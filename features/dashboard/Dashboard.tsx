@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { OverviewTab } from './components/OverviewTab';
 import { MonthlyBriefingTab } from './components/MonthlyBriefingTab';
+import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
 
 import { Clock } from 'lucide-react';
 
@@ -47,8 +48,16 @@ const Dashboard: React.FC = () => {
 
             {/* ── TAB CONTENT ── */}
             <div className="pt-2">
-                {activeTab === 'overview' && <OverviewTab />}
-                {activeTab === 'monthly' && <MonthlyBriefingTab />}
+                {activeTab === 'overview' && (
+                    <ErrorBoundary>
+                        <OverviewTab />
+                    </ErrorBoundary>
+                )}
+                {activeTab === 'monthly' && (
+                    <ErrorBoundary>
+                        <MonthlyBriefingTab />
+                    </ErrorBoundary>
+                )}
             </div>
         </div>
     );

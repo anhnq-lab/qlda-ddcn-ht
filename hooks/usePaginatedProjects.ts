@@ -20,6 +20,7 @@ export interface PaginatedProjectsResult {
     pageSize: number;
     totalPages: number;
     isLoading: boolean;
+    isFetching: boolean;
     error: string | null;
     refetch: () => void;
 }
@@ -27,7 +28,7 @@ export interface PaginatedProjectsResult {
 export function usePaginatedProjects(params?: QueryParams): PaginatedProjectsResult {
     const queryClient = useQueryClient();
 
-    const { data, isLoading, error, refetch } = useQuery({
+    const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: [PROJECTS_QUERY_KEY, JSON.stringify(params)],
         queryFn: () => ProjectService.getPaginated(params),
         staleTime: 30_000,        // 30s — don't refetch if data is fresh
@@ -42,6 +43,7 @@ export function usePaginatedProjects(params?: QueryParams): PaginatedProjectsRes
         pageSize: data?.pageSize || ProjectService.DEFAULT_PAGE_SIZE,
         totalPages: data?.totalPages || 0,
         isLoading,
+        isFetching,
         error: error ? (error as Error).message : null,
         refetch,
     };

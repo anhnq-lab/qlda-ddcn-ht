@@ -11,6 +11,7 @@ import { getStatusInfo, getPriorityInfo } from './TaskCreateEditModal';
 import { ProjectTaskModal } from '../projects/components/ProjectTaskModal';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { StatCard, EmptyState } from '../../components/ui';
+import { SkeletonStatCard } from '../../components/ui/Skeleton';
 import {
     Search, Plus, Calendar, User, CheckCircle2, Clock, AlertCircle,
     Trash2, Edit, Briefcase, Layers, ExternalLink, BarChart3, ChevronDown, ChevronUp,
@@ -73,7 +74,7 @@ const TaskList: React.FC = () => {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     // Data
-    const { data: tasks = [], isLoading } = useAllTasks();
+    const { data: tasks = [], isLoading, error: tasksError } = useAllTasks();
     const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
     const { data: employees = [] } = useEmployees();
 
@@ -266,65 +267,78 @@ const TaskList: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-500">
 
             {/* ══════════ STATS DASHBOARD ══════════ */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                {/* Total */}
-                <div className="col-span-2 lg:col-span-1">
+            {tasksError ? (
+                <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800 text-sm">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>Không tải được danh sách công việc: {(tasksError as Error).message}</span>
+                </div>
+            ) : isLoading ? (
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <SkeletonStatCard key={i} className={i === 0 ? 'col-span-2 lg:col-span-1' : ''} />
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    {/* Total */}
+                    <div className="col-span-2 lg:col-span-1">
+                        <StatCard
+                            label="Tổng công việc"
+                            value={stats.total}
+                            icon={<Target className="w-5 h-5 flex-shrink-0" />}
+                            color="blue"
+                            progressPercentage={stats.completion}
+                            progressLabel="HOÀN THÀNH"
+                        />
+                    </div>
+
+                    {/* In Progress */}
                     <StatCard
-                        label="Tổng công việc"
-                        value={stats.total}
-                        icon={<Target className="w-5 h-5 flex-shrink-0" />}
-                        color="blue"
-                        progressPercentage={stats.completion}
-                        progressLabel="HOÀN THÀNH"
+                        label="Đang thực hiện"
+                        value={stats.inProgress}
+                        icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
+                        color="amber"
+                        onClick={() => setFilterStatus(filterStatus === TaskStatus.InProgress ? 'All' : TaskStatus.InProgress)}
+                    />
+
+                    {/* Review */}
+                    <StatCard
+                        label="Chờ duyệt"
+                        value={stats.review}
+                        icon={<AlertCircle className="w-5 h-5 flex-shrink-0" />}
+                        color="violet"
+                        onClick={() => setFilterStatus(filterStatus === TaskStatus.Review ? 'All' : TaskStatus.Review)}
+                    />
+
+                    {/* Done */}
+                    <StatCard
+                        label="Hoàn thành"
+                        value={stats.done}
+                        icon={<CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
+                        color="emerald"
+                        onClick={() => setFilterStatus(filterStatus === TaskStatus.Done ? 'All' : TaskStatus.Done)}
+                    />
+
+                    {/* Overdue */}
+                    <StatCard
+                        label={
+                            <div className="flex items-center gap-1.5">
+                                Quá hạn
+                                {stats.overdue > 0 && (
+                                    <span className="flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-rose-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                    </span>
+                                )}
+                            </div>
+                        }
+                        value={stats.overdue}
+                        icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />}
+                        color="rose"
+                        onClick={() => { /* custom overdue filter logic */ }}
                     />
                 </div>
-
-                {/* In Progress */}
-                <StatCard
-                    label="Đang thực hiện"
-                    value={stats.inProgress}
-                    icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
-                    color="amber"
-                    onClick={() => setFilterStatus(filterStatus === TaskStatus.InProgress ? 'All' : TaskStatus.InProgress)}
-                />
-
-                {/* Review */}
-                <StatCard
-                    label="Chờ duyệt"
-                    value={stats.review}
-                    icon={<AlertCircle className="w-5 h-5 flex-shrink-0" />}
-                    color="violet"
-                    onClick={() => setFilterStatus(filterStatus === TaskStatus.Review ? 'All' : TaskStatus.Review)}
-                />
-
-                {/* Done */}
-                <StatCard
-                    label="Hoàn thành"
-                    value={stats.done}
-                    icon={<CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
-                    color="emerald"
-                    onClick={() => setFilterStatus(filterStatus === TaskStatus.Done ? 'All' : TaskStatus.Done)}
-                />
-
-                {/* Overdue */}
-                <StatCard
-                    label={
-                        <div className="flex items-center gap-1.5">
-                            Quá hạn
-                            {stats.overdue > 0 && (
-                                <span className="flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-rose-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                                </span>
-                            )}
-                        </div>
-                    }
-                    value={stats.overdue}
-                    icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />}
-                    color="rose"
-                    onClick={() => { /* custom overdue filter logic */ }}
-                />
-            </div>
+            )}
 
             {/* ══════════ TOOLBAR ══════════ */}
             <div className="toolbar">
@@ -453,7 +467,23 @@ const TaskList: React.FC = () => {
             )}
 
             {/* ══════════ TASK LIST ══════════ */}
-            {viewMode === 'list' ? (<>
+            {isLoading ? (
+                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="h-10 bg-[#F5EFE6] dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                            <div className="w-4 h-4 rounded bg-slate-200 dark:bg-slate-600 shrink-0" />
+                            <div className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-600 shrink-0" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse flex-1 max-w-xs" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse w-32 hidden md:block" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse w-16 mx-auto" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse w-24 hidden lg:block" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse w-20 hidden sm:block" />
+                            <div className="h-5 bg-slate-200 dark:bg-slate-600 rounded-full animate-pulse w-16" />
+                        </div>
+                    ))}
+                </div>
+            ) : viewMode === 'list' ? (<>
                 <div className="space-y-0">
                     {Object.keys(tasksByProject).length > 0 ? (
                         <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
@@ -628,7 +658,7 @@ const TaskList: React.FC = () => {
 
                                                         {/* Actions */}
                                                         <td className="px-4 py-3.5">
-                                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                                            <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-all">
                                                                 <PermissionGate resource="tasks" action="update">
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); openEditModal(task); }}

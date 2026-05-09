@@ -9,6 +9,7 @@ import { useSlidePanel } from '../../context/SlidePanelContext';
 import { ContractorDetailPanel } from '../projects/components/ContractorDetailPanel';
 import { exportContractorsToExcel } from '../../utils/contractorExcelIO';
 import { StatCard } from '../../components/ui';
+import { SkeletonStatCard } from '../../components/ui/Skeleton';
 
 const ContractorList: React.FC = () => {
     const { showToast } = useToast();
@@ -213,17 +214,23 @@ const ContractorList: React.FC = () => {
                 </div>
             )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {stats.map((stat) => (
-                    <StatCard
-                        key={stat.label}
-                        label={stat.label}
-                        value={stat.value}
-                        icon={<stat.icon className="w-4 h-4" />}
-                        color={stat.color}
-                    />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => <SkeletonStatCard key={i} />)}
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {stats.map((stat) => (
+                        <StatCard
+                            key={stat.label}
+                            label={stat.label}
+                            value={stat.value}
+                            icon={<stat.icon className="w-4 h-4" />}
+                            color={stat.color}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Toolbar */}
             <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -352,16 +359,18 @@ const ContractorList: React.FC = () => {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={(e) => handleEdit(e, contractor)}
                                                     className="p-1.5 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors"
+                                                    title="Chỉnh sửa nhà thầu"
                                                 >
                                                     <Pencil className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleDelete(e, contractor.ContractorID)}
                                                     className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
+                                                    title="Xóa nhà thầu"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
