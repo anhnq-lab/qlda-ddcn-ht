@@ -33,6 +33,8 @@ export interface Employee {
     Role: Role;
     Gender?: Gender;
     AllowedProjectIDs?: string[];
+    JobContent?: string;
+    CompletionCriteria?: string;
 }
 
 // 9.1 Audit Logs (Lưu vết hệ thống)

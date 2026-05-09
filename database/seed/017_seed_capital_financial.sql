@@ -18,7 +18,7 @@ BEGIN
     DELETE FROM capital_plans WHERE plan_id LIKE 'SEED-CP%';
 
     FOR v_projects IN SELECT project_id, total_investment, status FROM projects ORDER BY project_id LIMIT 15 LOOP
-        v_amt := COALESCE(v_projects.total_investment, 100000000000); -- default 100 tỷ
+        v_amt := CASE WHEN COALESCE(v_projects.total_investment, 0) = 0 THEN 100000000000 ELSE v_projects.total_investment END; -- default 100 tỷ
 
         -- Năm 2025
         INSERT INTO capital_plans (plan_id, project_id, year, amount, disbursed_amount, source, decision_number, date_assigned) VALUES

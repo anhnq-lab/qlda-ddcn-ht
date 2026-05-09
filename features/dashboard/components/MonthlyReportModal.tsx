@@ -95,22 +95,22 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
         setError('');
         try {
             const blob = await generateNd30Docx({
-                organizationParent: 'ỦY BAN NHÂN DÂN THÀNH PHỐ HỒ CHÍ MINH',
-                organizationName: 'BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG',
+                organizationParent: 'ỦY BAN NHÂN DÂN TỈNH HÀ TĨNH',
+                organizationName: 'BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC',
                 documentNumber: `${String(month).padStart(2, '0')}`,
                 documentSymbol: `${year}/BC-BQLDA`,
-                location: 'Thành phố Hồ Chí Minh',
+                location: 'Hà Tĩnh',
                 date: new Date(year, month - 1),
                 title: `BÁO CÁO GIAO BAN THÁNG ${month} NĂM ${year}`,
                 content,
-                signerTitle: 'TRƯỞNG BAN',
+                signerTitle: 'GIÁM ĐỐC',
                 signerName: '',
                 recipientList: [
-                    '- UBND thành phố (để báo cáo);',
-                    '- Sở Kế hoạch và Đầu tư TP.HCM;',
-                    '- Kho bạc Nhà nước TP.HCM;',
-                    '- Các ban quản lý dự án thành viên;',
-                    '- Lưu: VT, KH.',
+                    '- UBND tỉnh Hà Tĩnh (để báo cáo);',
+                    '- Sở Kế hoạch và Đầu tư tỉnh Hà Tĩnh;',
+                    '- Kho bạc Nhà nước tỉnh Hà Tĩnh;',
+                    '- Các phòng, đơn vị thuộc Ban;',
+                    '- Lưu: VT, HC-TH.',
                 ],
             });
             saveAs(blob, `BaoCaoGiaoBan_T${String(month).padStart(2, '0')}_${year}.docx`);

@@ -12,19 +12,15 @@ import {
 
 const OrgChart = () => {
     const departments = [
-        { name: "Văn phòng", color: "bg-blue-50 text-blue-700 border-blue-200" },
-        { name: "Phòng Kế hoạch – Đầu tư", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-        { name: "Phòng Tài chính – Kế toán", color: "bg-violet-50 text-violet-700 border-violet-200" },
-        { name: "Phòng Chính sách – Pháp chế", color: "bg-rose-50 text-rose-700 border-rose-200" },
-        { name: "Phòng Kỹ thuật – Chất lượng", color: "bg-purple-50 text-purple-700 border-purple-200" },
+        { name: "Phòng Hành chính – Tổng hợp", color: "bg-blue-50 text-blue-700 border-blue-200" },
+        { name: "Phòng Kế hoạch – Đấu thầu", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+        { name: "Phòng Kỹ thuật – Thẩm định", color: "bg-purple-50 text-purple-700 border-purple-200" },
     ];
     const projectUnits = [
-        { name: "Ban ĐH dự án 1", color: "bg-blue-50 text-blue-700 border-blue-200" },
-        { name: "Ban ĐH dự án 2", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-        { name: "Ban ĐH dự án 3", color: "bg-violet-50 text-violet-700 border-violet-200" },
-        { name: "Ban ĐH dự án 4", color: "bg-orange-50 text-orange-700 border-orange-200" },
-        { name: "Ban ĐH dự án 5", color: "bg-rose-50 text-rose-700 border-rose-200" },
-        { name: "TT Dịch vụ tư vấn", color: "bg-sky-50 text-sky-700 border-sky-200" },
+        { name: "Phòng Quản lý dự án 1", color: "bg-blue-50 text-blue-700 border-blue-200" },
+        { name: "Phòng Quản lý dự án 2", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+        { name: "Phòng Quản lý dự án 3", color: "bg-violet-50 text-violet-700 border-violet-200" },
+        { name: "Phòng Phát triển dịch vụ", color: "bg-sky-50 text-sky-700 border-sky-200" },
     ];
 
     return (
@@ -35,7 +31,7 @@ const OrgChart = () => {
                     <div className="bg-red-700 text-white px-10 py-2.5 rounded-xl shadow-lg border-2 border-white ring-1 ring-red-200 text-center cursor-default hover:scale-105 transition-transform">
                         <div className="flex items-center gap-2 justify-center">
                             <Landmark className="w-4 h-4" />
-                            <h4 className="font-black text-[11px] uppercase tracking-tight">Ủy ban Nhân dân TP. Hồ Chí Minh</h4>
+                            <h4 className="font-black text-[11px] uppercase tracking-tight">Ủy ban Nhân dân tỉnh Hà Tĩnh</h4>
                         </div>
                     </div>
                     <div className="absolute top-full left-1/2 w-px h-5 bg-gray-300 dark:bg-slate-700 -translate-x-1/2"></div>
@@ -82,7 +78,7 @@ const OrgChart = () => {
 
                 {/* Level 4: Ban ĐH DA + TT */}
                 <div className="w-full">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-2">Các Ban Điều hành dự án & Trung tâm</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-2">Các Phòng Quản lý dự án & Dịch vụ</p>
                     <div className="grid grid-cols-6 gap-2">
                         {projectUnits.map((unit, idx) => (
                             <div key={idx} className={`p-3 rounded-lg border ${unit.color} shadow-sm text-center hover:shadow-md transition-all cursor-default`}>

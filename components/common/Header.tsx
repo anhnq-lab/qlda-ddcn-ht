@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Search, LogOut, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { NotificationCenter } from './NotificationCenter';
+import { useTheme } from '../../context/ThemeContext';
 
 interface HeaderProps {
     onOpenSearch: () => void;
@@ -10,14 +11,11 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => {
     const { currentUser, logout } = useAuth();
+    const { theme, setTheme } = useTheme();
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const notifRef = useRef<HTMLDivElement>(null);
-
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-    });
 
     // Keyboard shortcut for search
     useEffect(() => {
@@ -44,15 +42,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
-
-    const toggleTheme = (newTheme: 'light' | 'dark') => {
-        setTheme(newTheme);
-        if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    };
 
     return (
         <header className="h-16 bg-[#FCF9F2]/95 dark:bg-slate-900 backdrop-blur-md border-b border-[#ece7de] dark:border-slate-800 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-colors duration-200">
@@ -177,7 +166,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                     <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Giao diện</span>
                                     <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
                                         <button
-                                            onClick={() => toggleTheme('light')}
+                                            onClick={() => setTheme('light')}
                                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${theme === 'light'
                                                 ? 'bg-[#FCF9F2] dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-lg border border-[#ece7de] dark:border-transparent'
                                                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
@@ -186,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                             <Sun size={14} /> Sáng
                                         </button>
                                         <button
-                                            onClick={() => toggleTheme('dark')}
+                                            onClick={() => setTheme('dark')}
                                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${theme === 'dark'
                                                 ? 'bg-slate-800 dark:bg-slate-700 text-primary-400 shadow-lg'
                                                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'

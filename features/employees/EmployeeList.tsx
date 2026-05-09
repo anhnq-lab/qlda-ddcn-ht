@@ -125,6 +125,8 @@ const EmployeeList: React.FC = () => {
             JoinDate: emp.JoinDate || '',
             Username: emp.Username || '',
             Password: '',
+            JobContent: (emp as any).JobContent || '',
+            CompletionCriteria: (emp as any).CompletionCriteria || '',
         });
         setIsModalOpen(true);
     }, [form]);
@@ -918,6 +920,28 @@ const EmployeeList: React.FC = () => {
                                                     </div>
                                                     {form.formState.errors.Status && <p className="text-red-500 text-xs mt-1">{form.formState.errors.Status.message}</p>}
                                                 </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Nội dung công việc & Tiêu chí */}
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Nội dung công việc</label>
+                                                <textarea
+                                                    {...form.register('JobContent')}
+                                                    rows={3}
+                                                    placeholder="Mô tả nội dung công việc..."
+                                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all resize-none"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Tiêu chí đánh giá hoàn thành</label>
+                                                <textarea
+                                                    {...form.register('CompletionCriteria')}
+                                                    rows={3}
+                                                    placeholder="Tiêu chí đánh giá..."
+                                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all resize-none"
+                                                />
                                             </div>
                                         </div>
 

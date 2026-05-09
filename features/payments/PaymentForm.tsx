@@ -92,7 +92,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-[#FCF9F2] dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="px-6 py-4 text-white flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #4A4230 0%, #9a3412 50%, #f97316 100%)' }}>
+                <div className="px-6 py-4 text-white flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #4A4230 0%, #1c456c 50%, #4a90e2 100%)' }}>
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl">
                             <CreditCard className="w-5 h-5" />

@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ScanSearch, RefreshCw, AlertTriangle, AlertCircle, Info, ChevronRight } from 'lucide-react';
 import { scanAllAnomalies, AnomalyReport, Anomaly } from '../../services/ai/anomalyDetector';
 
@@ -26,8 +26,8 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
     }, []);
 
     return (
-        <div className={`bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-[#F5EFE6] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center">
                         <ScanSearch size={14} className="text-white" />

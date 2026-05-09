@@ -756,7 +756,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         <div className="h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                             <div
                                 className="h-full rounded-full transition-all duration-700 ease-out"
-                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #f97316)', width: `${pct}%` }}
+                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
                             />
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-[10px] font-medium">

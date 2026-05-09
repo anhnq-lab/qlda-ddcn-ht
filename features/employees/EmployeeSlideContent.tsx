@@ -45,7 +45,7 @@ const getRoleInfo = (role: Role) => {
     }
 };
 
-const CHART_COLORS = ['#f97316', '#ea580c', '#404040', '#A3A3A3'];
+const CHART_COLORS = ['#4a90e2', '#357abd', '#404040', '#A3A3A3'];
 
 const getProgressGradient = (percent: number) => {
     if (percent >= 100) return 'from-emerald-400 to-emerald-600';
@@ -109,8 +109,8 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
         const done = completedTasks.length;
         const review = empTasks.filter(t => t.Status === TaskStatus.Review).length;
         return [
-            { name: 'Đang thực hiện', value: inProgress, color: '#f97316' },
-            { name: 'Chờ duyệt', value: review, color: '#ea580c' },
+            { name: 'Đang thực hiện', value: inProgress, color: '#4a90e2' },
+            { name: 'Chờ duyệt', value: review, color: '#357abd' },
             { name: 'Hoàn thành', value: done, color: '#404040' },
             { name: 'Cần làm', value: todo, color: '#A3A3A3' },
         ].filter(d => d.value > 0);
@@ -284,6 +284,28 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                         </div>
                     )}
                 </div>
+
+                {/* ── Nội dung công việc & Tiêu chí đánh giá ── */}
+                {(employee.JobContent || employee.CompletionCriteria) && (
+                    <div className="grid grid-cols-1 gap-4">
+                        {employee.JobContent && (
+                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <ClipboardList className="w-3 h-3" /> Nội dung công việc
+                                </h3>
+                                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.JobContent}</p>
+                            </div>
+                        )}
+                        {employee.CompletionCriteria && (
+                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <Target className="w-3 h-3" /> Tiêu chí đánh giá hoàn thành
+                                </h3>
+                                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.CompletionCriteria}</p>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* ══════════ TABS ══════════ */}
                 <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">

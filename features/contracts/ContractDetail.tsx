@@ -107,8 +107,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
     // Chart Data
     const financialData = [
         { name: 'Giá trị HĐ (sau ĐC)', value: totalAdjustedValue, fill: '#404040' },
-        { name: 'Đã thanh toán', value: totalPaid, fill: '#f97316' },
-        { name: 'Còn lại', value: remaining, fill: '#ea580c' },
+        { name: 'Đã thanh toán', value: totalPaid, fill: '#4a90e2' },
+        { name: 'Còn lại', value: remaining, fill: '#357abd' },
     ];
 
     const handleDelete = async () => {
@@ -490,8 +490,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                                     <stop offset="95%" stopColor="#8A8A8A" stopOpacity={0} />
                                                 </linearGradient>
                                                 <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                                                    <stop offset="5%" stopColor="#4a90e2" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#4a90e2" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -528,7 +528,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                             <Area
                                                 type="monotone"
                                                 dataKey="actual"
-                                                stroke="#f97316"
+                                                stroke="#4a90e2"
                                                 strokeWidth={2}
                                                 fill="url(#colorActual)"
                                                 name="actual"

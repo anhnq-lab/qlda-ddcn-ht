@@ -45,7 +45,7 @@ const getRoleInfo = (role: Role) => {
     }
 };
 
-const CHART_COLORS = ['#f97316', '#ea580c', '#404040', '#A3A3A3'];
+const CHART_COLORS = ['#4a90e2', '#357abd', '#404040', '#A3A3A3'];
 
 const getProgressGradient = (percent: number) => {
     if (percent >= 100) return 'from-emerald-400 to-emerald-600';
@@ -104,8 +104,8 @@ const EmployeeDetail: React.FC = () => {
         const done = completedTasks.length;
         const review = empTasks.filter(t => t.Status === TaskStatus.Review).length;
         const taskData = [
-            { name: 'Đang thực hiện', value: inProgress, color: '#f97316' }, // Gold 500
-            { name: 'Chờ duyệt', value: review, color: '#ea580c' }, // Gold 600
+            { name: 'Đang thực hiện', value: inProgress, color: '#4a90e2' }, // Gold 500
+            { name: 'Chờ duyệt', value: review, color: '#357abd' }, // Gold 600
             { name: 'Hoàn thành', value: done, color: '#404040' }, // Dark Slate
             { name: 'Cần làm', value: todo, color: '#A3A3A3' }, // Neutral Gray
         ];

@@ -210,7 +210,7 @@ const ProjectList: React.FC = () => {
                                                 <label
                                                     key={opt.val}
                                                     className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
-                                                        ? 'bg-primary-50 dark:bg-primary-900/30 ring-1 ring-primary-200 dark:ring-primary-800'
+                                                        ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
                                                         : 'hover:bg-slate-50 dark:hover:bg-slate-700'
                                                         }`}
                                                 >
@@ -238,7 +238,7 @@ const ProjectList: React.FC = () => {
                                                 <button
                                                     key={g}
                                                     onClick={() => setSelectedGroup(g)}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedGroup === g ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedGroup === g ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                                                         }`}
                                                 >
                                                     <span>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
@@ -255,7 +255,7 @@ const ProjectList: React.FC = () => {
                                         <div className="space-y-1">
                                             <button
                                                 onClick={() => setSelectedBoard('all')}
-                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === 'all' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === 'all' ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                             >
                                                 <span>Tất cả ban</span>
                                             </button>
@@ -263,7 +263,7 @@ const ProjectList: React.FC = () => {
                                                 <button
                                                     key={board.value}
                                                     onClick={() => setSelectedBoard(board.value.toString())}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${selectedBoard === board.value.toString() ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${selectedBoard === board.value.toString() ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                                 >
                                                     <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: board.hex }}></span>
                                                     <span className="flex-1">{board.label}</span>

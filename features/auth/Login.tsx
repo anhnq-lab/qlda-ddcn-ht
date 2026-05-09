@@ -159,19 +159,19 @@ const Login: React.FC = () => {
                     <div className="flex flex-col items-center text-center mb-12 w-full">
                         <img 
                             src="/logo-ddcn-transparent.png" 
-                            alt="Ban DDCN TP.HCM" 
+                            alt="Ban QLDA Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh"
                             className="w-[210px] h-auto object-contain drop-shadow-2xl dark:drop-shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-10 transition-transform hover:scale-105 duration-500" 
                         />
                         <h2 className="text-[13px] sm:text-[14px] font-bold tracking-[0.15em] uppercase text-slate-600 dark:text-slate-400 mb-2 flex justify-center w-full">
-                            Ban Quản Lý Dự Án ĐTXD Các Công Trình
+                            Ban Quản Lý Dự Án ĐTXD Công Trình
                         </h2>
                         <h3 className="text-[20px] sm:text-[22px] font-black tracking-wider uppercase leading-snug flex justify-center w-full">
-                            <span className="text-orange-600 dark:text-orange-500">DÂN DỤNG</span> 
-                            <span className="text-red-600 dark:text-red-500 mx-2">VÀ</span> 
-                            <span className="text-emerald-600 dark:text-emerald-500">CÔNG NGHIỆP</span>
+                            <span className="text-orange-600 dark:text-orange-500">DÂN DỤNG</span>
+                            <span className="text-red-600 dark:text-red-500 mx-2">VÀ</span>
+                            <span className="text-blue-600 dark:text-blue-400">HẠ TẦNG KHU VỰC</span>
                         </h3>
                         <p className="mt-3 text-[11px] font-bold text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase flex justify-center w-full">
-                            UBND Thành Phố Hồ Chí Minh
+                            UBND Tỉnh Hà Tĩnh
                         </p>
                     </div>
 
@@ -256,7 +256,7 @@ const Login: React.FC = () => {
 
                     <div className="mt-12 text-center">
                         <p className="text-[11px] font-medium text-slate-500 dark:text-slate-500">
-                            © 2026 Ban QLDA ĐTXD DDCN TPHCM. <br className="sm:hidden" />All rights reserved.
+                            © 2026 Ban QLDA ĐTXD Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
                         </p>
                     </div>
                 </div>

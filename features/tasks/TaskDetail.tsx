@@ -296,7 +296,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                         {/* Regulatory */}
                         <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                            <div className="h-1" style={{ background: 'linear-gradient(90deg, #fb923c, #f97316)' }} />
+                            <div className="h-1" style={{ background: 'linear-gradient(90deg, #fb923c, #4a90e2)' }} />
                             <div className="p-4">
                                 <h3 className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                     <Scale className="w-4 h-4" /> Thông tin pháp lý & Quy trình

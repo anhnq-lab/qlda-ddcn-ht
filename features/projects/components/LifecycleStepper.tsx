@@ -193,7 +193,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                             <button
                                 onClick={handleRevertStage}
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-white text-[11px] font-bold rounded-lg transition-colors shadow-sm"
-                                style={{ background: '#ea580c' }}
+                                style={{ background: '#357abd' }}
                             >
                                 <ArrowLeft className="w-3.5 h-3.5" />
                                 Lùi giai đoạn

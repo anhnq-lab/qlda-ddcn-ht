@@ -323,7 +323,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
                                 background: stats.avgProgress >= 50 ? 'linear-gradient(90deg, #10B981, #059669)' :
-                                    stats.avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #f97316)' :
+                                    stats.avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #4a90e2)' :
                                         'linear-gradient(90deg, #EF4444, #DC2626)',
                                 width: `${Math.min(100, Math.max(0, stats.avgProgress))}%`
                             }}

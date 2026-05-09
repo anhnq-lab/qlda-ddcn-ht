@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ProjectStatus, PROJECT_PHASE_COLORS } from '../../types';
 import { formatCurrency } from '../../utils/format';
+import { useTheme } from '../../context/ThemeContext';
 
 interface Project {
     ProjectID?: string;
@@ -197,9 +198,30 @@ function injectMarkerStyles() {
         .custom-popup .leaflet-popup-content-wrapper {
             border-radius: 12px; padding: 0; overflow: hidden;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            background: white !important;
+            color: #1f2937 !important;
+        }
+        .dark .custom-popup .leaflet-popup-content-wrapper {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+            border: 1px solid #334155;
         }
         .custom-popup .leaflet-popup-content { margin: 0; width: auto !important; }
-        .custom-popup .leaflet-popup-tip { background: white; }
+        .custom-popup .leaflet-popup-tip { background: white !important; }
+        .dark .custom-popup .leaflet-popup-tip { background: #1e293b !important; }
+        .popup-title {
+            font-size: 12px; font-weight: 900; color: #1f2937; margin: 0 0 4px 0;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .dark .popup-title {
+            color: #f1f5f9 !important;
+        }
+        .popup-value {
+            font-size: 10px; font-weight: 700; color: #6b7280; margin: 0;
+        }
+        .dark .popup-value {
+            color: #94a3b8 !important;
+        }
     `;
     document.head.appendChild(style);
 }
@@ -209,6 +231,8 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
     const mapRef = useRef<L.Map | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
     const [enrichedProjects, setEnrichedProjects] = useState<Project[]>([]);
+    const { theme } = useTheme();
+    const tileLayerRef = useRef<L.TileLayer | null>(null);
 
     // Inject marker CSS on mount
     useEffect(() => {
@@ -224,10 +248,6 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
             attributionControl: false,
         }).setView([16.0, 106.0], 6);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-        }).addTo(map);
-
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         mapRef.current = map;
@@ -237,6 +257,28 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
             mapRef.current = null;
         };
     }, []);
+
+    // Sync map tile layer with theme
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        if (tileLayerRef.current) {
+            map.removeLayer(tileLayerRef.current);
+        }
+
+        const tileUrl = theme === 'dark'
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+        const tileAttribution = '&copy; OpenStreetMap contributors &copy; CARTO';
+
+        const newTileLayer = L.tileLayer(tileUrl, {
+            attribution: tileAttribution,
+        }).addTo(map);
+
+        tileLayerRef.current = newTileLayer;
+    }, [theme]);
 
     // Geocode and enrich projects
     useEffect(() => {
@@ -282,12 +324,12 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
 
             const popupContent = `
                 <div style="padding: 8px; min-width: 200px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-                    <h4 style="font-size: 12px; font-weight: 900; color: #1f2937; margin: 0 0 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.ProjectName}</h4>
+                    <h4 class="popup-title">${p.ProjectName}</h4>
                     <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
                         <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; color: white; background-color: ${statusColor}; text-transform: uppercase;">
                             ${statusText}
                         </span>
-                        <p style="font-size: 10px; font-weight: 700; color: #6b7280; margin: 0;">${formatCurrency(p.TotalInvestment)}</p>
+                        <p class="popup-value">${formatCurrency(p.TotalInvestment)}</p>
                     </div>
                 </div>
             `;

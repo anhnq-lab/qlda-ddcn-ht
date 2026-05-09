@@ -91,6 +91,10 @@ export const dbToProject = (row: any): Project => ({
     LandUseCoefficient: Number(row.land_use_coefficient) || 0,
     AboveGroundFloors: Number(row.above_ground_floors) || 0,
     BasementFloors: Number(row.basement_floors) || 0,
+    DecisionLevelBeforeHandover: row.decision_level_before_handover || '',
+    OldInvestor: row.old_investor || '',
+    TransferDecision: row.transfer_decision || '',
+    CurrentStatusCode: row.current_status_code ? Number(row.current_status_code) : undefined,
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -177,6 +181,10 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.LandUseCoefficient !== undefined) result.land_use_coefficient = p.LandUseCoefficient;
     if (p.AboveGroundFloors !== undefined) result.above_ground_floors = p.AboveGroundFloors;
     if (p.BasementFloors !== undefined) result.basement_floors = p.BasementFloors;
+    if (p.DecisionLevelBeforeHandover !== undefined) result.decision_level_before_handover = p.DecisionLevelBeforeHandover;
+    if (p.OldInvestor !== undefined) result.old_investor = p.OldInvestor;
+    if (p.TransferDecision !== undefined) result.transfer_decision = p.TransferDecision;
+    if (p.CurrentStatusCode !== undefined) result.current_status_code = p.CurrentStatusCode;
     return result;
 };
 

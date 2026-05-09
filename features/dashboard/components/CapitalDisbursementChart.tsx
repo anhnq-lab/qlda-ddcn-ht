@@ -11,7 +11,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
     const { theme } = useTheme();
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-[#ece7de] dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><Wallet className="w-5 h-5" /></div>
@@ -22,7 +22,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                         <div className="w-2.5 h-2.5 rounded" style={{ background: theme === 'dark' ? '#475569' : '#E5E7EB' }} /> Kế hoạch
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400">
-                        <div className="w-2.5 h-2.5 rounded" style={{ background: '#f97316' }} /> Thực giải ngân
+                        <div className="w-2.5 h-2.5 rounded" style={{ background: '#4a90e2' }} /> Thực giải ngân
                     </span>
                 </div>
             </div>
@@ -45,7 +45,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                                 if (!active || !payload?.[0]) return null;
                                 const d = payload[0].payload;
                                 return (
-                                    <div className="bg-[#FCF9F2] dark:bg-slate-800 px-3 py-2 rounded-xl shadow-sm border border-gray-200 dark:border-slate-600">
+                                    <div className="bg-white dark:bg-slate-900 px-3 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
                                         <p className="text-[10px] font-black text-gray-700 dark:text-slate-200 mb-0.5">{label}</p>
                                         <p className="text-[9px] text-gray-600 dark:text-slate-300">Kế hoạch: <strong>{d.planned} Tỷ</strong></p>
                                         <p className="text-[9px] text-gray-600 dark:text-slate-300">Thực giải ngân: <strong>{d.actual} Tỷ</strong></p>
@@ -56,7 +56,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                             cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }}
                         />
                         <Bar dataKey="planned" fill={theme === 'dark' ? '#475569' : '#E5E7EB'} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                        <Bar dataKey="actual" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                        <Bar dataKey="actual" fill="#4a90e2" radius={[4, 4, 0, 0]} maxBarSize={40} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

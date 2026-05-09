@@ -58,8 +58,8 @@ const BG_MAP: Record<StatCardColor, string> = {
     indigo:  'bg-indigo-500',
     orange:  'bg-orange-500',
     purple:  'bg-purple-500',
-    slate:   'bg-[#F5EFE6]0',
-    gray:    'bg-[#F5EFE6]0',
+    slate:   'bg-slate-500',
+    gray:    'bg-gray-500',
 };
 
 /**

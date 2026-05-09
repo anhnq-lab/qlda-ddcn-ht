@@ -51,7 +51,7 @@ export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
                     <div className="relative h-2 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                         <div
                             className="absolute h-full rounded-full transition-all duration-700"
-                            style={{ background: 'linear-gradient(90deg, #fdba74, #f97316)', width: `${Math.min(pct, 100)}%` }}
+                            style={{ background: 'linear-gradient(90deg, #fdba74, #4a90e2)', width: `${Math.min(pct, 100)}%` }}
                         />
                         {plannedPct !== null && (
                             <div

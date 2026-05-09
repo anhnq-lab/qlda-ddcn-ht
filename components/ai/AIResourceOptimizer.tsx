@@ -19,8 +19,8 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
     }, []);
 
     return (
-        <div className={`bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-[#F5EFE6] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
                         <BarChart3 size={14} className="text-white" />

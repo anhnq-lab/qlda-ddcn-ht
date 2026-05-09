@@ -22,9 +22,9 @@ export const SOURCE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export const SOURCE_COLORS: Record<string, string> = {
-    'NSTW': '#9a3412',
+    'NSTW': '#1c456c',
     'NSĐP': '#fdba74',
-    'ODA': '#f97316',
+    'ODA': '#4a90e2',
     'Khác': '#6b7280',
 };
 

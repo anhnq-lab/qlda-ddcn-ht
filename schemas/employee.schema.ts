@@ -50,6 +50,8 @@ export const EmployeeCreateSchema = z.object({
     JoinDate: z.string().min(1, 'Vui lòng nhập ngày vào làm'),
     AvatarUrl: z.string().url().optional().or(z.literal('')),
     AllowedProjectIDs: z.array(z.string().uuid()).optional(),
+    JobContent: z.string().optional(),
+    CompletionCriteria: z.string().optional(),
 });
 
 export const EmployeeUpdateSchema = EmployeeCreateSchema.partial().extend({

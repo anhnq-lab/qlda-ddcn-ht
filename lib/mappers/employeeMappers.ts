@@ -11,12 +11,14 @@ export const dbToEmployee = (row: any): Employee => ({
     Position: row.position || '',
     Email: row.email || '',
     Phone: row.phone || '',
-    AvatarUrl: row.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.full_name || 'NV')}&background=f97316&color=fff&bold=true&size=128`,
+    AvatarUrl: row.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.full_name || 'NV')}&background=4a90e2&color=fff&bold=true&size=128`,
     Status: row.status as EmployeeStatus,
     JoinDate: row.join_date || '',
     Username: row.employee_id,
     Password: '',
     Gender: row.gender as Gender || undefined,
+    JobContent: row.job_content || undefined,
+    CompletionCriteria: row.completion_criteria || undefined,
 });
 
 export const employeeToDb = (emp: Partial<Employee>) => ({
@@ -31,5 +33,7 @@ export const employeeToDb = (emp: Partial<Employee>) => ({
     ...(emp.Status !== undefined && { status: emp.Status }),
     ...(emp.JoinDate !== undefined && { join_date: emp.JoinDate ? emp.JoinDate : null }),
     ...(emp.Gender !== undefined && { gender: emp.Gender }),
+    ...(emp.JobContent !== undefined && { job_content: emp.JobContent }),
+    ...(emp.CompletionCriteria !== undefined && { completion_criteria: emp.CompletionCriteria }),
 });
 

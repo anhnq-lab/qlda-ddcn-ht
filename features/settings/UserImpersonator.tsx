@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UserImpersonator — QLDA ĐDCN TP.HCM
  *
  * Admin UI to select an employee OR contractor and impersonate them.
@@ -129,7 +129,7 @@ const UserImpersonator: React.FC = () => {
             Position: 'Nhà thầu',
             Email: ctr.email || '',
             Phone: '',
-            AvatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(ctr.display_name)}&background=f97316&color=fff`,
+            AvatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(ctr.display_name)}&background=4a90e2&color=fff`,
             JoinDate: '',
             Status: 'Active' as any,
             Username: ctr.username,

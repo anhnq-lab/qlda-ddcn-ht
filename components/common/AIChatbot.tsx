@@ -226,7 +226,7 @@ export const AIChatbot: React.FC = () => {
             <button
                 onClick={() => setIsOpen(true)}
                 className="fixed bottom-6 right-6 text-white p-4 rounded-full shadow-lg transition-all duration-300 z-50 flex items-center gap-2 group hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #9a3412 0%, #f97316 100%)', boxShadow: '0 4px 20px rgba(184, 134, 11, 0.4)' }}
+                style={{ background: 'linear-gradient(135deg, #1c456c 0%, #4a90e2 100%)', boxShadow: '0 4px 20px rgba(74, 144, 226, 0.4)' }}
             >
                 <div className="relative">
                     <Sparkles size={24} />
@@ -248,7 +248,7 @@ export const AIChatbot: React.FC = () => {
             ${isExpanded ? 'w-[640px] h-[80vh]' : 'w-[400px] h-[540px]'}`}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 text-white rounded-t-xl" style={{ background: 'linear-gradient(135deg, #9a3412 0%, #f97316 100%)' }}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 text-white rounded-t-xl" style={{ background: 'linear-gradient(135deg, #1c456c 0%, #4a90e2 100%)' }}>
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                         <Sparkles size={18} />
@@ -384,7 +384,7 @@ export const AIChatbot: React.FC = () => {
                         onClick={() => handleSend()}
                         disabled={isLoading || !input.trim()}
                         className="text-white p-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
-                        style={{ background: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)' }}
+                        style={{ background: 'linear-gradient(135deg, #357abd 0%, #4a90e2 100%)' }}
                     >
                         <Send size={18} />
                     </button>

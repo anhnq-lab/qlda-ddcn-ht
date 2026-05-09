@@ -41,8 +41,8 @@ interface ProjectCapitalTabProps {
 
 // Color constants — Gold Theme
 const COLORS = {
-    tamUng: '#f97316',
-    klht: '#ea580c',
+    tamUng: '#4a90e2',
+    klht: '#357abd',
     thuHoi: '#996515',
     pending: '#D4A843',
     rejected: '#ef4444',

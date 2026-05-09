@@ -95,7 +95,7 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                         <div className="relative">
                             <ProgressRing
                                 progress={financialProgress}
-                                color="#f97316"
+                                color="#4a90e2"
                                 bgColor={ringBg}
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
@@ -124,7 +124,7 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
                                 background: avgProgress >= 50 ? 'linear-gradient(90deg, #10B981, #059669)' :
-                                    avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #f97316)' :
+                                    avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #4a90e2)' :
                                         'linear-gradient(90deg, #EF4444, #DC2626)',
                                 width: `${Math.min(100, Math.max(0, avgProgress))}%`
                             }}

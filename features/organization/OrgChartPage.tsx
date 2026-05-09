@@ -37,19 +37,13 @@ type NodeData = {
 };
 
 const DEPT_CONFIG: Record<string, { gradient: string; color: string; icon: string }> = {
-    'Văn phòng':                    { gradient: 'from-blue-500 to-blue-700',    color: '#3b82f6', icon: '🏛' },
-    'Phòng Kế hoạch – Đầu tư':     { gradient: 'from-emerald-500 to-emerald-700', color: '#10b981', icon: '📊' },
-    'Phòng Tài chính – Kế toán':    { gradient: 'from-violet-500 to-violet-700', color: '#8b5cf6', icon: '💰' },
-    'Phòng Chính sách – Pháp chế':  { gradient: 'from-rose-500 to-rose-700',   color: '#f43f5e', icon: '⚖' },
-    'Phòng Kỹ thuật – Chất lượng':  { gradient: 'from-purple-500 to-purple-700', color: '#a855f7', icon: '🔧' },
-    'Ban Điều hành dự án 1':         { gradient: 'from-sky-500 to-sky-700',     color: '#0ea5e9', icon: '🏗' },
-    'Ban Điều hành dự án 2':         { gradient: 'from-teal-500 to-teal-700',   color: '#14b8a6', icon: '🏗' },
-    'Ban Điều hành dự án 3':         { gradient: 'from-indigo-500 to-indigo-700', color: '#6366f1', icon: '🏗' },
-    'Ban Điều hành dự án 4':         { gradient: 'from-orange-500 to-orange-700', color: '#f97316', icon: '🏗' },
-    'Ban Điều hành dự án 5':         { gradient: 'from-pink-500 to-pink-700',   color: '#ec4899', icon: '🏗' },
-    'Ban Điều hành dự án 6':         { gradient: 'from-cyan-500 to-cyan-700',   color: '#06b6d4', icon: '🏗' },
-    'Ban Điều hành dự án 7':         { gradient: 'from-lime-500 to-lime-700',   color: '#84cc16', icon: '🏗' },
-    'Trung tâm Dịch vụ tư vấn':     { gradient: 'from-amber-500 to-amber-700', color: '#f59e0b', icon: '🎯' },
+    'Phòng Hành chính – Tổng hợp':  { gradient: 'from-blue-500 to-blue-700',    color: '#3b82f6', icon: '🏛' },
+    'Phòng Kế hoạch – Đấu thầu':    { gradient: 'from-emerald-500 to-emerald-700', color: '#10b981', icon: '📊' },
+    'Phòng Kỹ thuật – Thẩm định':   { gradient: 'from-purple-500 to-purple-700', color: '#a855f7', icon: '🔧' },
+    'Phòng Quản lý dự án 1':         { gradient: 'from-sky-500 to-sky-700',     color: '#0ea5e9', icon: '🏗' },
+    'Phòng Quản lý dự án 2':         { gradient: 'from-teal-500 to-teal-700',   color: '#14b8a6', icon: '🏗' },
+    'Phòng Quản lý dự án 3':         { gradient: 'from-indigo-500 to-indigo-700', color: '#6366f1', icon: '🏗' },
+    'Phòng Phát triển dịch vụ':     { gradient: 'from-amber-500 to-amber-700', color: '#f59e0b', icon: '🎯' },
 };
 
 // ══════════════════════════════════════════════════
@@ -90,12 +84,12 @@ const DirectorNode: React.FC<NodeProps> = ({ data }) => (
 
 const DeputyNode: React.FC<NodeProps> = ({ data }) => (
     <div className="relative">
-        <Handle type="target" position={Position.Top} className="!bg-orange-400" />
-        <Handle type="source" position={Position.Bottom} className="!bg-orange-400" />
-        <div className="bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-orange-700 px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all min-w-[160px] text-center">
+        <Handle type="target" position={Position.Top} className="!bg-primary-400" />
+        <Handle type="source" position={Position.Bottom} className="!bg-primary-400" />
+        <div className="bg-white dark:bg-slate-800 border-2 border-primary-200 dark:border-primary-700 px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all min-w-[160px] text-center">
             <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                <Award className="w-3.5 h-3.5 text-orange-500" />
-                <span className="text-[11px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-tight">{(data as NodeData).label}</span>
+                <Award className="w-3.5 h-3.5 text-primary-500" />
+                <span className="text-[11px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-tight">{(data as NodeData).label}</span>
             </div>
             {(data as NodeData).subtitle && (
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">{(data as NodeData).subtitle}</p>
@@ -147,13 +141,13 @@ function buildFlowElements(
     const pgds = employees.filter(e => e.Position === 'Phó Giám đốc Ban');
     const kt = employees.find(e => e.Position === 'Kế toán trưởng');
 
-    const funcDepts = ['Văn phòng', 'Phòng Kế hoạch – Đầu tư', 'Phòng Tài chính – Kế toán', 'Phòng Chính sách – Pháp chế', 'Phòng Kỹ thuật – Chất lượng'];
-    const unitDepts = ['Ban Điều hành dự án 1', 'Ban Điều hành dự án 2', 'Ban Điều hành dự án 3', 'Ban Điều hành dự án 4', 'Ban Điều hành dự án 5', 'Ban Điều hành dự án 6', 'Ban Điều hành dự án 7', 'Trung tâm Dịch vụ tư vấn'];
+    const funcDepts = ['Phòng Hành chính – Tổng hợp', 'Phòng Kế hoạch – Đấu thầu', 'Phòng Kỹ thuật – Thẩm định'];
+    const unitDepts = ['Phòng Quản lý dự án 1', 'Phòng Quản lý dự án 2', 'Phòng Quản lý dự án 3', 'Phòng Phát triển dịch vụ'];
 
     const CX = 600; // center x
 
     // Level 0: UBND
-    nodes.push({ id: 'ubnd', type: 'root', position: { x: CX - 120, y: 0 }, data: { label: 'Ủy ban Nhân dân TP. Hồ Chí Minh', type: 'root' } });
+    nodes.push({ id: 'ubnd', type: 'root', position: { x: CX - 120, y: 0 }, data: { label: 'UBND tỉnh Hà Tĩnh', type: 'root' } });
 
     // Level 1: Giám đốc
     nodes.push({ id: 'gd', type: 'director', position: { x: CX - 110, y: 130 }, data: { label: 'Giám đốc Ban', subtitle: gd?.FullName, type: 'director' } });
@@ -163,11 +157,11 @@ function buildFlowElements(
     const level2Total = pgds.length + (kt ? 1 : 0);
     const level2StartX = CX - (level2Total * 190) / 2;
 
-    pgds.forEach((pgd, i) => {
-        const id = `pgd-${i}`;
-        nodes.push({ id, type: 'deputy', position: { x: level2StartX + i * 190, y: 270 }, data: { label: 'Phó Giám đốc', subtitle: pgd.FullName, type: 'deputy' } });
-        edges.push({ id: `gd-${id}`, source: 'gd', target: id, type: 'smoothstep', style: { stroke: '#f97316', strokeWidth: 1.5 } });
-    });
+        pgds.forEach((pgd, i) => {
+            const id = `pgd-${i}`;
+            nodes.push({ id, type: 'deputy', position: { x: level2StartX + i * 190, y: 270 }, data: { label: 'Phó Giám đốc', subtitle: pgd.FullName, type: 'deputy' } });
+            edges.push({ id: `gd-${id}`, source: 'gd', target: id, type: 'smoothstep', style: { stroke: '#4a90e2', strokeWidth: 1.5 } });
+        });
 
     if (kt) {
         const ktId = 'kt';
@@ -211,19 +205,13 @@ function buildFlowElements(
 // ══════════════════════════════════════════════════
 
 const DEPARTMENTS = [
-    'Văn phòng',
-    'Phòng Kế hoạch – Đầu tư',
-    'Phòng Tài chính – Kế toán',
-    'Phòng Chính sách – Pháp chế',
-    'Phòng Kỹ thuật – Chất lượng',
-    'Ban Điều hành dự án 1',
-    'Ban Điều hành dự án 2',
-    'Ban Điều hành dự án 3',
-    'Ban Điều hành dự án 4',
-    'Ban Điều hành dự án 5',
-    'Ban Điều hành dự án 6',
-    'Ban Điều hành dự án 7',
-    'Trung tâm Dịch vụ tư vấn',
+    'Phòng Hành chính – Tổng hợp',
+    'Phòng Kế hoạch – Đấu thầu',
+    'Phòng Kỹ thuật – Thẩm định',
+    'Phòng Quản lý dự án 1',
+    'Phòng Quản lý dự án 2',
+    'Phòng Quản lý dự án 3',
+    'Phòng Phát triển dịch vụ',
 ];
 
 const OrgChartPage: React.FC = () => {
@@ -267,7 +255,7 @@ const OrgChartPage: React.FC = () => {
                     <div>
                         <h1 className="text-2xl font-black text-slate-800 dark:text-white">Sơ đồ tổ chức</h1>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Ban QLDA ĐTXD các công trình Dân dụng và Công nghiệp TP.HCM
+                            Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh
                         </p>
                     </div>
                 </div>
@@ -276,8 +264,8 @@ const OrgChartPage: React.FC = () => {
                 <div className="flex items-center gap-2 flex-wrap">
                     {[
                         { label: 'Giám đốc', val: 1, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700' },
-                        { label: 'Phó Giám đốc', val: leadership.pgds.length, color: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-700' },
-                        { label: 'Phòng/Ban/Đơn vị', val: 13, color: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700' },
+                        { label: 'Phó Giám đốc', val: leadership.pgds.length, color: 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-700' },
+                        { label: 'Phòng/Đơn vị', val: 7, color: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700' },
                         { label: 'Tổng nhân sự', val: employees.length, color: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' },
                     ].map(s => (
                         <div key={s.label} className={`border rounded-xl px-4 py-2 text-center ${s.color}`}>
@@ -335,7 +323,7 @@ const OrgChartPage: React.FC = () => {
                                 const d = n.data as NodeData;
                                 if (d.type === 'root') return '#dc2626';
                                 if (d.type === 'director') return '#7c3aed';
-                                if (d.type === 'deputy') return '#f97316';
+                                if (d.type === 'deputy') return '#4a90e2';
                                 return (d.color as string) ?? '#64748b';
                             }}
                             maskColor="rgba(241,237,230,0.5)"
@@ -346,11 +334,11 @@ const OrgChartPage: React.FC = () => {
                     <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
                         <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Chú giải</p>
                         {[
-                            { color: 'bg-red-600', label: 'UBND TP.HCM' },
+                            { color: 'bg-red-600', label: 'UBND tỉnh Hà Tĩnh' },
                             { color: 'bg-primary-600', label: 'Giám đốc Ban' },
-                            { color: 'bg-orange-500', label: 'Lãnh đạo' },
+                            { color: 'bg-primary-400', label: 'Lãnh đạo' },
                             { color: 'bg-blue-500', label: 'Phòng chức năng' },
-                            { color: 'bg-teal-500', label: 'Ban ĐH / Trung tâm' },
+                            { color: 'bg-teal-500', label: 'Phòng QLDA / Dịch vụ' },
                         ].map(l => (
                             <div key={l.label} className="flex items-center gap-2 mb-1">
                                 <div className={`w-3 h-3 rounded-full ${l.color}`} />
@@ -442,7 +430,7 @@ const OrgChartPage: React.FC = () => {
 
                     {/* Footer note */}
                     <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500 italic">
-                        * Theo Quyết định số 571/QĐ-UBND của UBND TP.HCM về thành lập Ban QLDA ĐTXD các công trình Dân dụng & Công nghiệp
+                        * Theo Quyết định của UBND tỉnh Hà Tĩnh về thành lập Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh
                     </p>
                 </div>
             )}

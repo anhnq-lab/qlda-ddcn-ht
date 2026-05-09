@@ -1184,12 +1184,14 @@ export type Database = {
       employees: {
         Row: {
           avatar_url: string | null
+          completion_criteria: string | null
           created_at: string
           department: string | null
           email: string | null
           employee_id: string
           full_name: string
           gender: string | null
+          job_content: string | null
           join_date: string | null
           managed_unit_ids: string[] | null
           management_rank: number | null
@@ -1201,12 +1203,14 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          completion_criteria?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           employee_id: string
           full_name: string
           gender?: string | null
+          job_content?: string | null
           join_date?: string | null
           managed_unit_ids?: string[] | null
           management_rank?: number | null
@@ -1218,12 +1222,14 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          completion_criteria?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           employee_id?: string
           full_name?: string
           gender?: string | null
+          job_content?: string | null
           join_date?: string | null
           managed_unit_ids?: string[] | null
           management_rank?: number | null

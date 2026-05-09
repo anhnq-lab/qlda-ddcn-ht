@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     AlertTriangle, Shield, TrendingDown, Clock, FileWarning,
     CheckCircle2, RefreshCw, ChevronRight, Sparkles, AlertCircle,
@@ -65,9 +65,9 @@ export const AIRiskDashboard: React.FC = () => {
     const warningCount = report?.risks.filter(r => r.level === 'warning').length ?? 0;
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden">
             {/* Header */}
-            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/40 dark:to-slate-900/20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-red-500 flex items-center justify-center">
                         <Sparkles size={14} className="text-white" />

@@ -268,7 +268,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         <div
                             className="absolute top-5 h-1.5 rounded-full transition-all duration-500"
                             style={{
-                                background: 'linear-gradient(90deg, #fb923c, #f97316)',
+                                background: 'linear-gradient(90deg, #fb923c, #4a90e2)',
                                 left: '2.5rem',
                                 width: actualStage > 0 ? `calc(${Math.min((actualStage - 1) / (lifecycleStages.length - 1) * 100, 100)}% - 5rem)` : '0%'
                             }}

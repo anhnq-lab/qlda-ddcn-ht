@@ -32,7 +32,7 @@ const PhaseBadge: React.FC<{ status: number }> = ({ status }) => {
 };
 
 // ── Progress Bar Inline ──────────────────────────────────
-const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color = '#f97316' }) => (
+const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color = '#4a90e2' }) => (
     <div className="flex items-center gap-2">
         <div className="flex-1 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
             <div
@@ -105,6 +105,12 @@ export const OverviewTab: React.FC = () => {
         }
         return list;
     }, [projectRows, selectedBoard, selectedYear]);
+
+    const top10KeyProjects = useMemo(() => {
+        return [...filteredRows]
+            .sort((a, b) => b.totalInvestment - a.totalInvestment)
+            .slice(0, 10);
+    }, [filteredRows]);
 
     const filteredProjects = useMemo(() => {
         return filteredRows.map(r => ({
@@ -187,19 +193,16 @@ export const OverviewTab: React.FC = () => {
                     onClick={() => navigate('/projects')}
                     footer={
                         <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                style={{ background: '#F59E0B18', color: '#B45309', border: '1px solid #F59E0B40' }}>
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                 Chuẩn bị: {statusSummary.prep}
                             </span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                style={{ background: '#10B98118', color: '#047857', border: '1px solid #10B98140' }}>
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
                                 Thực hiện: {statusSummary.exec}
                             </span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                style={{ background: '#6366F118', color: '#4338CA', border: '1px solid #6366F140' }}>
-                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                 Kết thúc: {statusSummary.comp}
                             </span>
                         </div>
@@ -241,11 +244,14 @@ export const OverviewTab: React.FC = () => {
             {/* ═══════════════════════════════════════════════════
                 2. BẢNG TỔNG HỢP DỰ ÁN
             ═══════════════════════════════════════════════════ */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-[#ece7de] dark:border-slate-700 overflow-hidden">
-                <div className="flex justify-between items-center px-5 py-3 border-b border-[#ece7de]/60 dark:border-slate-700">
-                    <h3 className="section-header text-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div className="flex justify-between items-center px-5 py-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 className="section-header text-sm flex items-center gap-2">
                         <div className="section-icon"><Building2 className="w-5 h-5" /></div>
-                        Tổng hợp dự án
+                        <span>Top 10 dự án trọng điểm</span>
+                        <span className="text-[10px] bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-black px-2 py-0.5 rounded-full border border-amber-200/40 uppercase tracking-wider">
+                            Theo tổng mức ĐT
+                        </span>
                     </h3>
                     <button
                         onClick={() => navigate('/projects')}
@@ -259,11 +265,11 @@ export const OverviewTab: React.FC = () => {
                     <div className="p-4">
                         <TableSkeleton columns={6} rows={3} />
                     </div>
-                ) : filteredRows.length > 0 ? (
+                ) : top10KeyProjects.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
                                     <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-widest">Tên dự án</th>
                                     <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest">Ban QLDA</th>
                                     <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest">Giai đoạn</th>
@@ -273,7 +279,7 @@ export const OverviewTab: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                                {filteredRows.map((row) => {
+                                {top10KeyProjects.map((row) => {
                                     const boardDef = MANAGEMENT_BOARDS.find(b => b.value === row.managementBoard);
                                     return (
                                         <tr
@@ -332,7 +338,7 @@ export const OverviewTab: React.FC = () => {
             ═══════════════════════════════════════════════════ */}
             {capitalVsDisbursement && (
                 <Suspense fallback={
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-[#ece7de] dark:border-slate-700 h-64 flex items-center justify-center">
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-64 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
                     </div>
                 }>
@@ -366,7 +372,7 @@ export const OverviewTab: React.FC = () => {
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[300px] xl:h-[500px]">
                 {/* Map (2/3) */}
-                <div className="xl:col-span-2 bg-[#FCF9F2] dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-[#ece7de] dark:border-slate-700 relative overflow-hidden h-full flex flex-col">
+                <div className="xl:col-span-2 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden h-full flex flex-col">
                     <div className="flex justify-between items-center mb-4 shrink-0">
                         <h3 className="section-header">
                             <div className="section-icon"><MapIcon className="w-5 h-5" /></div>
@@ -388,7 +394,7 @@ export const OverviewTab: React.FC = () => {
                             </Suspense>
                         )}
                         {/* Legend */}
-                        <div className="absolute top-4 right-4 bg-[#FCF9F2]/90 dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-[#ece7de] dark:border-slate-600 shadow-sm z-[1000]">
+                        <div className="absolute top-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm z-[1000]">
                             <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Chú thích</h4>
                             <div className="space-y-2">
                                 {Object.entries(PROJECT_PHASE_COLORS).map(([key, phase]) => (
@@ -403,7 +409,7 @@ export const OverviewTab: React.FC = () => {
                 </div>
 
                 {/* Alerts (1/3) */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/50 relative overflow-hidden h-full flex flex-col">
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/30 relative overflow-hidden h-full flex flex-col">
                     <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
                     <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0" style={{ paddingLeft: '0.75rem', borderLeft: '3px solid #EF4444' }}>
                         <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
@@ -417,7 +423,7 @@ export const OverviewTab: React.FC = () => {
                         ) : risks && risks.length > 0 ? (
                             risks.map((r: any) => (
                                 <div key={r.id} className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 rounded-xl flex items-start gap-3 transition-transform hover:scale-[1.02]">
-                                    <div className="p-1.5 bg-[#FCF9F2] dark:bg-slate-700 rounded-lg text-red-500 shadow-sm shrink-0">
+                                    <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg text-red-500 shadow-sm shrink-0">
                                         <AlertCircle className="w-4 h-4" />
                                     </div>
                                     <div>
@@ -432,7 +438,7 @@ export const OverviewTab: React.FC = () => {
                     </div>
                     <button
                         onClick={() => navigate('/reports')}
-                        className="w-full mt-4 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0 shadow-sm hover:shadow"
+                        className="w-full mt-4 py-2 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0 shadow-sm hover:shadow"
                     >
                         Xem chi tiết báo cáo rủi ro
                     </button>
