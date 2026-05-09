@@ -54,7 +54,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                 <input
                     type="text"
                     readOnly
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-[#F0ECE1] dark:bg-slate-900 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed"
                     value={formData.ProjectID}
                 />
             </div>
@@ -110,7 +110,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             className={`py-2 px-3 rounded-xl text-sm font-semibold transition-all border-2 whitespace-nowrap flex items-center justify-center ${
                                 formData.ManagementBoard === board.value
                                     ? `${board.color} text-white border-transparent shadow-md scale-[1.02]`
-                                    : 'bg-[#FCF9F2] dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                    : 'bg-bg-surface text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700'
                             }`}
                         >
                             Ban {board.value}
@@ -180,7 +180,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700 flex items-center gap-2 cursor-pointer hover:border-blue-300 dark:hover:border-blue-500/50 transition-colors"
                         onClick={() => setShowMemberDropdown(!showMemberDropdown)}
                     >
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />
                         <input
                             type="text"
                             placeholder={`Tìm nhân sự... (${selectedMembers.length} đã chọn)`}
@@ -189,19 +189,19 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             onChange={e => { setMemberSearch(e.target.value); setShowMemberDropdown(true); }}
                             onFocus={() => setShowMemberDropdown(true)}
                         />
-                        <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-500 transition-transform ${showMemberDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-400 transition-transform ${showMemberDropdown ? 'rotate-180' : ''}`} />
                     </div>
 
                     {showMemberDropdown && (
                         <>
                             <div className="fixed inset-0 z-10" onClick={() => setShowMemberDropdown(false)}></div>
-                            <div className="absolute z-20 mt-1 w-full bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm max-h-56 overflow-y-auto">
+                            <div className="absolute z-20 mt-1 w-full bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm max-h-56 overflow-y-auto">
                                 {Object.keys(groupedEmployees).length === 0 ? (
-                                    <div className="p-4 text-center text-sm text-gray-400 dark:text-slate-500">Không tìm thấy nhân sự</div>
+                                    <div className="p-4 text-center text-sm text-gray-400 dark:text-slate-400">Không tìm thấy nhân sự</div>
                                 ) : (
                                     Object.entries(groupedEmployees).map(([dept, emps]: [string, Employee[]]) => (
                                         <div key={dept}>
-                                            <div className="px-3 py-1.5 bg-[#F0ECE1] dark:bg-slate-900 dark:bg-slate-700 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider sticky top-0">
+                                            <div className="px-3 py-1.5 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider sticky top-0">
                                                 {dept}
                                             </div>
                                             {emps.map(emp => {
@@ -222,7 +222,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                                                         />
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{emp.FullName}</p>
-                                                            <p className="text-[10px] text-gray-400 dark:text-slate-500 truncate">{emp.Position}</p>
+                                                            <p className="text-[10px] text-gray-400 dark:text-slate-400 truncate">{emp.Position}</p>
                                                         </div>
                                                         {isSelected && (
                                                             <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center shrink-0">

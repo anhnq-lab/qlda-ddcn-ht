@@ -143,7 +143,7 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                     }
                 `}
             >
-                <span className={`flex-1 truncate ${!currentLabel ? 'text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}`}>
+                <span className={`flex-1 truncate ${!currentLabel ? 'text-slate-400 dark:text-slate-400' : 'text-slate-800 dark:text-slate-100'}`}>
                     {currentLabel || placeholder}
                 </span>
                 <div className="flex items-center gap-1 shrink-0">
@@ -217,7 +217,7 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                                             {opt.label}
                                         </p>
                                         {opt.sublabel && (
-                                            <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{opt.sublabel}</p>
+                                            <p className="text-xs text-slate-400 dark:text-slate-400 truncate">{opt.sublabel}</p>
                                         )}
                                     </div>
                                     {opt.value === value && (

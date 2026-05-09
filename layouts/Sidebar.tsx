@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div
       className={`
         h-full flex flex-col justify-between
-        transition-all duration-300 ease-out bg-[#FCF9F2] dark:bg-slate-900 border-r border-[#ece7de] dark:border-slate-800 z-50
+        transition-all duration-300 ease-out bg-bg-surface border-r border-border z-50
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}
     >
@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logo - Expanded state */}
           <div className={`flex items-center overflow-hidden transition-all duration-300 gap-3 ${isCollapsed ? 'md:hidden' : 'w-auto'}`}>
-            <div className="w-10 h-10 bg-[#FCF9F2] rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-[#ece7de]">
+            <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
                <LogoDDCN className="w-full h-full" />
             </div>
             <div className="animate-fade-in flex flex-col justify-center min-w-0">
@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logo - Collapsed state */}
           <div className={`hidden transition-all duration-300 ${isCollapsed ? 'md:flex justify-center' : ''}`}>
-             <div className="w-10 h-10 bg-[#FCF9F2] rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-[#ece7de]">
+             <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
                <LogoDDCN className="w-full h-full" />
              </div>
           </div>

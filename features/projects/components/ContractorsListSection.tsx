@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Building2, HardHat, ExternalLink, CircleDollarSign, Package, ChevronDown, ChevronUp } from 'lucide-react';
 import { Contractor, BiddingPackage } from '@/types';
 import { formatShortCurrency } from '@/utils/format';
@@ -35,9 +35,9 @@ export const ContractorsListSection: React.FC<ContractorsListSectionProps> = ({
         return (
             <div className="text-center py-8">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center">
-                    <HardHat className="w-6 h-6 text-gray-300 dark:text-slate-500" />
+                    <HardHat className="w-6 h-6 text-gray-300 dark:text-slate-400" />
                 </div>
-                <p className="text-sm font-medium text-gray-400 dark:text-slate-500">Chưa có nhà thầu</p>
+                <p className="text-sm font-medium text-gray-400 dark:text-slate-400">Chưa có nhà thầu</p>
                 <p className="text-[10px] text-gray-300 dark:text-slate-600 mt-0.5">Dữ liệu sẽ cập nhật khi có nhà thầu tham gia</p>
             </div>
         );
@@ -53,7 +53,7 @@ export const ContractorsListSection: React.FC<ContractorsListSectionProps> = ({
                 <div className="flex items-center gap-2">
                     <div className="section-icon"><HardHat className="w-3.5 h-3.5" /></div>
                     <span>Nhà thầu</span>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">({contractors.length > 0 ? contractors.length : packages.length})</span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400">({contractors.length > 0 ? contractors.length : packages.length})</span>
                 </div>
             </div>
 

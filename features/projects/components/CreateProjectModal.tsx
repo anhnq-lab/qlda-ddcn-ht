@@ -337,7 +337,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="bg-bg-surface shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800">
@@ -352,7 +352,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-gray-400 dark:text-slate-500 transition-colors"
+                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-gray-400 dark:text-slate-400 transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -408,7 +408,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                                 <Sparkles className="w-3.5 h-3.5 text-violet-500" />
                                                 Nhập liệu bằng AI
                                             </p>
-                                            <p className="text-[11px] text-gray-400 dark:text-slate-500">
+                                            <p className="text-[11px] text-gray-400 dark:text-slate-400">
                                                 Dán ảnh chụp màn hình (Ctrl+V) hoặc click để chọn ảnh — AI sẽ tự điền thông tin
                                             </p>
                                         </>
@@ -451,7 +451,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 {/* Action icon */}
                                 {aiStatus !== 'extracting' && (
                                     <div className="flex-shrink-0">
-                                        <ImagePlus className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+                                        <ImagePlus className="w-5 h-5 text-gray-400 dark:text-slate-400" />
                                     </div>
                                 )}
                             </div>
@@ -460,7 +460,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 )}
 
                 {/* Tabs Navigation */}
-                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-gray-200 dark:border-slate-700 bg-[#F0ECE1] dark:bg-slate-900 dark:bg-slate-800 gap-y-2 gap-x-1">
+                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 gap-y-2 gap-x-1">
                     {PROJ_TABS.map(tab => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -533,8 +533,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-[#F0ECE1] dark:bg-slate-900 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
-                    <p className="text-[11px] text-gray-400 dark:text-slate-500">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
+                    <p className="text-[11px] text-gray-400 dark:text-slate-400">
                         Các trường không bắt buộc có thể bổ sung sau
                     </p>
                     <div className="flex gap-3">

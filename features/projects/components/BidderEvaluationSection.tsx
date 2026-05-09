@@ -162,7 +162,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                     }));
                                     e.dataTransfer.effectAllowed = 'copy';
                                 }}
-                                className="flex items-center gap-2 p-2.5 bg-[#FCF9F2] dark:bg-slate-800 cursor-grab active:cursor-grabbing hover:bg-[#F5EFE6] dark:hover:bg-slate-750"
+                                className="flex items-center gap-2 p-2.5 bg-bg-surface cursor-grab active:cursor-grabbing hover:bg-bg-subtle dark:hover:bg-slate-750"
                                 onClick={() => setEditingBidder(editingBidder === b.id ? null : b.id!)}
                                 title="Kéo thả nhà thầu này sang Kết quả lựa chọn nhà thầu hoặc click để xem chi tiết"
                             >
@@ -207,7 +207,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
             {/* Add bidder search */}
             {isAdding ? (
                 <div ref={dropdownRef} className="relative">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-[#FCF9F2] dark:bg-slate-800 border border-blue-300 dark:border-blue-600 rounded-lg ring-2 ring-blue-500/20">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-bg-surface border border-blue-300 dark:border-blue-600 rounded-lg ring-2 ring-blue-500/20">
                         <Search className="w-4 h-4 text-blue-400 shrink-0" />
                         <input
                             autoFocus
@@ -223,7 +223,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                         </button>
                     </div>
                     {isDropdownOpen && (
-                        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-40 overflow-y-auto">
+                        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-40 overflow-y-auto">
                             {filteredContractors.length > 0 ? filteredContractors.map(c => (
                                 <button
                                     key={c.ContractorID}
@@ -258,7 +258,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
 
             {/* Summary */}
             {bidders.length > 0 && (
-                <div className="flex items-center justify-between px-2 py-1.5 bg-[#F5EFE6] dark:bg-slate-800 rounded text-xs text-gray-500 dark:text-slate-400">
+                <div className="flex items-center justify-between px-2 py-1.5 bg-bg-subtle rounded text-xs text-gray-500 dark:text-slate-400">
                     <span>{bidders.length} nhà thầu tham gia</span>
                     {bidders.filter(b => b.status === 'valid' || b.status === 'winner').length > 0 && (
                         <span className="text-green-600 dark:text-green-400">
@@ -326,11 +326,11 @@ const EditBidderRow: React.FC<{
         });
     };
 
-    const inputClass = "w-full px-2 py-1.5 text-xs bg-[#FCF9F2] dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-800 dark:text-slate-200";
+    const inputClass = "w-full px-2 py-1.5 text-xs bg-bg-surface border border-gray-200 dark:border-slate-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-800 dark:text-slate-200";
     const labelClass = "text-[10px] font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1";
 
     return (
-        <div className="p-3 bg-[#F5EFE6] dark:bg-slate-850 border-t border-gray-200 dark:border-slate-700 space-y-3">
+        <div className="p-3 bg-bg-subtle dark:bg-slate-850 border-t border-gray-200 dark:border-slate-700 space-y-3">
             <div className="grid grid-cols-2 gap-2">
                 <div>
                     <label className={labelClass}>Giá dự thầu (VND)</label>
@@ -462,7 +462,7 @@ const InlineScoreRow: React.FC<{
         }
     };
 
-    const inputClass = "w-full text-center px-1 py-1 text-xs bg-transparent border border-transparent hover:border-gray-300 dark:hover:border-slate-600 focus:border-blue-400 focus:bg-[#FCF9F2] dark:focus:bg-slate-900 focus:ring-1 focus:ring-blue-400 rounded outline-none transition-colors tabular-nums";
+    const inputClass = "w-full text-center px-1 py-1 text-xs bg-transparent border border-transparent hover:border-gray-300 dark:hover:border-slate-600 focus:border-blue-400 focus:bg-bg-surface dark:focus:bg-slate-900 focus:ring-1 focus:ring-blue-400 rounded outline-none transition-colors tabular-nums";
 
     return (
         <tr className={`border-b border-gray-100 dark:border-slate-800 ${bidder.status === 'winner' ? 'bg-primary-50/50 dark:bg-primary-950/20' : 'hover:bg-gray-50 dark:hover:bg-slate-800'}`}>
@@ -666,7 +666,7 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                     <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
                     <Upload className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
                     <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Tải lên Báo cáo đánh giá HSDT</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">PDF, Word, Excel</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">PDF, Word, Excel</p>
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         className="mt-3 px-4 py-1.5 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
@@ -674,7 +674,7 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                         Chọn file
                     </button>
                 </div>
-                <p className="text-center text-[10px] text-gray-400 dark:text-slate-500">
+                <p className="text-center text-[10px] text-gray-400 dark:text-slate-400">
                     Thêm nhà thầu tham gia ở bên trái để nhập điểm đánh giá chi tiết
                 </p>
             </div>

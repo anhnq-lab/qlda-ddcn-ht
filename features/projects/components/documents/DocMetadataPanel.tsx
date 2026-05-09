@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Document } from '@/types';
 import { Eye, Download, FileCheck } from 'lucide-react';
 
@@ -50,7 +50,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                         value={meta.document_number || ''}
                         onChange={e => onMetaChange('document_number', e.target.value)}
                         placeholder="VD: 123/QĐ-TTg"
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
                     />
                 </div>
                 <div>
@@ -59,7 +59,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                         type="date"
                         value={meta.issue_date || ''}
                         onChange={e => onMetaChange('issue_date', e.target.value)}
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
                     />
                 </div>
                 <div>
@@ -69,7 +69,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                         value={meta.issuing_authority || ''}
                         onChange={e => onMetaChange('issuing_authority', e.target.value)}
                         placeholder="VD: Thủ tướng Chính phủ"
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
                     />
                 </div>
                 <div>
@@ -79,7 +79,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                         value={meta.updated_by || ''}
                         onChange={e => onMetaChange('updated_by', e.target.value)}
                         placeholder="VD: Nguyễn Văn A"
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
                     />
                 </div>
             </div>
@@ -89,7 +89,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                     <select
                         value={meta.legal_status || 'active'}
                         onChange={e => onMetaChange('legal_status', e.target.value)}
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
                     >
                         <option value="active">✅ Còn hiệu lực</option>
                         <option value="expired">❌ Hết hiệu lực</option>
@@ -104,14 +104,14 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
                         onChange={e => onMetaChange('notes', e.target.value)}
                         placeholder="Nhập ghi chú..."
                         rows={2}
-                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all resize-none"
+                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all resize-none"
                     />
                 </div>
             </div>
 
             {/* Action buttons */}
             <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-slate-700">
-                <div className="text-[11px] text-gray-400 dark:text-slate-500">
+                <div className="text-[11px] text-gray-400 dark:text-slate-400">
                     {doc.Size && <span>Kích thước: {doc.Size}</span>}
                     {doc.Version && <span className="ml-3">Phiên bản: {doc.Version}</span>}
                 </div>

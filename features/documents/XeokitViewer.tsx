@@ -384,7 +384,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
                     {/* Model loaded badge */}
                     {modelLoaded && !isLoading && (
                         <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-sm shadow-emerald-500/30">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#FCF9F2] animate-pulse" /> Model Loaded
+                            <div className="w-1.5 h-1.5 rounded-full bg-bg-surface animate-pulse" /> Model Loaded
                         </div>
                     )}
 

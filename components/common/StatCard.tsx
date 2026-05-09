@@ -89,7 +89,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         <div
             className={`
                 relative overflow-hidden flex flex-col gap-2 p-4 rounded-xl
-                bg-bg-surface dark:bg-slate-800 border border-border-DEFAULT dark:border-slate-700/60
+                bg-bg-surface border border-border-DEFAULT dark:border-slate-700/60
                 shadow-sm h-full transition-all duration-200
                 ${onClick ? 'cursor-pointer hover:shadow-md hover:border-primary-200 dark:hover:border-slate-600' : ''}
                 ${className}
@@ -110,7 +110,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                     }`}>
                         {((trendPercentage !== undefined && trendPercentage >= 0) || trend === 'up') ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                         {trendPercentage !== undefined && <span>{Math.abs(trendPercentage)}%</span>}
-                        {trendLabel && <span className="text-slate-400 dark:text-slate-500 font-medium ml-0.5">{trendLabel}</span>}
+                        {trendLabel && <span className="text-slate-400 dark:text-slate-400 font-medium ml-0.5">{trendLabel}</span>}
                     </div>
                 )}
             </div>
@@ -122,7 +122,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                         {loading ? <div className="h-7 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" /> : value}
                     </div>
                     {targetValue && !loading && (
-                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500 truncate mt-1 lg:mt-0">
+                        <span className="text-xs font-medium text-slate-400 dark:text-slate-400 truncate mt-1 lg:mt-0">
                             / {targetValue}
                         </span>
                     )}
@@ -136,7 +136,7 @@ export const StatCard: React.FC<StatCardProps> = ({
             {progressPercentage !== undefined && progressLabel ? (
                 <div className="mt-1">
                     <div className="flex justify-between items-center mb-1">
-                        <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{progressLabel}</span>
+                        <span className="text-[9px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">{progressLabel}</span>
                         <span className={`text-[10px] font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
                     </div>
                     <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -144,7 +144,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                     </div>
                 </div>
             ) : sublabel ? (
-                <div className="text-[10px] font-medium text-slate-400 dark:text-slate-500 leading-none mt-1">
+                <div className="text-[10px] font-medium text-slate-400 dark:text-slate-400 leading-none mt-1">
                     {sublabel}
                 </div>
             ) : (

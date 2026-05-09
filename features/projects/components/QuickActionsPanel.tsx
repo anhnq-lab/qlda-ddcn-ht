@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
     FileText, Send, Download, CalendarPlus, RefreshCw,
     Settings, Loader2, Zap
@@ -78,14 +78,14 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     const actionsToRender = actions || defaultActions;
 
     const getButtonStyle = (variant: QuickAction['variant'] = 'secondary', disabled?: boolean) => {
-        if (disabled) return 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed';
+        if (disabled) return 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 cursor-not-allowed';
         switch (variant) {
             case 'primary':
                 return 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-sm shadow-primary-200/50 dark:shadow-primary-900/30';
             case 'danger':
                 return 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200';
             default:
-                return 'bg-[#FCF9F2] dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600/50 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
+                return 'bg-bg-surface hover:bg-gray-50 dark:hover:bg-slate-600/50 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
         }
     };
 
@@ -115,7 +115,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     const [primary, ...rest] = actionsToRender;
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="section-card-header">
                 <div className="flex items-center gap-2">

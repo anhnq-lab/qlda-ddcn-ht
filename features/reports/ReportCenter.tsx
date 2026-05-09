@@ -109,7 +109,7 @@ const ReportCenter: React.FC = () => {
             </div>
 
             {/* BC-03: Đồng bộ CSDL Quốc gia */}
-            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-[#FCF9F2] dark:bg-slate-800 dark:border-slate-700 border-gray-200">
+            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-bg-surface dark:border-slate-700 border-gray-200">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-blue-50/50 dark:bg-blue-900/10 skew-x-12 transform translate-x-10 pointer-events-none" />
 
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center relative z-10 gap-6">
@@ -127,7 +127,7 @@ const ReportCenter: React.FC = () => {
                         </p>
                         <div className="flex items-center gap-4 mt-5 pl-16">
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Trạng thái kết nối</span>
+                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Trạng thái kết nối</span>
                                 <span className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800/30">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -137,7 +137,7 @@ const ReportCenter: React.FC = () => {
                                 </span>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Lần đồng bộ cuối</span>
+                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Lần đồng bộ cuối</span>
                                 <span className="text-sm font-bold text-gray-700 dark:text-slate-300 px-3 py-1.5 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-100 dark:border-slate-600">
                                     Hôm nay, 08:30 AM
                                 </span>
@@ -188,7 +188,7 @@ const ReportCenter: React.FC = () => {
                         const isExporting = exportingReport === type;
                         const isSuccess = exportSuccess === type;
                         return (
-                            <div key={type} className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group flex flex-col">
+                            <div key={type} className="bg-bg-surface p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group flex flex-col">
                                 <div className={`w-12 h-12 ${iconBg} rounded-xl flex items-center justify-center ${iconColor} mb-4 group-hover:scale-110 transition-transform`}>
                                     <Icon className="w-6 h-6" />
                                 </div>
@@ -196,7 +196,7 @@ const ReportCenter: React.FC = () => {
                                 <p className="text-sm text-gray-500 dark:text-slate-400 mb-4 flex-1">{desc}</p>
 
                                 <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                                    <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
+                                    <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
                                         {period}
                                     </span>
                                     <button

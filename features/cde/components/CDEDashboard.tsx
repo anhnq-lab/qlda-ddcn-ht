@@ -109,7 +109,7 @@ const CDEDashboard: React.FC<CDEDashboardProps> = ({ stats, docs, projectName })
 
             <div className="grid grid-cols-2 gap-4">
                 {/* Status Distribution */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
+                <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
                     <h3 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-4">Phân bố trạng thái</h3>
                     <div className="space-y-3">
                         {Object.entries(analytics.byStatus).map(([status, count]) => {
@@ -138,7 +138,7 @@ const CDEDashboard: React.FC<CDEDashboardProps> = ({ stats, docs, projectName })
                 </div>
 
                 {/* Discipline Distribution */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
+                <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
                     <h3 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-4">Theo lĩnh vực</h3>
                     <div className="space-y-3">
                         {topDisciplines.map((item, idx) => {
@@ -162,7 +162,7 @@ const CDEDashboard: React.FC<CDEDashboardProps> = ({ stats, docs, projectName })
                 </div>
 
                 {/* Document Types */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
+                <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
                     <h3 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-4">Theo loại hồ sơ</h3>
                     <div className="space-y-2.5">
                         {topDocTypes.map((item, idx) => (
@@ -179,7 +179,7 @@ const CDEDashboard: React.FC<CDEDashboardProps> = ({ stats, docs, projectName })
                 </div>
 
                 {/* Monthly Trend */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
+                <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
                     <h3 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                         <TrendingUp className="w-3.5 h-3.5" /> Xu hướng theo tháng
                     </h3>

@@ -35,7 +35,7 @@ const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResizeStart, onResetWidth
             title="Kéo để thay đổi kích thước • Nhấp đúp để đặt lại"
         >
             <div className="slide-panel-resize-indicator">
-                <GripVertical size={12} className="text-slate-400 dark:text-slate-500 opacity-0 group-hover/resize:opacity-100 transition-opacity" />
+                <GripVertical size={12} className="text-slate-400 dark:text-slate-400 opacity-0 group-hover/resize:opacity-100 transition-opacity" />
             </div>
         </div>
     );
@@ -176,7 +176,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
                 initial={{ x: '100%', opacity: 0.5 }}
                 animate={{ x: isExiting ? '100%' : '0%', opacity: isExiting ? 0 : 1 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                className={`relative h-full bg-[#FCF9F2] dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 
+                className={`relative h-full bg-bg-surface border-l border-slate-200 dark:border-slate-700 
           flex flex-col overflow-hidden slide-panel-stacked
           ${isResizing ? 'slide-panel-resizing' : ''}`}
                 style={{
@@ -264,14 +264,14 @@ const PanelTabsOverlay: React.FC<PanelTabsOverlayProps> = ({ panels, sidebarWidt
                                 whitespace-nowrap
                                 ${isTopPanel
                                     ? 'bg-primary-600 dark:bg-primary-500 border-primary-700 dark:border-primary-600 text-white shadow-xl shadow-primary-500/30 dark:shadow-primary-700/50'
-                                    : 'bg-[#FCF9F2] dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-300 dark:hover:border-primary-600 shadow-lg shadow-slate-900/15 dark:shadow-slate-950/50 cursor-pointer'
+                                    : 'bg-bg-surface border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-300 dark:hover:border-primary-600 shadow-lg shadow-slate-900/15 dark:shadow-slate-950/50 cursor-pointer'
                                 }`}
                             title={panel.title || 'Panel'}
                         >
                             {/* Icon */}
                             <span className={`flex-shrink-0 w-4 h-4 flex items-center justify-center ${isTopPanel
                                 ? 'text-primary-200'
-                                : 'text-slate-400 dark:text-slate-500'
+                                : 'text-slate-400 dark:text-slate-400'
                                 }`}>
                                 {panel.icon || <FileText size={14} />}
                             </span>

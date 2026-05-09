@@ -62,10 +62,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                         className={`
                             pointer-events-auto relative overflow-hidden flex flex-col px-4 py-3 rounded-xl shadow-xl border
-                            ${toast.type === 'success' ? 'bg-[#FCF9F2] border-emerald-200/50 text-emerald-800' : ''}
-                            ${toast.type === 'error' ? 'bg-[#FCF9F2] border-red-200/50 text-red-800' : ''}
-                            ${toast.type === 'info' ? 'bg-[#FCF9F2] border-blue-200/50 text-blue-800' : ''}
-                            ${toast.type === 'warning' ? 'bg-[#FCF9F2] border-orange-200/50 text-orange-800' : ''}
+                            ${toast.type === 'success' ? 'bg-bg-surface border-emerald-200/50 text-emerald-800' : ''}
+                            ${toast.type === 'error' ? 'bg-bg-surface border-red-200/50 text-red-800' : ''}
+                            ${toast.type === 'info' ? 'bg-bg-surface border-blue-200/50 text-blue-800' : ''}
+                            ${toast.type === 'warning' ? 'bg-bg-surface border-orange-200/50 text-orange-800' : ''}
                         `}
                     >
                         <div className="flex items-center gap-3 w-full">

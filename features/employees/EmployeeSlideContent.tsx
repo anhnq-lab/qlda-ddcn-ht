@@ -213,8 +213,8 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 {/* ── Info Row — Contact + Stats ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Contact */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <User className="w-3 h-3" /> Liên hệ
                         </h3>
                         <div className="space-y-2.5">
@@ -238,8 +238,8 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                     </div>
 
                     {/* Mini Stats */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <ClipboardList className="w-3 h-3" /> Thống kê
                         </h3>
                         <div className="grid grid-cols-2 gap-2">
@@ -289,16 +289,16 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 {(employee.JobContent || employee.CompletionCriteria) && (
                     <div className="grid grid-cols-1 gap-4">
                         {employee.JobContent && (
-                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                                     <ClipboardList className="w-3 h-3" /> Nội dung công việc
                                 </h3>
                                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.JobContent}</p>
                             </div>
                         )}
                         {employee.CompletionCriteria && (
-                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                                     <Target className="w-3 h-3" /> Tiêu chí đánh giá hoàn thành
                                 </h3>
                                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.CompletionCriteria}</p>
@@ -308,9 +308,9 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 )}
 
                 {/* ══════════ TABS ══════════ */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                     {/* Tab Navigation */}
-                    <div className="border-b border-slate-100 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800 px-4">
+                    <div className="border-b border-slate-100 dark:border-slate-700 bg-bg-subtle px-4">
                         <div className="flex gap-1">
                             {[
                                 { key: 'tasks' as const, label: 'Công việc', icon: <ClipboardList className="w-3.5 h-3.5" />, count: empTasks.length },
@@ -322,12 +322,12 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                     onClick={() => setActiveTab(tab.key)}
                                     className={`flex items-center gap-1.5 px-3 py-3 text-xs font-medium border-b-2 transition-all -mb-px ${activeTab === tab.key
                                         ? 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400'
-                                        : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                                        : 'border-transparent text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                 >
                                     {tab.icon}
                                     <span>{tab.label}</span>
-                                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
+                                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400'
                                         }`}>{tab.count}</span>
                                 </button>
                             ))}
@@ -395,7 +395,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                     </div>
                                 ) : (
                                     <EmptyState
-                                        icon={<ClipboardList className="w-10 h-10 text-slate-300 dark:text-slate-500" />}
+                                        icon={<ClipboardList className="w-10 h-10 text-slate-300 dark:text-slate-400" />}
                                         title="Chưa có công việc nào được giao."
                                         className="py-10 border-0 bg-transparent shadow-none"
                                     />
@@ -442,7 +442,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                     </div>
                                 ) : (
                                     <EmptyState
-                                        icon={<FolderOpen className="w-10 h-10 text-slate-300 dark:text-slate-500" />}
+                                        icon={<FolderOpen className="w-10 h-10 text-slate-300 dark:text-slate-400" />}
                                         title="Chưa tham gia dự án nào."
                                         className="py-10 border-0 bg-transparent shadow-none"
                                     />
@@ -482,7 +482,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                     </div>
                                 ) : (
                                     <EmptyState
-                                        icon={<FileText className="w-10 h-10 text-slate-300 dark:text-slate-500" />}
+                                        icon={<FileText className="w-10 h-10 text-slate-300 dark:text-slate-400" />}
                                         title="Không có hợp đồng liên quan."
                                         className="py-10 border-0 bg-transparent shadow-none"
                                     />

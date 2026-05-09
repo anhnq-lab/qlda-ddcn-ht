@@ -67,7 +67,7 @@ const ProjectDetailSkeleton: React.FC = () => (
     <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900 animate-pulse">
         <div className="shrink-0 px-4 pt-4 space-y-4">
             {/* Header skeleton */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl p-4 border border-gray-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-2xl p-4 border border-gray-200 dark:border-slate-700">
                 <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-xl" />
                     <div className="flex-1 space-y-3">
@@ -97,7 +97,7 @@ const ProjectDetailSkeleton: React.FC = () => (
         </div>
         {/* Content skeleton */}
         <div className="flex-1 p-4 mt-2">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 h-[calc(100vh-220px)] overflow-hidden p-4">
+            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 h-[calc(100vh-220px)] overflow-hidden p-4">
                 <TableSkeleton columns={5} rows={10} />
             </div>
         </div>
@@ -334,7 +334,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     return (
-        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-[#FCF9F2]' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
+        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-bg-surface' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
             {/* Fixed Header + Tabs — does NOT scroll */}
             <div className={`shrink-0 px-4 ${activeTab === 'operations' ? 'pt-1' : inPanel ? 'pt-1' : 'pt-2'}`}>
                 {/* 1. Minimal Header — just title + actions */}
@@ -375,7 +375,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                                 <MoreVertical className="w-4 h-4 text-gray-400" />
                             </button>
-                            <div className="absolute right-0 top-full mt-1 bg-[#FCF9F2] dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <div className="absolute right-0 top-full mt-1 bg-bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                                 <button
                                     onClick={() => setShowDeleteModal(true)}
                                     className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -399,7 +399,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button
                                 id={`tab-${t.id}`}
                                 key={t.id} onClick={() => setActiveTab(t.id)}
-                                className={`${activeTab === 'operations' || inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'}`}
+                                className={`${activeTab === 'operations' || inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'}`}
                                 title={`${t.label} (← → chuyển tab)`}
                             >
                                 <t.icon className="w-3.5 h-3.5" />
@@ -664,7 +664,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
             {/* ─── AI Summary Popup Dialog ─── */}
             {showAISummary && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAISummary(false)}>
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700">
                             <div className="flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-blue-500" />

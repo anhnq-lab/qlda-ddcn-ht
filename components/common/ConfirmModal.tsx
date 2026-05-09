@@ -1,4 +1,4 @@
-﻿// ConfirmModal — Replaces window.confirm with a proper modal dialog
+// ConfirmModal — Replaces window.confirm with a proper modal dialog
 import React from 'react';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 
@@ -53,7 +53,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-bg-surface w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-6">
                     <div className="flex items-start gap-4">
                         <div className={`w-12 h-12 rounded-xl ${config.iconBg} flex items-center justify-center shrink-0`}>
@@ -75,7 +75,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     <button
                         onClick={onClose}
                         disabled={isLoading}
-                        className="px-4 py-2.5 bg-[#FCF9F2] dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-[#F5EFE6] dark:hover:bg-[#F5EFE6]0 transition-colors disabled:opacity-50"
+                        className="px-4 py-2.5 bg-bg-surface dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-bg-subtle dark:hover:bg-bg-subtle0 transition-colors disabled:opacity-50"
                     >
                         {cancelText}
                     </button>

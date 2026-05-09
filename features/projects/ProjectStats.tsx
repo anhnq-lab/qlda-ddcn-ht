@@ -88,7 +88,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects, onFilterPh
                 icon={<Wallet className="w-5 h-5 flex-shrink-0" />}
                 color="emerald"
                 footer={
-                    <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 mt-1">
+                    <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 dark:text-slate-400 mt-1">
                         <ArrowRight className="w-3 h-3" />
                         <span>TB: <strong className="text-emerald-600 dark:text-emerald-400">{formatCurrency(avgCapitalPerProject)}</strong> / dự án</span>
                     </div>
@@ -107,7 +107,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects, onFilterPh
                 icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
                 color={avgDisbursement >= 50 ? 'emerald' : avgDisbursement >= 30 ? 'amber' : 'rose'}
                 footer={
-                    <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 mt-1">
+                    <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 mt-1">
                         <strong className="text-slate-600 dark:text-slate-300">{highDisbursementProjects}</strong> dự án ≥ 50% kế hoạch
                         {aboveAvgProjects > 0 && ` · ${aboveAvgProjects} trên mức TB`}
                     </p>

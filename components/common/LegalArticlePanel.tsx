@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Scale, FileText, Calendar, Shield, Building2, ExternalLink, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { legalDocuments, LegalDocument, LegalArticle, LegalChapter, DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS } from '../../features/legal-documents/legalData';
@@ -62,12 +62,12 @@ const ArticleCard: React.FC<{
             id={`panel-article-${article.id}`}
             className={`rounded-xl border transition-all duration-300 ${isTarget
                 ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-300 dark:border-primary-700 shadow-lg ring-1 ring-primary-400/30'
-                : 'bg-[#FCF9F2] dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
+                : 'bg-bg-surface border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                 }`}
         >
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#F5EFE6] dark:hover:bg-slate-700 rounded-xl transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-bg-subtle dark:hover:bg-slate-700 rounded-xl transition-colors"
             >
                 <div className="flex items-center gap-2 min-w-0">
                     <span className={`text-xs font-black shrink-0 ${isTarget ? 'text-primary-600 dark:text-primary-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
@@ -80,7 +80,7 @@ const ArticleCard: React.FC<{
                 <div className={`shrink-0 p-1 rounded-lg transition-colors ${isExpanded ? 'bg-indigo-100 dark:bg-indigo-900/40' : 'bg-gray-100 dark:bg-slate-700'}`}>
                     {isExpanded
                         ? <ChevronDown className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-                        : <ChevronRight className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
+                        : <ChevronRight className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
                     }
                 </div>
             </button>
@@ -153,7 +153,7 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
         return (
             <div className="flex flex-col items-center justify-center py-16 text-center px-8">
                 <Scale className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
-                <h3 className="text-sm font-bold text-gray-400 dark:text-slate-500">Không tìm thấy văn bản</h3>
+                <h3 className="text-sm font-bold text-gray-400 dark:text-slate-400">Không tìm thấy văn bản</h3>
                 <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">ID: {docId}</p>
             </div>
         );
@@ -184,7 +184,7 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
                 </h2>
 
                 {/* Code */}
-                <p className="text-[10px] font-mono text-gray-400 dark:text-slate-500 mb-2 flex items-center gap-1.5">
+                <p className="text-[10px] font-mono text-gray-400 dark:text-slate-400 mb-2 flex items-center gap-1.5">
                     <FileText className="w-3 h-3" />
                     {doc.code}
                 </p>

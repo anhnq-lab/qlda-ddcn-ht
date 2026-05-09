@@ -54,14 +54,14 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-[#F1F5F9] dark:bg-slate-800 w-full max-w-6xl h-[90vh] rounded-3xl shadow-sm overflow-hidden flex flex-col border border-white/20 dark:border-slate-700">
                 {/* Header */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700">
+                <div className="bg-bg-surface px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-xl ${isIFC ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
                             {isIFC ? <Box className="w-6 h-6" /> : isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                         </div>
                         <div>
                             <h3 className="text-base font-black text-gray-800 dark:text-slate-200 tracking-tight">{displayName}</h3>
-                            <p className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">
+                            <p className="text-[10px] text-gray-400 dark:text-slate-400 font-bold uppercase tracking-widest">
                                 {file.isLocal ? 'TÀI LIỆU VỪA TẢI LÊN' : `PHIÊN BẢN: ${version}`} • {size}
                             </p>
                         </div>
@@ -79,7 +79,7 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                 {/* Content */}
                 <div className="flex-1 overflow-auto p-4 flex justify-center bg-[#525659]">
                     {(isPDF || isImage) && viewUrl ? (
-                        <div className="bg-[#FCF9F2] w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
+                        <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
                             {isPDF ? (
                                 <iframe src={`${viewUrl}#toolbar=0`} className="w-full h-full border-0" title="PDF Viewer" />
                             ) : (
@@ -97,7 +97,7 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                             </div>
                         </div>
                     ) : isExcel ? (
-                        <div className="bg-[#FCF9F2] w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
+                        <div className="bg-bg-surface w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
                             <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Online Preview</div>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse text-[12px]">
@@ -113,9 +113,9 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                                         {[1, 2, 3, 4, 5, 6, 7, 8].map(row => (
                                             <tr key={row}>
                                                 <td className="bg-[#E6E6E6] border border-gray-300 text-center text-gray-500 py-1">{row}</td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-[#FCF9F2]">Dữ liệu dòng {row}</td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-[#FCF9F2]"></td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-[#FCF9F2]"></td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface">Dữ liệu dòng {row}</td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface"></td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface"></td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -123,7 +123,7 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-[#FCF9F2] w-full max-w-[800px] min-h-[1100px] shadow-sm p-[80px] text-gray-800 font-serif relative">
+                        <div className="bg-bg-surface w-full max-w-[800px] min-h-[1100px] shadow-sm p-[80px] text-gray-800 font-serif relative">
                             <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12 pointer-events-none select-none">
                                 <h1 className="text-9xl font-black">CONFIDENTIAL</h1>
                             </div>

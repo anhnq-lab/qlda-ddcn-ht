@@ -448,17 +448,17 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     <div className="relative"  ref={columnPickerRef}>
                         <button
                             onClick={() => setShowColumnPicker(!showColumnPicker)}
-                            className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-200 hover:bg-[#F5EFE6] dark:hover:bg-slate-600 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm bg-bg-surface dark:text-slate-200 hover:bg-bg-subtle dark:hover:bg-slate-600 transition-colors"
                             title="Hiển thị/ẩn cột"
                         >
                             <Settings size={14} />
                             <span className="hidden sm:inline">Cột</span>
                         </button>
                         {showColumnPicker && (
-                            <div className="absolute left-0 top-full mt-1 w-56 bg-[#FCF9F2] dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-2 animate-in fade-in slide-in-from-top-2 duration-150">
+                            <div className="absolute left-0 top-full mt-1 w-56 bg-bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-2 animate-in fade-in slide-in-from-top-2 duration-150">
                                 <div className="px-3 py-1.5 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Hiển thị cột</div>
                                 {Object.entries(COLUMN_LABELS).map(([key, label]) => (
-                                    <label key={key} className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 cursor-pointer">
+                                    <label key={key} className="flex items-center gap-2 px-3 py-1.5 hover:bg-bg-subtle dark:hover:bg-slate-700 cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={visibleColumns[key]}
@@ -476,13 +476,13 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         <input
                             type="text"
                             placeholder="Tìm kiếm gói thầu..."
-                            className="pl-9 pr-4 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 w-64 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-400"
+                            className="pl-9 pr-4 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 w-64 bg-bg-surface dark:text-slate-200 dark:placeholder-slate-400"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select
-                        className="px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-200"
+                        className="px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-bg-surface dark:text-slate-200"
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
@@ -498,7 +498,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     <button
                         onClick={() => setIsExportModalOpen(true)}
                         disabled={selectedPackageIds.size === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-bg-surface border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     >
                         <Download size={16} />
                         <span>Xuất VB KHLCNT {selectedPackageIds.size > 0 && `(${selectedPackageIds.size})`}</span>
@@ -506,7 +506,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     <button
                         onClick={() => packages && packages.length > 0 && exportBiddingPackagesToExcel(packages, project?.ProjectName || 'DuAn')}
                         disabled={!packages || packages.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-emerald-300 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-bg-surface border border-emerald-300 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     >
                         <Download size={16} />
                         <span>Export Excel</span>
@@ -515,12 +515,12 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     <div className="relative" ref={moreActionsRef}>
                         <button
                             onClick={() => setShowMoreActions(!showMoreActions)}
-                            className="flex items-center gap-2 px-3 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400 rounded-lg hover:bg-[#F5EFE6] dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                            className="flex items-center gap-2 px-3 py-2 bg-bg-surface border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-600 transition-colors text-sm font-medium"
                         >
                             <MoreHorizontal size={16} />
                         </button>
                         {showMoreActions && (
-                            <div className="absolute right-0 top-full mt-1 w-52 bg-[#FCF9F2] dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
+                            <div className="absolute right-0 top-full mt-1 w-52 bg-bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
                                 <button
                                     onClick={() => { setIsDeleteAllConfirmOpen(true); setShowMoreActions(false); }}
                                     disabled={!packages || packages.length === 0}
@@ -560,7 +560,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     const isExpanded = expandedGroups.has(plan.PlanID);
 
                     return (
-                        <div key={plan.PlanID} className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div key={plan.PlanID} className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             {/* Plan Header - Click to expand */}
                             <div
                                 role="button"
@@ -622,12 +622,12 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                             {isExpanded && (
                                 <>
                                     {/* Per-plan action bar */}
-                                    <div className="flex items-center justify-between px-5 py-2.5 bg-[#F5EFE6] dark:bg-slate-900/40 border-b border-gray-200 dark:border-slate-700/80">
+                                    <div className="flex items-center justify-between px-5 py-2.5 bg-bg-subtle dark:bg-slate-900/40 border-b border-gray-200 dark:border-slate-700/80">
                                         <span className="text-xs font-medium text-gray-500 dark:text-slate-400">Gói thầu thuộc kế hoạch này</span>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => { setSelectedPlanId(plan.PlanID); setIsImportModalOpen(true); }}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#FCF9F2] dark:bg-slate-700 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-600 transition-colors"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-bg-surface border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-600 transition-colors"
                                             >
                                                 <Upload size={13} /> Import
                                             </button>
@@ -645,7 +645,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-xs border-collapse">
                                                 <thead>
-                                                    <tr className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] uppercase font-black tracking-widest">
+                                                    <tr className="bg-bg-subtle text-[10px] uppercase font-black tracking-widest">
                                                         <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-1 py-3 text-center w-8"></th>
                                                         <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-10">
                                                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
@@ -670,7 +670,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                         {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
                                                         {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
                                                     </tr>
-                                                    <tr className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] uppercase font-black tracking-widest">
+                                                    <tr className="bg-bg-subtle text-[10px] uppercase font-black tracking-widest">
                                                         <th className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
                                                         {visibleColumns.description && <th className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-center min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>}
                                                     </tr>
@@ -747,8 +747,8 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                 {isFiltered ? (
                                                     <>
                                                         <Search className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                                                        <p className="text-sm text-gray-400 dark:text-slate-500 mb-1">Không tìm thấy gói thầu phù hợp</p>
-                                                        <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">Có {allPlanPkgs.length} gói trong KHLCNT nhưng không khớp bộ lọc</p>
+                                                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-1">Không tìm thấy gói thầu phù hợp</p>
+                                                        <p className="text-xs text-gray-400 dark:text-slate-400 mb-3">Có {allPlanPkgs.length} gói trong KHLCNT nhưng không khớp bộ lọc</p>
                                                         <button onClick={() => { setSearchTerm(''); setFilterStatus('all'); }}
                                                             className="px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-colors">
                                                             Xóa bộ lọc
@@ -757,10 +757,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                 ) : (
                                                     <>
                                                         <FileText className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                                                        <p className="text-sm text-gray-400 dark:text-slate-500 mb-3">Chưa có gói thầu trong KHLCNT này</p>
+                                                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">Chưa có gói thầu trong KHLCNT này</p>
                                                         <div className="flex justify-center gap-2">
                                                             <button onClick={() => { setSelectedPlanId(plan.PlanID); setIsImportModalOpen(true); }}
-                                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#FCF9F2] dark:bg-slate-700 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 transition-colors">
+                                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-bg-surface border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 transition-colors">
                                                                 <Upload size={13} /> Import Excel
                                                             </button>
                                                             <button onClick={() => { setSelectedPlanId(plan.PlanID); setIsCreateModalOpen(true); }}
@@ -784,10 +784,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
                 {/* No plans & no packages */}
                 {(!plans || plans.length === 0) && (!filteredPackages || filteredPackages.length === 0) && (
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-12 text-center">
+                    <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-12 text-center">
                         <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto" />
                         <p className="text-gray-500 dark:text-slate-400 mt-2">Chưa có KHLCNT và gói thầu nào</p>
-                        <p className="text-sm text-gray-400 dark:text-slate-500 mt-1 mb-4">Nhấn "Thêm KHLCNT" để bắt đầu</p>
+                        <p className="text-sm text-gray-400 dark:text-slate-400 mt-1 mb-4">Nhấn "Thêm KHLCNT" để bắt đầu</p>
                         <button
                             onClick={() => setIsCreatePlanOpen(true)}
                             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm"
@@ -805,7 +805,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             {isDeleteConfirmOpen && selectedPackage && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDeleteConfirmOpen(false)} />
-                    <div className="relative bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
+                    <div className="relative bg-bg-surface rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
                                 <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -833,7 +833,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             {isDeleteAllConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDeleteAllConfirmOpen(false)} />
-                    <div className="relative bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
+                    <div className="relative bg-bg-surface rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
                                 <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -861,7 +861,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             {confirmDeletePlan && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setConfirmDeletePlan(null)} />
-                    <div className="relative bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
+                    <div className="relative bg-bg-surface rounded-xl shadow-sm w-full max-w-md p-4 animate-scale-in">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
                                 <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -960,17 +960,17 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({ pkg, isOpen, onToggle, 
                 <MoreVertical size={14} />
             </button>
             {isOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-[#FCF9F2] dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 z-30 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
                     <button
                         onClick={() => onView(pkg)}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700"
                     >
                         <Eye className="w-4 h-4" />
                         Xem chi tiết
                     </button>
                     <button
                         onClick={() => onEdit(pkg)}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700"
                     >
                         <Edit className="w-4 h-4" />
                         Chỉnh sửa
@@ -989,7 +989,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({ pkg, isOpen, onToggle, 
                             </a>
                             <button
                                 onClick={() => onCopyTBMT(pkg.NotificationCode!)}
-                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700"
+                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700"
                             >
                                 <Copy className="w-4 h-4" />
                                 Sao chép link TBMT

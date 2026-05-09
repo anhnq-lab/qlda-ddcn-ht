@@ -34,10 +34,10 @@ const Settings: React.FC = () => {
             description: 'Nền cát ấm, giảm mỏi mắt',
             icon: Leaf,
             preview: {
-                bg: 'bg-[#FCF9F2]',
+                bg: 'bg-bg-surface',
                 sidebar: 'bg-gray-100',
-                header: 'bg-[#FCF9F2]',
-                card: 'bg-[#F5EFE6]',
+                header: 'bg-bg-surface',
+                card: 'bg-bg-subtle',
                 text: 'bg-gray-300',
                 accent: 'bg-blue-500',
             }
@@ -75,7 +75,7 @@ const Settings: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-start">
                 <div className="space-y-6 flex-1 w-full">
                     {/* Appearance Section */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
                             <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
                                 <Palette className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -98,7 +98,7 @@ const Settings: React.FC = () => {
                                                     ? opt.key === 'nature'
                                                         ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20 ring-2 ring-emerald-200 dark:ring-emerald-800'
                                                         : 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800'
-                                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 bg-[#FCF9F2] dark:bg-slate-800'
+                                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 bg-bg-surface'
                                                 }`}
                                         >
                                             {/* Mini Preview */}
@@ -155,7 +155,7 @@ const Settings: React.FC = () => {
                     </div>
 
                     {/* Data Display Settings */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
                             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
                                 <TableProperties className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
@@ -170,11 +170,11 @@ const Settings: React.FC = () => {
                             {/* Data Density */}
                             <div>
                                 <h4 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-2">Mật độ dòng (Data Density)</h4>
-                                <div className="flex bg-[#F5EFE6] dark:bg-slate-900 rounded-xl max-w-sm p-1 border border-gray-200 dark:border-slate-700">
+                                <div className="flex bg-bg-subtle dark:bg-slate-900 rounded-xl max-w-sm p-1 border border-gray-200 dark:border-slate-700">
                                     <button
                                         onClick={() => setDensity('comfortable')}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${density === 'comfortable'
-                                                ? 'bg-[#FCF9F2] dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-200 dark:border-slate-600'
+                                                ? 'bg-bg-surface text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-200 dark:border-slate-600'
                                                 : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                             }`}
                                     >
@@ -184,7 +184,7 @@ const Settings: React.FC = () => {
                                     <button
                                         onClick={() => setDensity('compact')}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-all ${density === 'compact'
-                                                ? 'bg-[#FCF9F2] dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-200 dark:border-slate-600'
+                                                ? 'bg-bg-surface text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-200 dark:border-slate-600'
                                                 : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                             }`}
                                     >
@@ -215,19 +215,19 @@ const Settings: React.FC = () => {
                                         checked={stickyHeader}
                                         onChange={(e) => setStickyHeader(e.target.checked)}
                                     />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#FCF9F2] dark:bg-slate-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                                 </label>
                             </div>
                         </div>
                     </div>
 
                     {/* Other Settings (Placeholder) */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div className="divide-y divide-gray-100 dark:divide-slate-700">
                             {settingSections.map((section, idx) => (
                                 <div key={idx} className="px-4 py-3 flex items-center justify-between opacity-60 cursor-not-allowed">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-[#F5EFE6] dark:bg-slate-700 rounded-xl">
+                                        <div className="p-2 bg-bg-subtle dark:bg-slate-700 rounded-xl">
                                             <section.icon className="w-5 h-5 text-gray-500 dark:text-slate-400" />
                                         </div>
                                         <div>
@@ -236,7 +236,7 @@ const Settings: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 px-2 py-0.5 rounded-md uppercase">Sắp ra mắt</span>
+                                        <span className="text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 px-2 py-0.5 rounded-md uppercase">Sắp ra mắt</span>
                                         <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />
                                     </div>
                                 </div>
@@ -246,7 +246,7 @@ const Settings: React.FC = () => {
 
                     {/* Admin Section */}
                     {isAdmin && (
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <Link
                                 to="/admin"
                                 className="px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
@@ -260,7 +260,7 @@ const Settings: React.FC = () => {
                                         <p className="text-xs text-gray-500 dark:text-slate-400">Quản lý tài khoản, phân quyền, cấu hình</p>
                                     </div>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-slate-500" />
+                                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-slate-400" />
                             </Link>
                         </div>
                     )}
@@ -268,9 +268,9 @@ const Settings: React.FC = () => {
                     {/* Logout */}
                     <button
                         onClick={logout}
-                        className="w-full bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden px-4 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-800 transition-colors group"
+                        className="w-full bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden px-4 py-3 flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-800 transition-colors group"
                     >
-                        <div className="p-2 bg-[#F5EFE6] dark:bg-slate-700 rounded-xl group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors">
+                        <div className="p-2 bg-bg-subtle dark:bg-slate-700 rounded-xl group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors">
                             <LogOut className="w-5 h-5 text-gray-500 dark:text-slate-400 group-hover:text-red-500 transition-colors" />
                         </div>
                         <p className="text-sm font-bold text-gray-800 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Đăng xuất</p>
@@ -280,7 +280,7 @@ const Settings: React.FC = () => {
                 {/* Right Column: User Impersonator (Admin Only) */}
                 {isAdmin && (
                     <div className="w-full lg:w-[500px] xl:w-[600px] 2xl:w-[700px] flex-shrink-0 relative">
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm sticky top-6">
+                        <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm sticky top-6">
                             <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
                                 <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-xl">
                                     <Users className="w-5 h-5 text-orange-600 dark:text-orange-400" />

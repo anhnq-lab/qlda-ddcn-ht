@@ -427,13 +427,13 @@ const TaskList: React.FC = () => {
                         <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#FCF9F2] dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-bg-surface dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
                                 <ListTodo className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={() => setViewMode('board')}
-                                className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-[#FCF9F2] dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-bg-surface dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
                                 <LayoutGrid className="w-4 h-4" />
                             </button>
@@ -461,7 +461,7 @@ const TaskList: React.FC = () => {
                     <div className="flex items-center gap-2">
                         <select
                             onChange={(e) => { if (e.target.value) handleBatchStatus(e.target.value as TaskStatus); e.target.value = ''; }}
-                            className="text-xs px-3 py-1.5 bg-[#FCF9F2] dark:bg-slate-700 border border-blue-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer"
+                            className="text-xs px-3 py-1.5 bg-bg-surface border border-blue-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer"
                             defaultValue=""
                         >
                             <option value="" disabled>Đổi trạng thái...</option>
@@ -488,8 +488,8 @@ const TaskList: React.FC = () => {
 
             {/* ══════════ TASK LIST ══════════ */}
             {isLoading ? (
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="h-10 bg-[#F5EFE6] dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
+                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="h-10 bg-bg-subtle dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-slate-100 dark:border-slate-700 last:border-0">
                             <div className="w-4 h-4 rounded bg-slate-200 dark:bg-slate-600 shrink-0" />
@@ -506,10 +506,10 @@ const TaskList: React.FC = () => {
             ) : viewMode === 'list' ? (<>
                 <div className="space-y-0">
                     {Object.keys(tasksByProject).length > 0 ? (
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+                                    <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
                                         <th className="px-3 py-3 w-10 border-b border-slate-200 dark:border-slate-800 text-center">
                                             <input
                                                 type="checkbox"
@@ -548,7 +548,7 @@ const TaskList: React.FC = () => {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId)}</h3>
-                                                            <p className="text-[10px] text-slate-400 dark:text-slate-500">{projectTasks.length} công việc</p>
+                                                            <p className="text-[10px] text-slate-400 dark:text-slate-400">{projectTasks.length} công việc</p>
                                                         </div>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); navigate(`/projects/${projectId}`, { state: { activeTab: 'plan' } }); }}
@@ -647,7 +647,7 @@ const TaskList: React.FC = () => {
                                                                     </div>
                                                                     <div className="min-w-0">
                                                                         <p className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">{assignee.FullName}</p>
-                                                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{assignee.Position || assignee.Department}</p>
+                                                                        <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate">{assignee.Position || assignee.Department}</p>
                                                                     </div>
                                                                 </div>
                                                             ) : (
@@ -709,19 +709,19 @@ const TaskList: React.FC = () => {
                         </div>
                     ) : (
                         <EmptyState
-                            icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-500" />}
+                            icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-400" />}
                             title="Không tìm thấy công việc nào."
                             description="Thử thay đổi bộ lọc hoặc tạo công việc mới."
                             actionLabel="Tạo công việc"
                             onAction={openCreateModal}
-                            className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                            className="bg-bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
                         />
                     )}
                 </div>
 
                 {/* ══════════ PAGINATION ══════════ */}
                 {sortedTasks.length > pageSize && (
-                    <div className="flex items-center justify-between px-4 py-3 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                         <div className="flex items-center gap-3">
                             <span className="text-xs text-slate-500 dark:text-slate-400">
                                 Hiển thị {page * pageSize + 1}–{Math.min((page + 1) * pageSize, sortedTasks.length)} / {sortedTasks.length}
@@ -729,7 +729,7 @@ const TaskList: React.FC = () => {
                             <select
                                 value={pageSize}
                                 onChange={e => { setPageSize(Number(e.target.value)); setPage(0); }}
-                                className="text-xs px-2 py-1 bg-[#F5EFE6] dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+                                className="text-xs px-2 py-1 bg-bg-subtle dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
                             >
                                 {PAGE_SIZES.map(s => <option key={s} value={s}>{s} / trang</option>)}
                             </select>
@@ -768,7 +768,7 @@ const TaskList: React.FC = () => {
                                 <div className="flex items-center gap-2 px-1">
                                     <div className={`w-2 h-2 rounded-full ${statusInfo.bg}`} />
                                     <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{statusInfo.label}</h4>
-                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full font-bold">{statusTasks.length}</span>
+                                    <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full font-bold">{statusTasks.length}</span>
                                 </div>
                                 <div className="space-y-2 min-h-[200px]">
                                     {statusTasks.map(task => {
@@ -781,7 +781,7 @@ const TaskList: React.FC = () => {
                                             <div
                                                 key={task.TaskID}
                                                 onClick={() => openEditModal(task)}
-                                                className={`bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border p-4 cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all group ${isOverdue ? 'border-red-200 bg-red-50/30 dark:bg-red-900/10 dark:border-red-900/30' : 'border-slate-100 dark:border-slate-700'}`}
+                                                className={`bg-bg-surface rounded-xl border p-4 cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all group ${isOverdue ? 'border-red-200 bg-red-50/30 dark:bg-red-900/10 dark:border-red-900/30' : 'border-slate-100 dark:border-slate-700'}`}
                                             >
                                                 <div className="flex items-start justify-between gap-2 mb-2">
                                                     <h4 className={`text-sm font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors ${task.Status === TaskStatus.Done ? 'text-slate-400' : 'text-slate-800 dark:text-slate-100'
@@ -819,7 +819,7 @@ const TaskList: React.FC = () => {
                                         );
                                     })}
                                     {statusTasks.length === 0 && (
-                                        <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl text-xs text-slate-300 dark:text-slate-500">
+                                        <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl text-xs text-slate-300 dark:text-slate-400">
                                             Không có công việc
                                         </div>
                                     )}

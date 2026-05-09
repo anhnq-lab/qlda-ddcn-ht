@@ -134,7 +134,7 @@ export const TaskDependencyManager: React.FC<TaskDependencyManagerProps> = ({
                                 key={dep.TaskID}
                                 className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${blocking
                                         ? 'bg-primary-50 border-primary-200'
-                                        : 'bg-[#F5EFE6] border-gray-200'
+                                        : 'bg-bg-subtle border-gray-200'
                                     }`}
                             >
                                 {/* Status Icon */}
@@ -156,7 +156,7 @@ export const TaskDependencyManager: React.FC<TaskDependencyManagerProps> = ({
                                     <select
                                         value={dep.Type}
                                         onChange={(e) => handleTypeChange(dep.TaskID, e.target.value as DependencyType)}
-                                        className="text-[10px] px-1.5 py-1 border border-gray-200 rounded bg-[#FCF9F2] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="text-[10px] px-1.5 py-1 border border-gray-200 rounded bg-bg-surface focus:outline-none focus:ring-1 focus:ring-blue-500"
                                     >
                                         {DEPENDENCY_TYPES.map(type => (
                                             <option key={type.id} value={type.id}>
@@ -222,7 +222,7 @@ export const TaskDependencyManager: React.FC<TaskDependencyManagerProps> = ({
                         <select
                             value={selectedTaskId}
                             onChange={(e) => setSelectedTaskId(e.target.value)}
-                            className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-[#FCF9F2] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-bg-surface focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">-- Chọn công việc --</option>
                             {availableTasks.map(t => (
@@ -242,7 +242,7 @@ export const TaskDependencyManager: React.FC<TaskDependencyManagerProps> = ({
                             <select
                                 value={selectedType}
                                 onChange={(e) => setSelectedType(e.target.value as DependencyType)}
-                                className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-[#FCF9F2] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-bg-surface focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {DEPENDENCY_TYPES.map(type => (
                                     <option key={type.id} value={type.id}>
@@ -259,7 +259,7 @@ export const TaskDependencyManager: React.FC<TaskDependencyManagerProps> = ({
                                 type="number"
                                 value={lagDays}
                                 onChange={(e) => setLagDays(parseInt(e.target.value) || 0)}
-                                className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-[#FCF9F2] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full text-sm px-2 py-1.5 border border-blue-200 rounded bg-bg-surface focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="0"
                             />
                         </div>

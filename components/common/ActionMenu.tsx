@@ -44,7 +44,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ items, className = '', t
                     sideOffset={5}
                     align="end"
                     className={cn(
-                        "z-[60] min-w-[12rem] bg-[#FCF9F2] dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1",
+                        "z-[60] min-w-[12rem] bg-bg-surface rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1",
                         "animate-in data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200"
                     )}
                 >
@@ -59,7 +59,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ items, className = '', t
                                     "relative flex cursor-pointer select-none items-center gap-3 px-4 py-2.5 text-sm outline-none transition-colors",
                                     item.variant === 'danger'
                                         ? "text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/50"
-                                        : "text-slate-700 dark:text-slate-300 focus:bg-[#F5EFE6] dark:focus:bg-slate-800"
+                                        : "text-slate-700 dark:text-slate-300 focus:bg-bg-subtle dark:focus:bg-slate-800"
                                 )}
                             >
                                 {item.icon && <item.icon className="w-4 h-4" />}

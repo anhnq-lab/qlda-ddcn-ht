@@ -149,7 +149,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
             />
 
             {/* Panel */}
-            <div className="fixed right-0 top-0 bottom-0 left-64 bg-[#FCF9F2] dark:bg-slate-900 z-50 shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300 flex flex-col">
+            <div className="fixed right-0 top-0 bottom-0 left-64 bg-bg-surface z-50 shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300 flex flex-col">
 
                 {/* ═══ HEADER ═══ */}
                 <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-start gap-4 shrink-0">
@@ -165,7 +165,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                 {CONTRACTOR_TYPE_LABELS[contractor.ContractorType] || 'Khác'}
                             </span>
                             {contractor.TaxCode && (
-                                <span className="text-[10px] text-gray-400 dark:text-slate-500 font-mono">
+                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-mono">
                                     MST: {contractor.TaxCode}
                                 </span>
                             )}
@@ -181,7 +181,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                         </button>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 transition-colors"
+                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-400 transition-colors"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -242,30 +242,30 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                             </div>
 
                             {/* Info */}
-                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                                 <div className="px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Thông tin tổ chức</h3>
                                 </div>
                                 <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
                                     {infoItems.length > 0 ? infoItems.map(item => (
-                                        <div key={item.label} className="flex items-center gap-3 px-4 py-3 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors">
+                                        <div key={item.label} className="flex items-center gap-3 px-4 py-3 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors">
                                             <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
-                                                <item.icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
+                                                <item.icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wide font-medium">{item.label}</p>
+                                                <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-medium">{item.label}</p>
                                                 <p className="text-sm text-gray-800 dark:text-slate-200 font-medium truncate mt-0.5">{item.value}</p>
                                             </div>
                                         </div>
                                     )) : (
-                                        <div className="p-4 text-xs text-gray-400 dark:text-slate-500 text-center italic">Chưa có thông tin chi tiết</div>
+                                        <div className="p-4 text-xs text-gray-400 dark:text-slate-400 text-center italic">Chưa có thông tin chi tiết</div>
                                     )}
                                 </div>
                             </div>
 
                             {/* Recent contracts preview */}
                             {contracts.length > 0 && (
-                                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                                <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                                     <div className="px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
                                             <Briefcase className="w-3.5 h-3.5" /> Hợp đồng gần đây
@@ -283,7 +283,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                             return (
                                                 <div
                                                     key={ct.contract_id}
-                                                    className="p-3.5 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                                                    className="p-3.5 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                                     onClick={() => navigate(`/contracts/${ct.contract_id}`)}
                                                 >
                                                     <div className="flex items-start justify-between gap-2">
@@ -291,7 +291,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                                             <p className="text-sm font-semibold text-gray-800 dark:text-slate-200 leading-tight truncate">
                                                                 {ct.contract_name}
                                                             </p>
-                                                            <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                                                            <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">
                                                                 {ct.project_name}
                                                             </p>
                                                         </div>
@@ -305,7 +305,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${st.color}`}>{st.label}</span>
                                                         {ct.sign_date && (
-                                                            <span className="text-[9px] text-gray-400 dark:text-slate-500 flex items-center gap-0.5">
+                                                            <span className="text-[9px] text-gray-400 dark:text-slate-400 flex items-center gap-0.5">
                                                                 <Calendar className="w-2.5 h-2.5" />
                                                                 {new Date(ct.sign_date).toLocaleDateString('vi-VN')}
                                                             </span>
@@ -338,7 +338,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                     return (
                                         <div
                                             key={ct.contract_id}
-                                            className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+                                            className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
                                             onClick={() => navigate(`/contracts/${ct.contract_id}`)}
                                         >
                                             <div className="flex items-start justify-between gap-2 mb-2">
@@ -346,7 +346,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                                     <p className="text-sm font-bold text-gray-800 dark:text-slate-200 leading-tight">
                                                         {ct.contract_name}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">
                                                         {ct.project_name}
                                                     </p>
                                                 </div>
@@ -361,7 +361,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                                         </span>
                                                     )}
                                                     {ct.sign_date && (
-                                                        <span className="text-[9px] text-gray-400 dark:text-slate-500 flex items-center gap-0.5">
+                                                        <span className="text-[9px] text-gray-400 dark:text-slate-400 flex items-center gap-0.5">
                                                             <Calendar className="w-2.5 h-2.5" />
                                                             {new Date(ct.sign_date).toLocaleDateString('vi-VN')}
                                                         </span>
@@ -395,14 +395,14 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                 biddingPackages.map(pkg => (
                                     <div
                                         key={pkg.package_id}
-                                        className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                                        className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
                                     >
                                         <div className="flex items-start justify-between gap-2 mb-2">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-gray-800 dark:text-slate-200 leading-tight">
                                                     {pkg.package_name}
                                                 </p>
-                                                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                                                <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">
                                                     {pkg.project_name}
                                                 </p>
                                             </div>
@@ -413,7 +413,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                                     Đã trúng thầu
                                                 </span>
                                                 {pkg.package_number && (
-                                                    <span className="text-[9px] font-mono text-gray-400 dark:text-slate-500">
+                                                    <span className="text-[9px] font-mono text-gray-400 dark:text-slate-400">
                                                         #{pkg.package_number}
                                                     </span>
                                                 )}

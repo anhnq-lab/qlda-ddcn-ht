@@ -332,7 +332,7 @@ const OrgChartPage: React.FC = () => {
 
                     {/* Legend */}
                     <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
-                        <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Chú giải</p>
+                        <p className="text-[9px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Chú giải</p>
                         {[
                             { color: 'bg-red-600', label: 'UBND tỉnh Hà Tĩnh' },
                             { color: 'bg-primary-600', label: 'Giám đốc Ban' },
@@ -402,7 +402,7 @@ const OrgChartPage: React.FC = () => {
                                                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 transition-colors">
                                                         {emp.FullName}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{emp.Position}</p>
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate">{emp.Position}</p>
                                                 </div>
                                                 <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 opacity-0 group-hover/row:opacity-100 transition-opacity flex-shrink-0" />
                                             </div>
@@ -418,7 +418,7 @@ const OrgChartPage: React.FC = () => {
                                             </div>
                                         )}
                                         {members.length === 0 && (
-                                            <div className="px-5 py-5 text-center text-xs text-slate-400 dark:text-slate-500 italic">
+                                            <div className="px-5 py-5 text-center text-xs text-slate-400 dark:text-slate-400 italic">
                                                 Chưa có nhân sự
                                             </div>
                                         )}
@@ -429,7 +429,7 @@ const OrgChartPage: React.FC = () => {
                     </div>
 
                     {/* Footer note */}
-                    <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500 italic">
+                    <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-400 italic">
                         * Theo Quyết định của UBND tỉnh Hà Tĩnh về thành lập Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh
                     </p>
                 </div>

@@ -69,7 +69,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         return (
             <div
                 onClick={onClick}
-                className="group flex flex-col md:flex-row bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                className="group flex flex-col md:flex-row bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
                 <div className="w-full md:w-56 h-32 md:h-auto relative shrink-0">
                     <LazyImage
@@ -126,7 +126,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                             <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" />
                         </div>
                         <div className="text-right">
-                            <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase">Ngân sách</p>
+                            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase">Ngân sách</p>
                             <p className="text-sm font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(project.TotalInvestment)}</p>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     return (
         <div
             onClick={onClick}
-            className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
+            className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
         >
             {/* Image - Only badges */}
             <div className="relative h-28 w-full overflow-hidden shrink-0">
@@ -181,10 +181,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                 {/* Location + ID + Board */}
                 <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400 mb-2">
                     <span className="flex items-center gap-1 truncate">
-                        <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
+                        <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
                         <span className="truncate">{project.LocationCode}</span>
                     </span>
-                    <span className="font-mono text-[10px] bg-[#F5EFE6] dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="font-mono text-[10px] bg-bg-subtle dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
                         #{(project.ProjectID || '').slice(-5)}
                     </span>
                     {board && (
@@ -215,7 +215,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                 {/* Total Investment Footer */}
                 <div className="mt-auto pt-2 border-t border-gray-200 dark:border-slate-700">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-gray-400 dark:text-slate-500 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
+                        <span className="text-[10px] text-gray-400 dark:text-slate-400 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
                         <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Landmark, Gavel, ScrollText, ShieldCheck, FileText, ChevronRight } from 'lucide-react';
 import {
     LegalDocument, FlatArticle, DocType,
@@ -48,12 +48,12 @@ export const DocSidebarItem: React.FC<{
             onClick={onClick}
             className={`w-full text-left p-3.5 rounded-2xl transition-all group border ${isSelected
                 ? `${typeColor.bg} ${typeColor.border} ${typeColor.darkBg} ${typeColor.darkBorder} shadow-sm`
-                : 'border-transparent hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700'}`}
+                : 'border-transparent hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700'}`}
         >
             <div className="flex items-start gap-3">
                 <div className={`mt-0.5 p-2 rounded-xl shrink-0 transition-colors ${isSelected
                     ? `${typeColor.bg} ${typeColor.text} ${typeColor.darkBg} ${typeColor.darkText}`
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 group-hover:bg-[#FCF9F2] dark:group-hover:bg-slate-600'}`}>
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 group-hover:bg-bg-surface dark:group-hover:bg-slate-600'}`}>
                     <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -70,7 +70,7 @@ export const DocSidebarItem: React.FC<{
                         {doc.shortTitle}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                        <p className={`text-[10px] font-medium ${isSelected ? 'text-gray-500 dark:text-slate-400' : 'text-gray-400 dark:text-slate-500'}`}>
+                        <p className={`text-[10px] font-medium ${isSelected ? 'text-gray-500 dark:text-slate-400' : 'text-gray-400 dark:text-slate-400'}`}>
                             {doc.code}
                         </p>
                         {articleCount.articles > 0 && (
@@ -99,7 +99,7 @@ export const DeepSearchResult: React.FC<{
     >
         <div className="flex items-center gap-2 mb-1">
             <span className="text-[9px] font-black uppercase tracking-wider text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">{result.docTitle}</span>
-            <span className="text-[9px] font-bold text-gray-400 dark:text-slate-500">{result.chapterCode}</span>
+            <span className="text-[9px] font-bold text-gray-400 dark:text-slate-400">{result.chapterCode}</span>
         </div>
         <p className="text-xs font-bold text-gray-700 dark:text-slate-300">
             <span className="font-mono text-[10px] text-gray-400 mr-1">{result.article.code}</span>

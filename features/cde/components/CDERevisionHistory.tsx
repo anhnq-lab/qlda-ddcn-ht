@@ -54,7 +54,7 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
 
                             <div className={`p-3.5 rounded-xl border transition-all ml-1 mb-2 ${isCurrent
                                 ? 'bg-blue-50/70 dark:bg-blue-900/15 border-blue-100 dark:border-blue-800'
-                                : 'bg-[#FCF9F2] dark:bg-slate-800 border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
+                                : 'bg-bg-surface border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
                                 }`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2.5">
@@ -78,9 +78,9 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
                                     )}
                                 </div>
                                 <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
-                                    <div><span className="text-gray-400 dark:text-slate-500">Ngày:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.date}</span></div>
-                                    <div><span className="text-gray-400 dark:text-slate-500">Người tạo:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.author}</span></div>
-                                    <div className="col-span-2"><span className="text-gray-400 dark:text-slate-500">Lý do:</span> <span className="font-medium text-gray-500 dark:text-slate-400 italic">{rev.reason}</span></div>
+                                    <div><span className="text-gray-400 dark:text-slate-400">Ngày:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.date}</span></div>
+                                    <div><span className="text-gray-400 dark:text-slate-400">Người tạo:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.author}</span></div>
+                                    <div className="col-span-2"><span className="text-gray-400 dark:text-slate-400">Lý do:</span> <span className="font-medium text-gray-500 dark:text-slate-400 italic">{rev.reason}</span></div>
                                 </div>
                             </div>
                         </div>

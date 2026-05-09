@@ -63,7 +63,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
     return (
         <div className={`
-            bg-bg-surface dark:bg-slate-900
+            bg-bg-surface
             border-b border-border-DEFAULT dark:border-slate-700/60
             ${sticky ? 'sticky top-0 z-20' : ''}
             ${className}
@@ -71,7 +71,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <div className="px-6 pt-5 pb-0">
                 {/* Breadcrumbs */}
                 {breadcrumbs && breadcrumbs.length > 0 && (
-                    <nav className="flex items-center gap-1.5 text-xs text-txt-muted dark:text-slate-500 mb-3">
+                    <nav className="flex items-center gap-1.5 text-xs text-txt-muted dark:text-slate-400 mb-3">
                         {breadcrumbs.map((crumb, i) => (
                             <React.Fragment key={i}>
                                 {i > 0 && <span className="text-border-DEFAULT dark:text-slate-600">/</span>}

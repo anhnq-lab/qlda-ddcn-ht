@@ -151,7 +151,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
             case 'high': case 'urgent': return 'border-red-500 bg-red-50 text-red-700';
             case 'medium': return 'border-primary-500 bg-primary-50 text-primary-700';
             case 'low': return 'border-green-500 bg-green-50 text-green-700';
-            default: return 'border-gray-300 bg-[#F5EFE6]';
+            default: return 'border-gray-300 bg-bg-subtle';
         }
     };
 
@@ -159,11 +159,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}>
-                <div className="bg-[#FCF9F2] dark:bg-slate-900 rounded-xl shadow-sm w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-gray-200 dark:border-slate-700"
+                <div className="bg-bg-surface rounded-xl shadow-sm w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-gray-200 dark:border-slate-700"
                     onClick={e => e.stopPropagation()}>
 
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-[#F5EFE6] dark:bg-slate-800 shrink-0">
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-bg-subtle shrink-0">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-amber-500 flex items-center justify-center shrink-0">
@@ -186,13 +186,13 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                             <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
                                 <button
                                     onClick={() => setMode('view')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-bg-surface text-gray-900 dark:text-slate-50 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     Xem
                                 </button>
                                 <button
                                     onClick={() => setMode('create')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-[#FCF9F2] dark:bg-slate-900 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-bg-surface text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     Tạo việc
                                 </button>
@@ -340,7 +340,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                     />
@@ -353,7 +353,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                             <Building2 className="w-4 h-4 text-gray-400" /> Đơn vị phụ trách
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={responsibleUnit}
                                             onChange={e => setResponsibleUnit(e.target.value)}
                                         >
@@ -368,7 +368,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                             <Users className="w-4 h-4 text-gray-400" /> Phòng ban
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={department}
                                             onChange={e => {
                                                 setDepartment(e.target.value);
@@ -389,7 +389,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <User className="w-4 h-4 text-gray-400" /> Người phụ trách
                                     </label>
                                     <select
-                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                         value={assigneeId}
                                         onChange={e => setAssigneeId(e.target.value)}
                                     >
@@ -410,7 +410,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={startDate}
                                             onChange={e => setStartDate(e.target.value)}
                                         />
@@ -422,7 +422,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <input
                                             type="number"
                                             min="1"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={durationDays || ''}
                                             onChange={e => setDurationDays(parseInt(e.target.value) || 0)}
                                         />
@@ -433,7 +433,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={dueDate}
                                             onChange={e => setDueDate(e.target.value)}
                                         />
@@ -445,7 +445,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Trạng thái</label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
                                             value={status}
                                             onChange={e => setStatus(e.target.value as TaskStatus)}
                                         >
@@ -486,7 +486,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <AlignLeft className="w-4 h-4 text-gray-400" /> Ghi chú / Diễn giải
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
                                         placeholder="Nhập ghi chú, yêu cầu..."
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
@@ -500,7 +500,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-[#FCF9F2] dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                                         value={legalBasis}
                                         onChange={e => setLegalBasis(e.target.value)}
                                     />
@@ -523,7 +523,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                     {/* Footer */}
                     {mode === 'create' && (
-                        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-[#F5EFE6] dark:bg-slate-800 shrink-0">
+                        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-bg-subtle shrink-0">
                             <button
                                 type="button"
                                 onClick={() => setMode('view')}

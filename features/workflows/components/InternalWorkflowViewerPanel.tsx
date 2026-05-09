@@ -53,7 +53,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
 
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-[#FCF9F2] p-4 pt-16">
+            <div className="flex flex-col h-full bg-bg-surface p-4 pt-16">
                 <div className="animate-pulse space-y-4">
                     {[...Array(4)].map((_, i) => <div key={i} className="h-8 bg-slate-200 rounded" />)}
                 </div>

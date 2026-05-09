@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface BudgetVarianceProps {
@@ -66,7 +66,7 @@ export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
                 {/* Key figures — compact row */}
                 <div className="grid grid-cols-3 gap-1.5 text-center">
                     <div className="bg-gray-50 dark:bg-slate-700 rounded-lg py-1.5 px-1">
-                        <p className="text-[8px] text-gray-400 dark:text-slate-500 uppercase font-bold tracking-wide">Tổng ĐT</p>
+                        <p className="text-[8px] text-gray-400 dark:text-slate-400 uppercase font-bold tracking-wide">Tổng ĐT</p>
                         <p className="text-[11px] font-black text-gray-700 dark:text-slate-200 tabular-nums">{formatShort(totalInvestment)}</p>
                     </div>
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg py-1.5 px-1">
@@ -74,7 +74,7 @@ export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
                         <p className="text-[11px] font-black text-blue-700 dark:text-blue-300 tabular-nums">{formatShort(disbursedAmount)}</p>
                     </div>
                     <div className="bg-gray-50 dark:bg-slate-700 rounded-lg py-1.5 px-1">
-                        <p className="text-[8px] text-gray-400 dark:text-slate-500 uppercase font-bold tracking-wide">Còn lại</p>
+                        <p className="text-[8px] text-gray-400 dark:text-slate-400 uppercase font-bold tracking-wide">Còn lại</p>
                         <p className="text-[11px] font-black text-gray-700 dark:text-slate-200 tabular-nums">{formatShort(remaining)}</p>
                     </div>
                 </div>

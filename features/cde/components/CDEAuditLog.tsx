@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ScrollText, Filter, Search, FileText, UserCheck, Shield, FolderInput, Send, Trash2, Edit2, Eye, Download, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { CDEAuditEntry } from '../types';
@@ -11,8 +11,8 @@ const ACTION_CONFIG: Record<string, { label: string; icon: typeof FileText; colo
     'transmit': { label: 'Chuyển giao', icon: Send, color: 'text-primary-600 bg-primary-50 dark:bg-primary-900/20' },
     'delete': { label: 'Xóa', icon: Trash2, color: 'text-red-600 bg-red-50 dark:bg-red-900/20' },
     'edit': { label: 'Sửa đổi', icon: Edit2, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' },
-    'view': { label: 'Xem', icon: Eye, color: 'text-gray-500 bg-[#F5EFE6] dark:bg-slate-700' },
-    'download': { label: 'Tải xuống', icon: Download, color: 'text-gray-500 bg-[#F5EFE6] dark:bg-slate-700' },
+    'view': { label: 'Xem', icon: Eye, color: 'text-gray-500 bg-bg-subtle dark:bg-slate-700' },
+    'download': { label: 'Tải xuống', icon: Download, color: 'text-gray-500 bg-bg-subtle dark:bg-slate-700' },
     'permission': { label: 'Phân quyền', icon: Shield, color: 'text-red-600 bg-red-50 dark:bg-red-900/20' },
 };
 
@@ -61,7 +61,7 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
     };
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -77,14 +77,14 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
             </div>
 
             {/* Filters */}
-            <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700/50 flex items-center gap-3 bg-[#F5EFE6] dark:bg-slate-800">
+            <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700/50 flex items-center gap-3 bg-bg-subtle">
                 <div className="relative flex-1 max-w-xs">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
                     <input type="text" placeholder="Tìm kiếm..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                        className="w-full pl-8 pr-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                 </div>
                 <select value={filterAction} onChange={e => setFilterAction(e.target.value)}
-                    className="px-3 py-2 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
+                    className="px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
                     <option value="">Tất cả hành động</option>
                     {Object.entries(ACTION_CONFIG).map(([key, cfg]) => (
                         <option key={key} value={key}>{cfg.label}</option>
@@ -108,7 +108,7 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
                             const actionCfg = ACTION_CONFIG[entry.action] || ACTION_CONFIG['view'];
                             const ActionIcon = actionCfg.icon;
                             return (
-                                <div key={entry.id} className="px-5 py-3.5 flex items-start gap-3 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-all group">
+                                <div key={entry.id} className="px-5 py-3.5 flex items-start gap-3 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-all group">
                                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${actionCfg.color}`}>
                                         <ActionIcon className="w-4 h-4" />
                                     </div>

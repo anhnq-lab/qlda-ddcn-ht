@@ -135,7 +135,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             <h2 className="text-base font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">
                                 Báo cáo Giao ban — Tháng {month}/{year}
                             </h2>
-                            <p className="text-[11px] text-gray-400 dark:text-slate-500 font-medium mt-0.5">
+                            <p className="text-[11px] text-gray-400 dark:text-slate-400 font-medium mt-0.5">
                                 Chuẩn Nghị định 30/2020/NĐ-CP · Xuất DOCX
                             </p>
                         </div>
@@ -186,7 +186,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             </div>
                             <div className="text-center">
                                 <p className="font-bold text-gray-700 dark:text-slate-200">Đang tổng hợp dữ liệu & soạn báo cáo...</p>
-                                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Thường mất 15–30 giây. Vui lòng chờ.</p>
+                                <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Thường mất 15–30 giây. Vui lòng chờ.</p>
                             </div>
                             <div className="flex gap-1.5 mt-1">
                                 {['Thu thập dữ liệu', 'Phân tích', 'Soạn thảo'].map((step, i) => (

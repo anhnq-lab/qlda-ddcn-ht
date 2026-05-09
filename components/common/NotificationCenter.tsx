@@ -126,9 +126,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
             <div className="fixed inset-0 z-40" onClick={onClose} />
 
             {/* Dropdown */}
-            <div className="absolute right-0 top-full mt-2 w-96 bg-[#FCF9F2] rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 top-full mt-2 w-96 bg-bg-surface rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                 {/* Header */}
-                <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-[#F5EFE6]">
+                <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-bg-subtle">
                     <div className="flex items-center gap-2">
                         <Bell className="w-4 h-4 text-gray-600" />
                         <h3 className="text-sm font-bold text-gray-800">Thông báo</h3>
@@ -166,7 +166,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
                             <div
                                 key={notif.id}
                                 onClick={() => handleNotificationClick(notif)}
-                                className={`px-4 py-3 flex gap-3 transition-colors cursor-pointer group ${notif.read ? 'bg-[#FCF9F2] hover:bg-gray-50' : 'bg-blue-50/30 hover:bg-blue-50/50'
+                                className={`px-4 py-3 flex gap-3 transition-colors cursor-pointer group ${notif.read ? 'bg-bg-surface hover:bg-gray-50' : 'bg-blue-50/30 hover:bg-blue-50/50'
                                     }`}
                             >
                                 {/* Icon */}
@@ -201,7 +201,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
                 </div>
 
                 {/* Footer */}
-                <div className="px-4 py-3 border-t border-gray-200 bg-[#F5EFE6] flex items-center justify-between">
+                <div className="px-4 py-3 border-t border-gray-200 bg-bg-subtle flex items-center justify-between">
                     <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1">
                         <Trash2 className="w-3 h-3" />
                         Xóa tất cả

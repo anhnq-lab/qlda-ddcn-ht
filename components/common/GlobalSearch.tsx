@@ -178,7 +178,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div
-                className="w-full max-w-2xl bg-[#FCF9F2] rounded-2xl shadow-2xl overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200"
+                className="w-full max-w-2xl bg-bg-surface rounded-2xl shadow-2xl overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search Input */}
@@ -247,7 +247,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                                     key={`${result.type}-${result.id}`}
                                     onClick={() => handleSelect(result)}
                                     onMouseEnter={() => setActiveIndex(idx)}
-                                    className={`w-full px-5 py-3 flex items-center gap-4 text-left transition-colors ${activeIndex === idx ? 'bg-blue-50' : 'hover:bg-[#F5EFE6]'
+                                    className={`w-full px-5 py-3 flex items-center gap-4 text-left transition-colors ${activeIndex === idx ? 'bg-blue-50' : 'hover:bg-bg-subtle'
                                         }`}
                                 >
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${typeColors[result.type]}`}>
@@ -275,15 +275,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 py-3 bg-[#F5EFE6] border-t border-gray-200 flex items-center justify-between text-xs text-gray-400">
+                <div className="px-5 py-3 bg-bg-subtle border-t border-gray-200 flex items-center justify-between text-xs text-gray-400">
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-[#FCF9F2] border border-gray-200 rounded text-[10px] font-mono">↑</kbd>
-                            <kbd className="px-1.5 py-0.5 bg-[#FCF9F2] border border-gray-200 rounded text-[10px] font-mono">↓</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 rounded text-[10px] font-mono">↑</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 rounded text-[10px] font-mono">↓</kbd>
                             để di chuyển
                         </span>
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-[#FCF9F2] border border-gray-200 rounded text-[10px] font-mono">Enter</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 rounded text-[10px] font-mono">Enter</kbd>
                             để chọn
                         </span>
                     </div>

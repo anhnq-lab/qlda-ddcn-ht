@@ -148,12 +148,12 @@ function DataTable<T extends Record<string, any>>({
 
     const getSortIcon = (key: string) => {
         if (sortConfig.key !== key)
-            return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />;
+            return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-400 shrink-0" />;
         if (sortConfig.direction === 'asc')
             return <ChevronUp size={12} className="text-primary-500 shrink-0" />;
         if (sortConfig.direction === 'desc')
             return <ChevronDown size={12} className="text-primary-500 shrink-0" />;
-        return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />;
+        return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-400 shrink-0" />;
     };
 
     // Cell padding theo compact mode
@@ -172,7 +172,7 @@ function DataTable<T extends Record<string, any>>({
             {/* ── TABLE CARD ── */}
             <div
                 className={`
-                    bg-[#FCF9F2] dark:bg-slate-800
+                    bg-bg-surface
                     rounded-2xl border border-slate-100 dark:border-slate-700
                     shadow-sm overflow-hidden
                     ${className}
@@ -185,7 +185,7 @@ function DataTable<T extends Record<string, any>>({
                     <table className="w-full">
                         {/* ── HEADER ── */}
                         <thead className={stickyHeader ? 'sticky top-0 z-10' : ''}>
-                            <tr className="bg-[#F5EFE6] dark:bg-slate-800/80 text-[10px] font-black uppercase tracking-widest">
+                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
                                 {selectable && (
                                     <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
                                         <input
@@ -245,7 +245,7 @@ function DataTable<T extends Record<string, any>>({
                                 <tr>
                                     <td colSpan={totalCols} className="px-4 py-16 text-center">
                                         {emptyState || (
-                                            <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
+                                            <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-400">
                                                 {emptyIcon || (
                                                     <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}
@@ -314,7 +314,7 @@ function DataTable<T extends Record<string, any>>({
 
             {/* ── FOOTER (Pagination / Counter) ── */}
             {shouldShowFooter && !isLoading && (
-                <div className="flex items-center justify-between px-4 py-3 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                     {/* Left: count info */}
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                         {pagination ? (
@@ -351,7 +351,7 @@ function DataTable<T extends Record<string, any>>({
                         {/* Page size */}
                         {pagination?.onPageSizeChange && (
                             <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-slate-400 dark:text-slate-500">Hiển thị</span>
+                                <span className="text-xs text-slate-400 dark:text-slate-400">Hiển thị</span>
                                 <select
                                     value={pagination.pageSize}
                                     onChange={e => pagination.onPageSizeChange!(Number(e.target.value))}

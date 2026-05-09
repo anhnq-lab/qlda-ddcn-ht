@@ -43,10 +43,10 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
 
             {/* Investment Policy Decision */}
             {investmentPolicy && (
-                <div className="bg-[#FCF9F2] rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-bg-surface rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleCard('policy')}
-                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#F5EFE6] transition-colors"
+                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-bg-subtle transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -65,7 +65,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'policy' && (
-                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-[#F5EFE6]">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-bg-subtle">
                             <InfoRow icon={Calendar} label="Ngày ban hành" value={investmentPolicy.DecisionDate} />
                             <InfoRow icon={Building2} label="Cơ quan" value={investmentPolicy.Authority} />
                             <InfoRow icon={MapPin} label="Địa điểm" value={investmentPolicy.Location} />
@@ -86,10 +86,10 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
 
             {/* Feasibility Study */}
             {feasibilityStudy && (
-                <div className="bg-[#FCF9F2] rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-bg-surface rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleCard('feasibility')}
-                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#F5EFE6] transition-colors"
+                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-bg-subtle transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
@@ -108,7 +108,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'feasibility' && (
-                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-[#F5EFE6]">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-bg-subtle">
                             <InfoRow icon={Calendar} label="Ngày phê duyệt" value={feasibilityStudy.ApprovalDate} />
                             <InfoRow icon={Building2} label="Cơ quan phê duyệt" value={feasibilityStudy.ApprovalAuthority} />
                             <InfoRow icon={Coins} label="Tổng mức ĐT" value={formatCurrency(feasibilityStudy.TotalInvestment)} highlight />
@@ -129,10 +129,10 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
 
             {/* Approval Decision */}
             {approvalDecision && (
-                <div className="bg-[#FCF9F2] rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-bg-surface rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleCard('approval')}
-                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#F5EFE6] transition-colors"
+                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-bg-subtle transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
@@ -151,7 +151,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'approval' && (
-                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-[#F5EFE6]">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-bg-subtle">
                             <InfoRow icon={Calendar} label="Ngày phê duyệt" value={approvalDecision.date} />
                             <InfoRow icon={Building2} label="Cơ quan ban hành" value={approvalDecision.authority} />
                         </div>

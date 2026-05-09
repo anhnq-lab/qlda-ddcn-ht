@@ -1,10 +1,10 @@
-import React, { useState, useMemo, Suspense, lazy } from 'react';
+import React, { useMemo, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Wallet, Activity, AlertCircle, CheckCircle2, AlertTriangle, Building2, Map as MapIcon, Filter, ChevronDown, TrendingUp, ArrowRight, Brain, X } from 'lucide-react';
+import { Wallet, Activity, AlertCircle, CheckCircle2, AlertTriangle, Building2, Map as MapIcon, TrendingUp, ArrowRight, Brain } from 'lucide-react';
 import { formatShortCurrency } from '../../../utils/format';
 import { DashboardService } from '../../../services/DashboardService';
-import { ProjectStatus, MANAGEMENT_BOARDS, PROJECT_PHASE_COLORS } from '../../../types';
+import { ProjectStatus, PROJECT_PHASE_COLORS } from '../../../types';
 import { StatCard, ErrorBoundary, EmptyState, TableSkeleton } from '../../../components/ui';
 
 // Lazy load heavy components
@@ -49,12 +49,8 @@ const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color
     </div>
 );
 
-export const OverviewTab: React.FC = () => {
+export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard: string }> = ({ selectedYear, selectedBoard }) => {
     const navigate = useNavigate();
-
-    // ── Filter State ──
-    const [selectedYear, setSelectedYear] = useState<number | null>(new Date().getFullYear());
-    const [selectedBoard, setSelectedBoard] = useState<string>('all');
 
     const STALE_5M = 5 * 60 * 1000;
 
@@ -89,13 +85,6 @@ export const OverviewTab: React.FC = () => {
         staleTime: STALE_5M,
     });
 
-    // ── Derived ──
-    const availableYears = useMemo(() => {
-        const current = new Date().getFullYear();
-        const years: number[] = [];
-        for (let y = current + 1; y >= 2020; y--) years.push(y);
-        return years;
-    }, []);
 
     const filteredRows = useMemo(() => {
         if (!projectRows) return [];
@@ -142,54 +131,7 @@ export const OverviewTab: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-fade-in fade-in-up">
-            {/* Toolbar Filters */}
-            <div className="flex flex-wrap gap-2 justify-end items-center">
-                <div className="relative">
-                    <select
-                        value={selectedYear ?? 'all'}
-                        onChange={e => setSelectedYear(e.target.value === 'all' ? null : parseInt(e.target.value))}
-                        className="pl-3 pr-8 py-2 filter-primary min-w-[120px]"
-                    >
-                        <option value="all">Tất cả năm</option>
-                        {availableYears.map(y => (
-                            <option key={y} value={y}>Năm {y}</option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
-                </div>
 
-                <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
-                    <select
-                        value={selectedBoard}
-                        onChange={e => setSelectedBoard(e.target.value)}
-                        className="pl-9 pr-8 py-2 filter-primary min-w-[140px]"
-                    >
-                        <option value="all">Tất cả ban</option>
-                        {MANAGEMENT_BOARDS.map(b => (
-                            <option key={b.value} value={b.value}>{b.label}</option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
-                </div>
-            </div>
-
-            {/* Active filter */}
-            {(selectedYear !== new Date().getFullYear() || selectedBoard !== 'all') && selectedYear !== null && (
-                <div className="flex items-center gap-2 -mt-2">
-                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full border border-primary-200 dark:border-primary-800 flex items-center gap-1.5">
-                        <Filter className="w-3 h-3" />
-                        {selectedYear && selectedYear !== new Date().getFullYear() && `Năm ${selectedYear}`}
-                        {selectedBoard !== 'all' && ` • Ban QLDA ${selectedBoard}`}
-                    </span>
-                    <button
-                        onClick={() => { setSelectedYear(new Date().getFullYear()); setSelectedBoard('all'); }}
-                        className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                        <X className="w-3 h-3" /> Xóa bộ lọc
-                    </button>
-                </div>
-            )}
 
             {/* ═══════════════════════════════════════════════════
                 1. STAT CARDS — 4 cards

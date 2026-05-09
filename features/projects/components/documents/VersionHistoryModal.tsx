@@ -20,7 +20,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
                 <div className="p-5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800">
                     <div className="min-w-0">
                         <h3 className="text-base font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
@@ -34,7 +34,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
                 </div>
                 <div className="max-h-[400px] overflow-y-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-[#F5EFE6] dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 border-b border-slate-200 dark:border-slate-700">
+                        <thead className="bg-bg-subtle text-xs uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 border-b border-slate-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-5 py-3">Phiên bản</th>
                                 <th className="px-5 py-3">Ngày</th>
@@ -43,7 +43,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                             {history.map((h, idx) => (
-                                <tr key={idx} className="hover:bg-[#F5EFE6] dark:hover:bg-slate-700">
+                                <tr key={idx} className="hover:bg-bg-subtle dark:hover:bg-slate-700">
                                     <td className="px-5 py-3">
                                         <div className="flex items-center gap-2">
                                             <span className={`px-2 py-0.5 rounded text-xs font-bold font-mono ${h.isCurrent ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-300'}`}>
@@ -59,13 +59,13 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
                         </tbody>
                     </table>
                     {history.length <= 1 && (
-                        <div className="p-4 text-center text-gray-400 dark:text-slate-500 text-sm">
+                        <div className="p-4 text-center text-gray-400 dark:text-slate-400 text-sm">
                             Tài liệu này chưa có bản cập nhật nào.
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-[#F5EFE6] dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-[#FCF9F2] dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-[#F5EFE6] dark:hover:bg-[#F5EFE6]0 transition-colors dark:text-slate-200">
+                <div className="p-4 bg-bg-subtle dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 text-right">
+                    <button onClick={onClose} className="px-4 py-2 bg-bg-surface dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-bg-subtle dark:hover:bg-bg-subtle0 transition-colors dark:text-slate-200">
                         Đóng
                     </button>
                 </div>

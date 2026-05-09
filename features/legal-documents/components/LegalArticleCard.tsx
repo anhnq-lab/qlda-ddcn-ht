@@ -116,7 +116,7 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
             id={`article-${article.id}`}
             className={`p-5 rounded-2xl border transition-all duration-300 ${isActive
                 ? 'bg-indigo-50/30 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20'
-                : 'bg-[#FCF9F2] dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg'
+                : 'bg-bg-surface border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg'
                 } ${isEditing ? 'ring-2 ring-yellow-400 ring-offset-2' : ''}`}
         >
             <div className="flex items-start justify-between gap-4">

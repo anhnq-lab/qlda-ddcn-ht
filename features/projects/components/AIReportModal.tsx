@@ -138,7 +138,7 @@ export const AIReportModal: React.FC<AIReportModalProps> = ({
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-            <div className="relative w-full max-w-4xl max-h-[92vh] bg-[#FCF9F2] dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+            <div className="relative w-full max-w-4xl max-h-[92vh] bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
 
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-primary-900/20 dark:to-yellow-900/10">
@@ -160,7 +160,7 @@ export const AIReportModal: React.FC<AIReportModalProps> = ({
                                 <ActionBtn onClick={onRegenerate} icon={RefreshCw} label="Tạo lại" amber />
                             </>
                         )}
-                        <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors text-gray-400 dark:text-slate-500 ml-1">
+                        <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors text-gray-400 dark:text-slate-400 ml-1">
                             <X className="w-4 h-4" />
                         </button>
                     </div>
@@ -200,7 +200,7 @@ const ActionBtn: React.FC<{
             highlight ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' :
             accent ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-sm' :
             amber ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-200' :
-            'bg-[#FCF9F2] dark:bg-slate-700 hover:bg-[#F5EFE6] dark:hover:bg-slate-600 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
+            'bg-bg-surface hover:bg-bg-subtle dark:hover:bg-slate-600 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
         }`}
     >
         {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Icon className="w-3 h-3" />}
@@ -219,7 +219,7 @@ const LoadingState = () => (
         </div>
         <div className="text-center">
             <p className="text-sm font-bold text-gray-700 dark:text-slate-200">AI đang tổng hợp báo cáo...</p>
-            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Phân tích dữ liệu dự án và soạn báo cáo tháng</p>
+            <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Phân tích dữ liệu dự án và soạn báo cáo tháng</p>
         </div>
         <div className="w-full max-w-md space-y-3 mt-2 px-8">
             {[90, 75, 85, 60, 70, 50].map((w, i) => (
@@ -236,7 +236,7 @@ const ErrorState: React.FC<{ error: string; onRetry: () => void }> = ({ error, o
             <AlertTriangle className="w-8 h-8 text-red-400" />
         </div>
         <p className="text-sm font-bold text-red-600 dark:text-red-400">Không thể tạo báo cáo</p>
-        <p className="text-[11px] text-gray-400 dark:text-slate-500 max-w-sm text-center leading-relaxed">{error}</p>
+        <p className="text-[11px] text-gray-400 dark:text-slate-400 max-w-sm text-center leading-relaxed">{error}</p>
         <button onClick={onRetry} className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors shadow-sm shadow-primary-200/50">
             <RefreshCw className="w-3.5 h-3.5" /> Thử lại
         </button>

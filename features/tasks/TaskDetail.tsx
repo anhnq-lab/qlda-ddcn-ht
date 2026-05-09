@@ -37,7 +37,7 @@ const getPriorityConfig = (p?: TaskPriority) => {
         case TaskPriority.High: return { label: 'Cao', color: 'text-orange-600 bg-orange-50 ring-1 ring-orange-500/20' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'text-sky-600 bg-sky-50 ring-1 ring-sky-500/20' };
         case TaskPriority.Low: return { label: 'Thấp', color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
-        default: return { label: 'N/A', color: 'text-slate-400 bg-[#F5EFE6]' };
+        default: return { label: 'N/A', color: 'text-slate-400 bg-bg-subtle' };
     }
 };
 
@@ -184,7 +184,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                 {/* ══════════ BREADCRUMB ══════════ */}
                 {!isPanel && (
-                    <nav className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 flex-wrap">
+                    <nav className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-400 flex-wrap">
                         <button onClick={() => navigate('/tasks')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center gap-1">
                             <ArrowLeft className="w-3.5 h-3.5" />
                             Công việc
@@ -206,7 +206,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                 )}
 
                 {/* ══════════ HEADER CARD ══════════ */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                     {/* Top accent */}
                     <div className={`h-1 ${statusCfg.bg}`} />
 
@@ -221,7 +221,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                     <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${priorityCfg.color}`}>
                                         {priorityCfg.label}
                                     </span>
-                                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">{task.TaskID}</span>
+                                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">{task.TaskID}</span>
                                     {task.IsCritical && (
                                         <span className="text-[10px] font-black text-red-600 bg-red-50 ring-1 ring-red-200 px-2 py-1 rounded-md flex items-center gap-1">
                                             <Zap className="w-3 h-3" /> ĐƯỜNG GĂNG
@@ -236,7 +236,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                                 <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">{task.Title}</h1>
 
-                                <p className="text-sm text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                                <p className="text-sm text-slate-400 dark:text-slate-400 flex items-center gap-2">
                                     <Building2 className="w-4 h-4" />
                                     Thuộc dự án:
                                     <button
@@ -254,7 +254,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 {prevStatus && (
                                     <button
                                         onClick={() => handleStatusChange(prevStatus)}
-                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
+                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
                                     >
                                         ← {getStatusConfig(prevStatus).label}
                                     </button>
@@ -277,7 +277,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                         {/* ── Progress Bar ── */}
                         <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-700">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                     <BarChart3 className="w-3.5 h-3.5" /> Tiến độ thực hiện
                                 </span>
                                 <span className={`text-sm font-black ${progress >= 100 ? 'text-emerald-600' : progress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>{progress}%</span>
@@ -299,8 +299,8 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     <div className="lg:col-span-2 space-y-6">
 
                         {/* Description */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <FileText className="w-4 h-4" /> Nội dung thực hiện
                             </h3>
                             <div className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -309,7 +309,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                         </div>
 
                         {/* Regulatory */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div className="h-1" style={{ background: 'linear-gradient(90deg, #fb923c, #4a90e2)' }} />
                             <div className="p-4">
                                 <h3 className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -318,14 +318,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Căn cứ pháp lý</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Căn cứ pháp lý</label>
                                         <div className="flex items-start gap-2.5 bg-blue-50/60 dark:bg-blue-900/20 p-4 rounded-xl text-blue-800 dark:text-blue-300 text-sm font-medium ring-1 ring-blue-100 dark:ring-blue-800/40">
                                             <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" />
                                             {task.LegalBasis || "Chưa cập nhật"}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
                                         <div className="flex items-start gap-2.5 bg-emerald-50/60 dark:bg-emerald-900/20 p-4 rounded-xl text-emerald-800 dark:text-emerald-300 text-sm font-medium ring-1 ring-emerald-100 dark:ring-emerald-800/40">
                                             <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-500" />
                                             {task.OutputDocument || "Chưa xác định"}
@@ -335,20 +335,20 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5 border-t border-slate-100 dark:border-slate-700">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Bước thực hiện</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Bước thực hiện</label>
                                         <div className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold ${phaseColor.bg} ${phaseColor.text} ring-1 ${phaseColor.border}`}>
                                             <Layers className="w-3.5 h-3.5" />
                                             {stepLabel}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Thời gian quy định</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Thời gian quy định</label>
                                         <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                            <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
+                                            <Clock className="w-4 h-4 text-slate-400 dark:text-slate-400" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Phụ thuộc</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Phụ thuộc</label>
                                         <div className="space-y-1.5">
                                             {task.Dependencies && task.Dependencies.length > 0 ? (
                                                 task.Dependencies.map((dep, idx) => {
@@ -390,8 +390,8 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     <div className="space-y-6">
 
                         {/* Assignee Card */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-5">Phân công</h3>
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-5">Phân công</h3>
 
                             <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
                                 <div className="relative">
@@ -404,22 +404,22 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{assignee?.FullName || "Chưa phân công"}</p>
-                                    <p className="text-xs text-slate-400 dark:text-slate-500">{assignee?.Position || assignee?.Department || "N/A"}</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-400">{assignee?.Position || assignee?.Department || "N/A"}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <Calendar className="w-3 h-3" /> Hạn chót
                                     </label>
-                                    <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-[#F5EFE6]'}`}>
+                                    <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-bg-subtle'}`}>
                                         {task.DueDate ? new Date(task.DueDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Chưa có'}
                                         {isOverdue && <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />}
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <User className="w-3 h-3" /> Người phê duyệt
                                     </label>
                                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -427,7 +427,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <DollarSign className="w-3 h-3" /> Chi phí dự kiến
                                     </label>
                                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -494,9 +494,9 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                         )}
 
                         {/* Subtasks */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Công việc con</h3>
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Công việc con</h3>
                                 <button
                                     onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
                                     className="p-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl transition-colors"
@@ -513,27 +513,27 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 )}
 
                                 {(task.SubTasks || []).map((sub, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-[#FCF9F2] dark:hover:bg-slate-700 transition-all">
+                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-bg-surface dark:hover:bg-slate-700 transition-all">
                                         <div
                                             onClick={() => {
                                                 const updatedSubTasks = [...(task.SubTasks || [])];
                                                 updatedSubTasks[idx].Status = updatedSubTasks[idx].Status === 'done' ? 'todo' : 'done';
                                                 updateTaskMutation.mutate({ ...task, SubTasks: updatedSubTasks });
                                             }}
-                                            className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200' : 'border-slate-300 bg-[#FCF9F2] hover:border-blue-400'
+                                            className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200' : 'border-slate-300 bg-bg-surface hover:border-blue-400'
                                                 }`}
                                         >
                                             {sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
                                         </div>
                                         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'done' ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
+                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'done' ? 'text-slate-400 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                <span className="text-[10px] text-slate-400 bg-[#FCF9F2] px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
+                                                <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                                     <User className="w-3 h-3" />
                                                     {sub.AssigneeID ? employees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : "Chưa gán"}
                                                 </span>
                                                 {sub.DueDate && (
-                                                    <span className="text-[10px] text-slate-400 bg-[#FCF9F2] px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
+                                                    <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                                         <Calendar className="w-3 h-3" /> {sub.DueDate}
                                                     </span>
                                                 )}
@@ -556,14 +556,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                         </div>
 
                         {/* Attachments — Templates + Upload */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div className="h-0.5 bg-gradient-to-r from-violet-400 to-indigo-500" />
                             <div className="p-4">
                                 <div className="flex justify-between items-center mb-5">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                         <Paperclip className="w-4 h-4" /> Tài liệu công việc
                                     </h3>
-                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-[#F5EFE6] dark:bg-slate-700 px-2 py-1 rounded-lg">
+                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-bg-subtle dark:bg-slate-700 px-2 py-1 rounded-lg">
                                         {templates.length} mẫu • {(task.Attachments || []).length} đã tải
                                     </span>
                                 </div>
@@ -588,7 +588,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                                                 {tpl.name}
                                                                 <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${ftc.bg} ${ftc.text}`}>{tpl.fileType}</span>
                                                             </p>
-                                                            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 line-clamp-1">{tpl.description}</p>
+                                                            <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 line-clamp-1">{tpl.description}</p>
                                                             {tpl.legalBasis && (
                                                                 <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-0.5 flex items-center gap-1">
                                                                     <Scale className="w-2.5 h-2.5" /> {tpl.legalBasis}
@@ -629,14 +629,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                         <div className="space-y-1.5">
                                             {(task.Attachments || []).map((att) => (
                                                 <div key={att.id} className="flex items-center gap-3 p-3 bg-emerald-50/40 dark:bg-emerald-900/10 rounded-xl ring-1 ring-emerald-100 dark:ring-emerald-900/30 hover:ring-emerald-200 dark:hover:ring-emerald-800 transition-all group/att">
-                                                    <div className="p-2 bg-[#FCF9F2] dark:bg-slate-700 rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
+                                                    <div className="p-2 bg-bg-surface rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
                                                         <FileText className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 truncate block transition-colors">
                                                             {att.name}
                                                         </a>
-                                                        <p className="text-[10px] text-slate-400 dark:text-slate-500">{att.size} • {att.uploadDate}</p>
+                                                        <p className="text-[10px] text-slate-400 dark:text-slate-400">{att.size} • {att.uploadDate}</p>
                                                     </div>
                                                     <div className="flex items-center gap-1 shrink-0">
                                                         <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Tải xuống">
@@ -687,7 +687,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
             {/* ══════════ SUBTASK MODAL ══════════ */}
             {isSubTaskModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
                             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
                             <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">✕</button>
@@ -778,7 +778,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
                                 />
                                 {task.DueDate && (
-                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 flex items-center gap-1">
+                                    <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1.5 flex items-center gap-1">
                                         <Calendar className="w-3 h-3" />
                                         Không được vượt quá hạn công việc cha ({new Date(task.DueDate).toLocaleDateString('vi-VN')})
                                     </p>

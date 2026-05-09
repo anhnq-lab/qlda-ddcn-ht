@@ -233,9 +233,9 @@ const ContractorList: React.FC = () => {
             )}
 
             {/* Toolbar */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="relative max-w-sm flex-1">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
                         <input
                             type="text"
                             placeholder="Tìm theo tên, mã số thuế, địa chỉ..."
@@ -246,7 +246,7 @@ const ContractorList: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="relative">
-                            <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
+                            <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value as ContractorType | '')}
@@ -280,11 +280,11 @@ const ContractorList: React.FC = () => {
             </div>
 
             {/* Danh sách */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
+            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
                                 <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
                                 <SortHeader label="Mã số thuế" field="TaxCode" />
                                 <SortHeader label="Tên nhà thầu" field="FullName" />
@@ -334,7 +334,7 @@ const ContractorList: React.FC = () => {
                                         <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
                                             {contractor.Representative ? (
                                                 <div className="flex items-center gap-1.5">
-                                                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0" />
+                                                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400 shrink-0" />
                                                     {contractor.Representative}
                                                 </div>
                                             ) : (
@@ -348,11 +348,11 @@ const ContractorList: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 text-xs">
                                             <div className="flex items-center gap-1.5 truncate max-w-xs font-medium text-gray-900 dark:text-slate-200" title={contractor.Address}>
-                                                <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
+                                                <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
                                                 {contractor.Address || '—'}
                                             </div>
                                             {contractor.ContactInfo && (
-                                                <div className="flex items-center gap-1.5 text-gray-400 dark:text-slate-500 mt-0.5">
+                                                <div className="flex items-center gap-1.5 text-gray-400 dark:text-slate-400 mt-0.5">
                                                     <Phone className="w-3 h-3 shrink-0" />
                                                     {contractor.ContactInfo}
                                                 </div>
@@ -383,7 +383,7 @@ const ContractorList: React.FC = () => {
                                     <td colSpan={6} className="px-6 py-16 text-center">
                                         <Search className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
                                         <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Không tìm thấy nhà thầu nào</p>
-                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Thử thay đổi từ khóa tìm kiếm</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Thử thay đổi từ khóa tìm kiếm</p>
                                     </td>
                                 </tr>
                             )}
@@ -437,7 +437,7 @@ const ContractorList: React.FC = () => {
             {/* Add/Edit Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
                         <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
                                 {isEditing ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
@@ -615,7 +615,7 @@ const ContractorList: React.FC = () => {
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-sm border border-gray-200 dark:border-slate-700 p-4 animate-in zoom-in-95 duration-200">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-sm border border-gray-200 dark:border-slate-700 p-4 animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />

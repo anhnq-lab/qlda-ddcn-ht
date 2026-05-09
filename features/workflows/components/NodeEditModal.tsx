@@ -68,7 +68,7 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-            <div className="bg-[#FCF9F2] dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
                     <div className="flex items-center gap-3">

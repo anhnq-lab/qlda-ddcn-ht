@@ -143,7 +143,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative">
             <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
                     <div className="space-y-1.5 p-1">
                         <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">Nội dung công việc <span className="text-rose-500">*</span></label>
                         <textarea value={subTask.name} onChange={e => handleChange('name', e.target.value)}

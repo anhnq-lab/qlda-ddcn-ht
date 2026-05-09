@@ -90,7 +90,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
             {!collapsed && (
                 <div className={`
                     grid ${GRID_COLS[columns]} gap-4
-                    ${contentPadding ? 'p-4 bg-bg-subtle dark:bg-slate-800/50 rounded-xl' : ''}
+                    ${contentPadding ? 'p-4 bg-bg-subtle/50 rounded-xl' : ''}
                 `}>
                     {children}
                 </div>
@@ -139,7 +139,7 @@ export const FormField: React.FC<FormFieldProps> = ({
                 <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{error}</p>
             )}
             {hint && !error && (
-                <p className="mt-1 text-xs text-txt-placeholder dark:text-slate-500">{hint}</p>
+                <p className="mt-1 text-xs text-txt-placeholder dark:text-slate-400">{hint}</p>
             )}
         </div>
     );

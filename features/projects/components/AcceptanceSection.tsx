@@ -94,7 +94,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
     };
 
     const hasFinalAcceptance = records.some(r => r.acceptanceType === 'final');
-    const inputClass = "w-full px-3 py-2 text-sm bg-[#FCF9F2] dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
+    const inputClass = "w-full px-3 py-2 text-sm bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
     const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
 
     return (
@@ -220,7 +220,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
 
             {/* Records list */}
             {isLoading ? (
-                <div className="flex items-center justify-center p-4 text-gray-400 dark:text-slate-500">
+                <div className="flex items-center justify-center p-4 text-gray-400 dark:text-slate-400">
                     <Loader2 className="w-5 h-5 animate-spin mr-2" /> Đang tải...
                 </div>
             ) : records.length > 0 ? (
@@ -276,7 +276,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
                 <div className="text-center py-6">
                     <CheckCircle2 className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
                     <p className="text-sm text-gray-500 dark:text-slate-400">Chưa nghiệm thu</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Hoàn thành hợp đồng để nghiệm thu</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-400">Hoàn thành hợp đồng để nghiệm thu</p>
                 </div>
             ) : null}
 

@@ -19,7 +19,7 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
     onChange,
     className = '',
 }) => {
-    const activeClass = 'bg-[#FCF9F2] dark:bg-slate-600 shadow-lg text-primary-600 dark:text-primary-400';
+    const activeClass = 'bg-bg-surface dark:bg-slate-600 shadow-lg text-primary-600 dark:text-primary-400';
     const inactiveClass = 'text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300';
 
     return (

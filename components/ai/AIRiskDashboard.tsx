@@ -74,7 +74,7 @@ export const AIRiskDashboard: React.FC = () => {
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Cảnh báo AI</h3>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500">Phân tích rủi ro tự động</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-400">Phân tích rủi ro tự động</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export const AIRiskDashboard: React.FC = () => {
             {/* Content */}
             <div className="p-3">
                 {loading && !report && (
-                    <div className="flex items-center justify-center py-8 gap-2 text-slate-400 dark:text-slate-500">
+                    <div className="flex items-center justify-center py-8 gap-2 text-slate-400 dark:text-slate-400">
                         <RefreshCw size={16} className="animate-spin" />
                         <span className="text-xs">Đang phân tích rủi ro...</span>
                     </div>
@@ -116,7 +116,7 @@ export const AIRiskDashboard: React.FC = () => {
                 )}
 
                 {report && report.risks.length === 0 && (
-                    <div className="flex flex-col items-center py-6 text-slate-400 dark:text-slate-500">
+                    <div className="flex flex-col items-center py-6 text-slate-400 dark:text-slate-400">
                         <CheckCircle2 size={32} className="text-emerald-400 mb-2" />
                         <p className="text-xs font-medium">Không phát hiện rủi ro</p>
                         <p className="text-[10px]">Tất cả dự án hoạt động bình thường</p>
@@ -155,7 +155,7 @@ export const AIRiskDashboard: React.FC = () => {
                                                 </p>
                                             )}
                                             {risk.metric && (
-                                                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 font-mono">
+                                                <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 font-mono">
                                                     {risk.metric}
                                                 </p>
                                             )}
@@ -175,7 +175,7 @@ export const AIRiskDashboard: React.FC = () => {
                                                 <span className="font-medium">💡 Khuyến nghị:</span> {risk.recommendation}
                                             </div>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <span className="text-[9px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                                                <span className="text-[9px] text-slate-400 dark:text-slate-400 flex items-center gap-1">
                                                     {categoryIcons[risk.category] || <Shield size={10} />}
                                                     {risk.source === 'ai' ? 'Phân tích AI' : 'Quy tắc tự động'}
                                                 </span>
@@ -191,7 +191,7 @@ export const AIRiskDashboard: React.FC = () => {
                 {/* Score bar */}
                 {report && (
                     <div className="mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
-                        <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 mb-1">
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-400 mb-1">
                             <span>Điểm sức khỏe</span>
                             <span className="font-bold text-slate-600 dark:text-slate-300">{report.overallScore}/100</span>
                         </div>
@@ -206,7 +206,7 @@ export const AIRiskDashboard: React.FC = () => {
                                 style={{ width: `${report.overallScore}%` }}
                             />
                         </div>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1">
                             {report.summary}
                         </p>
                     </div>

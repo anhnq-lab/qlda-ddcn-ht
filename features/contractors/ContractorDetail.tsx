@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useContractors } from '../../hooks/useContractors';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
@@ -44,29 +44,29 @@ const ContractorDetail: React.FC = () => {
     ];
 
     return (
-        <div className="bg-[#F5EFE6] dark:bg-slate-900 min-h-screen p-4 animate-in fade-in duration-300">
+        <div className="bg-bg-subtle dark:bg-slate-900 min-h-screen p-4 animate-in fade-in duration-300">
             {/* Header */}
             <div className="max-w-6xl mx-auto mb-8">
                 <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-colors mb-4">
                     <ArrowLeft className="w-4 h-4" /> Quay lại danh sách
                 </button>
 
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
                     <div className="flex flex-col md:flex-row justify-between gap-8">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase ${contractor.IsForeign ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' : 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'}`}>
                                     {contractor.IsForeign ? 'Nhà thầu quốc tế' : 'Nhà thầu trong nước'}
                                 </span>
-                                <span className="text-gray-400 dark:text-slate-500 font-mono text-sm">#{contractor.ContractorID}</span>
+                                <span className="text-gray-400 dark:text-slate-400 font-mono text-sm">#{contractor.ContractorID}</span>
                             </div>
                             <h1 className="text-3xl font-black text-gray-800 dark:text-slate-100 mb-4">{contractor.FullName}</h1>
 
                             <div className="space-y-2.5">
                                 {infoItems.map(item => (
                                     <p key={item.label} className="flex items-center gap-2 text-gray-600 dark:text-slate-300">
-                                        <item.icon className="w-4 h-4 text-gray-400 dark:text-slate-500 shrink-0" />
-                                        <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase w-28 shrink-0">{item.label}:</span>
+                                        <item.icon className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
+                                        <span className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase w-28 shrink-0">{item.label}:</span>
                                         <span className="font-medium">{item.value}</span>
                                     </p>
                                 ))}
@@ -87,13 +87,13 @@ const ContractorDetail: React.FC = () => {
 
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Won Packages List */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
                         <Award className="w-6 h-6 text-yellow-500" /> Lịch sử đấu thầu & Trúng thầu
                     </h3>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm text-gray-600 dark:text-slate-300">
-                            <thead className="bg-[#F5EFE6] dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                            <thead className="bg-bg-subtle text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                                 <tr>
                                     <th className="px-4 py-3 rounded-tl-xl">Mã gói thầu</th>
                                     <th className="px-4 py-3">Tên gói thầu</th>
@@ -118,7 +118,7 @@ const ContractorDetail: React.FC = () => {
                                 ))}
                                 {wonPackages.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-slate-500 italic">Chưa có dữ liệu trúng thầu.</td>
+                                        <td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-slate-400 italic">Chưa có dữ liệu trúng thầu.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -127,7 +127,7 @@ const ContractorDetail: React.FC = () => {
                 </div>
 
                 {/* Contracts List */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
                         <FileText className="w-6 h-6 text-blue-500" /> Hợp đồng đã ký ({contracts.length})
                     </h3>
@@ -147,7 +147,7 @@ const ContractorDetail: React.FC = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center text-gray-400 dark:text-slate-500 italic py-8">Chưa có hợp đồng nào.</p>
+                        <p className="text-center text-gray-400 dark:text-slate-400 italic py-8">Chưa có hợp đồng nào.</p>
                     )}
                 </div>
             </div>

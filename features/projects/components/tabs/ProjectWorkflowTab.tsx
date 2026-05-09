@@ -55,7 +55,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
 
     return (
         <div className="space-y-4">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5">
+            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
                     <div>
                         <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
@@ -92,7 +92,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                 {nodes.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                         <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
-                            <GitBranch className="w-8 h-8 text-gray-400 dark:text-slate-500" />
+                            <GitBranch className="w-8 h-8 text-gray-400 dark:text-slate-400" />
                         </div>
                         <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">Chưa chạy quy trình nào</h3>
                         <p className="text-xs text-gray-500 dark:text-slate-400 max-w-sm mb-6">

@@ -372,7 +372,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     // ─── Loading state ───────────────────────────────────────
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-[#FCF9F2] dark:bg-slate-900 p-6">
+            <div className="flex flex-col h-full bg-bg-surface p-6">
                 <div className="animate-pulse space-y-4">
                     <div className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl w-2/3" />
                     <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/2" />
@@ -391,7 +391,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     return (
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative print:bg-white">
             {/* ── HEADER ── */}
-            <div className="px-5 py-4 bg-[#FCF9F2] dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 print:border-b-2 print:border-slate-300 flex-shrink-0">
+            <div className="px-5 py-4 bg-bg-surface border-b border-slate-200 dark:border-slate-700 print:border-b-2 print:border-slate-300 flex-shrink-0">
                 {/* Title row */}
                 <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -681,7 +681,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
                                                                 return (
                                                                     <tr key={st.id || stIdx}
-                                                                        className="bg-[#FCF9F2] dark:bg-slate-900 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
+                                                                        className="bg-bg-surface hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
                                                                         onClick={() => openSubTaskPanel(node, st, displayIndex, stIdx)}
                                                                     >
                                                                         {/* TT */}
@@ -800,7 +800,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             </div>
 
             {/* ── FOOTER ── */}
-            <div className="px-5 py-3 bg-[#FCF9F2]/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
+            <div className="px-5 py-3 bg-bg-surface/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
                 <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400 font-medium">
                     <span className="flex items-center gap-1.5">
                         <LayoutList size={13} />

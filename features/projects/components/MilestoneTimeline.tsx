@@ -136,14 +136,14 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
                     iconColor: 'text-gray-400 dark:text-slate-400',
                     lineColor: 'bg-gray-200 dark:bg-slate-600',
                     textColor: 'text-gray-500 dark:text-slate-400',
-                    dotColor: 'bg-gray-300 dark:bg-[#F5EFE6]0'
+                    dotColor: 'bg-gray-300 dark:bg-bg-subtle0'
                 };
         }
     };
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
-            <h4 className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-4 flex items-center gap-2">
+        <div className="bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
+            <h4 className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wide mb-4 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 Các mốc quan trọng
             </h4>

@@ -56,23 +56,23 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                         className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 cursor-pointer flex justify-between items-center transition-all ${showCapitalDropdown ? 'ring-2 ring-blue-500/20 border-blue-500 dark:border-blue-400' : ''}`}
                         onClick={() => setShowCapitalDropdown(!showCapitalDropdown)}
                     >
-                        <span className={formData.CapitalSource ? 'text-gray-800 dark:text-slate-100 line-clamp-1' : 'text-gray-500 dark:text-slate-500'}>
+                        <span className={formData.CapitalSource ? 'text-gray-800 dark:text-slate-100 line-clamp-1' : 'text-gray-500 dark:text-slate-400'}>
                             {formData.CapitalSource || 'Chọn nguồn vốn...'}
                         </span>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-500 transition-transform ${showCapitalDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-400 transition-transform ${showCapitalDropdown ? 'rotate-180' : ''}`} />
                     </div>
 
                     {showCapitalDropdown && (
                         <>
                             <div className="fixed inset-0 z-10" onClick={() => setShowCapitalDropdown(false)} />
-                            <div className="absolute z-20 mt-1 w-full bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm overflow-hidden py-1">
+                            <div className="absolute z-20 mt-1 w-full bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm overflow-hidden py-1">
                                 {['Ngân sách Trung ương', 'Ngân sách Địa phương', 'Vốn ODA', 'Vốn tư nhân', 'Khác'].map(source => {
                                     const currentSources = formData.CapitalSource ? formData.CapitalSource.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
                                     const isSelected = currentSources.includes(source);
                                     return (
                                         <div 
                                             key={source}
-                                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer"
+                                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer"
                                             onClick={() => {
                                                 const newSources = isSelected 
                                                     ? currentSources.filter((s: string) => s !== source)

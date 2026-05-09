@@ -87,7 +87,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
             <div
-                className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 border border-gray-200 dark:border-slate-700 animate-in fade-in zoom-in-95"
+                className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 border border-gray-200 dark:border-slate-700 animate-in fade-in zoom-in-95"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -100,7 +100,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                             <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
                                 {isEdit ? 'Sửa kế hoạch vốn' : (isMidTermUI ? 'Nhập kế hoạch trung hạn' : 'Nhập kế hoạch hằng năm')}
                             </h2>
-                            <p className="text-xs text-gray-400 dark:text-slate-500"><LegalReferenceLink text="Luật ĐTC 58/2024/QH15" /></p>
+                            <p className="text-xs text-gray-400 dark:text-slate-400"><LegalReferenceLink text="Luật ĐTC 58/2024/QH15" /></p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
@@ -123,7 +123,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                         value={periodStart}
                                         onChange={e => setPeriodStart(Number(e.target.value))}
                                         min={2000} max={2050}
-                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -136,7 +136,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                         value={periodEnd}
                                         onChange={e => setPeriodEnd(Number(e.target.value))}
                                         min={periodStart} max={2050}
-                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -151,7 +151,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                     value={year}
                                     onChange={e => setYear(Number(e.target.value))}
                                     min={2020} max={2035}
-                                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                     required
                                 />
                             </div>
@@ -165,7 +165,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                             <select
                                 value={source}
                                 onChange={e => setSource(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             >
                                 {SOURCES.map(s => (
                                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -187,7 +187,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                 setAmount(val);
                             }}
                             placeholder="Nhập số tiền..."
-                            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             required
                         />
                         {(() => {
@@ -205,7 +205,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                 </p>
                             );
                             if (numAmount > 0 && maxAllowable < Infinity) return (
-                                <p className="mt-1 text-[10px] text-gray-400 dark:text-slate-500">Hạn mức còn lại: {Number(maxAllowable).toLocaleString('vi-VN')} đ</p>
+                                <p className="mt-1 text-[10px] text-gray-400 dark:text-slate-400">Hạn mức còn lại: {Number(maxAllowable).toLocaleString('vi-VN')} đ</p>
                             );
                             return null;
                         })()}
@@ -222,7 +222,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                 value={decisionNumber}
                                 onChange={e => setDecisionNumber(e.target.value)}
                                 placeholder="VD: 123/QĐ-UBND"
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             />
                         </div>
                         <div>
@@ -233,7 +233,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                 type="date"
                                 value={dateAssigned}
                                 onChange={e => setDateAssigned(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             />
                         </div>
                     </div>
@@ -248,7 +248,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                             onChange={e => setNotes(e.target.value)}
                             placeholder="Nhập ghi chú hoặc lý do điều chỉnh..."
                             rows={2}
-                            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
                         />
                     </div>
 

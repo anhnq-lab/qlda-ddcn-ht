@@ -43,7 +43,7 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
     const info = getScoreInfo(score);
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
             <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                 Sức khỏe dự án
             </h4>
@@ -51,7 +51,7 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
                 <span className="text-3xl">{info.emoji}</span>
                 <div>
                     <span className={`text-2xl font-black ${info.color}`}>{score}</span>
-                    <span className="text-sm text-gray-400 dark:text-slate-500">/100</span>
+                    <span className="text-sm text-gray-400 dark:text-slate-400">/100</span>
                     <p className={`text-xs font-semibold ${info.color}`}>{info.label}</p>
                 </div>
             </div>

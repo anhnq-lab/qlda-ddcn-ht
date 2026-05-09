@@ -309,7 +309,7 @@ const BimPage: React.FC = () => {
                         }}
                     >
                         {/* Header bar */}
-                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-[#FCF9F2]'}`}>
+                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}>
                             <button onClick={handleBack} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isDark ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
                                 <ArrowLeft className="w-4 h-4" />Quay lại
                             </button>
@@ -392,7 +392,7 @@ const BimPage: React.FC = () => {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border transition-all ${isDark
                                         ? 'bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-cyan-500/50'
-                                        : 'bg-[#FCF9F2] border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
+                                        : 'bg-bg-surface border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
                                 />
                             </div>
 
@@ -476,7 +476,7 @@ const BimPage: React.FC = () => {
                                                     className={`group flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-200
                                                         ${isDark
                                                             ? 'bg-slate-800/40 border-slate-700/40 hover:border-slate-600 hover:bg-slate-800/70'
-                                                            : 'bg-[#F5EFE6] border-gray-200 hover:border-gray-300 hover:bg-[#FCF9F2]'
+                                                            : 'bg-bg-subtle border-gray-200 hover:border-gray-300 hover:bg-bg-surface'
                                                         }
                                                     `}
                                                 >
@@ -538,7 +538,7 @@ const BimProjectCard: React.FC<{
             className={`group relative w-full text-left rounded-2xl border transition-all duration-300 overflow-hidden
                 ${isDark
                     ? 'bg-slate-800/80 border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
-                    : 'bg-[#FCF9F2] border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
+                    : 'bg-bg-surface border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
                 }
             `}
         >

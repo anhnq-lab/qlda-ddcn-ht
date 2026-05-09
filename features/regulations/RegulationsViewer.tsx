@@ -122,7 +122,7 @@ const RegulationsViewer: React.FC = () => {
                         Quy chế Nội bộ
                     </h2>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />
                         <input
                             type="text"
                             placeholder="Tìm điều khoản, quy định..."
@@ -147,7 +147,7 @@ const RegulationsViewer: React.FC = () => {
                                 {chapter.icon ? <chapter.icon className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className={`text-[9px] font-bold uppercase tracking-wider mb-0.5 ${(displayChapter?.id === chapter.id) ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500'}`}>
+                                <p className={`text-[9px] font-bold uppercase tracking-wider mb-0.5 ${(displayChapter?.id === chapter.id) ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-400'}`}>
                                     {chapter.code}
                                 </p>
                                 <p className={`text-xs font-bold leading-relaxed line-clamp-2 ${(displayChapter?.id === chapter.id) ? 'text-gray-900 dark:text-slate-100' : 'text-gray-600 dark:text-slate-400'}`}>
@@ -190,7 +190,7 @@ const RegulationsViewer: React.FC = () => {
                 <div className="h-16 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-8 section-card-header backdrop-blur-md shrink-0 z-10 sticky top-0 shadow-sm">
                     {displayChapter ? (
                        <div>
-                         <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-500 mb-1">
+                         <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-400 mb-1">
                             <span>Hệ thống Quy chế</span>
                             <ChevronRight className="w-3 h-3" />
                             <span className="font-bold text-blue-600 dark:text-blue-400 uppercase">{displayChapter?.code}</span>
@@ -293,7 +293,7 @@ const RegulationsViewer: React.FC = () => {
                                     {(activeCommentId === article.id) && (
                                         <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 animate-in fade-in">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h4 className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                <h4 className="text-xs font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <HelpCircle className="w-4 h-4" /> Hỏi đáp & Thảo luận
                                                 </h4>
                                             </div>
@@ -307,14 +307,14 @@ const RegulationsViewer: React.FC = () => {
                                                         <div className="bg-gray-50 dark:bg-slate-700/50 rounded-2xl rounded-tl-none p-3 flex-1 border border-gray-100 dark:border-slate-600/50">
                                                             <div className="flex justify-between items-center mb-1">
                                                                 <span className="text-xs font-bold text-gray-800 dark:text-slate-200">{comment.user}</span>
-                                                                <span className="text-[10px] text-gray-400 dark:text-slate-500">{comment.date}</span>
+                                                                <span className="text-[10px] text-gray-400 dark:text-slate-400">{comment.date}</span>
                                                             </div>
                                                             <p className="text-xs text-gray-600 dark:text-slate-300">{comment.content}</p>
                                                         </div>
                                                     </div>
                                                 ))}
                                                 {(!article.comments || article.comments.length === 0) && (
-                                                    <p className="text-xs text-gray-400 dark:text-slate-500 italic text-center py-4">Chưa có bình luận hay thắc mắc nào. Bạn cần làm rõ nội dung Điều khoản này?</p>
+                                                    <p className="text-xs text-gray-400 dark:text-slate-400 italic text-center py-4">Chưa có bình luận hay thắc mắc nào. Bạn cần làm rõ nội dung Điều khoản này?</p>
                                                 )}
                                             </div>
 
@@ -402,7 +402,7 @@ const RegulationsViewer: React.FC = () => {
                                         <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 mb-0.5">{articleMatch.code}</p>
                                         <p className="text-xs font-semibold text-gray-700 dark:text-slate-300 truncate">{articleMatch.title}</p>
                                     </div>
-                                    <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 shrink-0" />
+                                    <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 shrink-0" />
                                 </button>
                             );
                         })}

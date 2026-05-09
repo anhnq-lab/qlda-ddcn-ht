@@ -54,7 +54,7 @@ const Login: React.FC = () => {
             <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-[#FCF9F2] dark:bg-slate-900 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
+                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-bg-surface dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
                 title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'}
             >
                 {theme === 'dark' ? <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
@@ -143,7 +143,7 @@ const Login: React.FC = () => {
                 </div>
 
                 {/* Footer Info */}
-                <div className="relative z-10 flex items-center gap-5 text-[11px] font-semibold text-slate-500 dark:text-slate-500 tracking-wider uppercase">
+                <div className="relative z-10 flex items-center gap-5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase">
                     <span>Phiên bản 2.5</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
                     <span>Bảo mật SSL 256-bit</span>
@@ -153,7 +153,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* ─── RIGHT COLUMN: LOGIN FORM ─── */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-[#FCF9F2] dark:bg-[#060A14] transition-colors duration-300">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-bg-surface dark:bg-[#060A14] transition-colors duration-300">
                 <div className="w-full max-w-[420px] lg:-mt-16">
                     
                     {/* Logo & Headers */}
@@ -167,7 +167,7 @@ const Login: React.FC = () => {
                             <span className="text-primary-700 dark:text-primary-600 mx-2">VÀ</span>
                             <span className="text-primary-800 dark:text-primary-700">HẠ TẦNG KHU VỰC</span>
                         </h3>
-                        <p className="mt-0.5 text-[11px] font-bold text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase flex justify-center w-full">
+                        <p className="mt-0.5 text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-[0.2em] uppercase flex justify-center w-full">
                             UBND Tỉnh Hà Tĩnh
                         </p>
                     </div>
@@ -175,7 +175,7 @@ const Login: React.FC = () => {
                     {/* Divider */}
                     <div className="flex items-center gap-4 mb-4">
                         <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200 dark:to-white/5"></div>
-                        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 tracking-widest uppercase">Đăng nhập ngay</span>
+                        <span className="text-xs font-bold text-slate-400 dark:text-slate-400 tracking-widest uppercase">Đăng nhập ngay</span>
                         <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200 dark:to-slate-800"></div>
                     </div>
 
@@ -197,7 +197,7 @@ const Login: React.FC = () => {
                                 placeholder="Tài khoản hoặc Email"
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                className="w-full pl-11 pr-4 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
                                 autoFocus
                             />
                         </div>
@@ -212,7 +212,7 @@ const Login: React.FC = () => {
                                 placeholder="Mật khẩu"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-11 pr-12 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                className="w-full pl-11 pr-12 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
                             />
                             <button
                                 type="button"
@@ -252,7 +252,7 @@ const Login: React.FC = () => {
                     </form>
 
                     <div className="mt-12 text-center">
-                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-500">
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                             © 2026 Ban QLDA ĐTXD Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
                         </p>
                     </div>

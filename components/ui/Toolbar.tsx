@@ -34,7 +34,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div
             className={`
-                bg-[#FCF9F2] dark:bg-slate-800
+                bg-bg-surface
                 rounded-2xl shadow-lg
                 border border-slate-200 dark:border-slate-700
                 p-4
@@ -45,7 +45,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 {/* Search Input */}
                 {onSearchChange && (
                     <div className="relative flex-1 min-w-[200px] max-w-[400px] w-full lg:w-auto">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-4 h-4" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-400 w-4 h-4" />
                         <input
                             type="text"
                             value={searchValue || ''}
@@ -53,7 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                             placeholder={searchPlaceholder}
                             className={`
                                 w-full pl-10 pr-8 py-2.5
-                                bg-[#F5EFE6] dark:bg-slate-700
+                                bg-bg-subtle dark:bg-slate-700
                                 border border-slate-200 dark:border-slate-600
                                 rounded-xl text-sm font-medium
                                 text-slate-800 dark:text-slate-100

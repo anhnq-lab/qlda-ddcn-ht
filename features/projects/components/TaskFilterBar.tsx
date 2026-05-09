@@ -71,7 +71,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     const getFilterStyle = (filter: { id: TaskFilter; color: string }, isActive: boolean) => {
-        if (!isActive) return 'bg-[#FCF9F2] dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-[#F5EFE6] dark:hover:bg-slate-700';
+        if (!isActive) return 'bg-bg-surface text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700';
 
         switch (filter.color) {
             case 'blue': return 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-800';
@@ -85,7 +85,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
+        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
             {/* Top Row: Search + Add Button */}
             <div className="flex items-center gap-4">
                 {/* Search */}
@@ -97,7 +97,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                             placeholder="Tìm kiếm công việc..."
                             value={searchQuery}
                             onChange={(e) => onSearch(e.target.value)}
-                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-[#FCF9F2] dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-bg-surface text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                         {searchQuery && (
                             <button
@@ -163,7 +163,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 key={view.id}
                                 onClick={() => onViewChange(view.id)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isActive
-                                    ? 'bg-[#FCF9F2] dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
+                                    ? 'bg-bg-surface dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
                                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                                 title={view.label}

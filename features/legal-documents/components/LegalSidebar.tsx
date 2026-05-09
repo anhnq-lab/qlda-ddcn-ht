@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Bookmark, Search, Clock, FileText } from 'lucide-react';
 import { LegalDocument, legalDocuments, getDocArticleCount, LegalArticle } from '../legalData';
 import { DocSidebarItem } from './LegalUI';
@@ -25,20 +25,20 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
     setExpandedChapters, setShowPdfViewer, setShowDeepSearch
 }) => {
     return (
-        <div className={`${readingMode ? 'hidden' : 'w-96'} bg-[#FCF9F2] dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden`}>
+        <div className={`${readingMode ? 'hidden' : 'w-96'} bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden`}>
             {/* Sidebar Header with tabs */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-bg-subtle">
                 <div className="flex items-center gap-2">
                     <button onClick={() => setShowBookmarks(false)}
-                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
                         <FileText className="w-4 h-4 inline" /> Văn bản ({filteredDocs.length})
                     </button>
                     <button onClick={() => setShowBookmarks(true)}
-                        className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-primary-500 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-primary-500 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
                         <Bookmark className="w-4 h-4" /> Đánh dấu ({bookmarks.length})
                     </button>
                     {recentlyViewed.length > 0 && (
-                        <span className="ml-auto flex items-center gap-1 text-[9px] font-bold text-gray-400 dark:text-slate-500">
+                        <span className="ml-auto flex items-center gap-1 text-[9px] font-bold text-gray-400 dark:text-slate-400">
                             <Clock className="w-3 h-3" />
                             {recentlyViewed.length}
                         </span>
@@ -51,7 +51,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                     bookmarks.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Bookmark className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
-                            <p className="text-sm font-bold text-gray-400 dark:text-slate-500">Chưa có mục đánh dấu</p>
+                            <p className="text-sm font-bold text-gray-400 dark:text-slate-400">Chưa có mục đánh dấu</p>
                             <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">Nhấn nút <Bookmark className="w-3 h-3 inline" /> trên điều khoản để đánh dấu</p>
                         </div>
                     ) : (
@@ -82,7 +82,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                     filteredDocs.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Search className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
-                            <p className="text-sm font-bold text-gray-400 dark:text-slate-500">Không tìm thấy văn bản</p>
+                            <p className="text-sm font-bold text-gray-400 dark:text-slate-400">Không tìm thấy văn bản</p>
                             <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">Thử tìm với từ khóa khác</p>
                         </div>
                     ) : filteredDocs.map(doc => (

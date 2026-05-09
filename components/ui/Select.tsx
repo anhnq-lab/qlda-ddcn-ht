@@ -127,10 +127,10 @@ export const Select: React.FC<SelectProps> = ({
                         disabled={disabled}
                         className={cn(
                             "w-full flex items-center justify-between gap-2",
-                            "bg-[#FCF9F2] dark:bg-slate-900 border rounded-xl",
+                            "bg-bg-surface border rounded-xl",
                             "text-left transition-all duration-200",
                             "focus:outline-none focus:ring-2",
-                            "disabled:bg-[#F5EFE6] dark:disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed",
+                            "disabled:bg-bg-subtle dark:disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed",
                             sizeStyles[size],
                             isOpen ? "ring-2 ring-primary-100 dark:ring-primary-900 border-primary-500" : "",
                             hasError
@@ -138,7 +138,7 @@ export const Select: React.FC<SelectProps> = ({
                                 : "border-slate-200 dark:border-slate-700 focus:border-primary-500 focus:ring-primary-100 dark:focus:ring-primary-900"
                         )}
                     >
-                        <span className={cn("truncate", hasValue ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-slate-500")}>
+                        <span className={cn("truncate", hasValue ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-slate-400")}>
                             {displayValue()}
                         </span>
                         <div className="flex items-center gap-1 shrink-0">
@@ -167,7 +167,7 @@ export const Select: React.FC<SelectProps> = ({
                             }
                         }}
                         className={cn(
-                            "z-[70] bg-[#FCF9F2] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-dropdown overflow-hidden",
+                            "z-[70] bg-bg-surface border border-slate-200 dark:border-slate-800 rounded-xl shadow-dropdown overflow-hidden",
                             "animate-in data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200"
                         )}
                     >
@@ -182,7 +182,7 @@ export const Select: React.FC<SelectProps> = ({
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         placeholder="Tìm kiếm..."
-                                        className="w-full pl-9 pr-3 py-2 bg-[#F5EFE6] dark:bg-slate-800 border-0 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        className="w-full pl-9 pr-3 py-2 bg-bg-subtle border-0 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     />
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ export const Select: React.FC<SelectProps> = ({
                                                 "w-full flex items-center gap-2 px-4 py-2.5 text-sm text-left transition-colors outline-none",
                                                 option.disabled
                                                     ? "text-slate-400 dark:text-slate-600 cursor-not-allowed"
-                                                    : "hover:bg-[#F5EFE6] dark:hover:bg-slate-800 focus:bg-[#F5EFE6] dark:focus:bg-slate-800",
+                                                    : "hover:bg-bg-subtle dark:hover:bg-slate-800 focus:bg-bg-subtle dark:focus:bg-slate-800",
                                                 isSelected
                                                     ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 font-medium"
                                                     : "text-slate-700 dark:text-slate-300"

@@ -40,7 +40,7 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
   const currentIndex = PHASES.findIndex((p) => p.id === currentPhase);
 
   return (
-    <div className="bg-[#FCF9F2] dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg mb-6 w-full">
+    <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg mb-6 w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -68,12 +68,12 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
               <div key={phase.id} className="group relative flex flex-col items-center w-1/4">
                 {/* Node Status Indicator */}
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-[#FCF9F2] dark:bg-slate-900 ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-bg-surface ${
                     isCompleted
                       ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400'
                       : isCurrent
                         ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 shadow-[0_0_0_4px_rgba(79,70,229,0.1)] dark:shadow-[0_0_0_4px_rgba(99,102,241,0.15)] ring-1 ring-indigo-600 dark:ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 animate-pulse'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-400'
                   }`}
                 >
                   {isCompleted ? <CheckCircle2 size={20} /> : isCurrent ? <Clock size={20} /> : <Circle size={20} />}

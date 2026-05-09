@@ -95,7 +95,7 @@ const BiddingContractPage: React.FC = () => {
     return (
         <div className="space-y-5 animate-in fade-in duration-500">
             {/* Tab Navigation + Project Filter */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-1.5">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-1.5">
                 <div className="flex items-center gap-1">
                     {TABS.map((tab) => {
                         const isActive = activeTab === tab.key;
@@ -108,7 +108,7 @@ const BiddingContractPage: React.FC = () => {
                                     transition-all duration-200 relative cursor-pointer
                                     ${isActive
                                         ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700'
+                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700'
                                     }
                                 `}
                             >
@@ -128,7 +128,7 @@ const BiddingContractPage: React.FC = () => {
                             className={`flex items-center gap-2 px-3.5 py-2.5 text-xs font-bold rounded-xl border transition-all duration-200 cursor-pointer whitespace-nowrap ${
                                 projectFilter !== 'all'
                                     ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 shadow-sm'
-                                    : 'bg-[#FCF9F2] dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'
+                                    : 'bg-bg-surface border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'
                             }`}
                         >
                             <Building2 className="w-3.5 h-3.5" />
@@ -137,9 +137,9 @@ const BiddingContractPage: React.FC = () => {
                         </button>
 
                         {isProjectDropdownOpen && (
-                            <div className="absolute top-full right-0 mt-1.5 w-80 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute top-full right-0 mt-1.5 w-80 bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                                 <div className="px-4 py-2.5 border-b border-gray-100 dark:border-slate-700">
-                                    <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-slate-500">Lọc theo dự án</p>
+                                    <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-slate-400">Lọc theo dự án</p>
                                 </div>
                                 <div className="max-h-64 overflow-y-auto">
                                     <button
@@ -147,11 +147,11 @@ const BiddingContractPage: React.FC = () => {
                                         className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors cursor-pointer ${
                                             projectFilter === 'all'
                                                 ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-bold'
-                                                : 'text-gray-700 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700'
+                                                : 'text-gray-700 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700'
                                         }`}
                                     >
                                         <span className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" />Tất cả dự án</span>
-                                        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{scopedPackages.length}</span>
+                                        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{scopedPackages.length}</span>
                                     </button>
                                     <div className="h-px bg-gray-100 dark:bg-slate-700" />
                                     {availableProjects.map(proj => (
@@ -161,11 +161,11 @@ const BiddingContractPage: React.FC = () => {
                                             className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors cursor-pointer ${
                                                 projectFilter === proj.id
                                                     ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-bold'
-                                                    : 'text-gray-700 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700'
+                                                    : 'text-gray-700 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700'
                                             }`}
                                         >
                                             <span className="truncate max-w-[220px] text-left">{proj.name}</span>
-                                            <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0 ml-2">{proj.count}</span>
+                                            <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0 ml-2">{proj.count}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -206,7 +206,7 @@ const BiddingContractPage: React.FC = () => {
 
 // ── Error fallback for lazy tabs ──
 const TabErrorFallback: React.FC = () => (
-    <div className="flex flex-col items-center justify-center py-20 bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 gap-3">
+    <div className="flex flex-col items-center justify-center py-20 bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 gap-3">
         <AlertTriangle className="w-8 h-8 text-amber-500" />
         <p className="text-sm font-semibold text-gray-600 dark:text-slate-300">Không thể tải nội dung. Vui lòng tải lại trang.</p>
         <button
@@ -392,15 +392,15 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             </div>
 
             {/* === Toolbar === */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
                 <div className="flex flex-col md:flex-row items-center gap-3">
                     {/* Search */}
                     <div className="relative w-full md:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />
                         <input
                             type="text"
                             placeholder="Tìm tên gói thầu, mã TBMT..."
-                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-[#F5EFE6] dark:bg-slate-700 dark:text-slate-200 focus:bg-[#FCF9F2] dark:focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-subtle dark:bg-slate-700 dark:text-slate-200 focus:bg-bg-surface dark:focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-gray-400 dark:placeholder:text-slate-500"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -420,12 +420,12 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                                 key={opt.value}
                                 onClick={() => setStatusFilter(opt.value)}
                                 className={`px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${statusFilter === opt.value
-                                    ? 'bg-[#FCF9F2] dark:bg-slate-600 text-gray-900 dark:text-slate-200 shadow-sm'
+                                    ? 'bg-bg-surface dark:bg-slate-600 text-gray-900 dark:text-slate-200 shadow-sm'
                                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                 }`}
                             >
                                 {opt.label}
-                                <span className={`ml-1 text-[10px] ${statusFilter === opt.value ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500'}`}>
+                                <span className={`ml-1 text-[10px] ${statusFilter === opt.value ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-400'}`}>
                                     {opt.count}
                                 </span>
                             </button>
@@ -433,12 +433,12 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                     </div>
 
                     <div className="ml-auto flex items-center gap-2">
-                        <span className="text-xs text-gray-400 dark:text-slate-500 font-medium hidden lg:inline">
+                        <span className="text-xs text-gray-400 dark:text-slate-400 font-medium hidden lg:inline">
                             Hiển thị {filteredPackages.length} / {scopedPackages.length}
                         </span>
                         <button
                             onClick={() => exportBiddingReportBieu01A(scopedPackages, projects)}
-                            className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-600 transition-colors flex items-center gap-2 hover:shadow-lg"
+                            className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-600 transition-colors flex items-center gap-2 hover:shadow-lg"
                             title="Xuất báo cáo đấu thầu Biểu 01A"
                         >
                             <Download className="w-4 h-4" />
@@ -449,11 +449,11 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             </div>
 
             {/* === Packages Table === */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
                                 <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest min-w-[220px]">Tên gói thầu</th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest min-w-[160px]">Dự án</th>
@@ -492,7 +492,7 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                                                 <div className="min-w-0">
                                                     <p className="font-semibold text-gray-800 dark:text-slate-200 text-[13px] leading-snug line-clamp-2">{pkg.PackageName}</p>
                                                     <div className="flex items-center gap-2 mt-0.5">
-                                                        <span className="text-[10px] text-gray-400 dark:text-slate-500 font-mono">{pkg.PackageNumber}</span>
+                                                        <span className="text-[10px] text-gray-400 dark:text-slate-400 font-mono">{pkg.PackageNumber}</span>
                                                         {pkg.NotificationCode && (
                                                             <span className="inline-flex items-center gap-0.5 text-[10px] font-mono text-blue-600 dark:text-blue-400">
                                                                 <Bell className="w-2.5 h-2.5" />{pkg.NotificationCode}
@@ -541,7 +541,7 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                                         {/* Arrow */}
                                         <td className="px-4 py-4">
                                             <div className="w-7 h-7 rounded-full bg-gray-50 dark:bg-slate-700 flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:ring-1 group-hover:ring-blue-200 dark:group-hover:ring-blue-800 transition-all">
-                                                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
+                                                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
                                             </div>
                                         </td>
                                     </tr>
@@ -566,17 +566,17 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                             <div className="w-px h-4 bg-gray-200 dark:bg-slate-600"></div>
                             <span className="text-xs text-gray-500 dark:text-slate-400">Tổng giá trị: <span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(stats.totalValue)}</span></span>
                         </div>
-                        <span className="text-xs text-gray-400 dark:text-slate-500">{filteredPackages.length} gói thầu</span>
+                        <span className="text-xs text-gray-400 dark:text-slate-400">{filteredPackages.length} gói thầu</span>
                     </div>
                 </div>
 
                 {filteredPackages.length === 0 && (
                     <div className="p-20 text-center">
                         <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center mx-auto mb-5 ring-1 ring-gray-200 dark:ring-slate-600">
-                            <Briefcase className="w-10 h-10 text-gray-300 dark:text-slate-500" />
+                            <Briefcase className="w-10 h-10 text-gray-300 dark:text-slate-400" />
                         </div>
                         <p className="text-gray-600 dark:text-slate-400 font-bold text-lg">Không tìm thấy gói thầu</p>
-                        <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                        <p className="text-gray-400 dark:text-slate-400 text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
                     </div>
                 )}
             </div>

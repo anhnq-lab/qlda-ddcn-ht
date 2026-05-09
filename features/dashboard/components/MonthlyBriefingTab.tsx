@@ -8,10 +8,9 @@ import { formatCurrency } from '../../../utils/format';
 import { DashboardService } from '../../../services/DashboardService';
 import { MonthlyReportModal } from './MonthlyReportModal';
 
-export const MonthlyBriefingTab: React.FC = () => {
+export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selectedYear }) => {
     const today = new Date();
     const [selectedMonth, setSelectedMonth] = useState<number>(today.getMonth() + 1);
-    const [selectedYear, setSelectedYear] = useState<number>(today.getFullYear());
     const [showReportModal, setShowReportModal] = useState(false);
 
     const { data: stats, isLoading, error, refetch } = useQuery({
@@ -22,7 +21,6 @@ export const MonthlyBriefingTab: React.FC = () => {
     });
 
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
-    const years = [today.getFullYear() - 1, today.getFullYear(), today.getFullYear() + 1];
 
     if (isLoading) {
         return (
@@ -50,7 +48,7 @@ export const MonthlyBriefingTab: React.FC = () => {
     return (
         <><div className="space-y-6 animate-fade-in fade-in-up">
             {/* ── Toolbar ── */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#FCF9F2] dark:bg-slate-800 p-4 rounded-xl border border-[#ece7de] dark:border-slate-700 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-surface p-4 rounded-xl border border-border shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                         <CalendarDays className="w-5 h-5 text-gray-500" />
@@ -62,13 +60,6 @@ export const MonthlyBriefingTab: React.FC = () => {
                         className="filter-primary text-sm font-semibold rounded-lg pr-8 py-1.5"
                     >
                         {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
-                    </select>
-                    <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="filter-primary text-sm font-semibold rounded-lg pr-8 py-1.5"
-                    >
-                        {years.map(y => <option key={y} value={y}>Năm {y}</option>)}
                     </select>
                 </div>
                 
@@ -90,7 +81,7 @@ export const MonthlyBriefingTab: React.FC = () => {
 
             {/* ── KPI Cards ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm">
+                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">
                             <TrendingUp className="w-5 h-5" />
@@ -110,7 +101,7 @@ export const MonthlyBriefingTab: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm">
+                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
                             <Building2 className="w-5 h-5" />
@@ -120,7 +111,7 @@ export const MonthlyBriefingTab: React.FC = () => {
                     <span className="text-2xl font-black text-gray-800 dark:text-slate-100">{stats.newProjectsStarted}</span>
                 </div>
 
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm">
+                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
                             <CheckCircle2 className="w-5 h-5" />
@@ -130,7 +121,7 @@ export const MonthlyBriefingTab: React.FC = () => {
                     <span className="text-2xl font-black text-gray-800 dark:text-slate-100">{stats.projectsCompleted}</span>
                 </div>
 
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 p-5 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm">
+                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
                             <FileText className="w-5 h-5" />
@@ -146,8 +137,8 @@ export const MonthlyBriefingTab: React.FC = () => {
                 
                 {/* Cột 1: Kết quả */}
                 <div className="space-y-6">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 p-6 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm h-full">
-                        <div className="flex items-center gap-2 mb-6 border-b border-[#ece7de] dark:border-slate-700 pb-3">
+                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm h-full">
+                        <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
                             <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg"><Target className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">KẾT QUẢ NỔI BẬT TRONG THÁNG</h3>
                         </div>
@@ -172,8 +163,8 @@ export const MonthlyBriefingTab: React.FC = () => {
 
                 {/* Cột 2: Tồn tại & Kế hoạch */}
                 <div className="space-y-6 h-full flex flex-col">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 p-6 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm flex-1">
-                        <div className="flex items-center gap-2 mb-6 border-b border-[#ece7de] dark:border-slate-700 pb-3">
+                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm flex-1">
+                        <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
                             <div className="p-1.5 bg-red-100 text-red-600 rounded-lg"><AlertTriangle className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">TỒN TẠI & VƯỚNG MẮC</h3>
                         </div>
@@ -193,8 +184,8 @@ export const MonthlyBriefingTab: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 p-6 rounded-2xl border border-[#ece7de] dark:border-slate-700 shadow-sm flex-1">
-                        <div className="flex items-center gap-2 mb-6 border-b border-[#ece7de] dark:border-slate-700 pb-3">
+                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm flex-1">
+                        <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
                             <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg"><Calendar className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">KẾ HOẠCH THÁNG TỚI</h3>
                         </div>

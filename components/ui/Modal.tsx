@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
                             if (!closeOnEscape) e.preventDefault();
                         }}
                         className={cn(
-                            "pointer-events-auto relative w-full bg-[#FCF9F2] dark:bg-slate-900 rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden",
+                            "pointer-events-auto relative w-full bg-bg-surface rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden",
                             "animate-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 duration-200",
                             sizeStyles[size],
                             className
@@ -196,7 +196,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 <button
                     onClick={onClose}
                     disabled={loading}
-                    className="flex-1 px-4 py-2.5 bg-[#FCF9F2] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-bg-surface border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
                 >
                     {cancelText}
                 </button>

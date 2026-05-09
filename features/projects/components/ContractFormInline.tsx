@@ -127,7 +127,7 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
     };
 
     const inputClass = (field: keyof FormData) =>
-        `w-full px-3 py-2 text-sm bg-[#FCF9F2] dark:bg-slate-900 border rounded-lg outline-none transition-colors
+        `w-full px-3 py-2 text-sm bg-bg-surface border rounded-lg outline-none transition-colors
         ${errors[field]
             ? 'border-red-300 dark:border-red-600 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
             : 'border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'

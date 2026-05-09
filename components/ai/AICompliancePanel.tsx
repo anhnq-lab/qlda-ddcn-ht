@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Shield, CheckCircle2, AlertTriangle, AlertCircle, Clock,
     ChevronRight, RefreshCw, Sparkles, ExternalLink
@@ -14,7 +14,7 @@ const statusConfig = {
     passed: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', icon: CheckCircle2, iconClass: 'text-emerald-600 dark:text-emerald-400', label: 'Đạt' },
     warning: { bg: 'bg-primary-50 dark:bg-primary-900/20', border: 'border-primary-200 dark:border-primary-800', icon: AlertCircle, iconClass: 'text-primary-600 dark:text-primary-400', label: 'Cảnh báo' },
     violation: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', icon: AlertTriangle, iconClass: 'text-red-600 dark:text-red-400', label: 'Vi phạm' },
-    pending: { bg: 'bg-[#F5EFE6] dark:bg-slate-800', border: 'border-slate-200 dark:border-slate-700', icon: Clock, iconClass: 'text-slate-400', label: 'Chờ xác nhận' },
+    pending: { bg: 'bg-bg-subtle', border: 'border-slate-200 dark:border-slate-700', icon: Clock, iconClass: 'text-slate-400', label: 'Chờ xác nhận' },
 };
 
 export const AICompliancePanel: React.FC<AICompliancePanelProps> = ({ projectId, className = '' }) => {
@@ -42,9 +42,9 @@ export const AICompliancePanel: React.FC<AICompliancePanelProps> = ({ projectId,
     const totalChecks = report?.checks.length ?? 0;
 
     return (
-        <div className={`bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
+        <div className={`bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
             {/* Header */}
-            <div className="px-4 py-3 bg-[#F5EFE6] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="px-4 py-3 bg-bg-subtle border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
                         <Shield size={14} className="text-white" />
@@ -91,7 +91,7 @@ export const AICompliancePanel: React.FC<AICompliancePanelProps> = ({ projectId,
                                     <span className="text-xs font-medium text-slate-700 dark:text-slate-200 block truncate">
                                         {check.requirement}
                                     </span>
-                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+                                    <span className="text-[10px] text-slate-400 dark:text-slate-400 block truncate">
                                         {check.regulation} — {check.article}
                                     </span>
                                 </div>

@@ -70,7 +70,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
     const dueSoonCount = dates.filter(d => d.status === 'due-soon').length;
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="section-card-header">
                 <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
             {/* Dates List */}
             <div className="divide-y divide-gray-50 dark:divide-slate-700">
                 {sortedDates.length === 0 ? (
-                    <div className="px-3 py-5 text-center text-gray-400 dark:text-slate-500">
+                    <div className="px-3 py-5 text-center text-gray-400 dark:text-slate-400">
                         <Calendar className="w-6 h-6 mx-auto mb-1.5 opacity-50" />
                         <p className="text-xs">Chưa có mốc thời gian nào</p>
                     </div>
@@ -107,7 +107,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                         return (
                             <div
                                 key={date.id}
-                                className={`px-3 py-2 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
+                                className={`px-3 py-2 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
                             >
                                 <div className="flex items-start gap-2">
                                     <div className={`w-7 h-7 rounded-lg ${style.bg} ${style.border} border flex items-center justify-center shrink-0`}>
@@ -129,7 +129,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                                             )}
                                         </div>
                                         {date.description && (
-                                            <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 truncate">{date.description}</p>
+                                            <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">{date.description}</p>
                                         )}
                                     </div>
                                     <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 shrink-0" />

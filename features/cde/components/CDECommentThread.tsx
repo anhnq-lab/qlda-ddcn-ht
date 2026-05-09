@@ -82,9 +82,9 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
                 <div className="flex items-baseline gap-2">
                     <span className="text-xs font-bold text-gray-800 dark:text-slate-100">{comment.author_name}</span>
                     {comment.author_role && (
-                        <span className="text-[9px] font-semibold text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{comment.author_role}</span>
+                        <span className="text-[9px] font-semibold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{comment.author_role}</span>
                     )}
-                    <span className="text-[9px] text-gray-400 dark:text-slate-500">{formatTime(comment.created_at)}</span>
+                    <span className="text-[9px] text-gray-400 dark:text-slate-400">{formatTime(comment.created_at)}</span>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-slate-300 mt-1 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
                 {!isReply && (
@@ -114,7 +114,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
             {/* Comment List */}
             <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {comments.length === 0 ? (
-                    <p className="text-xs text-gray-400 dark:text-slate-500 text-center py-4 italic">Chưa có thảo luận</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-400 text-center py-4 italic">Chưa có thảo luận</p>
                 ) : topLevel.map(comment => (
                     <div key={comment.id} className="space-y-2">
                         <CommentBubble comment={comment} />
@@ -145,7 +145,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                     placeholder="Viết nhận xét..."
                     rows={1}
-                    className="flex-1 resize-none text-xs bg-[#F5EFE6] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
+                    className="flex-1 resize-none text-xs bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
                 />
                 <button
                     onClick={handleSubmit}

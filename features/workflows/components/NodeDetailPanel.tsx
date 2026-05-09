@@ -227,7 +227,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
                 
                 {/* 1. Header Info */}
-                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors col-span-2">
                             <label className="text-xs font-bold text-slate-600 dark:text-slate-400">Tên nội dung thực hiện (Bước)</label>
@@ -298,7 +298,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
 
                     <div className="space-y-4">
                         {subTasks.map((st, i) => (
-                            <div key={st.id} className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group/st">
+                            <div key={st.id} className="bg-bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group/st">
                                 {/* Header */}
                                 <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                                     <div className="flex items-center gap-2">

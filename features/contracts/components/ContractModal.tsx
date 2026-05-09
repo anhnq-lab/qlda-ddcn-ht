@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Save, Loader2, FileSignature, Calendar, Banknote,
@@ -188,7 +188,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
     };
 
     const inputClass = (field: keyof FormData) =>
-        `w-full px-3 py-2 text-sm bg-[#FCF9F2] dark:bg-slate-900 border rounded-lg outline-none transition-colors
+        `w-full px-3 py-2 text-sm bg-bg-surface border rounded-lg outline-none transition-colors
         ${errors[field]
             ? 'border-red-300 dark:border-red-600 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
             : 'border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
@@ -209,7 +209,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 dark:bg-slate-900 backdrop-blur-sm overflow-hidden p-4">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 shrink-0">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
@@ -451,7 +451,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-[#FCF9F2] dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-bg-surface border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors"
                     >
                         Hủy bỏ
                     </button>

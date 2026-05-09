@@ -28,7 +28,7 @@ const KANBAN_COLUMNS: KanbanColumn[] = [
         title: 'Chờ làm',
         icon: Circle,
         color: 'text-gray-600',
-        bgColor: 'bg-[#F5EFE6]',
+        bgColor: 'bg-bg-subtle',
         borderColor: 'border-gray-200'
     },
     {
@@ -187,7 +187,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                     onDragStart={(e) => handleDragStart(e, task)}
                                     onDragEnd={handleDragEnd}
                                     onClick={() => onTaskClick(task)}
-                                    className={`group bg-[#FCF9F2] dark:bg-slate-800 rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
+                                    className={`group bg-bg-surface rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
                                         } ${isOverdue(task) ? 'bg-red-50/50' : ''}`}
                                 >
                                     {/* Drag Handle + Title */}
@@ -262,7 +262,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
 
                             {/* Empty State */}
                             {columnTasks.length === 0 && (
-                                <div className="h-32 flex flex-col items-center justify-center text-gray-400 dark:text-slate-500 text-sm">
+                                <div className="h-32 flex flex-col items-center justify-center text-gray-400 dark:text-slate-400 text-sm">
                                     <Icon className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-xs">Không có công việc</p>
                                 </div>

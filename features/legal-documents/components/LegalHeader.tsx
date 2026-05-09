@@ -44,8 +44,8 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
             {/* Search + Filters */}
             <div className="flex items-center gap-4">
                 <div className="relative flex-1">
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 h-12 transition-all focus-within:ring-2 focus-within:ring-indigo-100 dark:focus-within:ring-indigo-900/40 focus-within:border-indigo-400">
-                        <Search className="w-5 h-5 text-gray-400 dark:text-slate-500 mr-3" />
+                    <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 h-12 transition-all focus-within:ring-2 focus-within:ring-indigo-100 dark:focus-within:ring-indigo-900/40 focus-within:border-indigo-400">
+                        <Search className="w-5 h-5 text-gray-400 dark:text-slate-400 mr-3" />
                         <input
                             type="text"
                             placeholder="Tìm theo số hiệu, tên văn bản, nội dung điều khoản..."
@@ -62,7 +62,7 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
                     </div>
                     {/* Deep Search Dropdown */}
                     {showDeepSearch && deepSearchResults.length > 0 && (
-                        <div className="absolute top-14 left-0 right-0 z-50 bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 max-h-96 overflow-y-auto p-3 space-y-2 animate-in slide-in-from-top-2 duration-200">
+                        <div className="absolute top-14 left-0 right-0 z-50 bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 max-h-96 overflow-y-auto p-3 space-y-2 animate-in slide-in-from-top-2 duration-200">
                             <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-200 dark:border-slate-700">
                                 <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
                                     <Search className="w-3.5 h-3.5 inline" /> Tìm thấy {deepSearchResults.length} điều khoản
@@ -76,7 +76,7 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
                     )}
                 </div>
                 <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-gray-400 dark:text-slate-500" />
+                    <Filter className="w-4 h-4 text-gray-400 dark:text-slate-400" />
                     {(['all', 'luat', 'nghi-dinh', 'thong-tu', 'qcvn', 'quyet-dinh'] as const).map(type => {
                         const isActive = filterType === type;
                         const label = type === 'all' ? 'Tất cả' : DOC_TYPE_LABELS[type];
@@ -85,7 +85,7 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
                             <button key={type} onClick={() => setFilterType(type)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${isActive
                                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
-                                    : 'bg-[#FCF9F2] dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-[#F5EFE6] dark:hover:bg-slate-700'}`}>
+                                    : 'bg-bg-surface text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700'}`}>
                                 {label}
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${isActive ? 'bg-white/20' : 'bg-gray-100 dark:bg-slate-700'}`}>{count}</span>
                             </button>

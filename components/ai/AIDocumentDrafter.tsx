@@ -93,7 +93,7 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-2xl w-[700px] max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-xl shadow-2xl w-[700px] max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-700">
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                             <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                 Soạn văn bản AI
                             </h2>
-                            <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-[400px]">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-400 truncate max-w-[400px]">
                                 {projectName}
                             </p>
                         </div>
@@ -140,7 +140,7 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                                         <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
                                             {dt.label}
                                         </p>
-                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
+                                        <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 leading-relaxed">
                                             {dt.description}
                                         </p>
                                     </div>
@@ -190,14 +190,14 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                                     <button
                                         onClick={handleGenerate}
                                         disabled={loading}
-                                        className="text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors flex items-center gap-1"
+                                        className="text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors flex items-center gap-1"
                                     >
                                         <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
                                         Tạo lại
                                     </button>
                                     <button
                                         onClick={handleCopy}
-                                        className="text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors flex items-center gap-1"
+                                        className="text-[11px] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors flex items-center gap-1"
                                     >
                                         {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
                                         {copied ? 'Đã sao chép' : 'Sao chép'}
@@ -212,7 +212,7 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-4 bg-[#F5EFE6] dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 max-h-[50vh] overflow-y-auto">
+                            <div className="p-4 bg-bg-subtle dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 max-h-[50vh] overflow-y-auto">
                                 <pre className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap font-sans leading-relaxed">
                                     {draftContent}
                                 </pre>

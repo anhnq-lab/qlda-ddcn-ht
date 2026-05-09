@@ -202,7 +202,7 @@ const PersonalDashboard: React.FC = () => {
                                 <div
                                     key={project.ProjectID}
                                     onClick={() => navigate(`/projects/${project.ProjectID}`)}
-                                    className="p-4 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-4"
+                                    className="p-4 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-4"
                                 >
                                     <div className={`w-2 h-12 rounded-full ${project.Status === ProjectStatus.Preparation ? 'bg-blue-500' :
                                         project.Status === ProjectStatus.Execution ? 'bg-orange-500' :
@@ -259,12 +259,12 @@ const PersonalDashboard: React.FC = () => {
                                 <div
                                     key={task.TaskID}
                                     onClick={() => navigate(`/tasks/${task.TaskID}`)}
-                                    className="p-4 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                                    className="p-4 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{task.Title}</p>
-                                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 truncate">{task._projectName}</p>
+                                            <p className="text-xs text-gray-400 dark:text-slate-400 mt-1 truncate">{task._projectName}</p>
                                         </div>
                                         <span className={`text-[10px] font-bold px-2 py-1 rounded border shrink-0 ${priorityColors[task.Priority]}`}>
                                             {daysUntil(task.DueDate)}
@@ -299,7 +299,7 @@ const PersonalDashboard: React.FC = () => {
                             <div
                                 key={task.TaskID}
                                 onClick={() => navigate(`/tasks/${task.TaskID}`)}
-                                className="p-4 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
+                                className="p-4 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
                             >
                                 <div className={`w-2 h-2 rounded-full ${task.Priority === TaskPriority.Urgent ? 'bg-rose-500' :
                                     task.Priority === TaskPriority.High ? 'bg-primary-500' :
@@ -307,7 +307,7 @@ const PersonalDashboard: React.FC = () => {
                                     }`}></div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{task.Title}</p>
-                                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{task.DueDate}</p>
+                                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5">{task.DueDate}</p>
                                 </div>
                                 <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded">
                                     Đang làm
@@ -343,7 +343,7 @@ const PersonalDashboard: React.FC = () => {
                             myDocuments.map((doc: any) => (
                                 <div
                                     key={doc.doc_id}
-                                    className="p-4 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
+                                    className="p-4 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
                                     onClick={() => navigate('/documents')}
                                 >
                                     <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center shrink-0">
@@ -351,7 +351,7 @@ const PersonalDashboard: React.FC = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{doc.doc_name}</p>
-                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                                        <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5 truncate">
                                             {projectNameMap[doc.project_id] || doc.project_id}
                                             {doc.version ? ` • v${doc.version}` : ''}
                                         </p>
@@ -390,7 +390,7 @@ const PersonalDashboard: React.FC = () => {
                             <div
                                 key={contract.ContractID}
                                 onClick={() => navigate(`/contracts/${contract.ContractID}`)}
-                                className="p-4 hover:bg-[#F0ECE1] dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-4"
+                                className="p-4 hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-4"
                             >
                                 <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center shrink-0">
                                     <Briefcase className="w-5 h-5 text-slate-600 dark:text-slate-400" />
@@ -411,18 +411,18 @@ const PersonalDashboard: React.FC = () => {
             )}
 
             {/* Summary Footer */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-[#ece7de] dark:border-slate-700 p-4">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-border p-4">
                 <div className="flex flex-wrap items-center justify-between gap-6">
                     <div className="flex items-center gap-8">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase">Tổng mức đầu tư phụ trách</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase">Tổng mức đầu tư phụ trách</p>
                             <p className="text-xl font-black text-gray-900 dark:text-slate-100 mt-1">{formatCurrency(totalInvestment)}</p>
                         </div>
                         <div className="h-10 w-px bg-gray-200 dark:bg-slate-700"></div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase">Hoàn thành công việc</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase">Hoàn thành công việc</p>
                             <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
-                                {taskStats.done}/{taskStats.total} <span className="text-sm font-normal text-gray-400 dark:text-slate-500">({taskStats.total > 0 ? Math.round(taskStats.done / taskStats.total * 100) : 0}%)</span>
+                                {taskStats.done}/{taskStats.total} <span className="text-sm font-normal text-gray-400 dark:text-slate-400">({taskStats.total > 0 ? Math.round(taskStats.done / taskStats.total * 100) : 0}%)</span>
                             </p>
                         </div>
                     </div>

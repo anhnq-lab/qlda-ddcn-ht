@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { FileText, Clock, CheckCircle2, XCircle, ArrowRight, Upload, TrendingUp, Building2 } from 'lucide-react';
 import type { CDEDocument } from '../types';
 import { getStatusLabel, getStatusColor, CONTAINER_COLORS } from '../constants';
@@ -69,7 +69,7 @@ const CDEContractorDashboard: React.FC<CDEContractorDashboardProps> = ({
             </div>
 
             {/* Recent Submissions */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -99,7 +99,7 @@ const CDEContractorDashboard: React.FC<CDEContractorDashboardProps> = ({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold text-gray-800 dark:text-slate-100 truncate">{doc.doc_name}</p>
-                                        <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5">
+                                        <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">
                                             {doc.discipline || '—'} • {doc.upload_date ? new Date(doc.upload_date).toLocaleDateString('vi-VN') : '—'}
                                         </p>
                                     </div>

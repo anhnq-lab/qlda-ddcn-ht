@@ -111,7 +111,7 @@ const ProjectList: React.FC = () => {
         const endItem = Math.min(page * 50, total);
 
         return (
-            <div className="flex items-center justify-between bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 mt-3">
+            <div className="flex items-center justify-between bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 mt-3">
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     Hiển thị {startItem}-{endItem} / {total} dự án
                 </span>
@@ -168,12 +168,12 @@ const ProjectList: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-4 items-start">
                 {/* 2. SIDEBAR FILTER (Premium Style) */}
                 <div className={`shrink-0 transition-all duration-300 ${isSidebarOpen ? 'w-full lg:w-72' : 'w-0 lg:w-10'}`}>
-                    <div className={`bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden sticky top-6 ${!isSidebarOpen ? 'hidden lg:flex lg:items-center lg:justify-center lg:py-4' : ''}`}>
+                    <div className={`bg-bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden sticky top-6 ${!isSidebarOpen ? 'hidden lg:flex lg:items-center lg:justify-center lg:py-4' : ''}`}>
                         {/* Collapsed state */}
                         {!isSidebarOpen && (
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className="p-2 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 rounded-lg transition-all"
+                                className="p-2 hover:bg-bg-subtle dark:hover:bg-slate-700 rounded-lg transition-all"
                                 title="Mở bộ lọc"
                             >
                                 <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" />
@@ -183,7 +183,7 @@ const ProjectList: React.FC = () => {
                         {/* Expanded state */}
                         {isSidebarOpen && (
                             <>
-                                <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800 flex justify-between items-center">
+                                <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-bg-subtle flex justify-between items-center">
                                     <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                         <Filter className="w-4 h-4 text-primary-600 dark:text-primary-400" /> Bộ lọc dự án
                                     </h3>
@@ -280,7 +280,7 @@ const ProjectList: React.FC = () => {
                 {/* 3. MAIN LIST AREA */}
                 <div className="flex-1 w-full space-y-4">
                     {/* Toolbar */}
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 p-2 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="bg-bg-surface p-2 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative w-full md:flex-1">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 w-4 h-4" />
                             <input
@@ -304,14 +304,14 @@ const ProjectList: React.FC = () => {
                             <div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-[#FCF9F2] dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-bg-surface dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                     aria-label="Hiển thị dạng lưới"
                                 >
                                     <LayoutGrid className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-[#FCF9F2] dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-bg-surface dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                     aria-label="Hiển thị dạng danh sách"
                                 >
                                     <ListIcon className="w-4 h-4" />
@@ -361,7 +361,7 @@ const ProjectList: React.FC = () => {
                         {isLoading ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="bg-[#FCF9F2] dark:bg-slate-800 h-72 rounded-2xl p-4 space-y-4 border border-slate-200 dark:border-slate-700">
+                                    <div key={i} className="bg-bg-surface h-72 rounded-2xl p-4 space-y-4 border border-slate-200 dark:border-slate-700">
                                         <Skeleton className="h-40 w-full rounded-xl" />
                                         <Skeleton className="h-4 w-3/4" />
                                         <Skeleton className="h-4 w-1/2" />
@@ -385,7 +385,7 @@ const ProjectList: React.FC = () => {
                                 description={hasActiveFilters
                                     ? 'Không có dự án nào phù hợp với bộ lọc hiện tại. Hãy thử thay đổi từ khóa hoặc bộ lọc.'
                                     : 'Hãy bắt đầu bằng việc tạo dự án đầu tiên.'}
-                                className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 border-dashed"
+                                className="bg-bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 border-dashed"
                             >
                                 {hasActiveFilters ? (
                                     <button
@@ -407,11 +407,11 @@ const ProjectList: React.FC = () => {
                                 )}
                             </EmptyState>
                         ) : viewMode === 'list' ? (
-                            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div className="bg-bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm border-collapse">
                                         <thead>
-                                            <tr className="bg-[#F5EFE6] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                                            <tr className="bg-bg-subtle border-b border-slate-200 dark:border-slate-700">
                                                 <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-10">#</th>
                                                 <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest min-w-[280px]">Tên dự án</th>
                                                 <th className="px-3 py-2.5 text-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-20">Nhóm</th>
@@ -437,7 +437,7 @@ const ProjectList: React.FC = () => {
                                                         className="hover:bg-slate-50/80 dark:hover:bg-slate-700/60 cursor-pointer transition-colors group"
                                                     >
                                                         {/* # */}
-                                                        <td className="px-3 py-3 text-xs text-slate-400 dark:text-slate-500 tabular-nums">{rowNum}</td>
+                                                        <td className="px-3 py-3 text-xs text-slate-400 dark:text-slate-400 tabular-nums">{rowNum}</td>
 
                                                         {/* Tên dự án */}
                                                         <td className="px-3 py-3">
@@ -445,11 +445,11 @@ const ProjectList: React.FC = () => {
                                                                 {project.ProjectName}
                                                             </p>
                                                             <div className="flex items-center gap-2 mt-0.5">
-                                                                <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-1 rounded">
+                                                                <span className="font-mono text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1 rounded">
                                                                     #{(project.ProjectID || '').slice(-5)}
                                                                 </span>
                                                                 {project.LocationCode && (
-                                                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[220px]">
+                                                                    <span className="text-[10px] text-slate-400 dark:text-slate-400 truncate max-w-[220px]">
                                                                         {project.LocationCode}
                                                                     </span>
                                                                 )}

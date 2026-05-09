@@ -127,7 +127,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-            <div className="relative bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-5xl max-h-[90vh] overflow-hidden animate-scale-in">
+            <div className="relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-5xl max-h-[90vh] overflow-hidden animate-scale-in">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
@@ -155,7 +155,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                 </div>
 
                 {/* Step Progress */}
-                <div className="flex items-center gap-2 px-6 py-3 bg-[#F5EFE6] dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 px-6 py-3 bg-bg-subtle dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
                     {['upload', 'preview', 'done'].map((s, i) => (
                         <React.Fragment key={s}>
                             {i > 0 && <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />}
@@ -163,7 +163,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
                                 : (['upload', 'preview', 'done'].indexOf(step) > i
                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                    : 'bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-slate-500')
+                                    : 'bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-slate-400')
                                 }`}>
                                 {s === 'upload' && '📁 Chọn file'}
                                 {s === 'preview' && '👁️ Xem trước'}
@@ -197,7 +197,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                         <p className="text-gray-600 dark:text-slate-300 font-medium">
                                             Kéo thả file Excel vào đây
                                         </p>
-                                        <p className="text-sm text-gray-400 dark:text-slate-500 mt-1">
+                                        <p className="text-sm text-gray-400 dark:text-slate-400 mt-1">
                                             hoặc click để chọn file (.xlsx, .xls)
                                         </p>
                                         {file && (
@@ -299,8 +299,8 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                             <tr
                                                 key={idx}
                                                 className={`border-t border-gray-200 dark:border-slate-700 ${selectedRows.has(idx)
-                                                    ? 'bg-[#FCF9F2] dark:bg-slate-800'
-                                                    : 'bg-[#F5EFE6] dark:bg-slate-850 opacity-50'
+                                                    ? 'bg-bg-surface'
+                                                    : 'bg-bg-subtle dark:bg-slate-850 opacity-50'
                                                     } hover:bg-blue-50 dark:hover:bg-slate-750 transition-colors`}
                                             >
                                                 <td className="px-2 py-2 text-center">
@@ -349,7 +349,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                         ))}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="bg-[#F5EFE6] dark:bg-slate-750 font-bold border-t border-gray-200 dark:border-slate-600">
+                                        <tr className="bg-bg-subtle dark:bg-slate-750 font-bold border-t border-gray-200 dark:border-slate-600">
                                             <td colSpan={5} className="px-2 py-2 text-right text-slate-700 dark:text-slate-200">
                                                 Tổng ({selectedRows.size} gói đã chọn):
                                             </td>
@@ -385,7 +385,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-750">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-subtle dark:bg-slate-750">
                     <div>
                         {file && step !== 'done' && (
                             <span className="text-xs text-gray-500 dark:text-slate-400">

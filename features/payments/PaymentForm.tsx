@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { X, CreditCard, FileText, Calendar, DollarSign, Building2, Hash, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { useContractors } from '../../hooks/useContractors';
@@ -90,7 +90,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="px-6 py-4 text-white flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #4A4230 0%, #1c456c 50%, #4a90e2 100%)' }}>
                     <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                             <select
                                 value={formData.contractId}
                                 onChange={e => setFormData({ ...formData, contractId: e.target.value })}
-                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 ${errors.contractId ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-bg-surface text-gray-800 dark:text-slate-100 ${errors.contractId ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
                                     }`}
                             >
                                 <option value="">-- Chọn hợp đồng --</option>
@@ -182,7 +182,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     min="1"
                                     value={formData.batchNo}
                                     onChange={e => setFormData({ ...formData, batchNo: parseInt(e.target.value) || 1 })}
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100"
+                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-bg-surface text-gray-800 dark:text-slate-100"
                                 />
                             </div>
 
@@ -195,7 +195,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 <select
                                     value={formData.type}
                                     onChange={e => setFormData({ ...formData, type: e.target.value as PaymentType })}
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100"
+                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-bg-surface text-gray-800 dark:text-slate-100"
                                 >
                                     <option value={PaymentType.Advance}>Tạm ứng</option>
                                     <option value={PaymentType.Volume}>Thanh toán khối lượng</option>
@@ -214,7 +214,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 value={formData.amount}
                                 onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
                                 placeholder="0"
-                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-lg font-bold bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 ${errors.amount ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-lg font-bold bg-bg-surface text-gray-800 dark:text-slate-100 ${errors.amount ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
                                     }`}
                             />
                             {formData.amount > 0 && (
@@ -236,7 +236,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     value={formData.treasuryRef}
                                     onChange={e => setFormData({ ...formData, treasuryRef: e.target.value })}
                                     placeholder="VD: KB-2025-001234"
-                                    className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 ${errors.treasuryRef ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                    className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono bg-bg-surface text-gray-800 dark:text-slate-100 ${errors.treasuryRef ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
                                         }`}
                                 />
                                 {errors.treasuryRef && <p className="text-xs text-red-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.treasuryRef}</p>}
@@ -247,7 +247,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     Biểu mẫu Kho bạc
                                 </label>
                                 <div className="flex gap-3">
-                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl cursor-pointer transition-all ${formData.formType === '03a' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'border-gray-200 dark:border-slate-600 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300'
+                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl cursor-pointer transition-all ${formData.formType === '03a' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300'
                                         }`}>
                                         <input
                                             type="radio"
@@ -259,7 +259,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                         />
                                         <span className="text-sm font-bold">Mẫu 03a</span>
                                     </label>
-                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl cursor-pointer transition-all ${formData.formType === '04a' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'border-gray-200 dark:border-slate-600 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300'
+                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl cursor-pointer transition-all ${formData.formType === '04a' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300'
                                         }`}>
                                         <input
                                             type="radio"
@@ -285,7 +285,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 onChange={e => setFormData({ ...formData, note: e.target.value })}
                                 placeholder="Nhập nội dung ghi chú (nếu có)"
                                 rows={2}
-                                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none bg-[#FCF9F2] dark:bg-slate-700 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none bg-bg-surface text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                             />
                         </div>
 

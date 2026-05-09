@@ -25,7 +25,7 @@ const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> =
     Done: { bar: 'bg-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-600 dark:text-emerald-400' },
     InProgress: { bar: 'bg-primary-500', bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-600 dark:text-primary-400' },
     Review: { bar: 'bg-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-600 dark:text-blue-400' },
-    Todo: { bar: 'bg-slate-300 dark:bg-slate-600', bg: 'bg-[#F5EFE6] dark:bg-slate-800', text: 'text-slate-500 dark:text-slate-400' },
+    Todo: { bar: 'bg-slate-300 dark:bg-slate-600', bg: 'bg-bg-subtle', text: 'text-slate-500 dark:text-slate-400' },
     overdue: { bar: 'bg-red-500', bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-600 dark:text-red-400' },
 };
 
@@ -196,7 +196,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                 <div className="flex items-center gap-2">
                     <div className="section-icon"><BarChart3 className="w-3.5 h-3.5" /></div>
                     <span>Tiến độ thực hiện</span>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400">
                         ({stats.avgProgress}%)
                     </span>
                 </div>
@@ -233,7 +233,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                         {months.map((m, i) => (
                             <div
                                 key={i}
-                                className="text-[9px] font-bold text-slate-400 dark:text-slate-500 text-center py-0.5 border-r border-slate-100 dark:border-slate-700/50 last:border-r-0 shrink-0"
+                                className="text-[9px] font-bold text-slate-400 dark:text-slate-400 text-center py-0.5 border-r border-slate-100 dark:border-slate-700/50 last:border-r-0 shrink-0"
                                 style={{ width: `${m.width}%`, minWidth: '30px' }}
                             >
                                 {m.label}

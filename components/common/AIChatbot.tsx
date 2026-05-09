@@ -244,7 +244,7 @@ export const AIChatbot: React.FC = () => {
 
     return (
         <div
-            className={`fixed bottom-6 right-6 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl shadow-2xl z-50 transition-all duration-300 flex flex-col border border-slate-200 dark:border-slate-700
+            className={`fixed bottom-6 right-6 bg-bg-surface rounded-xl shadow-2xl z-50 transition-all duration-300 flex flex-col border border-slate-200 dark:border-slate-700
             ${isExpanded ? 'w-[640px] h-[80vh]' : 'w-[400px] h-[540px]'}`}
         >
             {/* Header */}
@@ -287,7 +287,7 @@ export const AIChatbot: React.FC = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F5EFE6] dark:bg-slate-900">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-bg-subtle dark:bg-slate-900">
                 {messages.map(msg => (
                     <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-2 max-w-[85%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -304,7 +304,7 @@ export const AIChatbot: React.FC = () => {
                             <div
                                 className={`p-3 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user'
                                     ? 'bg-primary-600 text-white rounded-tr-sm'
-                                    : 'bg-[#FCF9F2] dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-lg border border-slate-100 dark:border-slate-700 rounded-tl-sm'
+                                    : 'bg-bg-surface text-slate-700 dark:text-slate-200 shadow-lg border border-slate-100 dark:border-slate-700 rounded-tl-sm'
                                     } ${msg.isError ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : ''}`}
                             >
                                 {msg.sender === 'ai' ? renderMessageText(msg.text) : msg.text}
@@ -323,7 +323,7 @@ export const AIChatbot: React.FC = () => {
                             <div className="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
                                 <Bot size={14} className="text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <div className="bg-[#FCF9F2] dark:bg-slate-800 p-3 rounded-2xl rounded-tl-sm shadow-lg border border-slate-100 dark:border-slate-700">
+                            <div className="bg-bg-surface p-3 rounded-2xl rounded-tl-sm shadow-lg border border-slate-100 dark:border-slate-700">
                                 <div className="flex items-center gap-2">
                                     <div className="flex gap-1">
                                         <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:0ms]"></span>
@@ -345,13 +345,13 @@ export const AIChatbot: React.FC = () => {
                 {/* Quick suggestions */}
                 {showSuggestions && !isLoading && messages.length <= 2 && (
                     <div className="space-y-2 pt-2">
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">💡 Gợi ý câu hỏi:</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-400 font-medium">💡 Gợi ý câu hỏi:</p>
                         <div className="flex flex-wrap gap-1.5">
                             {QUICK_SUGGESTIONS.map((s, i) => (
                                 <button
                                     key={i}
                                     onClick={() => handleSend(s.prompt)}
-                                    className="text-[11px] px-2.5 py-1.5 bg-[#FCF9F2] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                                    className="text-[11px] px-2.5 py-1.5 bg-bg-surface border border-slate-200 dark:border-slate-700 rounded-full text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                                 >
                                     {s.label}
                                 </button>
@@ -364,7 +364,7 @@ export const AIChatbot: React.FC = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-3 bg-[#FCF9F2] dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 rounded-b-xl">
+            <div className="p-3 bg-bg-surface border-t border-slate-100 dark:border-slate-700 rounded-b-xl">
                 {!aiAvailable && (
                     <div className="text-[11px] text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-lg mb-2">
                         ⚠️ Chưa cấu hình Gemini API Key
@@ -378,7 +378,7 @@ export const AIChatbot: React.FC = () => {
                         onKeyDown={handleKeyPress}
                         placeholder="Hỏi về dự án, hợp đồng, giải ngân..."
                         disabled={isLoading}
-                        className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-[#F5EFE6] dark:disabled:bg-slate-700 bg-[#FCF9F2] dark:bg-slate-700 dark:text-white placeholder-slate-400"
+                        className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-bg-subtle dark:disabled:bg-slate-700 bg-bg-surface dark:text-white placeholder-slate-400"
                     />
                     <button
                         onClick={() => handleSend()}
@@ -390,7 +390,7 @@ export const AIChatbot: React.FC = () => {
                     </button>
                 </div>
                 <div className="text-center mt-2">
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-400">
                         Powered by DeepSeek AI — Kết nối dữ liệu thực
                     </span>
                 </div>

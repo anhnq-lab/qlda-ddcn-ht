@@ -73,7 +73,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
+            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
                 {/* Modal Header */}
                 <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 sticky top-0 z-10">
                     <div>
@@ -222,7 +222,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                                 onChange={e => setFormData({ ...formData, ProgressPercent: parseInt(e.target.value) })}
                                 className="w-full h-2 bg-slate-200 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
                             />
-                            <div className="flex justify-between text-[9px] text-slate-300 dark:text-slate-500 mt-1 px-0.5">
+                            <div className="flex justify-between text-[9px] text-slate-300 dark:text-slate-400 mt-1 px-0.5">
                                 <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
                             </div>
                         </div>

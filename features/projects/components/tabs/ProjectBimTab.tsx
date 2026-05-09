@@ -448,7 +448,7 @@ const ProjectBimTabContent: React.FC = () => {
     return (
         <div
             ref={wrapperRef}
-            className={`w-full overflow-hidden ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-950' : 'bg-[#F5EFE6]'}`}
+            className={`w-full overflow-hidden ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-950' : 'bg-bg-subtle'}`}
             style={{
                 ...(isFullscreen ? { width: '100vw', height: '100vh', position: 'fixed' as const, top: 0, left: 0, zIndex: 9999 } : {}),
             }}
@@ -462,7 +462,7 @@ const ProjectBimTabContent: React.FC = () => {
                 <>
                 <Panel defaultSize={20} minSize={15} maxSize={40} className="flex flex-col overflow-hidden">
                 <div
-                    className={`flex flex-col h-full border-r ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-[#FCF9F2]'}`}
+                    className={`flex flex-col h-full border-r ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}
                 >
                     {/* Top: Model Tree */}
                     <div className="flex-1 overflow-hidden flex flex-col min-h-0">
@@ -750,7 +750,7 @@ const ProjectBimTabContent: React.FC = () => {
 
             {/* ─── BOTTOM PANEL: Operations Management ─── */}
                 <Panel defaultSize={25} minSize={15} maxSize={60} className={`flex flex-col overflow-hidden border-t z-20
-                        ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-[#FCF9F2] border-gray-200'}
+                        ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'}
                     `}
                 >
                     {/* Panel header */}
@@ -788,7 +788,7 @@ const ProjectBimTabContent: React.FC = () => {
             {(!engine.viewerReady || !hasModels) && (
                 <div className={`
                     absolute bottom-0 w-full h-7 border-t flex items-center px-4 z-10
-                    ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-[#FCF9F2] border-gray-200'}
+                    ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'}
                 `}>
                     <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                         Kéo thả file IFC hoặc bấm Upload để bắt đầu
@@ -887,7 +887,7 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className={`absolute inset-0 ${isDark ? 'bg-black/60' : 'bg-black/30'} backdrop-blur-sm`} />
                     <div
                         className={`relative w-96 max-h-[80vh] overflow-y-auto rounded-2xl shadow-sm p-4 animate-[fadeSlideIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
-                            ${isDark ? 'bg-slate-900 border border-slate-700/50' : 'bg-[#FCF9F2] border border-gray-200'}
+                            ${isDark ? 'bg-slate-900 border border-slate-700/50' : 'bg-bg-surface border border-gray-200'}
                         `}
                         onClick={(e) => e.stopPropagation()}
                     >

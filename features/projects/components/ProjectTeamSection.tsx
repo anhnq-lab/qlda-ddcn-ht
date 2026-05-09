@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Users, Mail, Phone, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Employee } from '@/types';
 
@@ -28,7 +28,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                 <div className="flex items-center gap-2">
                     <div className="section-icon"><Users className="w-3.5 h-3.5" /></div>
                     <span>Thành viên dự án</span>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">({members.length})</span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400">({members.length})</span>
                 </div>
             </div>
 

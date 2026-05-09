@@ -267,7 +267,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                 <p className="text-sm text-gray-500 dark:text-slate-400">
                                     Chưa có công việc nào trong bước này
                                 </p>
-                                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
+                                <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">
                                     Bấm &quot;Thêm công việc&quot; để bắt đầu
                                 </p>
                             </div>
@@ -310,7 +310,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                     <div className="flex items-center gap-2 flex-wrap">
                                                         <span className={`text-sm font-medium ${
                                                             task.Status === TaskStatus.Done
-                                                                ? 'text-gray-400 dark:text-slate-500 line-through'
+                                                                ? 'text-gray-400 dark:text-slate-400 line-through'
                                                                 : overdueFlag
                                                                     ? 'text-red-700 dark:text-red-400'
                                                                     : 'text-gray-800 dark:text-slate-200'
@@ -341,7 +341,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                         {/* Date */}
                                                         {task.DueDate && (
                                                             <span className={`inline-flex items-center gap-1 text-[10px] ${
-                                                                overdueFlag ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-400 dark:text-slate-500'
+                                                                overdueFlag ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-400 dark:text-slate-400'
                                                             }`}>
                                                                 <Calendar className="w-3 h-3" />
                                                                 {formatDateShort(task.StartDate)} → {formatDateShort(task.DueDate)}
@@ -382,7 +382,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
 
                 {/* Footer */}
                 <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 flex items-center justify-between">
-                    <span className="text-xs text-gray-400 dark:text-slate-500">
+                    <span className="text-xs text-gray-400 dark:text-slate-400">
                         Mã bước: {item.code.substring(0, 8)}...
                     </span>
                     <div className="flex items-center gap-2">

@@ -55,12 +55,12 @@ export const PROVINCES = [
     { code: '96', name: 'Cà Mau' },
 ];
 
-export const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
-export const inputWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
-export const selectClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
-export const selectWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-[#FCF9F2] dark:bg-slate-700 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
+export const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-surface dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
+export const inputWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-surface dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
+export const selectClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-surface dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
+export const selectWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-surface dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]";
 export const labelClass = "block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2";
-export const iconClass = "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500";
+export const iconClass = "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400";
 
 interface SectionHeaderProps {
     icon: React.ElementType;
@@ -164,7 +164,7 @@ export const FormattedInput: React.FC<FormattedInputProps> = ({ value, onChange,
                 onChange={handleChange}
                 onBlur={handleBlur}
             />
-            {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />}
+            {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />}
         </div>
     );
 };

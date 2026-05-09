@@ -16,7 +16,7 @@ interface WorkflowVisualizerProps {
 
 export const WorkflowVisualizer: React.FC<WorkflowVisualizerProps> = ({ nodes, onActionClick }) => {
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5 mt-4">
+        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-5 mt-4">
             <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 mb-6">Trạng thái Quy trình</h3>
             
             <div className="relative border-l-2 border-gray-100 dark:border-slate-700 ml-4 pb-4">
@@ -42,7 +42,7 @@ export const WorkflowVisualizer: React.FC<WorkflowVisualizerProps> = ({ nodes, o
                                     <h4 className={`text-sm font-bold ${
                                         isDone ? 'text-gray-900 dark:text-white' : 
                                         isActive ? 'text-primary-700 dark:text-primary-400' : 
-                                        'text-gray-500 dark:text-slate-500'
+                                        'text-gray-500 dark:text-slate-400'
                                     }`}>
                                         Bước {index + 1}: {node.step_name}
                                     </h4>

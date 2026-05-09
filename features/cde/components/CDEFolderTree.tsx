@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { FolderOpen, Clock, Share2, CheckCircle2, Archive, Loader2, ChevronDown, ChevronRight, FileStack, Compass, PenTool, HardHat, FlagTriangleRight } from 'lucide-react';
 import type { CDEFolder, CDEContainerType } from '../types';
 import { CONTAINER_COLORS, CDE_PROJECT_PHASES } from '../constants';
@@ -51,7 +51,7 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
                             className={`flex items-center gap-2.5 py-2 px-3 rounded-xl cursor-pointer transition-all text-sm ${isActive
                                 ? `${colors.lightBg} ${colors.text} font-bold shadow-sm ${colors.border} border`
                                 : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
-                            <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? colors.text : 'text-gray-400 dark:text-slate-500'}`} />
+                            <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? colors.text : 'text-gray-400 dark:text-slate-400'}`} />
                             <span className="truncate flex-1 text-[12px]">{folder.name}</span>
                             {folder.doc_count != null && folder.doc_count > 0 && (
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? colors.badge : 'bg-gray-100 dark:bg-slate-700 text-gray-500'}`}>
@@ -99,9 +99,9 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
     };
 
     return (
-        <div className="w-[280px] bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0">
+        <div className="w-[280px] bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0">
             {/* Phase tabs */}
-            <div className="px-3 py-2.5 border-b border-gray-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+            <div className="px-3 py-2.5 border-b border-gray-200 dark:border-slate-700 bg-bg-subtle">
                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
                     <FileStack className="w-3 h-3" /> Giai đoạn dự án
                 </p>
@@ -132,7 +132,7 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
                 )}
             </div>
             <div className="px-4 py-2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/80 dark:bg-slate-800">
-                <p className="text-[9px] text-gray-400 dark:text-slate-500 text-center font-bold uppercase tracking-wider">
+                <p className="text-[9px] text-gray-400 dark:text-slate-400 text-center font-bold uppercase tracking-wider">
                     NĐ 175/2024 · ISO 19650
                 </p>
             </div>

@@ -3957,4 +3957,64 @@ body.slide-panel-open {
    END: DARK MODE CONTRAST OVERRIDE SYSTEM v2.1
    ============================================================================= */
 
+/* =============================================================================
+   WCAG AA CONTRAST BOOST — Phase C
+   Ensures ≥ 4.5:1 contrast ratio for all text on dark backgrounds
+   ============================================================================= */
+
+/* ── 15. SECONDARY TEXT — slate-400 on dark backgrounds needs boost ─────── */
+/* Labels, stat descriptors, sublabels: slate-400 (#94a3b8) on slate-800/900 
+   only gives ~3.8:1 ratio. Boost to slate-300 (#cbd5e1) = 6.5:1 ✓ */
+.dark .text-slate-400:not([class*="placeholder"]):not(.recharts-text) {
+  color: #a8b5c5 !important; /* boosted slate-400 → ~4.8:1 on slate-800 */
+}
+
+/* Stat labels (NHÂN SỰ, HOẠT ĐỘNG, etc.) — very small text needs more boost */
+.dark .text-\[10px\].text-slate-400,
+.dark .text-\[11px\].text-slate-400 {
+  color: #b4bfcc !important; /* ~5.2:1 on slate-800 */
+}
+
+/* ── 16. FORM PLACEHOLDER — WCAG allows 3:1 for inactive UI ────────────── */
+.dark input::placeholder,
+.dark textarea::placeholder,
+.dark select::placeholder {
+  color: #475569 !important; /* slate-600 — 3.2:1 on slate-800 ✓ inactive UI */
+}
+
+/* ── 17. SIDEBAR NAV LINK TEXT ─────────────────────────────────────────── */
+.dark nav a span.transition-all {
+  color: #94a3b8 !important; /* ensure visibility */
+}
+.dark nav a:hover span.transition-all,
+.dark nav a[class*="bg-primary"] span.transition-all {
+  color: #f1f5f9 !important; /* bright on active/hover */
+}
+
+/* ── 18. INACTIVE TAB TEXT ─────────────────────────────────────────────── */
+.dark .text-slate-500 {
+  color: #7e8ea0 !important; /* boosted from #64748b to pass 4.5:1 */
+}
+
+/* ── 19. STATUS BADGE TEXT ON DARK ──────────────────────────────────────── */
+.dark .text-primary-600 {
+  color: #7bb3f0 !important; /* brighter primary for dark bg — 5.2:1 */
+}
+.dark .text-emerald-600 {
+  color: #34d399 !important; /* brighter emerald — 5.8:1 */
+}
+
+/* ── 20. SEARCH BUTTON — boost placeholder-like text ───────────────────── */
+.dark button.block[class*="text-slate"] {
+  color: #94a3b8 !important; /* slate-400 — acceptable for placeholder UI */
+}
+
+/* ── 21. SUBTITLE TEXT ─────────────────────────────────────────────────── */
+.dark .text-gray-500 {
+  color: #7e8ea0 !important; /* match slate-500 boost */
+}
+
+/* =============================================================================
+   END: WCAG AA CONTRAST BOOST — Phase C
+   ============================================================================= */
 

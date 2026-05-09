@@ -79,7 +79,7 @@ const CDEDropZone: React.FC<CDEDropZoneProps> = ({
                 onDragLeave={() => setIsDragging(false)}
                 onClick={() => !disabled && inputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-200 ${disabled
-                    ? 'border-gray-200 bg-[#F5EFE6] cursor-not-allowed opacity-60'
+                    ? 'border-gray-200 bg-bg-subtle cursor-not-allowed opacity-60'
                     : isDragging
                         ? 'border-blue-400 bg-blue-50/50 dark:border-blue-500 dark:bg-blue-900/20 scale-[1.01] shadow-sm shadow-primary-100 dark:shadow-primary-900/20'
                         : 'border-gray-200 dark:border-slate-600 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/10'
@@ -92,11 +92,11 @@ const CDEDropZone: React.FC<CDEDropZoneProps> = ({
                         </div>
                     </div>
                 )}
-                <Upload className={`w-8 h-8 mx-auto mb-2 transition-colors ${isDragging ? 'text-blue-500' : 'text-gray-300 dark:text-slate-500'}`} />
+                <Upload className={`w-8 h-8 mx-auto mb-2 transition-colors ${isDragging ? 'text-blue-500' : 'text-gray-300 dark:text-slate-400'}`} />
                 <p className="text-sm text-gray-600 dark:text-slate-300 font-medium">
                     Kéo thả file hoặc <span className="text-blue-600 dark:text-blue-400 font-bold">click để chọn</span>
                 </p>
-                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1">
+                <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-1">
                     PDF, DOCX, DWG, ZIP, hình ảnh — Tối đa {maxSizeMB}MB {multiple ? '(nhiều file)' : ''}
                 </p>
             </div>
@@ -128,7 +128,7 @@ const CDEDropZone: React.FC<CDEDropZoneProps> = ({
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-bold text-gray-800 dark:text-slate-100 truncate">{f.file.name}</p>
-                                <p className={`text-[10px] mt-0.5 ${f.status === 'error' ? 'text-red-500' : 'text-gray-400 dark:text-slate-500'}`}>
+                                <p className={`text-[10px] mt-0.5 ${f.status === 'error' ? 'text-red-500' : 'text-gray-400 dark:text-slate-400'}`}>
                                     {f.error || formatFileSize(f.file.size)}
                                 </p>
                             </div>

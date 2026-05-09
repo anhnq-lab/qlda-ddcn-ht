@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Upload, FileText, AlertCircle, Loader2 } from 'lucide-react';
 import type { CDEFolder } from '../types';
 import { CDE_DISCIPLINES, CDE_DOC_TYPES, formatFileSize } from '../constants';
@@ -45,9 +45,9 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-[#F5EFE6] dark:bg-slate-800">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-bg-subtle">
                     <div>
                         <h2 className="text-lg font-black text-gray-800 dark:text-slate-100">Nộp hồ sơ</h2>
                         <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
@@ -82,7 +82,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                                 onClick={() => fileRef.current?.click()}
                                 className="border-2 border-dashed border-gray-200 dark:border-slate-600 rounded-xl p-4 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/10 transition-all"
                             >
-                                <Upload className="w-10 h-10 text-gray-300 dark:text-slate-500 mx-auto mb-2" />
+                                <Upload className="w-10 h-10 text-gray-300 dark:text-slate-400 mx-auto mb-2" />
                                 <p className="text-sm text-gray-500 dark:text-slate-400 font-medium">Click để chọn file hoặc kéo thả vào đây</p>
                                 <p className="text-[10px] text-gray-400 mt-1">PDF, DOCX, DWG, ZIP, hình ảnh — Max 50MB</p>
                             </div>
@@ -98,7 +98,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                         <select
                             value={folderId}
                             onChange={(e) => setFolderId(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
+                            className="w-full px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
                         >
                             <option value="">— Chọn thư mục —</option>
                             {wipFolders.map(f => (
@@ -116,7 +116,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                             <select
                                 value={discipline}
                                 onChange={(e) => setDiscipline(e.target.value)}
-                                className="w-full px-3 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200"
+                                className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200"
                             >
                                 <option value="">— Chọn —</option>
                                 {CDE_DISCIPLINES.map(d => (
@@ -131,7 +131,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                             <select
                                 value={docType}
                                 onChange={(e) => setDocType(e.target.value)}
-                                className="w-full px-3 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200"
+                                className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200"
                             >
                                 <option value="">— Chọn —</option>
                                 {CDE_DOC_TYPES.map(d => (
@@ -151,7 +151,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                             onChange={(e) => setNotes(e.target.value)}
                             rows={3}
                             placeholder="Mô tả ngắn gọn về tài liệu, nội dung đính kèm..."
-                            className="w-full px-4 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-800 dark:text-slate-200 resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
+                            className="w-full px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-800 dark:text-slate-200 resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
                         />
                     </div>
 

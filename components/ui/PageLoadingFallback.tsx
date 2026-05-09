@@ -26,7 +26,7 @@ const PageLoadingFallback: React.FC = () => {
             </div>
 
             {/* Content Area */}
-            <div className="bg-[#FCF9F2] dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-bg-surface dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
                 {/* Toolbar */}
                 <div className="flex items-center gap-3 mb-6">
                     <Skeleton variant="rounded" width={200} height={38} />

@@ -196,17 +196,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                 <div className="relative max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm đơn vị..."
-                        className="w-full pl-9 pr-4 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                        className="w-full pl-9 pr-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                 </div>
             )}
 
             {/* Org List */}
             {filtered.length === 0 ? (
                 <EmptyState
-                    icon={<Building2 className="w-12 h-12 text-gray-400 dark:text-slate-500" />}
+                    icon={<Building2 className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
                     title="Chưa có đơn vị nào tham gia"
                     description={'Bấm "Thêm đơn vị" để mời nhà thầu, tư vấn tham gia dự án'}
-                    className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                    className="bg-bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
                 />
             ) : (
                 <div className="space-y-3">
@@ -216,7 +216,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                         const isExpanded = expandedOrg === org.id;
                         const orgPerm = perms.find(p => p.user_id === org.id);
                         return (
-                            <div key={org.id} className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                            <div key={org.id} className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                                 {/* Org Header */}
                                 <div className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors" onClick={() => setExpandedOrg(isExpanded ? null : org.id)}>
                                     <div className="flex items-center gap-3">
@@ -288,7 +288,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Org */}
             {showAddOrg && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddOrg(false)}>
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                             <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Thêm đơn vị vào dự án</h3>
                             <button onClick={() => setShowAddOrg(false)} className="text-gray-400 hover:text-red-500"><X className="w-5 h-5" /></button>
@@ -321,7 +321,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Staff */}
             {showAddStaff && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddStaff(null)}>
-                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                             <div>
                                 <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Tạo tài khoản nhân sự</h3>
@@ -333,18 +333,18 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                             <div>
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Họ tên <span className="text-red-500">*</span></label>
                                 <input value={staffForm.display_name} onChange={e => setStaffForm(f => ({ ...f, display_name: e.target.value }))} placeholder="Nguyễn Văn A"
-                                    className="w-full px-3.5 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                    className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Mail className="w-3 h-3" /> Email</label>
                                     <input value={staffForm.email} onChange={e => setStaffForm(f => ({ ...f, email: e.target.value }))} placeholder="abc@email.com"
-                                        className="w-full px-3.5 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Phone className="w-3 h-3" /> Điện thoại</label>
                                     <input value={staffForm.phone} onChange={e => setStaffForm(f => ({ ...f, phone: e.target.value }))} placeholder="0901234567"
-                                        className="w-full px-3.5 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                             </div>
                             <div className="border-t border-gray-100 dark:border-slate-700 pt-3.5">
@@ -353,12 +353,12 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Tên đăng nhập <span className="text-red-500">*</span></label>
                                         <input value={staffForm.username} onChange={e => setStaffForm(f => ({ ...f, username: e.target.value }))} placeholder="nguyenvana"
-                                            className="w-full px-3.5 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Mật khẩu <span className="text-red-500">*</span></label>
                                         <input type="password" value={staffForm.password} onChange={e => setStaffForm(f => ({ ...f, password: e.target.value }))} placeholder="••••••"
-                                            className="w-full px-3.5 py-2.5 bg-[#FCF9F2] dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                 </div>
                             </div>
@@ -367,7 +367,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                 <div className="flex gap-2 flex-wrap">
                                     {ROLES.map(r => (
                                         <button key={r.value} onClick={() => setStaffForm(f => ({ ...f, role: r.value }))}
-                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-[#F5EFE6] dark:bg-slate-700 text-gray-400 border-transparent'}`}>
+                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-bg-subtle dark:bg-slate-700 text-gray-400 border-transparent'}`}>
                                             <r.icon className="w-3 h-3" />{r.label}
                                         </button>
                                     ))}

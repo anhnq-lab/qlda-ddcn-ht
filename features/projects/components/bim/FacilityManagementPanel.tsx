@@ -211,7 +211,7 @@ export const FacilityManagementPanel: React.FC = () => {
     // ── Style helpers ────────────────────────
     const inputCls = `w-full px-3 py-2 text-xs rounded-lg border outline-none transition-colors ${isDarkMode
         ? 'bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500'
-        : 'bg-[#FCF9F2] border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
+        : 'bg-bg-surface border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
         }`;
 
     const selectCls = `${inputCls} appearance-none`;
@@ -317,7 +317,7 @@ export const FacilityManagementPanel: React.FC = () => {
                 <select
                     value={filterCategory}
                     onChange={e => setFilterCategory(e.target.value)}
-                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-[#FCF9F2] border-gray-200 text-gray-600'}`}
+                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}`}
                 >
                     <option value="">Tất cả loại</option>
                     {ASSET_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -325,7 +325,7 @@ export const FacilityManagementPanel: React.FC = () => {
                 <select
                     value={filterStatus}
                     onChange={e => setFilterStatus(e.target.value)}
-                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-[#FCF9F2] border-gray-200 text-gray-600'}`}
+                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}`}
                 >
                     <option value="">Tất cả TT</option>
                     {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
@@ -343,7 +343,7 @@ export const FacilityManagementPanel: React.FC = () => {
             {!loading && (
                 <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
                     <table className="w-full text-[11px]">
-                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-[#FCF9F2]'}`}>
+                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-bg-surface'}`}>
                             <tr className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Mã TS</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tên tài sản</th>
@@ -362,7 +362,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                 return (
                                     <tr
                                         key={asset.asset_id}
-                                        className={`transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-[#F5EFE6]'}`}
+                                        className={`transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}
                                     >
                                         <td className={`px-3 py-1.5 font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.asset_code || '—'}
@@ -504,7 +504,7 @@ export const FacilityManagementPanel: React.FC = () => {
             {/* Add/Edit Modal */}
             {showForm && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className={`w-full max-w-lg mx-4 rounded-2xl shadow-sm border overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-[#FCF9F2] border-gray-200'
+                    <div className={`w-full max-w-lg mx-4 rounded-2xl shadow-sm border overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-bg-surface border-gray-200'
                         }`}>
                         {/* Modal header */}
                         <div className={`flex items-center justify-between px-5 py-3.5 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>

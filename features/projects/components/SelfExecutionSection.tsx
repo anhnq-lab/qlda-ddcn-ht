@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Building2, FileText, AlertCircle, Users, Briefcase } from 'lucide-react';
 import { DocumentAttachments } from '../../../components/common/DocumentAttachments';
 
@@ -31,7 +31,7 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Self-execution info card */}
-            <div className="p-4 bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
+            <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-indigo-500" />
                     Đơn vị tự thực hiện
@@ -52,7 +52,7 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Workflow info */}
-            <div className="p-4 bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
+            <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-orange-500" />
                     Quy trình tự thực hiện (Điều 81 NĐ 24/2024)
@@ -76,7 +76,7 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Documents */}
-            <div className="p-4 bg-[#FCF9F2] dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
+            <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-green-500" />
                     Hồ sơ tự thực hiện

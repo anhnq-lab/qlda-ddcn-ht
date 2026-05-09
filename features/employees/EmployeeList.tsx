@@ -246,7 +246,7 @@ const EmployeeList: React.FC = () => {
             render: (_: any, emp: Employee) => (
                 <div className="min-w-0">
                     <p className="font-medium text-slate-700 dark:text-slate-300 text-sm truncate">{emp.Position}</p>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{emp.Department}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-400 truncate">{emp.Department}</p>
                 </div>
             )
         },
@@ -326,12 +326,12 @@ const EmployeeList: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-500">
 
             {/* ══════════ TAB NAVIGATION ══════════ */}
-            <div className="flex items-center gap-1 bg-[#FCF9F2] dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit">
+            <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit">
                 <button
                     onClick={() => setActiveTab('list')}
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === 'list'
                         ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                 >
                     <Users className="w-4 h-4" />
@@ -341,7 +341,7 @@ const EmployeeList: React.FC = () => {
                     onClick={() => setActiveTab('org-chart')}
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === 'org-chart'
                         ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                 >
                     <Briefcase className="w-4 h-4" />
@@ -361,7 +361,7 @@ const EmployeeList: React.FC = () => {
                 <>
 
                     {/* ══════════ COMPACT STATS STRIP ══════════ */}
-                    <div className="flex items-center gap-1 flex-wrap bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm px-2 py-1.5">
+                    <div className="flex items-center gap-1 flex-wrap bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm px-2 py-1.5">
                         {/* Total */}
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-blue-50/60 dark:hover:bg-blue-500/10 transition-colors">
                             <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10">
@@ -369,7 +369,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.total || 0}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nhân sự</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Nhân sự</span>
                             </div>
                         </div>
 
@@ -382,7 +382,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.active || 0}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Hoạt động</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Hoạt động</span>
                             </div>
                         </div>
 
@@ -395,7 +395,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.male || 0}<span className="text-slate-300 dark:text-slate-600 mx-0.5">/</span>{stats?.female || 0}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nam / Nữ</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Nam / Nữ</span>
                             </div>
                         </div>
 
@@ -408,7 +408,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{departments.length}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Phòng ban</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Phòng ban</span>
                             </div>
                         </div>
 
@@ -424,7 +424,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.byRole?.[Role.Admin] || 0}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">QT.Viên</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">QT.Viên</span>
                             </div>
                         </button>
 
@@ -440,7 +440,7 @@ const EmployeeList: React.FC = () => {
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.byRole?.[Role.Manager] || 0}</span>
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Quản lý</span>
+                                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Quản lý</span>
                             </div>
                         </button>
                     </div>
@@ -450,7 +450,7 @@ const EmployeeList: React.FC = () => {
                     <div className="flex-1 space-y-4">
 
                         {/* ══════════ TOOLBAR ══════════ */}
-                        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
                             <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                                 {/* Left: Search + Filters */}
                                 <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
@@ -529,7 +529,7 @@ const EmployeeList: React.FC = () => {
 
                         {/* ══════════ CONTENT ══════════ */}
                         {isLoading ? (
-                            <div className="flex items-center justify-center h-64 bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+                            <div className="flex items-center justify-center h-64 bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700">
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
                                     <p className="text-sm text-slate-400">Đang tải dữ liệu...</p>
@@ -540,10 +540,10 @@ const EmployeeList: React.FC = () => {
                                 {viewMode === 'list' ? (
                                     /* ══════════ TABLE VIEW — TaskList style ══════════ */
                                     <>
-                                    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
+                                    <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                                         <table className="w-full">
                                             <thead>
-                                                <tr className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+                                                <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
                                                     <th className="px-3 py-3 w-12 border-b border-slate-200 dark:border-slate-800 text-center">STT</th>
                                                     <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-800">Nhân viên</th>
                                                     <th className="px-4 py-3 text-left min-w-[160px] border-b border-slate-200 dark:border-slate-800">Chức vụ / Phòng ban</th>
@@ -584,7 +584,7 @@ const EmployeeList: React.FC = () => {
                                                             <td className="px-4 py-3.5">
                                                                 <div className="min-w-0">
                                                                     <p className="font-medium text-slate-700 dark:text-slate-300 text-sm truncate">{emp.Position}</p>
-                                                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{emp.Department}</p>
+                                                                    <p className="text-[11px] text-slate-400 dark:text-slate-400 truncate">{emp.Department}</p>
                                                                 </div>
                                                             </td>
                                                             {/* Liên hệ */}
@@ -640,7 +640,7 @@ const EmployeeList: React.FC = () => {
                                     </div>
 
                                     {/* Footer Counter */}
-                                    <div className="flex items-center justify-between px-4 py-3 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                                    <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                                         <span className="text-xs text-slate-500 dark:text-slate-400">
                                             Hiển thị <span className="font-bold text-slate-600 dark:text-slate-300">{filteredEmployees.length}</span> / {employees.length} nhân sự
                                         </span>
@@ -656,7 +656,7 @@ const EmployeeList: React.FC = () => {
                                                 <div
                                                     key={emp.EmployeeID}
                                                     onClick={() => openEmployeePanel(emp)}
-                                                    className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
+                                                    className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
                                                 >
                                                     {/* Header gradient */}
                                                     <div className="h-20 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-b-[3px] border-primary-500 relative">
@@ -700,13 +700,13 @@ const EmployeeList: React.FC = () => {
                                                         <div className="flex gap-2 mt-4">
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); }}
-                                                                className="flex-1 py-2.5 bg-[#F5EFE6] dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                                                className="flex-1 py-2.5 bg-bg-subtle dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
                                                             >
                                                                 <Mail className="w-3 h-3" /> Email
                                                             </button>
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); }}
-                                                                className="flex-1 py-2.5 bg-[#F5EFE6] dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                                                className="flex-1 py-2.5 bg-bg-subtle dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
                                                             >
                                                                 <Phone className="w-3 h-3" /> Gọi
                                                             </button>
@@ -721,10 +721,10 @@ const EmployeeList: React.FC = () => {
                                 {/* Empty State */}
                                 {filteredEmployees.length === 0 && (
                                     <EmptyState
-                                        icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-500" />}
+                                        icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-400" />}
                                         title="Không tìm thấy nhân sự nào."
                                         description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
-                                        className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                                        className="bg-bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
                                     />
                                 )}
                             </>
@@ -735,7 +735,7 @@ const EmployeeList: React.FC = () => {
                     {
                         isModalOpen && (
                             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                                <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
+                                <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
 
 
                                     {/* Header */}

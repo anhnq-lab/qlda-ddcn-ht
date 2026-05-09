@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTabSearchParam } from '@/hooks/useTabSearchParam';
@@ -257,7 +257,7 @@ const CapitalPlanningPage: React.FC = () => {
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                                     isActive
                                         ? 'text-white shadow-md'
-                                        : 'text-gray-500 dark:text-slate-400 hover:bg-[#F5EFE6] dark:hover:bg-slate-700'
+                                        : 'text-gray-500 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700'
                                 }`}
                                 style={isActive ? { background: tabColors[t.color] } : undefined}
                             >
@@ -353,7 +353,7 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
                             const linked = annualPlans.filter((a: any) => a.project_id === plan.project_id && a.year >= plan.period_start && a.year <= plan.period_end);
 
                             return (
-                                <div key={plan.plan_id} className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                                <div key={plan.plan_id} className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                     <div className="px-5 py-3 cursor-pointer hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors" onClick={() => setExpandedPlan(isExp ? null : plan.plan_id)}>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
@@ -381,7 +381,7 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
                                     </div>
 
                                     {isExp && (
-                                        <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                                        <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-subtle">
                                             <div className="grid grid-cols-4 gap-3 mb-4">
                                                 {[
                                                     { label: 'Tổng KH trung hạn', value: formatCurrency(Number(plan.amount)), cls: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700' },
@@ -395,12 +395,12 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
                                                     </div>
                                                 ))}
                                             </div>
-                                            {plan.notes && <div className="bg-[#FCF9F2] dark:bg-slate-700 p-2.5 rounded-lg mb-3 text-xs text-gray-600 dark:text-slate-300 italic border border-gray-100 dark:border-slate-600 flex items-start gap-1.5"><FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" /><span>{plan.notes}</span></div>}
+                                            {plan.notes && <div className="bg-bg-surface p-2.5 rounded-lg mb-3 text-xs text-gray-600 dark:text-slate-300 italic border border-gray-100 dark:border-slate-600 flex items-start gap-1.5"><FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" /><span>{plan.notes}</span></div>}
                                             {linked.length > 0 && (
                                                 <>
                                                     <h5 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Phân bổ theo năm ({linked.length} KH)</h5>
                                                     <table className="w-full text-xs mb-3">
-                                                        <thead className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
+                                                        <thead className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
                                                             <tr><th className="px-3 py-1.5 text-left">Năm</th><th className="px-3 py-1.5 text-left">QĐ</th><th className="px-3 py-1.5 text-right">Vốn giao</th><th className="px-3 py-1.5 text-right">Đã GN</th><th className="px-3 py-1.5 text-right">Tỷ lệ</th></tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -455,7 +455,7 @@ const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string;
             <div className="overflow-x-auto">
                 <table className="w-full text-xs" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800 text-[10px] font-bold uppercase tracking-wider">
+                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle text-[10px] font-bold uppercase tracking-wider">
                             <th className="px-4 py-3 text-left w-8">STT</th>
                             <th className="px-4 py-3 text-left">Dự án</th>
                             <th className="px-4 py-3 text-left">QĐ giao vốn</th>
@@ -538,7 +538,7 @@ const DisbPlanTab: React.FC<{disbPlans: any[]; annualPlans: any[]; yearFilter: n
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
                             <th className="px-3 py-2 text-left text-[10px] font-bold uppercase sticky left-0 z-10 min-w-[200px]" style={{ background: 'inherit' }}>Dự án</th>
                             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[80px]">KHV</th>
                             {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right text-[10px] font-bold uppercase min-w-[80px] ${i + 1 === currentMonth ? 'bg-primary-100/60 dark:bg-primary-900/20' : ''}`}>{m}</th>)}
@@ -557,7 +557,7 @@ const DisbPlanTab: React.FC<{disbPlans: any[]; annualPlans: any[]; yearFilter: n
 
                             return (
                                 <tr key={pid} className="hover:bg-primary-50/20 dark:hover:bg-primary-900/5 transition-colors">
-                                    <td className="px-3 py-2 sticky left-0 bg-[#FCF9F2] dark:bg-slate-800 z-10">
+                                    <td className="px-3 py-2 sticky left-0 bg-bg-surface z-10">
                                         <p className="font-bold text-gray-800 dark:text-slate-100 truncate">{pName}</p>
                                     </td>
                                     <td className="px-3 py-2 text-right font-mono font-bold text-blue-600 dark:text-blue-300">{khv > 0 ? fmtB(khv) : '—'}</td>
@@ -623,7 +623,7 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
                             <th className="px-3 py-2 text-left text-[10px] font-bold uppercase sticky left-0 z-10 min-w-[200px]" style={{ background: 'inherit' }}>Dự án</th>
                             <th className="px-3 py-2 text-center text-[10px] font-bold uppercase min-w-[50px]">Loại</th>
                             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[80px]">KHV</th>
@@ -735,9 +735,9 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
 
 // ─── Empty State ────────────────────────────────
 const EmptyState: React.FC<{icon: React.ElementType; text: string}> = ({ icon: Icon, text }) => (
-    <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-12 text-center">
+    <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 p-12 text-center">
         <Icon className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-slate-600" />
-        <p className="text-sm font-bold text-gray-400 dark:text-slate-500">{text}</p>
+        <p className="text-sm font-bold text-gray-400 dark:text-slate-400">{text}</p>
     </div>
 );
 

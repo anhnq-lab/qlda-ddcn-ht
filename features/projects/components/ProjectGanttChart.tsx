@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Task, TaskStatus } from '@/types';
 
 interface ProjectGanttChartProps {
@@ -7,7 +7,7 @@ interface ProjectGanttChartProps {
 
 export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) => {
     if (tasks.length === 0) return (
-        <div className="py-12 text-center text-gray-400 italic bg-[#F5EFE6] dark:bg-slate-800 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+        <div className="py-12 text-center text-gray-400 italic bg-bg-subtle rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
             Chưa có dữ liệu tiến độ để hiển thị biểu đồ.
         </div>
     );
@@ -92,7 +92,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
         <div className="overflow-x-auto pb-4 rounded-xl border border-gray-200 dark:border-slate-700">
             <div style={{ minWidth: `${280 + totalWidth}px` }}>
                 {/* Year Header */}
-                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800">
+                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
                     <div className="w-[280px] shrink-0" />
                     <div className="flex">
                         {yearGroups.map(yg => (
@@ -108,7 +108,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                 </div>
 
                 {/* Month Header */}
-                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-[#F5EFE6] dark:bg-slate-800 sticky top-0 z-10">
+                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-bg-subtle sticky top-0 z-10">
                     <div className="w-[280px] shrink-0 px-4 py-2 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                         Hạng mục công việc
                     </div>
@@ -118,7 +118,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                                 key={idx}
                                 style={{ width: `${COL_WIDTH}px` }}
                                 title={`Tháng ${m.month} năm ${m.year}`}
-                                className="text-center py-2 text-[9px] font-black text-gray-400 dark:text-slate-500 border-l border-gray-200 dark:border-slate-700 cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                                className="text-center py-2 text-[9px] font-black text-gray-400 dark:text-slate-400 border-l border-gray-200 dark:border-slate-700 cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
                             >
                                 {m.label}
                             </div>
@@ -127,7 +127,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                 </div>
 
                 {/* Body - ALL tasks */}
-                <div className="divide-y divide-gray-50 dark:divide-slate-800 bg-[#FCF9F2] dark:bg-slate-900">
+                <div className="divide-y divide-gray-50 dark:divide-slate-800 bg-bg-surface">
                     {sortedTasks.map((task, idx) => {
                         const dueDate = new Date(task.DueDate);
                         let startDate = task.StartDate ? new Date(task.StartDate) : null;

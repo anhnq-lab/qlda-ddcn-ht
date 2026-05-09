@@ -39,7 +39,7 @@ export const TablePagination: React.FC<LegacyTablePaginationProps> = ({
     const endItem = Math.min(currentPage * pageSize, totalItems);
 
     return (
-        <div className={`flex items-center justify-between px-4 py-3 bg-bg-surface dark:bg-slate-800 border-t border-border-DEFAULT dark:border-slate-700/60 ${className}`}>
+        <div className={`flex items-center justify-between px-4 py-3 bg-bg-surface border-t border-border-DEFAULT dark:border-slate-700/60 ${className}`}>
             <div className="text-sm text-txt-muted dark:text-slate-400">
                 Hiển thị <span className="font-medium">{startItem}</span> - <span className="font-medium">{endItem}</span> trong <span className="font-medium">{totalItems}</span> kết quả
             </div>
@@ -51,7 +51,7 @@ export const TablePagination: React.FC<LegacyTablePaginationProps> = ({
                         <select
                             value={pageSize}
                             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                            className="px-2 py-1 text-sm border border-border-DEFAULT dark:border-slate-600 rounded-lg bg-bg-surface dark:bg-slate-700 text-txt-primary dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="px-2 py-1 text-sm border border-border-DEFAULT dark:border-slate-600 rounded-lg bg-bg-surface text-txt-primary dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             {pageSizeOptions.map((size) => (
                                 <option key={size} value={size}>{size}</option>

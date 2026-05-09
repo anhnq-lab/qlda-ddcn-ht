@@ -42,12 +42,8 @@ const MainLayout: React.FC = () => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const { theme } = useTheme();
 
-    // Layout background class theo theme
-    const layoutBg = theme === 'dark'
-        ? 'bg-slate-950'
-        : theme === 'light'
-            ? 'bg-slate-50'
-            : 'bg-[#F0ECE1]'; // nature
+    // Layout background — sử dụng CSS variable (tự động theo theme)
+    const layoutBg = 'bg-bg-app';
 
 
     // Persist sidebar collapse state

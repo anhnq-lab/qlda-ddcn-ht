@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -83,10 +83,10 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
     ] as const;
 
     return (
-        <div className="flex flex-col h-full bg-[#FCF9F2] dark:bg-slate-900 relative">
+        <div className="flex flex-col h-full bg-bg-surface relative">
             
             {/* ═══ STICKY HEADER ═══ */}
-            <div className="sticky top-0 z-10 bg-[#FCF9F2] dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+            <div className="sticky top-0 z-10 bg-bg-surface border-b border-gray-200 dark:border-slate-800">
                 <div className="p-5 pb-4">
                     <div className="flex items-start gap-4">
                         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-400 to-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-primary-500/20">
@@ -127,7 +127,7 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
                                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
                                 }`}
                             >
-                                <Icon className={`w-4 h-4 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'}`} />
+                                <Icon className={`w-4 h-4 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-400'}`} />
                                 {tab.label}
                             </button>
                         );
@@ -192,8 +192,8 @@ const OverviewTab: React.FC<{ contractor: ContractorData, contractorId: string, 
             </div>
 
             {/* General Information */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm shadow-gray-200/50 dark:shadow-none">
-                <div className="px-4 py-3 bg-[#F5EFE6] dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm shadow-gray-200/50 dark:shadow-none">
+                <div className="px-4 py-3 bg-bg-subtle dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 uppercase tracking-wide">Thông tin tổ chức</h3>
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
@@ -206,8 +206,8 @@ const OverviewTab: React.FC<{ contractor: ContractorData, contractorId: string, 
             </div>
 
             {/* Legal Information */}
-            <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm shadow-gray-200/50 dark:shadow-none">
-                <div className="px-4 py-3 bg-[#F5EFE6] dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm shadow-gray-200/50 dark:shadow-none">
+                <div className="px-4 py-3 bg-bg-subtle dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 uppercase tracking-wide">Hồ sơ năng lực & pháp lý</h3>
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
@@ -269,7 +269,7 @@ const ContractsTab: React.FC<{ contractorId: string, projectId?: string }> = ({ 
             {contracts.map(ct => {
                 const st = CONTRACT_STATUS_MAP[ct.status] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-500' };
                 return (
-                    <div key={ct.contract_id} className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                    <div key={ct.contract_id} className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start gap-4">
                             <div>
                                 <h4 className="font-bold text-primary-700 dark:text-primary-400 text-sm leading-tight hover:underline cursor-pointer">{ct.contract_name}</h4>
@@ -364,7 +364,7 @@ const PackagesTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
                             )
                         });
                     }}
-                    className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 group"
+                    className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 group"
                 >
                     <div className="flex justify-between items-start gap-4">
                         <div>
@@ -429,7 +429,7 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
     }
 
     return (
-        <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
             <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
                 {documents.map(doc => (
                     <div key={doc.doc_id} className="p-3 hover:bg-gray-50/80 dark:hover:bg-slate-750 transition-colors flex items-center justify-between group cursor-pointer">
@@ -444,12 +444,12 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
                                         {doc.project_name}
                                     </span>
                                     {doc.doc_type && (
-                                        <span className="text-[10px] text-gray-400 dark:text-slate-500">
+                                        <span className="text-[10px] text-gray-400 dark:text-slate-400">
                                             • {doc.doc_type}
                                         </span>
                                     )}
                                     {doc.issue_date && (
-                                        <span className="text-[10px] text-gray-400 dark:text-slate-500">
+                                        <span className="text-[10px] text-gray-400 dark:text-slate-400">
                                             • N/h: {new Date(doc.issue_date).toLocaleDateString('vi-VN')}
                                         </span>
                                     )}
@@ -469,12 +469,12 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
 // ==========================================
 
 const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string }> = ({ icon: Icon, label, value }) => (
-    <div className="flex items-start gap-3 px-4 py-3 hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors">
+    <div className="flex items-start gap-3 px-4 py-3 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors">
         <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
             <Icon className="w-3.5 h-3.5 text-gray-500 dark:text-slate-400" />
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wide font-bold">{label}</p>
+            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-bold">{label}</p>
             <p className="text-sm text-gray-800 dark:text-slate-200 font-medium mt-0.5" style={{ wordBreak: 'break-word' }}>{value}</p>
         </div>
     </div>
@@ -483,19 +483,19 @@ const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string 
 const EmptyRow: React.FC<{ icon: React.ElementType; label: string }> = ({ icon: Icon, label }) => (
     <div className="flex items-center gap-3 px-4 py-3 bg-gray-50/30 dark:bg-slate-800">
         <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 opacity-50">
-            <Icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
+            <Icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wide font-bold">{label}</p>
-            <p className="text-xs text-gray-400 dark:text-slate-500 italic mt-0.5">Chưa cập nhật</p>
+            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-bold">{label}</p>
+            <p className="text-xs text-gray-400 dark:text-slate-400 italic mt-0.5">Chưa cập nhật</p>
         </div>
     </div>
 );
 
 const EmptyState = ({ icon: Icon, title, message }: { icon: React.ElementType, title: string, message: string }) => (
-    <div className="p-4 text-center flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl bg-[#F5EFE6] dark:bg-slate-800 h-64">
+    <div className="p-4 text-center flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl bg-bg-subtle h-64">
         <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-            <Icon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
+            <Icon className="w-8 h-8 text-gray-400 dark:text-slate-400" />
         </div>
         <h3 className="text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">{title}</h3>
         <p className="text-xs text-gray-500 dark:text-slate-400 max-w-xs">{message}</p>

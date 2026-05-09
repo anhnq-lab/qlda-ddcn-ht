@@ -242,7 +242,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     }
 
     return (
-        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-[#FCF9F2] dark:bg-slate-900 p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
+        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-bg-surface p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
             {/* Back Navigation Banner */}
             {!isEmbedded && fromPath && fromLabel && (
                 <div className="shrink-0 mb-2">
@@ -289,7 +289,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
                     setShowDeepSearch={setShowDeepSearch}
                 />
 
-                <div className="flex-1 bg-[#FCF9F2] dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+                <div className="flex-1 bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
                     {/* Content Area with optional TOC */}
                     {selectedDoc ? (
                         <LegalDetail
