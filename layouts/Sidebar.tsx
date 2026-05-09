@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
+import { LogoDDCN } from '../components/common/LogoDDCN';
 import {
   LayoutDashboard,
   Briefcase,
@@ -22,7 +23,9 @@ import {
   Layers,
   CalendarRange,
   GitBranch,
-  Network
+  Network,
+  CalendarDays,
+  ClipboardList,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
@@ -52,6 +55,8 @@ const navItems: NavItem[] = [
   { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
   { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
   { name: 'Công việc', path: '/tasks', icon: CheckSquare, badge: 5, resource: 'tasks' },
+  { name: 'KH khung năm', path: '/annual-plan', icon: ClipboardList, resource: 'tasks' },
+  { name: 'KH tháng / BC tháng', path: '/monthly-plan', icon: CalendarDays, resource: 'tasks' },
   { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
   { name: 'Nhà thầu', path: '/contractors', icon: Users, resource: 'contractors' },
   { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase, resource: 'bidding' },
@@ -110,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo - Expanded state */}
           <div className={`flex items-center overflow-hidden transition-all duration-300 gap-3 ${isCollapsed ? 'md:hidden' : 'w-auto'}`}>
             <div className="w-10 h-10 bg-[#FCF9F2] rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-[#ece7de]">
-               <img src="/logo-ddcn-final.png" alt="Logo" className="w-full h-full object-cover rounded-md" />
+               <LogoDDCN className="w-full h-full" />
             </div>
             <div className="animate-fade-in flex flex-col justify-center min-w-0">
                <h1 className="text-[12px] font-black text-slate-900 dark:text-slate-100 leading-tight truncate uppercase tracking-tight w-full">Ban QLDA Dân dụng & Hạ tầng</h1>
@@ -121,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo - Collapsed state */}
           <div className={`hidden transition-all duration-300 ${isCollapsed ? 'md:flex justify-center' : ''}`}>
              <div className="w-10 h-10 bg-[#FCF9F2] rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-[#ece7de]">
-               <img src="/logo-ddcn-final.png" alt="Logo" className="w-full h-full object-cover rounded-md" />
+               <LogoDDCN className="w-full h-full" />
              </div>
           </div>
         </div>

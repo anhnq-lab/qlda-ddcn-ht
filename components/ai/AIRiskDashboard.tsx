@@ -8,24 +8,24 @@ import { analyzeAllProjectsRisks, FullRiskReport, EnrichedRiskItem } from '../..
 
 const levelConfig = {
     critical: {
-        bg: 'bg-red-50 dark:bg-red-900/20',
+        bg: 'bg-red-50 dark:bg-red-950',
         border: 'border-red-200 dark:border-red-800',
         icon: 'text-red-600 dark:text-red-400',
-        badge: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300',
+        badge: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
         label: 'Nghiêm trọng',
     },
     warning: {
-        bg: 'bg-primary-50 dark:bg-primary-900/20',
-        border: 'border-primary-200 dark:border-primary-800',
+        bg: 'bg-primary-50 dark:bg-blue-950',
+        border: 'border-primary-200 dark:border-blue-800',
         icon: 'text-primary-600 dark:text-primary-400',
-        badge: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
+        badge: 'bg-primary-100 dark:bg-blue-900 text-primary-700 dark:text-blue-300',
         label: 'Cảnh báo',
     },
     info: {
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
+        bg: 'bg-blue-50 dark:bg-blue-950',
         border: 'border-blue-200 dark:border-blue-800',
         icon: 'text-blue-600 dark:text-blue-400',
-        badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300',
+        badge: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
         label: 'Thông tin',
     },
 };
@@ -67,7 +67,7 @@ export const AIRiskDashboard: React.FC = () => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden">
             {/* Header */}
-            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/40 dark:to-slate-900/20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-red-500 flex items-center justify-center">
                         <Sparkles size={14} className="text-white" />

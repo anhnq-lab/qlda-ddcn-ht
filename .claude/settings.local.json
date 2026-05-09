@@ -43,7 +43,10 @@
       "Bash(findstr \"qlda\")",
       "mcp__06943db5-fde1-4f16-900c-8e37176eebb6__execute_sql",
       "Bash(Get-ChildItem -Path \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\" -Directory -Depth 2)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(python -c ' *)",
+      "Bash(python -u -c ' *)",
+      "Bash(python -c \"import sys; data=sys.stdin.read\\(\\); open\\('D:/01_Projects/qlda-ddcn-ht/ks/b1.txt','w',encoding='utf-8'\\).write\\(data\\)\")"
     ]
   }
 }

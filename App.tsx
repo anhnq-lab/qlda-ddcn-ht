@@ -46,6 +46,8 @@ const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'
 const AdminUserManagement = React.lazy(() => import('./features/admin/AdminUserManagement'));
 
 const WorkflowManagerPage = React.lazy(() => import('./features/workflows/WorkflowManagerPage'));
+const AnnualPlanPage = React.lazy(() => import('./features/annual-plan/AnnualPlanPage'));
+const MonthlyPlanPage = React.lazy(() => import('./features/monthly-plan/MonthlyPlanPage'));
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -120,6 +122,18 @@ const App: React.FC = () => {
                                         <Route path="tasks/:id" element={
                                             <ProtectedRoute resource="tasks">
                                                 <React.Suspense fallback={<PageLoadingFallback />}><TaskDetail /></React.Suspense>
+                                            </ProtectedRoute>
+                                        } />
+
+                                        {/* Plan Routes — KH khung năm + KH tháng/BC tháng */}
+                                        <Route path="annual-plan" element={
+                                            <ProtectedRoute resource="tasks">
+                                                <React.Suspense fallback={<PageLoadingFallback />}><AnnualPlanPage /></React.Suspense>
+                                            </ProtectedRoute>
+                                        } />
+                                        <Route path="monthly-plan" element={
+                                            <ProtectedRoute resource="tasks">
+                                                <React.Suspense fallback={<PageLoadingFallback />}><MonthlyPlanPage /></React.Suspense>
                                             </ProtectedRoute>
                                         } />
 

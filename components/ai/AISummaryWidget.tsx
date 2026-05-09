@@ -36,7 +36,7 @@ export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, cla
     if (!isAIAvailable()) return null;
 
     return (
-        <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30 p-4 ${className}`}>
+        <div className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900 p-4 ${className}`}>
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-blue-500" />

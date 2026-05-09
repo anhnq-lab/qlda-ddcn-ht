@@ -379,7 +379,7 @@ export const OverviewTab: React.FC = () => {
                             Bản đồ vị trí dự án
                         </h3>
                     </div>
-                    <div className="flex-1 w-full bg-gray-100 dark:bg-slate-700 rounded-2xl relative border border-gray-200 dark:border-slate-600 overflow-hidden z-0">
+                    <div className="flex-1 w-full bg-gray-100 dark:bg-slate-300 rounded-2xl relative border border-gray-200 dark:border-slate-400 overflow-hidden z-0">
                         {loadingProjects ? (
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
@@ -394,7 +394,7 @@ export const OverviewTab: React.FC = () => {
                             </Suspense>
                         )}
                         {/* Legend */}
-                        <div className="absolute top-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm z-[1000]">
+                        <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000]">
                             <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Chú thích</h4>
                             <div className="space-y-2">
                                 {Object.entries(PROJECT_PHASE_COLORS).map(([key, phase]) => (

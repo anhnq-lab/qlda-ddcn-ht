@@ -20,7 +20,7 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
 
     return (
         <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
                         <BarChart3 size={14} className="text-white" />
@@ -57,17 +57,17 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
                 {/* Summary KPIs */}
                 {result && (
                     <div className="grid grid-cols-3 gap-2">
-                        <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-2 text-center">
+                        <div className="bg-cyan-50 dark:bg-cyan-950 rounded-lg p-2 text-center">
                             <p className="text-lg font-black text-cyan-700 dark:text-cyan-300">{result.totalActiveProjects}</p>
-                            <p className="text-[9px] text-cyan-500">DA hoạt động</p>
+                            <p className="text-[9px] text-cyan-500 dark:text-cyan-400">DA hoạt động</p>
                         </div>
-                        <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
+                        <div className="bg-red-50 dark:bg-red-950 rounded-lg p-2 text-center">
                             <p className="text-lg font-black text-red-700 dark:text-red-300">{result.overloadedProjects.length}</p>
-                            <p className="text-[9px] text-red-500">Quá tải</p>
+                            <p className="text-[9px] text-red-500 dark:text-red-400">Quá tải</p>
                         </div>
-                        <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-2 text-center">
-                            <p className="text-lg font-black text-primary-700 dark:text-primary-300">{result.underutilizedProjects.length}</p>
-                            <p className="text-[9px] text-primary-500">Chưa khai thác</p>
+                        <div className="bg-primary-50 dark:bg-blue-950 rounded-lg p-2 text-center">
+                            <p className="text-lg font-black text-primary-700 dark:text-blue-300">{result.underutilizedProjects.length}</p>
+                            <p className="text-[9px] text-primary-500 dark:text-blue-400">Chưa khai thác</p>
                         </div>
                     </div>
                 )}

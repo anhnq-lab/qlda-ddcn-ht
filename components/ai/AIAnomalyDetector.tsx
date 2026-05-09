@@ -3,9 +3,9 @@ import { ScanSearch, RefreshCw, AlertTriangle, AlertCircle, Info, ChevronRight }
 import { scanAllAnomalies, AnomalyReport, Anomaly } from '../../services/ai/anomalyDetector';
 
 const levelConfig = {
-    critical: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', icon: AlertTriangle, iconClass: 'text-red-600', badge: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300', label: 'Nghiêm trọng' },
-    warning: { bg: 'bg-primary-50 dark:bg-primary-900/20', border: 'border-primary-200 dark:border-primary-800', icon: AlertCircle, iconClass: 'text-primary-600', badge: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300', label: 'Cảnh báo' },
-    info: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', icon: Info, iconClass: 'text-blue-600', badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300', label: 'Lưu ý' },
+    critical: { bg: 'bg-red-50 dark:bg-red-950', border: 'border-red-200 dark:border-red-800', icon: AlertTriangle, iconClass: 'text-red-600 dark:text-red-400', badge: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300', label: 'Nghiêm trọng' },
+    warning: { bg: 'bg-primary-50 dark:bg-blue-950', border: 'border-primary-200 dark:border-blue-800', icon: AlertCircle, iconClass: 'text-primary-600 dark:text-blue-400', badge: 'bg-primary-100 dark:bg-blue-900 text-primary-700 dark:text-blue-300', label: 'Cảnh báo' },
+    info: { bg: 'bg-blue-50 dark:bg-blue-950', border: 'border-blue-200 dark:border-blue-800', icon: Info, iconClass: 'text-blue-600 dark:text-blue-400', badge: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300', label: 'Lưu ý' },
 };
 
 export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className = '' }) => {
@@ -27,7 +27,7 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
 
     return (
         <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center">
                         <ScanSearch size={14} className="text-white" />
@@ -64,17 +64,17 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
                 {/* Summary */}
                 {report && (
                     <div className="grid grid-cols-3 gap-2 mb-1">
-                        <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-2 text-center">
+                        <div className="bg-red-50 dark:bg-red-950 rounded-lg p-2 text-center">
                             <p className="text-lg font-black text-red-700 dark:text-red-300">{report.criticalCount}</p>
-                            <p className="text-[9px] text-red-500">Nghiêm trọng</p>
+                            <p className="text-[9px] text-red-500 dark:text-red-400">Nghiêm trọng</p>
                         </div>
-                        <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-2 text-center">
-                            <p className="text-lg font-black text-primary-700 dark:text-primary-300">{report.warningCount}</p>
-                            <p className="text-[9px] text-primary-500">Cảnh báo</p>
+                        <div className="bg-primary-50 dark:bg-blue-950 rounded-lg p-2 text-center">
+                            <p className="text-lg font-black text-primary-700 dark:text-blue-300">{report.warningCount}</p>
+                            <p className="text-[9px] text-primary-500 dark:text-blue-400">Cảnh báo</p>
                         </div>
-                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 text-center">
+                        <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-2 text-center">
                             <p className="text-lg font-black text-blue-700 dark:text-blue-300">{report.infoCount}</p>
-                            <p className="text-[9px] text-blue-500">Lưu ý</p>
+                            <p className="text-[9px] text-blue-500 dark:text-blue-400">Lưu ý</p>
                         </div>
                     </div>
                 )}

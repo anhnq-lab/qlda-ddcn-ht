@@ -20,14 +20,14 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
     }, []);
 
     const riskColors = {
-        low: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
-        medium: 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400',
-        high: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+        low: 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400',
+        medium: 'bg-primary-100 dark:bg-blue-950 text-primary-700 dark:text-blue-400',
+        high: 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400',
     };
 
     return (
         <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-orange-500 flex items-center justify-center">
                         <Award size={14} className="text-white" />
@@ -42,7 +42,7 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
                 <button
                     onClick={loadRanking}
                     disabled={loading}
-                    className="text-[11px] px-2.5 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 transition-colors flex items-center gap-1"
+                    className="text-[11px] px-2.5 py-1.5 bg-primary-50 dark:bg-blue-900 text-primary-600 dark:text-blue-300 rounded-lg hover:bg-primary-100 dark:hover:bg-blue-800 transition-colors flex items-center gap-1"
                 >
                     {loading ? <RefreshCw size={12} className="animate-spin" /> : <TrendingUp size={12} />}
                     {loading ? 'Đang phân tích...' : ranking ? 'Cập nhật' : 'Phân tích'}

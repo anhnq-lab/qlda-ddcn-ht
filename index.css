@@ -883,6 +883,20 @@
   background-color: rgb(112 26 117 / 0.15);
 }
 
+/* primary-50 fallback for dark mode (không có trong Tailwind standard) */
+.dark .bg-primary-50 {
+  background-color: rgb(30 58 138 / 0.15);
+}
+
+.dark .bg-primary-100 {
+  background-color: rgb(30 58 138 / 0.25);
+}
+
+/* bg-white/90 — not caught by .dark .bg-white since the class name differs */
+.dark .bg-white\/90 {
+  background-color: rgb(21 29 46); /* slate-800 dark */
+}
+
 /* ── Gradient light backgrounds ── */
 .dark [class*="from-blue-50"] {
   --tw-gradient-from: rgb(30 58 138 / 0.15);
@@ -1014,9 +1028,12 @@
   color: rgb(52 211 153);
 }
 
-.dark .text-primary-700,
 .dark .text-amber-800 {
   color: rgb(251 191 36);
+}
+
+.dark .text-primary-700 {
+  color: rgb(143 190 238); /* primary-300 light */
 }
 
 .dark .text-red-700,
@@ -1073,6 +1090,14 @@
 
 .dark .ring-black\/5 {
   --tw-ring-color: rgb(148 163 184 / 0.1);
+}
+
+/* Ensure map container always shows a light bg so tiles are readable */
+.custom-map-container {
+  background-color: #e5e7eb;
+}
+.dark .custom-map-container {
+  background-color: #cbd5e1; /* slate-300 — light enough for tiles to pop */
 }
 
 /* ========================================

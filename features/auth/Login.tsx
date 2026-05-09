@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Lock, User, Eye, EyeOff, LayoutDashboard, BrainCircuit, ShieldCheck, Smartphone, Sun, Moon } from 'lucide-react';
+import { LogoDDCN } from '../../components/common/LogoDDCN';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('Admin');
@@ -48,12 +49,12 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex w-full bg-[#FAFAF8] dark:bg-[#060A14] text-slate-800 dark:text-slate-100 font-sans selection:bg-orange-500/30 transition-colors duration-300 relative">
+        <div className="min-h-screen flex w-full bg-[#FAFAF8] dark:bg-[#060A14] text-slate-800 dark:text-slate-100 font-sans selection:bg-primary-500/30 transition-colors duration-300 relative">
             {/* Theme Toggle Button */}
             <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-amber-500 hover:bg-[#FCF9F2] dark:bg-slate-900 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
+                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-[#FCF9F2] dark:bg-slate-900 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
                 title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'}
             >
                 {theme === 'dark' ? <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
@@ -63,17 +64,17 @@ const Login: React.FC = () => {
             <div className="hidden lg:flex w-1/2 flex-col justify-between relative overflow-hidden bg-[#F2EDE4] dark:bg-[#0A101D] border-r border-[#E8E1D5] dark:border-white/5 p-12 xl:p-20 transition-colors duration-300">
                 {/* Background ambient accents - CIC style */}
                 <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-slate-400/5 dark:bg-white/[0.02] blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-500/5 dark:bg-orange-500/[0.03] blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/5 dark:bg-primary-500/[0.03] blur-[100px] pointer-events-none" />
                 
                 {/* Diagonal lines pattern / Grid pattern */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 100% 100%, #ffffff 1px, transparent 1px)', backgroundSize: '48px 48px' }}></div>
 
                 {/* Top Branding */}
                 <div className="relative z-10 flex items-center gap-4">
-                    <img src="/logo-ddcn-transparent.png?v=2" alt="Logo" className="w-[64px] h-[64px] object-contain drop-shadow-md" />
+                    <LogoDDCN className="w-[64px] h-[64px] drop-shadow-md" />
                     <div>
                         <div className="font-black tracking-widest text-[18px] uppercase text-slate-900 dark:text-white leading-tight">
-                            Smart<span className="text-orange-600 dark:text-orange-500">PM</span>
+                            Smart<span className="text-primary-600 dark:text-primary-500">PM</span>
                         </div>
                         <div className="text-[12px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase mt-1">
                             Project Management Info System
@@ -85,7 +86,7 @@ const Login: React.FC = () => {
                 <div className="relative z-10 mt-12 mb-8 xl:mt-0 xl:mb-0">
                     <h1 className="text-4xl xl:text-5xl font-black leading-[1.15] tracking-tight">
                         Quản trị <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500 dark:from-orange-500 dark:to-orange-400">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400 dark:from-primary-500 dark:to-primary-300">
                             thông minh.
                         </span>
                     </h1>
@@ -97,7 +98,7 @@ const Login: React.FC = () => {
                     <div className="mt-12 space-y-3 w-full xl:pr-12">
                         {/* Feature 1 */}
                         <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/[0.06] transition-all duration-300">
-                            <div className="text-orange-600 dark:text-orange-500 flex-shrink-0 opacity-90">
+                            <div className="text-primary-600 dark:text-primary-500 flex-shrink-0 opacity-90">
                                 <LayoutDashboard className="w-[22px] h-[22px]" />
                             </div>
                             <div>
@@ -108,7 +109,7 @@ const Login: React.FC = () => {
 
                         {/* Feature 2 */}
                         <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/[0.06] transition-all duration-300">
-                            <div className="text-orange-600 dark:text-orange-500 flex-shrink-0 opacity-90">
+                            <div className="text-primary-600 dark:text-primary-500 flex-shrink-0 opacity-90">
                                 <BrainCircuit className="w-[22px] h-[22px]" />
                             </div>
                             <div>
@@ -119,7 +120,7 @@ const Login: React.FC = () => {
 
                         {/* Feature 3 */}
                         <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/[0.06] transition-all duration-300">
-                            <div className="text-orange-600 dark:text-orange-500 flex-shrink-0 opacity-90">
+                            <div className="text-primary-600 dark:text-primary-500 flex-shrink-0 opacity-90">
                                 <Smartphone className="w-[22px] h-[22px]" />
                             </div>
                             <div>
@@ -130,7 +131,7 @@ const Login: React.FC = () => {
 
                         {/* Feature 4 */}
                         <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/[0.06] transition-all duration-300">
-                            <div className="text-orange-600 dark:text-orange-500 flex-shrink-0 opacity-90">
+                            <div className="text-primary-600 dark:text-primary-500 flex-shrink-0 opacity-90">
                                 <ShieldCheck className="w-[22px] h-[22px]" />
                             </div>
                             <div>
@@ -153,37 +154,33 @@ const Login: React.FC = () => {
 
             {/* ─── RIGHT COLUMN: LOGIN FORM ─── */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-[#FCF9F2] dark:bg-[#060A14] transition-colors duration-300">
-                <div className="w-full max-w-[420px]">
+                <div className="w-full max-w-[420px] lg:-mt-16">
                     
                     {/* Logo & Headers */}
-                    <div className="flex flex-col items-center text-center mb-12 w-full">
-                        <img 
-                            src="/logo-ddcn-transparent.png" 
-                            alt="Ban QLDA Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh"
-                            className="w-[210px] h-auto object-contain drop-shadow-2xl dark:drop-shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-10 transition-transform hover:scale-105 duration-500" 
-                        />
-                        <h2 className="text-[13px] sm:text-[14px] font-bold tracking-[0.15em] uppercase text-slate-600 dark:text-slate-400 mb-2 flex justify-center w-full">
+                    <div className="flex flex-col items-center text-center mb-5 w-full">
+                        <LogoDDCN className="w-[210px] h-auto drop-shadow-2xl dark:drop-shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-2 transition-transform hover:scale-105 duration-500" />
+                        <h2 className="text-[13px] sm:text-[14px] font-bold tracking-[0.15em] uppercase text-slate-600 dark:text-slate-400 mb-0.5 flex justify-center w-full">
                             Ban Quản Lý Dự Án ĐTXD Công Trình
                         </h2>
                         <h3 className="text-[20px] sm:text-[22px] font-black tracking-wider uppercase leading-snug flex justify-center w-full">
-                            <span className="text-orange-600 dark:text-orange-500">DÂN DỤNG</span>
-                            <span className="text-red-600 dark:text-red-500 mx-2">VÀ</span>
-                            <span className="text-blue-600 dark:text-blue-400">HẠ TẦNG KHU VỰC</span>
+                            <span className="text-primary-600 dark:text-primary-500">DÂN DỤNG</span>
+                            <span className="text-primary-700 dark:text-primary-600 mx-2">VÀ</span>
+                            <span className="text-primary-800 dark:text-primary-700">HẠ TẦNG KHU VỰC</span>
                         </h3>
-                        <p className="mt-3 text-[11px] font-bold text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase flex justify-center w-full">
+                        <p className="mt-0.5 text-[11px] font-bold text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase flex justify-center w-full">
                             UBND Tỉnh Hà Tĩnh
                         </p>
                     </div>
 
                     {/* Divider */}
-                    <div className="flex items-center gap-4 mb-10">
+                    <div className="flex items-center gap-4 mb-4">
                         <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200 dark:to-white/5"></div>
                         <span className="text-xs font-bold text-slate-400 dark:text-slate-500 tracking-widest uppercase">Đăng nhập ngay</span>
                         <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200 dark:to-slate-800"></div>
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-3">
                         {error && (
                             <div className="p-3 bg-red-50/50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-medium rounded-xl border border-red-100 dark:border-red-500/20 flex items-center justify-center text-center animate-in fade-in">
                                 {error}
@@ -192,7 +189,7 @@ const Login: React.FC = () => {
 
                         {/* Username Input */}
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-orange-500 transition-colors">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
                                 <User className="w-4 h-4" />
                             </div>
                             <input
@@ -200,14 +197,14 @@ const Login: React.FC = () => {
                                 placeholder="Tài khoản hoặc Email"
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                className="w-full pl-11 pr-4 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
                                 autoFocus
                             />
                         </div>
 
                         {/* Password Input */}
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-orange-500 transition-colors">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
                                 <Lock className="w-4 h-4" />
                             </div>
                             <input
@@ -215,7 +212,7 @@ const Login: React.FC = () => {
                                 placeholder="Mật khẩu"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-11 pr-12 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                className="w-full pl-11 pr-12 py-3 bg-[#FCF9F2] dark:bg-slate-900 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
                             />
                             <button
                                 type="button"
@@ -228,11 +225,11 @@ const Login: React.FC = () => {
 
                         <div className="flex justify-between items-center pt-1 pb-2 px-1">
                             <label className="flex items-center gap-2 cursor-pointer group">
-                                <input type="checkbox" className="w-4 h-4 rounded border-[#D6CEBF] dark:border-slate-700 text-orange-600 focus:ring-orange-500 dark:bg-slate-800" />
+                                <input type="checkbox" className="w-4 h-4 rounded border-[#D6CEBF] dark:border-slate-700 text-primary-600 focus:ring-primary-500 dark:bg-slate-800" />
                                 <span className="text-xs text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">Ghi nhớ đăng nhập</span>
                             </label>
                             
-                            <a href="#" className="text-xs font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 transition-colors">
+                            <a href="#" className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 transition-colors">
                                 Quên mật khẩu?
                             </a>
                         </div>
@@ -241,7 +238,7 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="relative w-full flex items-center justify-center gap-2 py-3 px-4 bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700 text-white font-bold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-sm border border-transparent"
+                            className="relative w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white font-bold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-sm border border-transparent"
                         >
                             {isLoading ? (
                                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
