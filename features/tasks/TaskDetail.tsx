@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, TaskAttachment } from '../../types';
 import { useTask, useUpdateTask, useTasks } from '../../hooks/useTasks';
@@ -8,12 +8,13 @@ import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUti
 import { getTaskTemplates, getFileTypeColor, TaskTemplate } from '../../utils/taskTemplates';
 import { getTemplateConfig } from '../../utils/templateRegistry';
 import { TemplateExportModal } from '../projects/components/TemplateExportModal';
-import { supabase } from '../../lib/supabase';
+import { supabase as _supabase } from '../../lib/supabase';
+const supabase = _supabase as any;
 import {
     ArrowLeft, Calendar, FileText, CheckCircle2, Scale, Building2, User, Clock,
     ShieldCheck, DollarSign, Paperclip, Plus, Trash2, ChevronRight, ExternalLink,
     Play, Eye, BarChart3, Link2, AlertTriangle, Edit3, Target, Zap, Layers,
-    Upload, Download, FileSpreadsheet, File
+    Upload, Download, FileSpreadsheet, File, CalendarDays
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════
@@ -75,6 +76,19 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const [isUploading, setIsUploading] = useState(false);
     const [activeExportTemplate, setActiveExportTemplate] = useState<TaskTemplate | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // KH tháng liên kết
+    const [monthlyPlanItem, setMonthlyPlanItem] = useState<any>(null);
+
+    useEffect(() => {
+        if (!task?.MonthlyPlanItemID) { setMonthlyPlanItem(null); return; }
+        supabase
+            .from('monthly_plan_items')
+            .select('id, task_name, status, deadline_note, result_note, monthly_plan:monthly_plans(plan_month, plan_year, department_code)')
+            .eq('id', task.MonthlyPlanItemID)
+            .maybeSingle()
+            .then(({ data }: any) => setMonthlyPlanItem(data));
+    }, [task?.MonthlyPlanItemID]);
 
     const project = projects.find(p => p.ProjectID === task?.ProjectID);
     const assignee = employees.find(e => e.EmployeeID === task?.AssigneeID);
@@ -422,6 +436,62 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 </div>
                             </div>
                         </div>
+
+                        {/* Monthly Plan Item Link */}
+                        {monthlyPlanItem && (
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm overflow-hidden">
+                                <div className="h-0.5 bg-gradient-to-r from-indigo-400 to-violet-500" />
+                                <div className="p-4">
+                                    <h3 className="text-xs font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <CalendarDays className="w-3.5 h-3.5" />
+                                        Kế hoạch tháng liên kết
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {/* Plan period */}
+                                        {monthlyPlanItem.monthly_plan && (
+                                            <div className="flex items-center gap-2 text-xs">
+                                                <Calendar className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
+                                                    Tháng {monthlyPlanItem.monthly_plan.plan_month}/{monthlyPlanItem.monthly_plan.plan_year}
+                                                </span>
+                                                <span className="text-slate-400">— {monthlyPlanItem.monthly_plan.department_code}</span>
+                                            </div>
+                                        )}
+                                        {/* Task name */}
+                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">
+                                            {monthlyPlanItem.task_name}
+                                        </p>
+                                        {/* Status + deadline note */}
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            {(() => {
+                                                const statusMap: Record<string, { label: string; cls: string }> = {
+                                                    planned:    { label: 'Kế hoạch', cls: 'bg-slate-100 text-slate-500' },
+                                                    completed:  { label: 'Hoàn thành', cls: 'bg-emerald-50 text-emerald-600' },
+                                                    incomplete: { label: 'Chưa xong', cls: 'bg-red-50 text-red-500' },
+                                                    partial:    { label: 'Hoàn thành 1 phần', cls: 'bg-amber-50 text-amber-600' },
+                                                    deferred:   { label: 'Chuyển sang tháng sau', cls: 'bg-blue-50 text-blue-500' },
+                                                };
+                                                const s = statusMap[monthlyPlanItem.status] ?? { label: monthlyPlanItem.status, cls: 'bg-slate-100 text-slate-500' };
+                                                return (
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.cls}`}>
+                                                        {s.label}
+                                                    </span>
+                                                );
+                                            })()}
+                                            {monthlyPlanItem.deadline_note && (
+                                                <span className="text-xs text-slate-500 dark:text-slate-400">{monthlyPlanItem.deadline_note}</span>
+                                            )}
+                                        </div>
+                                        {/* Result note */}
+                                        {monthlyPlanItem.result_note && (
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 italic border-t border-slate-100 dark:border-slate-700 pt-2 mt-1">
+                                                {monthlyPlanItem.result_note}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Subtasks */}
                         <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">

@@ -27,6 +27,9 @@ export interface Task {
     // Project link (null for internal)
     ProjectID: string;
     
+    // Monthly plan item link (công việc con của KH tháng)
+    MonthlyPlanItemID?: string;
+    
     // Workflow reference (null if created manually)
     WorkflowID?: string;
     WorkflowNodeID?: string;

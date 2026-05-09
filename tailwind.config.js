@@ -100,12 +100,37 @@ export default {
                     700: '#1d4ed8',
                 },
 
-                // ─── SURFACE & TEXT TOKENS ────────────────────────────────────
+                // ─── SURFACE & TEXT TOKENS (CSS Variables — theme-aware) ────────
+                // Dùng bg-surface, bg-subtle, bg-muted thay hardcoded #FCF9F2
                 surface: {
+                    // Legacy fixed tokens (giữ backward compat)
                     primary:   '#F0ECE1',
                     secondary: '#E6E0D4',
                     tertiary:  '#DBD4C4',
                     elevated:  '#FCF9F2',
+                },
+
+                // Theme-aware background tokens — thay đổi theo theme CSS variable
+                bg: {
+                    app:      'var(--bg-app)',       // App background
+                    surface:  'var(--bg-surface)',   // Card / Panel
+                    subtle:   'var(--bg-subtle)',    // Table header, sidebar
+                    muted:    'var(--bg-muted)',     // Hover, alt rows
+                    elevated: 'var(--bg-elevated)',  // Modal, tooltip
+                },
+
+                // Theme-aware border tokens
+                border: {
+                    DEFAULT: 'var(--border-default)',
+                    subtle:  'var(--border-subtle)',
+                },
+
+                // Theme-aware text tokens
+                txt: {
+                    primary:     'var(--text-primary)',
+                    secondary:   'var(--text-secondary)',
+                    muted:       'var(--text-muted)',
+                    placeholder: 'var(--text-placeholder)',
                 },
 
                 content: {

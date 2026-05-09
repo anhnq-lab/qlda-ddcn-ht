@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import { MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlanItem, MonthlyPlanItemInput,
     DepartmentCode, MonthlyTaskStatus, MONTHLY_STATUS_LABELS,
 } from '../../types/plan.types';
+import ComboboxSelect from '../../components/ui/ComboboxSelect';
+import {
+    useAnnualPlanItems,
+    useGroupSuggestions,
+    useEmployeeOptions,
+    useProjectOptions,
+} from '../../hooks/usePlanData';
 
 interface Props {
     monthlyPlanId: string;
@@ -23,9 +30,6 @@ const DEFAULT_FORM: MonthlyPlanItemInput = {
     group_name: '',
     group_sort_order: 0,
     deadline_note: '',
-    staff_name: '',
-    dept_head_name: '',
-    ban_head_name: '',
     status: 'planned',
     completion_result: '',
     incomplete_reason: '',
@@ -33,12 +37,25 @@ const DEFAULT_FORM: MonthlyPlanItemInput = {
     sort_order: 0,
 };
 
+type SectionKey = 'lienket' | 'thongtin' | 'phancong' | 'ketqua';
+
 const MonthlyPlanItemModal: React.FC<Props> = ({
-    monthlyPlanId, month, year, item, onSaved, onClose,
+    monthlyPlanId, month, year, departmentCode, item, onSaved, onClose,
 }) => {
     const [form, setForm] = useState<MonthlyPlanItemInput>({ ...DEFAULT_FORM, monthly_plan_id: monthlyPlanId });
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [projectSearch, setProjectSearch] = useState('');
+    const [expanded, setExpanded] = useState<Set<SectionKey>>(new Set(['thongtin', 'phancong']));
+
+    // Data hooks
+    const { options: annualOptions, items: annualItems, loading: annualLoading } =
+        useAnnualPlanItems(year, departmentCode);
+    const groups = useGroupSuggestions(year);
+    const { options: employeeOptions, loading: empLoading } = useEmployeeOptions();
+    const { options: projectOptions, loading: projLoading } = useProjectOptions(projectSearch);
+
+    const groupOptions = groups.map(g => ({ value: g, label: g }));
 
     useEffect(() => {
         if (item) {
@@ -51,6 +68,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 task_name: item.task_name,
                 deliverable: item.deliverable ?? '',
                 deadline_note: item.deadline_note ?? `Tháng ${month}`,
+                due_date: item.due_date,
                 staff_id: item.staff_id,
                 staff_name: item.staff_name ?? '',
                 dept_head_id: item.dept_head_id,
@@ -63,16 +81,40 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 notes: item.notes ?? '',
                 sort_order: item.sort_order ?? 0,
             });
+            // Mở section kết quả nếu đang edit và có kết quả
+            if (item.status !== 'planned') {
+                setExpanded(prev => new Set([...prev, 'ketqua']));
+            }
         } else {
             setForm({ ...DEFAULT_FORM, monthly_plan_id: monthlyPlanId, deadline_note: `Tháng ${month}` });
         }
     }, [item, monthlyPlanId, month]);
 
-    const set = (field: keyof MonthlyPlanItemInput, value: any) =>
-        setForm(prev => ({ ...prev, [field]: value }));
+    const set = useCallback((field: keyof MonthlyPlanItemInput, value: any) =>
+        setForm(prev => ({ ...prev, [field]: value })), []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Khi chọn từ KH khung → auto-fill
+    const handleAnnualItemSelect = (value: string) => {
+        const found = annualItems.find(i => i.id === value);
+        if (found) {
+            set('annual_plan_item_id', value);
+            if (!form.task_name || form.task_name === '') set('task_name', found.task_name);
+            if (!form.deliverable && found.deliverable) set('deliverable', found.deliverable);
+            if (!form.group_name && found.group_name) set('group_name', found.group_name);
+        } else {
+            set('annual_plan_item_id', value);
+        }
+    };
+
+    const toggleSection = (key: SectionKey) =>
+        setExpanded(prev => {
+            const n = new Set(prev);
+            n.has(key) ? n.delete(key) : n.add(key);
+            return n;
+        });
+
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         if (!form.task_name.trim()) { setError('Vui lòng nhập nội dung nhiệm vụ'); return; }
         setSaving(true);
         setError('');
@@ -90,141 +132,380 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
         }
     };
 
+    // Ctrl+Enter submit
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmit();
+    };
+
     const showResultFields = form.status !== 'planned';
 
+    // Find display values for comboboxes
+    const annualDisplayVal = annualItems.find(i => i.id === form.annual_plan_item_id)?.task_name;
+    const selectedProject = projectOptions.find(o => o.value === form.project_id);
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                    <h2 className="font-semibold text-slate-800">
-                        {item ? 'Sửa nhiệm vụ' : `Thêm nhiệm vụ — Tháng ${month}/${year}`}
-                    </h2>
-                    <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onKeyDown={handleKeyDown}
+        >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+                    <div>
+                        <h2 className="font-semibold text-slate-800 dark:text-slate-100">
+                            {item ? 'Sửa nhiệm vụ' : `Thêm nhiệm vụ — Tháng ${month}/${year}`}
+                        </h2>
+                        <p className="text-xs text-slate-400 mt-0.5">Ctrl+Enter để lưu nhanh</p>
+                    </div>
+                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex-1 overflow-auto px-6 py-4 space-y-4">
-                    {error && <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg">{error}</div>}
-
-                    <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Nhóm công việc</label>
-                        <input
-                            value={form.group_name ?? ''}
-                            onChange={e => set('group_name', e.target.value)}
-                            placeholder="VD: Công tác Hành chính"
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
-                            Nội dung nhiệm vụ <span className="text-red-500">*</span>
-                        </label>
-                        <textarea
-                            value={form.task_name}
-                            onChange={e => set('task_name', e.target.value)}
-                            rows={3}
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Kết quả đầu ra</label>
-                        <input
-                            value={form.deliverable ?? ''}
-                            onChange={e => set('deliverable', e.target.value)}
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-slate-600 mb-1">Thời hạn hoàn thành</label>
-                            <input
-                                value={form.deadline_note ?? ''}
-                                onChange={e => set('deadline_note', e.target.value)}
-                                placeholder={`Tháng ${month}`}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-slate-600 mb-1">Trạng thái</label>
-                            <select
-                                value={form.status}
-                                onChange={e => set('status', e.target.value as MonthlyTaskStatus)}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                {Object.entries(MONTHLY_STATUS_LABELS).map(([v, l]) => (
-                                    <option key={v} value={v}>{l}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                        <div>
-                            <label className="block text-xs font-medium text-slate-600 mb-1">Cán bộ phụ trách</label>
-                            <input
-                                value={form.staff_name ?? ''}
-                                onChange={e => set('staff_name', e.target.value)}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-slate-600 mb-1">Lãnh đạo Phòng</label>
-                            <input
-                                value={form.dept_head_name ?? ''}
-                                onChange={e => set('dept_head_name', e.target.value)}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-slate-600 mb-1">Lãnh đạo Ban</label>
-                            <input
-                                value={form.ban_head_name ?? ''}
-                                onChange={e => set('ban_head_name', e.target.value)}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                    </div>
-
-                    {showResultFields && (
-                        <>
-                            <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">Kết quả thực hiện</label>
-                                <textarea
-                                    value={form.completion_result ?? ''}
-                                    onChange={e => set('completion_result', e.target.value)}
-                                    rows={2}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                                />
+                <div className="flex-1 overflow-auto">
+                    <form onSubmit={handleSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                        {error && (
+                            <div className="mx-6 mt-4 bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg border border-red-100">
+                                {error}
                             </div>
-                            {(form.status === 'incomplete' || form.status === 'partial') && (
+                        )}
+
+                        {/* ── SECTION: Liên kết ── */}
+                        <SectionPanel
+                            icon={<Link2 className="w-4 h-4 text-blue-500" />}
+                            title="Liên kết"
+                            sectionKey="lienket"
+                            expanded={expanded}
+                            onToggle={toggleSection}
+                            badge={
+                                (form.annual_plan_item_id || form.project_id)
+                                    ? <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
+                                        {[form.annual_plan_item_id && 'KH khung', form.project_id && 'Dự án'].filter(Boolean).join(', ')}
+                                    </span>
+                                    : null
+                            }
+                        >
+                            <div className="space-y-3 pt-3">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Lý do chưa hoàn thành</label>
-                                    <input
-                                        value={form.incomplete_reason ?? ''}
-                                        onChange={e => set('incomplete_reason', e.target.value)}
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    <label className="field-label">
+                                        🗂 Từ KH khung năm
+                                        {form.annual_plan_item_id && (
+                                            <span className="ml-2 text-blue-500 text-xs font-normal">✓ Đã liên kết</span>
+                                        )}
+                                    </label>
+                                    <ComboboxSelect
+                                        options={annualOptions}
+                                        value={form.annual_plan_item_id}
+                                        displayValue={annualDisplayVal}
+                                        onChange={(val) => handleAnnualItemSelect(val)}
+                                        placeholder="Chọn nhiệm vụ từ KH khung (tự điền thông tin)..."
+                                        loading={annualLoading}
+                                        clearable
+                                    />
+                                    {form.annual_plan_item_id && (
+                                        <p className="text-xs text-blue-500 mt-1">
+                                            ↑ Tên và kết quả đầu ra đã được tự động điền từ KH khung
+                                        </p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="field-label">
+                                        📁 Dự án liên quan
+                                    </label>
+                                    <ComboboxSelect
+                                        options={projectOptions}
+                                        value={form.project_id}
+                                        displayValue={selectedProject?.label}
+                                        onChange={(val) => set('project_id', val || undefined)}
+                                        placeholder="Liên kết với dự án (nếu có)..."
+                                        loading={projLoading}
+                                        clearable
                                     />
                                 </div>
-                            )}
-                        </>
-                    )}
-                </form>
+                            </div>
+                        </SectionPanel>
 
-                <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-100">
-                    <button type="button" onClick={onClose}
-                        className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">
-                        Hủy
-                    </button>
-                    <button onClick={handleSubmit} disabled={saving}
-                        className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
-                        {saving ? 'Đang lưu...' : item ? 'Cập nhật' : 'Thêm nhiệm vụ'}
-                    </button>
+                        {/* ── SECTION: Thông tin cơ bản ── */}
+                        <SectionPanel
+                            icon={<ClipboardList className="w-4 h-4 text-indigo-500" />}
+                            title="Thông tin nhiệm vụ"
+                            sectionKey="thongtin"
+                            expanded={expanded}
+                            onToggle={toggleSection}
+                        >
+                            <div className="space-y-3 pt-3">
+                                <div>
+                                    <label className="field-label">Nhóm công việc</label>
+                                    <ComboboxSelect
+                                        options={groupOptions}
+                                        value={form.group_name ?? ''}
+                                        onChange={(val) => set('group_name', val)}
+                                        placeholder="Chọn hoặc nhập nhóm mới..."
+                                        allowCustom
+                                        clearable={false}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="field-label">
+                                        Nội dung nhiệm vụ <span className="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        value={form.task_name}
+                                        onChange={e => set('task_name', e.target.value)}
+                                        rows={3}
+                                        placeholder="Mô tả nội dung nhiệm vụ cần thực hiện..."
+                                        className="field-input resize-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="field-label">Kết quả đầu ra / Sản phẩm</label>
+                                    <input
+                                        value={form.deliverable ?? ''}
+                                        onChange={e => set('deliverable', e.target.value)}
+                                        placeholder="VD: Báo cáo tổng hợp, Tờ trình phê duyệt..."
+                                        className="field-input"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="field-label">Thời hạn</label>
+                                        <input
+                                            list="deadline-options"
+                                            value={form.deadline_note ?? ''}
+                                            onChange={e => set('deadline_note', e.target.value)}
+                                            placeholder={`Tháng ${month}`}
+                                            className="field-input"
+                                        />
+                                        <datalist id="deadline-options">
+                                            {[1,2,3,4,5,6,7,8,9,10,11,12].map(m => (
+                                                <option key={m} value={`Tháng ${m}`} />
+                                            ))}
+                                            <option value="Quý I" />
+                                            <option value="Quý II" />
+                                            <option value="Quý III" />
+                                            <option value="Quý IV" />
+                                            <option value="Tuần 1" />
+                                            <option value="Tuần 2" />
+                                            <option value="Tuần 3" />
+                                            <option value="Tuần 4" />
+                                            <option value="Hàng tuần" />
+                                            <option value="Hàng tháng" />
+                                            <option value="Khi phát sinh" />
+                                        </datalist>
+                                    </div>
+                                    <div>
+                                        <label className="field-label">Ngày cụ thể</label>
+                                        <input
+                                            type="date"
+                                            value={form.due_date ?? ''}
+                                            onChange={e => set('due_date', e.target.value || undefined)}
+                                            className="field-input"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="field-label">Trạng thái</label>
+                                    <select
+                                        value={form.status}
+                                        onChange={e => {
+                                            const s = e.target.value as MonthlyTaskStatus;
+                                            set('status', s);
+                                            if (s !== 'planned') setExpanded(prev => new Set([...prev, 'ketqua']));
+                                        }}
+                                        className="field-input"
+                                    >
+                                        {Object.entries(MONTHLY_STATUS_LABELS).map(([v, l]) => (
+                                            <option key={v} value={v}>{l}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </SectionPanel>
+
+                        {/* ── SECTION: Phân công ── */}
+                        <SectionPanel
+                            icon={<Users className="w-4 h-4 text-emerald-500" />}
+                            title="Phân công thực hiện"
+                            sectionKey="phancong"
+                            expanded={expanded}
+                            onToggle={toggleSection}
+                            badge={
+                                form.staff_name
+                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_name}</span>
+                                    : null
+                            }
+                        >
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
+                                <div>
+                                    <label className="field-label">Cán bộ phụ trách</label>
+                                    <ComboboxSelect
+                                        options={employeeOptions}
+                                        value={form.staff_id}
+                                        displayValue={form.staff_name}
+                                        onChange={(val, opt) => {
+                                            set('staff_id', val || undefined);
+                                            set('staff_name', opt?.label ?? '');
+                                        }}
+                                        placeholder="Chọn nhân viên..."
+                                        loading={empLoading}
+                                        allowCustom
+                                    />
+                                </div>
+                                <div>
+                                    <label className="field-label">Lãnh đạo Phòng</label>
+                                    <ComboboxSelect
+                                        options={employeeOptions}
+                                        value={form.dept_head_id}
+                                        displayValue={form.dept_head_name}
+                                        onChange={(val, opt) => {
+                                            set('dept_head_id', val || undefined);
+                                            set('dept_head_name', opt?.label ?? '');
+                                        }}
+                                        placeholder="Chọn lãnh đạo..."
+                                        loading={empLoading}
+                                        allowCustom
+                                    />
+                                </div>
+                                <div>
+                                    <label className="field-label">Lãnh đạo Ban</label>
+                                    <ComboboxSelect
+                                        options={employeeOptions}
+                                        value={form.ban_head_id}
+                                        displayValue={form.ban_head_name}
+                                        onChange={(val, opt) => {
+                                            set('ban_head_id', val || undefined);
+                                            set('ban_head_name', opt?.label ?? '');
+                                        }}
+                                        placeholder="Chọn lãnh đạo..."
+                                        loading={empLoading}
+                                        allowCustom
+                                    />
+                                </div>
+                            </div>
+                        </SectionPanel>
+
+                        {/* ── SECTION: Kết quả BC tháng ── */}
+                        {showResultFields && (
+                            <SectionPanel
+                                icon={<Briefcase className="w-4 h-4 text-amber-500" />}
+                                title="Kết quả báo cáo tháng"
+                                sectionKey="ketqua"
+                                expanded={expanded}
+                                onToggle={toggleSection}
+                            >
+                                <div className="space-y-3 pt-3">
+                                    <div>
+                                        <label className="field-label">Kết quả thực hiện</label>
+                                        <textarea
+                                            value={form.completion_result ?? ''}
+                                            onChange={e => set('completion_result', e.target.value)}
+                                            rows={2}
+                                            placeholder="Mô tả kết quả đã thực hiện được..."
+                                            className="field-input resize-none"
+                                        />
+                                    </div>
+                                    {(form.status === 'incomplete' || form.status === 'partial' || form.status === 'deferred') && (
+                                        <div>
+                                            <label className="field-label">Lý do chưa hoàn thành / Chuyển tháng</label>
+                                            <input
+                                                value={form.incomplete_reason ?? ''}
+                                                onChange={e => set('incomplete_reason', e.target.value)}
+                                                placeholder="Nguyên nhân và dự kiến xử lý..."
+                                                className="field-input"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </SectionPanel>
+                        )}
+
+                        {/* Ghi chú */}
+                        <div className="px-6 py-4">
+                            <label className="field-label">Ghi chú</label>
+                            <input
+                                value={form.notes ?? ''}
+                                onChange={e => set('notes', e.target.value)}
+                                placeholder="Ghi chú thêm nếu cần..."
+                                className="field-input"
+                            />
+                        </div>
+                    </form>
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between gap-2 px-6 py-4 border-t border-slate-100 dark:border-slate-700">
+                    <p className="text-xs text-slate-400">
+                        {item ? `Sửa lần cuối: ${new Date(item.updated_at ?? '').toLocaleDateString('vi-VN')}` : 'Bản ghi mới'}
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={saving}
+                            className="px-5 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 font-medium transition-colors"
+                        >
+                            {saving ? 'Đang lưu...' : item ? 'Cập nhật' : 'Thêm nhiệm vụ'}
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <style>{`
+                .field-label { display: block; font-size: 0.75rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem; }
+                .dark .field-label { color: #94a3b8; }
+                .field-input {
+                    width: 100%; border: 1px solid #e2e8f0; border-radius: 0.5rem;
+                    padding: 0.5rem 0.75rem; font-size: 0.875rem;
+                    background: white; color: #1e293b;
+                    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+                }
+                .field-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+                .dark .field-input { background: #1e293b; border-color: #475569; color: #e2e8f0; }
+                .dark .field-input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.2); }
+            `}</style>
+        </div>
+    );
+};
+
+// ─── SectionPanel helper ──────────────────────────────────────
+interface SectionPanelProps {
+    icon: React.ReactNode;
+    title: string;
+    sectionKey: SectionKey;
+    expanded: Set<SectionKey>;
+    onToggle: (key: SectionKey) => void;
+    badge?: React.ReactNode;
+    children: React.ReactNode;
+}
+
+const SectionPanel: React.FC<SectionPanelProps> = ({ icon, title, sectionKey, expanded, onToggle, badge, children }) => {
+    const isOpen = expanded.has(sectionKey);
+    return (
+        <div className="px-6 py-3">
+            <button
+                type="button"
+                onClick={() => onToggle(sectionKey)}
+                className="w-full flex items-center gap-2 text-left group"
+            >
+                {icon}
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-200 flex-1">{title}</span>
+                {badge}
+                {isOpen
+                    ? <ChevronUp className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                    : <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                }
+            </button>
+            {isOpen && children}
         </div>
     );
 };

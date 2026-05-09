@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     History, Filter, Search, Calendar, User, FileText,
     Edit3, Trash2, Plus, Eye, Clock, ChevronLeft, ChevronRight,
@@ -239,14 +239,14 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             <div className="bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-[#F5EFE6] dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                        <thead className="bg-[#F5EFE6] dark:bg-slate-800 text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                             <tr>
-                                <th className="px-6 py-4 text-left">Thời gian</th>
-                                <th className="px-6 py-4 text-left">Người thực hiện</th>
-                                <th className="px-6 py-4 text-left">Hành động</th>
-                                <th className="px-6 py-4 text-left">Đối tượng</th>
-                                <th className="px-6 py-4 text-left">Chi tiết</th>
-                                <th className="px-6 py-4 text-left">IP</th>
+                                <th className="px-4 py-3 text-left">Thời gian</th>
+                                <th className="px-4 py-3 text-left">Người thực hiện</th>
+                                <th className="px-4 py-3 text-left">Hành động</th>
+                                <th className="px-4 py-3 text-left">Đối tượng</th>
+                                <th className="px-4 py-3 text-left">Chi tiết</th>
+                                <th className="px-4 py-3 text-left">IP</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -255,29 +255,29 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                 const EntityIcon = entityIcons[log.entityType] || FileText;
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-[#F5EFE6] dark:hover:bg-slate-700 transition-colors">
-                                        <td className="px-6 py-4">
+                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/60 border-b border-gray-100 dark:border-slate-700 transition-colors">
+                                        <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-gray-400" />
+                                                <Calendar className="w-4 h-4 text-gray-400 dark:text-slate-500 shrink-0" />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 dark:text-slate-100">{formatTime(log.timestamp)}</p>
-                                                    <p className="text-[10px] text-gray-400">
+                                                    <p className="font-semibold text-slate-700 dark:text-slate-200 text-xs">{formatTime(log.timestamp)}</p>
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">
                                                         {new Date(log.timestamp).toLocaleTimeString('vi-VN')}
                                                     </p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                                    <User className="w-4 h-4 text-blue-600" />
+                                                <div className="w-7 h-7 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center shrink-0">
+                                                    <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                                                 </div>
-                                                <span className="font-medium text-gray-700 dark:text-slate-200">{getUserName(log.userId)}</span>
+                                                <span className="font-semibold text-slate-700 dark:text-slate-200 text-xs">{getUserName(log.userId)}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${actionColors[log.action]}`}>
-                                                <ActionIcon className="w-3.5 h-3.5" />
+                                        <td className="px-4 py-3.5">
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold ${actionColors[log.action]}`}>
+                                                <ActionIcon className="w-3 h-3" />
                                                 {log.action === 'CREATE' ? 'Tạo mới' :
                                                     log.action === 'UPDATE' ? 'Cập nhật' :
                                                         log.action === 'DELETE' ? 'Xóa' :
@@ -285,22 +285,22 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                                                 log.action === 'EXPORT' ? 'Xuất file' : 'Đồng bộ'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <EntityIcon className="w-4 h-4 text-gray-400" />
+                                                <EntityIcon className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 dark:text-slate-100">{log.entityName}</p>
-                                                    <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono">{log.entityId}</p>
+                                                    <p className="font-semibold text-slate-700 dark:text-slate-200 text-xs">{log.entityName}</p>
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{log.entityId}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <p className="text-gray-600 dark:text-slate-300 text-xs max-w-[200px] truncate" title={log.details}>
-                                                {log.details || '-'}
+                                        <td className="px-4 py-3.5">
+                                            <p className="text-slate-500 dark:text-slate-400 text-xs max-w-[200px] truncate" title={log.details}>
+                                                {log.details || '—'}
                                             </p>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className="font-mono text-xs text-gray-400">{log.ipAddress || '-'}</span>
+                                        <td className="px-4 py-3.5">
+                                            <span className="font-mono text-xs text-slate-400 dark:text-slate-500">{log.ipAddress || '—'}</span>
                                         </td>
                                     </tr>
                                 );

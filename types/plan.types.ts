@@ -1,4 +1,5 @@
 // Types cho module Kế hoạch khung năm, KH tháng, Báo cáo tháng
+import type { Task } from './task.types';
 
 // ─── Enums (khớp với DB) ──────────────────────────────────────
 
@@ -149,6 +150,7 @@ export interface MonthlyPlanItem {
 
     // Populated khi join
     annual_plan_item?: AnnualPlanItem;
+    tasks?: Task[];  // Công việc con của nhiệm vụ KH tháng
 }
 
 export type MonthlyPlanItemInput = Omit<MonthlyPlanItem, 'id' | 'created_at' | 'updated_at' | 'annual_plan_item'>;

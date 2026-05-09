@@ -1,173 +1,20 @@
-import React from 'react';
-import { useTheme } from '../../context/ThemeContext';// ========================================
-// TABLE COMPONENT - Design System v2
-// ========================================
+/**
+ * Table.tsx — Deprecated alias
+ *
+ * Đã hợp nhất vào DataTable.tsx (Design System v2.1)
+ * File này giữ lại để backward compatibility.
+ * Vui lòng dùng DataTable thay thế:
+ *   import DataTable from './DataTable'
+ */
+import DataTable from './DataTable';
+export type { Column, SortConfig, SortDirection } from './DataTable';
 
-interface Column<T> {
-    key: keyof T | string;
-    header: React.ReactNode;
-    render?: (value: any, row: T, index: number) => React.ReactNode;
-    sortable?: boolean;
-    width?: string;
-    align?: 'left' | 'center' | 'right';
-    className?: string;
-}
+// Re-export DataTable as Table for backward compat
+export { DataTable as Table };
 
-interface TableProps<T> {
-    columns: Column<T>[];
-    data: T[];
-    loading?: boolean;
-    loadingRows?: number;
-    emptyState?: React.ReactNode;
-    onRowClick?: (row: T, index: number) => void;
-    rowClassName?: (row: T, index: number) => string;
-    striped?: boolean;
-    hoverable?: boolean;
-    compact?: boolean;
-    stickyHeader?: boolean;
-    className?: string;
-}
-
-export function Table<T extends Record<string, any>>({
-    columns,
-    data,
-    loading = false,
-    loadingRows = 5,
-    emptyState,
-    onRowClick,
-    rowClassName,
-    striped = false,
-    hoverable = true,
-    compact,
-    stickyHeader,
-    className = '',
-}: TableProps<T>) {
-    const { density, stickyHeader: globalStickyHeader } = useTheme();
-    
-    // Resolve props with global settings
-    const isCompact = compact !== undefined ? compact : density === 'compact';
-    const isSticky = stickyHeader !== undefined ? stickyHeader : globalStickyHeader;
-    const getCellValue = (row: T, key: keyof T | string): any => {
-        if (typeof key === 'string' && key.includes('.')) {
-            return key.split('.').reduce((obj, k) => obj?.[k], row as any);
-        }
-        return row[key as keyof T];
-    };
-
-    const alignClass = {
-        left: 'text-left',
-        center: 'text-center',
-        right: 'text-right',
-    };
-
-    const cellPadding = isCompact ? 'px-3 py-2' : 'px-4 py-3';
-
-    return (
-        <div className={`overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-[#FCF9F2] dark:bg-slate-900 shadow-lg ${className}`}>
-            <table className="w-full text-sm">
-                {/* Header */}
-                <thead className={`bg-slate-50 dark:bg-slate-800 ${isSticky ? 'sticky top-0 z-10' : ''}`}>
-                    <tr>
-                        {columns.map((column, idx) => (
-                            <th
-                                key={String(column.key) + idx}
-                                style={{ width: column.width }}
-                                className={`
-                                    ${cellPadding}
-                                    ${alignClass[column.align || 'left']}
-                                    text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider
-                                    border-b border-slate-200 dark:border-slate-800
-                                    ${column.className || ''}
-                                `}
-                            >
-                                <div className={`flex items-center gap-1 ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}>
-                                    {column.header}
-                                    {column.sortable && (
-                                        <svg className="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                        </svg>
-                                    )}
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-
-                {/* Body */}
-                <tbody className="bg-[#FCF9F2] dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800/50">
-                    {loading ? (
-                        // Loading skeleton rows
-                        Array.from({ length: loadingRows }).map((_, rowIdx) => (
-                            <tr key={`skeleton-${rowIdx}`}>
-                                {columns.map((column, colIdx) => (
-                                    <td
-                                        key={`skeleton-${rowIdx}-${colIdx}`}
-                                        className={cellPadding}
-                                    >
-                                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                                    </td>
-                                ))}
-                            </tr>
-                        ))
-                    ) : data.length === 0 ? (
-                        // Empty state
-                        <tr>
-                            <td colSpan={columns.length} className="px-4 py-12 text-center">
-                                {emptyState || (
-                                    <div className="text-slate-500 dark:text-slate-500">
-                                        <svg className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                        </svg>
-                                        <p className="text-sm font-medium">Không có dữ liệu</p>
-                                    </div>
-                                )}
-                            </td>
-                        </tr>
-                    ) : (
-                        // Data rows
-                        data.map((row, rowIdx) => (
-                            <tr
-                                key={rowIdx}
-                                onClick={() => onRowClick?.(row, rowIdx)}
-                                className={`
-                                    ${striped && rowIdx % 2 === 1 ? 'bg-[#F5EFE6] dark:bg-slate-800' : ''}
-                                    ${hoverable ? 'hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' : ''}
-                                    ${onRowClick ? 'cursor-pointer' : ''}
-                                    ${rowClassName?.(row, rowIdx) || ''}
-                                `}
-                            >
-                                {columns.map((column, colIdx) => {
-                                    const value = getCellValue(row, column.key);
-                                    return (
-                                        <td
-                                            key={`${rowIdx}-${colIdx}`}
-                                            className={`
-                                                ${cellPadding}
-                                                ${alignClass[column.align || 'left']}
-                                                text-sm text-slate-700 dark:text-slate-300
-                                                ${column.className || ''}
-                                            `}
-                                        >
-                                            {column.render
-                                                ? column.render(value, row, rowIdx)
-                                                : value ?? '-'}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-// ========================================
-// TABLE PAGINATION
-// ========================================
-
-interface TablePaginationProps {
+// TablePagination — forward compatible wrapper
+// DataTable tích hợp sẵn pagination, dùng prop `pagination` thay vì component riêng
+interface LegacyTablePaginationProps {
     currentPage: number;
     totalPages: number;
     totalItems: number;
@@ -178,7 +25,7 @@ interface TablePaginationProps {
     className?: string;
 }
 
-export const TablePagination: React.FC<TablePaginationProps> = ({
+export const TablePagination: React.FC<LegacyTablePaginationProps> = ({
     currentPage,
     totalPages,
     totalItems,
@@ -192,77 +39,51 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     const endItem = Math.min(currentPage * pageSize, totalItems);
 
     return (
-        <div className={`flex items-center justify-between px-4 py-3 bg-[#FCF9F2] border-t border-gray-200 ${className}`}>
-            {/* Info */}
-            <div className="text-sm text-gray-600">
+        <div className={`flex items-center justify-between px-4 py-3 bg-bg-surface dark:bg-slate-800 border-t border-border-DEFAULT dark:border-slate-700/60 ${className}`}>
+            <div className="text-sm text-txt-muted dark:text-slate-400">
                 Hiển thị <span className="font-medium">{startItem}</span> - <span className="font-medium">{endItem}</span> trong <span className="font-medium">{totalItems}</span> kết quả
             </div>
 
-            {/* Controls */}
             <div className="flex items-center gap-4">
-                {/* Page Size Selector */}
                 {onPageSizeChange && (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Hiển thị</span>
+                        <span className="text-sm text-txt-muted dark:text-slate-400">Hiển thị</span>
                         <select
                             value={pageSize}
                             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                            className="px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="px-2 py-1 text-sm border border-border-DEFAULT dark:border-slate-600 rounded-lg bg-bg-surface dark:bg-slate-700 text-txt-primary dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             {pageSizeOptions.map((size) => (
-                                <option key={size} value={size}>
-                                    {size}
-                                </option>
+                                <option key={size} value={size}>{size}</option>
                             ))}
                         </select>
                     </div>
                 )}
 
-                {/* Page Navigation */}
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={() => onPageChange(1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="First page"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                        </svg>
-                    </button>
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Previous page"
+                        className="p-1.5 rounded-lg hover:bg-bg-muted dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Trang trước"
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-txt-muted dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
 
-                    <span className="px-3 py-1 text-sm font-medium">
+                    <span className="px-3 py-1 text-sm font-medium text-txt-secondary dark:text-slate-300">
                         {currentPage} / {totalPages}
                     </span>
 
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Next page"
+                        className="p-1.5 rounded-lg hover:bg-bg-muted dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Trang sau"
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-txt-muted dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={() => onPageChange(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Last page"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
@@ -271,4 +92,6 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     );
 };
 
-export default Table;
+import React from 'react';
+
+export default DataTable;

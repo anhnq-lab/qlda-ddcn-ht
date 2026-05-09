@@ -9,6 +9,7 @@ import {
     DEPARTMENT_NAMES, FREQUENCY_LABELS, PlanFrequency,
 } from '../../types/plan.types';
 import AnnualPlanItemModal from './AnnualPlanItemModal';
+import AnnualPlanItemDetail from './AnnualPlanItemDetail';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -29,6 +30,7 @@ const AnnualPlanPage: React.FC = () => {
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState<AnnualPlanItem | null>(null);
+    const [detailItem, setDetailItem] = useState<AnnualPlanItem | null>(null);
 
     useEffect(() => {
         loadItems();
@@ -180,92 +182,95 @@ const AnnualPlanPage: React.FC = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-3">
-                        {Array.from(groups.entries()).map(([groupName, groupItems]) => (
-                            <div key={groupName} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                                {/* Group header */}
-                                <button
-                                    onClick={() => toggleGroup(groupName)}
-                                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        {expandedGroups.has(groupName)
-                                            ? <ChevronDown className="w-4 h-4 text-slate-400" />
-                                            : <ChevronRight className="w-4 h-4 text-slate-400" />}
-                                        <span className="font-semibold text-sm text-slate-800">{groupName}</span>
-                                        <span className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                                            {groupItems.length}
-                                        </span>
-                                    </div>
-                                </button>
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                        <table className="w-full text-sm">
+                            <thead className="sticky top-0 z-10">
+                                <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide border-b border-slate-200">
+                                    <th className="px-4 py-2.5 text-left w-8">TT</th>
+                                    <th className="px-4 py-2.5 text-left">Nội dung nhiệm vụ</th>
+                                    <th className="px-4 py-2.5 text-left w-48">Sản phẩm đầu ra</th>
+                                    <th className="px-4 py-2.5 text-center w-24">Bắt đầu</th>
+                                    <th className="px-4 py-2.5 text-center w-24">Kết thúc</th>
+                                    <th className="px-4 py-2.5 text-center w-28">Tần suất</th>
+                                    <th className="px-4 py-2.5 text-left w-40">Phụ trách</th>
+                                    <th className="px-4 py-2.5 w-16"></th>
+                                </tr>
+                            </thead>
 
-                                {/* Group items */}
-                                {expandedGroups.has(groupName) && (
-                                    <div className="border-t border-slate-100">
-                                        <table className="w-full text-sm">
-                                            <thead>
-                                                <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide">
-                                                    <th className="px-4 py-2 text-left w-8">TT</th>
-                                                    <th className="px-4 py-2 text-left">Nội dung nhiệm vụ</th>
-                                                    <th className="px-4 py-2 text-left w-48">Sản phẩm đầu ra</th>
-                                                    <th className="px-4 py-2 text-center w-24">Bắt đầu</th>
-                                                    <th className="px-4 py-2 text-center w-24">Kết thúc</th>
-                                                    <th className="px-4 py-2 text-center w-28">Tần suất</th>
-                                                    <th className="px-4 py-2 text-left w-40">Phụ trách</th>
-                                                    <th className="px-4 py-2 w-16"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {groupItems.map((item, idx) => (
-                                                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                                                        <td className="px-4 py-2.5 text-slate-400 text-xs">{idx + 1}</td>
-                                                        <td className="px-4 py-2.5">
-                                                            <span className="text-slate-800 leading-snug">{item.task_name}</span>
-                                                            {item.project_id && (
-                                                                <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">Dự án</span>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-4 py-2.5 text-slate-500 text-xs leading-snug">
-                                                            {item.deliverable ?? '—'}
-                                                        </td>
-                                                        <td className="px-4 py-2.5 text-center text-xs text-slate-600">
-                                                            {item.start_period ?? '—'}
-                                                        </td>
-                                                        <td className="px-4 py-2.5 text-center text-xs text-slate-600">
-                                                            {item.end_period ?? '—'}
-                                                        </td>
-                                                        <td className="px-4 py-2.5 text-center">
-                                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${FREQ_BADGE[item.frequency].color}`}>
-                                                                {FREQ_BADGE[item.frequency].label}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 py-2.5 text-xs text-slate-500 leading-snug">
-                                                            {item.responsible_text ?? '—'}
-                                                        </td>
-                                                        <td className="px-4 py-2.5">
-                                                            <div className="flex items-center gap-1 justify-end">
-                                                                <button
-                                                                    onClick={() => { setEditing(item); setModalOpen(true); }}
-                                                                    className="p-1 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
-                                                                >
-                                                                    <Edit2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDelete(item.id)}
-                                                                    className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                                                                >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            {Array.from(groups.entries()).map(([groupName, groupItems]) => (
+                                <tbody key={groupName} className="divide-y divide-slate-50">
+                                    {/* Group header row */}
+                                    <tr
+                                        className="bg-slate-50/80 cursor-pointer hover:bg-slate-100 transition-colors"
+                                        onClick={() => toggleGroup(groupName)}
+                                    >
+                                        <td colSpan={8} className="px-4 py-2.5 border-t border-slate-200">
+                                            <div className="flex items-center gap-2">
+                                                {expandedGroups.has(groupName)
+                                                    ? <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                                                    : <ChevronRight className="w-3.5 h-3.5 text-slate-400" />}
+                                                <span className="font-semibold text-xs text-slate-700 uppercase tracking-wide">
+                                                    {groupName}
+                                                </span>
+                                                <span className="text-xs text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded-full">
+                                                    {groupItems.length}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {/* Item rows */}
+                                    {expandedGroups.has(groupName) && groupItems.map((item, idx) => (
+                                        <tr
+                                            key={item.id}
+                                            className="hover:bg-indigo-50/30 transition-colors cursor-pointer"
+                                            onClick={() => setDetailItem(item)}
+                                        >
+                                            <td className="px-4 py-2.5 text-slate-400 text-xs">{idx + 1}</td>
+                                            <td className="px-4 py-2.5">
+                                                <span className="text-slate-800 leading-snug">{item.task_name}</span>
+                                                {item.project_id && (
+                                                    <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">Dự án</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-slate-500 text-xs leading-snug">
+                                                {item.deliverable ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-center text-xs text-slate-600">
+                                                {item.start_period ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-center text-xs text-slate-600">
+                                                {item.end_period ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-2.5 text-center">
+                                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${FREQ_BADGE[item.frequency].color}`}>
+                                                    {FREQ_BADGE[item.frequency].label}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-2.5 text-xs text-slate-500 leading-snug">
+                                                {item.responsible_text ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-2.5" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center gap-1 justify-end">
+                                                    <button
+                                                        onClick={() => { setEditing(item); setModalOpen(true); }}
+                                                        className="p-1 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                                                    >
+                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(item.id)}
+                                                        className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            ))}
+                        </table>
                     </div>
                 )}
             </div>
@@ -279,6 +284,24 @@ const AnnualPlanPage: React.FC = () => {
                     item={editing}
                     onSaved={handleSaved}
                     onClose={() => { setModalOpen(false); setEditing(null); }}
+                />
+            )}
+
+            {/* ── Detail panel ── */}
+            {detailItem && (
+                <AnnualPlanItemDetail
+                    item={detailItem}
+                    year={year}
+                    onEdit={() => {
+                        setEditing(detailItem);
+                        setDetailItem(null);
+                        setModalOpen(true);
+                    }}
+                    onDelete={() => {
+                        handleDelete(detailItem.id);
+                        setDetailItem(null);
+                    }}
+                    onClose={() => setDetailItem(null)}
                 />
             )}
         </div>

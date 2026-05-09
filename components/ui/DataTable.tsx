@@ -1,13 +1,20 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, ChevronsUpDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
+import { ChevronDown, ChevronUp, ChevronsUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// ========================================
+// DATATABLE — Chuẩn bảng CIC ERP v2.2
+// Dựa trên visual design của EmployeeList
+// ========================================
 
 export interface Column<T> {
     key: keyof T | string;
-    header: string;
+    header: React.ReactNode;
     width?: string;
+    minWidth?: string;
     align?: 'left' | 'center' | 'right';
     sortable?: boolean;
+    className?: string;
+    headerClassName?: string;
     render?: (value: any, row: T, index: number) => React.ReactNode;
 }
 
@@ -25,8 +32,10 @@ interface DataTableProps<T> {
 
     // Loading & Empty States
     isLoading?: boolean;
+    loadingRows?: number;
     emptyMessage?: string;
     emptyIcon?: React.ReactNode;
+    emptyState?: React.ReactNode;
 
     // Sorting
     sortable?: boolean;
@@ -40,6 +49,9 @@ interface DataTableProps<T> {
         totalItems: number;
         pageSize: number;
         onPageChange: (page: number) => void;
+        onPageSizeChange?: (size: number) => void;
+        pageSizeOptions?: number[];
+        label?: string; // e.g. "nhân sự", "dự án"...
     };
 
     // Selection
@@ -48,13 +60,18 @@ interface DataTableProps<T> {
     onSelectionChange?: (keys: string[]) => void;
 
     // Row Actions
-    onRowClick?: (row: T) => void;
-    rowClassName?: (row: T) => string;
+    onRowClick?: (row: T, index: number) => void;
+    rowClassName?: (row: T, index: number) => string;
 
     // Styling
     compact?: boolean;
     stickyHeader?: boolean;
+    maxHeight?: string; // e.g. 'calc(100vh-360px)'
     className?: string;
+    wrapperClassName?: string;
+    footerExtra?: React.ReactNode;
+    showFooter?: boolean; // default true if pagination or showFooter prop
+    footerLabel?: string; // "Hiển thị X / Y {footerLabel}"
 }
 
 function DataTable<T extends Record<string, any>>({
@@ -62,8 +79,10 @@ function DataTable<T extends Record<string, any>>({
     columns,
     keyExtractor,
     isLoading = false,
+    loadingRows = 5,
     emptyMessage = 'Không có dữ liệu',
     emptyIcon,
+    emptyState,
     sortable = false,
     defaultSort,
     onSort,
@@ -73,27 +92,26 @@ function DataTable<T extends Record<string, any>>({
     onSelectionChange,
     onRowClick,
     rowClassName,
-    compact,
-    stickyHeader,
+    compact = false,
+    stickyHeader = false,
+    maxHeight,
     className = '',
+    wrapperClassName = '',
+    footerExtra,
+    showFooter,
+    footerLabel = 'bản ghi',
 }: DataTableProps<T>) {
-    const { density, stickyHeader: globalStickyHeader } = useTheme();
-    
-    // Resolve props with global settings
-    const isCompact = compact !== undefined ? compact : density === 'compact';
-    const isSticky = stickyHeader !== undefined ? stickyHeader : globalStickyHeader;
-
-    const [sortConfig, setSortConfig] = useState<SortConfig>(defaultSort || { key: '', direction: null });
+    const [sortConfig, setSortConfig] = useState<SortConfig>(
+        defaultSort || { key: '', direction: null }
+    );
 
     const handleSort = (key: string) => {
         if (!sortable) return;
-
         let direction: SortDirection = 'asc';
         if (sortConfig.key === key) {
             if (sortConfig.direction === 'asc') direction = 'desc';
             else if (sortConfig.direction === 'desc') direction = null;
         }
-
         const newConfig = { key, direction };
         setSortConfig(newConfig);
         onSort?.(newConfig);
@@ -101,216 +119,319 @@ function DataTable<T extends Record<string, any>>({
 
     const sortedData = useMemo(() => {
         if (!sortConfig.key || !sortConfig.direction || onSort) return data;
-
         return [...data].sort((a, b) => {
-            const aVal = a[sortConfig.key];
-            const bVal = b[sortConfig.key];
-
+            const getValue = (obj: any, key: string) =>
+                key.includes('.') ? key.split('.').reduce((o, k) => o?.[k], obj) : obj[key];
+            const aVal = getValue(a, sortConfig.key);
+            const bVal = getValue(b, sortConfig.key);
             if (aVal === bVal) return 0;
             if (aVal == null) return 1;
             if (bVal == null) return -1;
-
-            const comparison = aVal < bVal ? -1 : 1;
-            return sortConfig.direction === 'asc' ? comparison : -comparison;
+            const cmp = aVal < bVal ? -1 : 1;
+            return sortConfig.direction === 'asc' ? cmp : -cmp;
         });
     }, [data, sortConfig, onSort]);
 
     const handleSelectAll = () => {
         if (!onSelectionChange) return;
-
-        if (selectedKeys.length === data.length) {
-            onSelectionChange([]);
-        } else {
-            onSelectionChange(data.map(keyExtractor));
-        }
+        onSelectionChange(selectedKeys.length === data.length ? [] : data.map(keyExtractor));
     };
 
     const handleSelectRow = (key: string) => {
         if (!onSelectionChange) return;
-
-        if (selectedKeys.includes(key)) {
-            onSelectionChange(selectedKeys.filter(k => k !== key));
-        } else {
-            onSelectionChange([...selectedKeys, key]);
-        }
+        onSelectionChange(
+            selectedKeys.includes(key)
+                ? selectedKeys.filter(k => k !== key)
+                : [...selectedKeys, key]
+        );
     };
 
     const getSortIcon = (key: string) => {
-        if (sortConfig.key !== key) {
-            return <ChevronsUpDown size={14} className="text-slate-400" />;
-        }
-        if (sortConfig.direction === 'asc') {
-            return <ChevronUp size={14} className="text-primary-500" />;
-        }
-        if (sortConfig.direction === 'desc') {
-            return <ChevronDown size={14} className="text-primary-500" />;
-        }
-        return <ChevronsUpDown size={14} className="text-slate-400" />;
+        if (sortConfig.key !== key)
+            return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />;
+        if (sortConfig.direction === 'asc')
+            return <ChevronUp size={12} className="text-primary-500 shrink-0" />;
+        if (sortConfig.direction === 'desc')
+            return <ChevronDown size={12} className="text-primary-500 shrink-0" />;
+        return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />;
     };
 
-    const cellPadding = isCompact ? 'px-3 py-2' : 'px-4 py-3';
-    const headerPadding = isCompact ? 'px-3 py-2' : 'px-4 py-3';
+    // Cell padding theo compact mode
+    const tdPad = compact ? 'px-3 py-2' : 'px-4 py-3.5';
+    const thPad = compact ? 'px-3 py-2.5' : 'px-4 py-3';
+
+    // Footer visibility
+    const shouldShowFooter = showFooter !== undefined
+        ? showFooter
+        : (pagination !== undefined || footerExtra !== undefined);
+
+    const totalCols = columns.length + (selectable ? 1 : 0);
 
     return (
-        <div className={`overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800/60 bg-[#FCF9F2] dark:bg-slate-900 ${className}`}>
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    {/* Header */}
-                    <thead className={`bg-[#F5EFE6] dark:bg-slate-800 ${isSticky ? 'sticky top-0 z-10' : ''}`}>
-                        <tr>
-                            {selectable && (
-                                <th className={`${headerPadding} w-12`}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedKeys.length === data.length && data.length > 0}
-                                        onChange={handleSelectAll}
-                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
-                                    />
-                                </th>
-                            )}
-                            {columns.map((col) => (
-                                <th
-                                    key={String(col.key)}
-                                    onClick={() => col.sortable && handleSort(String(col.key))}
-                                    style={{ width: col.width }}
-                                    className={`
-                                        ${headerPadding}
-                                        text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider
-                                        ${col.sortable ? 'cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none transition-colors' : ''}
-                                        ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
-                                    `}
-                                >
-                                    <div className={`flex items-center gap-1 ${col.align === 'center' ? 'justify-center' : col.align === 'right' ? 'justify-end' : ''}`}>
-                                        {col.header}
-                                        {col.sortable && getSortIcon(String(col.key))}
-                                    </div>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-
-                    {/* Body */}
-                    <tbody className="bg-[#FCF9F2] dark:bg-slate-900">
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-12">
-                                    <div className="flex flex-col items-center justify-center text-slate-400">
-                                        <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                                        <span className="text-sm">Đang tải...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : sortedData.length === 0 ? (
-                            <tr>
-                                <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-12">
-                                    <div className="flex flex-col items-center justify-center text-slate-400">
-                                        {emptyIcon && <div className="mb-3">{emptyIcon}</div>}
-                                        <span className="text-sm">{emptyMessage}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : (
-                            sortedData.map((row, index) => {
-                                const key = keyExtractor(row);
-                                const isSelected = selectedKeys.includes(key);
-
-                                return (
-                                    <tr
-                                        key={key}
-                                        onClick={() => onRowClick?.(row)}
+        <div className={`space-y-2 ${wrapperClassName}`}>
+            {/* ── TABLE CARD ── */}
+            <div
+                className={`
+                    bg-[#FCF9F2] dark:bg-slate-800
+                    rounded-2xl border border-slate-100 dark:border-slate-700
+                    shadow-sm overflow-hidden
+                    ${className}
+                `}
+            >
+                <div
+                    className={`overflow-x-auto ${maxHeight ? `overflow-y-auto` : ''}`}
+                    style={maxHeight ? { maxHeight } : undefined}
+                >
+                    <table className="w-full">
+                        {/* ── HEADER ── */}
+                        <thead className={stickyHeader ? 'sticky top-0 z-10' : ''}>
+                            <tr className="bg-[#F5EFE6] dark:bg-slate-800/80 text-[10px] font-black uppercase tracking-widest">
+                                {selectable && (
+                                    <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedKeys.length === data.length && data.length > 0}
+                                            onChange={handleSelectAll}
+                                            className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
+                                        />
+                                    </th>
+                                )}
+                                {columns.map((col, idx) => (
+                                    <th
+                                        key={String(col.key) + idx}
+                                        onClick={() => sortable && col.sortable && handleSort(String(col.key))}
+                                        style={{ width: col.width, minWidth: col.minWidth }}
                                         className={`
-                                            ${onRowClick ? 'cursor-pointer' : ''}
-                                            ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : `hover:bg-primary-50/30 dark:hover:bg-slate-700 ${index % 2 !== 0 ? 'bg-[#F5EFE6] dark:bg-slate-800' : 'bg-transparent dark:bg-transparent'}`}
-                                            border-b border-slate-100 dark:border-slate-700/50 last:border-b-0
-                                            transition-colors
-                                            ${rowClassName?.(row) || ''}
+                                            ${thPad}
+                                            border-b border-slate-200 dark:border-slate-700
+                                            text-slate-500 dark:text-slate-400
+                                            ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'}
+                                            ${sortable && col.sortable ? 'cursor-pointer select-none hover:text-primary-600 dark:hover:text-primary-400 transition-colors' : ''}
+                                            ${col.headerClassName || ''}
                                         `}
                                     >
+                                        <div className={`flex items-center gap-1 ${col.align === 'center' ? 'justify-center' : col.align === 'right' ? 'justify-end' : ''}`}>
+                                            {col.header}
+                                            {sortable && col.sortable && getSortIcon(String(col.key))}
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+
+                        {/* ── BODY ── */}
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700/70">
+                            {isLoading ? (
+                                // Skeleton rows
+                                Array.from({ length: loadingRows }).map((_, i) => (
+                                    <tr key={`skel-${i}`}>
                                         {selectable && (
-                                            <td className={`${cellPadding} w-12`} onClick={(e) => e.stopPropagation()}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isSelected}
-                                                    onChange={() => handleSelectRow(key)}
-                                                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
-                                                />
+                                            <td className={thPad}>
+                                                <div className="h-4 w-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
                                             </td>
                                         )}
-                                        {columns.map((col) => {
-                                            const value = row[col.key as keyof T];
-                                            return (
-                                                <td
-                                                    key={String(col.key)}
-                                                    className={`
-                                                        ${cellPadding}
-                                                        text-sm text-slate-700 dark:text-slate-300
-                                                        ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
-                                                    `}
-                                                >
-                                                    {col.render ? col.render(value, row, index) : String(value ?? '')}
-                                                </td>
-                                            );
-                                        })}
+                                        {columns.map((col, j) => (
+                                            <td key={`skel-${i}-${j}`} className={tdPad}>
+                                                <div
+                                                    className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"
+                                                    style={{ width: j === 0 ? '60%' : j === 1 ? '80%' : '50%' }}
+                                                />
+                                            </td>
+                                        ))}
                                     </tr>
-                                );
-                            })
-                        )}
-                    </tbody>
-                </table>
+                                ))
+                            ) : sortedData.length === 0 ? (
+                                // Empty state
+                                <tr>
+                                    <td colSpan={totalCols} className="px-4 py-16 text-center">
+                                        {emptyState || (
+                                            <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
+                                                {emptyIcon || (
+                                                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}
+                                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                                    </svg>
+                                                )}
+                                                <span className="text-sm font-medium">{emptyMessage}</span>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            ) : (
+                                sortedData.map((row, index) => {
+                                    const key = keyExtractor(row);
+                                    const isSelected = selectedKeys.includes(key);
+                                    return (
+                                        <tr
+                                            key={key}
+                                            onClick={() => onRowClick?.(row, index)}
+                                            className={`
+                                                group transition-all
+                                                ${onRowClick ? 'cursor-pointer' : ''}
+                                                ${isSelected
+                                                    ? 'bg-primary-50 dark:bg-primary-900/20'
+                                                    : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/60'
+                                                }
+                                                ${rowClassName?.(row, index) || ''}
+                                            `}
+                                        >
+                                            {selectable && (
+                                                <td className={`${tdPad} w-10`} onClick={e => e.stopPropagation()}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={() => handleSelectRow(key)}
+                                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
+                                                    />
+                                                </td>
+                                            )}
+                                            {columns.map(col => {
+                                                const value = String(col.key).includes('.')
+                                                    ? String(col.key).split('.').reduce((o: any, k) => o?.[k], row)
+                                                    : row[col.key as keyof T];
+                                                return (
+                                                    <td
+                                                        key={String(col.key)}
+                                                        className={`
+                                                            ${tdPad}
+                                                            text-sm text-slate-700 dark:text-slate-300
+                                                            ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
+                                                            ${col.className || ''}
+                                                        `}
+                                                    >
+                                                        {col.render ? col.render(value, row, index) : String(value ?? '—')}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            {/* Pagination */}
-            {pagination && !isLoading && sortedData.length > 0 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 dark:border-slate-800/60 bg-[#F5EFE6] dark:bg-slate-800">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Hiển thị {((pagination.currentPage - 1) * pagination.pageSize) + 1} - {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} / {pagination.totalItems}
+            {/* ── FOOTER (Pagination / Counter) ── */}
+            {shouldShowFooter && !isLoading && (
+                <div className="flex items-center justify-between px-4 py-3 bg-[#FCF9F2] dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                    {/* Left: count info */}
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {pagination ? (
+                            <>
+                                Hiển thị{' '}
+                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                    {((pagination.currentPage - 1) * pagination.pageSize) + 1}
+                                </span>
+                                {' '}–{' '}
+                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                    {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}
+                                </span>
+                                {' '}trong{' '}
+                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                    {pagination.totalItems}
+                                </span>
+                                {' '}{pagination.label || footerLabel}
+                            </>
+                        ) : (
+                            <>
+                                Hiển thị{' '}
+                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                    {sortedData.length}
+                                </span>
+                                {' '}{footerLabel}
+                            </>
+                        )}
                     </p>
 
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
-                            disabled={pagination.currentPage <= 1}
-                            className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            <ChevronLeft size={16} className="text-slate-600 dark:text-slate-300" />
-                        </button>
+                    <div className="flex items-center gap-3">
+                        {/* Extra slot */}
+                        {footerExtra}
 
-                        {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
-                            let pageNum: number;
-                            if (pagination.totalPages <= 5) {
-                                pageNum = i + 1;
-                            } else if (pagination.currentPage <= 3) {
-                                pageNum = i + 1;
-                            } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                                pageNum = pagination.totalPages - 4 + i;
-                            } else {
-                                pageNum = pagination.currentPage - 2 + i;
-                            }
-
-                            return (
-                                <button
-                                    key={pageNum}
-                                    onClick={() => pagination.onPageChange(pageNum)}
-                                    className={`
-                                        w-8 h-8 rounded-lg text-sm font-medium transition-colors
-                                        ${pagination.currentPage === pageNum
-                                            ? 'bg-primary-500 text-white'
-                                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                        }
-                                    `}
+                        {/* Page size */}
+                        {pagination?.onPageSizeChange && (
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-slate-400 dark:text-slate-500">Hiển thị</span>
+                                <select
+                                    value={pagination.pageSize}
+                                    onChange={e => pagination.onPageSizeChange!(Number(e.target.value))}
+                                    className="px-2 py-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 cursor-pointer"
                                 >
-                                    {pageNum}
-                                </button>
-                            );
-                        })}
+                                    {(pagination.pageSizeOptions || [10, 20, 50, 100]).map(s => (
+                                        <option key={s} value={s}>{s}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
-                        <button
-                            onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
-                            disabled={pagination.currentPage >= pagination.totalPages}
-                            className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            <ChevronRight size={16} className="text-slate-600 dark:text-slate-300" />
-                        </button>
+                        {/* Page nav */}
+                        {pagination && pagination.totalPages > 1 && (
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => pagination.onPageChange(1)}
+                                    disabled={pagination.currentPage <= 1}
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <svg className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
+                                    disabled={pagination.currentPage <= 1}
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeft size={14} className="text-slate-500 dark:text-slate-400" />
+                                </button>
+
+                                {(() => {
+                                    const total = pagination.totalPages;
+                                    const cur = pagination.currentPage;
+                                    const pages: number[] = [];
+                                    if (total <= 5) {
+                                        for (let i = 1; i <= total; i++) pages.push(i);
+                                    } else if (cur <= 3) {
+                                        pages.push(1, 2, 3, 4, 5);
+                                    } else if (cur >= total - 2) {
+                                        for (let i = total - 4; i <= total; i++) pages.push(i);
+                                    } else {
+                                        for (let i = cur - 2; i <= cur + 2; i++) pages.push(i);
+                                    }
+                                    return pages.map(p => (
+                                        <button
+                                            key={p}
+                                            onClick={() => pagination.onPageChange(p)}
+                                            className={`
+                                                w-7 h-7 rounded-lg text-xs font-medium transition-colors
+                                                ${cur === p
+                                                    ? 'bg-primary-500 text-white shadow-sm'
+                                                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                }
+                                            `}
+                                        >
+                                            {p}
+                                        </button>
+                                    ));
+                                })()}
+
+                                <button
+                                    onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
+                                    disabled={pagination.currentPage >= pagination.totalPages}
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRight size={14} className="text-slate-500 dark:text-slate-400" />
+                                </button>
+                                <button
+                                    onClick={() => pagination.onPageChange(pagination.totalPages)}
+                                    disabled={pagination.currentPage >= pagination.totalPages}
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <svg className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

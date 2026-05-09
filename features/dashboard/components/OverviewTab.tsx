@@ -16,6 +16,11 @@ const AIAnomalyDetector = lazy(() => import('../../../components/ai/AIAnomalyDet
 const AIContractorScoring = lazy(() => import('../../../components/ai/AIContractorScoring').then(m => ({ default: m.AIContractorScoring })));
 const AIResourceOptimizer = lazy(() => import('../../../components/ai/AIResourceOptimizer').then(m => ({ default: m.AIResourceOptimizer })));
 
+// New charts
+const ProjectStatusChart = lazy(() => import('./ProjectStatusChart'));
+const TaskCompletionChart = lazy(() => import('./TaskCompletionChart'));
+const ProjectStatusByBoardChart = lazy(() => import('./ProjectStatusByBoardChart'));
+
 
 // ── Phase Badge ──────────────────────────────────────────
 const PhaseBadge: React.FC<{ status: number }> = ({ status }) => {
@@ -69,6 +74,12 @@ export const OverviewTab: React.FC = () => {
     const { data: capitalVsDisbursement } = useQuery({
         queryKey: ['dashboard', 'capitalVsDisbursement', selectedYear],
         queryFn: () => DashboardService.getCapitalVsDisbursement(selectedYear || undefined),
+        staleTime: STALE_5M,
+    });
+
+    const { data: taskCompletion, isLoading: loadingTasks } = useQuery({
+        queryKey: ['dashboard', 'taskCompletion'],
+        queryFn: DashboardService.getTaskCompletion,
         staleTime: STALE_5M,
     });
 
@@ -242,95 +253,20 @@ export const OverviewTab: React.FC = () => {
             </div>
 
             {/* ═══════════════════════════════════════════════════
-                2. BẢNG TỔNG HỢP DỰ ÁN
+                2. BIỂU ĐỒ TỔNG QUAN DỰ ÁN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-                <div className="flex justify-between items-center px-5 py-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 className="section-header text-sm flex items-center gap-2">
-                        <div className="section-icon"><Building2 className="w-5 h-5" /></div>
-                        <span>Top 10 dự án trọng điểm</span>
-                        <span className="text-[10px] bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 font-black px-2 py-0.5 rounded-full border border-amber-200/40 uppercase tracking-wider">
-                            Theo tổng mức ĐT
-                        </span>
-                    </h3>
-                    <button
-                        onClick={() => navigate('/projects')}
-                        className="flex items-center gap-1 text-[11px] font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition-colors"
-                    >
-                        Xem chi tiết <ArrowRight className="w-3 h-3" />
-                    </button>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[300px]">
+                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+                    <ProjectStatusChart statusSummary={statusSummary} />
+                </Suspense>
+                
+                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+                    <ProjectStatusByBoardChart projects={filteredRows} />
+                </Suspense>
 
-                {loadingProjects ? (
-                    <div className="p-4">
-                        <TableSkeleton columns={6} rows={3} />
-                    </div>
-                ) : top10KeyProjects.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-widest">Tên dự án</th>
-                                    <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest">Ban QLDA</th>
-                                    <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest">Giai đoạn</th>
-                                    <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest w-36">Tiến độ</th>
-                                    <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-right">Vốn ĐT</th>
-                                    <th className="px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-right">Giải ngân</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                                {top10KeyProjects.map((row) => {
-                                    const boardDef = MANAGEMENT_BOARDS.find(b => b.value === row.managementBoard);
-                                    return (
-                                        <tr
-                                            key={row.projectId}
-                                            className="hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group"
-                                            onClick={() => navigate(`/projects/${row.projectId}`)}
-                                        >
-                                            <td className="px-5 py-3.5">
-                                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-1 mb-0.5">
-                                                    {row.projectName}
-                                                </p>
-                                                {row.startDate && row.expectedEndDate && (
-                                                    <p className="text-xs text-slate-400 dark:text-slate-500">
-                                                        {new Date(row.startDate).toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' })} → {new Date(row.expectedEndDate).toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' })}
-                                                    </p>
-                                                )}
-                                            </td>
-                                            <td className="px-4 py-3.5">
-                                                <span
-                                                    className="text-[10px] font-bold px-2 py-0.5 rounded-md"
-                                                    style={{
-                                                        background: `${boardDef?.hex || '#888'}15`,
-                                                        color: boardDef?.hex || '#888',
-                                                    }}
-                                                >
-                                                    {row.boardLabel}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3.5"><PhaseBadge status={row.status} /></td>
-                                            <td className="px-4 py-3.5">
-                                                <ProgressBar value={row.progress} color={boardDef?.hex} />
-                                            </td>
-                                            <td className="px-4 py-3.5 text-right">
-                                                <span className="text-[13px] font-semibold tabular-nums text-slate-700 dark:text-slate-200">
-                                                    {formatShortCurrency(row.totalInvestment)}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3.5 text-right">
-                                                <span className={`text-[13px] font-semibold tabular-nums ${row.paymentProgress >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}`}>
-                                                    {row.paymentProgress}%
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <EmptyState icon={<Building2 className="w-12 h-12" />} title="Không có dự án nào" className="py-12" />
-                )}
+                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+                    <TaskCompletionChart data={taskCompletion} loading={loadingTasks} />
+                </Suspense>
             </div>
 
             {/* ═══════════════════════════════════════════════════

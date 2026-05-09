@@ -283,7 +283,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 return (
                                     <tr
                                         key={contract.ContractID}
-                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/60"
                                         onClick={() => navigate(`/contracts/${encodeURIComponent(contract.ContractID)}`)}
                                     >
                                         {/* STT */}

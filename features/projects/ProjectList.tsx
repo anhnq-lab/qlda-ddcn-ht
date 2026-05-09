@@ -411,19 +411,19 @@ const ProjectList: React.FC = () => {
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm border-collapse">
                                         <thead>
-                                            <tr className="bg-[#F0E8DA] dark:bg-slate-700/80 border-b border-slate-200 dark:border-slate-600">
-                                                <th className="px-3 py-2.5 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-10">#</th>
-                                                <th className="px-3 py-2.5 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider min-w-[280px]">Tên dự án</th>
-                                                <th className="px-3 py-2.5 text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">Nhóm</th>
-                                                <th className="px-3 py-2.5 text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24">Ban QLDA</th>
-                                                <th className="px-3 py-2.5 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-36">Giai đoạn</th>
-                                                <th className="px-3 py-2.5 text-right text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-28">Tiến độ</th>
-                                                <th className="px-3 py-2.5 text-right text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-28">Giải ngân</th>
-                                                <th className="px-3 py-2.5 text-right text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-28">Tổng mức ĐT</th>
-                                                <th className="px-3 py-2.5 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider min-w-[160px]">Nguồn vốn</th>
+                                            <tr className="bg-[#F5EFE6] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-10">#</th>
+                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest min-w-[280px]">Tên dự án</th>
+                                                <th className="px-3 py-2.5 text-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-20">Nhóm</th>
+                                                <th className="px-3 py-2.5 text-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-24">Ban QLDA</th>
+                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-36">Giai đoạn</th>
+                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Tiến độ</th>
+                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Giải ngân</th>
+                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Tổng mức ĐT</th>
+                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest min-w-[160px]">Nguồn vốn</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                             {scopedProjects.map((project, index) => {
                                                 const status = STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
                                                 const board = project.ManagementBoard
@@ -434,7 +434,7 @@ const ProjectList: React.FC = () => {
                                                     <tr
                                                         key={project.ProjectID}
                                                         onClick={() => handleOpenProject(project)}
-                                                        className="border-b border-slate-100 dark:border-slate-700 hover:bg-primary-50/60 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
+                                                        className="hover:bg-slate-50/80 dark:hover:bg-slate-700/60 cursor-pointer transition-colors group"
                                                     >
                                                         {/* # */}
                                                         <td className="px-3 py-3 text-xs text-slate-400 dark:text-slate-500 tabular-nums">{rowNum}</td>

@@ -89,9 +89,9 @@ export const StatCard: React.FC<StatCardProps> = ({
         <div
             className={`
                 relative overflow-hidden flex flex-col gap-2 p-4 rounded-xl
-                bg-[#FCF9F2] dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                bg-bg-surface dark:bg-slate-800 border border-border-DEFAULT dark:border-slate-700/60
                 shadow-sm h-full transition-all duration-200
-                ${onClick ? 'cursor-pointer hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600' : ''}
+                ${onClick ? 'cursor-pointer hover:shadow-md hover:border-primary-200 dark:hover:border-slate-600' : ''}
                 ${className}
             `}
             onClick={onClick}

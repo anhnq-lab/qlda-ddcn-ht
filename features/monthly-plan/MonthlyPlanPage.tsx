@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     CalendarDays, Plus, ChevronDown, ChevronRight,
-    CheckCircle2, XCircle, Clock, AlertCircle, Building2,
-    BarChart3, ArrowRight, Edit2, Trash2, RefreshCw
+    CheckCircle2, XCircle, Clock, AlertCircle,
+    ArrowRight, Edit2, Trash2, RefreshCw, Download, Link2, FolderOpen,
 } from 'lucide-react';
+import { exportMonthlyReport } from './exportMonthlyReport';
 import { MonthlyPlanService, MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
@@ -11,6 +12,7 @@ import {
     MONTHLY_STATUS_LABELS, MonthlyReportSummary,
 } from '../../types/plan.types';
 import MonthlyPlanItemModal from './MonthlyPlanItemModal';
+import MonthlyPlanItemDetail from './MonthlyPlanItemDetail';
 
 const CURRENT_DATE = new Date();
 const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
@@ -38,6 +40,8 @@ const MonthlyPlanPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<MonthlyPlanItem | null>(null);
+    const [detailItem, setDetailItem] = useState<MonthlyPlanItem | null>(null);
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => { loadPlan(); }, [month, year, activeDept]);
     useEffect(() => { if (viewMode === 'report') loadSummaries(); }, [viewMode, month, year]);
@@ -134,6 +138,21 @@ const MonthlyPlanPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {/* Export Excel */}
+                        <button
+                            onClick={async () => {
+                                setExporting(true);
+                                try { await exportMonthlyReport(month, year); }
+                                catch (e) { console.error(e); }
+                                finally { setExporting(false); }
+                            }}
+                            disabled={exporting}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 text-slate-600 disabled:opacity-50 transition-colors"
+                        >
+                            <Download className="w-4 h-4" />
+                            {exporting ? 'Đang xuất...' : 'Xuất Excel'}
+                        </button>
+
                         {/* Toggle Plan/Report */}
                         <div className="flex bg-slate-100 rounded-lg p-0.5">
                             {(['plan', 'report'] as ViewMode[]).map(mode => (
@@ -331,6 +350,7 @@ const MonthlyPlanPage: React.FC = () => {
                                                 item={item}
                                                 viewMode={viewMode}
                                                 onStatusChange={handleStatusChange}
+                                                onRowClick={() => setDetailItem(item)}
                                                 onEdit={() => { setEditingItem(item); setModalOpen(true); }}
                                                 onDelete={() => handleDelete(item.id)}
                                             />
@@ -343,7 +363,7 @@ const MonthlyPlanPage: React.FC = () => {
                 )}
             </div>
 
-            {/* ── Modal ── */}
+            {/* ── Modal tạo/sửa ── */}
             {modalOpen && currentPlan && (
                 <MonthlyPlanItemModal
                     monthlyPlanId={currentPlan.id}
@@ -353,6 +373,29 @@ const MonthlyPlanPage: React.FC = () => {
                     item={editingItem}
                     onSaved={() => { setModalOpen(false); setEditingItem(null); loadPlan(); }}
                     onClose={() => { setModalOpen(false); setEditingItem(null); }}
+                />
+            )}
+
+            {/* ── Detail panel ── */}
+            {detailItem && (
+                <MonthlyPlanItemDetail
+                    item={detailItem}
+                    month={month}
+                    year={year}
+                    onEdit={() => {
+                        setEditingItem(detailItem);
+                        setDetailItem(null);
+                        setModalOpen(true);
+                    }}
+                    onDelete={() => {
+                        handleDelete(detailItem.id);
+                        setDetailItem(null);
+                    }}
+                    onClose={() => setDetailItem(null)}
+                    onAddTask={(monthlyPlanItemId) => {
+                        // TODO: mở TaskCreateEditModal với pre-fill monthlyPlanItemId
+                        setDetailItem(null);
+                    }}
                 />
             )}
         </div>
@@ -366,14 +409,18 @@ interface TaskRowProps {
     item: MonthlyPlanItem;
     viewMode: ViewMode;
     onStatusChange: (item: MonthlyPlanItem, status: MonthlyTaskStatus) => void;
+    onRowClick: () => void;
     onEdit: () => void;
     onDelete: () => void;
 }
 
-const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, onEdit, onDelete }) => {
+const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, onRowClick, onEdit, onDelete }) => {
     const cfg = STATUS_CONFIG[item.status];
     return (
-        <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50/50 transition-colors group">
+        <div
+            className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50/50 transition-colors group cursor-pointer"
+            onClick={onRowClick}
+        >
             <span className="text-xs text-slate-400 w-5 pt-0.5 flex-shrink-0">{idx}</span>
             <div className="flex-1 min-w-0">
                 <p className="text-sm text-slate-800 leading-snug">{item.task_name}</p>
@@ -385,9 +432,18 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
                         Lý do: {item.incomplete_reason}
                     </p>
                 )}
-                {item.project_id && (
-                    <span className="text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded mt-1 inline-block">Dự án</span>
-                )}
+                <div className="flex items-center gap-1.5 mt-1">
+                    {item.annual_plan_item_id && (
+                        <span className="text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5">
+                            <Link2 className="w-2.5 h-2.5" />KH khung
+                        </span>
+                    )}
+                    {item.project_id && (
+                        <span className="text-xs text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5">
+                            <FolderOpen className="w-2.5 h-2.5" />Dự án
+                        </span>
+                    )}
+                </div>
             </div>
 
             {/* Thời hạn */}
@@ -419,7 +475,7 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                 <button onClick={onEdit} className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded">
                     <Edit2 className="w-3.5 h-3.5" />
                 </button>

@@ -320,7 +320,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className="group cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                            className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/60"
                                             onClick={() => handleNavigateToSource(payment.ContractID)}
                                         >
                                             {/* STT */}

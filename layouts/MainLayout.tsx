@@ -11,7 +11,9 @@ import { SlidePanelContainer } from '../components/ui/SlidePanel';
 import { SlidePanelProvider } from '../context/SlidePanelContext';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
+import { useTheme } from '../context/ThemeContext';
 import { UserCheck, X } from 'lucide-react';
+
 
 // Loading skeleton for lazy-loaded pages
 const PageLoadingSkeleton: React.FC = () => (
@@ -38,6 +40,15 @@ const MainLayout: React.FC = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const { theme } = useTheme();
+
+    // Layout background class theo theme
+    const layoutBg = theme === 'dark'
+        ? 'bg-slate-950'
+        : theme === 'light'
+            ? 'bg-slate-50'
+            : 'bg-[#F0ECE1]'; // nature
+
 
     // Persist sidebar collapse state
     useEffect(() => {
@@ -58,7 +69,8 @@ const MainLayout: React.FC = () => {
 
     return (
         <SlidePanelProvider>
-        <div className="flex h-screen overflow-hidden bg-[#F0ECE1] dark:bg-slate-950">
+        <div className={`flex h-screen overflow-hidden ${layoutBg}`}>
+
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
@@ -89,7 +101,8 @@ const MainLayout: React.FC = () => {
                 </aside>
 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#F0ECE1] dark:bg-slate-950">
+                <div className={`flex-1 flex flex-col min-w-0 min-h-0 ${layoutBg}`}>
+
                     <div className="flex-1 flex flex-col min-w-0 min-h-0">
                         {/* Header */}
                         <Header

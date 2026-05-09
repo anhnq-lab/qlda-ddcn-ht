@@ -1,4 +1,4 @@
-// UI Components - Design System v2
+// UI Components - Design System v2.1
 // Export all reusable UI components
 
 // Core Components
@@ -17,6 +17,11 @@ export type { SelectProps, SelectOption } from './Select';
 export { Modal, ConfirmDialog } from './Modal';
 export type { ModalProps, ModalSize } from './Modal';
 
+// DataTable — unified table component (đã hợp nhất Table)
+export { default as DataTable } from './DataTable';
+export type { Column, SortConfig, SortDirection } from './DataTable';
+
+// Table — backward compat alias → DataTable
 export { Table, TablePagination } from './Table';
 
 export {
@@ -44,6 +49,19 @@ export type { ViewToggleProps, ViewMode } from './ViewToggle';
 
 export { Toolbar } from './Toolbar';
 export type { ToolbarProps } from './Toolbar';
+
+// ─── LAYOUT COMPONENTS (v2.1 — mới) ─────────────────────────
+export { PageHeader } from './PageHeader';
+export type { PageHeaderProps, BreadcrumbItem, PageHeaderAction } from './PageHeader';
+
+export { FilterBar } from './FilterBar';
+export type { FilterBarProps, FilterBarFilter, FilterOption } from './FilterBar';
+
+export { DetailLayout, TabNav } from './DetailLayout';
+export type { DetailLayoutProps, TabNavProps, TabItem } from './DetailLayout';
+
+export { FormSection, FormField } from './FormSection';
+export type { FormSectionProps, FormFieldProps } from './FormSection';
 
 // StatCard — unified, re-exported from common
 export { StatCard } from '../common/StatCard';

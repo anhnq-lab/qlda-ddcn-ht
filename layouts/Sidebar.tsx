@@ -24,8 +24,7 @@ import {
   CalendarRange,
   GitBranch,
   Network,
-  CalendarDays,
-  ClipboardList,
+  LayoutList,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
@@ -54,9 +53,7 @@ const navItems: NavItem[] = [
   { name: 'Tổng quan', path: '/', icon: LayoutDashboard, resource: 'dashboard' },
   { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
   { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
-  { name: 'Công việc', path: '/tasks', icon: CheckSquare, badge: 5, resource: 'tasks' },
-  { name: 'KH khung năm', path: '/annual-plan', icon: ClipboardList, resource: 'tasks' },
-  { name: 'KH tháng / BC tháng', path: '/monthly-plan', icon: CalendarDays, resource: 'tasks' },
+  { name: 'Kế hoạch & Công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
   { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
   { name: 'Nhà thầu', path: '/contractors', icon: Users, resource: 'contractors' },
   { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase, resource: 'bidding' },

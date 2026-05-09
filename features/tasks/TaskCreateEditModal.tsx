@@ -38,22 +38,31 @@ interface TaskCreateEditModalProps {
     isEditMode: boolean;
     projects: Project[];
     employees: Employee[];
+    presetMonthlyPlanItemId?: string;
 }
 
 export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
     isOpen,
     onClose,
     onSubmit,
-    initialData = {},
+    initialData = {} as Partial<Task>,
     isEditMode,
     projects,
     employees,
+    presetMonthlyPlanItemId,
 }) => {
     const [formData, setFormData] = useState<Partial<Task>>(initialData);
 
     useEffect(() => {
-        if (isOpen) setFormData(initialData);
-    }, [isOpen, initialData]);
+        if (isOpen) {
+            setFormData({
+                ...initialData,
+                ...(presetMonthlyPlanItemId && !initialData.MonthlyPlanItemID
+                    ? { MonthlyPlanItemID: presetMonthlyPlanItemId }
+                    : {}),
+            });
+        }
+    }, [isOpen, initialData, presetMonthlyPlanItemId]);
 
     if (!isOpen) return null;
 
@@ -230,8 +239,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm transition-all active:scale-[0.98]"
-                            
+                            className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all active:scale-[0.98]"
                         >
                             {isEditMode ? 'Lưu thay đổi' : 'Tạo công việc'}
                         </button>

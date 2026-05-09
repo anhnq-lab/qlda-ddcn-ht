@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { Sun, Moon, ChevronRight, Palette, Bell, Shield, User, Users, ShieldCheck, LogOut, Grid, AlignJustify, ArrowDownFromLine, TableProperties } from 'lucide-react';
+import { Sun, Moon, Leaf, ChevronRight, Palette, Bell, Shield, User, Users, ShieldCheck, LogOut, Grid, AlignJustify, ArrowDownFromLine, TableProperties } from 'lucide-react';
+
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import UserImpersonator from './UserImpersonator';
@@ -16,8 +17,22 @@ const Settings: React.FC = () => {
         {
             key: 'light' as const,
             label: 'Sáng',
-            description: 'Giao diện nền trắng, phù hợp ban ngày',
+            description: 'Nền trắng thuần, sắc nét',
             icon: Sun,
+            preview: {
+                bg: 'bg-white',
+                sidebar: 'bg-slate-100',
+                header: 'bg-white',
+                card: 'bg-slate-100',
+                text: 'bg-slate-300',
+                accent: 'bg-blue-500',
+            }
+        },
+        {
+            key: 'nature' as const,
+            label: 'Bảo vệ mắt',
+            description: 'Nền cát ấm, giảm mỏi mắt',
+            icon: Leaf,
             preview: {
                 bg: 'bg-[#FCF9F2]',
                 sidebar: 'bg-gray-100',
@@ -30,14 +45,14 @@ const Settings: React.FC = () => {
         {
             key: 'dark' as const,
             label: 'Tối',
-            description: 'Giao diện nền tối, giảm mỏi mắt',
+            description: 'Nền đậm Navy, ban đêm',
             icon: Moon,
             preview: {
                 bg: 'bg-slate-900',
                 sidebar: 'bg-slate-800',
                 header: 'bg-slate-800',
                 card: 'bg-slate-700',
-                text: 'bg-slate-200', /* Fixed typo from original bg-[#F5EFE6]0 */
+                text: 'bg-slate-400',
                 accent: 'bg-blue-500',
             }
         },
@@ -72,27 +87,29 @@ const Settings: React.FC = () => {
                         </div>
 
                         <div className="p-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {themeOptions.map(opt => {
                                     const isActive = theme === opt.key;
                                     return (
                                         <button
                                             key={opt.key}
                                             onClick={() => setTheme(opt.key)}
-                                            className={`relative rounded-xl border-2 p-4 text-left transition-all duration-200 group ${isActive
-                                                    ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800'
+                                            className={`relative rounded-xl border-2 p-3 text-left transition-all duration-200 group ${isActive
+                                                    ? opt.key === 'nature'
+                                                        ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20 ring-2 ring-emerald-200 dark:ring-emerald-800'
+                                                        : 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800'
                                                     : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 bg-[#FCF9F2] dark:bg-slate-800'
                                                 }`}
                                         >
                                             {/* Mini Preview */}
-                                            <div className={`${opt.preview.bg} rounded-lg border border-gray-200 dark:border-slate-600 p-2 mb-3 flex gap-1.5 h-20 overflow-hidden`}>
-                                                <div className={`${opt.preview.sidebar} rounded w-6 flex flex-col gap-1 p-1`}>
+                                            <div className={`${opt.preview.bg} rounded-lg border border-gray-200 dark:border-slate-600 p-2 mb-3 flex gap-1.5 h-16 overflow-hidden`}>
+                                                <div className={`${opt.preview.sidebar} rounded w-5 flex flex-col gap-1 p-1`}>
                                                     <div className={`${opt.preview.accent} rounded-sm h-1`}></div>
                                                     <div className={`${opt.preview.text} rounded-sm h-1`}></div>
                                                     <div className={`${opt.preview.text} rounded-sm h-1`}></div>
                                                 </div>
                                                 <div className="flex-1 flex flex-col gap-1">
-                                                    <div className={`${opt.preview.header} rounded h-3`}></div>
+                                                    <div className={`${opt.preview.header} rounded h-2.5`}></div>
                                                     <div className="flex gap-1 flex-1">
                                                         <div className={`${opt.preview.card} rounded flex-1`}></div>
                                                         <div className={`${opt.preview.card} rounded flex-1`}></div>
@@ -101,24 +118,31 @@ const Settings: React.FC = () => {
                                             </div>
 
                                             {/* Label */}
-                                            <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2">
                                                 <div className={`p-1.5 rounded-lg ${isActive
-                                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
+                                                        ? opt.key === 'nature'
+                                                            ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+                                                            : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
                                                         : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
                                                     }`}>
                                                     <opt.icon className="w-4 h-4" />
                                                 </div>
                                                 <div>
-                                                    <p className={`text-sm font-bold ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-800 dark:text-slate-100'
+                                                    <p className={`text-sm font-bold ${
+                                                        isActive
+                                                            ? opt.key === 'nature'
+                                                                ? 'text-emerald-700 dark:text-emerald-300'
+                                                                : 'text-blue-700 dark:text-blue-300'
+                                                            : 'text-gray-800 dark:text-slate-100'
                                                         }`}>{opt.label}</p>
-                                                    <p className="text-[11px] text-gray-500 dark:text-slate-400">{opt.description}</p>
+                                                    <p className="text-[10px] text-gray-500 dark:text-slate-400 leading-tight mt-0.5">{opt.description}</p>
                                                 </div>
                                             </div>
 
                                             {/* Active Indicator */}
                                             {isActive && (
-                                                <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center">
-                                                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                <div className={`absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center ${opt.key === 'nature' ? 'bg-emerald-500' : 'bg-primary-600'}`}>
+                                                    <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                     </svg>
                                                 </div>

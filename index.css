@@ -148,6 +148,32 @@
 }
 
 /* ========================================
+   THEME: NATURE (Bảo vệ mắt — nền cát ấm)
+   Đây là chế độ "sáng" cũ đã được đổi tên
+   :root mặc định đã là màu cát → chỉ cần đặt alias
+   ======================================== */
+.theme-nature {
+  --color-bg-body: #f1f5f9;         /* slate-100 — nền trang chính */
+  --color-bg-card: #FCF9F2;         /* Cát ấm — card/header */
+  --color-bg-card-alt: #F5EFE6;     /* Cát đậm — section header, table header */
+  --color-border-card: #ece7de;     /* Border cát */
+}
+
+/* ========================================
+   THEME: LIGHT (Sáng — nền trắng thuần)
+   ======================================== */
+.theme-light {
+  --color-bg-body: #f8fafc;         /* slate-50 — nền trang chính */
+  --color-bg-card: #ffffff;         /* Trắng thuần — card */
+  --color-bg-card-alt: #f1f5f9;     /* slate-100 — section header, table header */
+  --color-border-card: #e2e8f0;     /* slate-200 — border */
+
+  /* Override background tokens */
+  --color-bg-primary: #f8fafc;
+  --color-bg-elevated: #ffffff;
+}
+
+/* ========================================
    BASE STYLES
    ======================================== */
 @layer base {
@@ -160,11 +186,18 @@
   }
 
   body {
-    @apply bg-slate-100 text-slate-900 font-sans dark:bg-slate-950 dark:text-slate-100;
     font-family: var(--font-sans);
     line-height: 1.6;
     overflow-x: hidden;
+    @apply text-slate-900;
   }
+
+  /* Background body per theme */
+  html.theme-nature body { background-color: #f1f5f9; }
+  html.theme-light body  { background-color: #f8fafc; }
+  html.dark body         { background-color: #020617; color: #f1f5f9; }
+  /* Fallback (no class yet — happens briefly on first paint) */
+  body { background-color: #f1f5f9; }
 
   /* Fluid responsive: auto-scale when browser zoom ≥ 125% */
   @media (min-resolution: 1.25dppx) {
@@ -785,6 +818,65 @@
   .section-divider {
     @apply border-t-2 border-gray-100 dark:border-slate-700 my-4;
   }
+}
+
+/* ========================================
+   THEME-LIGHT OVERRIDES
+   Chuyển màu nền cát → trắng thuần
+   ======================================== */
+
+/* Card / Section containers */
+.theme-light .card,
+.theme-light .card-glass,
+.theme-light .stat-card,
+.theme-light .stat-card-premium,
+.theme-light .section-card,
+.theme-light .toolbar {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Section headers / Table headers */
+.theme-light .section-header,
+.theme-light .section-card-header,
+.theme-light .table-header-row,
+.theme-light .table-header-row th,
+.theme-light .table-footer {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Header bar */
+.theme-light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Inline bg-[#FCF9F2] overrides */
+.theme-light [class*="bg-\\[\\#FCF9F2\\]"] { background-color: #ffffff !important; }
+.theme-light [class*="bg-\\[\\#F5EFE6\\]"] { background-color: #f1f5f9 !important; }
+.theme-light [class*="bg-\\[\\#FBF8EF\\]"] { background-color: #f8fafc !important; }
+.theme-light [class*="bg-\\[\\#F0ECE1\\]"] { background-color: #f8fafc !important; }
+
+/* Utility class targets for inline Tailwind */
+.theme-light .bg-\\[\\#FCF9F2\\] { background-color: #ffffff !important; }
+.theme-light .bg-\\[\\#F5EFE6\\] { background-color: #f1f5f9 !important; }
+.theme-light .bg-\\[\\#FBF8EF\\] { background-color: #f8fafc !important; }
+.theme-light .bg-\\[\\#F0ECE1\\] { background-color: #f8fafc !important; }
+.theme-light .border-\\[\\#ece7de\\] { border-color: #e2e8f0 !important; }
+
+/* thead background */
+.theme-light thead {
+  background-color: #f1f5f9 !important;
+  box-shadow: 0 1px 0 #cbd5e1 !important;
+}
+
+/* Legal table rows */
+.theme-light .legal-table-wrapper tbody tr:nth-child(even) {
+  background-color: #f8fafc !important;
+}
+.theme-light .legal-table-wrapper th.section-header {
+  background-color: #f1f5f9 !important;
 }
 
 /* ========================================
@@ -3568,4 +3660,301 @@ body.slide-panel-open {
   border-color: #334155;
   color: #94a3b8;
 }
+
+/* ===================================================
+   ERP TABLE STANDARD (v2.2) — Unified table styling
+   Canonical: EmployeeList design pattern
+   =================================================== */
+
+/* Container card */
+.erp-table-container {
+  background: #FCF9F2;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.dark .erp-table-container {
+  background: rgb(30 41 59);
+  border-color: rgb(51 65 85);
+}
+
+/* Header row */
+.erp-table-container thead tr {
+  background: #F5EFE6;
+  border-bottom: 1px solid #e2e8f0;
+}
+.dark .erp-table-container thead tr {
+  background: rgb(30 41 59);
+  border-bottom-color: rgb(51 65 85);
+}
+
+/* Header cells */
+.erp-table-container thead th {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgb(100 116 139);
+  text-align: left;
+  white-space: nowrap;
+}
+.dark .erp-table-container thead th {
+  color: rgb(148 163 184);
+}
+
+/* Body dividers */
+.erp-table-container tbody {
+  border-collapse: separate;
+}
+.erp-table-container tbody tr {
+  transition: background-color 0.15s;
+  border-bottom: 1px solid rgb(243 244 246);
+}
+.dark .erp-table-container tbody tr {
+  border-bottom-color: rgba(51, 65, 85, 0.7);
+}
+
+/* Body row hover */
+.erp-table-container tbody tr:hover {
+  background: rgba(248, 250, 252, 0.8);
+}
+.dark .erp-table-container tbody tr:hover {
+  background: rgba(51, 65, 85, 0.6);
+}
+
+/* Body cells */
+.erp-table-container tbody td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: rgb(51 65 85);
+  vertical-align: middle;
+}
+.dark .erp-table-container tbody td {
+  color: rgb(203 213 225);
+}
+
+/* Footer */
+.erp-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #FCF9F2;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  font-size: 12px;
+  color: rgb(100 116 139);
+}
+.dark .erp-table-footer {
+  background: rgb(30 41 59);
+  border-color: rgb(51 65 85);
+  color: rgb(148 163 184);
+}
+
+/* =============================================================================
+   DARK MODE — CONTRAST OVERRIDE SYSTEM v2.1
+   Đảm bảo WCAG AA (4.5:1) trên TOÀN BỘ giao diện dark mode
+   Áp dụng cho tất cả component chưa chuyển sang CSS variables
+   ============================================================================= */
+
+/* ── 1. GLOBAL TEXT VISIBILITY ────────────────────────────────────────────── */
+.dark { color-scheme: dark; }
+
+/* Gray/Slate text classes không có dark: prefix — phải visible trên dark bg */
+.dark .text-gray-900 { color: #f1f5f9 !important; }
+.dark .text-gray-800 { color: #e2e8f0 !important; }
+.dark .text-gray-700 { color: #cbd5e1 !important; }
+.dark .text-gray-600 { color: #94a3b8 !important; }
+.dark .text-gray-500 { color: #64748b !important; }
+.dark .text-black    { color: #f8fafc !important; }
+.dark .text-slate-900 { color: #f1f5f9 !important; }
+.dark .text-slate-800 { color: #e2e8f0 !important; }
+.dark .text-slate-700 { color: #cbd5e1 !important; }
+.dark .text-slate-600 { color: #94a3b8 !important; }
+.dark .text-slate-500 { color: #64748b !important; }
+
+/* ── 2. BACKGROUND — hardcoded nature/sand colors → dark surface ────────── */
+.dark .bg-white:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
+.dark .bg-gray-50:not([class*="dark:bg-"]) { background-color: #151d2e !important; }
+.dark .bg-gray-100:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
+.dark .bg-slate-50:not([class*="dark:bg-"]) { background-color: #151d2e !important; }
+.dark .bg-slate-100:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
+/* Sand/nature colors */
+.dark [class~="bg-[#FCF9F2]"] { background-color: #1e293b !important; }
+.dark [class~="bg-[#F5EFE6]"] { background-color: #151d2e !important; }
+.dark [class~="bg-[#EDE8DF]"] { background-color: #0f1117 !important; }
+.dark [class~="bg-[#FBF8EF]"] { background-color: #1e293b !important; }
+.dark [class~="bg-[#F0ECE1]"] { background-color: #151d2e !important; }
+.dark [class~="bg-[#ece7de]"] { background-color: #1e293b !important; }
+
+/* ── 3. BORDER — hardcoded colors → dark border ─────────────────────────── */
+.dark .border-gray-100, .dark .border-gray-200, .dark .border-gray-300,
+.dark .border-slate-100, .dark .border-slate-200 {
+  border-color: #1e293b !important;
+}
+.dark [class~="border-[#ece7de]"],
+.dark [class~="border-[#e5dfd4]"] { border-color: #1e293b !important; }
+
+/* ── 4. TABLE — vấn đề chính từ screenshot ──────────────────────────────── */
+/* Header */
+.dark thead { background-color: #1e293b !important; }
+.dark thead th {
+  color: #94a3b8 !important;
+  border-color: #293548 !important;
+}
+/* Rows */
+.dark tbody td {
+  color: #cbd5e1 !important;
+  border-color: #1e293b !important;
+}
+.dark tbody td strong,
+.dark tbody td b,
+.dark tbody td.font-medium,
+.dark tbody td.font-semibold { color: #e2e8f0 !important; }
+.dark tbody td.font-bold { color: #f1f5f9 !important; }
+/* Row zebra & hover */
+.dark tbody tr:nth-child(even):not([class*="bg-"]) {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+}
+.dark tbody tr:hover { background-color: rgba(51, 65, 85, 0.4) !important; }
+/* Group header rows */
+.dark tr.bg-gray-50, .dark tr.bg-slate-50,
+.dark tr[class~="bg-[#F5EFE6]"],
+.dark tr[class*="bg-slate-100"],
+.dark tr[class*="task-group"] {
+  background-color: #151d2e !important;
+  color: #94a3b8 !important;
+}
+/* Cell text bị inherit sai */
+.dark td .text-gray-900 { color: #f1f5f9 !important; }
+.dark td .text-gray-800 { color: #e2e8f0 !important; }
+.dark td .text-gray-700 { color: #cbd5e1 !important; }
+.dark td .text-gray-600 { color: #94a3b8 !important; }
+.dark td .text-slate-900 { color: #f1f5f9 !important; }
+.dark td .text-slate-800 { color: #e2e8f0 !important; }
+.dark td .text-slate-700 { color: #cbd5e1 !important; }
+.dark td .text-slate-600 { color: #94a3b8 !important; }
+/* tfoot */
+.dark tfoot td, .dark tfoot th { color: #cbd5e1 !important; }
+
+/* ── 5. CARD & PANEL ─────────────────────────────────────────────────────── */
+.dark .section-card { background-color: #1e293b !important; border-color: #293548 !important; }
+.dark .section-card-header { background-color: #151d2e !important; border-color: #293548 !important; color: #e2e8f0 !important; }
+.dark .toolbar { background-color: #1e293b !important; border-color: #293548 !important; }
+.dark .table-footer { background-color: #151d2e !important; border-color: #293548 !important; }
+.dark .table-header-row, .dark .table-header-row th {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+/* ── 6. MODAL & DIALOG ──────────────────────────────────────────────────── */
+.dark [role="dialog"] { background-color: #1e293b !important; border-color: #293548 !important; }
+.dark [role="dialog"] h1, .dark [role="dialog"] h2,
+.dark [role="dialog"] h3, .dark [role="dialog"] h4 { color: #f1f5f9 !important; }
+.dark [role="dialog"] label { color: #94a3b8 !important; }
+.dark [role="dialog"] p { color: #cbd5e1 !important; }
+.dark [role="dialog"] .bg-white, .dark [role="dialog"] .bg-gray-50,
+.dark [role="dialog"] .bg-slate-50, .dark [role="dialog"] [class~="bg-[#FCF9F2]"] {
+  background-color: #151d2e !important;
+  border-color: #293548 !important;
+}
+
+/* ── 7. FORM INPUTS ──────────────────────────────────────────────────────── */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="dark:bg-"]) {
+  background-color: #151d2e !important;
+  border-color: #293548 !important;
+  color: #e2e8f0 !important;
+}
+.dark textarea:not([class*="dark:bg-"]) {
+  background-color: #151d2e !important;
+  border-color: #293548 !important;
+  color: #e2e8f0 !important;
+}
+.dark input::placeholder, .dark textarea::placeholder { color: #334155 !important; }
+.dark label:not([class*="text-"]) { color: #94a3b8 !important; }
+
+/* ── 8. DROPDOWN & LISTBOX ──────────────────────────────────────────────── */
+.dark [role="listbox"], .dark [role="menu"] {
+  background-color: #1e293b !important; border-color: #293548 !important;
+}
+.dark [role="option"], .dark [role="menuitem"] { color: #cbd5e1 !important; }
+.dark [role="option"]:hover, .dark [role="menuitem"]:hover { background-color: #293548 !important; }
+.dark [role="option"][aria-selected="true"] { background-color: rgba(74,144,226,0.15) !important; color: #93c5fd !important; }
+
+/* ── 9. STATUS BADGES — light bg → dark semi-transparent ────────────────── */
+.dark .bg-green-100  { background-color: rgba(5,150,105,0.15) !important; }
+.dark .text-green-800, .dark .text-green-700 { color: #34d399 !important; }
+.dark .bg-yellow-100 { background-color: rgba(245,158,11,0.15) !important; }
+.dark .text-yellow-800, .dark .text-yellow-700 { color: #fbbf24 !important; }
+.dark .bg-red-100    { background-color: rgba(239,68,68,0.15) !important; }
+.dark .text-red-800, .dark .text-red-700 { color: #f87171 !important; }
+.dark .bg-blue-100   { background-color: rgba(59,130,246,0.15) !important; }
+.dark .text-blue-800, .dark .text-blue-700 { color: #60a5fa !important; }
+.dark .bg-purple-100 { background-color: rgba(139,92,246,0.15) !important; }
+.dark .text-purple-800, .dark .text-purple-700 { color: #a78bfa !important; }
+.dark .bg-indigo-100 { background-color: rgba(99,102,241,0.15) !important; }
+.dark .text-indigo-800, .dark .text-indigo-700 { color: #818cf8 !important; }
+.dark .bg-orange-100 { background-color: rgba(249,115,22,0.15) !important; }
+.dark .text-orange-800, .dark .text-orange-700 { color: #fb923c !important; }
+.dark .bg-teal-100   { background-color: rgba(20,184,166,0.15) !important; }
+.dark .text-teal-800, .dark .text-teal-700 { color: #2dd4bf !important; }
+
+/* ── 10. HEADINGS ────────────────────────────────────────────────────────── */
+.dark h1:not([class*="text-"]) { color: #f8fafc !important; }
+.dark h2:not([class*="text-"]) { color: #f1f5f9 !important; }
+.dark h3:not([class*="text-"]) { color: #e2e8f0 !important; }
+.dark h4:not([class*="text-"]) { color: #e2e8f0 !important; }
+.dark h5:not([class*="text-"]) { color: #cbd5e1 !important; }
+
+/* ── 11. CHART (Recharts) ────────────────────────────────────────────────── */
+.dark .recharts-text,
+.dark .recharts-cartesian-axis-tick-value { fill: #94a3b8 !important; }
+.dark .recharts-legend-item-text { color: #94a3b8 !important; }
+.dark .recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border-color: #293548 !important;
+  color: #e2e8f0 !important;
+}
+
+/* ── 12. TABS ────────────────────────────────────────────────────────────── */
+.dark button[role="tab"]:not([class*="text-white"]):not([class*="dark:text-"]) { color: #64748b; }
+.dark button[role="tab"][aria-selected="true"] { color: #60a5fa !important; }
+
+/* ── 13. DIVIDERS ────────────────────────────────────────────────────────── */
+.dark hr { border-color: #1e293b !important; }
+
+/* ── 14. WORK-PLAN MODULE — từ screenshot ────────────────────────────────── */
+/* Task name column — invisible text fix */
+.dark [class*="task-name"],
+.dark [class*="task-title"],
+.dark [class*="wp-"] { color: inherit; }
+
+/* Group collapse toggle row */
+.dark [class*="group-row"],
+.dark [class*="category-row"] {
+  background-color: #151d2e !important;
+  color: #94a3b8 !important;
+}
+
+/* Frequency badge (Hàng quý, Hàng tháng, v.v.) */
+.dark [class*="frequency-badge"],
+.dark [class*="tan-suat"] {
+  background-color: rgba(74,144,226,0.1) !important;
+  color: #93c5fd !important;
+}
+
+/* Department chip */
+.dark [class*="dept-chip"],
+.dark [class*="phong-ban"] {
+  background-color: rgba(99,102,241,0.1) !important;
+  color: #818cf8 !important;
+}
+
+/* =============================================================================
+   END: DARK MODE CONTRAST OVERRIDE SYSTEM v2.1
+   ============================================================================= */
+
 

@@ -46,8 +46,7 @@ const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'
 const AdminUserManagement = React.lazy(() => import('./features/admin/AdminUserManagement'));
 
 const WorkflowManagerPage = React.lazy(() => import('./features/workflows/WorkflowManagerPage'));
-const AnnualPlanPage = React.lazy(() => import('./features/annual-plan/AnnualPlanPage'));
-const MonthlyPlanPage = React.lazy(() => import('./features/monthly-plan/MonthlyPlanPage'));
+const WorkPlanPage = React.lazy(() => import('./features/work-plan/WorkPlanPage'));
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -113,27 +112,19 @@ const App: React.FC = () => {
                                             </ProtectedRoute>
                                         } />
 
-                                        {/* Tasks Routes */}
-                                        <Route path="tasks" element={
+                                        {/* Unified Work-Plan page (Tasks + KH khung + KH tháng as tabs) */}
+                                        <Route path="work-plan" element={
                                             <ProtectedRoute resource="tasks">
-                                                <React.Suspense fallback={<PageLoadingFallback />}><TaskList /></React.Suspense>
+                                                <React.Suspense fallback={<PageLoadingFallback />}><WorkPlanPage /></React.Suspense>
                                             </ProtectedRoute>
                                         } />
+                                        {/* Backward-compatible redirects */}
+                                        <Route path="tasks" element={<Navigate to="/work-plan?tab=tasks" replace />} />
+                                        <Route path="annual-plan" element={<Navigate to="/work-plan?tab=annual" replace />} />
+                                        <Route path="monthly-plan" element={<Navigate to="/work-plan?tab=monthly" replace />} />
                                         <Route path="tasks/:id" element={
                                             <ProtectedRoute resource="tasks">
                                                 <React.Suspense fallback={<PageLoadingFallback />}><TaskDetail /></React.Suspense>
-                                            </ProtectedRoute>
-                                        } />
-
-                                        {/* Plan Routes — KH khung năm + KH tháng/BC tháng */}
-                                        <Route path="annual-plan" element={
-                                            <ProtectedRoute resource="tasks">
-                                                <React.Suspense fallback={<PageLoadingFallback />}><AnnualPlanPage /></React.Suspense>
-                                            </ProtectedRoute>
-                                        } />
-                                        <Route path="monthly-plan" element={
-                                            <ProtectedRoute resource="tasks">
-                                                <React.Suspense fallback={<PageLoadingFallback />}><MonthlyPlanPage /></React.Suspense>
                                             </ProtectedRoute>
                                         } />
 

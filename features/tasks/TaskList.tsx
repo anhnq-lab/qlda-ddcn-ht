@@ -57,6 +57,7 @@ const TaskList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterProject, setFilterProject] = useState<string>('All');
+    const [filterOverdue, setFilterOverdue] = useState(false);
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Partial<Task>>({});
@@ -91,8 +92,14 @@ const TaskList: React.FC = () => {
             task.Description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = filterStatus === 'All' || task.Status === filterStatus;
         const matchProject = filterProject === 'All' || task.ProjectID === filterProject;
-        return matchSearch && matchStatus && matchProject;
-    }), [tasks, searchTerm, filterStatus, filterProject, scopedProjectIds]);
+        // Overdue: chưa xong + có hạn + đã quá hạn
+        const matchOverdue = !filterOverdue || (
+            task.Status !== TaskStatus.Done &&
+            !!task.DueDate &&
+            new Date(task.DueDate) < new Date()
+        );
+        return matchSearch && matchStatus && matchProject && matchOverdue;
+    }), [tasks, searchTerm, filterStatus, filterProject, filterOverdue, scopedProjectIds]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {
@@ -258,7 +265,7 @@ const TaskList: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || searchTerm !== '';
+    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || searchTerm !== '' || filterOverdue;
 
     // ═══════════════════════════════════════════════════
     // Render
@@ -335,7 +342,11 @@ const TaskList: React.FC = () => {
                         value={stats.overdue}
                         icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />}
                         color="rose"
-                        onClick={() => { /* custom overdue filter logic */ }}
+                        onClick={() => {
+                            // Toggle filter quá hạn; reset status filter
+                            setFilterOverdue(v => !v);
+                            if (!filterOverdue) setFilterStatus('All');
+                        }}
                     />
                 </div>
             )}
@@ -394,11 +405,20 @@ const TaskList: React.FC = () => {
 
                         {hasActiveFilters && (
                             <button
-                                onClick={() => { setSearchTerm(''); setFilterStatus('All'); setFilterProject('All'); }}
+                                onClick={() => { setSearchTerm(''); setFilterStatus('All'); setFilterProject('All'); setFilterOverdue(false); }}
                                 className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
                             >
                                 Xóa bộ lọc
                             </button>
+                        )}
+                        {filterOverdue && (
+                            <span className="inline-flex items-center gap-1 text-xs text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded-lg font-medium">
+                                <AlertTriangle className="w-3 h-3" />
+                                Quá hạn
+                                <button onClick={() => setFilterOverdue(false)} className="ml-1 hover:text-rose-800">
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </span>
                         )}
                     </div>
 

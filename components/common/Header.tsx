@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Search, LogOut, Menu, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Bell, Search, LogOut, Menu, ChevronDown, Sun, Moon, Leaf } from 'lucide-react';
+
 import { useAuth } from '../../context/AuthContext';
 import { NotificationCenter } from './NotificationCenter';
 import { useTheme } from '../../context/ThemeContext';
@@ -167,21 +168,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                     <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
                                         <button
                                             onClick={() => setTheme('light')}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${theme === 'light'
-                                                ? 'bg-[#FCF9F2] dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-lg border border-[#ece7de] dark:border-transparent'
-                                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                                                }`}
+                                            title="Sáng (nền trắng)"
+                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                                theme === 'light'
+                                                    ? 'bg-white text-primary-600 shadow-lg border border-slate-200'
+                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                            }`}
                                         >
-                                            <Sun size={14} /> Sáng
+                                            <Sun size={13} /> Sáng
+                                        </button>
+                                        <button
+                                            onClick={() => setTheme('nature')}
+                                            title="Bảo vệ mắt (nền cát)"
+                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                                theme === 'nature'
+                                                    ? 'bg-[#FCF9F2] dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-lg border border-[#ece7de] dark:border-transparent'
+                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                            }`}
+                                        >
+                                            <Leaf size={13} /> Bảo mắt
                                         </button>
                                         <button
                                             onClick={() => setTheme('dark')}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${theme === 'dark'
-                                                ? 'bg-slate-800 dark:bg-slate-700 text-primary-400 shadow-lg'
-                                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                                                }`}
+                                            title="Tối (Navy)"
+                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                                theme === 'dark'
+                                                    ? 'bg-slate-800 dark:bg-slate-700 text-primary-400 shadow-lg'
+                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                            }`}
                                         >
-                                            <Moon size={14} /> Tối
+                                            <Moon size={13} /> Tối
                                         </button>
                                     </div>
                                 </div>
