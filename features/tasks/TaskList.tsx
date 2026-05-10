@@ -575,7 +575,7 @@ const TaskList: React.FC = () => {
                                         <th onClick={() => handleSort('Title')} className="group/th px-4 py-3 text-left w-[35%] min-w-[250px] cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
                                             <span className="flex items-center gap-1">Công việc <SortIcon field="Title" /></span>
                                         </th>
-                                        <th className="px-4 py-3 text-left hidden md:table-cell w-[20%] min-w-[150px] border-b border-slate-200 dark:border-slate-800">Bước thực hiện</th>
+                                        <th className="px-4 py-3 text-left hidden md:table-cell w-[20%] min-w-[150px] border-b border-slate-200 dark:border-slate-800">Phòng ban</th>
                                         <th onClick={() => handleSort('ProgressPercent')} className="group/th px-4 py-3 text-center w-24 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
                                             <span className="flex items-center justify-center gap-1">Tiến độ <SortIcon field="ProgressPercent" /></span>
                                         </th>
@@ -661,12 +661,12 @@ const TaskList: React.FC = () => {
                                                             )}
                                                         </td>
 
-                                                        {/* TimelineStep */}
+                                                        {/* Department */}
                                                         <td className="px-4 py-3.5 hidden md:table-cell">
-                                                            {task.TimelineStep ? (
-                                                                <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg ${phaseColor.bg} ${phaseColor.text} ring-1 ${phaseColor.border}`}>
+                                                            {assignee?.Department ? (
+                                                                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 ring-1 ring-blue-200 dark:ring-blue-800">
                                                                     <Layers className="w-3 shrink-0 h-3" />
-                                                                    <span className="line-clamp-1">{stepLabel}</span>
+                                                                    <span className="line-clamp-1">{assignee.Department.replace('Phòng ', '')}</span>
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-[10px] text-slate-300">—</span>
