@@ -58,6 +58,7 @@ const TaskList: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterProject, setFilterProject] = useState<string>('All');
     const [filterMonth, setFilterMonth] = useState<string>('All');
+    const [filterDepartment, setFilterDepartment] = useState<string>('All');
     const [filterOverdue, setFilterOverdue] = useState(false);
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,6 +85,12 @@ const TaskList: React.FC = () => {
     const saveTaskMutation = useSaveTask();
     const updateTaskMutation = useUpdateTask();
     const deleteTaskMutation = useDeleteTask();
+    
+    // Derived
+    const departments = useMemo(() => {
+        const depts = new Set(employees.map(e => e.Department).filter(Boolean));
+        return Array.from(depts).sort();
+    }, [employees]);
 
     // ── Filter ──
     const filteredTasks = useMemo(() => tasks.filter(task => {
@@ -102,14 +109,20 @@ const TaskList: React.FC = () => {
             (task.StartDate && new Date(task.StartDate).getMonth() + 1 === parseInt(filterMonth))
         );
 
+        // Department filter
+        const matchDepartment = filterDepartment === 'All' || (() => {
+            const assignee = employees.find(e => e.EmployeeID === task.AssigneeID);
+            return assignee?.Department === filterDepartment;
+        })();
+
         // Overdue: chưa xong + có hạn + đã quá hạn
         const matchOverdue = !filterOverdue || (
             task.Status !== TaskStatus.Done &&
             !!task.DueDate &&
             new Date(task.DueDate) < new Date()
         );
-        return matchSearch && matchStatus && matchProject && matchMonth && matchOverdue;
-    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterOverdue, scopedProjectIds]);
+        return matchSearch && matchStatus && matchProject && matchMonth && matchDepartment && matchOverdue;
+    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, scopedProjectIds, employees]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {
@@ -275,7 +288,7 @@ const TaskList: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || searchTerm !== '' || filterOverdue;
+    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || filterMonth !== 'All' || filterDepartment !== 'All' || searchTerm !== '' || filterOverdue;
 
     // ═══════════════════════════════════════════════════
     // Render
@@ -413,6 +426,21 @@ const TaskList: React.FC = () => {
                         </div>
 
                         <div className="relative">
+                            <Layers className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                            <select
+                                value={filterDepartment}
+                                onChange={(e) => setFilterDepartment(e.target.value)}
+                                className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all min-w-[150px] max-w-[200px]"
+                            >
+                                <option value="All">Tất cả phòng ban</option>
+                                {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                        </div>
+
+                        <div className="relative">
                             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                             <select
                                 value={filterStatus}
@@ -430,7 +458,7 @@ const TaskList: React.FC = () => {
 
                         {hasActiveFilters && (
                             <button
-                                onClick={() => { setSearchTerm(''); setFilterStatus('All'); setFilterProject('All'); setFilterOverdue(false); }}
+                                onClick={() => { setSearchTerm(''); setFilterStatus('All'); setFilterProject('All'); setFilterMonth('All'); setFilterDepartment('All'); setFilterOverdue(false); }}
                                 className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
                             >
                                 Xóa bộ lọc

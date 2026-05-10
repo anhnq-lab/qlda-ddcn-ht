@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Plus, RefreshCw, Filter, ChevronDown, Search, AlertCircle, User, Calendar } from 'lucide-react';
+import { ClipboardList, Plus, RefreshCw, Search, AlertCircle, ClipboardCheck } from 'lucide-react';
 import { EvaluationService } from './services/evaluationService';
 import { EvaluationStatusBadge, ClassificationBadge } from './components/EvaluationBadges';
 import EvaluationFormModal from './components/EvaluationFormModal';
+import EvaluationSlidePanel from './components/EvaluationSlidePanel';
 import {
     MONTHS_VI,
     calcSelfTotal,
@@ -12,85 +13,13 @@ import {
     type EvaluationStatus,
 } from './types/evaluation.types';
 import { useAuth } from '../../context/AuthContext';
+import { useSlidePanel } from '../../context/SlidePanelContext';
 import { Role } from '../../types/employee.types';
 
-// ── Tạo phiếu mới modal (nhẹ, không dùng form phức tạp) ──────────────
-const CreateFormModal: React.FC<{
-    isOpen: boolean;
-    onClose: () => void;
-    onCreated: (form: EvaluationForm) => void;
-    currentUser: { EmployeeID: string; FullName: string; Department: string };
-}> = ({ isOpen, onClose, onCreated, currentUser }) => {
-    const now = new Date();
-    const [month, setMonth] = useState(now.getMonth() + 1);
-    const [year, setYear] = useState(now.getFullYear());
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    if (!isOpen) return null;
-
-    const handleCreate = async () => {
-        setSaving(true); setError(null);
-        // Kiểm tra đã có phiếu chưa
-        const { data: existing } = await EvaluationService.getByEmployeePeriod({
-            employee_id: currentUser.EmployeeID,
-            eval_month: month,
-            eval_year: year,
-        });
-        if (existing) {
-            setError(`Đã có phiếu đánh giá tháng ${month}/${year} của bạn.`);
-            setSaving(false);
-            return;
-        }
-        const { data, error: err } = await EvaluationService.create({
-            employee_id: currentUser.EmployeeID,
-            employee_name: currentUser.FullName,
-            department_code: currentUser.Department,
-            department_name: currentUser.Department,
-            eval_month: month,
-            eval_year: year,
-        });
-        setSaving(false);
-        if (err || !data) { setError(err ?? 'Tạo phiếu thất bại'); return; }
-        onCreated(data);
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-            <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">Tạo phiếu đánh giá</h3>
-                <p className="text-sm text-slate-400 mb-5">Chọn kỳ đánh giá để tạo phiếu mới</p>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Tháng</label>
-                        <select value={month} onChange={e => setMonth(+e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                            {MONTHS_VI.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Năm</label>
-                        <select value={year} onChange={e => setYear(+e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                            {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                    </div>
-                </div>
-                {error && <p className="text-xs text-red-500 mb-3 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-800">{error}</p>}
-                <div className="flex gap-3">
-                    <button onClick={onClose} className="flex-1 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition-colors">Hủy</button>
-                    <button onClick={handleCreate} disabled={saving} className="flex-1 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 shadow-lg shadow-primary-500/20">
-                        {saving ? 'Đang tạo...' : 'Tạo phiếu'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// ── Main Page ──────────────────────────────────────────────────────────
+// ── Main Page ──────────────────────────────────────────────────────────────────
 const EvaluationPage: React.FC = () => {
     const { currentUser } = useAuth();
+    const { openPanel, closePanel } = useSlidePanel();
     const isManager = currentUser?.Role === Role.Manager || currentUser?.Role === Role.Admin;
 
     const now = new Date();
@@ -101,7 +30,6 @@ const EvaluationPage: React.FC = () => {
     const [forms, setForms] = useState<EvaluationForm[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedForm, setSelectedForm] = useState<EvaluationForm | null>(null);
-    const [showCreate, setShowCreate] = useState(false);
 
     const fetchForms = useCallback(async () => {
         if (!currentUser) return;
@@ -111,6 +39,7 @@ const EvaluationPage: React.FC = () => {
             eval_month: filterMonth || undefined,
         };
         if (filterStatus) params.status = filterStatus;
+        // Nhân viên thường chỉ thấy phiếu của mình
         if (!isManager) params.employee_id = currentUser.EmployeeID;
         const { data } = await EvaluationService.list(params);
         setForms(data);
@@ -125,7 +54,6 @@ const EvaluationPage: React.FC = () => {
         f.department_name.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Stats
     const stats = {
         total: filtered.length,
         submitted: filtered.filter(f => f.status === 'submitted').length,
@@ -133,37 +61,91 @@ const EvaluationPage: React.FC = () => {
         draft: filtered.filter(f => f.status === 'draft').length,
     };
 
-    const handleCreated = (form: EvaluationForm) => {
-        setShowCreate(false);
-        setSelectedForm(form);
-        fetchForms();
+    // ── Open slide panel to create new form ────────────────────────
+    const handleOpenCreate = () => {
+        if (!currentUser) return;
+        let panelId: string;
+
+        const handleSaved = async (savedForm: EvaluationForm) => {
+            await fetchForms();
+            // If submitted → close the panel
+            if (savedForm.status === 'submitted') {
+                setTimeout(() => closePanel(panelId), 1600);
+            }
+        };
+
+        panelId = openPanel({
+            title: 'Tạo phiếu đánh giá',
+            icon: <ClipboardCheck size={16} />,
+            url: '/evaluation/new',
+            component: (
+                <EvaluationSlidePanel
+                    onSaved={handleSaved}
+                    onClose={() => closePanel(panelId)}
+                />
+            ),
+        });
+    };
+
+    // ── Open slide panel to view/edit existing form ────────────────
+    const handleOpenForm = (form: EvaluationForm) => {
+        let panelId: string;
+
+        const handleSaved = async (savedForm: EvaluationForm) => {
+            await fetchForms();
+            // Update in manager modal if status changed to submitted
+            if (savedForm.status === 'submitted') {
+                setTimeout(() => closePanel(panelId), 1600);
+            }
+        };
+
+        // Employee self-assess panel
+        const isOwnForm = form.employee_id === currentUser?.EmployeeID;
+        const canEdit = (form.status === 'draft' || form.status === 'rejected') && isOwnForm;
+
+        if (!isManager || canEdit) {
+            panelId = openPanel({
+                title: `Phiếu đánh giá — ${form.employee_name}`,
+                icon: <ClipboardCheck size={16} />,
+                url: `/evaluation/${form.id}`,
+                component: (
+                    <EvaluationSlidePanel
+                        existingForm={form}
+                        onSaved={handleSaved}
+                        onClose={() => closePanel(panelId)}
+                    />
+                ),
+            });
+        } else {
+            // Manager review modal (existing)
+            setSelectedForm(form);
+        }
     };
 
     return (
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
-                            <ClipboardList size={20} className="text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Đánh giá, xếp loại</h1>
-                            <p className="text-sm text-slate-400">Phiếu đánh giá hàng tháng theo Quy chế QCDGXL-2026</p>
-                        </div>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
+                        <ClipboardList size={20} className="text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Đánh giá, xếp loại</h1>
+                        <p className="text-sm text-slate-400">Phiếu đánh giá hàng tháng theo Quy chế QCDGXL-2026</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <button onClick={fetchForms} className="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Làm mới">
                         <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
                     </button>
-                    {!isManager && (
-                        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors shadow-lg shadow-primary-500/20">
-                            <Plus size={16} />
-                            Tạo phiếu mới
-                        </button>
-                    )}
+                    <button
+                        onClick={handleOpenCreate}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors shadow-lg shadow-primary-500/20"
+                    >
+                        <Plus size={16} />
+                        Tạo phiếu mới
+                    </button>
                 </div>
             </div>
 
@@ -185,7 +167,6 @@ const EvaluationPage: React.FC = () => {
             {/* Filters */}
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <div className="flex flex-col sm:flex-row gap-3">
-                    {/* Search (manager only) */}
                     {isManager && (
                         <div className="relative flex-1">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -231,12 +212,13 @@ const EvaluationPage: React.FC = () => {
                     <div className="py-20 flex flex-col items-center gap-3 text-slate-400">
                         <AlertCircle size={36} className="text-slate-300 dark:text-slate-600" />
                         <p className="text-sm font-medium">Không có phiếu nào</p>
-                        {!isManager && (
-                            <button onClick={() => setShowCreate(true)} className="mt-2 flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 rounded-xl transition-colors">
-                                <Plus size={14} />
-                                Tạo phiếu đầu tiên
-                            </button>
-                        )}
+                        <button
+                            onClick={handleOpenCreate}
+                            className="mt-2 flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 rounded-xl transition-colors"
+                        >
+                            <Plus size={14} />
+                            Tạo phiếu đầu tiên
+                        </button>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
@@ -261,7 +243,7 @@ const EvaluationPage: React.FC = () => {
 
                                     return (
                                         <tr key={f.id}
-                                            onClick={() => setSelectedForm(f)}
+                                            onClick={() => handleOpenForm(f)}
                                             className="hover:bg-primary-50/50 dark:hover:bg-slate-800/70 cursor-pointer transition-colors group">
                                             <td className="px-5 py-3.5">
                                                 <div className="flex items-center gap-3">
@@ -303,16 +285,7 @@ const EvaluationPage: React.FC = () => {
                 )}
             </div>
 
-            {/* Modals */}
-            {currentUser && (
-                <CreateFormModal
-                    isOpen={showCreate}
-                    onClose={() => setShowCreate(false)}
-                    onCreated={handleCreated}
-                    currentUser={{ EmployeeID: currentUser.EmployeeID, FullName: currentUser.FullName, Department: currentUser.Department }}
-                />
-            )}
-
+            {/* Manager review modal (unchanged) */}
             {selectedForm && (
                 <EvaluationFormModal
                     form={selectedForm}

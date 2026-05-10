@@ -166,6 +166,10 @@ async function seedApril() {
         
     if (freshItems && freshItems.length > 0) {
         console.log(`Tạo công việc (Tasks) cho phòng ${deptCode}...`);
+        
+        const { data: employees } = await supabase.from('employees').select('employee_id');
+        const { data: projects } = await supabase.from('projects').select('project_id');
+
         for (const item of freshItems) {
             // Check if tasks already exist for this monthly_plan_item_id
             const { data: existingTasks } = await supabase
@@ -174,16 +178,24 @@ async function seedApril() {
                 .eq('metadata->>monthly_plan_item_id', item.id);
                 
             if (!existingTasks || existingTasks.length === 0) {
+                // Select random employee and project
+                const assigneeId = employees && employees.length > 0 ? employees[Math.floor(Math.random() * employees.length)].employee_id : null;
+                const approverId = employees && employees.length > 0 ? employees[Math.floor(Math.random() * employees.length)].employee_id : null;
+                const projectId = projects && projects.length > 0 ? projects[Math.floor(Math.random() * projects.length)].project_id : null;
+
                 const newTask = {
                     id: uuidv4(),
                     title: `[T.4] Thực hiện: ${item.task_name}`,
-                    task_type: 'internal',
+                    task_type: projectId ? 'project' : 'internal',
+                    project_id: projectId,
                     metadata: {
                         monthly_plan_item_id: item.id
                     },
                     status: 'todo',
                     priority: 'medium',
-                    assignee_id: null, // Sẽ update sau nếu có employee
+                    assignee_id: assigneeId,
+                    approver_id: approverId,
+                    start_date: `2026-04-01T00:00:00Z`,
                     due_date: `2026-04-25T00:00:00Z`
                 };
                 
