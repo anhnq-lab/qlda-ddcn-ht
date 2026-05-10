@@ -189,7 +189,7 @@ export const MonthlyPlanItemService = {
         year: number,
         deptCode: DepartmentCode
     ): Promise<MonthlyPlanItem[]> {
-        // Lấy tất cả nhiệm vụ KH khung của phòng
+        // 1. Lấy tất cả nhiệm vụ KH khung của phòng trong năm
         const { data: annualItems, error } = await supabase
             .from('annual_plan_items')
             .select('*')
@@ -197,14 +197,35 @@ export const MonthlyPlanItemService = {
             .eq('department_code', deptCode);
         if (error) throw error;
 
+        // 2. Lấy danh sách annual_plan_item_id đã tồn tại trong monthly_plan này
+        //    để tránh tạo bản ghi trùng khi bấm "Sinh từ KH khung" nhiều lần
+        const { data: existing } = await supabase
+            .from('monthly_plan_items')
+            .select('annual_plan_item_id')
+            .eq('monthly_plan_id', monthlyPlanId)
+            .not('annual_plan_item_id', 'is', null);
+        const existingIds = new Set((existing ?? []).map((e: any) => e.annual_plan_item_id));
+
+        // 3. Lọc và map items cần sinh
         const toInsert: MonthlyPlanItemInput[] = (annualItems ?? [])
             .filter(item => {
+                // Bỏ qua nếu đã được seed rồi
+                if (existingIds.has(item.id)) return false;
+
                 // Luôn thêm task hàng tháng và hàng ngày
                 if (item.frequency === 'monthly' || item.frequency === 'daily') return true;
-                // Task 1 lần: kiểm tra xem tháng này có trong khoảng thời gian không
-                if (item.frequency === 'one_time' || item.frequency === 'quarterly') {
-                    return isInPeriod(item.start_period, item.end_period, month);
+
+                // Task hàng quý: chỉ sinh vào đầu quý (tháng 1, 4, 7, 10)
+                if (item.frequency === 'quarterly') {
+                    return isInPeriodQuarterly(item.start_period, item.end_period, month);
                 }
+
+                // Task một lần: kiểm tra khoảng thời gian; nếu không parse được → include
+                if (item.frequency === 'one_time') {
+                    return isInPeriodOneTime(item.start_period, item.end_period, month);
+                }
+
+                // as_needed: không tự sinh, người dùng thêm thủ công
                 return false;
             })
             .map((item, idx) => ({
@@ -216,7 +237,6 @@ export const MonthlyPlanItemService = {
                 task_name: item.task_name,
                 deliverable: item.deliverable ?? null,
                 deadline_note: `Tháng ${month}`,
-                responsible_text: item.responsible_text ?? null,
                 status: 'planned' as MonthlyTaskStatus,
                 sort_order: idx,
             }));
@@ -340,26 +360,75 @@ export const MonthlyPlanItemService = {
 
 // ─── Helpers ─────────────────────────────────────────────────
 
-function isInPeriod(startPeriod?: string, endPeriod?: string, month?: number): boolean {
+/** Map quý → số quý (1-4) */
+const QUARTER_NUM_MAP: Record<string, number> = {
+    'Quý I': 1, 'Quý II': 2, 'Quý III': 3, 'Quý IV': 4,
+};
+
+/** Map quý → tháng đầu quý */
+const QUARTER_START_MONTH: Record<number, number> = {
+    1: 1, 2: 4, 3: 7, 4: 10,
+};
+
+/** Parse quý từ chuỗi, trả về số quý (1-4) hoặc null */
+function parseQuarterNum(period?: string | null): number | null {
+    if (!period) return null;
+    for (const [label, num] of Object.entries(QUARTER_NUM_MAP)) {
+        if (period.includes(label)) return num;
+    }
+    return null;
+}
+
+/** Parse tháng từ chuỗi ("Tháng 4", "Quý II" → 4), trả về null nếu không nhận dạng được */
+function parseMonthNum(period?: string | null): number | null {
+    if (!period) return null;
+    const m = period.match(/Tháng\s*(\d+)/i);
+    if (m) return parseInt(m[1]);
+    const q = parseQuarterNum(period);
+    if (q) return QUARTER_START_MONTH[q];
+    return null;
+}
+
+/**
+ * Kiểm tra task HÀNG QUÝ có nên sinh vào tháng này không.
+ * Quy tắc: chỉ sinh vào tháng ĐẦU quý (1, 4, 7, 10) trong khoảng quý cho phép.
+ */
+function isInPeriodQuarterly(startPeriod?: string | null, endPeriod?: string | null, month?: number): boolean {
     if (!month) return false;
-    const quarterMap: Record<string, number[]> = {
-        'Quý I':  [1, 2, 3],
-        'Quý II': [4, 5, 6],
-        'Quý III':[7, 8, 9],
-        'Quý IV': [10, 11, 12],
-    };
 
-    const getMonthNum = (period?: string): number | null => {
-        if (!period) return null;
-        const m = period.match(/Tháng\s+(\d+)/i);
-        if (m) return parseInt(m[1]);
-        for (const [q, months] of Object.entries(quarterMap)) {
-            if (period.includes(q)) return months[0];
-        }
-        return null;
-    };
+    // Chỉ sinh vào đầu quý
+    const quarterStartMonths = [1, 4, 7, 10];
+    if (!quarterStartMonths.includes(month)) return false;
 
-    const start = getMonthNum(startPeriod) ?? 1;
-    const end = getMonthNum(endPeriod) ?? 12;
-    return month >= start && month <= end;
+    const currentQuarter = Math.ceil(month / 3);
+
+    // Parse khoảng quý từ start/end period
+    const startQ = parseQuarterNum(startPeriod) ?? 1;
+    const endQ   = parseQuarterNum(endPeriod)   ?? 4;
+
+    return currentQuarter >= startQ && currentQuarter <= endQ;
+}
+
+/**
+ * Kiểm tra task MỘT LẦN có nên sinh vào tháng này không.
+ * - Nếu cả start và end đều không parse được → include (an toàn hơn bỏ sót).
+ * - Nếu parse được → kiểm tra khoảng tháng.
+ */
+function isInPeriodOneTime(startPeriod?: string | null, endPeriod?: string | null, month?: number): boolean {
+    if (!month) return false;
+
+    const start = parseMonthNum(startPeriod);
+    const end   = parseMonthNum(endPeriod);
+
+    // Không nhận dạng được period nào → include (để user tự quyết định)
+    if (start === null && end === null) return true;
+
+    const effectiveStart = start ?? 1;
+    const effectiveEnd   = end   ?? 12;
+    return month >= effectiveStart && month <= effectiveEnd;
+}
+
+/** @deprecated Dùng isInPeriodOneTime hoặc isInPeriodQuarterly thay thế */
+function isInPeriod(startPeriod?: string, endPeriod?: string, month?: number): boolean {
+    return isInPeriodOneTime(startPeriod, endPeriod, month);
 }

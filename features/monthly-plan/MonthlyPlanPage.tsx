@@ -42,6 +42,8 @@ const MonthlyPlanPage: React.FC = () => {
     const [editingItem, setEditingItem] = useState<MonthlyPlanItem | null>(null);
     const [detailItem, setDetailItem] = useState<MonthlyPlanItem | null>(null);
     const [exporting, setExporting] = useState(false);
+    const [seedLoading, setSeedLoading] = useState(false);
+    const [seedResult, setSeedResult] = useState<{ count: number; show: boolean } | null>(null);
 
     useEffect(() => { loadPlan(); }, [month, year, activeDept]);
     useEffect(() => { if (viewMode === 'report') loadSummaries(); }, [viewMode, month, year]);
@@ -75,15 +77,20 @@ const MonthlyPlanPage: React.FC = () => {
 
     const handleSeedFromAnnual = async () => {
         if (!currentPlan) return;
-        if (!confirm(`Tự động sinh nhiệm vụ từ KH khung năm ${year} cho tháng ${month}?`)) return;
-        setLoading(true);
+        if (!confirm(`Tự động sinh nhiệm vụ từ KH khung năm ${year} cho tháng ${month}?\n\n(Các nhiệm vụ đã có sẽ được giữ nguyên, không tạo trùng.)`)) return;
+        setSeedLoading(true);
+        setSeedResult(null);
         try {
-            await MonthlyPlanItemService.seedFromAnnualPlan(currentPlan.id, month, year, activeDept);
+            const seeded = await MonthlyPlanItemService.seedFromAnnualPlan(currentPlan.id, month, year, activeDept);
+            setSeedResult({ count: seeded.length, show: true });
+            // Ẩn thông báo sau 4 giây
+            setTimeout(() => setSeedResult(null), 4000);
             await loadPlan();
         } catch (e) {
             console.error(e);
+            alert('Có lỗi khi sinh nhiệm vụ. Vui lòng thử lại.');
         } finally {
-            setLoading(false);
+            setSeedLoading(false);
         }
     };
 
@@ -138,6 +145,18 @@ const MonthlyPlanPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {/* Toast kết quả seed */}
+                        {seedResult?.show && (
+                            <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium animate-in fade-in duration-300 ${
+                                seedResult.count > 0
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            }`}>
+                                {seedResult.count > 0
+                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ từ KH khung`
+                                    : '⚠ Không có nhiệm vụ mới nào (KH khung trống hoặc đã sinh hết)'}
+                            </span>
+                        )}
                         {/* Export Excel */}
                         <button
                             onClick={async () => {
@@ -194,11 +213,12 @@ const MonthlyPlanPage: React.FC = () => {
                             <>
                                 <button
                                     onClick={handleSeedFromAnnual}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600"
+                                    disabled={seedLoading || loading}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Sinh từ KH khung"
                                 >
-                                    <RefreshCw className="w-4 h-4" />
-                                    Sinh từ KH khung
+                                    <RefreshCw className={`w-4 h-4 ${seedLoading ? 'animate-spin' : ''}`} />
+                                    {seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}
                                 </button>
                                 <button
                                     onClick={() => { setEditingItem(null); setModalOpen(true); }}
