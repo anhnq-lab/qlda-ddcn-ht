@@ -1,0 +1,629 @@
+/* BIM/Xeokit viewer styles */
+   XEOKIT TREEVIEW STYLES
+   ======================================== */
+.xeokit-tree-view {
+  font-family: var(--font-sans);
+}
+
+/* Tree Node Container */
+.xeokit-tree-view ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.xeokit-tree-view ul ul {
+  padding-left: 16px;
+  border-left: 1px solid rgba(148, 163, 184, 0.2);
+  margin-left: 8px;
+}
+
+/* Tree Node Item */
+.xeokit-tree-view li {
+  padding: 4px 0;
+}
+
+/* Clickable Node Title */
+.xeokit-tree-view a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 12px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.xeokit-tree-view a:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #e2e8f0;
+}
+
+/* Selected/Active Node */
+.xeokit-tree-view a.highlighted,
+.xeokit-tree-view a:focus {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+/* Expand/Collapse Icon */
+.xeokit-tree-view .xeokit-tree-switcher {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.xeokit-tree-view .xeokit-tree-switcher:hover {
+  color: #94a3b8;
+}
+
+/* Rotate arrow when expanded */
+.xeokit-tree-view .xeokit-tree-switcher-open {
+  transform: rotate(90deg);
+}
+
+/* Checkbox styling */
+.xeokit-tree-view input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Group headers (IFC types) */
+.xeokit-tree-view .xeokit-tree-node-title {
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+/* Leaf nodes (elements) */
+.xeokit-tree-view .xeokit-tree-leaf a {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Hidden nodes */
+.xeokit-tree-view .xeokit-tree-node-hidden a {
+  opacity: 0.5;
+}
+
+/* Collapsed children */
+.xeokit-tree-view .xeokit-tree-children-hidden {
+  display: none;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-\[shimmer_2s_infinite\] {
+  animation: shimmer 2s infinite;
+}
+
+.animate-\[shimmer_1\.5s_infinite\] {
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+   BIM VIEWER ANIMATIONS
+   ======================================== */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes borderDash {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+/* ========================================
+   CENTRALIZED GRADIENT UTILITIES
+   Use these classes instead of hardcoding gradients.
+   Change once here → updates entire app.
+   ======================================== */
+@layer components {
+
+  /* ── Brand Gradients ── */
+  .gradient-brand {
+    background: linear-gradient(135deg, #333333 0%, #1c456c 100%);
+    color: white;
+  }
+
+  .gradient-gold {
+    background: linear-gradient(90deg, #fdba74, #fb923c, #4a90e2);
+  }
+
+  .gradient-gold-subtle {
+    background: linear-gradient(90deg, #fb923c, #4a90e2);
+  }
+
+  .gradient-header {
+    background: linear-gradient(135deg, #333333 0%, #4A4230 50%, #1c456c 100%);
+    color: white;
+  }
+
+  .gradient-btn {
+    background: linear-gradient(135deg, #1c456c 0%, #4a90e2 100%);
+    color: white;
+  }
+
+  .gradient-btn:hover {
+    background: linear-gradient(135deg, #1c456c 0%, #357abd 100%);
+  }
+
+  /* ── Hero Header (dark charcoal-gold) ── */
+  .hero-header {
+    @apply rounded-2xl p-5 text-white shadow-lg;
+    background: linear-gradient(135deg, #333333 0%, #4A4230 50%, #1c456c 100%);
+  }
+
+  /* ── Avatar Gradient ── */
+  .avatar-gradient {
+    background: linear-gradient(135deg, #1c456c 0%, #4a90e2 100%);
+    color: white;
+  }
+
+  /* ── Progress Bar Gold ── */
+  .progress-gold {
+    background: linear-gradient(90deg, #fdba74, #fb923c, #4a90e2);
+  }
+
+  /* ── Stat Card Progressive Series (4 tiers) ── */
+  .stat-card-tier-1 {
+    background: linear-gradient(135deg, #3D3D3D 0%, #333333 100%);
+    border-top: 3px solid #888;
+    color: white;
+  }
+
+  .stat-card-tier-2 {
+    background: linear-gradient(135deg, #4A4A3D 0%, #3D3D33 100%);
+    border-top: 3px solid #fdba74;
+    color: white;
+  }
+
+  .stat-card-tier-3 {
+    background: linear-gradient(135deg, #5A5030 0%, #4A4230 100%);
+    border-top: 3px solid #fb923c;
+    color: white;
+  }
+
+  .stat-card-tier-4 {
+    background: linear-gradient(135deg, #6A5A25 0%, #1c456c 100%);
+    border-top: 3px solid #4a90e2;
+    color: white;
+  }
+
+  .stat-card-tier-5 {
+    background: linear-gradient(135deg, #7A6520 0%, #6A5A20 100%);
+    border-top: 3px solid #E4C45A;
+    color: white;
+  }
+
+  .stat-card-tier-6 {
+    background: linear-gradient(135deg, #8A7528 0%, #7A6520 100%);
+    border-top: 3px solid #F0D68A;
+    color: white;
+  }
+}
+
+/* ========================================
+   BIM 3D VIEWER — NATIVE COLOR OVERRIDES
+   Restores native blue/cyan for BIM components
+   since Tailwind remaps blue→gold globally.
+   Scoped to elements inside [data-bim-viewer].
+   ======================================== */
+[data-bim-viewer] .bg-blue-500 {
+  background-color: #3b82f6 !important;
+}
+
+[data-bim-viewer] .bg-blue-600 {
+  background-color: #2563eb !important;
+}
+
+[data-bim-viewer] .bg-blue-700 {
+  background-color: #1d4ed8 !important;
+}
+
+[data-bim-viewer] .text-blue-400 {
+  color: #60a5fa !important;
+}
+
+[data-bim-viewer] .text-blue-500 {
+  color: #3b82f6 !important;
+}
+
+[data-bim-viewer] .text-blue-600 {
+  color: #2563eb !important;
+}
+
+[data-bim-viewer] .border-blue-500 {
+  border-color: #3b82f6 !important;
+}
+
+[data-bim-viewer] .from-blue-400 {
+  --tw-gradient-from: #60a5fa !important;
+}
+
+[data-bim-viewer] .from-blue-500 {
+  --tw-gradient-from: #3b82f6 !important;
+}
+
+[data-bim-viewer] .to-blue-600 {
+  --tw-gradient-to: #2563eb !important;
+}
+
+[data-bim-viewer] .to-indigo-500 {
+  --tw-gradient-to: #6366f1 !important;
+}
+
+[data-bim-viewer] .to-indigo-600 {
+  --tw-gradient-to: #4f46e5 !important;
+}
+
+[data-bim-viewer] .bg-cyan-500 {
+  background-color: #06b6d4 !important;
+}
+
+[data-bim-viewer] .text-cyan-400 {
+  color: #22d3ee !important;
+}
+
+[data-bim-viewer] .from-cyan-400 {
+  --tw-gradient-from: #22d3ee !important;
+}
+
+[data-bim-viewer] .to-cyan-600 {
+  --tw-gradient-to: #0891b2 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Slide Panel – Bitrix24-style right-side sliding panel system
+   Optimized: GPU acceleration, resize handle, mobile responsive
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Slide-in animation ────────────────────────────────────────────── */
+@keyframes slidePanelIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slidePanelOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0.5;
+  }
+}
+
+/* ─── Backdrop fade animation ───────────────────────────────────────── */
+@keyframes slidePanelBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slidePanelBackdropOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ─── Tab ear fade-in ──────────────────────────────────────────────── */
+@keyframes slideTabFadeIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Panel enter/exit — GPU-accelerated ────────────────────────────── */
+.slide-panel-enter {
+  animation: slidePanelIn 280ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.slide-panel-exit {
+  animation: slidePanelOut 220ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.slide-panel-backdrop-enter {
+  animation: slidePanelBackdropIn 200ms ease-out forwards;
+  will-change: opacity;
+}
+
+.slide-panel-backdrop-exit {
+  animation: slidePanelBackdropOut 180ms ease-in forwards;
+  will-change: opacity;
+}
+
+/* ─── Panel shadow — prominent floating effect ─────────────────────── */
+.slide-panel-stacked {
+  contain: layout style;
+  box-shadow:
+    -16px 0 60px -12px rgba(0, 0, 0, 0.2),
+    -6px 0 24px -6px rgba(0, 0, 0, 0.14),
+    -2px 0 8px 0 rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.dark .slide-panel-stacked {
+  box-shadow:
+    -16px 0 60px -12px rgba(0, 0, 0, 0.7),
+    -6px 0 24px -6px rgba(0, 0, 0, 0.5),
+    -2px 0 8px 0 rgba(0, 0, 0, 0.4),
+    -1px 0 0px 0 rgba(249, 115, 22, 0.25),
+    0 0 40px -10px rgba(249, 115, 22, 0.15);
+}
+
+/* Disable transition during resize for crisp feel */
+.slide-panel-resizing {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ─── Tab Ear ──────────────────────────────────────────────────────── */
+.slide-panel-tab {
+  animation: slideTabFadeIn 250ms ease-out 200ms both;
+}
+
+/* ─── Panel Title Bar ──────────────────────────────────────────────── */
+.slide-panel-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.slide-panel-title-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4a90e2, #357abd, transparent);
+  opacity: 0.5;
+}
+
+.dark .slide-panel-title-bar {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .slide-panel-title-bar::after {
+  background: linear-gradient(90deg, #4a90e2, rgba(74, 144, 226, 0.3), transparent);
+  opacity: 0.6;
+}
+
+.slide-panel-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(184, 134, 11, 0.08) 100%);
+  color: #357abd;
+  flex-shrink: 0;
+}
+
+.dark .slide-panel-title-icon {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(184, 134, 11, 0.12) 100%);
+  color: #4a90e2;
+}
+
+.slide-panel-title-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.dark .slide-panel-title-text {
+  color: #f1f5f9;
+}
+
+.slide-panel-title-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.slide-panel-title-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #475569;
+}
+
+.dark .slide-panel-title-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+.slide-panel-title-btn-close:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.dark .slide-panel-title-btn-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* ─── Resize Handle (wider hit area for easy dragging) ─────────────── */
+.slide-panel-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  cursor: col-resize;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease;
+  /* Extend hit area beyond visual boundary */
+  margin-left: -4px;
+}
+
+.slide-panel-resize-handle:hover,
+.slide-panel-resize-handle:active {
+  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.12), rgba(249, 115, 22, 0.18));
+}
+
+.dark .slide-panel-resize-handle:hover,
+.dark .slide-panel-resize-handle:active {
+  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.15), rgba(249, 115, 22, 0.25));
+}
+
+.slide-panel-resize-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4px;
+  height: 48px;
+  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.25);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-panel-resize-handle:hover .slide-panel-resize-indicator {
+  background: rgba(249, 115, 22, 0.5);
+  height: 64px;
+  width: 4px;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.2);
+}
+
+.slide-panel-resize-handle:active .slide-panel-resize-indicator {
+  background: rgba(249, 115, 22, 0.85);
+  height: 80px;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.35);
+}
+
+/* ─── Prevent body scroll when panel is open ────────────────────────── */
+body.slide-panel-open {
+  overflow: hidden;
+}
+
+/* ─── Mobile: full-width panel ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  .slide-panel-viewport .slide-panel-stacked {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .slide-panel-title-bar {
+    padding: 8px 8px 8px 12px;
+  }
+
+  .slide-panel-title-text {
+    font-size: 12px;
+    max-width: 200px !important;
+  }
+}
+
+/* ─── Accessibility: prefers-reduced-motion ─────────────────────────────── */
+/* WCAG 2.1 AA — Tắt animation / transition khi user chọn giảm chuyển động  */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+
+  /* Pulse / spin skeleton loaders vẫn cho chạy nhưng rất chậm */
+  .animate-pulse,
+  .animate-spin {
+    animation-duration: 2s !important;
+  }
+}
+
+/* ========================================

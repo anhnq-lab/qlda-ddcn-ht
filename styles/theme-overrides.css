@@ -1,0 +1,373 @@
+/* Theme light/dark overrides */
+   THEME-LIGHT OVERRIDES
+   Chuyển màu nền cát → trắng thuần
+   ======================================== */
+
+/* Card / Section containers */
+.theme-light .card,
+.theme-light .card-glass,
+.theme-light .stat-card,
+.theme-light .stat-card-premium,
+.theme-light .section-card,
+.theme-light .toolbar {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Section headers / Table headers */
+.theme-light .section-header,
+.theme-light .section-card-header,
+.theme-light .table-header-row,
+.theme-light .table-header-row th,
+.theme-light .table-footer {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Header bar */
+.theme-light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Inline bg-[#FCF9F2] overrides */
+.theme-light [class*="bg-\\[\\#FCF9F2\\]"] { background-color: #ffffff !important; }
+.theme-light [class*="bg-\\[\\#F5EFE6\\]"] { background-color: #f1f5f9 !important; }
+.theme-light [class*="bg-\\[\\#FBF8EF\\]"] { background-color: #f8fafc !important; }
+.theme-light [class*="bg-\\[\\#F0ECE1\\]"] { background-color: #f8fafc !important; }
+
+/* Utility class targets for inline Tailwind */
+.theme-light .bg-\\[\\#FCF9F2\\] { background-color: #ffffff !important; }
+.theme-light .bg-\\[\\#F5EFE6\\] { background-color: #f1f5f9 !important; }
+.theme-light .bg-\\[\\#FBF8EF\\] { background-color: #f8fafc !important; }
+.theme-light .bg-\\[\\#F0ECE1\\] { background-color: #f8fafc !important; }
+.theme-light .border-\\[\\#ece7de\\] { border-color: #e2e8f0 !important; }
+
+/* thead background */
+.theme-light thead {
+  background-color: #f1f5f9 !important;
+  box-shadow: 0 1px 0 #cbd5e1 !important;
+}
+
+/* Legal table rows */
+.theme-light .legal-table-wrapper tbody tr:nth-child(even) {
+  background-color: #f8fafc !important;
+}
+.theme-light .legal-table-wrapper th.section-header {
+  background-color: #f1f5f9 !important;
+}
+
+/* ========================================
+   GLOBAL DARK MODE CATCH-ALL
+   Fixes uncovered light-only elements
+   ======================================== */
+
+/* ── Background catch-alls (solid colors only — NO opacity for neutral bg) ── */
+.dark .bg-white {
+  background-color: #1e293b; /* slate-800 solid */
+}
+
+.dark .bg-gray-50 {
+  background-color: #0f172a; /* slate-900 solid */
+}
+
+.dark .bg-gray-100 {
+  background-color: #1e293b; /* slate-800 solid */
+}
+
+/* ── Slate backgrounds — KHÔNG dùng /opacity cho neutral bg ── */
+.dark .bg-slate-50 {
+  background-color: #0f172a; /* slate-900 solid */
+}
+
+.dark .bg-slate-100 {
+  background-color: #1e293b; /* slate-800 solid */
+}
+
+/* ── Semantic light backgrounds → dark equivalents ── */
+/* Sử dụng màu phù hợp: opacity thấp (15%) OK cho semantic colors, NOT neutral */
+.dark .bg-blue-50,
+.dark .bg-blue-50\/50 {
+  background-color: rgb(30 58 138 / 0.15);
+}
+
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/50 {
+  background-color: rgb(6 78 59 / 0.15);
+}
+
+.dark .bg-green-50,
+.dark .bg-green-50\/50 {
+  background-color: rgb(6 78 59 / 0.15);
+}
+
+.dark .bg-amber-50 {
+  background-color: rgb(120 53 15 / 0.15);
+}
+
+.dark .bg-yellow-50 {
+  background-color: rgb(120 53 15 / 0.12);
+}
+
+.dark .bg-orange-50 {
+  background-color: rgb(124 45 18 / 0.15);
+}
+
+.dark .bg-red-50 {
+  background-color: rgb(127 29 29 / 0.15);
+}
+
+.dark .bg-rose-50 {
+  background-color: rgb(136 19 55 / 0.15);
+}
+
+.dark .bg-violet-50 {
+  background-color: rgb(76 29 149 / 0.15);
+}
+
+.dark .bg-purple-50 {
+  background-color: rgb(88 28 135 / 0.15);
+}
+
+.dark .bg-indigo-50 {
+  background-color: rgb(49 46 129 / 0.15);
+}
+
+.dark .bg-sky-50 {
+  background-color: rgb(12 74 110 / 0.15);
+}
+
+.dark .bg-teal-50 {
+  background-color: rgb(19 78 74 / 0.15);
+}
+
+.dark .bg-cyan-50 {
+  background-color: rgb(8 70 92 / 0.15);
+}
+
+.dark .bg-pink-50 {
+  background-color: rgb(131 24 67 / 0.15);
+}
+
+.dark .bg-fuchsia-50 {
+  background-color: rgb(112 26 117 / 0.15);
+}
+
+/* primary-50 fallback for dark mode (không có trong Tailwind standard) */
+.dark .bg-primary-50 {
+  background-color: rgb(30 58 138 / 0.15);
+}
+
+.dark .bg-primary-100 {
+  background-color: rgb(30 58 138 / 0.25);
+}
+
+/* bg-white/90 — not caught by .dark .bg-white since the class name differs */
+.dark .bg-white\/90 {
+  background-color: rgb(21 29 46); /* slate-800 dark */
+}
+
+/* ── Gradient light backgrounds ── */
+.dark [class*="from-blue-50"] {
+  --tw-gradient-from: rgb(30 58 138 / 0.15);
+}
+
+.dark [class*="to-blue-50"] {
+  --tw-gradient-to: rgb(30 58 138 / 0.15);
+}
+
+.dark [class*="from-emerald-50"] {
+  --tw-gradient-from: rgb(6 78 59 / 0.15);
+}
+
+.dark [class*="to-emerald-50"] {
+  --tw-gradient-to: rgb(6 78 59 / 0.15);
+}
+
+.dark [class*="from-indigo-50"] {
+  --tw-gradient-from: rgb(49 46 129 / 0.15);
+}
+
+.dark [class*="to-indigo-50"] {
+  --tw-gradient-to: rgb(49 46 129 / 0.15);
+}
+
+/* ── Border catch-alls ── */
+.dark .border-gray-100 {
+  border-color: rgb(51 65 85);
+}
+
+.dark .border-gray-200 {
+  border-color: rgb(71 85 105);
+}
+
+.dark .border-blue-100 {
+  border-color: rgb(30 58 138 / 0.4);
+}
+
+.dark .border-blue-200 {
+  border-color: rgb(30 58 138 / 0.4);
+}
+
+.dark .border-emerald-100 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-emerald-200 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-amber-100 {
+  border-color: rgb(120 53 15 / 0.4);
+}
+
+.dark .border-amber-200 {
+  border-color: rgb(120 53 15 / 0.4);
+}
+
+.dark .border-red-100,
+.dark .border-red-200 {
+  border-color: rgb(127 29 29 / 0.4);
+}
+
+.dark .border-violet-100,
+.dark .border-violet-200,
+.dark .border-purple-100,
+.dark .border-purple-200 {
+  border-color: rgb(76 29 149 / 0.4);
+}
+
+.dark .border-green-200 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-orange-200 {
+  border-color: rgb(124 45 18 / 0.4);
+}
+
+.dark .border-teal-200 {
+  border-color: rgb(19 78 74 / 0.4);
+}
+
+/* ── Text catch-alls ── */
+/* CRITICAL: text-slate-400/500/600 used 500+ times — brighten for dark backgrounds */
+.dark .text-slate-400 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-slate-500 {
+  color: rgb(148 163 184);
+}
+
+.dark .text-slate-600 {
+  color: rgb(203 213 225);
+}
+
+/* Gray → brighter for readability */
+.dark .text-gray-800 {
+  color: rgb(241 245 249);
+}
+
+.dark .text-gray-700 {
+  color: rgb(226 232 240);
+}
+
+.dark .text-gray-600 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-gray-500 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-gray-400 {
+  color: rgb(148 163 184);
+}
+
+/* Semantic text */
+.dark .text-blue-800 {
+  color: rgb(147 197 253);
+}
+
+.dark .text-blue-700 {
+  color: rgb(96 165 250);
+}
+
+.dark .text-emerald-700,
+.dark .text-emerald-800 {
+  color: rgb(52 211 153);
+}
+
+.dark .text-amber-800 {
+  color: rgb(251 191 36);
+}
+
+.dark .text-primary-700 {
+  color: rgb(143 190 238); /* primary-300 light */
+}
+
+.dark .text-red-700,
+.dark .text-red-800 {
+  color: rgb(248 113 113);
+}
+
+.dark .text-violet-700 {
+  color: rgb(167 139 250);
+}
+
+.dark .text-indigo-700 {
+  color: rgb(129 140 248);
+}
+
+.dark .text-green-700,
+.dark .text-green-800 {
+  color: rgb(74 222 128);
+}
+
+.dark .text-purple-700 {
+  color: rgb(192 132 252);
+}
+
+.dark .text-orange-700 {
+  color: rgb(251 146 60);
+}
+
+/* ── Form Controls ── */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  background-color: rgb(30 41 59);
+  color: rgb(226 232 240);
+  border-color: rgb(71 85 105);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(100 116 139);
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 2px rgb(30 58 138 / 0.3);
+}
+
+/* ── Ring overrides ── */
+.dark .ring-slate-100 {
+  --tw-ring-color: rgb(51 65 85);
+}
+
+.dark .ring-black\/5 {
+  --tw-ring-color: rgb(148 163 184 / 0.1);
+}
+
+/* Ensure map container always shows a light bg so tiles are readable */
+.custom-map-container {
+  background-color: #e5e7eb;
+}
+.dark .custom-map-container {
+  background-color: #cbd5e1; /* slate-300 — light enough for tiles to pop */
+}
+
+/* ========================================

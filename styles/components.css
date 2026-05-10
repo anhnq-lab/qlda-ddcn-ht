@@ -1,0 +1,408 @@
+/* Component utility classes */
+   COMPONENT UTILITIES
+   ======================================== */
+@layer components {
+
+  /* Card Styles */
+  .card {
+    @apply bg-[#FCF9F2] rounded-2xl border border-[#ece7de] shadow-lg;
+    @apply dark:bg-slate-800 dark:border-slate-700;
+    @apply transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1 cursor-pointer;
+  }
+
+  .card-glass {
+    @apply bg-[#FCF9F2]/90 backdrop-blur-xl border-white/50 shadow-md;
+    @apply dark:bg-slate-800 dark:border-slate-700;
+  }
+
+  /* Button Base */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply px-5 py-2.5 text-sm;
+    @apply font-bold rounded-full transition-all duration-300;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none;
+  }
+
+  .btn-xs {
+    @apply px-2.5 py-1 text-xs;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-5 py-2.5 text-base;
+  }
+
+  .btn-xl {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white border-transparent;
+    box-shadow: 0 4px 14px 0 rgba(53, 122, 189, 0.39);
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-500 -translate-y-[2px];
+    box-shadow: 0 6px 20px 0 rgba(74, 144, 226, 0.45);
+  }
+
+  .btn-primary:active {
+    @apply bg-primary-700 translate-y-0 text-white border-transparent;
+    box-shadow: 0 2px 8px 0 rgba(36, 94, 150, 0.3);
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-200 shadow-sm;
+    @apply hover:bg-gray-50 active:bg-gray-100;
+    @apply focus-visible:ring-gray-400;
+    @apply dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700;
+    @apply dark:hover:bg-slate-700 dark:active:bg-slate-600;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-600;
+    @apply hover:bg-gray-100 active:bg-gray-200;
+    @apply dark:text-slate-300 dark:hover:bg-slate-800 dark:active:bg-slate-700;
+  }
+
+  .btn-danger {
+    @apply bg-danger-500 text-white;
+    @apply hover:bg-danger-600 active:bg-danger-700;
+    @apply focus-visible:ring-danger-500;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.12), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  }
+
+  .btn-success {
+    @apply bg-success-500 text-white;
+    @apply hover:bg-success-600 active:bg-success-700;
+    @apply focus-visible:ring-success-500;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.12), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  }
+
+  /* Input Styles */
+  .input {
+    @apply w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl;
+    @apply text-gray-900 placeholder:text-gray-400;
+    @apply transition-all duration-200;
+    @apply focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none;
+    @apply disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed;
+    @apply dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100;
+    @apply dark:placeholder:text-slate-500;
+    @apply dark:focus:border-primary-500 dark:focus:ring-primary-900;
+    @apply dark:disabled:bg-slate-900 dark:disabled:text-slate-600;
+  }
+
+  .input-error {
+    @apply border-danger-300 focus:border-danger-500 focus:ring-danger-100;
+    @apply dark:border-danger-500 dark:focus:ring-danger-900;
+  }
+
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  
+
+  /* ── Stat Card ── */
+  .stat-card {
+    @apply relative overflow-hidden transition-all duration-200;
+    @apply flex flex-col gap-1.5 p-3;
+    @apply bg-[#FCF9F2] border border-[#ece7de] shadow-lg rounded-xl;
+    @apply dark:bg-[#1a202c] dark:border-slate-800 dark:shadow-slate-900;
+  }
+
+  .stat-card:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+
+  .stat-card-icon {
+    @apply flex items-center justify-center w-7 h-7 rounded-lg shrink-0;
+  }
+
+  .stat-card-blue .stat-card-icon {
+    @apply bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-400;
+  }
+
+  .stat-card-emerald .stat-card-icon {
+    @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-900 dark:text-emerald-400;
+  }
+
+  .stat-card-amber .stat-card-icon {
+    @apply bg-amber-50 text-primary-600 dark:bg-amber-900 dark:text-amber-400;
+  }
+
+  .stat-card-rose .stat-card-icon {
+    @apply bg-rose-50 text-rose-600 dark:bg-rose-900 dark:text-rose-400;
+  }
+
+  .stat-card-violet .stat-card-icon {
+    @apply bg-violet-50 text-violet-600 dark:bg-violet-900 dark:text-violet-400;
+  }
+
+  .stat-card-purple .stat-card-icon {
+    @apply bg-purple-50 text-purple-600 dark:bg-purple-900 dark:text-purple-400;
+  }
+
+  .stat-card-value {
+    @apply text-lg font-black text-gray-900 dark:text-white leading-none tracking-tight;
+  }
+
+  .stat-card-label {
+    @apply text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
+  }
+
+  .stat-card-trend {
+    @apply text-[11px] font-semibold;
+  }
+
+  .stat-card-trend.up {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .stat-card-trend.down {
+    @apply text-rose-600 dark:text-rose-400;
+  }
+
+  /* ── Progress Bar ── */
+  
+
+  /* ── Filter Item ── */
+  .filter-item {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer;
+    @apply text-gray-600 dark:text-slate-400;
+    @apply transition-colors duration-150;
+  }
+
+  .filter-item:hover {
+    @apply bg-gray-50 text-gray-900;
+    @apply dark:bg-slate-700 dark:text-slate-200;
+  }
+
+  .filter-item.active {
+    @apply bg-primary-50 text-primary-700 font-medium;
+    @apply dark:bg-primary-900 dark:text-primary-300;
+  }
+
+  /* ── Search Input ── */
+  .search-input-wrapper {
+    @apply relative flex items-center;
+  }
+
+  .search-input-wrapper .search-icon {
+    @apply absolute left-3 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none;
+  }
+
+  .search-input-wrapper input {
+    @apply w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl;
+    @apply text-sm text-gray-900 placeholder:text-gray-400;
+    @apply transition-all duration-200;
+    @apply focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none;
+    @apply dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100;
+    @apply dark:placeholder:text-slate-500;
+    @apply dark:focus:border-primary-500 dark:focus:ring-primary-900;
+  }
+
+  /* ── Legal Document Tables ── */
+  .legal-table-wrapper {
+    @apply text-sm;
+  }
+
+  .legal-table-wrapper table {
+    @apply w-full border-collapse;
+  }
+
+  .legal-table-wrapper th,
+  .legal-table-wrapper td {
+    @apply px-3 py-2.5 text-left border border-[#ece7de] dark:border-slate-600;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .legal-table-wrapper thead th {
+    @apply bg-indigo-50 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-300 font-bold text-xs uppercase tracking-wider;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .legal-table-wrapper tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .legal-table-wrapper tbody tr:nth-child(even) {
+    @apply bg-[#FBF8EF] dark:bg-slate-700;
+  }
+
+  .legal-table-wrapper tbody tr:hover {
+    @apply bg-indigo-50 dark:bg-indigo-900;
+  }
+
+  /* Section header row inside table */
+  .legal-table-wrapper th.section-header {
+    @apply bg-[#F5EFE6] dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm normal-case tracking-normal;
+    letter-spacing: 0;
+  }
+
+  /* Numeric/code columns */
+  .legal-table-wrapper td.col-stt,
+  .legal-table-wrapper td.col-code {
+    @apply text-center font-mono text-xs font-bold text-gray-500 dark:text-slate-400;
+    white-space: nowrap;
+    width: 3rem;
+  }
+
+  /* Note/description columns */
+  .legal-table-wrapper td.col-note {
+    @apply text-xs text-gray-500 dark:text-slate-400 italic;
+  }
+
+  .legal-table-wrapper .table-caption {
+    @apply text-xs text-gray-500 dark:text-slate-400 italic mt-2 px-1;
+  }
+
+  /* ── Dark Mode: Table Overrides (WCAG AA 4.5:1 contrast) ── */
+  .dark table thead th {
+    @apply text-slate-200 border-slate-600;
+  }
+
+  .dark table tbody td {
+    @apply text-slate-300 border-slate-700;
+  }
+
+  .dark table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.08);
+  }
+
+  .dark table tfoot td,
+  .dark table tfoot th {
+    @apply text-slate-200 border-slate-600;
+  }
+
+  /* ── Dark Mode: Select / Option overrides ── */
+  .dark select option {
+    @apply bg-slate-800 text-slate-200;
+  }
+
+  /* ── Sidebar Nav Items (Theme Vàng Cam) ── */
+  .sidebar-nav-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff !important;
+  }
+
+  /* ── Section Header — Decorative border-left primary ── */
+  .section-header {
+    @apply flex items-center gap-3 text-sm font-bold tracking-wide;
+    @apply text-slate-800 dark:text-slate-100;
+    @apply bg-[#F5EFE6] dark:bg-slate-800;
+    @apply py-3 px-4 rounded-lg border-l-4 border-primary-500;
+  }
+
+  .section-header .section-icon {
+    @apply p-2 rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-400;
+  }
+
+  /* ── Section Card — Container with clear border ── */
+  .section-card {
+    @apply bg-[#FCF9F2] dark:bg-slate-900 rounded-xl border border-[#ece7de] dark:border-slate-800 shadow-lg overflow-hidden;
+  }
+
+  .section-card-header {
+    @apply flex items-center justify-between gap-2 px-3.5 py-2.5;
+    @apply border-b border-[#ece7de] dark:border-slate-800;
+    @apply text-sm font-bold text-slate-800 dark:text-slate-100;
+    @apply bg-[#F5EFE6] dark:bg-slate-800;
+  }
+
+
+  .section-card-header .section-icon {
+    @apply p-1.5 rounded-lg bg-transparent text-primary-500;
+  }
+
+  /* ── Table Header Row — Same visual as section-card-header but for <tr> ── */
+  .table-header-row {
+    @apply border-b border-[#ece7de] dark:border-slate-800 bg-[#F5EFE6] dark:bg-slate-800;
+  }
+
+
+  .table-header-row th {
+    @apply text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    @apply bg-[#F5EFE6] dark:bg-slate-800;
+  }
+
+
+  /* ── Stat Card Premium — Clean UI Standard ── */
+  .stat-card-premium {
+    @apply bg-[#FCF9F2] dark:bg-slate-900 rounded-xl p-3 shadow-lg border border-[#ece7de] dark:border-slate-800;
+    @apply relative overflow-hidden transition-all duration-200 flex flex-col justify-center gap-1.5;
+  }
+
+  .stat-card-premium:hover {
+    @apply shadow-xl transform -translate-y-1;
+  }
+
+  /* ── Filter Primary — Cam theme cho select/input ── */
+  .filter-primary {
+    @apply bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600;
+    @apply text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl;
+    @apply shadow-sm transition-all appearance-none cursor-pointer;
+  }
+
+  .filter-primary:hover {
+    @apply border-primary-400 dark:border-primary-500;
+  }
+
+  .filter-primary:focus {
+    @apply outline-none ring-2 ring-primary-500 border-primary-500;
+  }
+
+  /* ── Toolbar — Thanh công cụ chuẩn cho List Views ── */
+  .toolbar {
+    @apply bg-[#FCF9F2] dark:bg-slate-800 rounded-2xl shadow-lg;
+    @apply border border-[#ece7de] dark:border-slate-700 p-4;
+  }
+
+  .table-footer {
+    @apply bg-[#F5EFE6] dark:bg-slate-900 border-t border-[#ece7de] dark:border-slate-700 px-6 py-4;
+  }
+
+  /* ── Filter Input — Input/select chuẩn cho toolbar ── */
+  .filter-input {
+    @apply w-full pl-10 pr-4 py-2.5 text-sm rounded-xl;
+    @apply border border-slate-200 dark:border-slate-600;
+    @apply bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100;
+    @apply placeholder:text-slate-400 dark:placeholder:text-slate-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply transition-all shadow-sm;
+  }
+
+  /* ── Divider & Separator Utilities ── */
+  .divider {
+    @apply border-t border-gray-200 dark:border-slate-700;
+  }
+
+  .list-item-border {
+    @apply border-b border-gray-100 last:border-b-0 dark:border-slate-700;
+  }
+
+  .section-divider {
+    @apply border-t-2 border-gray-100 dark:border-slate-700 my-4;
+  }
+}
+
+/* ========================================
