@@ -3,17 +3,17 @@
    DESIGN TOKENS (CSS Variables)
    ======================================== */
 :root {
-  /* Primary Colors — Nordic Slate & Powder Blue Scale (Theme ảnh chụp màn hình cực kỳ trang nhã) */
-  --color-primary-50: #eff6fc;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #b9d9eb;
-  --color-primary-300: #8fbeee;
-  --color-primary-400: #5eade2;
-  --color-primary-500: #4a90e2;
-  --color-primary-600: #357abd;
-  --color-primary-700: #245e96;
-  --color-primary-800: #1c456c;
-  --color-primary-900: #112d4e;
+  /* Primary Colors — New Palette (Accent #00668c) */
+  --color-primary-50: #f2f8fc;
+  --color-primary-100: #d4eaf7;
+  --color-primary-200: #b6ccd8;
+  --color-primary-300: #71c4ef;
+  --color-primary-400: #3995b8;
+  --color-primary-500: #00668c;
+  --color-primary-600: #005273;
+  --color-primary-700: #00415a;
+  --color-primary-800: #3b3c3d;
+  --color-primary-900: #1a1b1c;
 
   /* Accent Colors — Đỏ cờ (branding) */
   --color-accent-100: #fde3e3;
@@ -60,8 +60,8 @@
   --color-slate-950: #020617;
 
   /* Text Colors */
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #334155;
+  --color-text-primary: #1d1c1c;
+  --color-text-secondary: #313d44;
   --color-text-tertiary: #64748b;
   --color-text-muted: #94a3b8;
   --color-text-inverse: #ffffff;
@@ -157,15 +157,15 @@
 }
 
 /* ========================================
-   THEME: LIGHT (Sáng — nền trắng thuần)
+   THEME: LIGHT (Sáng — nền kem/ấm)
    ======================================== */
 .theme-light {
-  --color-bg-body: #f8fafc;         /* slate-50 — nền trang chính */
-  --color-bg-card: #ffffff;         /* Trắng thuần — card */
-  --color-bg-card-alt: #f1f5f9;     /* slate-100 — section header, table header */
-  --color-border-card: #e2e8f0;     /* slate-200 — border */
+  --color-bg-body: #f5f4f1;         /* bg-200 — nền trang chính */
+  --color-bg-card: #fffefb;         /* bg-100 — card */
+  --color-bg-card-alt: #f5f4f1;     /* bg-200 — section header, table header */
+  --color-border-card: #cccbc8;     /* bg-300 — border */
 
   /* Override background tokens */
-  --color-bg-primary: #f8fafc;
-  --color-bg-elevated: #ffffff;
+  --color-bg-primary: #f5f4f1;
+  --color-bg-elevated: #fffefb;
 }
