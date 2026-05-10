@@ -57,6 +57,7 @@ const TaskList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterProject, setFilterProject] = useState<string>('All');
+    const [filterMonth, setFilterMonth] = useState<string>('All');
     const [filterOverdue, setFilterOverdue] = useState(false);
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,20 +87,29 @@ const TaskList: React.FC = () => {
 
     // ── Filter ──
     const filteredTasks = useMemo(() => tasks.filter(task => {
-        // First: scope filter — only show tasks for scoped projects
-        if (!scopedProjectIds.has(task.ProjectID)) return false;
+        // First: scope filter — only show tasks for scoped projects, but ALWAYS show internal/unassigned tasks
+        const isInternal = task.TaskType === 'internal' || !task.ProjectID;
+        if (!isInternal && !scopedProjectIds.has(task.ProjectID)) return false;
+        
         const matchSearch = task.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             task.Description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = filterStatus === 'All' || task.Status === filterStatus;
         const matchProject = filterProject === 'All' || task.ProjectID === filterProject;
+        
+        // Month filter (checks both StartDate and DueDate)
+        const matchMonth = filterMonth === 'All' || (
+            (task.DueDate && new Date(task.DueDate).getMonth() + 1 === parseInt(filterMonth)) ||
+            (task.StartDate && new Date(task.StartDate).getMonth() + 1 === parseInt(filterMonth))
+        );
+
         // Overdue: chưa xong + có hạn + đã quá hạn
         const matchOverdue = !filterOverdue || (
             task.Status !== TaskStatus.Done &&
             !!task.DueDate &&
             new Date(task.DueDate) < new Date()
         );
-        return matchSearch && matchStatus && matchProject && matchOverdue;
-    }), [tasks, searchTerm, filterStatus, filterProject, filterOverdue, scopedProjectIds]);
+        return matchSearch && matchStatus && matchProject && matchMonth && matchOverdue;
+    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterOverdue, scopedProjectIds]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {
@@ -382,6 +392,21 @@ const TaskList: React.FC = () => {
                                 <option value="All">Tất cả dự án</option>
                                 {projects.map(p => (
                                     <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName.substring(0, 28)}...</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                        </div>
+
+                        <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                            <select
+                                value={filterMonth}
+                                onChange={(e) => setFilterMonth(e.target.value)}
+                                className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all min-w-[140px]"
+                            >
+                                <option value="All">Tất cả tháng</option>
+                                {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                                    <option key={month} value={month.toString()}>Tháng {month}</option>
                                 ))}
                             </select>
                             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
