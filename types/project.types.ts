@@ -43,6 +43,32 @@ export enum ProjectStage {
     Completion = 'Completion'      // GĐ Kết thúc xây dựng
 }
 
+export enum ProjectCurrentStatus {
+    DuyetChuTruong = 1, // Duyệt chủ trương
+    DuyetDuAn = 2, // Duyệt dự án nhưng chưa khởi công
+    DangThiCong = 3, // Đang thi công
+    DaHoanThanhChuaBanGiao = 4, // Đã hoàn thành chưa bàn giao/ đang đề xuất dừng thực hiện
+    DaBanGiaoChuaTrinhQuyetToan = 5, // Đã bàn giao/ đã dừng thực hiện nhưng chưa trình quyết toán
+    DaTrinhChuaPheDuyetQuyetToan = 6, // Đã trình nhưng chưa phê duyệt quyết toán
+    DaQuyetToanConCongNo = 7, // Đã quyết toán còn công nợ
+    HetNhiemVuChi = 8, // Hết nhiệm vụ chi nhưng còn xử lý về tài chính (thanh tra, kiểm toán, dư ứng, thu hồi,...)
+    KetThuc = 9, // Dự án kết thúc
+    ChuaNhanBanGiao = 10, // Chưa nhận bàn giao từ CĐT cũ
+}
+
+export const PROJECT_CURRENT_STATUS_CONFIG: Record<number, { label: string; fullLabel: string; hex: string; bgClass: string; textClass: string; borderClass: string }> = {
+    1: { label: 'Duyệt chủ trương', fullLabel: 'Duyệt chủ trương', hex: '#6366F1', bgClass: 'bg-indigo-50 dark:bg-indigo-900/30', textClass: 'text-indigo-700 dark:text-indigo-400', borderClass: 'border-indigo-100 dark:border-indigo-800' },
+    2: { label: 'Chưa khởi công', fullLabel: 'Duyệt dự án nhưng chưa khởi công', hex: '#8B5CF6', bgClass: 'bg-violet-50 dark:bg-violet-900/30', textClass: 'text-violet-700 dark:text-violet-400', borderClass: 'border-violet-100 dark:border-violet-800' },
+    3: { label: 'Đang thi công', fullLabel: 'Đang thi công', hex: '#F59E0B', bgClass: 'bg-amber-50 dark:bg-amber-900/30', textClass: 'text-amber-700 dark:text-amber-400', borderClass: 'border-amber-100 dark:border-amber-800' },
+    4: { label: 'Hoàn thành chưa bàn giao', fullLabel: 'Đã hoàn thành chưa bàn giao / Đang đề xuất dừng thực hiện', hex: '#06B6D4', bgClass: 'bg-cyan-50 dark:bg-cyan-900/30', textClass: 'text-cyan-700 dark:text-cyan-400', borderClass: 'border-cyan-100 dark:border-cyan-800' },
+    5: { label: 'Bàn giao chưa trình QT', fullLabel: 'Đã bàn giao / Đã dừng thực hiện nhưng chưa trình quyết toán', hex: '#3B82F6', bgClass: 'bg-blue-50 dark:bg-blue-900/30', textClass: 'text-blue-700 dark:text-blue-400', borderClass: 'border-blue-100 dark:border-blue-800' },
+    6: { label: 'Đã trình chưa duyệt QT', fullLabel: 'Đã trình nhưng chưa phê duyệt quyết toán', hex: '#EC4899', bgClass: 'bg-pink-50 dark:bg-pink-900/30', textClass: 'text-pink-700 dark:text-pink-400', borderClass: 'border-pink-100 dark:border-pink-800' },
+    7: { label: 'Đã QT còn công nợ', fullLabel: 'Đã quyết toán còn công nợ', hex: '#EF4444', bgClass: 'bg-red-50 dark:bg-red-900/30', textClass: 'text-red-700 dark:text-red-400', borderClass: 'border-red-100 dark:border-red-800' },
+    8: { label: 'Xử lý tài chính', fullLabel: 'Hết nhiệm vụ chi nhưng còn xử lý về tài chính (thanh tra, kiểm toán, dư ứng, thu hồi,...)', hex: '#F97316', bgClass: 'bg-orange-50 dark:bg-orange-900/30', textClass: 'text-orange-700 dark:text-orange-400', borderClass: 'border-orange-100 dark:border-orange-800' },
+    9: { label: 'Dự án kết thúc', fullLabel: 'Dự án kết thúc', hex: '#10B981', bgClass: 'bg-emerald-50 dark:bg-emerald-900/30', textClass: 'text-emerald-700 dark:text-emerald-400', borderClass: 'border-emerald-100 dark:border-emerald-800' },
+    10: { label: 'Chưa nhận bàn giao', fullLabel: 'Chưa nhận bàn giao từ CĐT cũ', hex: '#64748B', bgClass: 'bg-slate-50 dark:bg-slate-900/30', textClass: 'text-slate-700 dark:text-slate-400', borderClass: 'border-slate-100 dark:border-slate-800' },
+};
+
 /**
  * Lĩnh vực đầu tư - theo Điều 9 Luật ĐTC 58/2024/QH15
  * Phân thành 5 nhóm lĩnh vực (Khoản 1-5 Điều 9) với ngưỡng khác nhau
@@ -207,16 +233,109 @@ export interface Project {
     OldInvestor?: string;
     TransferDecision?: string;
     CurrentStatusCode?: number;
+    // Quyết định chủ trương đầu tư
+    PolicyDecisionLevel?: string;     // Cấp quyết định: QH, CP, Thủ tướng, Bộ trưởng, UBND tỉnh
+    PolicyDecisionNumber?: string;    // Số QĐ chủ trương (CBT số)
+    PolicyDecisionDate?: string;      // Ngày ban hành QĐ chủ trương
+    PolicyDecisionAuthority?: string; // Cơ quan ban hành
+    // Cơ cấu nguồn vốn chi tiết
+    BudgetAllocations?: BudgetAllocations;
+    // Hình thức thực hiện
+    BiddingForm?: string;             // Hình thức lựa chọn nhà thầu
+    // Dữ liệu nhóm (JSONB)
+    KHVInfo?: KHVInfo;
+    ImplementationTracking?: ImplementationTracking;
+    AdjustedApproval?: AdjustedApproval;
+    ContractorDetails?: ContractorDetails;
+    ProjectManagement?: ProjectManagement;
+    ProjectStatusInfo?: ProjectStatusInfo;
+}
+
+/** Quyết định giao KHV + kế hoạch vốn */
+export interface KHVInfo {
+    decisionNumber?: string;    // Số QĐ giao KHV
+    decisionDate?: string;      // Ngày QĐ
+    fundingSourceCode?: string; // Mã nguồn
+    total?: number;             // Tổng KHV
+    year2025Extended?: number;  // 2025 kéo dài
+    year2026?: number;          // 2026
+}
+
+/** Theo dõi khối lượng & giải ngân */
+export interface ImplementationTracking {
+    totalVolume?: number;           // Tổng cộng KL thực hiện
+    ytdVolume?: number;             // Lũy kế đầu năm
+    periodVolume?: number;          // Thực hiện trong kỳ
+    volumeRate?: number;            // Tỷ lệ %
+    totalDisbursed?: number;        // Tổng cộng giải ngân
+    ytdDisbursed?: number;          // Lũy kế đầu năm (giải ngân)
+    periodDisbursed?: number;       // Giải ngân trong kỳ
+    disbursementRate?: number;      // Tỷ lệ giải ngân
+    remainingCapital?: number;      // KH vốn còn lại
+    completedNotDisbursed?: number; // KL hoàn thành chưa giải ngân
+}
+
+/** QĐ điều chỉnh dự án + thời gian điều chỉnh & thực tế */
+export interface AdjustedApproval {
+    decisionNumber?: string;  // Số QĐ phê duyệt điều chỉnh
+    decisionDate?: string;    // Ngày QĐ điều chỉnh
+    totalEstimate?: number;   // Tổng dự toán sau điều chỉnh
+    adjustedStartDate?: string; // Khởi công sau điều chỉnh
+    adjustedEndDate?: string;   // Hoàn thành sau điều chỉnh
+    actualStartDate?: string;   // Thực tế khởi công
+    actualEndDate?: string;     // Thực tế hoàn thành
+}
+
+/** Đơn vị thực hiện (nhà thầu thi công) */
+export interface ContractorDetails {
+    unitName?: string;        // Tên đơn vị
+    taxCode?: string;         // Mã số thuế
+    address?: string;         // Địa chỉ
+    contractContent?: string; // Nội dung Hợp đồng
+    packageNumber?: string;   // Số hiệu gói thầu
+    legalRep?: string;        // Đại diện Pháp luật
+    siteManager?: string;     // Chỉ huy công trường
+    techStaff?: string;       // Cán bộ kỹ thuật
+}
+
+/** Nhân sự quản lý dự án (nội bộ) */
+export interface ProjectManagement {
+    accountant?: string;      // Kế toán theo dõi
+    projectDirector?: string; // Giám đốc QLDA
+    techStaff?: string;       // Cán bộ kỹ thuật
+}
+
+/** Hiện trạng & tình hình dự án */
+export interface ProjectStatusInfo {
+    isSettled?: boolean;                // Đã hoàn thành Quyết toán
+    isHandedOverNotSettled?: boolean;   // Đã nghiệm thu Bàn giao chưa QT
+    isCompletedNotHandedOver?: boolean; // Đã hoàn thành chưa bàn giao
+    auditStatus?: string;               // Tình hình thanh tra kiểm toán
+    delayReason?: string;               // Nguyên nhân chậm tiến độ
+    delayResponsibility?: string;       // Trách nhiệm
+    delayResolution?: string;           // Kết quả xử lý
+    delayRecommendation?: string;       // Kiến nghị, đề xuất giải pháp
+    notes?: string;                     // Ghi chú
 }
 
 /** Chi tiết tổng mức đầu tư — TT24 A.II.7.4 */
 export interface CostBreakdown {
-    construction?: number;
-    equipment?: number;
-    management?: number;
-    consultancy?: number;
-    other?: number;
-    contingency?: number;
+    landClearance?: number; // GPM&B - Giải phóng mặt bằng
+    construction?: number;  // XL - Xây lắp
+    equipment?: number;     // Thiết bị
+    consultancy?: number;   // TV - Tư vấn
+    management?: number;    // QL - Quản lý dự án
+    other?: number;         // Chi phí khác
+    contingency?: number;   // Dự phòng
+}
+
+/** Cơ cấu nguồn vốn chi tiết */
+export interface BudgetAllocations {
+    BudgetNSTW?: number;              // Ngân sách Trung ương
+    BudgetNSDiaphuong?: number;       // Ngân sách địa phương
+    BudgetLoan?: number;              // Vốn vay
+    BudgetODA?: number;               // Vốn ODA/nước ngoài
+    BudgetOtherNSNN?: number;         // Vốn khác ngoài NSNN
 }
 
 /** Quyết định phê duyệt chủ trương đầu tư */

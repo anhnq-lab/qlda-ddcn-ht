@@ -44,7 +44,10 @@ export const DashboardService = {
     getOverviewMetrics: async (year: number): Promise<DashboardOverviewMetrics> => {
         const today = new Date().toISOString();
 
-        const [projectsRes, capitalRes, disbursedRes, overdueTasksRes, issueRes] = await Promise.all([
+        const [projectsCountRes, totalInvRes, capitalRes, disbursedRes, overdueTasksRes, issueRes] = await Promise.all([
+            // Count projects (no rows fetched)
+            supabase.from('projects').select('*', { count: 'exact', head: true }),
+            // Sum total_investment (only 1 column, minimal transfer)
             supabase.from('projects').select('total_investment'),
             supabase.from('capital_plans').select('amount').eq('year', year),
             supabase.from('disbursements').select('amount, date')
@@ -56,7 +59,7 @@ export const DashboardService = {
                 .eq('status', 'Open'),
         ]);
 
-        const totalInvestment = (projectsRes.data || []).reduce((acc, p) => acc + Number(p.total_investment), 0);
+        const totalInvestment = (totalInvRes.data || []).reduce((acc, p) => acc + Number(p.total_investment), 0);
         const yearlyPlanned = (capitalRes.data || []).reduce((acc, p) => acc + Number(p.amount), 0);
         const yearlyDisbursed = (disbursedRes.data || []).reduce((acc, d) => acc + Number(d.amount), 0);
         const yearlyDisbursementRate = yearlyPlanned > 0
@@ -65,7 +68,7 @@ export const DashboardService = {
         const riskCount = (overdueTasksRes.count || 0) + (issueRes.count || 0);
 
         return {
-            totalProjects: (projectsRes.data || []).length,
+            totalProjects: projectsCountRes.count || 0,
             totalInvestment,
             yearlyPlanned,
             yearlyDisbursed,
@@ -147,7 +150,7 @@ export const DashboardService = {
         });
     },
 
-    /** Task Completion — count by status for ring chart */
+    /** Task Completion — count by status using RPC for server-side aggregation */
     getTaskCompletion: async (): Promise<{
         done: number;
         inProgress: number;
@@ -155,18 +158,23 @@ export const DashboardService = {
         overdue: number;
         total: number;
     }> => {
-        const today = new Date().toISOString();
-        const { data: tasks } = await supabase
-            .from('tasks')
-            .select('status, due_date');
+        const { data, error } = await (supabase.rpc as any)('get_task_status_counts');
 
-        const all = tasks || [];
-        const done = all.filter(t => t.status === 'Done').length;
-        const overdue = all.filter(t => t.status !== 'Done' && t.due_date && t.due_date < today).length;
-        const inProgress = all.filter(t => (t.status === 'InProgress' || t.status === 'Review') && !(t.due_date && t.due_date < today)).length;
-        const todo = all.filter(t => t.status === 'Todo' && !(t.due_date && t.due_date < today)).length;
+        if (error) {
+            console.error("Error fetching task completion counts:", error);
+            return { done: 0, inProgress: 0, todo: 0, overdue: 0, total: 0 };
+        }
 
-        return { done, inProgress, todo, overdue, total: all.length };
+        const dataArr = Array.isArray(data) ? data : (data ? [data] : []);
+        const counts = dataArr.length > 0 ? dataArr[0] : { done_count: 0, in_progress_count: 0, todo_count: 0, overdue_count: 0, total_count: 0 };
+
+        return { 
+            done: Number(counts.done_count) || 0, 
+            inProgress: Number(counts.in_progress_count) || 0, 
+            todo: Number(counts.todo_count) || 0, 
+            overdue: Number(counts.overdue_count) || 0, 
+            total: Number(counts.total_count) || 0 
+        };
     },
 
     /** Risks — overdue tasks + open issues */

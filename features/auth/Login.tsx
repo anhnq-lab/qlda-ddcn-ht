@@ -253,7 +253,7 @@ const Login: React.FC = () => {
 
                     <div className="mt-12 text-center">
                         <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                            © 2026 Ban QLDA ĐTXD Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
+                            © 2026 Ban QLDA đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
                         </p>
                     </div>
                 </div>

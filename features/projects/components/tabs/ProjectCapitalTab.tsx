@@ -82,7 +82,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
 
     const [disbursementFilter, setDisbursementFilter] = useState<DisbursementFilter>('all');
     const [planYearFilter, setPlanYearFilter] = useState<number>(new Date().getFullYear());
-    const [capitalSubTab, setCapitalSubTab] = useState<CapitalSubTab>('mid_term');
+    const [capitalSubTab, setCapitalSubTab] = useState<CapitalSubTab>('annual');
     const [expandedMidTermPlan, setExpandedMidTermPlan] = useState<string | null>(null);
 
     // ── CRUD State ──
@@ -92,7 +92,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [editingDisb, setEditingDisb] = useState<Disbursement | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'plan' | 'disb' | 'disbPlan'; id: string } | null>(null);
     const [disbPlanModalOpen, setDisbPlanModalOpen] = useState(false);
-    const [modalPlanType, setModalPlanType] = useState<CapitalSubTab>('mid_term');
+    const [modalPlanType, setModalPlanType] = useState<CapitalSubTab>('annual');
 
     // ── Mutations ──
     const createPlan = useCreateCapitalPlan();

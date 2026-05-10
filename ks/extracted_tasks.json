@@ -1,0 +1,1881 @@
+[
+  {
+    "name": "Phòng Hành chính - Tổng hợp",
+    "tasks": [
+      {
+        "title": "Công tác Hành chính",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tiếp nhận hồ sơ lưu kho",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Chỉnh lý hồ sơ lưu kho",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tham mưu tổng hợp",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Ban hành kế hoạch xây dựng hồ sơ quản lý chất lượng",
+        "assignee": "Trịnh Văn Minh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": ""
+      },
+      {
+        "title": "Điều chuyển công tác viên chức",
+        "assignee": "Trịnh Văn Minh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "Mua sắm tài sản",
+        "assignee": "Trịnh Văn Minh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "Hoàn thiên các chứng từ thanh toán chi thường xuyên",
+        "assignee": "Nguyễn Thị Lan Anh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": ""
+      },
+      {
+        "title": "Tiếp tục làm QH TPP, QH bí thư các chi bô, QH phó bí thư, UVBCH các chi bộ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác tổ chức nhân sự",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác kế toán, giải ngân",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Hệ thống số sách hạch toán kế toán",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập báo cáo QT các công trình đử ĐK",
+        "assignee": "Vũ Thị Giang,",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lấy sổ phụ, lập sổ vào phần mềm, đối chiếu tiền gửi tại các ngân hàng",
+        "assignee": "Vũ Thị Giang,",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp với các phòng báo cáo khi có yêu cầu",
+        "assignee": "Lê Thị Thanh Bình",
+        "manager": "Đoàn Chính Hữu/ Phạm Thị Oanh",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk",
+        "assignee": "Lê Thị Thanh Bình",
+        "manager": "Đoàn Chính Hữu/ Phạm Thị Oanh",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "thực hiện các Công việc phụ trách phòng, kế toán trưởng giao",
+        "assignee": "Lê Thị Thanh Bình",
+        "manager": "Đoàn Chính Hữu/ Phạm Thị Oanh",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "Rà soát các dự án đường điện để bàn giao về cho xã",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "thực hiện các Công việc phụ trách phòng, kế toán trưởng giao",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập báo cáo QT các công trình khi đủ điều kiện",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập báo cáo QT các công trình đử ĐK",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp với các phòng báo cáo khi có yêu cầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình (nguồn 2025 tháng chỉnh lý) đủ đk",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập báo cáo QT các công trình khi đủ điều kiện",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập và soát hồ sơ, nhập phần mềm các dự án công trình đủ điều kiện thanh toán quyết toán",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp các phòng cáo cáo khi có yêu cầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập báo cáo QT các công trình khi đủ điều kiện",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lập và soát hồ sơ, nhập phần mềm các dự án công trình đủ điều kiện thanh toán quyết toán",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp các phòng cáo cáo khi có yêu cầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào phần mềm, thanh toán công nợ các dự án đủ điều kiện, phối hợp với các phòng liên quan báo cáo cung cấp số liệu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp với các bộ phận trong việc xử lý hồ sơ khi trong quá trình tiếp nhận",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "thực hiện các Công việc phụ trách phòng, kế toán trưởng giao",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp các phòng cáo cáo khi có yêu cầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thanh toán các khoản phát sinh tại Ban QLDA",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thanh toán hoàn ứng khối lượng hoàn thành  công trình  mình phụ trách",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Hoàn thiện bàn giao hồ sơ dự án cao tốc bắc nam về xã (4 dự án) đúng quy định",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lấy sao kê  ngân hàng, nhập PM",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án được giao",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thanh toán các chi phí Hội nghị, tiếp khách, chi phí khác và quỹ PTHĐSN",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kiểm kê, theo dõi tài sản của Ban QLDA",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phối hợp các phòng cáo cáo khi có yêu cầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thanh quyết toán khối lượng hoàn thành các công trình đang phụ trách",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng hợp, theo dõi các hoạt động tư vấn QLDA, Thuế GTGT, TNDN",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án được giao",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Nộp hồ sơ quyết toán 3 dự án ban can lộc cũ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thủ tục chuyển nguồn….",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Mở tài khoản  chi đầu tư tại KB cho các dự án chuyển CĐT tại KV Vũ Quang",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Chi phí Vận hành",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thanh toán các khoản phát sinh tại Ban QLDA",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kiểm soát Hồ sơ, Thanh toán các khoản phát sinh tại Ban QLDA",
+        "assignee": "Ng Thị Hồng Hạnh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": ""
+      },
+      {
+        "title": "Kiểm soát Hồ sơ, Thanh toán các khoản phát sinh tại các Văn phòng khu vực",
+        "assignee": "Ng Thị Hồng Hạnh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": ""
+      },
+      {
+        "title": "Kiểm soát Hồ sơ, Thanh toán các khoản phát sinh",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Giải ngân vốn đầu tư",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số hồ sơ qua Kho bạc:   Hồ sơ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng giải ngân trong tháng:  Tổng giải ngân trong tháng: 139.244,42 triệu đồng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Lũy kế giải ngân từ đầu năm    triệu đồng, tỷ lệ   %",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Quản lý tài sản",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Quản lý tài sản, thực hiện kiểm kê tài sản",
+        "assignee": "Ng Thị Hồng Hạnh",
+        "manager": "Đoàn Chính Hữu",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác quyết  toán",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA đầu tư XDCT Dân dụng và Công nghiệp",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính):   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán: ....dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Thạch Hà (30CT)",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính):   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán: ....dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Hương Khê (29 CT)",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính):   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán:   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Cẩm Xuyên",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính):  Toàn bộ các dự án còn lại",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán: ....dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Can Lộc (5 CT)",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính): .   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán: ....dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Đức Thọ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính):  01 dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán:   dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Các dự án từ Ban QLDA ĐTXD huyện Vũ Quang",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án hoàn thành BCQT nộp QT (SởTài chính): 01  dự án",
+        "assignee": "Nguyễn Thị Thuận",
+        "manager": "Đoàn Chính Hữu/ Phạm Thị Oanh",
+        "director": "Nguyễn Quang Linh",
+        "deadline": ""
+      },
+      {
+        "title": "Số dự án đã được UBND tỉnh duyệt Quyết toán: ....dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác Văn phòng Đảng ủy",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      }
+    ]
+  },
+  {
+    "name": "Phòng Kế hoạch - Đấu thầu",
+    "tasks": [
+      {
+        "title": "Công tác tổng hợp báo cáo",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng hợp báo cáo theo yêu cầu định kỳ và đột xuất",
+        "assignee": "Nguyễn Thị Quỳnh Nga\nPhan Thị Thu Hà\nDương Thị Quỳnh Hoa",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng 5"
+      },
+      {
+        "title": "Báo cáo tổng hợp công việc thực hiện tháng 5 - Kế hoạch thực hiện tháng 06/2026 của các phòng trong BQLDA",
+        "assignee": "Dương Thị Quỳnh Hoa",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng 5"
+      },
+      {
+        "title": "Góp ý các nội dung theo yêu cầu của các sở ban ngành liên quan",
+        "assignee": "Phạm Viết Cần\nNguyễn Minh Quang\nNguyễn Thị Quỳnh Nga\nPhan Thị Thu Hà\nDương Thị Quỳnh Hoa",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng 5"
+      },
+      {
+        "title": "Công tác đấu thầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Thẩm định KHLCN nhà thầu các gói thầu khi trình KHLCNT",
+        "assignee": "Phạm Viết Cần",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Số hồ sơ lập HSMT các gói thầu phát sinh trong tháng",
+        "assignee": "Phạm Viết Cần",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng 5"
+      },
+      {
+        "title": "Chấm thầu  các thầu phát sinh trong tháng",
+        "assignee": "Phạm Viết Cần",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Thanh Bình",
+        "deadline": "Tháng 5"
+      },
+      {
+        "title": "Tham mưu quyết định chỉ định thầu một số gói thầu theo kế hoạch LCNT đã được duyệt",
+        "assignee": "Nguyễn Minh Quang",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Đăng tải KHLCNT, lập HSMT và mời thầu các gói thầu phát sinh trong tháng",
+        "assignee": "Phạm Viết Cần",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Hoàn thiện thỏa thuận tài trợ dự án KOICA, chuẩn bị làm việc với đoàn thiết kế dự án",
+        "assignee": "Dương Quỳnh Hoa",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Dịch đơn rút vốn các gói thuộc dự án BIIG2",
+        "assignee": "Dương Quỳnh Hoa",
+        "manager": "Bùi Nam Sơn",
+        "director": "Nguyễn Quang Linh",
+        "deadline": "Tháng  5"
+      }
+    ]
+  },
+  {
+    "name": "Phòng Kỹ thuật thẩm định",
+    "tasks": [
+      {
+        "title": "Số hồ sơ thẩm định HSMT",
+        "assignee": "Theo phân công của phụ trách phòng",
+        "manager": "Hà Vũ Tuấn Dũng",
+        "director": "Ngô Đức Quy",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Số hồ sơ thẩm định, điều chỉnh: thiết kế bản vẽ thi công và dự toán; giá gói thầu; điều chỉnh giá",
+        "assignee": "Theo phân công của phụ trách phòng",
+        "manager": "Hà Vũ Tuấn Dũng",
+        "director": "Ngô Đức Quy",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Số hồ sơ kiểm tra nghiệm thu thanh/quyết toán",
+        "assignee": "Theo phân công của phụ trách phòng",
+        "manager": "Hà Vũ Tuấn Dũng",
+        "director": "Ngô Đức Quy",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Số công trình kiểm tra/nghiệm thu hoàn thành/nghiệm thu bàn giao đưa vào sử dụng",
+        "assignee": "Theo phân công của phụ trách phòng",
+        "manager": "Hà Vũ Tuấn Dũng",
+        "director": "Ngô Đức Quy",
+        "deadline": "Tháng  5"
+      },
+      {
+        "title": "Phụ trách các công trình, dự án",
+        "assignee": "Theo phân công của phụ trách phòng",
+        "manager": "Hà Vũ Tuấn Dũng",
+        "director": "Ngô Đức Quy",
+        "deadline": "Tháng  5"
+      }
+    ]
+  },
+  {
+    "name": "Phòng Phát triển dịch vụ",
+    "tasks": [
+      {
+        "title": "GPMB",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đường Lâm - Liên huyện Hương Khê",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Phối hợp hồ sơ số liệu chi phí GPMB cho quyết toán các công trình thuộc dự án BIIG2, dự án Ngân sách",
+        "assignee": "Nguyễn Thị Hồng Lam",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác Tư vấn QLDA các công trình",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Bệnh viện tâm thần cơ sở 2 Cẩm Xuyên",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Nâng cấp tuyến đường quốc lộ 15b đến tổ dân phố Liên Xuân phường Trần Phú",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Bệnh viện tâm thần cơ sở 1",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Lập đề cương nhiệm vụ tư vấn QLDA để tổ chức lựa chọn tư vấn quản lý dự án",
+        "assignee": "Lê Bạch Long",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Tiếp cận triển khai TVQLDA một số công trình khác",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Triển khai TV QLDA Cầu tại quán ông Thìn Lân Thôn Tân Thuận xã Cẩm Hưng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "TVGS đường cạnh trường tiểu học Hà Huy Tập Cẩm Hưng",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Phối hợp thực hiện 1 số báo cáo theo yêu cầu",
+        "assignee": "Nguyễn  Thị Hồng Lam",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Dự án Rừng ngập mặn thuộc dự án IWMC",
+        "assignee": "Đào Xuân Hiên",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Khôi phục cầu Thái Mầu, phường Hà Huy Tập",
+        "assignee": "Trương Bá Thuận",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-30 00:00:00"
+      },
+      {
+        "title": "Tiếp cận triển khai tư vấn QLDA 7 công trình xã Cẩm Hưng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": "2026-04-30 00:00:00"
+      },
+      {
+        "title": "Phối hợp thực hiện 1 số báo cáo theo yêu cầu",
+        "assignee": "Nguyễn  Thị Hồng Lam",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-04-30 00:00:00"
+      },
+      {
+        "title": "Dự án Rừng ngập mặn thuộc dự án IWMC",
+        "assignee": "Đào Xuân Hiên",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-04-30 00:00:00"
+      },
+      {
+        "title": "Khôi phục cầu Thái Mầu, phường Hà Huy Tập",
+        "assignee": "",
+        "manager": "Nguyễn Thanh Bình",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-04-30 00:00:00"
+      }
+    ]
+  },
+  {
+    "name": "Phòng QLDA 1",
+    "tasks": [
+      {
+        "title": "Đăng ký số  dự án trình Phòng KTTĐ thẩm định đề cương 05",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký số  dự án trình Phòng KHĐT thẩm định KHLCNT 06",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký Số công trình/ dự án đã trình Sở chuyên ngành thẩm định TK, BCKTKT 03",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký Số dự án 02/ công trình nghiệm thu trong tháng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký số dự án đã thực hiện GPMB",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "VP tỉnh",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Dự án xây dựng, tôn tạo Nhà lưu niệm, Nhà tưởng niệm (Khu lưu niệm Tổng Bí thư Trần Phú):",
+        "assignee": "Lê Văn Anh Trung/Lê Ngọc Sơn",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án xây dựng, cải tạo hạ tầng kỹ thuật và một số hạng mục tại Khu lưu niệm Tổng Bí thư Trần Phú:",
+        "assignee": "Lê Văn Anh Trung/Lê Ngọc Sơn",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án xây dựng, tôn tạo một số hạng mục tại Khu mộ Tổng Bí thư Trần Phú:",
+        "assignee": "Nguyễn Thành Chung/Võ Việt Đức",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án xây dựng, tôn tạo Nhà lưu niệm, Nhà tưởng niệm, Nhà tranh (Khu lưu niệm Tổng Bí thư Hà Huy Tập)",
+        "assignee": "Lê Văn Anh Trung/Võ Việt Đức",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án xây dựng, cải tạo hạ tầng kỹ thuật và một số hạng mục tại Khu lưu niệm Tổng Bí thư Hà Huy Tập:",
+        "assignee": "Lê Văn Anh Trung/Võ Việt Đức",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án xây dựng, tôn tạo một số hạng mục tại Khu mộ Tổng Bí thư Hà Huy Tập:",
+        "assignee": "Trần Anh Dũng",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án Xây dựng trường phổ thông nội trú liên cấp Tiểu học và THCS Sơn Kim 1",
+        "assignee": "Nguyễn Văn Quang",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án Xây dựng trường phổ thông nội trú liên cấp Tiểu học và THCS Hương Khê",
+        "assignee": "Nguyễn Văn Khoa/Nguyễn Văn Quang",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Cải tạo, nâng cấp Hồ sinh thái Khu di tích Ngã ba Đồng Lộc (giai đoạn 2)",
+        "assignee": "Nguyễn Quyết Thắng/Nguyễn Thành Chung",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Trụ sở làm việc Trạm kiểm dịch động vật nội địa",
+        "assignee": "Nguyễn Văn Khoa",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "VP Đức Thọ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đường từ thị trấn Đức Thọ đến Khu lưu niệm Trần Phú, huyện Đức Thọ:",
+        "assignee": "Nguyễn Thành Chung",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Kè chống sạt lở bờ hữu sông Ngàn Sâu đoạn qua xã Đức Đồng - Đức Lạc, huyện Đức Thọ:",
+        "assignee": "Trần Duy Khán",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Dự án Cầu Bãi Thẹn nối huyện Đức Thọ và thị xã Hồng Lĩnh",
+        "assignee": "Nguyễn Thành Chung",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "VP Vũ Quang",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Cầu Hốp Chuối, thị trấn Vũ Quang, huyện Vũ Quang:",
+        "assignee": "Nguyễn Quốc Việt",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Nhà học 2 tầng 8 phòng và các hạng mục phụ trợ trường Tiểu học Đức Lĩnh:",
+        "assignee": "Phạm Chí Công",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Xây dựng nhà sinh hoạt cộng đồng kết hợp tránh lũ thôn 5 xã Ân Phú:",
+        "assignee": "Phan Trọng Cường",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Trường tiểu học Ân Phú; Hạng mục:",
+        "assignee": "Pham Chí Công",
+        "manager": "Phan Quốc Bảo",
+        "director": "Trần Ngọc Bảo",
+        "deadline": "2026-05-31 00:00:00"
+      },
+      {
+        "title": "Phòng QLDA 2",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Nhiệm vụ thực hiện trong tháng 05/2026",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phòng QLDA 2",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký số  dự án trình Phòng KTTĐ thẩm định đề cương      công trình",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký số  dự án trình Phòng KTTĐ thẩm định điều chỉnh:    công trình (phê duyệt thiết kế).",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký số  dự án trình Phòng KHĐT thẩm định KHLCNT, CĐT:",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký Số công trình/ dự án đã trình Sở chuyên ngành thẩm định TK, BCKTKT:",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký ký kết Hợp đồng các công trình:   01 Hợp đồng",
+        "assignee": "Trần Đình Phú; Nguyễn Thanh Tân",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký Số dự án/ công trình nghiệm thu trong tháng:     công trình",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đăng ký số dự án đã thực hiện GPMB:  03 (đường tránh lũ, tx05, bệnh viện tỉnh)",
+        "assignee": "Phan Văn Ánh, Nguyễn Thành Trung, Nguyễn Trọng Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Tờ trình, cấp phép gửi Sở, ngành:",
+        "assignee": "",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Các Văn bản, Báo cáo gửi Sở, ngành, doanh nghiệp và địa phương: 15",
+        "assignee": "Nguyễn Trọng Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "KẾ HOẠCH THỰC HIỆN THÁNG 05/2026 CỦA TỪNG DỰ ÁN",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      }
+    ]
+  },
+  {
+    "name": "Văn phòng",
+    "tasks": [
+      {
+        "title": "Trường Chính trị Trần Phú",
+        "assignee": "Cù Chí Tài; Nguyễn Việt Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Trường Cao đẳng nghề Việt Đức (GĐ1)",
+        "assignee": "Nguyễn Văn Quang\nNguyễn Văn Toàn                                                                                              Nguyễn Trọng Hoàng (MB)",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Trường Cao đẳng nghề Việt Đức ( giai đoạn 2)",
+        "assignee": "Cù Chí Tài\nNguyễn Công Toàn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Trường THPT Cẩm Xuyên",
+        "assignee": "Cù Chí Tài; Biện Văn Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đường Sơn Thượng, huyện Kỳ Anh (BIIG2)",
+        "assignee": "Nguyễn Văn Thọ\nNguyễn Văn Khoa\nLê Tùng Nguyên",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đường ĐH90, huyện Hương Khê (BIIG2)",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Lắp đặt thiết bị 04 Bệnh viện tuyến huyện",
+        "assignee": "Nguyễn Văn Quang\nNguyễn Văn Toàn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Bệnh viện Tỉnh Hà Tĩnh",
+        "assignee": "Cù Chí Tài\nBiện Văn Hoàng                                                                                             Nguyễn Trọng Hoàng (MB)",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Dự án bệnh viện Cẩm Xuyên",
+        "assignee": "Nguyễn văn Thọ\nNguyễn Văn Đức",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hoàn thiện các báo cáo của phòng gửi các Sở Ngành, nội bộ Ban",
+        "assignee": "Nguyễn Trọng Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Tham mưu các văn bản liên quan đến Đảng ủy Ban",
+        "assignee": "Nguyễn Trọng Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Dự án Đầu tư xây dựng, cải tạo và nâng cấp cơ sở hạ tầng, cung cấp trang thiết bị cho các trạm y tế xã trên địa bàn tỉnh Hà Tĩnh\"",
+        "assignee": "Cù Chí Tài\nNguyễn Văn Thọ\nNguyễn Công Toàn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      }
+    ]
+  },
+  {
+    "name": "Khu vực Cẩm Xuyên",
+    "tasks": [
+      {
+        "title": "Đường nối đường gom QL15B đi cụm công nghiệp Cẩm Nhượng",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Như Sơn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Dự án đường Cẩm Sơn đi Cẩm Thịnh (đường Tránh lũ)",
+        "assignee": "Nguyễn Trọng Hanh\nPhan Văn Ánh",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hệ thống điện chiếu sáng KDL Thiên Cầm",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Thành Trung",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hạ tầng KDL Nam Thiên Cầm (GĐ1)",
+        "assignee": "Nguyễn Trọng Hanh\nHồ Thái Sơn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hạ tầng KDL Nam Thiên Cầm (GĐ2)",
+        "assignee": "Nguyễn Trọng Hanh\nHồ Thái Sơn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hạ tầng KDL Nam Thiên Cầm (GĐ3)",
+        "assignee": "Nguyễn Trọng Hanh\nHồ Thái Sơn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đường Trục xã TX.05, huyện Cẩm Xuyên",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Thành Trung\nPhan Văn Ánh",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đường Phạm Lê Đức, huyện Cẩm Xuyên",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Anh Quốc",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Rãnh dọc bổ sung đường Cẩm Thạch-Thạch Hội",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Hữu Sơn",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Đường giao thông trục xã Cẩm Quan",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Văn Đức",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Nhà học 2 tầng 10 phòng Trường Tiểu học Cẩm Hưng",
+        "assignee": "Nguyễn Trọng Hanh\nBiện Văn Hoàng",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Hoàn thiện hạ tầng kỹ thuật Cụm công nghiệp - Tiểu thủ công nghiệp Bắc Cẩm Xuyên",
+        "assignee": "Nguyễn Trọng Hanh\nNguyễn Anh Quốc",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      }
+    ]
+  },
+  {
+    "name": "Khu vực Can Lộc",
+    "tasks": [
+      {
+        "title": "Dự án Nâng cấp, mở rộng tuyến đường Thiên - An (tuyến nhánh 01), huyện Can Lộc, tỉnh Hà Tĩnh.",
+        "assignee": "Nguyễn Thanh Tân\nTrần Bảo Ngọc",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Nâng cấp mở rộng tuyến đường ĐH36",
+        "assignee": "Nguyễn Thanh Tân\nTrần Bảo Ngọc",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Dự án đường giao thông liên xã Khánh Vĩnh Yên - Thanh Lộc, huyện Can Lộc đi thị xã Hồng Lĩnh",
+        "assignee": "Trần Đình Phú",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      },
+      {
+        "title": "Dự án xây dựng nhà học 4 tầng Trường THPT Đồng Lộc, huyện Can Lộc",
+        "assignee": "Nguyễn Tiến Đạt",
+        "manager": "Võ Mạnh Hà",
+        "director": "Nguyễn Văn Nhân",
+        "deadline": "05/2026"
+      }
+    ]
+  },
+  {
+    "name": "Phòng QLDA 3",
+    "tasks": [
+      {
+        "title": "Đăng ký số  dự án trình Phòng KTTĐ thẩm định đề cương: 0 công trình",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": ""
+      },
+      {
+        "title": "Đăng ký số dự án trình Phòng KTTĐ thẩm định điều chỉnh: : 02 công trình",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": ""
+      },
+      {
+        "title": "Cải thiện cơ sở hạ tầng đô thị Hương Khê",
+        "assignee": "Nguyễn Quốc Quyền\nNguyễn Nam Phong\nNguyễn Đình Thế",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Cải thiện cơ sở hạ tầng đô thị Thạch Hà",
+        "assignee": "Nguyễn Trung Dũng\nTrương Đình Đức\nNguyễn Đức Thuận",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đăng ký số  dự án trình Phòng KHĐT thẩm định KHLCNT: 01 công trình",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": ""
+      },
+      {
+        "title": "Cải tạo nâng cấp hệ thống thủy lợi bên ngoài ranh giới Dự án Khu công nghiệp Bắc Thạch Hà (giai đoạn 1)",
+        "assignee": "Từ Hữu Hoan",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đăng ký Số công trình/ dự án đã trình Sở chuyên ngành thẩm định BCNCKT, TKBVTC, BCKTKT: 01 công trình.",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": ""
+      },
+      {
+        "title": "Nâng cấp tuyến đường trục xã TX.01 đoạn từ Quốc lộ 15B đến thôn Văn Sơn, xã Đỉnh Bàn, huyện Thạch Hà",
+        "assignee": "Từ Hữu Tuấn",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đăng ký Số dự án/ công trình nghiệm thu trong tháng:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "KẾ HOẠCH THỰC HIỆN CÁC DỰ ÁN",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "KHU VỰC THẠCH HÀ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tiểu dự án Cải thiện cơ sở hạ tầng đô thị Thạch Hà, huyện Thạch Hà, tỉnh Hà Tĩnh",
+        "assignee": "-Từ Hữu Tuấn\n- Trương Đình Đức\n- Nguyễn Đức Thuận\n- Từ Hữu Hoan\n- Nguyễn Trung Dũng",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường trục ngang ven biển huyện Thạch Hà",
+        "assignee": "Nguyễn Trung Dũng",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dãy nhà 03 tầng 06 phòng học bộ môn và các hạng mục phụ trợ Trường THCS Nguyễn Thiếp",
+        "assignee": "Ngô Văn Mạnh",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dự án Xử lý cấp bách đê Hữu Phủ, huyện Thạch Hà, đoạn từ K10+00 đến K15+315 (giai đoạn 2, đoạn từ K10+00 đến K12+970)",
+        "assignee": "Trương Đình Đức",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dự án Quảng trường biển Cửa Sót, huyện Lộc Hà",
+        "assignee": "Trần Khắc Tiến",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dự án Xử lý cấp bách Đê Tả Nghèn, huyện Lộc Hà",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dự án Nâng cấp kênh tiêu cầu Trung Nghĩa, thị trấn Lộc Hà, huyện Lộc Hà",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Dự án Đê Tả Nghèn huyện Lộc Hà, đoạn qua chùa Phổ Độ nối với Tỉnh Lộ 9",
+        "assignee": "",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông tổ 9, thị trấn Thạch Hà",
+        "assignee": "Lê Quốc Hưng",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "KHU VỰC HƯƠNG KHÊ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Cải thiện cơ sở hạ tầng đô thị Hương Khê:",
+        "assignee": "Nguyễn Quốc Quyền\nNguyễn Nam Phong\nNguyễn Đình Thế\nLương Xuân Hà",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Nâng cấp đường giao thông Huyện lộ 92 (ĐH92) đoạn từ xã Hương Thủy đi xã Hương Giang, huyện Hương Khê",
+        "assignee": "Nguyễn Đình Thế",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông nối đường Huyện lộ 2 (ĐH.87) đi đường Hồ Chí Minh, đoạn qua xã Hương Trạch, huyện Hương Khê",
+        "assignee": "Nguyễn Đình Thế",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông bảo vệ an ninh biên giới, kết hợp bảo vệ phát triển thác Vũ Môn và phát triển vùng, huyện Hương Khê (giai đoạn 1):",
+        "assignee": "Nguyễn Đình Thế",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông từ đường Hồ Chí Minh vào khu vực biên giơi xã Hòa Hải",
+        "assignee": "Phạm Thanh Hải",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông tránh lũ kết hợp vào khu xử lý chất thải rắn huyện Hương Khê tại thôn 2, xã Hương Thủy",
+        "assignee": "Nguyễn Nam Phong",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Nâng cấp đường giao thông trục chính xã Phú Phong",
+        "assignee": "Trần trung Kiên",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường GTNT xã Hương Long (tuyến đường đi thôn 7, 8 và tuyến đường trục TX01 đoạn từ huyện lộ 6 đi huyện lộ 8)",
+        "assignee": "Phạm Thanh Hải",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường GTNT xã Hương Trà",
+        "assignee": "Phạm Thanh Hải",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "Đường giao thông từ đường Hồ Chí Minh vào cụm công nghiệp Gia Phố, huyện Hương Khê (giai đoạn 1)",
+        "assignee": "Phạm Thanh Hải",
+        "manager": "Đặng Hữu Phương",
+        "director": "Ngô Đức Quy",
+        "deadline": "30/5/2026"
+      },
+      {
+        "title": "C. Kết luận, đánh giá:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "I. Báo cáo kết quả thực hiện tháng 4/2026:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Trong đó:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "1. Phòng Hành chính - Tổng hợp",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng  06 nhiệm vụ  chính ; 04 nhiệm vụ đã hoàn thành ; 02 nhiệm vụ  hoàn thành  mức 80%.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Nội dung công việc chính",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác Hành chính",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tham mưu tổng hợp",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổ chức bộ máy",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác Kế toán, giải ngân",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kế toán văn phòng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Giải ngân vốn đầu tư",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Quyết toán công trình/dự án",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Công tác Đảng",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "III. Đánh giá:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "1. Phòng Hành chính - Tổng hợp:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "2. Phòng Kế hoạch - Đấu thầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng 32 nhiệm vụ; đã hoàn thành 32 nhiệm vụ; chưa hoàn thành  0  nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "3. Phòng Kỹ thuật thẩm định",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng nhiệm vụ; đã hoàn thành 36 nhiệm vụ; chưa hoàn thành 3 nhiệm vụ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "4. Phòng Phát triển Dịch vụ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng 14 nhiệm vụ đã hoàn thành 08 nhiệm vụ; 04 nhiệm vụ chưa hoàn thành (có 02 Ct do điều chỉnh giá, và 02 CT đang chờ UBND tỉnh xem xét xử lý), 02 nhiệm vụ đang thực hiện theo kế hoạch.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "5. Phòng QLDA 1",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng 17 nhiệm vụ; đã hoàn thành 13  nhiệm vụ; chưa hoàn thành  04 nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "6. Phòng QLDA 2",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng nhiệm vụ:     30  ; đã hoàn thành nhiệm vụ 15; chưa hoàn thành  nhiệm vụ 15.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "7. Phòng QLDA 3",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng 14 nhiệm vụ; đã hoàn thành 04 nhiệm vụ; chưa hoàn thành       nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "II. Kế hoạch tháng 5/2026:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Trong đó:",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "2. Phòng Kế hoạch - Đấu thầu",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kế hoạch nhiệm vụ đề ra trong tháng là 14 nhiệm vụ chủ yếu.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phòng Kế hoạch - Đấu thầu: HTTNV",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "3. Phòng Kỹ thuật thẩm định",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kế hoạch nhiệm vụ đề ra trong tháng là 06 nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "- Phòng Kỹ thuật thẩm định: HTTNV.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "4. Phòng Phát triển Dịch vụ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kế hoạch nhiệm vụ đề ra trong tháng 5 là  13  nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Phòng Phát triển Dịch vụ: HTTNV",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "5. Phòng QLDA 1",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Tổng  nhiệm vụ đề ra trong Kế hoạch là 17 nhiệm vụ",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "-Phòng QLDA 1: HTTNV",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "6. Phòng QLDA 2",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "-Phòng QLDA 2: HTTNV",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "7. Phòng QLDA 3",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "Kế hoạch nhiệm vụ đề ra trong tháng 5 là 8 nhiệm vụ.",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      },
+      {
+        "title": "-Phòng QLDA 3: HTTNV",
+        "assignee": "",
+        "manager": "",
+        "director": "",
+        "deadline": ""
+      }
+    ]
+  }
+]

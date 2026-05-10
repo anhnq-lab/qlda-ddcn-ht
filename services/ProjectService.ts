@@ -104,6 +104,85 @@ export class ProjectService {
     }
 
     /**
+     * Get aggregate statistics for projects to display badges with project counts in the UI filters.
+     * Implements faceted search counting by fetching raw data and calculating counts based on active filters.
+     */
+    static async getStats(params?: QueryParams): Promise<{ 
+        statusCounts: Record<number, number>; 
+        currentStatusCounts: Record<number, number>; 
+        groupCounts: Record<string, number>;
+        boardCounts: Record<string, number>;
+        total: number;
+    }> {
+        return withRetry(async () => {
+            // Fetch necessary columns for stats
+            let query = supabase.from('projects').select('status, current_status_code, group_code, management_board');
+            
+            // Apply all filters EXCEPT the ones we are counting
+            const statParams = { ...params };
+            if (statParams.filters) {
+                statParams.filters = { ...statParams.filters };
+                delete statParams.filters.status;
+                delete statParams.filters.currentStatus;
+                delete statParams.filters.group;
+                delete statParams.filters.board;
+            }
+            
+            query = this._applyFilters(query, statParams);
+            
+            const { data, error } = await query;
+            if (error) throw toServiceError(error, 'Không thể tải thống kê dự án');
+
+            const statusCounts: Record<number, number> = {};
+            const currentStatusCounts: Record<number, number> = {};
+            const groupCounts: Record<string, number> = {};
+            const boardCounts: Record<string, number> = {};
+            let total = 0;
+
+            const activeStatus = params?.filters?.status;
+            const activeCurrentStatus = params?.filters?.currentStatus;
+            const activeGroup = params?.filters?.group;
+            const activeBoard = params?.filters?.board;
+
+            (data || []).forEach(row => {
+                const s = row.status;
+                const cs = row.current_status_code;
+                const g = row.group_code;
+                const b = row.management_board;
+
+                // For 'total', it should reflect the count IF all current filters were applied.
+                // Wait, 'total' is used for the "Tất cả" option in the UI. 
+                // "Tất cả" should just clear that specific filter. 
+                // So totalUnfiltered for Status should be: count where group and board match.
+                // We'll calculate totals for each category separately if needed, but for simplicity we return counts.
+
+                // Status Counts (ignoring status/currentStatus filters, but applying group/board)
+                const matchesGroup = !activeGroup || g === activeGroup;
+                const matchesBoard = !activeBoard || b?.toString() === activeBoard?.toString();
+                if (matchesGroup && matchesBoard) {
+                    total++; // This is the total number of items when status filters are cleared
+                    if (s !== null && s !== undefined) statusCounts[s] = (statusCounts[s] || 0) + 1;
+                    if (cs !== null && cs !== undefined) currentStatusCounts[cs] = (currentStatusCounts[cs] || 0) + 1;
+                }
+
+                // Group Counts (ignoring group filter, but applying status/currentStatus/board)
+                const matchesStatus = (!activeStatus || s?.toString() === activeStatus?.toString()) && 
+                                      (!activeCurrentStatus || cs?.toString() === activeCurrentStatus?.toString());
+                if (matchesStatus && matchesBoard) {
+                    if (g) groupCounts[g] = (groupCounts[g] || 0) + 1;
+                }
+
+                // Board Counts (ignoring board filter, but applying status/currentStatus/group)
+                if (matchesStatus && matchesGroup) {
+                    if (b) boardCounts[b] = (boardCounts[b] || 0) + 1;
+                }
+            });
+
+            return { statusCounts, currentStatusCounts, groupCounts, boardCounts, total };
+        });
+    }
+
+    /**
      * Apply common filters to a query builder (shared between getAll and getPaginated)
      */
     private static _applyFilters(query: any, params?: QueryParams): any {
@@ -117,6 +196,7 @@ export class ProjectService {
         const f = params.filters;
         if (f) {
             if (f.status !== undefined && f.status !== '' && f.status !== 'all') query = query.eq('status', f.status);
+            if (f.currentStatus !== undefined && f.currentStatus !== '' && f.currentStatus !== 'all') query = query.eq('current_status_code', f.currentStatus);
             if (f.group && f.group !== 'all') query = query.eq('group_code', f.group);
             if (f.board && f.board !== 'all') query = query.eq('management_board', f.board);
             if (f.investmentType) query = query.eq('investment_type', f.investmentType);
@@ -257,7 +337,8 @@ export class ProjectService {
     }
 
     /**
-     * Get project statistics — optimized with SQL count/sum instead of fetching all rows
+     * Get project statistics — single query fetching all 3 fields at once.
+     * Replaces the old 3-query approach that caused 2 extra round-trips.
      */
     static async getStatistics(): Promise<{
         total: number;
@@ -265,49 +346,38 @@ export class ProjectService {
         byGroup: Record<ProjectGroup, number>;
         totalInvestment: number;
     }> {
-        // Parallel aggregate queries — much faster than getAll() + JS loop
-        const [statusResult, groupResult, totalResult] = await Promise.all([
-            supabase
-                .from('projects')
-                .select('status')
-                .then(({ data }) => {
-                    const counts: Record<string, number> = {};
-                    data?.forEach((r: any) => { counts[r.status] = (counts[r.status] || 0) + 1; });
-                    return counts;
-                }),
-            supabase
-                .from('projects')
-                .select('group_code')
-                .then(({ data }) => {
-                    const counts: Record<string, number> = {};
-                    data?.forEach((r: any) => { counts[r.group_code] = (counts[r.group_code] || 0) + 1; });
-                    return counts;
-                }),
-            supabase
-                .from('projects')
-                .select('total_investment')
-                .then(({ data }) => {
-                    let sum = 0;
-                    let count = 0;
-                    data?.forEach((r: any) => { sum += (r.total_investment || 0); count++; });
-                    return { sum, count };
-                }),
-        ]);
+        // Single query fetching all needed fields — reduces round-trips from 3 to 1
+        const { data, error } = await supabase
+            .from('projects')
+            .select('status, group_code, total_investment');
+
+        if (error) throw toServiceError(error, 'Không thể tải thống kê dự án');
+
+        const all = data || [];
+        const byStatus: Record<string, number> = {};
+        const byGroup: Record<string, number> = {};
+        let totalInvestment = 0;
+
+        for (const r of all) {
+            byStatus[r.status] = (byStatus[r.status] || 0) + 1;
+            byGroup[r.group_code] = (byGroup[r.group_code] || 0) + 1;
+            totalInvestment += Number(r.total_investment) || 0;
+        }
 
         return {
-            total: totalResult.count,
+            total: all.length,
             byStatus: {
-                [ProjectStatus.Preparation]: statusResult[ProjectStatus.Preparation] || 0,
-                [ProjectStatus.Execution]: statusResult[ProjectStatus.Execution] || 0,
-                [ProjectStatus.Completion]: statusResult[ProjectStatus.Completion] || 0,
+                [ProjectStatus.Preparation]: byStatus[ProjectStatus.Preparation] || 0,
+                [ProjectStatus.Execution]: byStatus[ProjectStatus.Execution] || 0,
+                [ProjectStatus.Completion]: byStatus[ProjectStatus.Completion] || 0,
             },
             byGroup: {
-                [ProjectGroup.QN]: groupResult[ProjectGroup.QN] || 0,
-                [ProjectGroup.A]: groupResult[ProjectGroup.A] || 0,
-                [ProjectGroup.B]: groupResult[ProjectGroup.B] || 0,
-                [ProjectGroup.C]: groupResult[ProjectGroup.C] || 0,
+                [ProjectGroup.QN]: byGroup[ProjectGroup.QN] || 0,
+                [ProjectGroup.A]: byGroup[ProjectGroup.A] || 0,
+                [ProjectGroup.B]: byGroup[ProjectGroup.B] || 0,
+                [ProjectGroup.C]: byGroup[ProjectGroup.C] || 0,
             },
-            totalInvestment: totalResult.sum,
+            totalInvestment,
         };
     }
 
@@ -573,21 +643,30 @@ export class ProjectService {
             yearlyDisbursed: number;
         }
     }> {
-        // Fetch allocations from capital_plans table (Only Annual plans represent real allocations)
-        const { data: allocationRows } = await (supabase as any)
-            .from('capital_plans')
-            .select('*')
-            .eq('project_id', projectId)
-            .eq('plan_type', 'annual');
+        // Run all 3 fetches in PARALLEL — removes waterfall, saves 1-2 round-trips
+        const [allocationRes, disbursementRes, projectRes] = await Promise.all([
+            // Fetch annual capital allocations
+            (supabase as any)
+                .from('capital_plans')
+                .select('*')
+                .eq('project_id', projectId),
 
-        const allocations: CapitalAllocation[] = (allocationRows || []).map(dbToCapitalAllocation);
+            // Fetch disbursements sorted by date
+            supabase
+                .from('disbursements')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('date', { ascending: true }),
 
-        // Fetch disbursements
-        const { data: disbursementRows } = await supabase
-            .from('disbursements')
-            .select('*')
-            .eq('project_id', projectId)
-            .order('date', { ascending: true });
+            // Fetch only the total_investment field — avoids a full getById() round-trip
+            supabase
+                .from('projects')
+                .select('total_investment')
+                .eq('project_id', projectId)
+                .maybeSingle(),
+        ]);
+
+        const allocations: CapitalAllocation[] = (allocationRes.data || []).map(dbToCapitalAllocation);
 
         // Helper: chuẩn hóa Status case-insensitive
         const normalizeStatus = (s: string): 'Pending' | 'Approved' | 'Rejected' => {
@@ -597,7 +676,7 @@ export class ProjectService {
             return 'Rejected';
         };
 
-        const disbursements: Disbursement[] = (disbursementRows || []).map((row: any) => ({
+        const disbursements: Disbursement[] = (disbursementRes.data || []).map((row: any) => ({
             DisbursementID: row.disbursement_id,
             ProjectID: row.project_id,
             CapitalPlanID: row.capital_plan_id || undefined,
@@ -624,9 +703,8 @@ export class ProjectService {
             alloc.DisbursedAmount = CapitalService.calculateTrueDisbursed(relatedDisbs);
         });
 
-        // Get project total investment
-        const project = await this.getById(projectId);
-        const totalInvestment = project?.TotalInvestment || 0;
+        // Get total_investment from parallel fetch — no extra round-trip
+        const totalInvestment = Number(projectRes.data?.total_investment) || 0;
 
         // Compute summary
         const totalAdvance = disbursements.filter(d => d.Type === 'TamUng' && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);

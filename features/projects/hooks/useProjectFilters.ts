@@ -6,19 +6,27 @@
  */
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ProjectStatus, ProjectGroup } from '../../../types';
+import { ProjectStatus, ProjectGroup, PROJECT_CURRENT_STATUS_CONFIG } from '../../../types';
 import type { QueryParams } from '../../../types/api';
 
 // ═══════════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
-
 export const STATUS_OPTIONS = [
     { val: 'all', label: 'Tất cả', hex: '#9CA3AF' },
     { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị dự án', hex: '#3B82F6' },
     { val: ProjectStatus.Execution.toString(), label: 'Thực hiện dự án', hex: '#F97316' },
     { val: ProjectStatus.Completion.toString(), label: 'Kết thúc xây dựng', hex: '#10B981' },
 ] as const;
+
+export const CURRENT_STATUS_OPTIONS = [
+    { val: 'all', label: 'Tất cả', hex: '#9CA3AF' },
+    ...Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([code, s]) => ({
+        val: code.toString(),
+        label: `${code}. ${s.label}`,
+        hex: s.hex
+    }))
+];
 
 export const GROUP_OPTIONS = ['all', ProjectGroup.A, ProjectGroup.B, ProjectGroup.C] as const;
 
@@ -48,6 +56,8 @@ export interface ProjectFiltersResult {
     // Filter state
     selectedStatus: string;
     setSelectedStatus: (s: string) => void;
+    selectedCurrentStatus: string;
+    setSelectedCurrentStatus: (s: string) => void;
     selectedGroup: string;
     setSelectedGroup: (g: string) => void;
     selectedBoard: string;
@@ -75,6 +85,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     // ── State from URL or defaults ──
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
     const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'all');
+    const [selectedCurrentStatus, setSelectedCurrentStatus] = useState(searchParams.get('currentStatus') || 'all');
     const [selectedGroup, setSelectedGroup] = useState(searchParams.get('group') || 'all');
     const [selectedBoard, setSelectedBoard] = useState(searchParams.get('board') || 'all');
     const [sortBy, setSortBy] = useState<SortOption>((searchParams.get('sort') as SortOption) || 'created');
@@ -87,7 +98,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     // Reset page when filters change
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, selectedStatus, selectedGroup, selectedBoard, sortBy]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, sortBy]);
 
     // ── Sync state → URL (skip on first render) ──
     useEffect(() => {
@@ -98,13 +109,14 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         const params = new URLSearchParams();
         if (debouncedSearch) params.set('q', debouncedSearch);
         if (selectedStatus !== 'all') params.set('status', selectedStatus);
+        if (selectedCurrentStatus !== 'all') params.set('currentStatus', selectedCurrentStatus);
         if (selectedGroup !== 'all') params.set('group', selectedGroup);
         if (selectedBoard !== 'all') params.set('board', selectedBoard);
         if (sortBy !== 'created') params.set('sort', sortBy);
         if (viewMode !== 'grid') params.set('view', viewMode);
         if (page > 1) params.set('page', page.toString());
         setSearchParams(params, { replace: true });
-    }, [debouncedSearch, selectedStatus, selectedGroup, selectedBoard, sortBy, viewMode, page, setSearchParams]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, sortBy, viewMode, page, setSearchParams]);
 
     // ── Build QueryParams for server-side query ──
     const queryParams = useMemo((): QueryParams => ({
@@ -115,17 +127,19 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         sortOrder: sortBy === 'name' ? 'asc' : 'desc',
         filters: {
             ...(selectedStatus !== 'all' && { status: selectedStatus }),
+            ...(selectedCurrentStatus !== 'all' && { currentStatus: selectedCurrentStatus }),
             ...(selectedGroup !== 'all' && { group: selectedGroup }),
             ...(selectedBoard !== 'all' && { board: selectedBoard }),
         },
-    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedGroup, selectedBoard]);
+    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard]);
 
     // ── Actions ──
-    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all';
+    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedCurrentStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all';
 
     const clearFilters = useCallback(() => {
         setSearchQuery('');
         setSelectedStatus('all');
+        setSelectedCurrentStatus('all');
         setSelectedGroup('all');
         setSelectedBoard('all');
         setPage(1);
@@ -134,6 +148,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     return {
         searchQuery, setSearchQuery,
         selectedStatus, setSelectedStatus,
+        selectedCurrentStatus, setSelectedCurrentStatus,
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
         sortBy, setSortBy,

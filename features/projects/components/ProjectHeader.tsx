@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, MapPin, Trash2, Pencil, Building2, Hash, Calendar } from 'lucide-react';
-import { Project, ProjectStatus, ProjectGroup } from '@/types';
+import { Project, ProjectStatus, ProjectGroup, PROJECT_CURRENT_STATUS_CONFIG } from '@/types';
 import { formatShortCurrency } from '@/utils/format';
 
 interface ProjectHeaderProps {
@@ -38,7 +38,10 @@ const getStatusConfig = (status: ProjectStatus) => {
 export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, isSyncing, syncResult, onDelete, onEdit, compact, hideBackButton }) => {
     const navigate = useNavigate();
     const groupBadge = getGroupBadge(project.GroupCode);
-    const statusConfig = getStatusConfig(project.Status);
+    
+    // Map current_status_code or fallback to general status
+    const currentStatus = project.CurrentStatusCode ? PROJECT_CURRENT_STATUS_CONFIG[project.CurrentStatusCode] : null;
+    const statusConfig = currentStatus ? { label: currentStatus.label, bg: `${currentStatus.bgClass} ${currentStatus.textClass} border ${currentStatus.borderClass}` } : getStatusConfig(project.Status);
 
     // Progress bar mini
     const progress = project.Progress || 0;

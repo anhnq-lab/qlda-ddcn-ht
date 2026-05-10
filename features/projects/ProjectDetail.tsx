@@ -5,7 +5,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { ProjectService } from '@/services/ProjectService';
 import { ProjectMemberService } from '@/services/ProjectMemberService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
-import { Project, Employee, ProjectStage } from '@/types';
+import { Project, ProjectStage } from '@/types';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjectTasks } from '@/hooks/useWorkflowTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
@@ -26,7 +26,7 @@ import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { TableSkeleton } from '@/components/ui';
-import { Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Settings2, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch } from 'lucide-react';
+import { Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Receipt, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch } from 'lucide-react';
 import { AIReportModal } from './components/AIReportModal';
 import { generateMonthlyReport } from '@/services/aiService';
 import { useToast } from '@/components/ui/Toast';
@@ -39,7 +39,7 @@ const ProjectCapitalTab = React.lazy(() => import('./components/tabs/ProjectCapi
 const ProjectDocumentsTab = React.lazy(() => import('./components/tabs/ProjectDocumentsTab').then(m => ({ default: m.ProjectDocumentsTab })));
 const ProjectComplianceTab = React.lazy(() => import('./components/tabs/ProjectComplianceTab').then(m => ({ default: m.ProjectComplianceTab })));
 const ProjectWorkflowTab = React.lazy(() => import('./components/tabs/ProjectWorkflowTab').then(m => ({ default: m.ProjectWorkflowTab })));
-const ProjectOperationsTab = React.lazy(() => import('./components/tabs/ProjectOperationsTab').then(m => ({ default: m.ProjectOperationsTab })));
+const ProjectSettlementTab = React.lazy(() => import('./components/tabs/ProjectSettlementTab').then(m => ({ default: m.ProjectSettlementTab })));
 const ProjectInspectionTab = React.lazy(() => import('./components/tabs/ProjectInspectionTab').then(m => ({ default: m.ProjectInspectionTab })));
 const AISummaryWidget = React.lazy(() => import('@/components/ai/AISummaryWidget').then(m => ({ default: m.AISummaryWidget })));
 const AICompliancePanel = React.lazy(() => import('@/components/ai/AICompliancePanel').then(m => ({ default: m.AICompliancePanel })));
@@ -54,7 +54,7 @@ const TAB_DEFINITIONS = [
     { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
     { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
     { id: 'inspection', label: 'THANH TRA', icon: Shield },
-    { id: 'operations', label: 'VẬN HÀNH', icon: Settings2 },
+    { id: 'settlement', label: 'QUYẾT TOÁN', icon: Receipt },
     { id: 'workflow', label: 'QUY TRÌNH', icon: GitBranch },
     { id: 'tt24', label: 'ĐỒNG BỘ CSDL', icon: Database },
 ] as const;
@@ -162,7 +162,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     const [showDrafter, setShowDrafter] = useState(false);
 
     // Lazy-mount flags: once mounted, stay mounted to preserve state
-    const [opsMounted, setOpsMounted] = useState(activeTab === 'operations');
+    const [settlementMounted, setSettlementMounted] = useState(activeTab === 'settlement');
     const [planMounted, setPlanMounted] = useState(activeTab === 'plan');
     const [packagesMounted, setPackagesMounted] = useState(activeTab === 'packages');
     const [capitalMounted, setCapitalMounted] = useState(activeTab === 'capital');
@@ -170,12 +170,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
 
     // Mount heavy tabs on first visit
     useEffect(() => {
-        if (activeTab === 'operations' && !opsMounted) setOpsMounted(true);
+        if (activeTab === 'settlement' && !settlementMounted) setSettlementMounted(true);
         if (activeTab === 'plan' && !planMounted) setPlanMounted(true);
         if (activeTab === 'packages' && !packagesMounted) setPackagesMounted(true);
         if (activeTab === 'capital' && !capitalMounted) setCapitalMounted(true);
         if (activeTab === 'workflow' && !workflowMounted) setWorkflowMounted(true);
-    }, [activeTab, opsMounted, planMounted, packagesMounted, capitalMounted, workflowMounted]);
+    }, [activeTab, settlementMounted, planMounted, packagesMounted, capitalMounted, workflowMounted]);
 
     // Keyboard: Arrow Left/Right to switch tabs
     const activeTabRef = React.useRef(activeTab);
@@ -213,21 +213,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     // Get bidding packages for this project
     const { data: packages = [] } = useBiddingPackages(id || '');
 
-    // Get project members — also starts in parallel with project fetch
-    const [projectMembers, setProjectMembers] = useState<Employee[]>([]);
-    useEffect(() => {
-        if (!id) return;
-        const loadMembers = async () => {
-            try {
-                const members = await ProjectMemberService.getMembersWithDetails(id);
-                setProjectMembers(members);
-            } catch (error) {
-                console.error('Failed to load project members:', error);
-                setProjectMembers([]);
-            }
-        };
-        loadMembers();
-    }, [id]);
+    // Get project members — React Query for caching (re-visits use 5-min cache)
+    const { data: projectMembers = [] } = useQuery({
+        queryKey: ['project-members', id],
+        queryFn: () => ProjectMemberService.getMembersWithDetails(id!),
+        enabled: !!id,
+        staleTime: 5 * 60 * 1000,   // 5 phút cache
+        gcTime: 15 * 60 * 1000,
+    });
 
     // ─── Handlers ───
     const handleSync = useCallback(async () => {
@@ -336,7 +329,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     return (
         <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-bg-surface' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
             {/* Fixed Header + Tabs — does NOT scroll */}
-            <div className={`shrink-0 px-4 ${activeTab === 'operations' ? 'pt-1' : inPanel ? 'pt-1' : 'pt-2'}`}>
+            <div className={`shrink-0 px-4 ${inPanel ? 'pt-1' : 'pt-2'}`}>
                 {/* 1. Minimal Header — just title + actions */}
                 <div className="flex items-center justify-between gap-3 mb-1.5">
                     <div className="flex items-center gap-2 min-w-0">
@@ -399,7 +392,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button
                                 id={`tab-${t.id}`}
                                 key={t.id} onClick={() => setActiveTab(t.id)}
-                                className={`${activeTab === 'operations' || inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'}`}
+                                className={`${inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'}`}
                                 title={`${t.label} (← → chuyển tab)`}
                             >
                                 <t.icon className="w-3.5 h-3.5" />
@@ -584,14 +577,14 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                     </ErrorBoundary>
                 </div>
             )}
-            {opsMounted && (
+            {settlementMounted && (
                 <div
-                    className={`flex-1 min-h-0 ${activeTab === 'operations' ? '' : 'absolute inset-0 pointer-events-none'}`}
-                    style={activeTab === 'operations' ? undefined : { visibility: 'hidden', zIndex: -1 }}
+                    className={`flex-1 min-h-0 ${activeTab === 'settlement' ? '' : 'absolute inset-0 pointer-events-none'}`}
+                    style={activeTab === 'settlement' ? undefined : { visibility: 'hidden', zIndex: -1 }}
                 >
                     <ErrorBoundary>
                     <React.Suspense fallback={<TableSkeleton columns={4} rows={8} />}>
-                    <ProjectOperationsTab projectID={project.ProjectID} />
+                    <ProjectSettlementTab projectID={project.ProjectID} />
                     </React.Suspense>
                     </ErrorBoundary>
                 </div>
@@ -621,9 +614,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         if (project) {
                             try {
                                 await ProjectMemberService.replaceMembers(project.ProjectID, members);
-                                // Reload members to update the overview tab
-                                const updatedMembers = await ProjectMemberService.getMembersWithDetails(project.ProjectID);
-                                setProjectMembers(updatedMembers);
+                                // Invalidate cache so React Query re-fetches members
+                                queryClient.invalidateQueries({ queryKey: ['project-members', project.ProjectID] });
                             } catch (error) {
                                 console.error('Failed to save members:', error);
                             }

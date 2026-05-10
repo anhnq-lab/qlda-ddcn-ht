@@ -95,6 +95,18 @@ export const dbToProject = (row: any): Project => ({
     OldInvestor: row.old_investor || '',
     TransferDecision: row.transfer_decision || '',
     CurrentStatusCode: row.current_status_code ? Number(row.current_status_code) : undefined,
+    PolicyDecisionLevel: row.policy_decision_level || '',
+    PolicyDecisionNumber: row.policy_decision_number || '',
+    PolicyDecisionDate: row.policy_decision_date || '',
+    PolicyDecisionAuthority: row.policy_decision_authority || '',
+    BudgetAllocations: row.budget_allocations || {},
+    BiddingForm: row.bidding_form || '',
+    KHVInfo: row.khv_info || {},
+    ImplementationTracking: row.implementation_tracking || {},
+    AdjustedApproval: row.adjusted_approval || {},
+    ContractorDetails: row.contractor_details || {},
+    ProjectManagement: row.project_management || {},
+    ProjectStatusInfo: row.project_status_info || {},
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -185,6 +197,18 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.OldInvestor !== undefined) result.old_investor = p.OldInvestor;
     if (p.TransferDecision !== undefined) result.transfer_decision = p.TransferDecision;
     if (p.CurrentStatusCode !== undefined) result.current_status_code = p.CurrentStatusCode;
+    if (p.PolicyDecisionLevel !== undefined) result.policy_decision_level = p.PolicyDecisionLevel;
+    if (p.PolicyDecisionNumber !== undefined) result.policy_decision_number = p.PolicyDecisionNumber;
+    if (p.PolicyDecisionDate !== undefined) result.policy_decision_date = p.PolicyDecisionDate === '' ? null : p.PolicyDecisionDate;
+    if (p.PolicyDecisionAuthority !== undefined) result.policy_decision_authority = p.PolicyDecisionAuthority;
+    if (p.BudgetAllocations !== undefined) result.budget_allocations = p.BudgetAllocations;
+    if (p.BiddingForm !== undefined) result.bidding_form = p.BiddingForm;
+    if (p.KHVInfo !== undefined) result.khv_info = p.KHVInfo;
+    if (p.ImplementationTracking !== undefined) result.implementation_tracking = p.ImplementationTracking;
+    if (p.AdjustedApproval !== undefined) result.adjusted_approval = p.AdjustedApproval;
+    if (p.ContractorDetails !== undefined) result.contractor_details = p.ContractorDetails;
+    if (p.ProjectManagement !== undefined) result.project_management = p.ProjectManagement;
+    if (p.ProjectStatusInfo !== undefined) result.project_status_info = p.ProjectStatusInfo;
     return result;
 };
 

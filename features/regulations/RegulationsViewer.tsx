@@ -16,12 +16,13 @@ import {
     Gavel,
     Send,
     PenTool,
-    ArrowLeft
+    ArrowLeft,
+    Loader2
 } from 'lucide-react';
-import { regulationsData } from './data/regulationsData';
-
 
 const RegulationsViewer: React.FC = () => {
+    const [regulationsData, setRegulationsData] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
     const [selectedChapterId, setSelectedChapterId] = useState<string>("CH1");
     const [searchQuery, setSearchQuery] = useState("");
@@ -36,6 +37,15 @@ const RegulationsViewer: React.FC = () => {
     const [editedArticles, setEditedArticles] = useState<Record<string, {title: string, content: string}>>({});
 
     useEffect(() => {
+        // Load dynamic data
+        import('./data/regulationsData').then(module => {
+            setRegulationsData(module.regulationsData);
+            setIsLoading(false);
+        }).catch(err => {
+            console.error("Failed to load regulations data:", err);
+            setIsLoading(false);
+        });
+
         const saved = localStorage.getItem('editedRegulations');
         if (saved) {
             try { setEditedArticles(JSON.parse(saved)); } catch (e) {}
@@ -115,6 +125,15 @@ const RegulationsViewer: React.FC = () => {
     };
 
     // Grid View for documents
+    if (isLoading) {
+        return (
+            <div className="flex flex-col h-[calc(100vh-100px)] items-center justify-center bg-transparent dark:bg-slate-950">
+                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-4" />
+                <p className="text-gray-500 dark:text-slate-400 font-semibold">Đang tải dữ liệu quy chế...</p>
+            </div>
+        );
+    }
+
     if (!selectedDocument) {
         const filteredDocs = regulationsData.filter(d => 
             d.title.toLowerCase().includes(searchQuery.toLowerCase()) || 

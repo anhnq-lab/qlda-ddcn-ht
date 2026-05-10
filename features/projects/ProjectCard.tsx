@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Project, ProjectStatus, ProjectGroup, MANAGEMENT_BOARDS } from '../../types';
+import { Project, ProjectStatus, ProjectGroup, MANAGEMENT_BOARDS, PROJECT_CURRENT_STATUS_CONFIG } from '../../types';
 import { MapPin, Building, Layers, Building2, Calendar } from 'lucide-react';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient, requiresBIM } from '../../utils/projectCompliance';
@@ -7,7 +7,7 @@ import { ProgressBar } from '../../components/ui';
 
 interface ProjectCardProps {
     project: Project;
-    onClick: () => void;
+    onClick: (project: Project) => void;
     layout?: 'grid' | 'list';
 }
 
@@ -60,7 +60,8 @@ const LazyImage: React.FC<{ src: string; alt: string; className?: string }> = ({
 // ═══════════════════════════════════════════════════════════════
 
 export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, onClick, layout = 'grid' }) => {
-    const status = STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
+    const currentStatus = project.CurrentStatusCode ? PROJECT_CURRENT_STATUS_CONFIG[project.CurrentStatusCode] : null;
+    const status = currentStatus || STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
     const board = project.ManagementBoard
         ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard)
         : null;
@@ -68,7 +69,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     if (layout === 'list') {
         return (
             <div
-                onClick={onClick}
+                onClick={() => onClick(project)}
                 className="group flex flex-col md:flex-row bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
                 <div className="w-full md:w-56 h-32 md:h-auto relative shrink-0">
@@ -138,7 +139,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     // Grid Layout - Clean & Compact with fixed height
     return (
         <div
-            onClick={onClick}
+            onClick={() => onClick(project)}
             className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
         >
             {/* Image - Only badges */}

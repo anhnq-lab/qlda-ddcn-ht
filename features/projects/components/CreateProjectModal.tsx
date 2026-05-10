@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield, Users, Check, ChevronDown, Sparkles, ImagePlus, Loader2, CheckCircle2, Ruler, Layers } from 'lucide-react';
+import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
@@ -17,15 +17,19 @@ interface CreateProjectModalProps {
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
 import { ProjectFormInvestment } from './forms/ProjectFormInvestment';
-import { ProjectFormScale } from './forms/ProjectFormScale';
+import { ProjectFormKHV } from './forms/ProjectFormKHV';
 import { ProjectFormContractors } from './forms/ProjectFormContractors';
+import { ProjectFormStatus } from './forms/ProjectFormStatus';
+import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
 const PROJ_TABS = [
-    { id: 'general', label: 'Thông tin chung', icon: Building2 },
-    { id: 'investment', label: 'Đầu tư & Phê duyệt', icon: DollarSign },
-    { id: 'scale', label: 'Quy mô xây dựng', icon: Ruler },
+    { id: 'general',     label: 'Thông tin chung',       icon: Building2 },
+    { id: 'investment',  label: 'Cơ cấu vốn & Chi phí',  icon: DollarSign },
+    { id: 'khv',         label: 'KHV & Giải ngân',        icon: BarChart2 },
     { id: 'contractors', label: 'Nhà thầu & Tiêu chuẩn', icon: HardHat },
+    { id: 'status',      label: 'Hiện trạng',              icon: Activity },
+    { id: 'members',     label: 'Thành viên',              icon: Users },
 ];
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
@@ -33,7 +37,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const [isLoading, setIsLoading] = useState(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [selectedMembers, setSelectedMembers] = useState<SelectedMember[]>([]);
-    const [showCapitalDropdown, setShowCapitalDropdown] = useState(false);
 
     // ── AI Image Extraction ──
     const [aiStatus, setAiStatus] = useState<'idle' | 'extracting' | 'done' | 'error'>('idle');
@@ -41,7 +44,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
     const [aiError, setAiError] = useState('');
     const aiFileInputRef = useRef<HTMLInputElement>(null);
-    const [activeTab, setActiveTab] = useState<'general' | 'investment' | 'scale' | 'contractors' | 'members'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'investment' | 'khv' | 'contractors' | 'status' | 'members'>('general');
     const [formData, setFormData] = useState({
         // Section 1 - Thông tin cơ bản
         ProjectID: '',
@@ -52,12 +55,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         // Section 2 - Thông tin đầu tư
         TotalInvestment: 0,
         CapitalSource: 'Ngân sách Địa phương',
-        ProvinceCode: '79', // TP. Hồ Chí Minh default
+        ProvinceCode: '42', // Hà Tĩnh default
         LocationCode: '',
         ConstructionType: '',
         ConstructionGrade: '',
-        CompetentAuthority: 'UBND TP.HCM',
-        InvestorName: 'Ban QLDA ĐTXD CN',
+        CompetentAuthority: 'UBND tỉnh Hà Tĩnh',
+        InvestorName: 'Ban Quản lý dự án đầu tư xây dựng công trình dân dụng và hạ tầng khu vực',
         Duration: '',
         ManagementBoard: 1,
         ApprovalDate: '',
@@ -67,6 +70,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         FeasibilityContractor: '',
         SurveyContractor: '',
         ReviewContractor: '',
+        BiddingForm: '',
         // Mục tiêu & Quy mô đầu tư
         Objective: '',
         InvestmentScale: '',
@@ -80,6 +84,37 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         LandUseCoefficient: 0,
         AboveGroundFloors: 0,
         BasementFloors: 0,
+        // Quyết định chủ trương đầu tư
+        PolicyDecisionLevel: '',
+        PolicyDecisionNumber: '',
+        PolicyDecisionDate: '',
+        PolicyDecisionAuthority: '',
+        // Cơ cấu nguồn vốn chi tiết
+        BudgetAllocations: {
+            BudgetNSTW: 0,
+            BudgetNSDiaphuong: 0,
+            BudgetLoan: 0,
+            BudgetODA: 0,
+            BudgetOtherNSNN: 0,
+        },
+        // Phê duyệt dự án (bổ sung)
+        DecisionAuthority: '',
+        ExpectedEndDate: '',
+        // Hạng mục chi phí
+        CostBreakdown: {} as Record<string, number>,
+        // Dữ liệu JSONB nhóm
+        KHVInfo: {},
+        ImplementationTracking: {},
+        AdjustedApproval: {},
+        ContractorDetails: {},
+        ProjectManagement: {},
+        ProjectStatusInfo: {},
+        // Bàn giao & chuyển CĐT
+        DecisionLevelBeforeHandover: '',
+        OldInvestor: '',
+        TransferDecision: '',
+        // Trạng thái dự án mới (1-10)
+        CurrentStatusCode: null as number | null,
     });
 
     // Populate form data in edit mode
@@ -93,12 +128,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 StartDate: editProject.StartDate ? new Date(editProject.StartDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                 TotalInvestment: editProject.TotalInvestment || 0,
                 CapitalSource: editProject.CapitalSource || 'Ngân sách Địa phương',
-                ProvinceCode: editProject.ProvinceCode || '79',
+                ProvinceCode: editProject.ProvinceCode || '42',
                 LocationCode: editProject.LocationCode || '',
                 ConstructionType: editProject.ConstructionType || '',
                 ConstructionGrade: editProject.ConstructionGrade || '',
-                CompetentAuthority: editProject.CompetentAuthority || 'UBND TP.HCM',
-                InvestorName: editProject.InvestorName || 'Ban QLDA ĐTXD CN',
+                CompetentAuthority: editProject.CompetentAuthority || 'UBND tỉnh Hà Tĩnh',
+                InvestorName: editProject.InvestorName || 'Ban Quản lý dự án đầu tư xây dựng công trình dân dụng và hạ tầng khu vực',
                 Duration: editProject.Duration || '',
                 ManagementBoard: editProject.ManagementBoard || 1,
                 ApprovalDate: editProject.ApprovalDate ? new Date(editProject.ApprovalDate).toISOString().split('T')[0] : '',
@@ -107,6 +142,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 FeasibilityContractor: editProject.FeasibilityContractor || '',
                 SurveyContractor: editProject.SurveyContractor || '',
                 ReviewContractor: editProject.ReviewContractor || '',
+                BiddingForm: editProject.BiddingForm || '',
                 Objective: editProject.Objective || '',
                 InvestmentScale: editProject.InvestmentScale || '',
                 TotalEstimate: editProject.TotalEstimate || 0,
@@ -118,6 +154,30 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 LandUseCoefficient: editProject.LandUseCoefficient || 0,
                 AboveGroundFloors: editProject.AboveGroundFloors || 0,
                 BasementFloors: editProject.BasementFloors || 0,
+                PolicyDecisionLevel: editProject.PolicyDecisionLevel || '',
+                PolicyDecisionNumber: editProject.PolicyDecisionNumber || '',
+                PolicyDecisionDate: editProject.PolicyDecisionDate || '',
+                PolicyDecisionAuthority: editProject.PolicyDecisionAuthority || '',
+                BudgetAllocations: editProject.BudgetAllocations || {
+                    BudgetNSTW: 0,
+                    BudgetNSDiaphuong: 0,
+                    BudgetLoan: 0,
+                    BudgetODA: 0,
+                    BudgetOtherNSNN: 0,
+                },
+                DecisionAuthority: editProject.DecisionAuthority || '',
+                ExpectedEndDate: editProject.ExpectedEndDate ? new Date(editProject.ExpectedEndDate).toISOString().split('T')[0] : '',
+                CostBreakdown: editProject.CostBreakdown || {},
+                KHVInfo: editProject.KHVInfo || {},
+                ImplementationTracking: editProject.ImplementationTracking || {},
+                AdjustedApproval: editProject.AdjustedApproval || {},
+                ContractorDetails: editProject.ContractorDetails || {},
+                ProjectManagement: editProject.ProjectManagement || {},
+                ProjectStatusInfo: editProject.ProjectStatusInfo || {},
+                DecisionLevelBeforeHandover: editProject.DecisionLevelBeforeHandover || '',
+                OldInvestor: editProject.OldInvestor || '',
+                TransferDecision: editProject.TransferDecision || '',
+                CurrentStatusCode: editProject.CurrentStatusCode || null,
             });
         }
     }, [isOpen, editProject]);
@@ -487,44 +547,57 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-[50vh]">
                     <div className="p-4 overflow-y-auto flex-1">
 
-                    {/* ═══ SECTION 1: Thông tin cơ bản ═══ */}
+                    {/* ═══ Tab 1: Thông tin chung ═══ */}
                     {activeTab === 'general' && (
                         <ProjectFormGeneral
                             formData={formData}
                             updateField={updateField}
                             aiHighlight={aiHighlight}
-                            employees={employees}
-                            selectedMembers={selectedMembers}
-                            toggleMember={toggleMember}
-                            updateMemberRole={updateMemberRole}
                         />
                     )}
 
-                    {/* ═══ SECTION 2: Thông tin đầu tư ═══ */}
+                    {/* ═══ Tab 2: Cơ cấu vốn & Chi phí ═══ */}
                     {activeTab === 'investment' && (
                         <ProjectFormInvestment
                             formData={formData}
                             updateField={updateField}
-                            aiHighlight={aiHighlight}
-                            showCapitalDropdown={showCapitalDropdown}
-                            setShowCapitalDropdown={setShowCapitalDropdown}
                         />
                     )}
 
-                    {/* ═══ SECTION 2.5: Quy mô công trình ═══ */}
-                    {activeTab === 'scale' && (
-                        <ProjectFormScale
+                    {/* ═══ Tab 3: KHV & Giải ngân ═══ */}
+                    {activeTab === 'khv' && (
+                        <ProjectFormKHV
                             formData={formData}
                             updateField={updateField}
                         />
                     )}
 
-                    {/* ═══ SECTION 3: Nhà thầu & Tiêu chuẩn ═══ */}
+                    {/* ═══ Tab 4: Nhà thầu & Tiêu chuẩn ═══ */}
                     {activeTab === 'contractors' && (
                         <ProjectFormContractors
                             formData={formData}
                             updateField={updateField}
                             aiHighlight={aiHighlight}
+                        />
+                    )}
+
+                    {/* ═══ Tab 5: Hiện trạng ═══ */}
+                    {activeTab === 'status' && (
+                        <ProjectFormStatus
+                            formData={formData}
+                            updateField={updateField}
+                            aiHighlight={aiHighlight}
+                        />
+                    )}
+
+                    {/* ═══ Tab 6: Thành viên ═══ */}
+                    {activeTab === 'members' && (
+                        <ProjectFormMembers
+                            formData={formData}
+                            employees={employees}
+                            selectedMembers={selectedMembers}
+                            toggleMember={toggleMember}
+                            updateMemberRole={updateMemberRole}
                         />
                     )}
 

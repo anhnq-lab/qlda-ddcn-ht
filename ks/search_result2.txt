@@ -1,0 +1,60 @@
+310: 10 | Tổng giá trị thanh toán trong tháng: Khu vực HK     triệu đồng;  Khu vực Thạch Hà:         triệu đồng | Dương Đình Phú
+Dương Hồng Quân | Đặng Hữu Phương | Ngô Đức Quy
+311: 11 | Số công trình đã thực hiện GPMB: 0 công trình | Đặng Hữu Phương | Ngô Đức Quy
+312: 12 | Số công trình còn vướng GPMB: Khu vực HK 06 công trình, TH: 05 công trình | Hoàn thành GPMB | Nguyễn Trung Dũng
+Võ Tá Anh
+Nguyễn Đức Thuận
+Lê Quốc Hưng
+Phạm Thanh Hải
+Nguyễn Đình Thế
+Nguyễn Nam Phong
+Trần Trung Kiên
+Nguyễn Quốc Quyền
+Lương Xuân Hà | Đặng Hữu Phương | Ngô Đức Quy | Chưa hoàn thành
+313: B | Kế hoạch thực hiện tháng 5/2026
+314: I | Phòng Hành chính - Tổng hợp
+315: 1. | Công tác Hành chính 
+316: Số văn bản ban hành: ...văn bản
+317: Số văn bản đến:  ....văn bản
+318: Tiếp nhận hồ sơ lưu kho
+319: Chỉnh lý hồ sơ lưu kho
+320: 2 | Tham mưu tổng hợp
+321: 1 | Ban hành kế hoạch xây dựng hồ sơ quản lý chất lượng | Trịnh Văn Minh | Đoàn Chính Hữu | Nguyễn Văn Nhân
+322: 2 | Điều chuyển công tác viên chức | Trịnh Văn Minh | Đoàn Chính Hữu | Nguyễn Quang Linh
+323: 3 | Mua sắm tài sản | Trịnh Văn Minh | Đoàn Chính Hữu | Nguyễn Quang Linh
+324: 4 | Hoàn thiên các chứng từ thanh toán chi thường xuyên | Nguyễn Thị Lan Anh | Đoàn Chính Hữu | Nguyễn Văn Nhân
+325: 5 | Tiếp tục làm QH TPP, QH bí thư các chi bô, QH phó bí thư, UVBCH các chi bộ
+326: 3 | Công tác tổ chức nhân sự
+327: 4 | Công tác kế toán, giải ngân 
+328: 2025-01-04 00:00:00 | Hệ thống số sách hạch toán kế toán
+329: Lập báo cáo QT các công trình đử ĐK  | Vũ Thị Giang, 
+330: Lấy sổ phụ, lập sổ vào phần mềm, đối chiếu tiền gửi tại các ngân hàng | Vũ Thị Giang, 
+331: Phối hợp với các phòng báo cáo khi có yêu cầu | Lê Thị Thanh Bình | Đoàn Chính Hữu/ Phạm Thị Oanh | Nguyễn Quang Linh
+332: Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk  | Lê Thị Thanh Bình | Đoàn Chính Hữu/ Phạm Thị Oanh | Nguyễn Quang Linh
+333: thực hiện các Công việc phụ trách phòng, kế toán trưởng giao  | Lê Thị Thanh Bình | Đoàn Chính Hữu/ Phạm Thị Oanh | Nguyễn Quang Linh
+334: Rà soát các dự án đường điện để bàn giao về cho xã
+335: Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk 
+336: thực hiện các Công việc phụ trách phòng, kế toán trưởng giao 
+337: Lập báo cáo QT các công trình khi đủ điều kiện
+338: Lập báo cáo QT các công trình đử ĐK 
+339: Phối hợp với các phòng báo cáo khi có yêu cầu
+340: Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình (nguồn 2025 tháng chỉnh lý) đủ đk 
+341: Lập báo cáo QT các công trình khi đủ điều kiện
+342: Lập và soát hồ sơ, nhập phần mềm các dự án công trình đủ điều kiện thanh toán quyết toán
+343: Phối hợp các phòng cáo cáo khi có yêu cầu
+344: Lập báo cáo QT các công trình khi đủ điều kiện
+345: Lập và soát hồ sơ, nhập phần mềm các dự án công trình đủ điều kiện thanh toán quyết toán
+346: Phối hợp các phòng cáo cáo khi có yêu cầu
+347: Soát hồ sơ, nhập vào phần mềm, thanh toán công nợ các dự án đủ điều kiện, phối hợp với các phòng liên quan báo cáo cung cấp số liệu
+348: Phối hợp với các bộ phận trong việc xử lý hồ sơ khi trong quá trình tiếp nhận 
+349: thực hiện các Công việc phụ trách phòng, kế toán trưởng giao 
+350: Phối hợp các phòng cáo cáo khi có yêu cầu
+351: Thanh toán các khoản phát sinh tại Ban QLDA
+352: Thanh toán hoàn ứng khối lượng hoàn thành  công trình  mình phụ trách
+353: Hoàn thiện bàn giao hồ sơ dự án cao tốc bắc nam về xã (4 dự án) đúng quy định
+354: Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án/ công trình đủ đk 
+355: Lấy sao kê  ngân hàng, nhập PM 
+356: Soát hồ sơ, nhập vào PM,thanh toán công nợ các dự án được giao 
+357: Thanh toán các chi phí Hội nghị, tiếp khách, chi phí khác và quỹ PTHĐSN
+358: Kiểm kê, theo dõi tài sản của Ban QLDA
+359: Phối hợp các phòng cáo cáo khi có yêu cầu

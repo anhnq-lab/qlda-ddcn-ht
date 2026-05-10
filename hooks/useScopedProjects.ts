@@ -13,6 +13,7 @@
  */
 import { useMemo } from 'react';
 import { usePaginatedProjects } from './usePaginatedProjects';
+import { useProjectStats, ProjectStatsResult } from './useProjectStats';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { usePermissionCheck } from './usePermissionCheck';
@@ -45,6 +46,12 @@ export interface ScopedProjectsResult {
     pageSize: number;
     /** Total pages */
     totalPages: number;
+    /** Stats: Status counts */
+    statusCounts: Record<number, number>;
+    /** Stats: Current Status counts */
+    currentStatusCounts: Record<number, number>;
+    /** Stats: Total (unfiltered by status) */
+    totalUnfiltered: number;
     /** Whether user has global scope (sees all) */
     isGlobalScope: boolean;
     /** The Ban number of the effective user (null if global) */
@@ -86,6 +93,9 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     // Paginated fetch from server
     const { projects, total, page, pageSize, totalPages, isLoading, isFetching, refetch } = usePaginatedProjects(serverParams);
 
+    // Fetch aggregate stats for the current scope (ignoring status/currentStatus filters)
+    const { statusCounts, currentStatusCounts, groupCounts, boardCounts, total: totalUnfiltered, isLoading: isLoadingStats } = useProjectStats(serverParams);
+
     // Contractor: client-side filter by allowed IDs (small set, OK client-side)
     const scopedProjects = useMemo(() => {
         if (systemRole === 'contractor') {
@@ -109,9 +119,14 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         page,
         pageSize,
         totalPages,
+        statusCounts,
+        currentStatusCounts,
+        groupCounts,
+        boardCounts,
+        totalUnfiltered: systemRole === 'contractor' ? scopedProjects.length : totalUnfiltered,
         isGlobalScope,
         banNumber,
-        isLoading,
+        isLoading: isLoading || isLoadingStats,
         isFetching,
         refetch,
     };

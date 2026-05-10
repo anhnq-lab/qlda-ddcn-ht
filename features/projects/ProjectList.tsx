@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualList } from '../../hooks/useVirtualList';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
 import { useProjectsRealtime } from '../../hooks/useProjectsRealtime';
 import { useInvalidateProjects } from '../../hooks/usePaginatedProjects';
-import { ProjectGroup, MANAGEMENT_BOARDS, ProjectStatus } from '../../types';
+import { ProjectGroup, MANAGEMENT_BOARDS, ProjectStatus, PROJECT_CURRENT_STATUS_CONFIG } from '../../types';
 import { ProjectCard, STATUS_CONFIG } from './ProjectCard';
 import { ProgressBar } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
-import { Search, Plus, LayoutGrid, List as ListIcon, Filter, Layers, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { CreateProjectModal } from './components/CreateProjectModal';
@@ -18,8 +18,74 @@ import { SelectedMember } from '../../types';
 import ProjectService from '../../services/ProjectService';
 import { Project } from '../../types';
 import { supabase } from '../../lib/supabase';
+
+// ── PaginationBar — memo để tránh re-render không cần thiết khi filter/sort thay đổi ──
+const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }: {
+    page: number;
+    totalPages: number;
+    total: number;
+    pageSize: number;
+    onPageChange: (p: number) => void;
+}) => {
+    if (totalPages <= 1) return null;
+    const startItem = (page - 1) * pageSize + 1;
+    const endItem = Math.min(page * pageSize, total);
+
+    return (
+        <div className="flex items-center justify-between bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 mt-3">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Hiển thị {startItem}-{endItem} / {total} dự án
+            </span>
+            <div className="flex items-center gap-1">
+                <button
+                    onClick={() => onPageChange(Math.max(1, page - 1))}
+                    disabled={page <= 1}
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    aria-label="Trang trước"
+                >
+                    <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                </button>
+                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 7) {
+                        pageNum = i + 1;
+                    } else if (page <= 4) {
+                        pageNum = i + 1;
+                    } else if (page >= totalPages - 3) {
+                        pageNum = totalPages - 6 + i;
+                    } else {
+                        pageNum = page - 3 + i;
+                    }
+                    return (
+                        <button
+                            key={pageNum}
+                            onClick={() => onPageChange(pageNum)}
+                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                                page === pageNum
+                                    ? 'bg-primary-500 text-white shadow-sm'
+                                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                            }`}
+                        >
+                            {pageNum}
+                        </button>
+                    );
+                })}
+                <button
+                    onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+                    disabled={page >= totalPages}
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    aria-label="Trang sau"
+                >
+                    <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                </button>
+            </div>
+        </div>
+    );
+});
+PaginationBar.displayName = 'PaginationBar';
+
 import { ProjectMemberService } from '../../services/ProjectMemberService';
-import { useProjectFilters, STATUS_OPTIONS, GROUP_OPTIONS, SortOption } from './hooks/useProjectFilters';
+import { useProjectFilters, STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SortOption } from './hooks/useProjectFilters';
 import { useToast } from '../../components/ui/Toast';
 
 const ProjectList: React.FC = () => {
@@ -35,6 +101,7 @@ const ProjectList: React.FC = () => {
     const {
         searchQuery, setSearchQuery,
         selectedStatus, setSelectedStatus,
+        selectedCurrentStatus, setSelectedCurrentStatus,
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
         sortBy, setSortBy,
@@ -45,24 +112,21 @@ const ProjectList: React.FC = () => {
     } = useProjectFilters();
 
     // ── Data Fetching with scope + server-side pagination ──
-    const { scopedProjects, total, totalPages, pageSize, isLoading, isFetching, refetch } = useScopedProjects(queryParams);
+    const { 
+        scopedProjects, total, totalPages, pageSize, isLoading, isFetching, refetch,
+        statusCounts, currentStatusCounts, groupCounts, boardCounts, totalUnfiltered
+    } = useScopedProjects(queryParams);
 
     // Create Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Responsive setup for virtualization
+    // Responsive setup
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-    const { containerRef, virtualItems, totalHeight } = useVirtualList({
-        items: scopedProjects,
-        itemHeight: isMobile ? 290 : 144,
-        overscan: 5,
-    });
 
     const handleCreateProject = () => {
         setIsModalOpen(true);
@@ -104,64 +168,6 @@ const ProjectList: React.FC = () => {
         navigate(`/projects/${project.ProjectID}`);
     }, [navigate]);
 
-    // ── Pagination Controls ──
-    const PaginationBar = () => {
-        if (totalPages <= 1) return null;
-        const startItem = (page - 1) * 50 + 1;
-        const endItem = Math.min(page * 50, total);
-
-        return (
-            <div className="flex items-center justify-between bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 mt-3">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    Hiển thị {startItem}-{endItem} / {total} dự án
-                </span>
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={() => setPage(Math.max(1, page - 1))}
-                        disabled={page <= 1}
-                        className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                        aria-label="Trang trước"
-                    >
-                        <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-                    </button>
-                    {/* Page buttons */}
-                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                        let pageNum: number;
-                        if (totalPages <= 7) {
-                            pageNum = i + 1;
-                        } else if (page <= 4) {
-                            pageNum = i + 1;
-                        } else if (page >= totalPages - 3) {
-                            pageNum = totalPages - 6 + i;
-                        } else {
-                            pageNum = page - 3 + i;
-                        }
-                        return (
-                            <button
-                                key={pageNum}
-                                onClick={() => setPage(pageNum)}
-                                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                                    page === pageNum
-                                        ? 'bg-primary-500 text-white shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                                }`}
-                            >
-                                {pageNum}
-                            </button>
-                        );
-                    })}
-                    <button
-                        onClick={() => setPage(Math.min(totalPages, page + 1))}
-                        disabled={page >= totalPages}
-                        className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                        aria-label="Trang sau"
-                    >
-                        <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-                    </button>
-                </div>
-            </div>
-        );
-    };
 
     return (
         <div className="flex flex-col gap-4 animate-in fade-in duration-300 pb-20">
@@ -206,25 +212,69 @@ const ProjectList: React.FC = () => {
                                     <div>
                                         <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Giai đoạn</label>
                                         <div className="space-y-1">
-                                            {STATUS_OPTIONS.map(opt => (
-                                                <label
-                                                    key={opt.val}
-                                                    className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
-                                                        ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
-                                                        : 'hover:bg-slate-50 dark:hover:bg-slate-700'
-                                                        }`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name="status"
-                                                        checked={selectedStatus === opt.val}
-                                                        onChange={() => setSelectedStatus(opt.val)}
-                                                        className="sr-only"
-                                                    />
-                                                    <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: opt.hex }}></span>
-                                                    <span className={`text-sm flex-1 ${selectedStatus === opt.val ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{opt.label}</span>
-                                                </label>
-                                            ))}
+                                            {STATUS_OPTIONS.map(opt => {
+                                                const count = opt.val === 'all' ? totalUnfiltered : (statusCounts[Number(opt.val)] || 0);
+                                                return (
+                                                    <label
+                                                        key={opt.val}
+                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
+                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                            }`}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name="status"
+                                                            checked={selectedStatus === opt.val}
+                                                            onChange={() => setSelectedStatus(opt.val)}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: opt.hex }}></span>
+                                                        <span className={`text-sm flex-1 ${selectedStatus === opt.val ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{opt.label}</span>
+                                                        {count > 0 && (
+                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                                {count}
+                                                            </span>
+                                                        )}
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full h-px bg-slate-100 dark:bg-slate-700"></div>
+
+                                    {/* Current Status Filter */}
+                                    <div>
+                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Trạng thái hiện tại</label>
+                                        <div className="space-y-1">
+                                            {CURRENT_STATUS_OPTIONS.map(opt => {
+                                                const count = opt.val === 'all' ? totalUnfiltered : (currentStatusCounts[Number(opt.val)] || 0);
+                                                return (
+                                                    <label
+                                                        key={opt.val}
+                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedCurrentStatus === opt.val
+                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                            }`}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name="currentStatus"
+                                                            checked={selectedCurrentStatus === opt.val}
+                                                            onChange={() => setSelectedCurrentStatus(opt.val)}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: opt.hex }}></span>
+                                                        <span className={`text-sm flex-1 ${selectedCurrentStatus === opt.val ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{opt.label}</span>
+                                                        {count > 0 && (
+                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                                {count}
+                                                            </span>
+                                                        )}
+                                                    </label>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -234,16 +284,24 @@ const ProjectList: React.FC = () => {
                                     <div>
                                         <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Nhóm dự án</label>
                                         <div className="space-y-1">
-                                            {GROUP_OPTIONS.map(g => (
-                                                <button
-                                                    key={g}
-                                                    onClick={() => setSelectedGroup(g)}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedGroup === g ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                                                        }`}
-                                                >
-                                                    <span>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
-                                                </button>
-                                            ))}
+                                            {GROUP_OPTIONS.map(g => {
+                                                const count = g === 'all' ? totalUnfiltered : (groupCounts[g] || 0);
+                                                return (
+                                                    <button
+                                                        key={g}
+                                                        onClick={() => setSelectedGroup(g)}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedGroup === g ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                            }`}
+                                                    >
+                                                        <span>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
+                                                        {count > 0 && (
+                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                                {count}
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -258,17 +316,32 @@ const ProjectList: React.FC = () => {
                                                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === 'all' ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                             >
                                                 <span>Tất cả ban</span>
+                                                {totalUnfiltered > 0 && (
+                                                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                        {totalUnfiltered}
+                                                    </span>
+                                                )}
                                             </button>
-                                            {MANAGEMENT_BOARDS.map(board => (
-                                                <button
-                                                    key={board.value}
-                                                    onClick={() => setSelectedBoard(board.value.toString())}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${selectedBoard === board.value.toString() ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
-                                                >
-                                                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: board.hex }}></span>
-                                                    <span className="flex-1">{board.label}</span>
-                                                </button>
-                                            ))}
+                                            {MANAGEMENT_BOARDS.map(board => {
+                                                const count = boardCounts[board.value.toString()] || 0;
+                                                return (
+                                                    <button
+                                                        key={board.value}
+                                                        onClick={() => setSelectedBoard(board.value.toString())}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === board.value.toString() ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: board.hex }}></span>
+                                                            <span className="flex-1">{board.label}</span>
+                                                        </div>
+                                                        {count > 0 && (
+                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                                {count}
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>
@@ -425,7 +498,8 @@ const ProjectList: React.FC = () => {
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                             {scopedProjects.map((project, index) => {
-                                                const status = STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
+                                                const currentStatus = project.CurrentStatusCode ? PROJECT_CURRENT_STATUS_CONFIG[project.CurrentStatusCode] : null;
+                                                const status = currentStatus || STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
                                                 const board = project.ManagementBoard
                                                     ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard)
                                                     : null;
@@ -520,10 +594,10 @@ const ProjectList: React.FC = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {scopedProjects.map(project => (
-                                    <ProjectCard
+                                <ProjectCard
                                         key={project.ProjectID}
                                         project={project}
-                                        onClick={() => handleOpenProject(project)}
+                                        onClick={handleOpenProject}
                                         layout="grid"
                                     />
                                 ))}
@@ -532,7 +606,13 @@ const ProjectList: React.FC = () => {
                     </div>
 
                     {/* Pagination */}
-                    <PaginationBar />
+                    <PaginationBar
+                        page={page}
+                        totalPages={totalPages}
+                        total={total}
+                        pageSize={50}
+                        onPageChange={setPage}
+                    />
                 </div>
             </div>
 
