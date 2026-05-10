@@ -17,6 +17,8 @@ import {
 import { StatCard } from '../../components/ui';
 import { CapitalImportModal } from './CapitalImportModal';
 import { APPROVAL_BADGES, SOURCE_LABELS, normalizeSource, MONTHS } from '../../utils/capitalConstants';
+import { useSlidePanelSafe } from '../../context/SlidePanelContext';
+import { ProjectCapitalTab } from '../projects/components/tabs/ProjectCapitalTab';
 
 // ═══════════════════════════════════════════════════
 //  KẾ HOẠCH VỐN & GIẢI NGÂN — Module tổng hợp
@@ -545,6 +547,8 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
 //  TAB 2: HÀNG NĂM (Feature #16)
 // ═══════════════════════════════════════════════════
 const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string; navigate: any}> = ({ plans, yearFilter, searchTerm, navigate }) => {
+    const slidePanel = useSlidePanelSafe();
+
     const filtered = plans
         .filter((p: any) => p.year === yearFilter)
         .filter((p: any) => !searchTerm || (p.project_name || '').toLowerCase().includes(searchTerm.toLowerCase()))
@@ -577,7 +581,21 @@ const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string;
                             const remaining = Number(p.amount) - Number(p.disbursed_amount);
                             const rate = Number(p.amount) > 0 ? (Number(p.disbursed_amount) / Number(p.amount)) * 100 : 0;
                             return (
-                                <tr key={p.plan_id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors">
+                                <tr key={p.plan_id} 
+                                    className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors cursor-pointer group"
+                                    onClick={() => {
+                                        if (slidePanel) {
+                                            slidePanel.openPanel({
+                                                title: `Vốn & Giải ngân: ${p.project_name}`,
+                                                component: <ProjectCapitalTab projectID={p.project_id} />,
+                                                icon: <Landmark className="w-5 h-5 text-blue-500" />,
+                                                url: `/projects/${p.project_id}?tab=capital`
+                                            });
+                                        } else {
+                                            navigate(`/projects/${p.project_id}?tab=capital`);
+                                        }
+                                    }}
+                                >
                                     <td className="px-4 py-2.5 text-gray-400 font-mono">{idx + 1}</td>
                                     <td className="px-4 py-2.5">
                                         <p className="font-bold text-gray-800 dark:text-slate-100">{p.project_name}</p>
@@ -600,9 +618,9 @@ const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string;
                                         </div>
                                     </td>
                                     <td className="px-4 py-2.5 text-center">
-                                        <button onClick={() => navigate(`/projects/${p.project_id}`)} className="p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors" title="Xem DA">
+                                        <div className="p-1 text-gray-400 group-hover:text-blue-600 transition-colors" title="Xem chi tiết">
                                             <ArrowRight className="w-3.5 h-3.5" />
-                                        </button>
+                                        </div>
                                     </td>
                                 </tr>
                             );

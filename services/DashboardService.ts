@@ -49,8 +49,8 @@ export const DashboardService = {
             supabase.from('projects').select('*', { count: 'exact', head: true }),
             // Sum total_investment (only 1 column, minimal transfer)
             supabase.from('projects').select('total_investment'),
-            supabase.from('capital_plans').select('amount').eq('year', year),
-            supabase.from('disbursements').select('amount, date')
+            supabase.from('capital_plans').select('project_id, amount, disbursed_amount').eq('year', year),
+            supabase.from('disbursements').select('project_id, amount, date')
                 .gte('date', `${year}-01-01`)
                 .lte('date', `${year}-12-31`),
             supabase.from('tasks').select('*', { count: 'exact', head: true })
@@ -59,9 +59,27 @@ export const DashboardService = {
                 .eq('status', 'Open'),
         ]);
 
+        const capitalData = capitalRes.data || [];
+        const disbData = disbursedRes.data || [];
+
         const totalInvestment = (totalInvRes.data || []).reduce((acc, p) => acc + Number(p.total_investment), 0);
-        const yearlyPlanned = (capitalRes.data || []).reduce((acc, p) => acc + Number(p.amount), 0);
-        const yearlyDisbursed = (disbursedRes.data || []).reduce((acc, d) => acc + Number(d.amount), 0);
+        const yearlyPlanned = capitalData.reduce((acc, p) => acc + Number(p.amount), 0);
+        
+        let yearlyDisbursed = 0;
+        const projectIds = [...new Set([
+            ...capitalData.map(p => p.project_id),
+            ...disbData.map(d => d.project_id)
+        ])];
+
+        projectIds.forEach(pid => {
+            const projectDisbs = disbData.filter(d => d.project_id === pid);
+            if (projectDisbs.length > 0) {
+                yearlyDisbursed += projectDisbs.reduce((s, d) => s + Number(d.amount), 0);
+            } else {
+                const projectPlans = capitalData.filter(p => p.project_id === pid);
+                yearlyDisbursed += projectPlans.reduce((s, p) => s + Number(p.disbursed_amount || 0), 0);
+            }
+        });
         const yearlyDisbursementRate = yearlyPlanned > 0
             ? Math.round((yearlyDisbursed / yearlyPlanned) * 1000) / 10
             : 0;
@@ -120,7 +138,7 @@ export const DashboardService = {
         const targetYear = year || new Date().getFullYear();
 
         const [plansRes, disbursedRes, projectsRes] = await Promise.all([
-            supabase.from('capital_plans').select('project_id, amount').eq('year', targetYear),
+            supabase.from('capital_plans').select('project_id, amount, disbursed_amount').eq('year', targetYear),
             supabase.from('disbursements').select('project_id, amount')
                 .gte('date', `${targetYear}-01-01`)
                 .lte('date', `${targetYear}-12-31`),
@@ -132,13 +150,21 @@ export const DashboardService = {
                 .filter(p => p.management_board === board.value)
                 .map(p => p.project_id);
 
-            const planned = (plansRes.data || [])
-                .filter(p => boardProjectIds.includes(p.project_id))
-                .reduce((s, p) => s + Number(p.amount), 0);
+            const boardPlans = (plansRes.data || []).filter(p => boardProjectIds.includes(p.project_id));
+            const boardDisbs = (disbursedRes.data || []).filter(d => boardProjectIds.includes(d.project_id));
 
-            const actual = (disbursedRes.data || [])
-                .filter(d => boardProjectIds.includes(d.project_id))
-                .reduce((s, d) => s + Number(d.amount), 0);
+            const planned = boardPlans.reduce((s, p) => s + Number(p.amount), 0);
+
+            let actual = 0;
+            boardProjectIds.forEach(pid => {
+                const projectDisbs = boardDisbs.filter(d => d.project_id === pid);
+                if (projectDisbs.length > 0) {
+                    actual += projectDisbs.reduce((s, d) => s + Number(d.amount), 0);
+                } else {
+                    const projectPlans = boardPlans.filter(p => p.project_id === pid);
+                    actual += projectPlans.reduce((s, p) => s + Number(p.disbursed_amount || 0), 0);
+                }
+            });
 
             return {
                 name: board.label,

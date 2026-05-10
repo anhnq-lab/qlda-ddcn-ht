@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus, TaskPriority, Employee } from '../../types';
 import { getTimelineStepOptions } from '../../utils/timelineStepUtils';
+import { useMonthlyPlanItemOptions } from '../../hooks/useMonthlyPlanItemOptions';
 import {
     X, BarChart3, Layers, CheckCircle2, Clock, AlertCircle,
 } from 'lucide-react';
@@ -52,6 +53,10 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
     presetMonthlyPlanItemId,
 }) => {
     const [formData, setFormData] = useState<Partial<Task>>(initialData);
+    
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    const { options: planItemOptions } = useMonthlyPlanItemOptions(currentMonth, currentYear);
 
     useEffect(() => {
         if (isOpen) {
@@ -114,31 +119,49 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         />
                     </div>
 
-                    {/* Project + Assignee */}
+                    {/* Project + Assignee + Monthly Plan */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Dự án</label>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Dự án liên kết</label>
                             <select
-                                value={formData.ProjectID}
+                                value={formData.ProjectID || ''}
                                 onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             >
+                                <option value="">-- Thuộc dự án (Tùy chọn) --</option>
                                 {projects.map(p => (
                                     <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName.substring(0, 28)}...</option>
                                 ))}
                             </select>
                         </div>
                         <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Kế hoạch tháng</label>
+                            <select
+                                value={formData.MonthlyPlanItemID || ''}
+                                onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="">-- Thuộc KH Tháng (Tùy chọn) --</option>
+                                {planItemOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
                             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Phụ trách</label>
                             <select
-                                value={formData.AssigneeID}
+                                value={formData.AssigneeID || ''}
                                 onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             >
+                                <option value="">-- Chọn người phụ trách --</option>
                                 {employees.map(emp => (
                                     <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName}</option>
                                 ))}
                             </select>
+                        </div>
+                        <div className="flex flex-col justify-end">
+                             {/* Placeholder for future if needed, to maintain grid layout or span */}
                         </div>
                     </div>
 

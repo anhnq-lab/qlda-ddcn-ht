@@ -11,6 +11,7 @@ export const dbToTask = (row: DbTask): Task => ({
     Description: row.description || '',
     TaskType: row.task_type as TaskType,
     ProjectID: row.project_id || '',
+    MonthlyPlanItemID: row.metadata?.monthly_plan_item_id || undefined,
     WorkflowID: row.workflow_id || undefined,
     WorkflowNodeID: row.workflow_node_id || undefined,
     AssigneeID: row.assignee_id || row.metadata?.assignee_role || '',
@@ -78,6 +79,7 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
         attachments: task.Attachments,
         dependencies: task.Dependencies,
         isCritical: task.IsCritical,
+        monthly_plan_item_id: task.MonthlyPlanItemID || undefined
     };
     
     return row;

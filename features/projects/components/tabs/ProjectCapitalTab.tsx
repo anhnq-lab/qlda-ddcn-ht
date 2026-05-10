@@ -352,7 +352,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
 
     // Early returns AFTER all hooks
     if (isLoading) return <div className="p-4 text-center text-gray-500 dark:text-slate-400">Đang tải dữ liệu vốn...</div>;
-    if (!data) return <div className="p-4 text-center text-red-500 dark:text-red-400">Không có dữ liệu vốn</div>;
+    if (!capitalSummary) return <div className="p-4 text-center text-red-500 dark:text-red-400">Không có dữ liệu vốn</div>;
 
     return (
         <div className="space-y-6">

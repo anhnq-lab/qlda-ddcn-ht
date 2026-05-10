@@ -8,6 +8,7 @@ import {
     AdminDeptDetail, PlanningDeptDetail, TechnicalDeptDetail,
     ProjectMgmtDeptDetail, ServiceDevDeptDetail
 } from '../components/RegulationsComponents';
+import { assessmentRegulationChapters } from './assessmentRegulationData';
 
 const quyCheLamViecChapters: RegChapter[] = [
     {
@@ -703,5 +704,14 @@ export const regulationsData: RegulationDocument[] = [
         date: "2026",
         status: "active",
         chapters: []
+    },
+    {
+        id: "doc-qcdgxl",
+        code: "QCDGXL-2026",
+        title: "Quy chế đánh giá, xếp loại",
+        description: "Quy chế Đánh giá, xếp loại hàng tháng đối với cán bộ, viên chức, người lao động.",
+        date: "2026",
+        status: "draft",
+        chapters: assessmentRegulationChapters
     }
 ];
