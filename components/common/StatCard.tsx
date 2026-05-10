@@ -101,7 +101,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         >
             {/* Row 1: Label + Trend */}
             <div className="flex items-center justify-between">
-                <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase leading-none min-h-[14px]">
+                <div className="flex items-center text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase leading-none min-h-[14px]">
                     {label}
                 </div>
                 {(trendPercentage !== undefined || trend) && (

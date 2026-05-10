@@ -542,7 +542,7 @@ export class CapitalService {
             totalDisbursed = this.calculateTrueDisbursed(disbursements);
             totalAdvance = disbursements.filter(d => d.Type === 'TamUng' && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
             advanceRecovered = disbursements.filter(d => d.Type === 'ThuHoiTamUng' && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
-            completionPayment = disbursements.filter(d => (d.Type === 'ThanhToanKLHT' || d.Type === 'ThanhToanTT') && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
+            completionPayment = disbursements.filter(d => (d.Type === 'ThanhToanKLHT' || (d.Type as any) === 'ThanhToanTT') && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
         } else {
             // Dùng tổng hợp từ capital_plans.disbursed_amount
             totalDisbursed = annualPlans.reduce((s, p) => s + (p.DisbursedAmount || 0), 0);

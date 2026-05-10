@@ -26,6 +26,7 @@ export interface Task {
     
     // Project link (null for internal)
     ProjectID: string;
+    ProjectName?: string; // Tên dự án từ DB join
     
     // Monthly plan item link (công việc con của KH tháng)
     MonthlyPlanItemID?: string;

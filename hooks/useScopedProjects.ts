@@ -50,6 +50,10 @@ export interface ScopedProjectsResult {
     statusCounts: Record<number, number>;
     /** Stats: Current Status counts */
     currentStatusCounts: Record<number, number>;
+    /** Stats: Group counts */
+    groupCounts: Record<string, number>;
+    /** Stats: Board counts */
+    boardCounts: Record<string, number>;
     /** Stats: Total (unfiltered by status) */
     totalUnfiltered: number;
     /** Whether user has global scope (sees all) */

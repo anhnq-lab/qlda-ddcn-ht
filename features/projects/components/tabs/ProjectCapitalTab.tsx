@@ -296,7 +296,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 .filter(d => {
                     const dYear = new Date(d.Date).getFullYear();
                     // Ưu tiên match theo AllocationID, fallback theo năm
-                    const matchPlan = d.AllocationID === a.AllocationID;
+                    const matchPlan = d.CapitalPlanID === a.PlanID || d.AllocationID === (a as any).AllocationID;
                     const matchYear = dYear === a.Year;
                     return (matchPlan || matchYear) && d.Status === 'Approved' && d.Type !== 'ThuHoiTamUng';
                 })
@@ -521,7 +521,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                     {[...linkedAnnual].sort((a, b) => a.Year - b.Year).map(ap => {
                                                                         const apRate = ap.Amount > 0 ? ((ap.DisbursedAmount || 0) / ap.Amount) * 100 : 0;
                                                                         return (
-                                                                            <tr key={ap.AllocationID} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10">
+                                                                            <tr key={ap.PlanID} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10">
                                                                                 <td className="px-3 py-2 font-bold text-gray-800 dark:text-slate-100">{ap.Year}</td>
                                                                                 <td className="px-3 py-2 text-gray-600 dark:text-slate-300">{ap.DecisionNumber || '—'}</td>
                                                                                 <td className="px-3 py-2 text-right font-mono font-bold text-blue-700">{formatCurrency(ap.Amount)}</td>
@@ -537,7 +537,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                                         <button 
                                                                                             onClick={(e) => { 
                                                                                                 e.stopPropagation(); 
-                                                                                                const rawData = capitalPlans.find(raw => raw.PlanID === ap.AllocationID); 
+                                                                                                const rawData = capitalPlans.find(raw => raw.PlanID === ap.PlanID); 
                                                                                                 if(rawData) {
                                                                                                     setEditingPlan(rawData); 
                                                                                                     setModalPlanType('annual');
@@ -549,7 +549,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                                             <Edit3 className="w-3.5 h-3.5" />
                                                                                         </button>
                                                                                         <button 
-                                                                                            onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ type: 'plan', id: ap.AllocationID }); }} 
+                                                                                            onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ type: 'plan', id: ap.PlanID }); }} 
                                                                                             className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
                                                                                         >
                                                                                             <Trash2 className="w-3.5 h-3.5" />
@@ -600,7 +600,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                                 {[...allocationWithRate].sort((a, b) => a.Year - b.Year).map(a => (
-                                    <tr key={a.AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
+                                    <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
                                         <td className="px-4 py-2.5">
                                             <span className="font-bold text-gray-800 dark:text-slate-100">Năm {a.Year}</span>
                                         </td>
@@ -631,7 +631,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             <div className="flex items-center justify-center gap-1">
                                                 <button
                                                     onClick={() => handleEditPlan({
-                                                        PlanID: a.AllocationID,
+                                                        PlanID: a.PlanID || (a as any).AllocationID,
                                                         ProjectID: projectID,
                                                         Year: a.Year,
                                                         Amount: a.Amount,
@@ -646,7 +646,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                     <Pencil className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
-                                                    onClick={() => setDeleteConfirm({ type: 'plan', id: a.AllocationID })}
+                                                    onClick={() => setDeleteConfirm({ type: 'plan', id: a.PlanID || (a as any).AllocationID })}
                                                     className="p-1 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
                                                     title="Xóa"
                                                 >

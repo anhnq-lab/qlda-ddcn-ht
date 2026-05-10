@@ -4,7 +4,7 @@ import { Clock, Shield, Target, FileSpreadsheet, BookOpen, Upload, Loader2, Link
 import type { WorkflowNode, SubTask } from '../../../types/workflow.types';
 import { useSlidePanel } from '../../../context/SlidePanelContext';
 import LegalDocumentSearch from '../../legal-documents/LegalDocumentSearch';
-import { legalDocuments } from '../../legal-documents/legalData';
+
 import { uploadTemplateFile, appendTemplateName, resolveLegalReference } from '../utils/workflowUtils';
 
 interface SubTaskDetailPanelProps {
@@ -122,7 +122,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
     };
 
     const handleOpenLegalSearch = (basisText: string) => {
-        const target = resolveLegalReference(basisText, (legalDocuments as any));
+        const target = resolveLegalReference(basisText);
 
         openPanel({
             title: 'Tra cứu pháp luật',

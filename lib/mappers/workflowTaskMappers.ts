@@ -38,6 +38,7 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         TaskType: wt.task_type || metadata.task_type || 'project',
         Description: wt.description || wt.comments || metadata.description || '',
         ProjectID: projectId || wt.project_id || (wt as any).instance?.reference_id || '',
+        ProjectName: wt.projects?.project_name || '',
         AssigneeID: wt.assignee_id || metadata.assignee_role || '',
         DueDate: wt.due_date || '',
         StartDate: wt.start_date || wt.started_at || '',

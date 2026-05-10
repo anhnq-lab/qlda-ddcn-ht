@@ -9,6 +9,7 @@ import { Project, ProjectStage } from '@/types';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjectTasks } from '@/hooks/useWorkflowTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
+import { supabase } from '@/lib/supabase';
 
 /** Props when rendering inside a SlidePanel */
 export interface ProjectDetailProps {
@@ -18,8 +19,9 @@ export interface ProjectDetailProps {
     onClose?: () => void;
     /** Render in panel mode (no breadcrumb nav, adjusted height) */
     inPanel?: boolean;
+    /** The tab to open initially (e.g. 'plan') */
+    initialTab?: string;
 }
-import { supabase } from '@/lib/supabase';
 import { ProjectHeader } from './components/ProjectHeader';
 // Always-visible on initial load — static imports
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
@@ -107,7 +109,7 @@ const ProjectDetailSkeleton: React.FC = () => (
 
 
 // ─────── Main Component ───────
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId, onClose, inPanel = false }) => {
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId, onClose, inPanel = false, initialTab }) => {
     const { id: paramId } = useParams<{ id: string }>();
     const id = propProjectId || paramId;
     const location = useLocation();
@@ -124,20 +126,25 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     });
     const { addToast } = useToast();
 
-    // Tab state synced with URL ?tab= (persists on reload)
-    const [activeTab, setActiveTab] = useTabSearchParam<TabId>('info', TAB_IDS);
+    // Tab state: if inPanel, use local state initialized from initialTab or 'info'. Else use URL search param.
+    const [urlActiveTab, setUrlActiveTab] = useTabSearchParam<TabId>('info', TAB_IDS);
+    const [localActiveTab, setLocalActiveTab] = useState<TabId>((initialTab as TabId) || 'info');
+
+    const activeTab = inPanel ? localActiveTab : urlActiveTab;
+    const setActiveTab = inPanel ? setLocalActiveTab : setUrlActiveTab;
 
     // Support cross-page navigation via location.state (e.g., TaskDetail → plan tab)
     const openPackageId = (location.state as any)?.openPackageId || null;
     const initialDetailTab = (location.state as any)?.initialDetailTab || undefined;
     useEffect(() => {
+        if (inPanel) return; // Ignore location state changes when in panel
         const stateTab = (location.state as any)?.activeTab as TabId | undefined;
         if (stateTab && TAB_IDS.includes(stateTab) && stateTab !== activeTab) {
             setActiveTab(stateTab);
             // Clear location.state to avoid re-triggering on back/forward
             window.history.replaceState({}, '');
         }
-    }, [location.state]);
+    }, [location.state, inPanel, activeTab, setActiveTab]);
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);

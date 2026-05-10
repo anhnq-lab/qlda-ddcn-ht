@@ -23,15 +23,13 @@ export interface LegalSearchTarget {
 }
 
 export function resolveLegalReference(
-    basisText: string,
-    legalDocuments: Array<{ id: string; chapters: Array<{ articles: Array<{ id: string; code: string }> }> }>
+    basisText: string
 ): LegalSearchTarget {
     if (!basisText || !basisText.trim()) {
         return {};
     }
 
     let foundDocId: string | undefined = undefined;
-    let foundArticleId: string | undefined = undefined;
     
     const lowerText = basisText.toLowerCase();
 
@@ -40,29 +38,10 @@ export function resolveLegalReference(
         foundDocId = 'luat-dau-tu-cong-2024';
     }
 
-    // 2. Nhận diện điều khoản
-    const dieuMatch = lowerText.match(/điều\s+(\d+[a-z]?)/);
-    if (dieuMatch && foundDocId) {
-        const articleNumber = dieuMatch[1];
-        const doc = legalDocuments.find(d => d.id === foundDocId);
-        if (doc) {
-            for (const chapter of doc.chapters) {
-                const article = chapter.articles.find(a => 
-                    a.code.toLowerCase().includes(`điều ${articleNumber}.`) || 
-                    a.code.toLowerCase() === `điều ${articleNumber}`
-                );
-                if (article) {
-                    foundArticleId = article.id;
-                    break;
-                }
-            }
-        }
-    }
-
     return {
         docId: foundDocId,
-        articleId: foundArticleId,
-        searchQuery: !foundDocId ? basisText : undefined,
+        // The LegalDocumentSearch component will use the searchQuery to find the article
+        searchQuery: basisText,
     };
 }
 

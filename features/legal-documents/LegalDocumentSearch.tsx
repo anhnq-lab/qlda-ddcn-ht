@@ -7,7 +7,6 @@ import {
     useDeepSearch,
     useDebounce,
     usePrefetchDocument,
-    convertToLegacyDoc,
 } from './useLegalDocuments';
 import { useBookmarks, useRecentlyViewed, useReadingPrefs, useLegalEditStore } from './useLegalStorage';
 import { LegalHeader } from './components/LegalHeader';
@@ -84,9 +83,9 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     const { data: deepSearchRaw } = useDeepSearch(selectedDocId || null, debouncedSearchQuery);
     const prefetchDocument = usePrefetchDocument();
 
-    // Legacy adapters (keeps sub-components unchanged)
-    const filteredDocs = useMemo(() => (listResult?.documents ?? []).map(convertToLegacyDoc), [listResult]);
-    const selectedDoc = useMemo(() => selectedDocRaw ? convertToLegacyDoc(selectedDocRaw) : null, [selectedDocRaw]);
+    // Mapping raw data directly since components have been updated
+    const filteredDocs = useMemo(() => listResult?.documents ?? [], [listResult]);
+    const selectedDoc = useMemo(() => selectedDocRaw ?? null, [selectedDocRaw]);
     const stats = useMemo(() => ({
         total: statsData?.total ?? 0,
         byType: statsData?.byType ?? {},
@@ -127,17 +126,20 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
             if (expandedChapters.size === 0 || initialArticleId) {
                 // If there's a urlArticleId or initialArticleId, we should open that chapter instead
                 const targetArticleId = initialArticleId || urlArticleId;
-                let targetChapterId = selectedDoc.chapters[0]?.id;
+                const chapters = selectedDoc.chapters || [];
+                let targetChapterId = chapters[0]?.id;
                 
                 if (targetArticleId) {
-                    const chapterWithArticle = selectedDoc.chapters.find(c => c.articles.some(a => a.id === targetArticleId));
+                    const chapterWithArticle = chapters.find(c => (c.articles || []).some(a => a.id === targetArticleId));
                     if (chapterWithArticle) {
                         targetChapterId = chapterWithArticle.id;
                         setTimeout(() => scrollToArticle(targetArticleId, targetChapterId), 300);
                     }
                 }
-                setExpandedChapters(new Set([targetChapterId]));
-                const allArticles = selectedDoc.chapters.flatMap(c => c.articles.map(a => a.id));
+                if (targetChapterId) {
+                    setExpandedChapters(new Set([targetChapterId]));
+                }
+                const allArticles = chapters.flatMap(c => (c.articles || []).map(a => a.id));
                 setExpandedArticles(new Set(allArticles));
             }
         }

@@ -200,7 +200,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                                     ? 'text-red-700'
                                                     : 'text-gray-800 dark:text-slate-200'
                                                 }`}>
-                                                {task.Title}
+                                                {task.Title?.replace(/^(?:Phòng|Ban)\s+[^-]+-\s*/i, '')}
                                             </h4>
                                         </div>
                                     </div>
@@ -241,9 +241,9 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                         )}
 
                                         {/* Assignee */}
-                                        {task.AssigneeID && (
+                                        {task.AssigneeID && typeof task.AssigneeID === 'string' && (
                                             <span className="flex items-center gap-1 text-[10px] text-gray-500">
-                                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold" >
+                                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold" style={{ backgroundColor: '#64748b' }}>
                                                     {task.AssigneeID.slice(0, 2).toUpperCase()}
                                                 </div>
                                             </span>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bookmark, Search, Clock, FileText } from 'lucide-react';
-import { LegalDocument, legalDocuments, getDocArticleCount, LegalArticle } from '../legalData';
+import { LegalDocumentDB } from '../../../services/LegalDocumentService';
 import { DocSidebarItem } from './LegalUI';
 import { BookmarkItem, RecentlyViewedItem } from '../useLegalStorage';
 
@@ -8,7 +8,7 @@ interface LegalSidebarProps {
     readingMode: boolean;
     showBookmarks: boolean;
     setShowBookmarks: (val: boolean) => void;
-    filteredDocs: LegalDocument[];
+    filteredDocs: LegalDocumentDB[];
     bookmarks: BookmarkItem[];
     recentlyViewed: RecentlyViewedItem[];
     selectedDocId: string;
@@ -56,23 +56,14 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                         </div>
                     ) : (
                         bookmarks.map(bm => {
-                            const doc = legalDocuments.find(d => d.id === bm.docId);
-                            if (!doc) return null;
-                            let foundArticle: LegalArticle | null = null;
-                            let foundChapterId = '';
-                            for (const ch of doc.chapters) {
-                                const art = ch.articles.find(a => a.id === bm.articleId);
-                                if (art) { foundArticle = art; foundChapterId = ch.id; break; }
-                            }
-                            if (!foundArticle) return null;
                             return (
                                 <button key={bm.articleId}
-                                    onClick={() => { setSelectedDocId(bm.docId); setShowBookmarks(false); scrollToArticle(bm.articleId, foundChapterId); }}
+                                    onClick={() => { setSelectedDocId(bm.docId); setShowBookmarks(false); if (bm.chapterId) scrollToArticle(bm.articleId, bm.chapterId); }}
                                     className="w-full text-left p-3 rounded-xl border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-900/10 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all">
-                                    <p className="text-[9px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-wider">{doc.short_title}</p>
+                                    <p className="text-[9px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-wider">{bm.docShortTitle || 'Văn bản đã lưu'}</p>
                                     <p className="text-xs font-bold text-gray-700 dark:text-slate-300 mt-0.5">
-                                        <span className="text-gray-400 font-mono text-[10px] mr-1">{foundArticle.code}</span>
-                                        {foundArticle.title}
+                                        <span className="text-gray-400 font-mono text-[10px] mr-1">{bm.articleCode || ''}</span>
+                                        {bm.articleTitle || 'Điều khoản đã lưu'}
                                     </p>
                                 </button>
                             );
@@ -87,7 +78,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                         </div>
                     ) : filteredDocs.map(doc => (
                         <DocSidebarItem key={doc.id} doc={doc} isSelected={selectedDocId === doc.id}
-                            articleCount={getDocArticleCount(doc.id)}
+                            articleCount={{ chapters: 0, articles: 0 }}
                             onClick={() => { setSelectedDocId(doc.id); setShowPdfViewer(false); setExpandedChapters(new Set()); setShowDeepSearch(false); }} />
                     ))
                 )}

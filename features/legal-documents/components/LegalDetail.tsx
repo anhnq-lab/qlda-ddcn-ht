@@ -1,11 +1,11 @@
 import React from 'react';
 import { Share2, Printer, Download, Maximize2, Minimize2, FileText, FileDown, Bookmark, Link as LinkIcon, Check, ChevronDown, ChevronRight, Scale, Info, Calendar, Shield, Building2 } from 'lucide-react';
-import { LegalDocument, DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS } from '../legalData';
+import { LegalDocumentDB, DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS } from '../../../services/LegalDocumentService';
 import { HighlightText, TYPE_ICONS } from './LegalUI';
 import LegalArticleCard from './LegalArticleCard';
 
 interface LegalDetailProps {
-    selectedDoc: LegalDocument | null;
+    selectedDoc: LegalDocumentDB | null;
     contentRef: React.RefObject<HTMLDivElement>;
     showPdfViewer: boolean;
     setShowPdfViewer: (val: boolean) => void;
@@ -76,9 +76,9 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                             {selectedDoc.title}
                         </h1>
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] font-medium text-gray-500 dark:text-slate-400">
-                            <p className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-gray-400" /> Ban hành: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedDate}</span></p>
-                            <p className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effectiveDate}</span></p>
-                            <p className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedBy}</span></p>
+                            <p className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-gray-400" /> Ban hành: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issued_date}</span></p>
+                            <p className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effective_date}</span></p>
+                            <p className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issued_by}</span></p>
                         </div>
                     </div>
 
@@ -128,14 +128,14 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                         <span className="text-xs font-bold text-gray-600 dark:text-slate-300 flex items-center gap-2">
                                             <FileDown className="w-4 h-4" /> Bản gốc PDF
                                         </span>
-                                        <span className="text-[10px] bg-bg-surface px-2 py-1 rounded font-mono text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-600">{selectedDoc.fileSize}</span>
+                                        <span className="text-[10px] bg-bg-surface px-2 py-1 rounded font-mono text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-600">{selectedDoc.file_size}</span>
                                     </div>
-                                    <iframe src={`${selectedDoc.filePath}#toolbar=0&navpanes=0`} className="w-full flex-1" title="PDF Viewer" />
+                                    <iframe src={`${selectedDoc.file_path}#toolbar=0&navpanes=0`} className="w-full flex-1" title="PDF Viewer" />
                                 </div>
                             </div>
                         ) : (
                             <div className="p-4 lg:px-12 xl:px-16 max-w-4xl mx-auto" style={{ fontSize: `${fontSize}px` }}>
-                                {selectedDoc.chapters.map(chapter => (
+                                {(selectedDoc.chapters || []).map(chapter => (
                                     <div key={chapter.id} className="mb-10 last:mb-0">
                                         <div
                                             onClick={() => toggleChapter(chapter.id)}
@@ -156,7 +156,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
 
                                         {expandedChapters.has(chapter.id) && (
                                             <div className="space-y-4">
-                                                {chapter.articles.map(article => {
+                                                {(chapter.articles || []).map(article => {
                                                     const isActive = activeArticleId === article.id;
                                                     const bookmarked = isBookmarked(article.id);
                                                     const isExpanded = expandedArticles.has(article.id);
@@ -167,7 +167,6 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                                             article={{
                                                                 ...article,
                                                                 content: edits[article.id] || article.content, // Overlay edit content
-                                                                fullContent: edits[article.id] || article.fullContent,
                                                             }}
                                                             selectedDocId={selectedDoc.id}
                                                             isActive={isActive}

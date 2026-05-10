@@ -11,9 +11,32 @@ import MainLayout from './layouts/MainLayout';
 // Auth Features (eager load - needed immediately)
 import Login from './features/auth/Login';
 
+// lazyWithRetry wrapper to automatically handle chunk load errors after deployment
+const lazyWithRetry = (componentImport: () => Promise<any>) =>
+    React.lazy(async () => {
+        const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+            window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+        );
+
+        try {
+            const component = await componentImport();
+            window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+            return component;
+        } catch (error) {
+            if (!pageHasAlreadyBeenForceRefreshed) {
+                // Assume that the error is from an outdated chunk, so force a reload
+                window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+                window.location.reload();
+                // Return a dummy component to satisfy React.lazy while reloading
+                return { default: () => null };
+            }
+            throw error;
+        }
+    });
+
 // Lazy-loaded Feature Modules (code splitting)
-const Dashboard = React.lazy(() => import('./features/dashboard/Dashboard'));
-const PersonalDashboard = React.lazy(() => import('./features/dashboard/PersonalDashboard'));
+const Dashboard = lazyWithRetry(() => import('./features/dashboard/Dashboard'));
+const PersonalDashboard = lazyWithRetry(() => import('./features/dashboard/PersonalDashboard'));
 
 // Contractor-aware home: redirect contractors to CDE
 const ContractorAwareHome: React.FC = () => {
@@ -21,33 +44,33 @@ const ContractorAwareHome: React.FC = () => {
     if (userType === 'contractor') return <Navigate to="/cde" replace />;
     return <React.Suspense fallback={<PageLoadingFallback />}><Dashboard /></React.Suspense>;
 };
-const ProjectList = React.lazy(() => import('./features/projects/ProjectList'));
-const ProjectDetail = React.lazy(() => import('./features/projects/ProjectDetail'));
+const ProjectList = lazyWithRetry(() => import('./features/projects/ProjectList'));
+const ProjectDetail = lazyWithRetry(() => import('./features/projects/ProjectDetail'));
 
-const PackageDetail = React.lazy(() => import('./features/projects/PackageDetail'));
-const ContractDetail = React.lazy(() => import('./features/contracts/ContractDetail'));
-const BiddingContractPage = React.lazy(() => import('./features/bidding/BiddingContractPage'));
-const ContractorList = React.lazy(() => import('./features/contractors/ContractorList'));
-const ContractorDetail = React.lazy(() => import('./features/contractors/ContractorDetail'));
-const EmployeeList = React.lazy(() => import('./features/employees/EmployeeList'));
-const EmployeeDetail = React.lazy(() => import('./features/employees/EmployeeDetail'));
-const TaskList = React.lazy(() => import('./features/tasks/TaskList'));
-const TaskDetail = React.lazy(() => import('./features/tasks/TaskDetail'));
+const PackageDetail = lazyWithRetry(() => import('./features/projects/PackageDetail'));
+const ContractDetail = lazyWithRetry(() => import('./features/contracts/ContractDetail'));
+const BiddingContractPage = lazyWithRetry(() => import('./features/bidding/BiddingContractPage'));
+const ContractorList = lazyWithRetry(() => import('./features/contractors/ContractorList'));
+const ContractorDetail = lazyWithRetry(() => import('./features/contractors/ContractorDetail'));
+const EmployeeList = lazyWithRetry(() => import('./features/employees/EmployeeList'));
+const EmployeeDetail = lazyWithRetry(() => import('./features/employees/EmployeeDetail'));
+const TaskList = lazyWithRetry(() => import('./features/tasks/TaskList'));
+const TaskDetail = lazyWithRetry(() => import('./features/tasks/TaskDetail'));
 // PaymentList now loaded inside BiddingContractPage
 // DocumentManager removed — integrated into CDE as 'Kho lưu trữ' tab
-const CDEPage = React.lazy(() => import('./features/cde/CDEPage'));
-const BimPage = React.lazy(() => import('./features/bim/BimPage'));
-const ReportCenter = React.lazy(() => import('./features/reports/ReportCenter'));
-const MidTermCapitalPage = React.lazy(() => import('./features/capital/MidTermCapitalPage'));
-const Regulations = React.lazy(() => import('./features/regulations/Regulations'));
-const EvaluationPage = React.lazy(() => import('./features/evaluation/EvaluationPage'));
-const LegalDocumentSearch = React.lazy(() => import('./features/legal-documents/LegalDocumentSearch'));
-const Settings = React.lazy(() => import('./features/settings/Settings'));
-const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'));
-const AdminUserManagement = React.lazy(() => import('./features/admin/AdminUserManagement'));
+const CDEPage = lazyWithRetry(() => import('./features/cde/CDEPage'));
+const BimPage = lazyWithRetry(() => import('./features/bim/BimPage'));
+const ReportCenter = lazyWithRetry(() => import('./features/reports/ReportCenter'));
+const MidTermCapitalPage = lazyWithRetry(() => import('./features/capital/MidTermCapitalPage'));
+const Regulations = lazyWithRetry(() => import('./features/regulations/Regulations'));
+const EvaluationPage = lazyWithRetry(() => import('./features/evaluation/EvaluationPage'));
+const LegalDocumentSearch = lazyWithRetry(() => import('./features/legal-documents/LegalDocumentSearch'));
+const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
+const AuditLogViewer = lazyWithRetry(() => import('./features/admin/AuditLogViewer'));
+const AdminUserManagement = lazyWithRetry(() => import('./features/admin/AdminUserManagement'));
 
-const WorkflowManagerPage = React.lazy(() => import('./features/workflows/WorkflowManagerPage'));
-const WorkPlanPage = React.lazy(() => import('./features/work-plan/WorkPlanPage'));
+const WorkflowManagerPage = lazyWithRetry(() => import('./features/workflows/WorkflowManagerPage'));
+const WorkPlanPage = lazyWithRetry(() => import('./features/work-plan/WorkPlanPage'));
 import ProtectedRoute from './components/ProtectedRoute';
 
 

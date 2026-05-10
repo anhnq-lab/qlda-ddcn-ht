@@ -1,10 +1,10 @@
 import React, { memo, useMemo, useState, useRef, useEffect } from 'react';
 import { Bookmark, Link as LinkIcon, Check, Edit3, Save, X, Bold, Italic, Underline, List, ListOrdered, Undo, Redo, Eraser, AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
-import { LegalArticle } from '../legalData';
+import { LegalArticleDB } from '../../../services/LegalDocumentService';
 import { HighlightText } from './LegalUI';
 
 interface LegalArticleCardProps {
-    article: LegalArticle;
+    article: LegalArticleDB;
     selectedDocId: string;
     isActive: boolean;
     isExpanded: boolean;

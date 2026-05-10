@@ -11,7 +11,6 @@ import { useToast } from '../../../components/ui/Toast';
 import NodeDetailPanel from './NodeDetailPanel';
 import { SubTaskDetailPanel } from './SubTaskDetailPanel';
 import LegalDocumentSearch from '../../legal-documents/LegalDocumentSearch';
-import { legalDocuments } from '../../legal-documents/legalData';
 import { parseSla, resolveLegalReference, uploadTemplateFile } from '../utils/workflowUtils';
 
 // ─── Inline Component: TemplateCell ────────────────────────────
@@ -309,7 +308,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
     // ─── Panel openers ───────────────────────────────────────
     const handleOpenLegalSearch = (basisText: string) => {
-        const target = resolveLegalReference(basisText, (legalDocuments as any));
+        const target = resolveLegalReference(basisText);
         openPanel({
             id: target.docId ? 'legal-search-parsed' : 'legal-search',
             title: 'Tra cứu pháp luật',

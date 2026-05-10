@@ -279,7 +279,7 @@ export class CDEService {
         is_latest?: boolean;
     }>> {
         // Get the current document
-        const { data: currentDoc } = await supabase
+        const { data: currentDoc } = await (supabase as any)
             .from('documents')
             .select('doc_name, project_id, folder_id, version_group_id')
             .eq('doc_id', docId)
@@ -291,7 +291,7 @@ export class CDEService {
 
         if (currentDoc.version_group_id) {
             // Get all documents in the same version group
-            const { data } = await supabase
+            const { data } = await (supabase as any)
                 .from('documents')
                 .select('*')
                 .eq('version_group_id', currentDoc.version_group_id)
@@ -455,7 +455,7 @@ export class CDEService {
      * Get stats for a project's CDE.
      */
     static async getStats(projectId: string): Promise<CDEStats> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('cde_project_stats_view')
             .select('*')
             .eq('project_id', projectId)

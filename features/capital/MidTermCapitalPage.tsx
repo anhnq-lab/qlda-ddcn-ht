@@ -411,6 +411,13 @@ const CapitalPlanningPage: React.FC = () => {
                     <strong>Căn cứ:</strong> Luật ĐTC 58/2024/QH15 (Đ.49-55), NĐ 99/2021/NĐ-CP, sửa đổi bởi Luật 90/2025/QH15
                 </p>
             </div>
+
+            {/* Import Modal */}
+            <CapitalImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                currentYear={yearFilter}
+            />
         </div>
     );
 };
@@ -853,12 +860,6 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
                 <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3 text-red-500" /> Đỏ = Thấp hơn KH</span>
             </div>
 
-            {/* Import Modal */}
-            <CapitalImportModal
-                isOpen={isImportModalOpen}
-                onClose={() => setIsImportModalOpen(false)}
-                currentYear={yearFilter}
-            />
         </div>
     );
 };

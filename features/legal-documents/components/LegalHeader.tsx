@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Scale, Filter, X, FileText, Layers, ShieldCheck } from 'lucide-react';
-import { DocType, DOC_TYPE_LABELS, FlatArticle } from '../legalData';
-import { DeepSearchResult } from './LegalUI';
+import { DocType, DOC_TYPE_LABELS } from '../../../services/LegalDocumentService';
+import { DeepSearchResult, DeepSearchItem } from './LegalUI';
 import { StatCard } from '../../../components/ui';
 
 interface LegalHeaderProps {
@@ -12,7 +12,7 @@ interface LegalHeaderProps {
     stats: any;
     showDeepSearch: boolean;
     setShowDeepSearch: (val: boolean) => void;
-    deepSearchResults: FlatArticle[];
+    deepSearchResults: DeepSearchItem[];
     navigateDeepSearch: (docId: string, chapterId: string) => void;
     readingMode: boolean;
 }

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Scale, FileText, Calendar, Shield, Building2, ExternalLink, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { legalDocuments, LegalDocument, LegalArticle, LegalChapter, DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS } from '../../features/legal-documents/legalData';
+import { DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS, LegalArticleDB } from '../../services/LegalDocumentService';
+import { useDocumentDetail } from '../../features/legal-documents/useLegalDocuments';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+// Trigger HMR
 
 interface LegalArticlePanelProps {
     docId: string;
@@ -51,7 +53,7 @@ const ArticleContent: React.FC<{ content: string }> = ({ content }) => {
 // ─── Single Article Card ─────────────────────────────────────────────────────
 
 const ArticleCard: React.FC<{
-    article: LegalArticle;
+    article: LegalArticleDB;
     isTarget: boolean;
     defaultExpanded: boolean;
 }> = ({ article, isTarget, defaultExpanded }) => {
@@ -107,14 +109,16 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
     const navigate = useNavigate();
     const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
 
-    // Find document
-    const doc = useMemo(() => legalDocuments.find(d => d.id === docId), [docId]);
+    // Fetch document
+    const { data: doc, isLoading } = useDocumentDetail(docId || null);
 
     // Find target article and its chapter
     const { targetArticle, targetChapter } = useMemo(() => {
         if (!doc || !articleId) return { targetArticle: null, targetChapter: null };
-        for (const ch of doc.chapters) {
-            const art = ch.articles.find(a => a.id === articleId);
+        const chapters = doc.chapters || [];
+        for (const ch of chapters) {
+            const articles = ch.articles || [];
+            const art = articles.find(a => a.id === articleId);
             if (art) return { targetArticle: art, targetChapter: ch };
         }
         return { targetArticle: null, targetChapter: null };
@@ -149,9 +153,18 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
         });
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-16 text-center px-8 h-full">
+                <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                <h3 className="text-sm font-bold text-gray-500">Đang tải văn bản...</h3>
+            </div>
+        );
+    }
+
     if (!doc) {
         return (
-            <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+            <div className="flex flex-col items-center justify-center py-16 text-center px-8 h-full">
                 <Scale className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
                 <h3 className="text-sm font-bold text-gray-400 dark:text-slate-400">Không tìm thấy văn bản</h3>
                 <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">ID: {docId}</p>
@@ -159,8 +172,8 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
         );
     }
 
-    const typeColor = DOC_TYPE_COLORS[doc.type];
-    const statusColor = DOC_STATUS_COLORS[doc.status];
+    const typeColor = DOC_TYPE_COLORS[doc.type] || DOC_TYPE_COLORS['other' as any];
+    const statusColor = DOC_STATUS_COLORS[doc.status] || DOC_STATUS_COLORS['draft' as any];
 
     return (
         <div className="flex flex-col h-full overflow-hidden">
@@ -170,11 +183,11 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
                 <div className="flex items-center gap-2 mb-2">
                     <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${typeColor.bg} ${typeColor.text} ${typeColor.border} border ${typeColor.darkBg} ${typeColor.darkText} ${typeColor.darkBorder}`}>
                         <Scale className="w-3 h-3" />
-                        {DOC_TYPE_LABELS[doc.type]}
+                        {DOC_TYPE_LABELS[doc.type] || doc.type}
                     </span>
                     <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold border ${statusColor.bg} ${statusColor.text}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${statusColor.dot}`} />
-                        {DOC_STATUS_LABELS[doc.status]}
+                        {DOC_STATUS_LABELS[doc.status] || doc.status}
                     </span>
                 </div>
 
@@ -193,15 +206,15 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-gray-500 dark:text-slate-400">
                     <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 text-gray-400" />
-                        Ban hành: <strong className="text-gray-700 dark:text-slate-300">{doc.issuedDate}</strong>
+                        Ban hành: <strong className="text-gray-700 dark:text-slate-300">{doc.issued_date ? new Date(doc.issued_date).toLocaleDateString('vi-VN') : 'N/A'}</strong>
                     </span>
                     <span className="flex items-center gap-1">
                         <Shield className="w-3 h-3 text-emerald-500" />
-                        Hiệu lực: <strong className="text-gray-700 dark:text-slate-300">{doc.effectiveDate}</strong>
+                        Hiệu lực: <strong className="text-gray-700 dark:text-slate-300">{doc.effective_date ? new Date(doc.effective_date).toLocaleDateString('vi-VN') : 'N/A'}</strong>
                     </span>
                     <span className="flex items-center gap-1">
                         <Building2 className="w-3 h-3 text-indigo-400" />
-                        {doc.issuedBy}
+                        {doc.issued_by}
                     </span>
                 </div>
 
@@ -220,7 +233,7 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
 
             {/* Content — Chapters & Articles */}
             <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-3">
-                {doc.chapters.map(chapter => (
+                {(doc.chapters || []).map(chapter => (
                     <div key={chapter.id}>
                         {/* Chapter Header */}
                         <button
@@ -249,7 +262,7 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
                         {/* Articles */}
                         {expandedChapters.has(chapter.id) && (
                             <div className="mt-2 space-y-2 ml-1">
-                                {chapter.articles.map(article => (
+                                {(chapter.articles || []).map(article => (
                                     <ArticleCard
                                         key={article.id}
                                         article={article}

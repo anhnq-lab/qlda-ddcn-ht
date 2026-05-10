@@ -3,11 +3,11 @@ import type { RegChapter } from '../types/regulations.types';
 
 export const assessmentRegulationChapters: RegChapter[] = [
   {
-    id: "chuong-chung",
+    id: "chuong-chung", code: "chuong-chung",
     title: "Quy định chung",
     articles: [
       {
-        id: "chuong-chung-dieu-1",
+        id: "chuong-chung-dieu-1", code: "chuong-chung-dieu-1",
         title: "Điều 1. Ban hành kèm theo Quyết định này Quy chế Đánh giá, xếp loại hàng tháng đối với cán bộ, viên chức, người lao động thuộc Ban Quản lý dự án đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh.",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -15,7 +15,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-chung-dieu-2",
+        id: "chuong-chung-dieu-2", code: "chuong-chung-dieu-2",
         title: "Điều 2. Quyết định này có hiệu lực kể từ ngày ban hành.",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -23,7 +23,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-chung-dieu-3",
+        id: "chuong-chung-dieu-3", code: "chuong-chung-dieu-3",
         title: "Điều 3. Trưởng các phòng: Hành chính \- Tổng hợp, Quản lý dự án 1, Quản lý dự án 2, Quản lý dự án 3, Kế hoạch \- Đấu thầu, Kỹ thuật \- Thẩm định, Phát triển dịch vụ và các tổ chức, cá nhân có liên quan chịu trách nhiệm thi hành Quyết định này./.",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -42,11 +42,11 @@ export const assessmentRegulationChapters: RegChapter[] = [
     ]
   },
   {
-    id: "chuong-i",
+    id: "chuong-i", code: "chuong-i",
     title: "Chương I: NHỮNG QUY ĐỊNH CHUNG",
     articles: [
       {
-        id: "chuong-i-dieu-1",
+        id: "chuong-i-dieu-1", code: "chuong-i-dieu-1",
         title: "Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -56,7 +56,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-i-dieu-2",
+        id: "chuong-i-dieu-2", code: "chuong-i-dieu-2",
         title: "Điều 2. Mục đích",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -66,7 +66,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-i-dieu-3",
+        id: "chuong-i-dieu-3", code: "chuong-i-dieu-3",
         title: "Điều 3. Yêu cầu",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -76,7 +76,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-i-dieu-4",
+        id: "chuong-i-dieu-4", code: "chuong-i-dieu-4",
         title: "Điều 4. Nguyên tắc đánh giá, xếp loại chất lượng",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -89,7 +89,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-i-dieu-5",
+        id: "chuong-i-dieu-5", code: "chuong-i-dieu-5",
         title: "Điều 5. Thời hạn định kỳ đánh giá, xếp loại",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -100,7 +100,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-i-dieu-6",
+        id: "chuong-i-dieu-6", code: "chuong-i-dieu-6",
         title: "Điều 6. Mức đánh giá, xếp loại chất lượng",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -115,11 +115,11 @@ export const assessmentRegulationChapters: RegChapter[] = [
     ]
   },
   {
-    id: "chuong-ii",
+    id: "chuong-ii", code: "chuong-ii",
     title: "Chương II: NỘI DUNG VÀ QUY TRÌNH ĐÁNH GIÁ,",
     articles: [
       {
-        id: "chuong-ii-dieu-7",
+        id: "chuong-ii-dieu-7", code: "chuong-ii-dieu-7",
         title: "Điều 7. Thẩm quyền đánh giá, xếp loại chất lượng",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -131,7 +131,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-8",
+        id: "chuong-ii-dieu-8", code: "chuong-ii-dieu-8",
         title: "Điều 8. Tiêu chí đánh giá, xếp loại (Thang điểm 100\)",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -183,7 +183,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-9",
+        id: "chuong-ii-dieu-9", code: "chuong-ii-dieu-9",
         title: "Điều 9. Mức xếp loại",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -196,7 +196,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-10",
+        id: "chuong-ii-dieu-10", code: "chuong-ii-dieu-10",
         title: "Điều 10. Một số trường hợp cụ thể trong đánh giá, xếp loại",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -211,7 +211,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-11",
+        id: "chuong-ii-dieu-11", code: "chuong-ii-dieu-11",
         title: "Điều 11. Quy trình, các bước thực hiện đánh giá, xếp loại",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -227,7 +227,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-12",
+        id: "chuong-ii-dieu-12", code: "chuong-ii-dieu-12",
         title: "Điều 12. Khiếu nại, kiến nghị về kết quả xếp loại chất lượng.",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -239,7 +239,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-13",
+        id: "chuong-ii-dieu-13", code: "chuong-ii-dieu-13",
         title: "Điều 13. Sử dụng kết quả đánh giá, xếp loại hàng tháng để đánh giá xếp loại đối với cán bộ, viên chức, người lao động hằng năm.",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -248,7 +248,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-ii-dieu-14",
+        id: "chuong-ii-dieu-14", code: "chuong-ii-dieu-14",
         title: "Điều 14. Biểu mẫu",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -267,11 +267,11 @@ export const assessmentRegulationChapters: RegChapter[] = [
     ]
   },
   {
-    id: "chuong-iii",
+    id: "chuong-iii", code: "chuong-iii",
     title: "Chương III: TỔ CHỨC THỰC HIỆN",
     articles: [
       {
-        id: "chuong-iii-dieu-15",
+        id: "chuong-iii-dieu-15", code: "chuong-iii-dieu-15",
         title: "Điều 15. Trách nhiệm của viên chức, người lao động",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -282,7 +282,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-iii-dieu-16",
+        id: "chuong-iii-dieu-16", code: "chuong-iii-dieu-16",
         title: "Điều 16. Trách nhiệm của các phòng chuyên môn",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -295,7 +295,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-iii-dieu-17",
+        id: "chuong-iii-dieu-17", code: "chuong-iii-dieu-17",
         title: "Điều 17. Trách nhiệm của phòng Hành chính \- Tổng hợp",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">
@@ -306,7 +306,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         )
       },
       {
-        id: "chuong-iii-dieu-18",
+        id: "chuong-iii-dieu-18", code: "chuong-iii-dieu-18",
         title: "Điều 18. Điều khoản thi hành",
         content: (
           <div className="space-y-3 text-slate-700 dark:text-slate-300">

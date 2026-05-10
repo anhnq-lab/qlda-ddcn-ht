@@ -9,9 +9,12 @@ import { workflowTaskToTask } from '../../lib/dbMappers';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
 import { getStatusInfo, getPriorityInfo } from './TaskCreateEditModal';
 import { ProjectTaskModal } from '../projects/components/ProjectTaskModal';
+import ProjectDetail from '../projects/ProjectDetail';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { StatCard, EmptyState } from '../../components/ui';
 import { SkeletonStatCard } from '../../components/ui/Skeleton';
+import { KanbanBoard } from './components/KanbanBoard';
+import { TaskSlidePanel } from './components/TaskSlidePanel';
 import {
     Search, Plus, Calendar, User, CheckCircle2, Clock, AlertCircle,
     Trash2, Edit, Briefcase, Layers, ExternalLink, BarChart3, ChevronDown, ChevronUp,
@@ -241,22 +244,24 @@ const TaskList: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const openEditModal = (task: Task) => {
+    const openTaskPanel = (task: Task) => {
         openPanel({
             title: task.Title,
             icon: <CheckCircle2 className="w-5 h-5 text-blue-500" />,
             url: `/tasks/${task.TaskID}`,
-            component: (
-                <ProjectTaskModal
-                    isOpen={true}
-                    onClose={() => {/* panel close handled by SlidePanelContext */}}
-                    onSubmit={handleSave}
-                    initialData={{ ...task }}
-                    allTasks={tasks}
-                    asSlidePanel={true}
-                />
-            ),
+            component: <TaskSlidePanel taskId={task.TaskID} onClose={() => {/* context handles close */}} />,
+            maxWidth: 'max-w-4xl'
         });
+    };
+
+    const openEditModal = (task: Task) => {
+        setIsEditMode(true);
+        setCurrentTask(task);
+        setIsModalOpen(true);
+    };
+
+    const handleTaskStatusChange = async (taskId: string, newStatus: TaskStatus) => {
+        await updateTaskMutation.mutateAsync({ taskId, updates: { status: newStatus as any } });
     };
 
     const handleSave = async (taskData: Partial<Task>) => {
@@ -311,16 +316,15 @@ const TaskList: React.FC = () => {
             ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     {/* Total */}
-                    <div className="col-span-2 lg:col-span-1">
-                        <StatCard
-                            label="Tổng công việc"
-                            value={stats.total}
-                            icon={<Target className="w-5 h-5 flex-shrink-0" />}
-                            color="blue"
-                            progressPercentage={stats.completion}
-                            progressLabel="HOÀN THÀNH"
-                        />
-                    </div>
+                    <StatCard
+                        className="col-span-2 lg:col-span-1"
+                        label="Tổng công việc"
+                        value={stats.total}
+                        icon={<Target className="w-5 h-5 flex-shrink-0" />}
+                        color="blue"
+                        progressPercentage={stats.completion}
+                        progressLabel="HOÀN THÀNH"
+                    />
 
                     {/* In Progress */}
                     <StatCard
@@ -596,15 +600,22 @@ const TaskList: React.FC = () => {
                                             <tr className="bg-slate-50/80 dark:bg-slate-700 border-t-2 border-slate-200 dark:border-slate-600">
                                                 <td colSpan={10} className="px-4 py-2.5">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="p-1.5 rounded-lg shadow-lg" >
-                                                            <Briefcase className="w-3.5 h-3.5 text-white" />
+                                                        <div className="p-1.5 rounded-lg shadow-sm bg-indigo-100 dark:bg-indigo-500/20" >
+                                                            <FolderOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId)}</h3>
                                                             <p className="text-[10px] text-slate-400 dark:text-slate-400">{projectTasks.length} công việc</p>
                                                         </div>
                                                         <button
-                                                            onClick={(e) => { e.stopPropagation(); navigate(`/projects/${projectId}`, { state: { activeTab: 'plan' } }); }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openPanel({
+                                                                    component: <ProjectDetail projectId={projectId} inPanel={true} initialTab="plan" />,
+                                                                    title: `Kế hoạch: ${getProjectName(projectId)}`,
+                                                                    maxWidth: 'max-w-4xl'
+                                                                });
+                                                            }}
                                                             className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium transition-colors"
                                                         >
                                                             <ExternalLink className="w-3 h-3" />
@@ -626,7 +637,7 @@ const TaskList: React.FC = () => {
                                                 return (
                                                     <tr
                                                         key={task.TaskID}
-                                                        onClick={() => openEditModal(task)}
+                                                        onClick={() => openTaskPanel(task)}
                                                         className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700 ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
                                                     >
                                                         {/* Checkbox */}
@@ -650,7 +661,7 @@ const TaskList: React.FC = () => {
                                                             <div className="flex items-center gap-2 mb-0.5">
                                                                 <h4 className={`text-sm font-semibold group-hover:text-blue-600 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'
                                                                     }`}>
-                                                                    {task.Title}
+                                                                    {task.Title?.replace(/^(?:Phòng|Ban)\s+[^-]+-\s*/i, '')}
                                                                 </h4>
                                                                 {task.IsCritical && (
                                                                     <span className="shrink-0 text-[8px] font-black text-red-600 bg-red-100 px-1.5 py-0.5 rounded-md uppercase">Găng</span>
@@ -812,75 +823,16 @@ const TaskList: React.FC = () => {
                 )}
             </>) : (
                 /* ══════════ BOARD VIEW (Kanban-like columns) ══════════ */
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {[TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Review, TaskStatus.Done].map(status => {
-                        const statusInfo = getStatusInfo(status);
-                        const statusTasks = filteredTasks.filter(t => t.Status === status);
-                        return (
-                            <div key={status} className="space-y-3">
-                                <div className="flex items-center gap-2 px-1">
-                                    <div className={`w-2 h-2 rounded-full ${statusInfo.bg}`} />
-                                    <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{statusInfo.label}</h4>
-                                    <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full font-bold">{statusTasks.length}</span>
-                                </div>
-                                <div className="space-y-2 min-h-[200px]">
-                                    {statusTasks.map(task => {
-                                        const assignee = getAssignee(task.AssigneeID);
-                                        const priorityInfo = getPriorityInfo(task.Priority);
-                                        const progress = task.ProgressPercent || (task.Status === TaskStatus.Done ? 100 : 0);
-                                        const isOverdue = task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date();
-
-                                        return (
-                                            <div
-                                                key={task.TaskID}
-                                                onClick={() => openEditModal(task)}
-                                                className={`bg-bg-surface rounded-xl border p-4 cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all group ${isOverdue ? 'border-red-200 bg-red-50/30 dark:bg-red-900/10 dark:border-red-900/30' : 'border-slate-100 dark:border-slate-700'}`}
-                                            >
-                                                <div className="flex items-start justify-between gap-2 mb-2">
-                                                    <h4 className={`text-sm font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors ${task.Status === TaskStatus.Done ? 'text-slate-400' : 'text-slate-800 dark:text-slate-100'
-                                                        }`}>{task.Title}</h4>
-                                                    <span className={`shrink-0 w-1.5 h-1.5 rounded-full mt-1.5 ${priorityInfo.dot}`} />
-                                                </div>
-
-                                                {/* Progress */}
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <div className="flex-1 h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                                        <div
-                                                            className={`h-full rounded-full bg-gradient-to-r ${getProgressGradient(progress)} transition-all`}
-                                                            style={{ width: `${progress}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="text-[10px] font-bold text-slate-400">{progress}%</span>
-                                                </div>
-
-                                                <div className="flex items-center justify-between">
-                                                    {assignee ? (
-                                                        <img
-                                                            src={assignee.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee.FullName}&background=6366f1&color=fff&size=24`}
-                                                            alt=""
-                                                            className="w-6 h-6 rounded-full ring-2 ring-white shadow-lg"
-                                                        />
-                                                    ) : <div className="w-6" />}
-                                                    {task.DueDate && (
-                                                        <span className={`text-[10px] flex items-center gap-1 ${isOverdue ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
-                                                            <Calendar className="w-3 h-3" />
-                                                            {new Date(task.DueDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {statusTasks.length === 0 && (
-                                        <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl text-xs text-slate-300 dark:text-slate-400">
-                                            Không có công việc
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                <KanbanBoard 
+                    tasks={filteredTasks} 
+                    onTaskStatusChange={handleTaskStatusChange}
+                    onTaskClick={(taskId) => {
+                        const task = tasks.find(t => t.TaskID === taskId);
+                        if (task) openTaskPanel(task);
+                    }}
+                    getAssignee={getAssignee}
+                    getProjectName={getProjectName}
+                />
             )}
 
             {/* ══════════ MODAL ══════════ */}

@@ -179,8 +179,8 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const templates = getTaskTemplates(task.TimelineStep, task.Title);
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 min-h-screen animate-in fade-in duration-300">
-            <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
+        <div className={isPanel ? "animate-in fade-in duration-300" : "bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 min-h-screen animate-in fade-in duration-300"}>
+            <div className={isPanel ? "p-4 md:p-6 space-y-6" : "max-w-6xl mx-auto px-6 py-6 space-y-6"}>
 
                 {/* ══════════ BREADCRUMB ══════════ */}
                 {!isPanel && (

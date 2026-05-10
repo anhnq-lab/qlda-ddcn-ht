@@ -7,7 +7,7 @@ import { useSlidePanel } from '../../../context/SlidePanelContext';
 import NodeDetailPanel from './NodeDetailPanel';
 import { SubTaskDetailPanel } from './SubTaskDetailPanel';
 import LegalDocumentSearch from '../../legal-documents/LegalDocumentSearch';
-import { legalDocuments } from '../../legal-documents/legalData';
+
 import { parseSla, resolveLegalReference } from '../utils/workflowUtils';
 
 interface WorkflowSlidePanelProps {
@@ -41,7 +41,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
     const importFileRef = React.useRef<HTMLInputElement>(null);
 
     const handleOpenLegalSearch = (basisText: string) => {
-        const target = resolveLegalReference(basisText, (legalDocuments as any));
+        const target = resolveLegalReference(basisText);
         openPanel({
             id: target.docId ? 'legal-search-parsed' : 'legal-search',
             title: 'Tra cứu pháp luật',

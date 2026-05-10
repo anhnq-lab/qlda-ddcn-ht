@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { Employee } from '../types';
 import { supabase } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
@@ -139,6 +139,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [contractorId, setContractorId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Add fetching ref to prevent concurrent duplicate profile requests
+    const fetchingProfileRef = useRef<string | null>(null);
+
     const handleAuthUser = useCallback(async (authUser: User | null) => {
         if (!authUser) {
             setCurrentUser(null);
@@ -148,10 +151,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return;
         }
 
+        // Prevent double fetching for the same user (fixes concurrent RPC calls)
+        if (fetchingProfileRef.current === authUser.id) {
+            return;
+        }
+        fetchingProfileRef.current = authUser.id;
+
         setSupabaseUser(authUser);
 
         // Single RPC call to resolve user profile (employee or contractor)
         const profile = await fetchUserProfile(authUser.id);
+
+        fetchingProfileRef.current = null;
 
         if (profile.user) {
             setCurrentUser(profile.user);
@@ -186,10 +197,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Safety timeout
         const timeout = setTimeout(() => {
             if (mounted && isLoading) {
-                console.warn('[Auth] Session check timed out after 6s');
+                console.warn('[Auth] Session check timed out after 4s - forcing release');
                 setIsLoading(false);
             }
-        }, 6000);
+        }, 4000);
 
         const initAuth = async () => {
             try {
@@ -248,10 +259,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Listen for auth changes (login/logout/token refresh)
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (_event, newSession) => {
+            (event, newSession) => {
                 if (!mounted) return;
+                // Ignore INITIAL_SESSION as we already handle it in initAuth()
+                if (event === 'INITIAL_SESSION') return;
+
                 setSession(newSession);
-                await handleAuthUser(newSession?.user ?? null);
+                // Do not await here! Awaiting RPC calls inside auth listener causes deadlocks with Supabase navigator.locks
+                handleAuthUser(newSession?.user ?? null).catch(err => {
+                    console.error('[Auth] Error handling auth state change:', err);
+                });
             }
         );
 

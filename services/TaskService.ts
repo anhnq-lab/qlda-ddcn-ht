@@ -61,7 +61,7 @@ export const TaskService = {
   getAllTasks: async (projectIds?: string[]): Promise<DbTask[]> => {
     let query = supabase
       .from('tasks')
-      .select('*')
+      .select('*, projects(project_name)')
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });
 
@@ -187,6 +187,22 @@ export const TaskService = {
     return { total: total || 0, done: done || 0 };
   },
 
+  // ─── COLLABORATION READ ──────────────────────────────────
+  
+  /** Lấy bình luận của 1 task */
+  getTaskComments: async (taskId: string) => {
+    const { data, error } = await supabase.rpc('get_task_comments_v2', { p_task_id: taskId });
+    if (error) throw error;
+    return data || [];
+  },
+  
+  /** Lấy nhật ký hoạt động của 1 task */
+  getTaskActivities: async (taskId: string) => {
+    const { data, error } = await supabase.rpc('get_task_activities_v2', { p_task_id: taskId });
+    if (error) throw error;
+    return data || [];
+  },
+
   // ─── WRITE ───────────────────────────────────────────────
 
   /** Tạo task mới */
@@ -251,7 +267,7 @@ export const TaskService = {
       delete payload.metadata.sub_tasks;
     }
 
-    const { data: currentTask } = await supabase.from('tasks').select('project_id, task_type').eq('id', taskId).maybeSingle();
+    const { data: currentTask } = await (supabase as any).from('tasks').select('project_id, task_type').eq('id', taskId).maybeSingle();
 
     const { data, error } = await supabase
       .from('tasks')
@@ -372,6 +388,27 @@ export const TaskService = {
   deleteSubTask: async (subTaskId: string): Promise<void> => {
     const { error } = await (supabase as any).from('sub_tasks').delete().eq('id', subTaskId);
     if (error) throw error;
+  },
+
+  // ─── COLLABORATION WRITE ─────────────────────────────────
+  
+  /** Thêm bình luận mới */
+  addComment: async (taskId: string, content: string, attachments: any[] = []) => {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) throw new Error("Chưa đăng nhập");
+    
+    const { data, error } = await supabase
+      .from('task_comments')
+      .insert({
+        task_id: taskId,
+        user_id: userData.user.id,
+        content,
+        attachments
+      })
+      .select('*, user:auth.users!user_id(id, email, raw_user_meta_data)')
+      .single();
+    if (error) throw error;
+    return data;
   },
 
   // ─── WORKFLOW INTEGRATION ────────────────────────────────

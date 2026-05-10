@@ -129,41 +129,4 @@ export function usePrefetchDocument() {
     }, [queryClient]);
 }
 
-// ------------------------------------------------------------------ //
-// Adapter: convertToLegacyFormat
-// Converts LegalDocumentDB → shape expected by existing sub-components
-// (LegalDetail, LegalSidebar, LegalTOC, LegalHeader)
-// This lets us avoid rewriting all sub-components at once.
-// ------------------------------------------------------------------ //
-export function convertToLegacyDoc(doc: LegalDocumentDB) {
-    return {
-        id: doc.id,
-        code: doc.code,
-        title: doc.title,
-        shortTitle: doc.short_title,
-        type: doc.type,
-        issuedDate: doc.issued_date,
-        effectiveDate: doc.effective_date,
-        issuedBy: doc.issued_by,
-        status: doc.status,
-        summary: doc.summary,
-        fileName: doc.file_name,
-        filePath: doc.file_path,
-        fileSize: doc.file_size,
-        tags: doc.tags,
-        relatedDocIds: doc.related_doc_ids,
-        chapters: (doc.chapters ?? []).map(ch => ({
-            id: ch.id,
-            code: ch.code,
-            title: ch.title,
-            articles: (ch.articles ?? []).map(art => ({
-                id: art.id,
-                code: art.code,
-                title: art.title,
-                summary: art.summary,
-                content: art.content,
-                fullContent: art.full_content,
-            })),
-        })),
-    };
-}
+

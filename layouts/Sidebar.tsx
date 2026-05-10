@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* ── Logo & Brand ── */}
       <div className="flex flex-col h-full overflow-hidden">
-        <div className={`relative p-4 flex items-center justify-between ${isCollapsed ? 'md:px-3 md:justify-center' : ''} border-b border-slate-100 dark:border-slate-800`}>
+        <div className={`relative h-16 px-4 shrink-0 flex items-center justify-between ${isCollapsed ? 'md:px-3 md:justify-center' : ''} border-b border-slate-100 dark:border-slate-800`}>
           {/* Subtle gradient accent line at bottom */}
           <div className="absolute bottom-0 left-4 right-4 h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
 

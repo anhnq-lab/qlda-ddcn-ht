@@ -116,7 +116,7 @@ export class ProjectService {
     }> {
         return withRetry(async () => {
             // Fetch necessary columns for stats
-            let query = supabase.from('projects').select('status, current_status_code, group_code, management_board');
+            let query = (supabase as any).from('projects').select('status, current_status_code, group_code, management_board');
             
             // Apply all filters EXCEPT the ones we are counting
             const statParams = { ...params };

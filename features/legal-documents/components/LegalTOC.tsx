@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { AlignLeft, Hash, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
-import { LegalDocument } from '../legalData';
+import { LegalDocumentDB } from '../../../services/LegalDocumentService';
 
 interface LegalTOCProps {
-    selectedDoc: LegalDocument;
+    selectedDoc: LegalDocumentDB;
     scrollToArticle: (articleId: string, chapterId: string) => void;
     setExpandedChapters: React.Dispatch<React.SetStateAction<Set<string>>>;
     activeArticleId?: string | null;
 }
 
 export const LegalTOC: React.FC<LegalTOCProps> = ({ selectedDoc, scrollToArticle, setExpandedChapters, activeArticleId }) => {
+    const chapters = selectedDoc.chapters || [];
     const [expandedTocChapters, setExpandedTocChapters] = useState<Set<string>>(
-        new Set(selectedDoc.chapters.map(c => c.id))
+        new Set(chapters.map(c => c.id))
     );
 
     const toggleTocChapter = (chapterId: string) => {
@@ -32,13 +33,13 @@ export const LegalTOC: React.FC<LegalTOCProps> = ({ selectedDoc, scrollToArticle
                     Mục lục văn bản
                 </span>
                 <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 font-medium">
-                    {selectedDoc.chapters.length} chương · {selectedDoc.chapters.reduce((s, c) => s + c.articles.length, 0)} điều
+                    {chapters.length} chương · {chapters.reduce((s, c) => s + (c.articles?.length || 0), 0)} điều
                 </p>
             </div>
 
             {/* Chapters & Articles */}
             <div className="flex-1 p-3 space-y-1">
-                {selectedDoc.chapters.map(ch => {
+                {chapters.map(ch => {
                     const isChExpanded = expandedTocChapters.has(ch.id);
                     return (
                         <div key={`toc-${ch.id}`} className="mb-1">
@@ -62,7 +63,7 @@ export const LegalTOC: React.FC<LegalTOCProps> = ({ selectedDoc, scrollToArticle
                             {/* Articles list */}
                             {isChExpanded && (
                                 <div className="ml-4 pl-3 border-l-2 border-indigo-100 dark:border-indigo-900/40 space-y-0.5 mt-1 mb-2">
-                                    {ch.articles.map(art => {
+                                    {(ch.articles || []).map(art => {
                                         const isActive = activeArticleId === art.id;
                                         return (
                                             <button

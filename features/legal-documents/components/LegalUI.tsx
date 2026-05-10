@@ -1,9 +1,9 @@
 import React from 'react';
 import { Landmark, Gavel, ScrollText, ShieldCheck, FileText, ChevronRight } from 'lucide-react';
 import {
-    LegalDocument, FlatArticle, DocType,
+    LegalDocumentDB, DocType,
     DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS
-} from '../legalData';
+} from '../../../services/LegalDocumentService';
 
 // ============================================
 // TYPE ICON MAP
@@ -16,7 +16,8 @@ export const TYPE_ICONS: Record<DocType, React.ElementType> = {
 // ============================================
 // HIGHLIGHT TEXT
 // ============================================
-export const HighlightText: React.FC<{ text: string; query: string }> = ({ text, query }) => {
+export const HighlightText: React.FC<{ text: string | null; query: string }> = ({ text, query }) => {
+    if (!text) return null;
     if (!query.trim()) return <>{text}</>;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
@@ -37,7 +38,7 @@ export const HighlightText: React.FC<{ text: string; query: string }> = ({ text,
 // DOCUMENT CARD (SIDEBAR)
 // ============================================
 export const DocSidebarItem: React.FC<{
-    doc: LegalDocument; isSelected: boolean; onClick: () => void;
+    doc: LegalDocumentDB; isSelected: boolean; onClick: () => void;
     articleCount: { chapters: number; articles: number };
 }> = ({ doc, isSelected, onClick, articleCount }) => {
     const typeColor = DOC_TYPE_COLORS[doc.type];
@@ -67,7 +68,7 @@ export const DocSidebarItem: React.FC<{
                         </span>
                     </div>
                     <p className={`text-xs font-bold leading-snug line-clamp-2 ${isSelected ? 'text-gray-900 dark:text-slate-100' : 'text-gray-600 dark:text-slate-400'}`}>
-                        {doc.shortTitle}
+                        {doc.short_title || doc.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                         <p className={`text-[10px] font-medium ${isSelected ? 'text-gray-500 dark:text-slate-400' : 'text-gray-400 dark:text-slate-400'}`}>
@@ -89,8 +90,17 @@ export const DocSidebarItem: React.FC<{
 // ============================================
 // DEEP SEARCH RESULT
 // ============================================
+export interface DeepSearchItem {
+    docId: string;
+    chapterId: string;
+    articleId: string;
+    articleCode: string;
+    articleTitle: string;
+    snippet: string;
+}
+
 export const DeepSearchResult: React.FC<{
-    result: FlatArticle; query: string;
+    result: DeepSearchItem; query: string;
     onNavigate: (docId: string, chapterId: string) => void;
 }> = ({ result, query, onNavigate }) => (
     <button
@@ -98,15 +108,16 @@ export const DeepSearchResult: React.FC<{
         className="w-full text-left p-3 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
     >
         <div className="flex items-center gap-2 mb-1">
-            <span className="text-[9px] font-black uppercase tracking-wider text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">{result.docTitle}</span>
-            <span className="text-[9px] font-bold text-gray-400 dark:text-slate-400">{result.chapterCode}</span>
+            <span className="text-[9px] font-black uppercase tracking-wider text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">
+                Kết quả tìm kiếm
+            </span>
         </div>
         <p className="text-xs font-bold text-gray-700 dark:text-slate-300">
-            <span className="font-mono text-[10px] text-gray-400 mr-1">{result.article.code}</span>
-            <HighlightText text={result.article.title} query={query} />
+            <span className="font-mono text-[10px] text-gray-400 mr-1">{result.articleCode}</span>
+            <HighlightText text={result.articleTitle} query={query} />
         </p>
         <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
-            <HighlightText text={result.article.summary} query={query} />
+            <HighlightText text={result.snippet} query={query} />
         </p>
     </button>
 );

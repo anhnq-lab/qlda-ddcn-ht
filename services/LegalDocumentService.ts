@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LegalDocumentService â€” Replaces static legalData.ts (2.1MB)
  * All legal document data is now fetched from Supabase.
  */
@@ -74,17 +74,17 @@ export interface LegalDocumentSearchResult {
 }
 
 export const DOC_TYPE_LABELS: Record<DocType, string> = {
-    'luat': 'Luáº­t',
-    'nghi-dinh': 'Nghá»‹ Ä‘á»‹nh',
-    'thong-tu': 'ThÃ´ng tÆ°',
+    'luat': 'Luật',
+    'nghi-dinh': 'Nghị định',
+    'thong-tu': 'Thông tư',
     'qcvn': 'QCVN/TCVN',
-    'quyet-dinh': 'Quyáº¿t Ä‘á»‹nh',
+    'quyet-dinh': 'Quyết định',
 };
 
 export const DOC_STATUS_LABELS: Record<DocStatus, string> = {
-    'hieu-luc': 'CÃ²n hiá»‡u lá»±c',
-    'het-hieu-luc': 'Háº¿t hiá»‡u lá»±c',
-    'sap-hieu-luc': 'Sáº¯p cÃ³ hiá»‡u lá»±c',
+    'hieu-luc': 'Còn hiệu lực',
+    'het-hieu-luc': 'Hết hiệu lực',
+    'sap-hieu-luc': 'Sắp có hiệu lực',
 };
 
 export const DOC_TYPE_COLORS: Record<DocType, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
@@ -120,10 +120,8 @@ export const LegalDocumentService = {
         if (status) query = query.eq('status', status);
 
         if (searchQuery.trim()) {
-            // Server-side search on title, code, summary, tags
-            query = query.or(
-                `title.ilike.%${searchQuery}%,code.ilike.%${searchQuery}%,summary.ilike.%${searchQuery}%,issued_by.ilike.%${searchQuery}%`
-            );
+            // Server-side Full Text Search (FTS) using the generated 'fts' tsvector column
+            query = query.textSearch('fts', searchQuery, { type: 'websearch', config: 'simple' });
         }
 
         const { data, error, count } = await query;
