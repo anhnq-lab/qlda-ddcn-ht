@@ -24,10 +24,10 @@ import {
     DISBURSEMENT_TYPE_LABELS, normalizeSource
 } from '../../../../utils/capitalConstants';
 import {
-    useCapitalPlans,
+    useProjectCapitalSummary,
     useCreateCapitalPlan, useUpdateCapitalPlan, useDeleteCapitalPlan,
     useCreateDisbursement, useUpdateDisbursement, useDeleteDisbursement,
-    useDisbursementPlans, useBulkSaveDisbursementPlans, useDeleteDisbursementPlan,
+    useBulkSaveDisbursementPlans, useDeleteDisbursementPlan,
 } from '../../../../hooks/useCapital';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -65,14 +65,12 @@ const TYPE_LABELS = DISBURSEMENT_TYPE_LABELS;
 type DisbursementFilter = 'all' | 'TamUng' | 'ThanhToanKLHT' | 'ThuHoiTamUng';
 
 export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID }) => {
-    const { data, isLoading } = useQuery({
-        queryKey: ['project-capital', projectID],
-        queryFn: () => ProjectService.getCapitalInfo(projectID)
-    });
-
-    // Capital plans for linking in DisbursementModal
-    const { data: capitalPlans = [] } = useCapitalPlans(projectID);
-    const { data: disbursementPlanData = [] } = useDisbursementPlans(projectID);
+    // Single source of truth cho dữ liệu giải ngân dự án
+    const { data: capitalSummary, isLoading } = useProjectCapitalSummary(projectID);
+    
+    // Gán dữ liệu tương thích với UI hiện tại
+    const capitalPlans = capitalSummary?.capitalPlans ?? [];
+    const disbursementPlanData = capitalSummary?.disbursementPlans ?? [];
 
     // Project tasks for "Việc trong tháng" column
     const { data: projectTasks = [] } = useQuery({
@@ -174,9 +172,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     };
 
     // Safe destructure — hooks must always run regardless of data
-    const allocations = data?.allocations ?? [];
-    const disbursements = data?.disbursements ?? [];
-    const summary = data?.summary ?? {
+    const allocations = capitalSummary?.capitalPlans ?? [];
+    const disbursements = capitalSummary?.disbursements ?? [];
+    const summary = capitalSummary?.summary ?? {
         totalInvestment: 0, totalAllocated: 0, totalDisbursed: 0,
         totalAdvance: 0, advanceRecovered: 0, advanceBalance: 0,
         completionPayment: 0, disbursementRate: 0, yearlyTarget: 0, yearlyDisbursed: 0,

@@ -48,6 +48,9 @@ export interface CDEDocument {
     priority: string;
     is_digitized: boolean;
     created_at: string;
+    version_group_id?: string;
+    file_hash?: string;
+    is_latest?: boolean;
 }
 
 export interface CDEWorkflowEntry {

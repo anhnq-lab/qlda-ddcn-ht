@@ -274,60 +274,50 @@ export class CDEService {
      * Get revision history for a document (all versions sharing same doc_name pattern).
      */
     static async getRevisions(docId: number): Promise<Array<{
-        version: string; revision: string; date: string;
+        doc_id: number; version: string; revision: string; date: string;
         author: string; reason: string; size: string; storagePath?: string;
+        is_latest?: boolean;
     }>> {
         // Get the current document
         const { data: currentDoc } = await supabase
             .from('documents')
-            .select('doc_name, project_id, cde_folder_id')
+            .select('doc_name, project_id, folder_id, version_group_id')
             .eq('doc_id', docId)
             .single();
 
         if (!currentDoc) return [];
 
-        // Get workflow history to build revision entries
-        const { data: wfHistory } = await supabase
-            .from('cde_workflow_history')
-            .select('*')
-            .eq('doc_id', docId)
-            .order('created_at', { ascending: false });
+        let docs = [];
 
-        // Build revision list from workflow history
-        const revisions: Array<{
-            version: string; revision: string; date: string;
-            author: string; reason: string; size: string; storagePath?: string;
-        }> = [];
-
-        // Add entries for each workflow step
-        if (wfHistory && wfHistory.length > 0) {
-            const statusVersionMap: Record<string, string> = {
-                'SUBMIT': 'P01.01', 'CHECK': 'P01.02', 'APPRAISE': 'P01.03',
-                'APPROVE': 'C01.01', 'SIGN': 'C01.02',
-            };
-            wfHistory.forEach(wf => {
-                revisions.push({
-                    version: statusVersionMap[wf.step_code] || 'P01.01',
-                    revision: wf.step_code.startsWith('A') || wf.step_code === 'SIGN' || wf.step_code === 'APPROVE' ? 'C01' : 'P01',
-                    date: new Date(wf.created_at || '').toLocaleDateString('vi-VN'),
-                    author: wf.actor_name,
-                    reason: `${wf.step_name} — ${wf.status}${wf.comment ? `: ${wf.comment}` : ''}`,
-                    size: '—',
-                });
-            });
+        if (currentDoc.version_group_id) {
+            // Get all documents in the same version group
+            const { data } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('version_group_id', currentDoc.version_group_id)
+                .order('created_at', { ascending: false });
+            docs = data || [];
+        } else {
+            // Fallback for old documents without version_group_id
+            const { data } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('doc_id', docId);
+            docs = data || [];
         }
 
-        // Always add initial version if no history
-        if (revisions.length === 0) {
-            revisions.push({
-                version: 'P01.01',
-                revision: 'P01',
-                date: new Date().toLocaleDateString('vi-VN'),
-                author: '—',
-                reason: 'Phiên bản đầu tiên',
-                size: '—',
-            });
-        }
+        // Build revision list from actual documents
+        const revisions = docs.map(doc => ({
+            doc_id: doc.doc_id,
+            version: doc.version || 'P01.01',
+            revision: doc.revision || 'P01',
+            date: new Date(doc.upload_date || doc.created_at || '').toLocaleDateString('vi-VN'),
+            author: doc.uploaded_by || '—',
+            reason: doc.notes || 'Cập nhật phiên bản',
+            size: doc.size || '—',
+            storagePath: doc.storage_path,
+            is_latest: doc.is_latest,
+        }));
 
         return revisions;
     }
@@ -465,38 +455,106 @@ export class CDEService {
      * Get stats for a project's CDE.
      */
     static async getStats(projectId: string): Promise<CDEStats> {
-        const baseQuery = supabase.from('documents')
-            .select('*', { count: 'exact', head: true })
+        const { data, error } = await supabase
+            .from('cde_project_stats_view')
+            .select('*')
             .eq('project_id', projectId)
-            .not('cde_folder_id', 'is', null);
+            .maybeSingle();
 
-        // Fetch counts in parallel without downloading any rows
-        const [totalRes, wipRes, sharedRes, publishedRes, archivedRes] = await Promise.all([
-            supabase.from('documents').select('*', { count: 'exact', head: true })
-                .eq('project_id', projectId).not('cde_folder_id', 'is', null),
-            supabase.from('documents').select('*', { count: 'exact', head: true })
-                .eq('project_id', projectId).not('cde_folder_id', 'is', null)
-                .or('iso_status.eq.WIP,iso_status.is.null'),
-            supabase.from('documents').select('*', { count: 'exact', head: true })
-                .eq('project_id', projectId).not('cde_folder_id', 'is', null)
-                .eq('iso_status', 'SHARED'),
-            supabase.from('documents').select('*', { count: 'exact', head: true })
-                .eq('project_id', projectId).not('cde_folder_id', 'is', null)
-                .eq('iso_status', 'PUBLISHED'),
-            supabase.from('documents').select('*', { count: 'exact', head: true })
-                .eq('project_id', projectId).not('cde_folder_id', 'is', null)
-                .eq('iso_status', 'ARCHIVED')
-        ]);
-
-        if (totalRes.error) throw new Error(`Failed to fetch stats: ${totalRes.error.message}`);
+        if (error) throw new Error(`Failed to fetch stats: ${error.message}`);
 
         return {
-            total: totalRes.count || 0,
-            wip: wipRes.count || 0,
-            shared: sharedRes.count || 0,
-            published: publishedRes.count || 0,
-            archived: archivedRes.count || 0,
+            total: data?.total || 0,
+            wip: data?.wip || 0,
+            shared: data?.shared || 0,
+            published: data?.published || 0,
+            archived: data?.archived || 0,
         };
+    }
+
+    /**
+     * Resumable Upload (TUS) implementation for large files.
+     * Used for files > 50MB (BIM, CAD).
+     */
+    static async uploadLargeDocument(
+        file: File,
+        projectId: string,
+        folderId: string,
+        metadata: { doc_name: string; category?: number; doc_type?: string },
+        onProgress?: (bytesUploaded: number, bytesTotal: number) => void
+    ): Promise<string> {
+        // We dynamically import tus so it doesn't break SSR/bundler if not needed immediately
+        const tus = await import('tus-js-client');
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Not authenticated');
+
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+        const endpoint = `${supabaseUrl}/storage/v1/upload/resumable`;
+        
+        // Ensure path uniqueness
+        const path = `cde/${projectId}/${folderId}/${Date.now()}_${file.name}`;
+
+        return new Promise((resolve, reject) => {
+            const upload = new tus.Upload(file, {
+                endpoint,
+                retryDelays: [0, 3000, 5000, 10000, 20000],
+                headers: {
+                    authorization: `Bearer ${session.access_token}`,
+                    'x-upsert': 'true',
+                },
+                uploadDataDuringCreation: true,
+                removeFingerprintOnSuccess: true,
+                metadata: {
+                    bucketName: 'documents',
+                    objectName: path,
+                    contentType: file.type || 'application/octet-stream',
+                },
+                chunkSize: 6 * 1024 * 1024, // 6MB chunk size
+                onError: (error) => {
+                    console.error('TUS Upload Error:', error);
+                    reject(error);
+                },
+                onProgress: (bytesUploaded, bytesTotal) => {
+                    if (onProgress) onProgress(bytesUploaded, bytesTotal);
+                },
+                onSuccess: async () => {
+                    try {
+                        const { data: urlData } = supabase.storage.from('documents').getPublicUrl(path);
+                        
+                        // Calculate a fast pseudo-hash for deduplication, or leave empty if not available
+                        const fileHash = `${file.size}-${file.lastModified}-${file.name}`;
+
+                        // Insert DB record
+                        const { data, error } = await supabase.from('documents').insert({
+                            project_id: projectId,
+                            folder_id: folderId,
+                            doc_name: metadata.doc_name,
+                            storage_path: urlData.publicUrl,
+                            size: formatFileSize(file.size),
+                            category: metadata.category || 0,
+                            doc_type: metadata.doc_type,
+                            is_digitized: true,
+                            iso_status: 'WIP',
+                            file_hash: fileHash,
+                            is_latest: true,
+                        }).select('doc_id').single();
+
+                        if (error) throw error;
+                        resolve(urlData.publicUrl);
+                    } catch (err) {
+                        reject(err);
+                    }
+                },
+            });
+
+            upload.findPreviousUploads().then(function (previousUploads) {
+                if (previousUploads.length) {
+                    upload.resumeFromPreviousUpload(previousUploads[0]);
+                }
+                upload.start();
+            });
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════

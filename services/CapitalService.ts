@@ -438,6 +438,144 @@ export class CapitalService {
         return advance + completion - recovered;
     }
 
+    /**
+     * [SINGLE SOURCE OF TRUTH] Get project capital summary — used by both
+     * ProjectCapitalTab and MidTermCapitalPage to avoid dual data model.
+     * 
+     * Logic ưu tiên:
+     * 1. Nếu có disbursements records → tính từ disbursements (chính xác nhất)
+     * 2. Nếu không có disbursements → dùng capital_plans.disbursed_amount (dữ liệu import)
+     * 
+     * Điều này đảm bảo dữ liệu import từ Excel vẫn hiển thị đúng ngay cả khi
+     * chưa có giao dịch giải ngân chi tiết nào.
+     */
+    static async getProjectCapitalSummary(projectId: string): Promise<{
+        capitalPlans: CapitalPlan[];
+        disbursements: Disbursement[];
+        disbursementPlans: DisbursementPlanItem[];
+        summary: {
+            totalInvestment: number;
+            totalAllocated: number;
+            totalDisbursed: number;
+            totalAdvance: number;
+            advanceRecovered: number;
+            advanceBalance: number;
+            completionPayment: number;
+            disbursementRate: number;
+            yearlyTarget: number;
+            yearlyDisbursed: number;
+        };
+    }> {
+        const [plansRes, disbRes, disbPlanRes, projectRes] = await Promise.all([
+            supabase.from('capital_plans').select('*').eq('project_id', projectId).order('year', { ascending: true }),
+            supabase.from('disbursements').select('*').eq('project_id', projectId).order('date', { ascending: true }),
+            (supabase as any).from('disbursement_plans').select('*').eq('project_id', projectId).order('year').order('month'),
+            supabase.from('projects').select('total_investment').eq('project_id', projectId).maybeSingle(),
+        ]);
+
+        const capitalPlans: CapitalPlan[] = (plansRes.data || []).map(this.mapCapitalPlan.bind(this));
+        const rawDisbs = disbRes.data || [];
+
+        const normalizeStatus = (s: string): 'Pending' | 'Approved' | 'Rejected' => {
+            const lower = (s || '').toLowerCase();
+            if (lower === 'approved' || lower === 'completed') return 'Approved';
+            if (lower === 'pending') return 'Pending';
+            return 'Rejected';
+        };
+
+        const disbursements: Disbursement[] = rawDisbs.map((row: any) => ({
+            DisbursementID: row.disbursement_id,
+            ProjectID: row.project_id,
+            CapitalPlanID: row.capital_plan_id || undefined,
+            AllocationID: row.capital_plan_id || undefined,
+            PaymentID: row.payment_id || undefined,
+            Amount: Number(row.amount) || 0,
+            Date: row.date,
+            TreasuryCode: row.treasury_code || '',
+            FormType: row.form_type || '',
+            Description: row.description || '',
+            Status: normalizeStatus(row.status),
+            Type: row.type || 'ThanhToanKLHT',
+            ContractNumber: row.contract_number || '',
+            CumulativeBefore: Number(row.cumulative_before) || 0,
+            AdvanceBalance: Number(row.advance_balance) || 0,
+        }));
+
+        const disbursementPlans: DisbursementPlanItem[] = (disbPlanRes.data || []).map(this.mapDisbursementPlan.bind(this));
+
+        // === CORE LOGIC: Tính disbursed_amount cho từng capital plan ===
+        // Ưu tiên 1: disbursements table (giao dịch chi tiết)
+        // Ưu tiên 2: capital_plans.disbursed_amount (dữ liệu import tổng hợp)
+        const hasDetailedDisbursements = disbursements.length > 0;
+
+        capitalPlans.forEach(plan => {
+            if (hasDetailedDisbursements) {
+                // Tính từ disbursements chi tiết
+                const relatedDisbs = disbursements.filter(d => {
+                    if (plan.PlanType === 'annual') {
+                        return new Date(d.Date).getFullYear() === plan.Year;
+                    } else if (plan.PlanType === 'mid_term') {
+                        const y = new Date(d.Date).getFullYear();
+                        return y >= (plan.PeriodStart || 0) && y <= (plan.PeriodEnd || 9999);
+                    }
+                    return false;
+                });
+                if (relatedDisbs.length > 0) {
+                    plan.DisbursedAmount = this.calculateTrueDisbursed(relatedDisbs);
+                }
+                // Nếu không có disbursements cho plan này → giữ nguyên DB value (import snapshot)
+            }
+            // Nếu không có disbursements table data → dùng capital_plans.disbursed_amount (đã được map sẵn)
+        });
+
+        // Summary calculations
+        const totalInvestment = Number(projectRes.data?.total_investment) || 0;
+        const annualPlans = capitalPlans.filter(p => p.PlanType === 'annual');
+        const totalAllocated = annualPlans.reduce((s, p) => s + (p.Amount || 0), 0);
+
+        let totalDisbursed: number;
+        let totalAdvance: number;
+        let advanceRecovered: number;
+        let completionPayment: number;
+
+        if (hasDetailedDisbursements) {
+            totalDisbursed = this.calculateTrueDisbursed(disbursements);
+            totalAdvance = disbursements.filter(d => d.Type === 'TamUng' && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
+            advanceRecovered = disbursements.filter(d => d.Type === 'ThuHoiTamUng' && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
+            completionPayment = disbursements.filter(d => (d.Type === 'ThanhToanKLHT' || d.Type === 'ThanhToanTT') && d.Status === 'Approved').reduce((s, d) => s + d.Amount, 0);
+        } else {
+            // Dùng tổng hợp từ capital_plans.disbursed_amount
+            totalDisbursed = annualPlans.reduce((s, p) => s + (p.DisbursedAmount || 0), 0);
+            totalAdvance = 0;
+            advanceRecovered = 0;
+            completionPayment = totalDisbursed;
+        }
+
+        const currentYear = new Date().getFullYear();
+        const yearlyTarget = annualPlans.filter(p => p.Year === currentYear).reduce((s, p) => s + (p.Amount || 0), 0);
+        const yearlyDisbursed = hasDetailedDisbursements
+            ? this.calculateTrueDisbursed(disbursements.filter(d => new Date(d.Date).getFullYear() === currentYear))
+            : (annualPlans.find(p => p.Year === currentYear)?.DisbursedAmount || 0);
+
+        return {
+            capitalPlans,
+            disbursements,
+            disbursementPlans,
+            summary: {
+                totalInvestment,
+                totalAllocated,
+                totalDisbursed,
+                totalAdvance,
+                advanceRecovered,
+                advanceBalance: totalAdvance - advanceRecovered,
+                completionPayment,
+                disbursementRate: totalAllocated > 0 ? Math.round((totalDisbursed / totalAllocated) * 100) : 0,
+                yearlyTarget,
+                yearlyDisbursed,
+            },
+        };
+    }
+
     /** Fetch all capital plans with project names joined and actual disbursements computed */
     static async fetchAllCapitalPlans(): Promise<CapitalPlanRow[]> {
         const [
@@ -469,9 +607,10 @@ export class CapitalService {
             
             return {
                 ...p,
+                plan_type: p.plan_type || 'annual',
                 project_name: pm.get(p.project_id) || p.project_id,
                 source: normalizeSource(p.source),
-                disbursed_amount: this.calculateTrueDisbursed(relatedDisbs)
+                disbursed_amount: relatedDisbs.length > 0 ? this.calculateTrueDisbursed(relatedDisbs) : (Number(p.disbursed_amount) || 0)
             };
         });
     }

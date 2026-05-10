@@ -46,6 +46,22 @@ export const useCapitalAlerts = (projectId: string) => {
     });
 };
 
+/**
+ * [PRIMARY HOOK] Single source of truth for project capital data.
+ * Replaces both useCapitalStats + useCapitalPlans + useDisbursements with one cached call.
+ * Used by ProjectCapitalTab and (optionally) MidTermCapitalPage project drill-down.
+ */
+export const useProjectCapitalSummary = (projectId: string) => {
+    return useQuery({
+        queryKey: ['project-capital-summary', projectId],
+        queryFn: () => CapitalService.getProjectCapitalSummary(projectId),
+        enabled: !!projectId,
+        staleTime: 30_000, // 30s cache — balance between freshness and performance
+    });
+};
+
+
+
 // ═══════════════════════════════════════════════════════════
 // MUTATIONS — Capital Plans
 // ═══════════════════════════════════════════════════════════
@@ -55,6 +71,10 @@ const CAPITAL_QUERY_KEYS = (projectId: string) => [
     ['capitalStats', projectId],
     ['capitalAlerts', projectId],
     ['project-capital', projectId],
+    ['project-capital-summary', projectId],
+    ['all-capital-plans'],
+    ['all-disb-plans'],
+    ['all-disbursements'],
 ];
 
 export const useCreateCapitalPlan = () => {

@@ -9,9 +9,13 @@ import * as XLSX from 'xlsx';
 import {
     CalendarRange, Calendar, Landmark, TrendingUp, AlertTriangle,
     ChevronDown, ChevronRight, Search, Building2, ArrowRight, DollarSign,
-    BarChart3, TrendingDown, ArrowUpDown, Download, Filter, X, BookOpen, FileText
+    BarChart3, TrendingDown, ArrowUpDown, Download, Filter, X, BookOpen, FileText, Upload
 } from 'lucide-react';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+} from 'recharts';
 import { StatCard } from '../../components/ui';
+import { CapitalImportModal } from './CapitalImportModal';
 import { APPROVAL_BADGES, SOURCE_LABELS, normalizeSource, MONTHS } from '../../utils/capitalConstants';
 
 // ═══════════════════════════════════════════════════
@@ -111,6 +115,7 @@ const CapitalPlanningPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
     const [sourceFilter, setSourceFilter] = useState<string>('all');
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     const { data: allPlans = [], isLoading: loadingPlans } = useQuery<CapitalPlanRow[]>({
         queryKey: ['all-capital-plans'],
@@ -148,6 +153,34 @@ const CapitalPlanningPage: React.FC = () => {
 
     // Current displayed data (for export)
     const currentExportData = activeTab === 'mid_term' ? filteredMidTerm : filteredAnnual.filter((p: any) => p.year === yearFilter);
+
+    // Chart Data (Aggregated by Year)
+    const chartData = useMemo(() => {
+        const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i);
+        return years.map(y => {
+            const yPlans = filteredAnnual.filter((p: any) => p.year === y);
+            const totalKH = yPlans.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+            const totalGN = yPlans.reduce((sum: number, p: any) => sum + Number(p.disbursed_amount), 0);
+            return {
+                name: y.toString(),
+                'Kế hoạch': totalKH,
+                'Giải ngân': totalGN,
+            };
+        });
+    }, [filteredAnnual]);
+
+    // Automatic Alerts (Projects with < 50% disbursement in current year)
+    const slowDisbursementAlerts = useMemo(() => {
+        const currentYearPlans = filteredAnnual.filter((p: any) => p.year === yearFilter && Number(p.amount) > 0);
+        return currentYearPlans.filter((p: any) => {
+            const rate = (Number(p.disbursed_amount) / Number(p.amount)) * 100;
+            return rate < 50;
+        }).sort((a: any, b: any) => {
+            const rateA = (Number(a.disbursed_amount) / Number(a.amount));
+            const rateB = (Number(b.disbursed_amount) / Number(b.amount));
+            return rateA - rateB;
+        });
+    }, [filteredAnnual, yearFilter]);
 
     const TAB_CFG: { key: PageTab; label: string; icon: React.ElementType; color: string }[] = [
         { key: 'mid_term', label: 'Trung hạn', icon: CalendarRange, color: 'blue' },
@@ -206,6 +239,15 @@ const CapitalPlanningPage: React.FC = () => {
                             {Array.from({ length: 8 }, (_, i) => new Date().getFullYear() + 2 - i).map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
                     </div>
+                    {/* Import Excel */}
+                    <button
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all"
+                        title="Import Kế hoạch vốn từ Excel"
+                    >
+                        <Upload className="w-3.5 h-3.5" />
+                        Nhập Excel
+                    </button>
                     {/* Export Excel — all tabs */}
                     <button
                         onClick={() => exportCapitalToExcel(
@@ -242,6 +284,69 @@ const CapitalPlanningPage: React.FC = () => {
                         }
                     />
                 ))}
+            </div>
+
+            {/* ───── Automatic Alerts ───── */}
+            {slowDisbursementAlerts.length > 0 && (
+                <div className="bg-rose-50/50 dark:bg-rose-900/10 border border-rose-200/50 dark:border-rose-800/30 rounded-xl p-4">
+                    <h3 className="text-xs font-bold text-rose-600 dark:text-rose-400 mb-3 flex items-center gap-2 uppercase tracking-wider">
+                        <AlertTriangle className="w-4 h-4" />
+                        Cảnh báo: {slowDisbursementAlerts.length} dự án giải ngân chậm (Dưới 50% KH năm {yearFilter})
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {slowDisbursementAlerts.map((p: any) => {
+                            const rate = Math.round((Number(p.disbursed_amount) / Number(p.amount)) * 100);
+                            return (
+                                <div key={p.plan_id} className="bg-white dark:bg-slate-800 rounded-lg p-3 shadow-sm border border-rose-100 dark:border-rose-800/50 flex flex-col justify-between cursor-pointer hover:border-rose-300 transition-colors" onClick={() => navigate(`/projects/${p.project_id}?tab=capital`)}>
+                                    <p className="text-[11px] font-bold text-gray-800 dark:text-slate-200 line-clamp-2 mb-2" title={p.project_name || p.project_id}>
+                                        {p.project_name || p.project_id}
+                                    </p>
+                                    <div className="flex justify-between items-end mt-auto">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 dark:text-slate-400">Đã GN / Kế hoạch</p>
+                                            <p className="text-[11px] font-mono font-bold text-gray-700 dark:text-slate-300">
+                                                {fmtB(Number(p.disbursed_amount))} / {fmtB(Number(p.amount))}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className={`text-[11px] font-black ${rate < 30 ? 'text-red-600 dark:text-red-400' : 'text-rose-500 dark:text-rose-400'}`}>
+                                                {rate}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden">
+                                        <div className={`h-1.5 rounded-full ${rate < 30 ? 'bg-red-500' : 'bg-rose-400'}`} style={{ width: `${Math.max(2, rate)}%` }}></div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* ───── Overview Chart ───── */}
+            <div className="section-card p-4">
+                <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-blue-500" />
+                    Tổng quan Kế hoạch vs Giải ngân (5 năm)
+                </h3>
+                <div className="h-48 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(156, 163, 175, 0.2)" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} tickFormatter={(val) => fmtB(val)} />
+                            <Tooltip
+                                cursor={{ fill: 'rgba(156, 163, 175, 0.1)' }}
+                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                formatter={(value: number) => [`${value.toLocaleString()} trđ`, undefined]}
+                            />
+                            <Legend wrapperStyle={{ fontSize: '11px' }} />
+                            <Bar dataKey="Kế hoạch" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                            <Bar dataKey="Giải ngân" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
             {/* ───── Tab Bar ───── */}
@@ -729,6 +834,13 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-emerald-100 rounded" /> TT = Thực tế</span>
                 <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3 text-red-500" /> Đỏ = Thấp hơn KH</span>
             </div>
+
+            {/* Import Modal */}
+            <CapitalImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                currentYear={yearFilter}
+            />
         </div>
     );
 };

@@ -38,12 +38,31 @@ export const DISBURSEMENT_TYPE_LABELS: Record<string, string> = {
 // ─── Normalize Source (Luật ĐTC 58/2024 Điều 5) ─────────
 export function normalizeSource(raw: string): string {
     if (!raw) return 'NSĐP';
-    const lower = raw.toLowerCase().replace(/[\s_-]+/g, '');
-    if (lower.includes('diaphuong') || lower.includes('thanhpho') || lower.includes('tphcm') || lower.includes('nstp') || lower.includes('nsdp') || lower === 'nsđp') return 'NSĐP';
-    if (lower.includes('truonguong') || lower.includes('trungương') || lower.includes('nstw')) return 'NSTW';
-    if (lower.includes('oda') || lower.includes('vonvay')) return 'ODA';
+    // Bỏ dấu tiếng Việt để so sánh không phân biệt dấu
+    const lower = raw.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[\s_\-.]+/g, '');
+
+    // Ngân sách Trung ương
+    if (lower.includes('trunguong') || lower.includes('nstw')) return 'NSTW';
+
+    // ODA / Vốn vay nước ngoài
+    if (lower.includes('oda') || lower.includes('vonvay') || lower.includes('vaynuocngoai')) return 'ODA';
+
+    // Ngân sách Địa phương — bao gồm "Ngân sách nhà nước" (mặc định về ĐP khi không rõ)
+    if (
+        lower.includes('diaphuong') || lower.includes('thanhpho') ||
+        lower.includes('tphcm') || lower.includes('nstp') ||
+        lower.includes('nsdp') || lower === 'nsdp' ||
+        lower.includes('nstl') || lower.includes('nstinh') ||
+        // Các variant "Ngân sách nhà nước" phổ biến trong Excel
+        lower.includes('nhanuoc') || lower.includes('nsnn') ||
+        lower.includes('ngansach') || lower.includes('ngan sach')
+    ) return 'NSĐP';
+
     return raw;
 }
+
 
 // ─── Months shorthand ───────────────────────────────────
 export const MONTHS = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     X, Calendar, User, AlignLeft, CheckSquare, Clock, Flag, Link2, BarChart3,
     Plus, Trash2, CheckCircle2, Scale, Paperclip, Upload, Download, FileText,
-    AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Layers, Zap, FileSpreadsheet, File
+    AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Layers, Zap, FileSpreadsheet, File, Folder
 } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, TaskDependency, TaskAttachment } from '@/types';
 import { useEmployees } from '@/hooks/useEmployees';
@@ -18,6 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjects } from '@/hooks/useProjects';
+import { useMonthlyPlanItemOptions } from '@/hooks/usePlanData';
 
 // ── Date helpers ──
 const todayISO = () => new Date().toISOString();
@@ -162,6 +163,9 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const navigate = useNavigate();
     const { data: employees = [] } = useEmployees();
     const { projects = [] } = useProjects();
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    const { options: planItemOptions } = useMonthlyPlanItemOptions(currentMonth, currentYear);
     const updateTaskMutation = useUpdateTask();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -533,6 +537,39 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         value={formData.Description}
                                         onChange={e => setFormData({ ...formData, Description: e.target.value })}
                                     />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
+                                            <Folder className="w-4 h-4 text-gray-400" /> Dự án liên kết
+                                        </label>
+                                        <select
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            value={formData.ProjectID || ''}
+                                            onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
+                                        >
+                                            <option value="">-- Thuộc dự án (Tùy chọn) --</option>
+                                            {projects.map(p => (
+                                                <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
+                                            <Calendar className="w-4 h-4 text-gray-400" /> Kế hoạch tháng
+                                        </label>
+                                        <select
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            value={formData.MonthlyPlanItemID || ''}
+                                            onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
+                                        >
+                                            <option value="">-- Thuộc KH Tháng (Tùy chọn) --</option>
+                                            {planItemOptions.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-4">

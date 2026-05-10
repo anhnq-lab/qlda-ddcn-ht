@@ -26,6 +26,9 @@ export interface Document {
     ISOStatus?: ISO19650Status;
     Revision?: string;
     WorkflowHistory?: WorkflowStep[];
+    VersionGroupID?: string;
+    FileHash?: string;
+    IsLatest?: boolean;
 }
 
 export interface Folder {
