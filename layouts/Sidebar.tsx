@@ -53,7 +53,7 @@ const navItems: NavItem[] = [
   { name: 'Tổng quan', path: '/', icon: LayoutDashboard, resource: 'dashboard' },
   { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
   { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
-  { name: 'Kế hoạch & Công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
+  { name: 'Quản lý công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
   { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
   { name: 'Nhà thầu', path: '/contractors', icon: Users, resource: 'contractors' },
   { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase, resource: 'bidding' },
