@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus, TaskPriority, Employee } from '../../types';
 import { getTimelineStepOptions } from '../../utils/timelineStepUtils';
-import { useMonthlyPlanItemOptions } from '../../hooks/useMonthlyPlanItemOptions';
+import { useMonthlyPlanItemOptions } from '../../hooks/usePlanData';
 import {
     X, BarChart3, Layers, CheckCircle2, Clock, AlertCircle,
 } from 'lucide-react';

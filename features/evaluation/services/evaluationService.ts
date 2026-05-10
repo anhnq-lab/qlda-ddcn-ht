@@ -1,9 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { supabase } from '../../../lib/supabase';
 import type { EvaluationForm, EvaluationStatus } from '../types/evaluation.types';
 
-// ============================================================
-// Evaluation Service — CRUD cho bảng evaluation_forms
-// ============================================================
+// evaluation_forms chưa có trong generated Supabase types
+// Dùng type-cast qua `any` — sẽ update sau khi chạy generate types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sb = supabase as any;
 
 type ScoreFields = {
     self_score_1?: number; self_score_2?: number; self_score_3?: number;
@@ -20,9 +22,6 @@ type ScoreFields = {
 
 export const EvaluationService = {
 
-    /**
-     * Lấy danh sách phiếu đánh giá theo bộ lọc
-     */
     async list(params: {
         eval_year?: number;
         eval_month?: number;
@@ -30,7 +29,7 @@ export const EvaluationService = {
         employee_id?: string;
         status?: EvaluationStatus;
     }): Promise<{ data: EvaluationForm[]; error: string | null }> {
-        let query = supabase
+        let query = sb
             .from('evaluation_forms')
             .select('*')
             .order('eval_year', { ascending: false })
@@ -45,14 +44,11 @@ export const EvaluationService = {
 
         const { data, error } = await query;
         if (error) return { data: [], error: error.message };
-        return { data: data as EvaluationForm[], error: null };
+        return { data: (data ?? []) as EvaluationForm[], error: null };
     },
 
-    /**
-     * Lấy 1 phiếu theo id
-     */
     async getById(id: string): Promise<{ data: EvaluationForm | null; error: string | null }> {
-        const { data, error } = await supabase
+        const { data, error } = await sb
             .from('evaluation_forms')
             .select('*')
             .eq('id', id)
@@ -61,15 +57,12 @@ export const EvaluationService = {
         return { data: data as EvaluationForm, error: null };
     },
 
-    /**
-     * Lấy phiếu của một nhân viên theo tháng/năm
-     */
     async getByEmployeePeriod(params: {
         employee_id: string;
         eval_month: number;
         eval_year: number;
     }): Promise<{ data: EvaluationForm | null; error: string | null }> {
-        const { data, error } = await supabase
+        const { data, error } = await sb
             .from('evaluation_forms')
             .select('*')
             .eq('employee_id', params.employee_id)
@@ -80,9 +73,6 @@ export const EvaluationService = {
         return { data: data as EvaluationForm | null, error: null };
     },
 
-    /**
-     * Tạo phiếu mới (nhân viên tự tạo)
-     */
     async create(payload: {
         employee_id: string;
         employee_name: string;
@@ -91,7 +81,7 @@ export const EvaluationService = {
         eval_month: number;
         eval_year: number;
     } & Partial<ScoreFields>): Promise<{ data: EvaluationForm | null; error: string | null }> {
-        const { data, error } = await supabase
+        const { data, error } = await sb
             .from('evaluation_forms')
             .insert({
                 employee_id: payload.employee_id,
@@ -116,66 +106,47 @@ export const EvaluationService = {
         return { data: data as EvaluationForm, error: null };
     },
 
-    /**
-     * Cập nhật điểm tự đánh giá (nhân viên)
-     */
     async updateSelfScores(id: string, scores: {
         self_score_1: number; self_score_2: number; self_score_3: number;
         self_score_4: number; self_score_5: number; self_score_6: number;
         self_score_7: number; self_notes?: string | null;
     }): Promise<{ error: string | null }> {
-        const { error } = await supabase
+        const { error } = await sb
             .from('evaluation_forms')
             .update({ ...scores, status: 'draft' })
             .eq('id', id);
         return { error: error?.message ?? null };
     },
 
-    /**
-     * Nhân viên nộp phiếu (draft → submitted)
-     */
     async submit(id: string): Promise<{ error: string | null }> {
-        const { error } = await supabase
+        const { error } = await sb
             .from('evaluation_forms')
-            .update({
-                status: 'submitted',
-                self_submitted_at: new Date().toISOString(),
-            })
+            .update({ status: 'submitted', self_submitted_at: new Date().toISOString() })
             .eq('id', id)
             .in('status', ['draft', 'rejected']);
         return { error: error?.message ?? null };
     },
 
-    /**
-     * Trưởng phòng phê duyệt (cập nhật điểm + approve)
-     */
     async approve(id: string, managerData: {
         manager_score_1: number; manager_score_2: number; manager_score_3: number;
         manager_score_4: number; manager_score_5: number; manager_score_6: number;
         manager_score_7: number; manager_notes?: string | null;
         manager_id: string; manager_name: string;
     }): Promise<{ error: string | null }> {
-        const { error } = await supabase
+        const { error } = await sb
             .from('evaluation_forms')
-            .update({
-                ...managerData,
-                status: 'approved',
-                reviewed_at: new Date().toISOString(),
-            })
+            .update({ ...managerData, status: 'approved', reviewed_at: new Date().toISOString() })
             .eq('id', id)
             .eq('status', 'submitted');
         return { error: error?.message ?? null };
     },
 
-    /**
-     * Trưởng phòng từ chối
-     */
     async reject(id: string, managerData: {
         manager_notes: string;
         manager_id: string;
         manager_name: string;
     }): Promise<{ error: string | null }> {
-        const { error } = await supabase
+        const { error } = await sb
             .from('evaluation_forms')
             .update({
                 manager_notes: managerData.manager_notes,

@@ -40,6 +40,7 @@ const BimPage = React.lazy(() => import('./features/bim/BimPage'));
 const ReportCenter = React.lazy(() => import('./features/reports/ReportCenter'));
 const MidTermCapitalPage = React.lazy(() => import('./features/capital/MidTermCapitalPage'));
 const Regulations = React.lazy(() => import('./features/regulations/Regulations'));
+const EvaluationPage = React.lazy(() => import('./features/evaluation/EvaluationPage'));
 const LegalDocumentSearch = React.lazy(() => import('./features/legal-documents/LegalDocumentSearch'));
 const Settings = React.lazy(() => import('./features/settings/Settings'));
 const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'));
@@ -204,6 +205,11 @@ const App: React.FC = () => {
                                             <ProtectedRoute resource="regulations">
                                                 <React.Suspense fallback={<PageLoadingFallback />}><Regulations /></React.Suspense>
                                             </ProtectedRoute>
+                                        } />
+
+                                        {/* Evaluation Module */}
+                                        <Route path="evaluation" element={
+                                            <React.Suspense fallback={<PageLoadingFallback />}><EvaluationPage /></React.Suspense>
                                         } />
 
                                         {/* Admin */}

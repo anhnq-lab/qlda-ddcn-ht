@@ -25,6 +25,7 @@ import {
   GitBranch,
   Network,
   LayoutList,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
@@ -63,6 +64,7 @@ const navItems: NavItem[] = [
   { name: 'Văn bản pháp luật', path: '/legal-documents', icon: Scale, resource: 'legal_docs' },
   { name: 'Báo cáo', path: '/reports', icon: BarChart2, resource: 'reports' },
   { name: 'Quy chế làm việc', path: '/regulations', icon: BookOpen, resource: 'regulations' },
+  { name: 'Đánh giá, xếp loại', path: '/evaluation', icon: ClipboardCheck },
   { name: 'Quy trình', path: '/quy-trinh', icon: GitBranch, resource: 'workflows' },
   { name: 'Quản lý tài khoản', path: '/admin', icon: ShieldCheck, resource: 'admin_accounts' },
   { name: 'Nhật ký hệ thống', path: '/audit-log', icon: Network, resource: 'admin_audit' },
