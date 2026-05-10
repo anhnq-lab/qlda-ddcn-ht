@@ -157,55 +157,103 @@ async function seedApril() {
         }
     }
     
-    // 5. Thêm 1-2 Tasks (công việc chi tiết) gắn với KH tháng
+    // 5. Thêm 7 Tasks (công việc chi tiết theo giai đoạn) gắn với KH tháng
     const { data: freshItems } = await supabase
         .from('monthly_plan_items')
         .select('id, task_name')
-        .eq('monthly_plan_id', planId)
-        .limit(2);
+        .eq('monthly_plan_id', planId);
         
     if (freshItems && freshItems.length > 0) {
         console.log(`Tạo công việc (Tasks) cho phòng ${deptCode}...`);
         
-        const { data: employees } = await supabase.from('employees').select('employee_id');
+        // Fetch employees specifically for this department
+        // Map deptCode to exact DB department strings based on actual data
+        const dbDeptMapping: Record<string, string> = {
+            'HCTH': 'Phòng Hành chính – Tổng hợp',
+            'KHDT': 'Phòng Kế hoạch – Đấu thầu', // Assuming KHDT maps to this
+            'KTTD': 'Phòng Kỹ thuật – Thẩm định',
+            'QLDA1': 'Phòng Quản lý dự án 1',
+            'QLDA2': 'Phòng Quản lý dự án 2',
+            'QLDA3': 'Phòng Quản lý dự án 3',
+            'PTDV': 'Phòng Phát triển dịch vụ'
+        };
+
+        const targetDeptName = dbDeptMapping[deptCode];
+        
+        const { data: employees } = await supabase
+            .from('employees')
+            .select('employee_id, full_name, role')
+            .eq('department', targetDeptName);
+            
+        // If no employees found for this department, fallback to all (should not happen if mapping is correct)
+        let availableEmployees = employees;
+        if (!availableEmployees || availableEmployees.length === 0) {
+            console.warn(`⚠️ Không tìm thấy nhân viên nào thuộc ${targetDeptName}. Dùng toàn bộ nhân viên thay thế.`);
+            const { data: allEmps } = await supabase.from('employees').select('employee_id, full_name, role');
+            availableEmployees = allEmps || [];
+        }
+
         const { data: projects } = await supabase.from('projects').select('project_id');
 
-        for (const item of freshItems) {
-            // Check if tasks already exist for this monthly_plan_item_id
-            const { data: existingTasks } = await supabase
-                .from('tasks')
-                .select('id')
-                .eq('metadata->>monthly_plan_item_id', item.id);
+        // Pick the first monthly plan item to attach these logical phases
+        const item = freshItems[0];
+        
+        // Check if tasks already exist for this monthly_plan_item_id to prevent duplicates on rerun
+        const { data: existingTasks } = await supabase
+            .from('tasks')
+            .select('id')
+            .eq('metadata->>monthly_plan_item_id', item.id);
+            
+        if (!existingTasks || existingTasks.length < 7) {
+            
+            const phases = [
+                { suffix: 'Lập kế hoạch và chuẩn bị tài liệu', start: '2026-04-01', due: '2026-04-04' },
+                { suffix: 'Thu thập số liệu và khảo sát', start: '2026-04-05', due: '2026-04-08' },
+                { suffix: 'Triển khai thực hiện chuyên môn', start: '2026-04-09', due: '2026-04-14' },
+                { suffix: 'Kiểm tra, rà soát tiến độ', start: '2026-04-15', due: '2026-04-18' },
+                { suffix: 'Họp thống nhất và xin ý kiến', start: '2026-04-19', due: '2026-04-21' },
+                { suffix: 'Hoàn thiện hồ sơ báo cáo', start: '2026-04-22', due: '2026-04-25' },
+                { suffix: 'Trình lãnh đạo phê duyệt', start: '2026-04-26', due: '2026-04-28' },
+            ];
+
+            const projectId = projects && projects.length > 0 ? projects[Math.floor(Math.random() * projects.length)].project_id : null;
+
+            for (const phase of phases) {
+                const assignee = availableEmployees && availableEmployees.length > 0 
+                    ? availableEmployees[Math.floor(Math.random() * availableEmployees.length)] 
+                    : null;
                 
-            if (!existingTasks || existingTasks.length === 0) {
-                // Select random employee and project
-                const assigneeId = employees && employees.length > 0 ? employees[Math.floor(Math.random() * employees.length)].employee_id : null;
-                const approverId = employees && employees.length > 0 ? employees[Math.floor(Math.random() * employees.length)].employee_id : null;
-                const projectId = projects && projects.length > 0 ? projects[Math.floor(Math.random() * projects.length)].project_id : null;
+                // Try to find a manager/deputy for approver, else pick random
+                let approver = availableEmployees?.find(e => e.role === 'Trưởng phòng' || e.role === 'Phó Trưởng phòng');
+                if (!approver && availableEmployees && availableEmployees.length > 0) {
+                    approver = availableEmployees[Math.floor(Math.random() * availableEmployees.length)];
+                }
 
                 const newTask = {
                     id: uuidv4(),
-                    title: `[T.4] Thực hiện: ${item.task_name}`,
+                    title: `[${item.task_name}] - ${phase.suffix}`,
                     task_type: projectId ? 'project' : 'internal',
-                    project_id: projectId,
+                    project_id: projectId, // Keep same project for all phases of this plan item
                     metadata: {
                         monthly_plan_item_id: item.id
                     },
                     status: 'todo',
                     priority: 'medium',
-                    assignee_id: assigneeId,
-                    approver_id: approverId,
-                    start_date: `2026-04-01T00:00:00Z`,
-                    due_date: `2026-04-25T00:00:00Z`
+                    assignee_id: assignee?.employee_id || null,
+                    approver_id: approver?.employee_id || null,
+                    start_date: `${phase.start}T08:00:00Z`,
+                    due_date: `${phase.due}T17:00:00Z`
                 };
                 
                 const { error: taskError } = await supabase.from('tasks').insert(newTask);
                 if (taskError) {
                     console.error(`Lỗi tạo task cho ${item.task_name}:`, taskError);
                 } else {
-                    console.log(` + Đã tạo task: ${newTask.title}`);
+                    console.log(` + Đã tạo task: ${newTask.title} (Assignee: ${assignee?.full_name})`);
                 }
             }
+        } else {
+            console.log(`Đã tồn tại công việc cho mục: ${item.task_name}. Bỏ qua tạo mới.`);
         }
     }
   }
@@ -213,3 +261,4 @@ async function seedApril() {
 }
 
 seedApril().catch(console.error);
+
