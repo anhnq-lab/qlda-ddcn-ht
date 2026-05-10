@@ -19,10 +19,12 @@ import {
 } from './types/evaluation.types';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import EvaluationSlidePanel from './components/EvaluationSlidePanel';
+import { DEPARTMENT_CODES, DEPARTMENT_NAMES } from '../../types/plan.types';
+import DataTable, { Column } from '../../components/ui/DataTable';
 
 export const EvaluationPage: React.FC = () => {
     const { currentUser } = useAuth();
-    const { openPanel, closePanel } = useSlidePanel();
+    const { openPanel, closePanel, setPanelWidth } = useSlidePanel();
     const isManager = currentUser?.Role === Role.Manager || currentUser?.Role === Role.Admin;
 
     const [forms, setForms] = useState<EvaluationForm[]>([]);
@@ -31,7 +33,12 @@ export const EvaluationPage: React.FC = () => {
     const [year, setYear] = useState(new Date().getFullYear());
     const [statusFilter, setStatusFilter] = useState<EvaluationStatus | 'all'>('all');
     const [deptFilter, setDeptFilter] = useState<string>('all');
-    const [departments, setDepartments] = useState<{code:string;name:string}[]>([]);
+    
+    // Convert hardcoded departments to the format needed for the select dropdown
+    const departments = DEPARTMENT_CODES.map(code => ({
+        code,
+        name: DEPARTMENT_NAMES[code]
+    }));
 
     useEffect(() => {
         loadData();
@@ -42,12 +49,6 @@ export const EvaluationPage: React.FC = () => {
         setLoading(true);
 
         try {
-            // Load departments for filter (managers only)
-            if (isManager && departments.length === 0) {
-                const { data: depts } = await supabase.from('departments').select('code, name').order('name');
-                if (depts) setDepartments(depts);
-            }
-
             // Load evaluations
             const queryParams: any = { eval_month: month, eval_year: year };
             
@@ -72,9 +73,10 @@ export const EvaluationPage: React.FC = () => {
     };
 
     const handleCreateNew = () => {
-        openPanel(
-            `Đánh giá tháng ${month}/${year}`,
-            <EvaluationSlidePanel 
+        setPanelWidth(window.innerWidth / 2);
+        openPanel({
+            title: `Đánh giá tháng ${month}/${year}`,
+            component: <EvaluationSlidePanel 
                 defaultMonth={month} 
                 defaultYear={year} 
                 onSaved={(f) => {
@@ -82,21 +84,104 @@ export const EvaluationPage: React.FC = () => {
                 }}
                 onClose={() => closePanel()}
             />
-        );
+        });
     };
 
     const handleViewForm = (form: EvaluationForm) => {
-        openPanel(
-            `Phiếu đánh giá - ${form.employee_name}`,
-            <EvaluationSlidePanel 
+        setPanelWidth(window.innerWidth / 2);
+        openPanel({
+            title: `Phiếu đánh giá - ${form.employee_name}`,
+            component: <EvaluationSlidePanel 
                 existingForm={form}
                 onSaved={(f) => {
                     loadData();
                 }}
                 onClose={() => closePanel()}
             />
-        );
+        });
     };
+
+    const columns: Column<EvaluationForm>[] = [
+        {
+            key: 'employee_name',
+            header: 'Nhân sự',
+            sortable: true,
+            render: (_, row) => (
+                <div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{row.employee_name}</div>
+                    <div className="text-[11px] text-slate-500 mt-0.5">{row.chuc_vu || row.department_name}</div>
+                </div>
+            )
+        },
+        {
+            key: 'form_type',
+            header: 'Loại phiếu',
+            align: 'center',
+            render: (_, row) => (
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                    PL{row.form_type === 'leader' ? '01' : '02'}
+                </span>
+            )
+        },
+        {
+            key: 'self_score',
+            header: 'Tự chấm',
+            align: 'center',
+            render: (_, row) => {
+                const score = calcSelfTotal(row);
+                return <span className="font-bold text-slate-700 dark:text-slate-200">{score.toFixed(0)}</span>;
+            }
+        },
+        {
+            key: 'manager_score',
+            header: 'Phê duyệt',
+            align: 'center',
+            render: (_, row) => {
+                const score = calcManagerTotal(row);
+                return <span className="font-bold text-primary-600 dark:text-primary-400">{score.toFixed(0)}</span>;
+            }
+        },
+        {
+            key: 'classification',
+            header: 'Xếp loại',
+            align: 'center',
+            render: (_, row) => {
+                const selfTotal = calcSelfTotal(row);
+                const managerTotal = calcManagerTotal(row);
+                const finalScore = row.status === 'approved' ? managerTotal : selfTotal;
+                const cls = getClassification(finalScore);
+                const clsCfg = CLASSIFICATION_CONFIG[cls];
+                return (
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${clsCfg.bg} ${clsCfg.color}`}>
+                        {cls}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'status',
+            header: 'Trạng thái',
+            align: 'center',
+            render: (_, row) => {
+                const cfg = STATUS_CONFIG[row.status];
+                return (
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${cfg.bg} ${cfg.color}`}>
+                        {cfg.label}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'self_submitted_at',
+            header: 'Ngày nộp',
+            align: 'right',
+            render: (_, row) => (
+                <span className="text-xs text-slate-500">
+                    {row.self_submitted_at ? new Date(row.self_submitted_at).toLocaleDateString('vi-VN') : '—'}
+                </span>
+            )
+        }
+    ];
 
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
@@ -185,63 +270,13 @@ export const EvaluationPage: React.FC = () => {
                         <p className="text-sm">Chưa có phiếu đánh giá nào trong tháng này.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {forms.map(form => {
-                            const selfTotal = calcSelfTotal(form);
-                            const managerTotal = calcManagerTotal(form);
-                            const finalScore = form.status === 'approved' ? managerTotal : selfTotal;
-                            const cls = getClassification(finalScore);
-                            const clsCfg = CLASSIFICATION_CONFIG[cls];
-                            
-                            return (
-                                <div 
-                                    key={form.id}
-                                    onClick={() => handleViewForm(form)}
-                                    className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-700 transition-all cursor-pointer group"
-                                >
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{form.employee_name}</h3>
-                                            <p className="text-[11px] text-slate-500 mt-1">{form.chuc_vu || form.department_name}</p>
-                                        </div>
-                                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${STATUS_CONFIG[form.status].bg} ${STATUS_CONFIG[form.status].color}`}>
-                                            {STATUS_CONFIG[form.status].label}
-                                        </span>
-                                    </div>
-
-                                    <div className={`p-4 rounded-xl border ${clsCfg.bg} ${clsCfg.darkBg} ${clsCfg.border} mb-4`}>
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">
-                                                    {form.status === 'approved' ? 'Điểm duyệt' : 'Điểm tự chấm'}
-                                                </div>
-                                                <div className={`text-2xl font-black ${clsCfg.color} ${clsCfg.darkColor}`}>
-                                                    {finalScore.toFixed(0)} <span className="text-xs font-normal opacity-50">/100</span>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className={`text-xs font-bold ${clsCfg.color} ${clsCfg.darkColor}`}>
-                                                    {cls}
-                                                </div>
-                                                <div className="text-[10px] text-slate-500 mt-1">
-                                                    PL{form.form_type === 'leader' ? '01' : '02'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between text-[11px]">
-                                        <span className="text-slate-400">
-                                            {form.self_submitted_at ? `Nộp: ${new Date(form.self_submitted_at).toLocaleDateString('vi-VN')}` : 'Chưa nộp'}
-                                        </span>
-                                        <span className="text-primary-600 dark:text-primary-400 font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            Xem chi tiết <ChevronRight size={12} />
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    <DataTable
+                        data={forms}
+                        columns={columns}
+                        keyExtractor={(row) => row.id}
+                        onRowClick={handleViewForm}
+                        sortable
+                    />
                 )}
             </div>
         </div>
