@@ -1,5 +1,6 @@
 /* Utility classes and animations */
-   UTILITY CLASSES
+
+/* UTILITY CLASSES
    ======================================== */
 @layer utilities {
 
@@ -86,8 +87,8 @@
   }
 }
 
-/* ========================================
-   ANIMATIONS
+
+/* ANIMATIONS
    ======================================== */
 @keyframes skeleton-shimmer {
   0% {
@@ -259,5 +260,3 @@
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
-
-/* ========================================

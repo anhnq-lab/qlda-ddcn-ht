@@ -467,16 +467,18 @@ END $$;
 -- ============================================
 INSERT INTO employees (employee_id, full_name, position, department, role, status) VALUES
     ('NV001', 'Quản trị viên', 'Quản trị hệ thống', 'Ban Giám đốc', 'Admin', 1),
-    ('NV002', 'Nguyễn Văn Trường', 'Giám đốc Ban', 'Ban Giám đốc', 'Director', 1),
-    ('NV003', 'Dương Minh Thùy', 'Phó Giám đốc Ban', 'Ban Giám đốc', 'DeputyDirector', 1),
-    ('NV004', 'Lê Văn Dũng', 'Phó Giám đốc Ban', 'Ban Giám đốc', 'DeputyDirector', 1)
+    ('NV002', 'Nguyễn Quang Linh', 'Giám đốc Ban', 'Ban Giám đốc', 'Director', 1),
+    ('NV003', 'Trần Ngọc Bảo', 'Phó Giám đốc Ban', 'Ban Giám đốc', 'DeputyDirector', 1),
+    ('NV004', 'Nguyễn Văn Nhân', 'Phó Giám đốc Ban', 'Ban Giám đốc', 'DeputyDirector', 1),
+    ('NV040', 'Ngô Đức Quy', 'Phó Giám đốc Ban', 'Ban Giám đốc', 'DeputyDirector', 1)
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO user_accounts (employee_id, username, password_hash) VALUES
     ('NV001', 'Admin', '123456'),
-    ('NV002', 'TRUONG.NV', '123456'),
-    ('NV003', 'THUY.DM', '123456'),
-    ('NV004', 'DUNG.LV', '123456')
+    ('NV002', 'LINH.NQ', '123456'),
+    ('NV003', 'BAO.TN', '123456'),
+    ('NV004', 'NHAN.NV', '123456'),
+    ('NV040', 'QUY.ND', '123456')
 ON CONFLICT (username) DO NOTHING;
 
 

@@ -16,11 +16,13 @@ import {
     Gavel,
     Send,
     PenTool,
+    ArrowLeft
 } from 'lucide-react';
 import { regulationsData } from './data/regulationsData';
 
 
 const RegulationsViewer: React.FC = () => {
+    const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
     const [selectedChapterId, setSelectedChapterId] = useState<string>("CH1");
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
@@ -55,14 +57,15 @@ const RegulationsViewer: React.FC = () => {
     };
     // -----------------------------
 
-    const selectedChapter = regulationsData.find(c => c.id === selectedChapterId);
+    const selectedDocument = useMemo(() => regulationsData.find(d => d.id === selectedDocumentId) || null, [selectedDocumentId]);
+    const currentChapters = selectedDocument?.chapters || [];
 
     // Enhance filtering with raw text fallback
     const filteredChapters = useMemo(() => {
-        if (!searchQuery) return regulationsData;
+        if (!searchQuery) return currentChapters;
         const lowerQ = searchQuery.toLowerCase();
         
-        return regulationsData.map(chapter => {
+        return currentChapters.map(chapter => {
             const matchingArticles = chapter.articles.filter(a => {
                 const matchCodeAndTitle = a.title.toLowerCase().includes(lowerQ) || a.code.toLowerCase().includes(lowerQ);
                 // Simple raw text matching using JSON.stringify for the react nodes, naive but effective for filtering
@@ -77,7 +80,7 @@ const RegulationsViewer: React.FC = () => {
                 isMatch: chapter.title.toLowerCase().includes(lowerQ) || chapter.code.toLowerCase().includes(lowerQ) || matchingArticles.length > 0
             };
         }).filter(c => c.isMatch);
-    }, [searchQuery]);
+    }, [searchQuery, currentChapters]);
 
     // Active displayed chapter (could be filtered)
     const displayChapter = filteredChapters.find(c => c.id === selectedChapterId) || filteredChapters[0];
@@ -111,16 +114,93 @@ const RegulationsViewer: React.FC = () => {
         setCommentText("");
     };
 
+    // Grid View for documents
+    if (!selectedDocument) {
+        const filteredDocs = regulationsData.filter(d => 
+            d.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            d.code.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        return (
+            <div className="flex flex-col h-[calc(100vh-100px)] p-6 md:p-10 gap-6 overflow-y-auto bg-transparent dark:bg-slate-950 font-sans">
+                <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
+                    <div>
+                        <h1 className="text-2xl font-black text-gray-900 dark:text-slate-100 flex items-center gap-3">
+                            <Gavel className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                            Hệ thống Quy chế
+                        </h1>
+                        <p className="text-gray-500 dark:text-slate-400 mt-1 text-sm font-semibold">Danh sách các quy chế nội bộ, quy trình làm việc và văn bản quản lý</p>
+                    </div>
+                    <div className="relative w-80">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
+                        <input
+                            type="text"
+                            placeholder="Tìm quy chế..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 dark:text-slate-200"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDocs.map(doc => (
+                        <div 
+                            key={doc.id}
+                            onClick={() => { 
+                                setSelectedDocumentId(doc.id); 
+                                if (doc.chapters.length > 0) {
+                                    setSelectedChapterId(doc.chapters[0].id);
+                                }
+                                setSearchQuery(""); 
+                            }}
+                            className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all flex flex-col group"
+                        >
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl group-hover:scale-110 transition-transform">
+                                    <BookOpen className="w-6 h-6" />
+                                </div>
+                                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${doc.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400'}`}>
+                                    {doc.status === 'active' ? 'Có Hiệu Lực' : 'Dự Thảo'}
+                                </span>
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{doc.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-slate-400 mb-4 flex-1 line-clamp-3">{doc.description}</p>
+                            <div className="flex items-center justify-between text-xs font-bold text-gray-400 dark:text-slate-500 pt-4 border-t border-gray-100 dark:border-slate-800">
+                                <span>{doc.code}</span>
+                                <span>{doc.date}</span>
+                            </div>
+                        </div>
+                    ))}
+                    {filteredDocs.length === 0 && (
+                        <div className="col-span-full py-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700">
+                            <Search className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+                            <p className="text-gray-500 dark:text-slate-400 font-semibold">Không tìm thấy quy chế nào phù hợp.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-[calc(100vh-100px)] bg-transparent dark:bg-slate-950 font-sans gap-4">
 
             {/* LEFT SIDEBAR - NAVIGATION */}
             <div className="w-80 section-card flex flex-col shrink-0 overflow-hidden">
                 <div className="p-5 section-card-header z-10 shrink-0">
-                    <h2 className="text-lg font-black text-gray-800 dark:text-slate-100 tracking-tight mb-4 flex items-center gap-2">
-                        <Gavel className="w-5 h-5 text-blue-600" />
-                        Quy chế Nội bộ
-                    </h2>
+                    <div className="mb-4">
+                        <button 
+                            onClick={() => { setSelectedDocumentId(null); setSearchQuery(""); }}
+                            className="flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5" /> Quay lại danh sách
+                        </button>
+                        <h2 className="text-lg font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-start gap-2">
+                            <Gavel className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                            <span className="line-clamp-2">{selectedDocument.title}</span>
+                        </h2>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />
                         <input
@@ -170,15 +250,17 @@ const RegulationsViewer: React.FC = () => {
 
                 <div className="p-4 border-t border-gray-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900 backdrop-blur-md shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 rounded-full">
+                        <div className={`p-2 rounded-full ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400' : 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400'}`}>
                             <FileCheck2 className="w-4 h-4" />
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase">VB Pháp lý</p>
-                                <span className="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider">Có Hiệu Lực</span>
+                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase">Trạng thái</p>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400' : 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400'}`}>
+                                    {selectedDocument.status === 'active' ? 'Có Hiệu Lực' : 'Dự Thảo'}
+                                </span>
                             </div>
-                            <p className="text-xs font-bold text-gray-800 dark:text-slate-200">QĐ số 188/QĐ-BQLDA</p>
+                            <p className="text-xs font-bold text-gray-800 dark:text-slate-200">{selectedDocument.code}</p>
                         </div>
                     </div>
                 </div>
@@ -189,13 +271,13 @@ const RegulationsViewer: React.FC = () => {
                 {/* Header */}
                 <div className="h-16 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-8 section-card-header backdrop-blur-md shrink-0 z-10 sticky top-0 shadow-sm">
                     {displayChapter ? (
-                       <div>
+                        <div>
                          <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-400 mb-1">
                             <span>Hệ thống Quy chế</span>
                             <ChevronRight className="w-3 h-3" />
-                            <span className="font-bold text-blue-600 dark:text-blue-400 uppercase">{displayChapter?.code}</span>
+                            <span className="font-bold text-blue-600 dark:text-blue-400 uppercase line-clamp-1">{displayChapter?.code}</span>
                          </div>
-                         <h1 className="text-lg font-black text-gray-900 dark:text-slate-100 uppercase tracking-tight">{displayChapter?.title}</h1>
+                         <h1 className="text-lg font-black text-gray-900 dark:text-slate-100 uppercase tracking-tight line-clamp-1">{displayChapter?.title}</h1>
                        </div>
                     ) : (
                         <div></div>
@@ -378,7 +460,7 @@ const RegulationsViewer: React.FC = () => {
                      <div className="p-3 space-y-2 max-h-[30vh] overflow-y-auto custom-scrollbar bg-transparent dark:bg-slate-900 shrink-0 border-b border-gray-200 dark:border-slate-800">
                         {savedArticles.map(id => {
                             let articleMatch: any = null;
-                            for (const chap of regulationsData) {
+                            for (const chap of currentChapters) {
                                 const match = chap.articles.find(a => a.id === id);
                                 if (match) { articleMatch = match; break; }
                             }
@@ -388,7 +470,7 @@ const RegulationsViewer: React.FC = () => {
                                     key={id}
                                     onClick={() => {
                                         // If article is not in current chapter, switch chapter then scroll
-                                        const parentChap = regulationsData.find(c => c.articles.some(a => a.id === id));
+                                        const parentChap = currentChapters.find(c => c.articles.some(a => a.id === id));
                                         if (parentChap && selectedChapterId !== parentChap.id) {
                                             setSelectedChapterId(parentChap.id);
                                             setTimeout(() => handleScrollToArticle(id), 100);

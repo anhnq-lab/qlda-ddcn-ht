@@ -1,6 +1,6 @@
 /* Design tokens, theme variables */
-/* ========================================
-   DESIGN TOKENS (CSS Variables)
+
+/* DESIGN TOKENS (CSS Variables)
    ======================================== */
 :root {
   /* Primary Colors — New Palette (Accent #00668c) */
@@ -115,24 +115,31 @@
 
 /* Dark Mode Variables */
 .dark {
-  /* Slate Scale Dark (Từ CIC ERP - Nền Navy) */
-  --color-slate-700: #1e293b; /* Borders/Lines */
-  --color-slate-800: #151d2e; /* Card BG (Navy Lighter) */
-  --color-slate-900: #0b1120; /* Main BG (Midnight Navy) */
-  --color-slate-950: #020617; /* Sâu sắc */
+  /* Slate Scale Dark (Fintech Matte Navy v2) */
+  --color-slate-50: #f8fafc;  /* Text High Contrast */
+  --color-slate-100: #f1f5f9; /* Text Light */
+  --color-slate-200: #e2e8f0; /* Text Primary */
+  --color-slate-300: #cbd5e1; /* Light borders in cards */
+  --color-slate-400: #94a3b8; /* Text Secondary / Icons */
+  --color-slate-500: #64748b; /* Muted Text/Icon */
+  --color-slate-600: #475569; /* Subtle text */
+  --color-slate-700: #293548; /* Borders/Lines */
+  --color-slate-800: #1e293b; /* Input BG / Table Header / Hover */
+  --color-slate-900: #151d2e; /* Card BG (DISTINCT from 800) */
+  --color-slate-950: #0b1120; /* Main BG (DEEPEST) */
 
   --color-bg-primary: var(--color-slate-950);
   --color-bg-secondary: var(--color-slate-900);
   --color-bg-tertiary: var(--color-slate-800);
   --color-bg-elevated: var(--color-slate-900);
 
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-tertiary: #94a3b8;
-  --color-text-muted: #64748b;
+  --color-text-primary: var(--color-slate-50);
+  --color-text-secondary: var(--color-slate-200);
+  --color-text-tertiary: var(--color-slate-400);
+  --color-text-muted: var(--color-slate-500);
 
   --color-border-primary: var(--color-slate-700);
-  --color-border-secondary: var(--color-slate-600);
+  --color-border-secondary: var(--color-slate-800);
 
   /* Dark Shadows (Từ CIC ERP) */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.25);
@@ -140,12 +147,12 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 0 0 1px rgb(255 255 255 / 0.03);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.04);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.04);
-  --shadow-glow: 0 8px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(74, 144, 226, 0.08); /* Dark Card Glow */
-  --shadow-primary: 0 10px 25px -5px rgb(74 144 226 / 0.15), 0 0 0 1px rgb(74 144 226 / 0.1);
+  --shadow-glow: 0 8px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 102, 140, 0.08); /* Dark Card Glow with #00668c */
+  --shadow-primary: 0 10px 25px -5px rgb(0 102 140 / 0.15), 0 0 0 1px rgb(0 102 140 / 0.1);
 }
 
-/* ========================================
-   THEME: NATURE (Bảo vệ mắt — nền cát ấm)
+
+/* THEME: NATURE (Bảo vệ mắt — nền cát ấm)
    Đây là chế độ "sáng" cũ đã được đổi tên
    :root mặc định đã là màu cát → chỉ cần đặt alias
    ======================================== */
@@ -156,8 +163,8 @@
   --color-border-card: #ece7de;     /* Border cát */
 }
 
-/* ========================================
-   THEME: LIGHT (Sáng — nền kem/ấm)
+
+/* THEME: LIGHT (Sáng — nền kem/ấm)
    ======================================== */
 .theme-light {
   --color-bg-body: #f5f4f1;         /* bg-200 — nền trang chính */

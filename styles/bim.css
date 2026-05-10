@@ -1,5 +1,5 @@
 /* BIM/Xeokit viewer styles */
-   XEOKIT TREEVIEW STYLES
+/* XEOKIT TREEVIEW STYLES
    ======================================== */
 .xeokit-tree-view {
   font-family: var(--font-sans);
@@ -100,8 +100,8 @@
   display: none;
 }
 
-/* ========================================
-   PRINT STYLES
+
+/* PRINT STYLES
    ======================================== */
 @media print {
   .no-print {
@@ -132,8 +132,8 @@
   animation: shimmer 1.5s infinite;
 }
 
-/* ========================================
-   BIM VIEWER ANIMATIONS
+
+/* BIM VIEWER ANIMATIONS
    ======================================== */
 @keyframes fadeSlideIn {
   from {
@@ -177,8 +177,8 @@
   }
 }
 
-/* ========================================
-   CENTRALIZED GRADIENT UTILITIES
+
+/* CENTRALIZED GRADIENT UTILITIES
    Use these classes instead of hardcoding gradients.
    Change once here → updates entire app.
    ======================================== */
@@ -267,8 +267,8 @@
   }
 }
 
-/* ========================================
-   BIM 3D VIEWER — NATIVE COLOR OVERRIDES
+
+/* BIM 3D VIEWER — NATIVE COLOR OVERRIDES
    Restores native blue/cyan for BIM components
    since Tailwind remaps blue→gold globally.
    Scoped to elements inside [data-bim-viewer].
@@ -626,4 +626,3 @@ body.slide-panel-open {
   }
 }
 
-/* ========================================

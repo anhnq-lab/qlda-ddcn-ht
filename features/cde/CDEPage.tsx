@@ -27,10 +27,14 @@ import CDEAuditLog from './components/CDEAuditLog';
 import CDEFilePreview from './components/CDEFilePreview';
 import CDEDigitalSign from './components/CDEDigitalSign';
 import { supabase } from '../../lib/supabase';
-import { FolderOpen, BarChart3, Shield, ClipboardList, ScrollText } from 'lucide-react';
+import { FolderOpen, BarChart3, Shield, ClipboardList, ScrollText, GitBranch } from 'lucide-react';
 
 import { useContracts } from '../../hooks/useContracts';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
+import CDEInternalWorkflowPanel from './components/CDEInternalWorkflowPanel';
+import { useCDEInternalWorkflowInstances, useCreateInternalWorkflow, useProcessInternalWorkflowStep } from '../../hooks/useCDE';
+import { CDE_INTERNAL_WORKFLOW_TEMPLATES } from './constants';
+import type { InternalDepartment } from './types';
 
 const EMPTY_FILTERS: CDEFilters = { status: [], discipline: [], docType: [], dateFrom: '', dateTo: '' };
 
@@ -53,7 +57,7 @@ const CDEPage: React.FC = () => {
     const [showTransmittal, setShowTransmittal] = useState(false);
     const [filters, setFilters] = useState<CDEFilters>(EMPTY_FILTERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [activeTab, setActiveTab] = useTabSearchParam('explorer', ['explorer', 'analytics', 'permissions', 'transmittals', 'audit'] as const);
+    const [activeTab, setActiveTab] = useTabSearchParam('explorer', ['explorer', 'analytics', 'permissions', 'transmittals', 'audit', 'internal-workflow'] as const);
     const [activePhase, setActivePhase] = useState('implementation');
     const [previewDoc, setPreviewDoc] = useState<CDEDocument | null>(null);
     const [signDoc, setSignDoc] = useState<CDEDocument | null>(null);
@@ -79,6 +83,77 @@ const CDEPage: React.FC = () => {
     const { data: projectDocs = [] } = useCDEProjectDocuments(selectedProjectId);
     const { download: downloadFile } = useDownloadCDE();
     const { data: userPermission } = useCDEUserPermission(selectedProjectId, currentUser?.EmployeeID || '');
+
+    // Internal workflow
+    const { data: internalInstances = [], isLoading: instancesLoading } = useCDEInternalWorkflowInstances(selectedProjectId);
+    const createWorkflowMutation = useCreateInternalWorkflow();
+    const processWorkflowStepMutation = useProcessInternalWorkflowStep();
+
+    // Map department code from user's department string
+    const currentUserDept: InternalDepartment | undefined = (() => {
+        const dept = currentUser?.Department || '';
+        if (dept.includes('HC') || dept.includes('Hành chính')) return 'HC_TH';
+        if (dept.includes('ĐHDA') || dept.includes('Điều hành')) return 'DHDA';
+        if (dept.includes('PTDV') || dept.includes('Phát triển')) return 'PTDV';
+        if (dept.includes('KT') || dept.includes('Kỹ thuật')) return 'KT_TD';
+        if (dept.includes('KH') || dept.includes('TC') || dept.includes('Tài chính')) return 'KH_TC';
+        if (currentUser?.Role === 'director' || dept.includes('Giám đốc')) return 'DIRECTOR';
+        return undefined;
+    })();
+
+    const handleCreateInternalWorkflow = async (templateId: string, title: string, docId?: number) => {
+        const template = CDE_INTERNAL_WORKFLOW_TEMPLATES.find(t => t.id === templateId);
+        if (!template) return;
+        const firstStep = template.steps[0];
+        await createWorkflowMutation.mutateAsync({
+            projectId: selectedProjectId,
+            templateId: template.id,
+            templateCode: template.code,
+            templateName: template.name,
+            title,
+            createdBy: currentUser?.EmployeeID || '',
+            createdByName: currentUser?.FullName || '',
+            docId,
+            firstStepDef: {
+                step_no: firstStep.step_no,
+                code: firstStep.code,
+                name: firstStep.name,
+                department: firstStep.department,
+                department_label: firstStep.department_label,
+            },
+        });
+        setToast({ message: 'Đã khởi tạo quy trình nội bộ', type: 'success' });
+    };
+
+    const handleProcessInternalStep = async (instanceId: string, stepNo: number, action: 'done' | 'rejected', comment: string) => {
+        const instance = internalInstances.find(i => i.id === instanceId);
+        if (!instance) return;
+        const template = CDE_INTERNAL_WORKFLOW_TEMPLATES.find(t => t.id === instance.template_id);
+        if (!template) return;
+        const currentStepDef = template.steps.find(s => s.step_no === stepNo);
+        const nextStepDef = action === 'done' ? template.steps.find(s => s.step_no === stepNo + 1) : undefined;
+        if (!currentStepDef) return;
+        await processWorkflowStepMutation.mutateAsync({
+            instanceId,
+            stepNo,
+            stepCode: currentStepDef.code,
+            stepName: currentStepDef.name,
+            department: currentStepDef.department,
+            departmentLabel: currentStepDef.department_label,
+            action,
+            comment,
+            actorId: currentUser?.EmployeeID || '',
+            actorName: currentUser?.FullName || '',
+            nextStepDef: nextStepDef ? {
+                step_no: nextStepDef.step_no,
+                code: nextStepDef.code,
+                name: nextStepDef.name,
+                department: nextStepDef.department,
+                department_label: nextStepDef.department_label,
+            } : undefined,
+        });
+        setToast({ message: action === 'done' ? 'Đã chuyển bước tiếp theo' : 'Đã trả lại hồ sơ', type: 'success' });
+    };
 
     // Toast state
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -250,6 +325,7 @@ const CDEPage: React.FC = () => {
     const TABS = [
         { key: 'explorer' as const, label: 'Quản lý', icon: FolderOpen },
         { key: 'analytics' as const, label: 'Thống kê', icon: BarChart3 },
+        { key: 'internal-workflow' as const, label: 'Quy trình', icon: GitBranch },
         { key: 'permissions' as const, label: 'Phân quyền', icon: Shield },
         { key: 'audit' as const, label: 'Nhật ký', icon: ScrollText },
     ];
@@ -394,6 +470,20 @@ const CDEPage: React.FC = () => {
             {activeTab === 'audit' && (
                 <div className="flex-1 overflow-y-auto">
                     <CDEAuditLog projectId={selectedProjectId} />
+                </div>
+            )}
+
+            {/* Tab: Internal Workflow — Quy trình nội bộ giữa các phòng ban */}
+            {activeTab === 'internal-workflow' && (
+                <div className="flex-1 overflow-hidden">
+                    <CDEInternalWorkflowPanel
+                        projectId={selectedProjectId}
+                        instances={internalInstances}
+                        isLoading={instancesLoading}
+                        currentUserDept={currentUserDept}
+                        onCreateInstance={handleCreateInternalWorkflow}
+                        onStepAction={handleProcessInternalStep}
+                    />
                 </div>
             )}
 

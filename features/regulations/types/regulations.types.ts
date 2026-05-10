@@ -27,3 +27,14 @@ export interface RegChapter {
     articles: RegArticle[];
     type?: 'text' | 'chart' | 'list';
 }
+
+export interface RegulationDocument {
+    id: string;
+    code: string;
+    title: string;
+    description: string;
+    date: string;
+    effectiveDate?: string;
+    status: 'active' | 'draft' | 'archived';
+    chapters: RegChapter[];
+}

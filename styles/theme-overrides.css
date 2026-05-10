@@ -1,5 +1,6 @@
 /* Theme light/dark overrides */
-   THEME-LIGHT OVERRIDES
+
+/* THEME-LIGHT OVERRIDES
    Chuyển màu nền cát → trắng thuần
    ======================================== */
 
@@ -24,11 +25,78 @@
   border-color: #e2e8f0 !important;
 }
 
-/* Header bar */
-.theme-light header {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-color: #e2e8f0 !important;
+/* Header and Sidebar - Corporate Identity (Light Theme only) */
+.theme-light .layout-header,
+.theme-light .layout-sidebar {
+  background-color: var(--color-primary-500) !important;
+  border-color: var(--color-primary-600) !important;
+  color: #ffffff !important;
 }
+
+/* Fix text and icons in Sidebar and Header */
+.theme-light .layout-sidebar .text-slate-500,
+.theme-light .layout-sidebar .text-slate-900,
+.theme-light .layout-sidebar .text-slate-700,
+.theme-light .layout-sidebar .text-slate-400,
+.theme-light .layout-header .text-slate-500,
+.theme-light .layout-header .text-slate-900,
+.theme-light .layout-header .text-slate-700,
+.theme-light .layout-header .text-slate-400 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Active links in Sidebar */
+.theme-light .layout-sidebar .bg-primary-50 {
+  background-color: var(--color-primary-600) !important;
+  color: #ffffff !important;
+  border-left-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* Hover effects for buttons/links */
+.theme-light .layout-sidebar a:not(.bg-primary-50):hover,
+.theme-light .layout-header button.hover\:bg-slate-100:hover,
+.theme-light .layout-header button.hover\:bg-bg-surface:hover,
+.theme-light .layout-header button.hover\:bg-slate-50:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+/* Header Search box */
+.theme-light .layout-header .bg-slate-50 {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+.theme-light .layout-header .bg-slate-50:hover {
+  background-color: rgba(0, 0, 0, 0.25) !important;
+}
+.theme-light .layout-header kbd {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+/* Remove gradient bottom line in sidebar */
+.theme-light .layout-sidebar .bg-gradient-to-r {
+  background: var(--color-primary-600) !important;
+}
+
+/* Dropdown override: Reset colors inside the dropdown */
+.theme-light .user-dropdown {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+.theme-light .user-dropdown .text-slate-900 { color: #0f172a !important; }
+.theme-light .user-dropdown .text-slate-700 { color: #334155 !important; }
+.theme-light .user-dropdown .text-slate-600 { color: #475569 !important; }
+.theme-light .user-dropdown .text-slate-500 { color: #64748b !important; }
+.theme-light .user-dropdown .text-slate-400 { color: #94a3b8 !important; }
+.theme-light .user-dropdown .bg-slate-100 { background-color: #f1f5f9 !important; }
+.theme-light .user-dropdown .hover\:bg-slate-100:hover { background-color: #f1f5f9 !important; }
+.theme-light .user-dropdown .hover\:bg-red-50:hover { background-color: #fef2f2 !important; }
+.theme-light .user-dropdown .text-red-600 { color: #dc2626 !important; }
 
 /* Inline bg-[#FCF9F2] overrides */
 .theme-light [class*="bg-\\[\\#FCF9F2\\]"] { background-color: #ffffff !important; }
@@ -57,8 +125,8 @@
   background-color: #f1f5f9 !important;
 }
 
-/* ========================================
-   GLOBAL DARK MODE CATCH-ALL
+
+/* GLOBAL DARK MODE CATCH-ALL
    Fixes uncovered light-only elements
    ======================================== */
 
@@ -155,11 +223,11 @@
 
 /* primary-50 fallback for dark mode (không có trong Tailwind standard) */
 .dark .bg-primary-50 {
-  background-color: rgb(30 58 138 / 0.15);
+  background-color: rgb(0 102 140 / 0.15);
 }
 
 .dark .bg-primary-100 {
-  background-color: rgb(30 58 138 / 0.25);
+  background-color: rgb(0 102 140 / 0.25);
 }
 
 /* bg-white/90 — not caught by .dark .bg-white since the class name differs */
@@ -303,7 +371,7 @@
 }
 
 .dark .text-primary-700 {
-  color: rgb(143 190 238); /* primary-300 light */
+  color: rgb(113 196 239); /* primary-300 light */
 }
 
 .dark .text-red-700,
@@ -369,5 +437,3 @@
 .dark .custom-map-container {
   background-color: #cbd5e1; /* slate-300 — light enough for tiles to pop */
 }
-
-/* ========================================

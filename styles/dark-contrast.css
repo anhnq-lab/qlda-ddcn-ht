@@ -1,5 +1,6 @@
 /* Dark mode contrast + WCAG */
-   DARK MODE — CONTRAST OVERRIDE SYSTEM v2.1
+
+/* DARK MODE — CONTRAST OVERRIDE SYSTEM v2.1
    Đảm bảo WCAG AA (4.5:1) trên TOÀN BỘ giao diện dark mode
    Áp dụng cho tất cả component chưa chuyển sang CSS variables
    ============================================================================= */
@@ -126,7 +127,7 @@
 }
 .dark [role="option"], .dark [role="menuitem"] { color: #cbd5e1 !important; }
 .dark [role="option"]:hover, .dark [role="menuitem"]:hover { background-color: #293548 !important; }
-.dark [role="option"][aria-selected="true"] { background-color: rgba(74,144,226,0.15) !important; color: #93c5fd !important; }
+.dark [role="option"][aria-selected="true"] { background-color: rgba(0, 102, 140, 0.25) !important; color: #71c4ef !important; }
 
 /* ── 9. STATUS BADGES — light bg → dark semi-transparent ────────────────── */
 .dark .bg-green-100  { background-color: rgba(5,150,105,0.15) !important; }
@@ -186,8 +187,8 @@
 /* Frequency badge (Hàng quý, Hàng tháng, v.v.) */
 .dark [class*="frequency-badge"],
 .dark [class*="tan-suat"] {
-  background-color: rgba(74,144,226,0.1) !important;
-  color: #93c5fd !important;
+  background-color: rgba(0, 102, 140, 0.2) !important;
+  color: #71c4ef !important;
 }
 
 /* Department chip */
@@ -197,12 +198,12 @@
   color: #818cf8 !important;
 }
 
-/* =============================================================================
-   END: DARK MODE CONTRAST OVERRIDE SYSTEM v2.1
+
+/* END: DARK MODE CONTRAST OVERRIDE SYSTEM v2.1
    ============================================================================= */
 
-/* =============================================================================
-   WCAG AA CONTRAST BOOST — Phase C
+
+/* WCAG AA CONTRAST BOOST — Phase C
    Ensures ≥ 4.5:1 contrast ratio for all text on dark backgrounds
    ============================================================================= */
 
@@ -258,6 +259,6 @@
   color: #7e8ea0 !important; /* match slate-500 boost */
 }
 
-/* =============================================================================
-   END: WCAG AA CONTRAST BOOST — Phase C
+
+/* END: WCAG AA CONTRAST BOOST — Phase C
    ============================================================================= */

@@ -1,5 +1,5 @@
 /* Workflow module styles */
-   WORKFLOW MODULE — Quy trình Thực hiện Dự án
+/* WORKFLOW MODULE — Quy trình Thực hiện Dự án
    ======================================== */
 
 /* --- Loading --- */
@@ -334,8 +334,8 @@
   font-size: 11px; color: #92400e; line-height: 1.5;
 }
 .dark .wf-sla-hint { background: rgba(180,83,9,0.1); border-color: rgba(253,230,138,0.2); color: #fcd34d; }
-/* ========================================================================
-   WORKFLOW MASTER PAGE � .wfm-*
+
+/* WORKFLOW MASTER PAGE � .wfm-*
    Full-page admin editor for workflow templates + steps
    ======================================================================== */
 
@@ -1129,8 +1129,8 @@
   .wfm-detail-grid { grid-template-columns: 1fr; }
 }
 
-/* ========================================================================
-   PROJECT WORKFLOW TAB - TABLE VIEW EXTENSIONS
+
+/* PROJECT WORKFLOW TAB - TABLE VIEW EXTENSIONS
    ======================================================================== */
 
 /* View Toggle */
@@ -1544,4 +1544,3 @@
   color: #94a3b8;
 }
 
-/* ===================================================

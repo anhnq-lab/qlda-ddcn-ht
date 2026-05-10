@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`
+      className={`layout-sidebar
         h-full flex flex-col justify-between
         transition-all duration-300 ease-out bg-bg-surface border-r border-border z-50
         ${isCollapsed ? 'w-20' : 'w-64'}

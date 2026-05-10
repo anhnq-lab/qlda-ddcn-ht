@@ -142,3 +142,40 @@ export const useMoveDocument = () => {
         },
     });
 };
+
+// ─── Internal Workflow Hooks ──────────────────────────────────────────────────
+
+export const useCDEInternalWorkflowInstances = (projectId: string) =>
+    useQuery({
+        queryKey: ['cde-internal-workflow', projectId],
+        queryFn: () => CDEService.getInternalWorkflowInstances(projectId),
+        enabled: !!projectId,
+    });
+
+export const useCDEInternalWorkflowSteps = (instanceId: string | null) =>
+    useQuery({
+        queryKey: ['cde-internal-workflow-steps', instanceId],
+        queryFn: () => CDEService.getInternalWorkflowStepRecords(instanceId!),
+        enabled: !!instanceId,
+    });
+
+export const useCreateInternalWorkflow = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: CDEService.createInternalWorkflowInstance,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cde-internal-workflow'] });
+        },
+    });
+};
+
+export const useProcessInternalWorkflowStep = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: CDEService.processInternalWorkflowStep,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cde-internal-workflow'] });
+            queryClient.invalidateQueries({ queryKey: ['cde-internal-workflow-steps'] });
+        },
+    });
+};

@@ -1,5 +1,5 @@
 /* Custom scrollbar styles */
-   CUSTOM SCROLLBAR (Legacy Support)
+/* CUSTOM SCROLLBAR (Legacy Support)
    ======================================== */
 ::-webkit-scrollbar {
   width: 8px;
@@ -30,5 +30,3 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
-
-/* ========================================

@@ -141,3 +141,93 @@ export interface CDEAuditEntry {
     created_at: string;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Internal Workflow Types — Quy trình nội bộ giữa các phòng ban
+// ═══════════════════════════════════════════════════════════════
+
+export type InternalDepartment =
+    | 'REQUESTOR'   // Đơn vị đề nghị (bên ngoài / nhà thầu)
+    | 'HC_TH'       // Phòng Hành chính - Tổng hợp (bộ phận một cửa)
+    | 'DHDA'        // Phòng Điều hành dự án
+    | 'PTDV'        // Phòng Phát triển dịch vụ
+    | 'KT_TD'       // Phòng Kỹ thuật - Thẩm định
+    | 'KH_TC'       // Phòng Kế hoạch - Tài chính
+    | 'DIRECTOR'    // Giám đốc Ban QLDA
+    | 'EXTERNAL';   // Cơ quan ngoài (Sở TC, UBND tỉnh…)
+
+export type InternalWorkflowInstanceStatus =
+    | 'draft'        // Đang soạn hồ sơ
+    | 'in_progress'  // Đang lưu chuyển
+    | 'completed'    // Hoàn thành
+    | 'rejected'     // Bị từ chối
+    | 'on_hold';     // Tạm dừng
+
+export type InternalStepStatus =
+    | 'waiting'    // Chờ bước trước hoàn thành
+    | 'pending'    // Đến lượt, chờ xử lý
+    | 'done'       // Đã xử lý — chuyển tiếp
+    | 'rejected'   // Trả lại / từ chối
+    | 'skipped';   // Bỏ qua (không áp dụng)
+
+export interface InternalWorkflowStepDef {
+    step_no: number;
+    code: string;
+    name: string;
+    description: string;
+    department: InternalDepartment;
+    department_label: string;
+    action_label: string;  // nhãn nút hành động chính
+    sla_days: number;      // SLA ngày làm việc (0 = không giới hạn)
+    is_external: boolean;  // true = cơ quan ngoài ban QLDA
+    forms?: string[];      // mã biểu mẫu liên quan
+}
+
+export interface InternalWorkflowTemplate {
+    id: string;
+    code: string;
+    name: string;
+    description: string;
+    legal_basis: string[];  // văn bản pháp lý
+    steps: InternalWorkflowStepDef[];
+    applicable_doc_types: string[];  // loại tài liệu áp dụng
+    applicable_phases: string[];     // giai đoạn dự án áp dụng
+}
+
+export interface InternalWorkflowInstance {
+    id: string;
+    project_id: string;
+    doc_id: number | null;
+    template_id: string;
+    template_code: string;
+    template_name: string;
+    title: string;
+    current_step_no: number;
+    status: InternalWorkflowInstanceStatus;
+    created_by: string;
+    created_by_name: string;
+    started_at: string;
+    completed_at: string | null;
+    due_date: string | null;
+    metadata: Record<string, any>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface InternalWorkflowStepRecord {
+    id: string;
+    instance_id: string;
+    step_no: number;
+    step_code: string;
+    step_name: string;
+    department: InternalDepartment;
+    department_label: string;
+    actor_id: string | null;
+    actor_name: string | null;
+    status: InternalStepStatus;
+    comment: string;
+    attachments: string[];
+    acted_at: string | null;
+    deadline: string | null;
+    created_at: string;
+}
+

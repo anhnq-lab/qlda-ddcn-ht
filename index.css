@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* =============================================================================
    CIC ERP — Modular CSS Architecture
    Split from monolithic index.css (4000+ lines) into logical modules.
@@ -18,3 +14,7 @@
 @import './styles/workflow.css';
 @import './styles/tables.css';
 @import './styles/dark-contrast.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,15 +1,15 @@
-﻿import React from 'react';
+import React from 'react';
 import {
     FileText, Layout, BarChart3, PenTool, Briefcase, TrendingUp, Landmark
 } from 'lucide-react';
-import type { RegChapter } from '../types/regulations.types';
+import type { RegChapter, RegulationDocument } from '../types/regulations.types';
 import {
     OrgChart, SubmissionProcessChart, RelationshipMap, Article2Visual,
     AdminDeptDetail, PlanningDeptDetail, TechnicalDeptDetail,
     ProjectMgmtDeptDetail, ServiceDevDeptDetail
 } from '../components/RegulationsComponents';
 
-export const regulationsData: RegChapter[] = [
+const quyCheLamViecChapters: RegChapter[] = [
     {
         id: "CH1",
         code: "Chương I",
@@ -862,5 +862,35 @@ export const regulationsData: RegChapter[] = [
                 )
             }
         ]
+    }
+];
+
+export const regulationsData: RegulationDocument[] = [
+    {
+        id: "doc-qclv",
+        code: "QCLV-2026",
+        title: "Quy chế làm việc Ban QLDA",
+        description: "Quy chế làm việc của Ban Quản lý dự án đầu tư xây dựng các công trình dân dụng và công nghiệp.",
+        date: "2026",
+        status: "active",
+        chapters: quyCheLamViecChapters
+    },
+    {
+        id: "doc-qcctnb",
+        code: "QCCTNB-2026",
+        title: "Quy chế chi tiêu nội bộ",
+        description: "Quy chế quản lý, sử dụng tài sản nhà nước và chi tiêu nội bộ (Bản nháp).",
+        date: "2026",
+        status: "draft",
+        chapters: []
+    },
+    {
+        id: "doc-qcthdc",
+        code: "QCTHDC-2026",
+        title: "Quy chế dân chủ ở cơ sở",
+        description: "Quy chế thực hiện dân chủ ở cơ sở tại nơi làm việc.",
+        date: "2026",
+        status: "active",
+        chapters: []
     }
 ];

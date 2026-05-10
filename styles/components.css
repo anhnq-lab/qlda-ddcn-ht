@@ -1,5 +1,6 @@
 /* Component utility classes */
-   COMPONENT UTILITIES
+
+/* COMPONENT UTILITIES
    ======================================== */
 @layer components {
 
@@ -50,17 +51,17 @@
 
   .btn-primary {
     @apply bg-primary-600 text-white border-transparent;
-    box-shadow: 0 4px 14px 0 rgba(53, 122, 189, 0.39);
+    box-shadow: 0 4px 14px 0 rgba(0, 102, 140, 0.39);
   }
 
   .btn-primary:hover {
     @apply bg-primary-500 -translate-y-[2px];
-    box-shadow: 0 6px 20px 0 rgba(74, 144, 226, 0.45);
+    box-shadow: 0 6px 20px 0 rgba(0, 102, 140, 0.45);
   }
 
   .btn-primary:active {
     @apply bg-primary-700 translate-y-0 text-white border-transparent;
-    box-shadow: 0 2px 8px 0 rgba(36, 94, 150, 0.3);
+    box-shadow: 0 2px 8px 0 rgba(0, 102, 140, 0.3);
   }
 
   .btn-secondary {
@@ -404,5 +405,3 @@
     @apply border-t-2 border-gray-100 dark:border-slate-700 my-4;
   }
 }
-
-/* ========================================

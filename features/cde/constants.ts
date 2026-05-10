@@ -217,6 +217,173 @@ export const CDE_DOC_TYPES = [
     { value: 'other', label: 'Khác', phase: 'all' },
 ];
 
+// ═══════════════════════════════════════════════════════════════
+// Internal Workflow Templates — Quy trình nội bộ
+// ═══════════════════════════════════════════════════════════════
+import type { InternalWorkflowTemplate } from './types';
+
+// --- Quy trình Quyết toán Vốn Đầu tư Dự án Hoàn thành ---
+// Mã: QT.04.QTVDTDAHT — Ban QLDA đầu tư XDCT dân dụng và công nghiệp
+// Căn cứ: NĐ 99/2021/NĐ-CP, TT 96/2021/TT-BTC
+export const WORKFLOW_QUYET_TOAN: InternalWorkflowTemplate = {
+    id: 'qt_04_qtvdtdaht',
+    code: 'QT.04.QTVDTDAHT',
+    name: 'Quyết toán vốn đầu tư dự án hoàn thành',
+    description: 'Quy trình quyết toán hợp đồng A-B và quyết toán vốn đầu tư dự án hoàn thành theo quy định',
+    legal_basis: [
+        'Nghị định 99/2021/NĐ-CP ngày 19/11/2021',
+        'Thông tư 79/2019/TT-BTC ngày 14/11/2019',
+        'Thông tư 96/2021/TT-BTC ngày 11/11/2021',
+        'TCVN ISO 9001:2015',
+    ],
+    applicable_doc_types: ['settlement', 'contract_settlement', 'handover', 'acceptance'],
+    applicable_phases: ['completion'],
+    steps: [
+        {
+            step_no: 1,
+            code: 'B1_PREPARE',
+            name: 'Chuẩn bị hồ sơ đề nghị quyết toán A-B',
+            description: 'Đơn vị đề nghị quyết toán chuẩn bị hồ sơ gồm: Giấy đề nghị quyết toán A-B, Biên bản nghiệm thu, Bảng xác định khối lượng & giá trị, Hóa đơn GTGT, Biên bản bàn giao, Hồ sơ hoàn công, Hồ sơ quản lý chất lượng, Hồ sơ pháp lý khác.',
+            department: 'REQUESTOR',
+            department_label: 'Đơn vị đề nghị quyết toán',
+            action_label: 'Nộp hồ sơ',
+            sla_days: 0,
+            is_external: true,
+            forms: ['BM.01-QT.KHTC.04', 'BM.02-QT.KHTC.04', 'BM.03-QT.KHTC.04'],
+        },
+        {
+            step_no: 2,
+            code: 'B2_RECEIVE',
+            name: 'Tiếp nhận & kiểm tra hồ sơ',
+            description: 'Phòng HC-TH (bộ phận một cửa) kiểm tra, tiếp nhận hồ sơ quyết toán A-B. Nếu đủ điều kiện: chuyển Phòng ĐHDA/PTDV để xác nhận khối lượng.',
+            department: 'HC_TH',
+            department_label: 'Phòng HC-TH (Bộ phận một cửa)',
+            action_label: 'Tiếp nhận & chuyển xử lý',
+            sla_days: 1,
+            is_external: false,
+        },
+        {
+            step_no: 3,
+            code: 'B3_VOLUME_CONFIRM',
+            name: 'Xác nhận khối lượng quyết toán A-B',
+            description: 'Phòng ĐHDA hoặc Phòng PTDV (đối với chi phí GPMB, RPBM, ĐTM) kiểm tra hồ sơ kỹ thuật, xác nhận khối lượng đề nghị quyết toán A-B, sau đó chuyển hồ sơ về bộ phận một cửa.',
+            department: 'DHDA',
+            department_label: 'Phòng ĐHDA / Phòng PTDV',
+            action_label: 'Xác nhận khối lượng',
+            sla_days: 3,
+            is_external: false,
+        },
+        {
+            step_no: 4,
+            code: 'B4_VOLUME_REVIEW',
+            name: 'Kiểm tra, rà soát khối lượng quyết toán A-B',
+            description: 'Phòng KT-TĐ tiếp nhận hồ sơ từ bộ phận một cửa, kiểm tra rà soát sự phù hợp của hồ sơ quyết toán A-B (đơn giá, biện pháp thi công, định mức…), sau đó chuyển về bộ phận một cửa.',
+            department: 'KT_TD',
+            department_label: 'Phòng KT-TĐ',
+            action_label: 'Rà soát & chuyển tiếp',
+            sla_days: 2,
+            is_external: false,
+        },
+        {
+            step_no: 5,
+            code: 'B5_VALUE_CHECK',
+            name: 'Kiểm tra giá trị đề nghị quyết toán A-B',
+            description: 'Phòng KH-TC tiếp nhận hồ sơ từ bộ phận một cửa, kiểm tra thể thức hồ sơ và giá trị đề nghị quyết toán A-B (thẩm tra tài chính, đối chiếu thanh toán…), sau đó chuyển về bộ phận một cửa.',
+            department: 'KH_TC',
+            department_label: 'Phòng KH-TC',
+            action_label: 'Kiểm tra tài chính',
+            sla_days: 3,
+            is_external: false,
+        },
+        {
+            step_no: 6,
+            code: 'B6_APPROVE',
+            name: 'Phê duyệt hồ sơ quyết toán A-B',
+            description: 'Bộ phận một cửa trình Giám đốc Ban QLDA xem xét và phê duyệt hồ sơ quyết toán A-B cho đơn vị.',
+            department: 'DIRECTOR',
+            department_label: 'Giám đốc Ban QLDA',
+            action_label: 'Phê duyệt',
+            sla_days: 3,
+            is_external: false,
+        },
+        {
+            step_no: 7,
+            code: 'B7_ISSUE',
+            name: 'Ban hành / Trả hồ sơ quyết toán A-B',
+            description: 'Nếu hồ sơ hợp lệ: bộ phận một cửa đóng dấu, ban hành hồ sơ và gửi các phòng liên quan. Nếu chưa hợp lệ: yêu cầu đơn vị bổ sung, sửa đổi.',
+            department: 'HC_TH',
+            department_label: 'Phòng HC-TH (Bộ phận một cửa)',
+            action_label: 'Ban hành hồ sơ',
+            sla_days: 1,
+            is_external: false,
+        },
+        {
+            step_no: 8,
+            code: 'B8_AUDIT_SUBMIT',
+            name: 'Trình thẩm tra quyết toán VĐTDAHT',
+            description: 'Phòng KH-TC tổng hợp, rà soát toàn bộ hồ sơ chi phí dự án đầu tư; lập tờ trình đề nghị phê duyệt quyết toán của chủ đầu tư và báo cáo quyết toán vốn đầu tư theo TT 96/2021/TT-BTC; phối hợp ĐHDA/PTDV trình Sở Tài chính thẩm tra.',
+            department: 'KH_TC',
+            department_label: 'Phòng KH-TC + ĐHDA + PTDV',
+            action_label: 'Trình thẩm tra',
+            sla_days: 120, // ≤4 tháng (nhóm C), ≤6 (B), ≤9 (A)
+            is_external: false,
+            forms: ['BM.04-QT.KHTC.04', 'Mẫu 01-08/QTDA TT96/2021/TT-BTC'],
+        },
+        {
+            step_no: 9,
+            code: 'B9_SOC_REVIEW',
+            name: 'Sở Tài chính thẩm tra quyết toán',
+            description: 'Phòng KH-TC + ĐHDA + PTDV phối hợp Sở Tài chính giải trình vướng mắc. Sở Tài chính và Ban QLDA ký biên bản thống nhất số liệu. Sở Tài chính lập báo cáo thẩm tra và trình UBND tỉnh phê duyệt.',
+            department: 'EXTERNAL',
+            department_label: 'Sở Tài chính',
+            action_label: 'Thẩm tra & trình UBND',
+            sla_days: 90, // ≤3 tháng (C), ≤4 (B), ≤8 (A)
+            is_external: true,
+        },
+        {
+            step_no: 10,
+            code: 'B10_PROVINCE_APPROVE',
+            name: 'UBND tỉnh phê duyệt quyết toán VĐTDAHT',
+            description: 'UBND tỉnh xem xét hồ sơ và ban hành quyết định phê duyệt quyết toán vốn đầu tư dự án hoàn thành.',
+            department: 'EXTERNAL',
+            department_label: 'UBND tỉnh',
+            action_label: 'Phê duyệt quyết toán',
+            sla_days: 20, // ≤15 ngày (C), ≤20 (B), ≤1 tháng (A)
+            is_external: true,
+            forms: ['Mẫu 11/QTDA TT96/2021/TT-BTC'],
+        },
+        {
+            step_no: 11,
+            code: 'B11_ARCHIVE',
+            name: 'Lưu kho hồ sơ & xử lý công nợ sau quyết toán',
+            description: 'Sau khi có quyết định phê duyệt dự án hoàn thành, Phòng KH-TC thực hiện quy trình lưu kho hồ sơ và xử lý công nợ sau quyết toán.',
+            department: 'KH_TC',
+            department_label: 'Phòng KH-TC',
+            action_label: 'Hoàn tất lưu trữ',
+            sla_days: 30,
+            is_external: false,
+        },
+    ],
+};
+
+// Registry tất cả workflow nội bộ
+export const CDE_INTERNAL_WORKFLOW_TEMPLATES: InternalWorkflowTemplate[] = [
+    WORKFLOW_QUYET_TOAN,
+    // Thêm các quy trình khác ở đây (thanh toán, nghiệm thu, v.v.)
+];
+
+// Map department → màu badge
+export const DEPT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+    REQUESTOR: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-300 dark:border-gray-600' },
+    HC_TH:     { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-300 dark:border-blue-700' },
+    DHDA:      { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-300 dark:border-amber-700' },
+    PTDV:      { bg: 'bg-orange-50 dark:bg-orange-900/20', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-300 dark:border-orange-700' },
+    KT_TD:     { bg: 'bg-violet-50 dark:bg-violet-900/20', text: 'text-violet-700 dark:text-violet-300', border: 'border-violet-300 dark:border-violet-700' },
+    KH_TC:     { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-300 dark:border-emerald-700' },
+    DIRECTOR:  { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-300', border: 'border-red-300 dark:border-red-700' },
+    EXTERNAL:  { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-600 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600' },
+};
+
 // --- Helper functions ---
 export function getStatusColor(status: string): string {
     return CDE_STATUS_CONFIG[status as CDEStatusCode]?.color || '#9ca3af';
