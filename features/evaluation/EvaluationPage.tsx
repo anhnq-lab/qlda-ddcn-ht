@@ -1,300 +1,249 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Plus, RefreshCw, Search, AlertCircle, ClipboardCheck } from 'lucide-react';
-import { EvaluationService } from './services/evaluationService';
-import { EvaluationStatusBadge, ClassificationBadge } from './components/EvaluationBadges';
-import EvaluationFormModal from './components/EvaluationFormModal';
-import EvaluationSlidePanel from './components/EvaluationSlidePanel';
-import {
-    MONTHS_VI,
-    calcSelfTotal,
-    calcManagerTotal,
-    getClassification,
-    type EvaluationForm,
-    type EvaluationStatus,
-} from './types/evaluation.types';
+import React, { useState, useEffect } from 'react';
+import { 
+    FileText, CheckCircle2, XCircle, Search, SlidersHorizontal, Plus, ChevronRight, 
+    Calendar, Users, Eye, FileSignature 
+} from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
-import { useSlidePanel } from '../../context/SlidePanelContext';
 import { Role } from '../../types/employee.types';
+import { EvaluationService } from './services/evaluationService';
+import { 
+    type EvaluationForm, 
+    type EvaluationStatus, 
+    calcSelfTotal, 
+    calcManagerTotal, 
+    getClassification, 
+    STATUS_CONFIG, 
+    MONTHS_VI, 
+    CLASSIFICATION_CONFIG 
+} from './types/evaluation.types';
+import { useSlidePanel } from '../../context/SlidePanelContext';
+import EvaluationSlidePanel from './components/EvaluationSlidePanel';
 
-// ── Main Page ──────────────────────────────────────────────────────────────────
-const EvaluationPage: React.FC = () => {
+export const EvaluationPage: React.FC = () => {
     const { currentUser } = useAuth();
     const { openPanel, closePanel } = useSlidePanel();
     const isManager = currentUser?.Role === Role.Manager || currentUser?.Role === Role.Admin;
 
-    const now = new Date();
-    const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
-    const [filterYear, setFilterYear] = useState(now.getFullYear());
-    const [filterStatus, setFilterStatus] = useState<EvaluationStatus | ''>('');
-    const [search, setSearch] = useState('');
     const [forms, setForms] = useState<EvaluationForm[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedForm, setSelectedForm] = useState<EvaluationForm | null>(null);
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
+    const [statusFilter, setStatusFilter] = useState<EvaluationStatus | 'all'>('all');
+    const [deptFilter, setDeptFilter] = useState<string>('all');
+    const [departments, setDepartments] = useState<{code:string;name:string}[]>([]);
 
-    const fetchForms = useCallback(async () => {
+    useEffect(() => {
+        loadData();
+    }, [month, year, statusFilter, deptFilter, currentUser]);
+
+    const loadData = async () => {
         if (!currentUser) return;
         setLoading(true);
-        const params: Parameters<typeof EvaluationService.list>[0] = {
-            eval_year: filterYear,
-            eval_month: filterMonth || undefined,
-        };
-        if (filterStatus) params.status = filterStatus;
-        // Nhân viên thường chỉ thấy phiếu của mình
-        if (!isManager) params.employee_id = currentUser.EmployeeID;
-        const { data } = await EvaluationService.list(params);
-        setForms(data);
-        setLoading(false);
-    }, [currentUser, filterMonth, filterYear, filterStatus, isManager]);
 
-    useEffect(() => { fetchForms(); }, [fetchForms]);
-
-    const filtered = forms.filter(f =>
-        !search ||
-        f.employee_name.toLowerCase().includes(search.toLowerCase()) ||
-        f.department_name.toLowerCase().includes(search.toLowerCase())
-    );
-
-    const stats = {
-        total: filtered.length,
-        submitted: filtered.filter(f => f.status === 'submitted').length,
-        approved: filtered.filter(f => f.status === 'approved').length,
-        draft: filtered.filter(f => f.status === 'draft').length,
-    };
-
-    // ── Open slide panel to create new form ────────────────────────
-    const handleOpenCreate = () => {
-        if (!currentUser) return;
-        let panelId: string;
-
-        const handleSaved = async (savedForm: EvaluationForm) => {
-            await fetchForms();
-            // If submitted → close the panel
-            if (savedForm.status === 'submitted') {
-                setTimeout(() => closePanel(panelId), 1600);
+        try {
+            // Load departments for filter (managers only)
+            if (isManager && departments.length === 0) {
+                const { data: depts } = await supabase.from('departments').select('code, name').order('name');
+                if (depts) setDepartments(depts);
             }
-        };
 
-        panelId = openPanel({
-            title: 'Tạo phiếu đánh giá',
-            icon: <ClipboardCheck size={16} />,
-            url: '/evaluation/new',
-            component: (
-                <EvaluationSlidePanel
-                    onSaved={handleSaved}
-                    onClose={() => closePanel(panelId)}
-                />
-            ),
-        });
-    };
-
-    // ── Open slide panel to view/edit existing form ────────────────
-    const handleOpenForm = (form: EvaluationForm) => {
-        let panelId: string;
-
-        const handleSaved = async (savedForm: EvaluationForm) => {
-            await fetchForms();
-            // Update in manager modal if status changed to submitted
-            if (savedForm.status === 'submitted') {
-                setTimeout(() => closePanel(panelId), 1600);
+            // Load evaluations
+            const queryParams: any = { eval_month: month, eval_year: year };
+            
+            // Managers see their department (or all if Admin), Staff see only themselves
+            if (!isManager) {
+                queryParams.employee_id = currentUser.EmployeeID;
+            } else if (currentUser.Role !== Role.Admin) {
+                queryParams.department_code = currentUser.Department;
+            } else if (deptFilter !== 'all') {
+                queryParams.department_code = deptFilter;
             }
-        };
 
-        // Employee self-assess panel
-        const isOwnForm = form.employee_id === currentUser?.EmployeeID;
-        const canEdit = (form.status === 'draft' || form.status === 'rejected') && isOwnForm;
+            if (statusFilter !== 'all') queryParams.status = statusFilter;
 
-        if (!isManager || canEdit) {
-            panelId = openPanel({
-                title: `Phiếu đánh giá — ${form.employee_name}`,
-                icon: <ClipboardCheck size={16} />,
-                url: `/evaluation/${form.id}`,
-                component: (
-                    <EvaluationSlidePanel
-                        existingForm={form}
-                        onSaved={handleSaved}
-                        onClose={() => closePanel(panelId)}
-                    />
-                ),
-            });
-        } else {
-            // Manager review modal (existing)
-            setSelectedForm(form);
+            const { data } = await EvaluationService.list(queryParams);
+            setForms(data);
+        } catch (err) {
+            console.error('Error loading evaluations:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
+    const handleCreateNew = () => {
+        openPanel(
+            `Đánh giá tháng ${month}/${year}`,
+            <EvaluationSlidePanel 
+                defaultMonth={month} 
+                defaultYear={year} 
+                onSaved={(f) => {
+                    loadData(); // Reload list
+                }}
+                onClose={() => closePanel()}
+            />
+        );
+    };
+
+    const handleViewForm = (form: EvaluationForm) => {
+        openPanel(
+            `Phiếu đánh giá - ${form.employee_name}`,
+            <EvaluationSlidePanel 
+                existingForm={form}
+                onSaved={(f) => {
+                    loadData();
+                }}
+                onClose={() => closePanel()}
+            />
+        );
+    };
+
     return (
-        <div className="space-y-6">
-            {/* Page Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
-                        <ClipboardList size={20} className="text-primary-600 dark:text-primary-400" />
-                    </div>
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+            {/* Header */}
+            <div className="flex-none px-6 py-5 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Đánh giá, xếp loại</h1>
-                        <p className="text-sm text-slate-400">Phiếu đánh giá hàng tháng theo Quy chế QCDGXL-2026</p>
+                        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-display tracking-tight">
+                            Đánh giá xếp loại (PL01 & PL02)
+                        </h1>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Quy chế đánh giá, xếp loại cán bộ, viên chức (QCDGXL-2026)
+                        </p>
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={fetchForms} className="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Làm mới">
-                        <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                    </button>
-                    <button
-                        onClick={handleOpenCreate}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors shadow-lg shadow-primary-500/20"
+                    <button 
+                        onClick={handleCreateNew}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl shadow-sm shadow-primary-500/20 transition-all"
                     >
-                        <Plus size={16} />
-                        Tạo phiếu mới
+                        <Plus size={16} /> Tạo phiếu tự đánh giá
                     </button>
                 </div>
-            </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                    { label: 'Tổng phiếu', value: stats.total, color: 'text-slate-700 dark:text-slate-200', bg: 'bg-slate-50 dark:bg-slate-800' },
-                    { label: 'Chờ duyệt', value: stats.submitted, color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-                    { label: 'Đã duyệt', value: stats.approved, color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-                    { label: 'Nháp', value: stats.draft, color: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-800' },
-                ].map(s => (
-                    <div key={s.label} className={`${s.bg} rounded-xl p-4 border border-slate-100 dark:border-slate-700`}>
-                        <div className={`text-2xl font-black ${s.color}`}>{s.value}</div>
-                        <div className="text-xs text-slate-400 font-medium mt-0.5">{s.label}</div>
+                {/* Filters */}
+                <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                        <Calendar size={14} className="text-slate-400" />
+                        <select 
+                            value={month} 
+                            onChange={e => setMonth(+e.target.value)}
+                            className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                        >
+                            {MONTHS_VI.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
+                        </select>
+                        <span className="text-slate-300 dark:text-slate-600">/</span>
+                        <select 
+                            value={year} 
+                            onChange={e => setYear(+e.target.value)}
+                            className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                        >
+                            {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
                     </div>
-                ))}
-            </div>
 
-            {/* Filters */}
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                    {isManager && (
-                        <div className="relative flex-1">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                placeholder="Tìm nhân viên, phòng..."
-                                className="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400"
-                            />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                        <SlidersHorizontal size={14} className="text-slate-400" />
+                        <select 
+                            value={statusFilter} 
+                            onChange={e => setStatusFilter(e.target.value as any)}
+                            className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none"
+                        >
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="draft">Nháp</option>
+                            <option value="submitted">Chờ duyệt</option>
+                            <option value="approved">Đã duyệt</option>
+                            <option value="rejected">Từ chối</option>
+                        </select>
+                    </div>
+
+                    {currentUser?.Role === Role.Admin && (
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                            <Users size={14} className="text-slate-400" />
+                            <select 
+                                value={deptFilter} 
+                                onChange={e => setDeptFilter(e.target.value)}
+                                className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none max-w-[200px] truncate"
+                            >
+                                <option value="all">Tất cả phòng ban</option>
+                                {departments.map(d => (
+                                    <option key={d.code} value={d.code}>{d.name}</option>
+                                ))}
+                            </select>
                         </div>
                     )}
-
-                    <select value={filterMonth} onChange={e => setFilterMonth(+e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                        <option value={0}>Tất cả tháng</option>
-                        {MONTHS_VI.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                    </select>
-
-                    <select value={filterYear} onChange={e => setFilterYear(+e.target.value)}
-                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                        {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
-
-                    <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as EvaluationStatus | '')}
-                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="draft">Nháp</option>
-                        <option value="submitted">Chờ duyệt</option>
-                        <option value="approved">Đã duyệt</option>
-                        <option value="rejected">Từ chối</option>
-                    </select>
                 </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            {/* List */}
+            <div className="flex-1 overflow-auto p-6">
                 {loading ? (
-                    <div className="py-20 flex flex-col items-center gap-3 text-slate-400">
-                        <RefreshCw size={28} className="animate-spin text-primary-400" />
-                        <span className="text-sm">Đang tải dữ liệu...</span>
+                    <div className="flex items-center justify-center h-40">
+                        <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                ) : filtered.length === 0 ? (
-                    <div className="py-20 flex flex-col items-center gap-3 text-slate-400">
-                        <AlertCircle size={36} className="text-slate-300 dark:text-slate-600" />
-                        <p className="text-sm font-medium">Không có phiếu nào</p>
-                        <button
-                            onClick={handleOpenCreate}
-                            className="mt-2 flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 rounded-xl transition-colors"
-                        >
-                            <Plus size={14} />
-                            Tạo phiếu đầu tiên
-                        </button>
+                ) : forms.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                        <FileText size={48} className="mb-4 opacity-20" />
+                        <p className="text-sm">Chưa có phiếu đánh giá nào trong tháng này.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                                    <th className="text-left text-xs font-bold text-slate-500 uppercase tracking-wide px-5 py-3">Nhân viên</th>
-                                    {isManager && <th className="text-left text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Phòng</th>}
-                                    <th className="text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Kỳ</th>
-                                    <th className="text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Điểm TĐG</th>
-                                    <th className="text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Điểm TP</th>
-                                    <th className="text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Xếp loại</th>
-                                    <th className="text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-4 py-3">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {filtered.map(f => {
-                                    const selfTotal = calcSelfTotal(f);
-                                    const managerTotal = f.manager_score_1 !== null ? calcManagerTotal(f) : null;
-                                    const finalScore = managerTotal ?? selfTotal;
-                                    const cls = getClassification(finalScore);
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {forms.map(form => {
+                            const selfTotal = calcSelfTotal(form);
+                            const managerTotal = calcManagerTotal(form);
+                            const finalScore = form.status === 'approved' ? managerTotal : selfTotal;
+                            const cls = getClassification(finalScore);
+                            const clsCfg = CLASSIFICATION_CONFIG[cls];
+                            
+                            return (
+                                <div 
+                                    key={form.id}
+                                    onClick={() => handleViewForm(form)}
+                                    className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-700 transition-all cursor-pointer group"
+                                >
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{form.employee_name}</h3>
+                                            <p className="text-[11px] text-slate-500 mt-1">{form.chuc_vu || form.department_name}</p>
+                                        </div>
+                                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${STATUS_CONFIG[form.status].bg} ${STATUS_CONFIG[form.status].color}`}>
+                                            {STATUS_CONFIG[form.status].label}
+                                        </span>
+                                    </div>
 
-                                    return (
-                                        <tr key={f.id}
-                                            onClick={() => handleOpenForm(f)}
-                                            className="hover:bg-primary-50/50 dark:hover:bg-slate-800/70 cursor-pointer transition-colors group">
-                                            <td className="px-5 py-3.5">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-sm font-bold text-primary-700 dark:text-primary-300 shrink-0">
-                                                        {f.employee_name.charAt(0)}
-                                                    </div>
-                                                    <span className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-                                                        {f.employee_name}
-                                                    </span>
+                                    <div className={`p-4 rounded-xl border ${clsCfg.bg} ${clsCfg.darkBg} ${clsCfg.border} mb-4`}>
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">
+                                                    {form.status === 'approved' ? 'Điểm duyệt' : 'Điểm tự chấm'}
                                                 </div>
-                                            </td>
-                                            {isManager && (
-                                                <td className="px-4 py-3.5 text-slate-500 dark:text-slate-400 text-xs">{f.department_name}</td>
-                                            )}
-                                            <td className="px-4 py-3.5 text-center">
-                                                <span className="text-xs font-medium text-slate-500">{MONTHS_VI[f.eval_month - 1].replace('Tháng ', 'T')}/{f.eval_year}</span>
-                                            </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{selfTotal.toFixed(1)}</span>
-                                            </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                {managerTotal !== null
-                                                    ? <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{managerTotal.toFixed(1)}</span>
-                                                    : <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
-                                                }
-                                            </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                <ClassificationBadge score={finalScore} size="sm" />
-                                            </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                <EvaluationStatusBadge status={f.status} size="sm" />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                                <div className={`text-2xl font-black ${clsCfg.color} ${clsCfg.darkColor}`}>
+                                                    {finalScore.toFixed(0)} <span className="text-xs font-normal opacity-50">/100</span>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className={`text-xs font-bold ${clsCfg.color} ${clsCfg.darkColor}`}>
+                                                    {cls}
+                                                </div>
+                                                <div className="text-[10px] text-slate-500 mt-1">
+                                                    PL{form.form_type === 'leader' ? '01' : '02'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between text-[11px]">
+                                        <span className="text-slate-400">
+                                            {form.self_submitted_at ? `Nộp: ${new Date(form.self_submitted_at).toLocaleDateString('vi-VN')}` : 'Chưa nộp'}
+                                        </span>
+                                        <span className="text-primary-600 dark:text-primary-400 font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Xem chi tiết <ChevronRight size={12} />
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
-
-            {/* Manager review modal (unchanged) */}
-            {selectedForm && (
-                <EvaluationFormModal
-                    form={selectedForm}
-                    isOpen={!!selectedForm}
-                    onClose={() => setSelectedForm(null)}
-                    onRefresh={fetchForms}
-                    canManage={isManager}
-                />
-            )}
         </div>
     );
 };

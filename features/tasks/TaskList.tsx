@@ -78,7 +78,7 @@ const TaskList: React.FC = () => {
 
     // Data
     const { data: tasks = [], isLoading, error: tasksError } = useAllTasks();
-    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
+    const { scopedProjects: projects, scopedProjectIds, isGlobalScope } = useScopedProjects();
     const { data: employees = [] } = useEmployees();
 
     // Mutations
@@ -96,7 +96,7 @@ const TaskList: React.FC = () => {
     const filteredTasks = useMemo(() => tasks.filter(task => {
         // First: scope filter — only show tasks for scoped projects, but ALWAYS show internal/unassigned tasks
         const isInternal = task.TaskType === 'internal' || !task.ProjectID;
-        if (!isInternal && !scopedProjectIds.has(task.ProjectID)) return false;
+        if (!isInternal && !isGlobalScope && !scopedProjectIds.has(task.ProjectID)) return false;
         
         const matchSearch = task.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             task.Description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -122,7 +122,7 @@ const TaskList: React.FC = () => {
             new Date(task.DueDate) < new Date()
         );
         return matchSearch && matchStatus && matchProject && matchMonth && matchDepartment && matchOverdue;
-    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, scopedProjectIds, employees]);
+    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, scopedProjectIds, isGlobalScope, employees]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {

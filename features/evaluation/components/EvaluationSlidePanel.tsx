@@ -1,450 +1,316 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Save, Send, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import {
-    ClipboardList, Send, Save, ChevronDown, ChevronUp, Info,
-    CheckCircle2, AlertTriangle, User, Building2, Calendar,
-} from 'lucide-react';
-import {
-    EVALUATION_CRITERIA,
-    MONTHS_VI,
-    calcSelfTotal,
-    getClassification,
-    CLASSIFICATION_CONFIG,
-    STATUS_CONFIG,
-    type EvaluationForm,
+    type EvaluationForm, type EvalScores, type FormType, type G2_1_Leader, type G2_1_Staff,
+    type G4_Leader, type G4_Staff,
+    DEFAULT_LEADER_SCORES, DEFAULT_STAFF_SCORES,
+    calcG1, calcG2_1, calcTotal, getClassification, getFormTotal,
+    COMPLETION_LEVELS, MONTHS_VI, STATUS_CONFIG, CLASSIFICATION_CONFIG,
+    G1_ITEMS, G2_1_LEADER_ITEMS, G2_1_STAFF_ITEMS, G4_LEADER_ITEMS, G4_STAFF_ITEMS,
 } from '../types/evaluation.types';
 import { EvaluationService } from '../services/evaluationService';
 import { useAuth } from '../../../context/AuthContext';
+import { Role } from '../../../types/employee.types';
 
-// ─── Props ────────────────────────────────────────────────────────────────────
-interface Props {
-    /** Nếu có form sẵn → edit mode; nếu null → create mode */
-    existingForm?: EvaluationForm | null;
-    /** Tháng/năm mặc định khi tạo mới */
-    defaultMonth?: number;
-    defaultYear?: number;
-    onSaved?: (form: EvaluationForm) => void;
-    onClose?: () => void;
-}
-
-// ─── Score slider with progress bar ──────────────────────────────────────────
-const CriteriaCard: React.FC<{
-    index: number;
-    label: string;
-    description: string;
-    maxScore: number;
-    value: number;
-    onChange: (v: number) => void;
-    disabled?: boolean;
-}> = ({ index, label, description, maxScore, value, onChange, disabled }) => {
-    const [expanded, setExpanded] = useState(false);
-    const min = maxScore === 5 && index === 6 ? -5 : 0; // tiêu chí 7 có thể âm
-    const pct = Math.max(0, Math.min(100, ((value - min) / (maxScore - min)) * 100));
-
-    const barColor =
-        pct >= 80 ? 'bg-emerald-500' :
-        pct >= 60 ? 'bg-blue-500' :
-        pct >= 40 ? 'bg-amber-400' :
-        'bg-red-400';
-
-    const step = maxScore >= 10 ? 1 : 0.5;
-
-    return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all">
-            {/* Header row */}
-            <div className="flex items-start gap-3 p-4">
-                {/* Index badge */}
-                <div className="w-7 h-7 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-xs font-black text-primary-600 dark:text-primary-400">{index}</span>
+// ─── Mini score row ───────────────────────────────────────────
+const ScoreRow: React.FC<{code?:string;label:string;max:number;value:number;onChange:(v:number)=>void;disabled?:boolean}> = ({code,label,max,value,onChange,disabled})=>{
+    const pct = Math.min(100,(value/max)*100);
+    const col = pct>=80?'bg-emerald-500':pct>=60?'bg-blue-500':pct>=40?'bg-amber-400':'bg-red-400';
+    return(
+        <div className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
+            {code&&<span className="text-[10px] font-bold text-slate-400 w-7 shrink-0">{code}</span>}
+            <p className="text-xs text-slate-600 dark:text-slate-300 flex-1 leading-snug">{label}</p>
+            <div className="flex items-center gap-2 shrink-0">
+                <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-600 rounded-full hidden sm:block">
+                    <div className={`h-full rounded-full transition-all ${col}`} style={{width:`${pct}%`}}/>
                 </div>
-
-                {/* Label + toggle description */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-snug flex-1">{label}</p>
-                        <button
-                            onClick={() => setExpanded(v => !v)}
-                            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 shrink-0"
-                        >
-                            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </button>
-                    </div>
-
-                    {/* Score display */}
-                    <div className="flex items-center gap-3 mt-2">
-                        <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all duration-300 ${barColor}`}
-                                style={{ width: `${pct}%` }}
-                            />
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                            <input
-                                type="number"
-                                min={min}
-                                max={maxScore}
-                                step={step}
-                                value={value}
-                                disabled={disabled}
-                                onChange={e => {
-                                    const v = parseFloat(e.target.value);
-                                    if (!isNaN(v)) onChange(Math.min(maxScore, Math.max(min, v)));
-                                }}
-                                className="w-14 text-center text-base font-black text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                            <span className="text-xs text-slate-400 font-medium">/{maxScore}</span>
-                        </div>
-                    </div>
-
-                    {/* Slider */}
-                    {!disabled && (
-                        <input
-                            type="range"
-                            min={min}
-                            max={maxScore}
-                            step={step}
-                            value={value}
-                            onChange={e => onChange(parseFloat(e.target.value))}
-                            className="w-full mt-2 accent-primary-500 cursor-pointer"
-                        />
-                    )}
+                {!disabled
+                    ? <input type="range" min={0} max={max} step={1} value={value}
+                        onChange={e=>onChange(+e.target.value)}
+                        className="w-20 accent-primary-500 cursor-pointer"/>
+                    : null}
+                <div className="flex items-center gap-0.5 text-xs font-black text-slate-800 dark:text-slate-200 w-12 text-right">
+                    <input type="number" min={0} max={max} value={value} disabled={disabled}
+                        onChange={e=>{const v=+e.target.value;if(!isNaN(v))onChange(Math.min(max,Math.max(0,v)));}}
+                        className="w-8 text-center bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-primary-400 disabled:opacity-50"/>
+                    <span className="text-slate-400">/{max}</span>
                 </div>
             </div>
-
-            {/* Expandable description */}
-            {expanded && (
-                <div className="px-4 pb-4 pt-0">
-                    <div className="flex items-start gap-2 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                        <Info size={14} className="text-slate-400 shrink-0 mt-0.5" />
-                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
 
-// ─── Main SlidePanel Content ──────────────────────────────────────────────────
-const EvaluationSlidePanel: React.FC<Props> = ({
-    existingForm,
-    defaultMonth,
-    defaultYear,
-    onSaved,
-    onClose,
-}) => {
+// ─── Section card ─────────────────────────────────────────────
+const Section: React.FC<{title:string;subtitle?:string;score:number;maxScore:number;children:React.ReactNode;defaultOpen?:boolean}> = ({title,subtitle,score,maxScore,children,defaultOpen=true})=>{
+    const [open,setOpen]=useState(defaultOpen);
+    const pct=Math.min(100,(score/maxScore)*100);
+    return(
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-3">
+            <button onClick={()=>setOpen(v=>!v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{title}</span>
+                        {subtitle&&<span className="text-xs text-slate-400">{subtitle}</span>}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 h-1 bg-slate-100 dark:bg-slate-600 rounded-full">
+                            <div className="h-full bg-primary-500 rounded-full transition-all" style={{width:`${pct}%`}}/>
+                        </div>
+                        <span className="text-xs font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">{score}/{maxScore}</span>
+                    </div>
+                </div>
+                {open?<ChevronUp size={14} className="text-slate-400 shrink-0"/>:<ChevronDown size={14} className="text-slate-400 shrink-0"/>}
+            </button>
+            {open&&<div className="px-4 pb-3">{children}</div>}
+        </div>
+    );
+};
+
+// ─── Main Panel ───────────────────────────────────────────────
+interface Props {
+    existingForm?: EvaluationForm|null;
+    defaultMonth?: number;
+    defaultYear?: number;
+    onSaved?: (f: EvaluationForm) => void;
+    onClose?: () => void;
+}
+
+const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaultYear,onSaved,onClose}) => {
     const { currentUser } = useAuth();
     const now = new Date();
+    const isManager = currentUser?.Role===Role.Manager||currentUser?.Role===Role.Admin;
 
-    // Period selector (only for new forms)
-    const [month, setMonth] = useState(defaultMonth ?? now.getMonth() + 1);
-    const [year, setYear] = useState(defaultYear ?? now.getFullYear());
+    const [month,setMonth]   = useState(defaultMonth??now.getMonth()+1);
+    const [year,setYear]     = useState(defaultYear??now.getFullYear());
+    const [formType,setFormType] = useState<FormType>(existingForm?.form_type??'staff');
+    const [chucVu,setChucVu] = useState(existingForm?.chuc_vu??'');
+    const [notes,setNotes]   = useState(existingForm?.self_notes??'');
+    const [saving,setSaving] = useState(false);
+    const [error,setError]   = useState<string|null>(null);
+    const [success,setSuccess]= useState<string|null>(null);
 
-    // Scores — initialize from existing or zero
-    const initScores = useCallback(() => ({
-        s1: existingForm?.self_score_1 ?? 0,
-        s2: existingForm?.self_score_2 ?? 0,
-        s3: existingForm?.self_score_3 ?? 0,
-        s4: existingForm?.self_score_4 ?? 0,
-        s5: existingForm?.self_score_5 ?? 0,
-        s6: existingForm?.self_score_6 ?? 0,
-        s7: existingForm?.self_score_7 ?? 0,
-    }), [existingForm]);
+    const initScores = useCallback(():EvalScores=>{
+        if(existingForm?.self_scores && Object.keys(existingForm.self_scores).length>0)
+            return existingForm.self_scores;
+        return formType==='leader'?{...DEFAULT_LEADER_SCORES}:{...DEFAULT_STAFF_SCORES};
+    },[existingForm,formType]);
 
-    const [scores, setScores] = useState<{s1:number;s2:number;s3:number;s4:number;s5:number;s6:number;s7:number}>(initScores);
-    const [notes, setNotes] = useState(existingForm?.self_notes ?? '');
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
+    const [scores,setScores] = useState<EvalScores>(initScores);
 
-    // Reset khi existingForm thay đổi
-    useEffect(() => {
+    useEffect(()=>{
         setScores(initScores());
-        setNotes(existingForm?.self_notes ?? '');
-    }, [existingForm, initScores]);
+        setNotes(existingForm?.self_notes??'');
+        setChucVu(existingForm?.chuc_vu??'');
+    },[existingForm,initScores]);
 
-    const scoreValues = Object.values(scores);
-    const total = scoreValues.reduce((a, b) => a + b, 0);
-    const classification = getClassification(total);
-    const clsCfg = CLASSIFICATION_CONFIG[classification];
+    // When formType changes on new form, reset scores
+    useEffect(()=>{
+        if(!existingForm) setScores(formType==='leader'?{...DEFAULT_LEADER_SCORES}:{...DEFAULT_STAFF_SCORES});
+    },[formType,existingForm]);
 
-    const isEditable = !existingForm || existingForm.status === 'draft' || existingForm.status === 'rejected';
+    const isEditable = !existingForm||existingForm.status==='draft'||existingForm.status==='rejected';
+    const total = calcTotal(scores);
+    const cls   = getClassification(total);
+    const clsCfg = CLASSIFICATION_CONFIG[cls];
+    const g2_1items = formType==='leader'?G2_1_LEADER_ITEMS:G2_1_STAFF_ITEMS;
+    const g4items   = formType==='leader'?G4_LEADER_ITEMS:G4_STAFF_ITEMS;
 
-    const setScore = (key: keyof typeof scores) => (v: number) =>
-        setScores(prev => ({ ...prev, [key]: v }));
+    const setG1 = (k:string,v:number)=>setScores(p=>({...p,g1:{...p.g1,[k]:v}}));
+    const setG2_1 = (k:string,v:number)=>setScores(p=>({...p,g2_1:{...p.g2_1,[k]:v}}));
+    const setG2_2Level = (lv:string)=>{
+        const found=COMPLETION_LEVELS.find(c=>c.level===lv);
+        setScores(p=>({...p,g2_2:{level:found?.level??null,score:found?.score??0}}));
+    };
+    const setG3 = (k:string,v:boolean)=>setScores(p=>({...p,g3:{...p.g3,[k]:v}}));
+    const setG4 = (k:string,v:boolean)=>setScores(p=>({...p,g4:{...p.g4,[k]:v}}));
 
-    const buildScorePayload = () => ({
-        self_score_1: scores.s1,
-        self_score_2: scores.s2,
-        self_score_3: scores.s3,
-        self_score_4: scores.s4,
-        self_score_5: scores.s5,
-        self_score_6: scores.s6,
-        self_score_7: scores.s7,
-        self_notes: notes || null,
-    });
-
-    // ── Lưu nháp ──────────────────────────────────────────────────
-    const handleSaveDraft = async () => {
-        if (!currentUser) return;
+    const persist = async (submit=false) => {
+        if(!currentUser) return;
         setSaving(true); setError(null); setSuccess(null);
+        const payload = {...scores,formType};
 
         let form = existingForm;
-
-        // Tạo mới nếu chưa có
-        if (!form) {
-            const check = await EvaluationService.getByEmployeePeriod({
-                employee_id: currentUser.EmployeeID,
-                eval_month: month,
-                eval_year: year,
-            });
-            if (check.data) {
-                form = check.data;
-            } else {
-                const { data, error: createErr } = await EvaluationService.create({
-                    employee_id: currentUser.EmployeeID,
-                    employee_name: currentUser.FullName,
-                    department_code: currentUser.Department,
-                    department_name: currentUser.Department,
-                    eval_month: month,
-                    eval_year: year,
-                    ...buildScorePayload(),
+        if(!form){
+            const ck = await EvaluationService.getByEmployeePeriod({employee_id:currentUser.EmployeeID,eval_month:month,eval_year:year});
+            if(ck.data){ form=ck.data; }
+            else {
+                const {data,error:e} = await EvaluationService.create({
+                    employee_id:currentUser.EmployeeID, employee_name:currentUser.FullName,
+                    chuc_vu:chucVu||null, department_code:currentUser.Department,
+                    department_name:currentUser.Department, eval_month:month, eval_year:year,
+                    form_type:formType, self_scores:payload as EvalScores,
                 });
-                if (createErr || !data) {
-                    setError(createErr ?? 'Không thể tạo phiếu. Vui lòng thử lại.');
-                    setSaving(false);
-                    return;
-                }
                 setSaving(false);
-                setSuccess('Đã lưu nháp!');
-                onSaved?.(data);
+                if(e||!data){setError(e??'Lỗi tạo phiếu');return;}
+                if(submit){
+                    await EvaluationService.submit(data.id);
+                    const {data:r}=await EvaluationService.getById(data.id);
+                    if(r){onSaved?.(r);setSuccess('Đã nộp phiếu!');setTimeout(()=>onClose?.(),1500);}
+                } else {setSuccess('Đã lưu nháp!');onSaved?.(data);}
                 return;
             }
         }
-
-        // Cập nhật nếu đã có
-        const { error: updateErr } = await EvaluationService.updateSelfScores(form.id, buildScorePayload());
+        await EvaluationService.updateSelfScores(form.id, payload as EvalScores, chucVu||null);
+        if(submit){
+            await EvaluationService.submit(form.id);
+            setSuccess('Đã nộp phiếu!');
+            setTimeout(()=>onClose?.(),1500);
+        } else { setSuccess('Đã lưu nháp!'); }
+        const {data:r}=await EvaluationService.getById(form.id);
+        if(r) onSaved?.(r);
         setSaving(false);
-        if (updateErr) { setError(updateErr); return; }
-        setSuccess('Đã lưu nháp!');
-
-        // Refresh form
-        const { data: refreshed } = await EvaluationService.getById(form.id);
-        if (refreshed) onSaved?.(refreshed);
     };
 
-    // ── Nộp phiếu ─────────────────────────────────────────────────
-    const handleSubmit = async () => {
-        if (!currentUser) return;
-        setSaving(true); setError(null); setSuccess(null);
-
-        let form = existingForm;
-
-        // Tạo/cập nhật trước
-        if (!form) {
-            const check = await EvaluationService.getByEmployeePeriod({
-                employee_id: currentUser.EmployeeID,
-                eval_month: month,
-                eval_year: year,
-            });
-            if (check.data) {
-                form = check.data;
-                await EvaluationService.updateSelfScores(form.id, buildScorePayload());
-            } else {
-                const { data, error: createErr } = await EvaluationService.create({
-                    employee_id: currentUser.EmployeeID,
-                    employee_name: currentUser.FullName,
-                    department_code: currentUser.Department,
-                    department_name: currentUser.Department,
-                    eval_month: month,
-                    eval_year: year,
-                    ...buildScorePayload(),
-                });
-                if (createErr || !data) {
-                    setError(createErr ?? 'Không thể tạo phiếu. Vui lòng thử lại.');
-                    setSaving(false);
-                    return;
-                }
-                form = data;
-            }
-        } else {
-            await EvaluationService.updateSelfScores(form.id, buildScorePayload());
-        }
-
-        // Nộp
-        const { error: submitErr } = await EvaluationService.submit(form!.id);
-        setSaving(false);
-        if (submitErr) { setError(submitErr); return; }
-
-        setSuccess('Đã nộp phiếu thành công!');
-        const { data: refreshed } = await EvaluationService.getById(form!.id);
-        if (refreshed) onSaved?.(refreshed);
-
-        // Đóng panel sau 1.5s
-        setTimeout(() => onClose?.(), 1500);
-    };
-
-    const scoreKeys = ['s1','s2','s3','s4','s5','s6','s7'] as const;
-
-    return (
+    return(
         <div className="flex flex-col h-full">
-            {/* ── Header info ─────────────────────────────────── */}
-            <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800 space-y-4">
-
-                {/* Thông tin kỳ */}
-                {!existingForm ? (
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Kỳ đánh giá — Tháng</label>
-                            <select value={month} onChange={e => setMonth(+e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                                {MONTHS_VI.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                            </select>
+            {/* Header meta */}
+            <div className="px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800 space-y-3">
+                {!existingForm&&(
+                    <>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Tháng</label>
+                                <select value={month} onChange={e=>setMonth(+e.target.value)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                    {MONTHS_VI.map((m,i)=><option key={i} value={i+1}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Năm</label>
+                                <select value={year} onChange={e=>setYear(+e.target.value)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                    {[2024,2025,2026,2027].map(y=><option key={y} value={y}>{y}</option>)}
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 block">Năm</label>
-                            <select value={year} onChange={e => setYear(+e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400">
-                                {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-                            </select>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Loại phiếu</label>
+                                <select value={formType} onChange={e=>setFormType(e.target.value as FormType)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                    <option value="staff">PL02 — Viên chức, người lao động</option>
+                                    <option value="leader">PL01 — Cán bộ lãnh đạo, quản lý</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">{formType==='leader'?'Chức vụ':'Vị trí việc làm'}</label>
+                                <input value={chucVu} onChange={e=>setChucVu(e.target.value)} placeholder="Nhập chức vụ..." className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400"/>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-4 flex-wrap">
-                        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                            <User size={14} className="text-slate-400" />
-                            <span className="font-semibold">{existingForm.employee_name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-500">
-                            <Building2 size={14} className="text-slate-400" />
-                            <span>{existingForm.department_name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-500">
-                            <Calendar size={14} className="text-slate-400" />
-                            <span>{MONTHS_VI[existingForm.eval_month - 1]} {existingForm.eval_year}</span>
-                        </div>
-                        {/* Status */}
-                        {(() => {
-                            const sc = STATUS_CONFIG[existingForm.status];
-                            return (
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sc.bg} ${sc.darkBg} ${sc.color} ${sc.darkColor}`}>
-                                    {sc.label}
-                                </span>
-                            );
-                        })()}
-                    </div>
+                    </>
                 )}
 
-                {/* Total score preview */}
-                <div className={`flex items-center gap-4 px-4 py-3 rounded-xl border ${clsCfg.border} ${clsCfg.bg} ${clsCfg.darkBg}`}>
+                {/* Score summary */}
+                <div className={`flex items-center gap-3 px-3 py-2 rounded-xl border ${clsCfg.border} ${clsCfg.bg} ${clsCfg.darkBg}`}>
                     <div className="text-center">
-                        <div className={`text-3xl font-black ${clsCfg.color} ${clsCfg.darkColor}`}>
-                            {total.toFixed(1)}
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-medium">/ 100</div>
+                        <div className={`text-2xl font-black ${clsCfg.color} ${clsCfg.darkColor}`}>{total.toFixed(0)}</div>
+                        <div className="text-[9px] text-slate-400">/100</div>
                     </div>
-                    <div className="flex-1">
-                        <div className={`text-sm font-bold ${clsCfg.color} ${clsCfg.darkColor}`}>{classification}</div>
-                        <div className="text-xs text-slate-400 mt-0.5">Dự kiến xếp loại</div>
-                        {/* Mini breakdown */}
-                        <div className="flex gap-1 mt-2 flex-wrap">
-                            {scoreKeys.map((k, i) => (
-                                <span key={k} className="text-[10px] bg-white dark:bg-slate-700 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600">
-                                    T{i+1}: {scores[k]}
-                                </span>
-                            ))}
+                    <div>
+                        <div className={`text-xs font-bold ${clsCfg.color} ${clsCfg.darkColor}`}>{cls}</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                            Mục I: {calcG1(scores)} · Mục II: {calcG2_1(scores)+scores.g2_2.score} · Thưởng: +{(scores.g3.bonus1?3:0)+(scores.g3.bonus2?2:0)}
                         </div>
                     </div>
+                    {existingForm&&<span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_CONFIG[existingForm.status].bg} ${STATUS_CONFIG[existingForm.status].color}`}>{STATUS_CONFIG[existingForm.status].label}</span>}
                 </div>
             </div>
 
-            {/* ── Criteria list ────────────────────────────────── */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-                {EVALUATION_CRITERIA.map((c, i) => (
-                    <CriteriaCard
-                        key={c.key}
-                        index={i + 1}
-                        label={c.label}
-                        description={c.description}
-                        maxScore={c.maxScore}
-                        value={scores[scoreKeys[i]]}
-                        onChange={setScore(scoreKeys[i])}
-                        disabled={!isEditable}
-                    />
-                ))}
+            {/* Scrollable criteria */}
+            <div className="flex-1 overflow-y-auto px-4 py-3">
+
+                {/* I — Ý thức kỷ luật */}
+                <Section title="I. Ý thức tổ chức kỷ luật, phẩm chất đạo đức lối sống" maxScore={20} score={calcG1(scores)}>
+                    {G1_ITEMS.map(c=>(
+                        <ScoreRow key={c.key} label={c.label} max={c.max} value={(scores.g1 as Record<string,number>)[c.key]} onChange={v=>setG1(c.key,v)} disabled={!isEditable}/>
+                    ))}
+                </Section>
+
+                {/* II.1 — Năng lực & kỹ năng */}
+                <Section title="II.1 Năng lực và kỹ năng" maxScore={20} score={calcG2_1(scores)}>
+                    {g2_1items.map(c=>(
+                        <ScoreRow key={c.key} code={c.code} label={c.label} max={c.max}
+                            value={(scores.g2_1 as Record<string,number>)[c.key]??0}
+                            onChange={v=>setG2_1(c.key,v)} disabled={!isEditable}/>
+                    ))}
+                </Section>
+
+                {/* II.2 — Mức hoàn thành */}
+                <Section title="II.2 Kết quả thực hiện nhiệm vụ" subtitle="(chọn 1 mức)" maxScore={55} score={scores.g2_2.score} defaultOpen={true}>
+                    <div className="space-y-1.5 pt-1">
+                        {COMPLETION_LEVELS.map(lv=>(
+                            <label key={lv.level} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${scores.g2_2.level===lv.level?'border-primary-400 bg-primary-50 dark:bg-primary-900/20':'border-slate-200 dark:border-slate-700 hover:border-primary-300'} ${!isEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <input type="radio" name="completion" value={lv.level??''} checked={scores.g2_2.level===lv.level} disabled={!isEditable} onChange={()=>setG2_2Level(lv.level??'')} className="accent-primary-500"/>
+                                <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{lv.label}</span>
+                                <span className="text-xs font-black text-primary-600 dark:text-primary-400">{lv.score} đ</span>
+                            </label>
+                        ))}
+                    </div>
+                </Section>
+
+                {/* III — Điểm thưởng */}
+                <Section title="III. Điểm thưởng" maxScore={5} score={(scores.g3.bonus1?3:0)+(scores.g3.bonus2?2:0)} defaultOpen={false}>
+                    <div className="space-y-1.5 pt-1">
+                        {[{k:'bonus1',label:'Được Ban giám đốc tuyên dương',pts:3},{k:'bonus2',label:'Tham mưu đột phá; tham mưu ≥10 văn bản',pts:2}].map(b=>(
+                            <label key={b.k} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g3 as Record<string,boolean>)[b.k]?'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20':'border-slate-200 dark:border-slate-700 hover:border-emerald-300'} ${!isEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <input type="checkbox" checked={(scores.g3 as Record<string,boolean>)[b.k]} disabled={!isEditable} onChange={e=>setG3(b.k,e.target.checked)} className="accent-emerald-500"/>
+                                <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{b.label}</span>
+                                <span className="text-xs font-black text-emerald-600">+{b.pts} đ</span>
+                            </label>
+                        ))}
+                    </div>
+                </Section>
+
+                {/* IV — Điểm trừ */}
+                <Section title="IV. Điểm trừ" subtitle="(tích nếu bị trừ)" maxScore={1} score={0} defaultOpen={false}>
+                    <div className="space-y-1.5 pt-1">
+                        {g4items.map(d=>(
+                            <label key={d.key} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g4 as Record<string,boolean>)[d.key]?'border-red-400 bg-red-50 dark:bg-red-900/20':'border-slate-200 dark:border-slate-700 hover:border-red-300'} ${!isEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <input type="checkbox" checked={(scores.g4 as Record<string,boolean>)[d.key]} disabled={!isEditable} onChange={e=>setG4(d.key,e.target.checked)} className="accent-red-500 mt-0.5"/>
+                                <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 leading-snug">{d.label}</span>
+                                <span className="text-xs font-black text-red-600 shrink-0">-{d.points} đ</span>
+                            </label>
+                        ))}
+                    </div>
+                </Section>
 
                 {/* Ghi chú */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block mb-2">
-                        Nhận xét / Ghi chú cá nhân
-                    </label>
-                    <textarea
-                        rows={4}
-                        value={notes}
-                        disabled={!isEditable}
-                        onChange={e => setNotes(e.target.value)}
-                        placeholder="Mô tả kết quả công việc trong tháng, thành tích nổi bật, khó khăn gặp phải..."
-                        className="w-full text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
+                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-3">
+                    <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-2 block">Nhận xét cá nhân</label>
+                    <textarea rows={3} value={notes} disabled={!isEditable} onChange={e=>setNotes(e.target.value)}
+                        placeholder="Kết quả công việc nổi bật, khó khăn trong tháng..."
+                        className="w-full text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50"/>
                 </div>
 
-                {/* Nhận xét từ chối (nếu có) */}
-                {existingForm?.status === 'rejected' && existingForm.manager_notes && (
-                    <div className="flex gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                        <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                {/* Rejection note */}
+                {existingForm?.status==='rejected'&&existingForm.manager_notes&&(
+                    <div className="flex gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-3">
+                        <AlertTriangle size={14} className="text-red-500 shrink-0 mt-0.5"/>
                         <div>
-                            <p className="text-xs font-bold text-red-700 dark:text-red-400 mb-1">
-                                Lý do từ chối (bởi {existingForm.manager_name}):
-                            </p>
-                            <p className="text-sm text-red-600 dark:text-red-300">{existingForm.manager_notes}</p>
+                            <p className="text-[10px] font-bold text-red-700 mb-1">Lý do từ chối — {existingForm.manager_name}:</p>
+                            <p className="text-xs text-red-600">{existingForm.manager_notes}</p>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* ── Footer ──────────────────────────────────────── */}
-            <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                {/* Feedback messages */}
-                {error && (
-                    <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                        <AlertTriangle size={14} className="text-red-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
-                    </div>
-                )}
-                {success && (
-                    <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-                        <CheckCircle2 size={14} className="text-emerald-600" />
-                        <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{success}</p>
-                    </div>
-                )}
-
-                {isEditable ? (
-                    <div className="flex gap-3">
-                        <button
-                            onClick={handleSaveDraft}
-                            disabled={saving}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
-                        >
-                            <Save size={15} />
-                            {saving ? 'Đang lưu...' : 'Lưu nháp'}
+            {/* Footer */}
+            <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                {error&&<div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg text-xs text-red-600"><AlertTriangle size={12}/>{error}</div>}
+                {success&&<div className="flex items-center gap-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-700"><CheckCircle2 size={12}/>{success}</div>}
+                {isEditable?(
+                    <div className="flex gap-2">
+                        <button onClick={()=>persist(false)} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50">
+                            <Save size={14}/>{saving?'Đang lưu...':'Lưu nháp'}
                         </button>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={saving}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 shadow-lg shadow-primary-500/20"
-                        >
-                            <Send size={15} />
-                            {saving ? 'Đang nộp...' : 'Nộp phiếu'}
+                        <button onClick={()=>persist(true)} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 shadow-lg shadow-primary-500/20">
+                            <Send size={14}/>{saving?'Đang nộp...':'Nộp phiếu'}
                         </button>
                     </div>
-                ) : (
-                    <div className="text-center py-3 text-sm text-slate-400">
-                        {existingForm?.status === 'submitted' && '⏳ Đang chờ trưởng phòng phê duyệt'}
-                        {existingForm?.status === 'approved' && '✅ Phiếu đã được phê duyệt'}
-                    </div>
+                ):(
+                    <p className="text-center text-xs text-slate-400 py-2">
+                        {existingForm?.status==='submitted'&&'⏳ Đang chờ trưởng phòng phê duyệt'}
+                        {existingForm?.status==='approved'&&'✅ Phiếu đã được phê duyệt'}
+                    </p>
                 )}
-
-                <p className="text-center text-[10px] text-slate-300 dark:text-slate-600">
-                    Quy chế đánh giá, xếp loại QCDGXL-2026 · Tổng tối đa 100 điểm
-                </p>
+                <p className="text-center text-[10px] text-slate-300 dark:text-slate-600">PL{formType==='leader'?'01':'02'} · Quy chế QCDGXL-2026 · Tổng tối đa 100 điểm</p>
             </div>
         </div>
     );

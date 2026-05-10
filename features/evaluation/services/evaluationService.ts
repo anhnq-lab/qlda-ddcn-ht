@@ -1,23 +1,21 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { supabase } from '../../../lib/supabase';
-import type { EvaluationForm, EvaluationStatus } from '../types/evaluation.types';
+import type { EvaluationForm, EvalScores, EvaluationStatus, FormType } from '../types/evaluation.types';
+import { DEFAULT_STAFF_SCORES, DEFAULT_LEADER_SCORES } from '../types/evaluation.types';
 
-// evaluation_forms chưa có trong generated Supabase types
-// Dùng type-cast qua `any` — sẽ update sau khi chạy generate types
+// evaluation_forms chưa có trong generated Supabase types — dùng cast any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sb = supabase as any;
 
-type ScoreFields = {
-    self_score_1?: number; self_score_2?: number; self_score_3?: number;
-    self_score_4?: number; self_score_5?: number; self_score_6?: number;
-    self_score_7?: number; self_notes?: string | null;
-    manager_score_1?: number | null; manager_score_2?: number | null;
-    manager_score_3?: number | null; manager_score_4?: number | null;
-    manager_score_5?: number | null; manager_score_6?: number | null;
-    manager_score_7?: number | null; manager_notes?: string | null;
-    manager_id?: string | null; manager_name?: string | null;
-    reviewed_at?: string | null; self_submitted_at?: string | null;
-    status?: EvaluationStatus;
+type CreatePayload = {
+    employee_id: string;
+    employee_name: string;
+    chuc_vu?: string | null;
+    department_code: string;
+    department_name: string;
+    eval_month: number;
+    eval_year: number;
+    form_type?: FormType;
+    self_scores?: EvalScores;
 };
 
 export const EvaluationService = {
@@ -73,32 +71,25 @@ export const EvaluationService = {
         return { data: data as EvaluationForm | null, error: null };
     },
 
-    async create(payload: {
-        employee_id: string;
-        employee_name: string;
-        department_code: string;
-        department_name: string;
-        eval_month: number;
-        eval_year: number;
-    } & Partial<ScoreFields>): Promise<{ data: EvaluationForm | null; error: string | null }> {
+    async create(payload: CreatePayload): Promise<{ data: EvaluationForm | null; error: string | null }> {
+        const formType = payload.form_type ?? 'staff';
+        const scores = payload.self_scores ?? (formType === 'leader' ? DEFAULT_LEADER_SCORES : DEFAULT_STAFF_SCORES);
         const { data, error } = await sb
             .from('evaluation_forms')
             .insert({
                 employee_id: payload.employee_id,
                 employee_name: payload.employee_name,
+                chuc_vu: payload.chuc_vu ?? null,
                 department_code: payload.department_code,
                 department_name: payload.department_name,
                 eval_month: payload.eval_month,
                 eval_year: payload.eval_year,
+                form_type: formType,
                 status: 'draft',
-                self_score_1: payload.self_score_1 ?? 0,
-                self_score_2: payload.self_score_2 ?? 0,
-                self_score_3: payload.self_score_3 ?? 0,
-                self_score_4: payload.self_score_4 ?? 0,
-                self_score_5: payload.self_score_5 ?? 0,
-                self_score_6: payload.self_score_6 ?? 0,
-                self_score_7: payload.self_score_7 ?? 0,
-                self_notes: payload.self_notes ?? null,
+                self_scores: scores,
+                // Legacy flat columns — set to 0 for backward compat
+                self_score_1: 0, self_score_2: 0, self_score_3: 0,
+                self_score_4: 0, self_score_5: 0, self_score_6: 0, self_score_7: 0,
             })
             .select()
             .single();
@@ -106,14 +97,16 @@ export const EvaluationService = {
         return { data: data as EvaluationForm, error: null };
     },
 
-    async updateSelfScores(id: string, scores: {
-        self_score_1: number; self_score_2: number; self_score_3: number;
-        self_score_4: number; self_score_5: number; self_score_6: number;
-        self_score_7: number; self_notes?: string | null;
-    }): Promise<{ error: string | null }> {
+    async updateSelfScores(id: string, scores: EvalScores, chucVu?: string | null): Promise<{ error: string | null }> {
+        const update: Record<string, unknown> = {
+            self_scores: scores,
+            status: 'draft',
+        };
+        if (chucVu !== undefined) update.chuc_vu = chucVu;
+
         const { error } = await sb
             .from('evaluation_forms')
-            .update({ ...scores, status: 'draft' })
+            .update(update)
             .eq('id', id);
         return { error: error?.message ?? null };
     },
@@ -127,21 +120,28 @@ export const EvaluationService = {
         return { error: error?.message ?? null };
     },
 
-    async approve(id: string, managerData: {
-        manager_score_1: number; manager_score_2: number; manager_score_3: number;
-        manager_score_4: number; manager_score_5: number; manager_score_6: number;
-        manager_score_7: number; manager_notes?: string | null;
-        manager_id: string; manager_name: string;
+    async approve(id: string, data: {
+        manager_scores: EvalScores;
+        manager_notes?: string | null;
+        manager_id: string;
+        manager_name: string;
     }): Promise<{ error: string | null }> {
         const { error } = await sb
             .from('evaluation_forms')
-            .update({ ...managerData, status: 'approved', reviewed_at: new Date().toISOString() })
+            .update({
+                manager_scores: data.manager_scores,
+                manager_notes: data.manager_notes ?? null,
+                manager_id: data.manager_id,
+                manager_name: data.manager_name,
+                status: 'approved',
+                reviewed_at: new Date().toISOString(),
+            })
             .eq('id', id)
             .eq('status', 'submitted');
         return { error: error?.message ?? null };
     },
 
-    async reject(id: string, managerData: {
+    async reject(id: string, data: {
         manager_notes: string;
         manager_id: string;
         manager_name: string;
@@ -149,9 +149,9 @@ export const EvaluationService = {
         const { error } = await sb
             .from('evaluation_forms')
             .update({
-                manager_notes: managerData.manager_notes,
-                manager_id: managerData.manager_id,
-                manager_name: managerData.manager_name,
+                manager_notes: data.manager_notes,
+                manager_id: data.manager_id,
+                manager_name: data.manager_name,
                 status: 'rejected',
                 reviewed_at: new Date().toISOString(),
             })
