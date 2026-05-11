@@ -22,11 +22,11 @@ export function useTabSearchParam<T extends string>(
 ): [T, (tab: T) => void] {
 
     // Read initial value from URL, fall back to default
-    const getTabFromUrl = (): T => {
+    const getTabFromUrl = useCallback((): T => {
         const params = new URLSearchParams(window.location.search);
         const val = params.get(paramName) as T | null;
         return val && validTabs.includes(val) ? val : defaultTab;
-    };
+    }, [paramName, validTabs, defaultTab]);
 
     const [activeTab, setActiveTabState] = useState<T>(getTabFromUrl);
     const activeTabRef = useRef(activeTab);
@@ -42,7 +42,7 @@ export function useTabSearchParam<T extends string>(
         };
         window.addEventListener('popstate', handlePopState);
         return () => window.removeEventListener('popstate', handlePopState);
-    }, []);
+    }, [getTabFromUrl]);
 
     // Update both state and URL — uses replaceState to preserve all other params
     const setActiveTab = useCallback(

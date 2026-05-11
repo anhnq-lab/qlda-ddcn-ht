@@ -788,13 +788,30 @@ const EmployeeList: React.FC = () => {
                                                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Chức danh *</label>
                                                     <div className="relative">
                                                         <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
-                                                        <input
+                                                        <select
                                                             disabled={!canManageUsers && editMode === 'edit'}
-                                                            type="text"
                                                             {...form.register('Position')}
-                                                            className={`w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border ${form.formState.errors.Position ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-600 focus:ring-blue-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
-                                                            placeholder="Trưởng phòng, Chuyên viên..."
-                                                        />
+                                                            className={`w-full pl-10 pr-8 py-3 bg-slate-50 dark:bg-slate-700 border ${form.formState.errors.Position ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-600 focus:ring-blue-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                                        >
+                                                            <option value="Giám đốc Ban">Giám đốc Ban</option>
+                                                            <option value="Phó Giám đốc Ban">Phó Giám đốc Ban</option>
+                                                            <option value="Trưởng phòng">Trưởng phòng</option>
+                                                            <option value="Phó phòng">Phó phòng</option>
+                                                            <option value="Chánh Văn phòng">Chánh Văn phòng</option>
+                                                            <option value="Phó Văn phòng">Phó Văn phòng</option>
+                                                            <option value="Kế toán trưởng">Kế toán trưởng</option>
+                                                            <option value="Kế toán viên">Kế toán viên</option>
+                                                            <option value="Chuyên viên chính">Chuyên viên chính</option>
+                                                            <option value="Chuyên viên">Chuyên viên</option>
+                                                            <option value="Kỹ sư chính">Kỹ sư chính</option>
+                                                            <option value="Kỹ sư">Kỹ sư</option>
+                                                            <option value="Tư vấn giám sát">Tư vấn giám sát</option>
+                                                            <option value="Cán bộ kỹ thuật">Cán bộ kỹ thuật</option>
+                                                            <option value="Cán bộ hiện trường">Cán bộ hiện trường</option>
+                                                            <option value="Nhân viên">Nhân viên</option>
+                                                            <option value="Khác">Khác</option>
+                                                        </select>
+                                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                                                     </div>
                                                     {form.formState.errors.Position && <p className="text-red-500 text-xs mt-1">{form.formState.errors.Position.message}</p>}
                                                 </div>

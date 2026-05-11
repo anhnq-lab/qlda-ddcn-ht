@@ -17,13 +17,13 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Queries
-    const { data: comments = [], refetch: refetchComments } = useQuery({
+    const { data: comments = [], refetch: refetchComments } = useQuery<any[]>({
         queryKey: ['task_comments', taskId],
         queryFn: () => TaskService.getTaskComments(taskId),
         enabled: type === 'comments'
     });
 
-    const { data: activities = [] } = useQuery({
+    const { data: activities = [] } = useQuery<any[]>({
         queryKey: ['task_activities', taskId],
         queryFn: () => TaskService.getTaskActivities(taskId),
         enabled: type === 'history'

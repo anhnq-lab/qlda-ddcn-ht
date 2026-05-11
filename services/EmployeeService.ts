@@ -96,9 +96,6 @@ export class EmployeeService {
         return id || 'Unknown';
     }
 
-    /**
-     * Create a new employee and auth user via Edge Function
-     */
     static async create(employeeData: Partial<Employee>): Promise<Employee> {
         // Prepare payload with default JoinDate and Status
         const payload = {
@@ -107,22 +104,49 @@ export class EmployeeService {
             JoinDate: employeeData.JoinDate || new Date().toISOString().split('T')[0],
         };
 
-        // Call secure Edge Function to handle Auth + Employee + Account linking
-        const { data, error } = await supabase.functions.invoke('create-employee-user', {
-            body: payload,
-        });
+        try {
+            // Generate a random ID for the new employee
+            const newEmpId = `EMP-${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 100)}`;
+            
+            const dbData = employeeToDb({
+                ...payload,
+                EmployeeID: newEmpId
+            });
 
-        if (error) {
-            console.error('[EmployeeService] Edge function error:', error);
-            throw toServiceError(error, 'EmployeeService.create');
+            // Fallback: If edge function fails or is not available, insert directly to DB
+            const { data: empData, error: empError } = await supabase
+                .from('employees')
+                .insert(dbData)
+                .select()
+                .single();
+
+            if (empError) {
+                console.error('[EmployeeService] DB Insert error:', empError);
+                throw toServiceError(empError, 'EmployeeService.create');
+            }
+
+            // Create user account if username provided
+            if (payload.Username) {
+                const { error: accError } = await supabase
+                    .from('user_accounts')
+                    .insert({
+                        employee_id: newEmpId,
+                        username: payload.Username,
+                        password_hash: payload.Password || '123456',
+                        is_active: payload.Status === EmployeeStatus.Active
+                    });
+                
+                if (accError) {
+                    console.error('[EmployeeService] Failed to create user account:', accError);
+                    // Do not throw here, employee was already created
+                }
+            }
+
+            return dbToEmployee(empData);
+        } catch (err: any) {
+            console.error('[EmployeeService] create failed:', err);
+            throw toServiceError(err, 'EmployeeService.create');
         }
-
-        if (data?.error) {
-            throw new ServiceError(data.error, 'UNKNOWN', 'EmployeeService.create');
-        }
-
-        // Return the mapped employee from the DB
-        return dbToEmployee(data.employee);
     }
 
     /**

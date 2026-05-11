@@ -168,7 +168,7 @@ export const useCreateDisbursementPlan = () => {
         mutationFn: (plan: Omit<import('../services/CapitalService').DisbursementPlanItem, 'Id'>) =>
             CapitalService.createDisbursementPlan(plan),
         onSuccess: (_data, variables) => {
-            qc.invalidateQueries({ queryKey: ['disbursementPlans', variables.ProjectID] });
+            CAPITAL_QUERY_KEYS(variables.ProjectID).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
     });
 };
@@ -179,7 +179,7 @@ export const useUpdateDisbursementPlan = () => {
         mutationFn: ({ id, updates, projectId }: { id: string; updates: Partial<import('../services/CapitalService').DisbursementPlanItem>; projectId: string }) =>
             CapitalService.updateDisbursementPlan(id, updates),
         onSuccess: (_data, variables) => {
-            qc.invalidateQueries({ queryKey: ['disbursementPlans', variables.projectId] });
+            CAPITAL_QUERY_KEYS(variables.projectId).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
     });
 };
@@ -190,7 +190,7 @@ export const useDeleteDisbursementPlan = () => {
         mutationFn: ({ id, projectId }: { id: string; projectId: string }) =>
             CapitalService.deleteDisbursementPlan(id),
         onSuccess: (_data, variables) => {
-            qc.invalidateQueries({ queryKey: ['disbursementPlans', variables.projectId] });
+            CAPITAL_QUERY_KEYS(variables.projectId).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
     });
 };

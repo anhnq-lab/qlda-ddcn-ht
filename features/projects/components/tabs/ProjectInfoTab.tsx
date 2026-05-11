@@ -18,6 +18,7 @@ import { KeyDatesWidget, KeyDate } from '../KeyDatesWidget';
 import { QuickActionsPanel } from '../QuickActionsPanel';
 import { LegalReferenceLink } from '../../../../components/common/LegalReferenceLink';
 import { useSlidePanel } from '@/context/SlidePanelContext';
+import { useProjectCapitalSummary } from '@/hooks/useCapital';
 
 // Extended contractor with package info for display
 interface ContractorWithPackages extends Contractor {
@@ -182,36 +183,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     const financialProgress = taskProgressData?.constructionProgress ?? 0;
 
     // ═══ Calculate disbursed amount from real disbursement data ═══
-    const { data: realDisbursedTotal = 0 } = useQuery<number>({
-        queryKey: ['project-real-disbursed', project.ProjectID],
-        queryFn: async () => {
-            const { data: rows } = await (supabase
-                .from('disbursements')
-                .select('amount, type, status')
-                .eq('project_id', project.ProjectID)
-                .in('status', ['Approved', 'approved', 'completed', 'Completed']) as any);
-            if (!rows || rows.length === 0) return 0;
-            let total = 0;
-            for (const r of rows as any[]) {
-                const amt = Number(r.amount) || 0;
-                if (r.type === 'ThuHoiTamUng') {
-                    total -= amt;
-                } else {
-                    total += amt;
-                }
-            }
-            return Math.max(0, total);
-        },
-        enabled: !!project.ProjectID,
-        staleTime: 5 * 60 * 1000,
-    });
-
-    const disbursedAmount = realDisbursedTotal;
-    const disbursedPercent = project.TotalInvestment > 0
-        ? (disbursedAmount / project.TotalInvestment) * 100
-        : 0;
-
-
+    const { data: capitalSummary } = useProjectCapitalSummary(project.ProjectID);
+    const disbursedAmount = capitalSummary?.summary.totalDisbursed || 0;
 
     // ═══ FETCH KEY DATES FROM MULTIPLE SOURCES ═══
     const { data: keyDates = [] } = useQuery<KeyDate[]>({
@@ -357,38 +330,31 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
         staleTime: 5 * 60 * 1000,
     });
 
-    // Fetch real disbursement data for BudgetVarianceCard
-    const { data: disbursementData } = useQuery({
-        queryKey: ['project-disbursement-overview', project.ProjectID],
-        queryFn: async () => {
-            const now = new Date();
-            const thisMonth = now.getMonth() + 1;
-            const thisYear = now.getFullYear();
-            const lastMonth = thisMonth === 1 ? 12 : thisMonth - 1;
-            const lastMonthYear = thisMonth === 1 ? thisYear - 1 : thisYear;
+    // Calculate disbursement data for BudgetVarianceCard
+    const disbursementData = useMemo(() => {
+        if (!capitalSummary) return { planned: 0, prevMonth: 0 };
+        const now = new Date();
+        const thisMonth = now.getMonth() + 1;
+        const thisYear = now.getFullYear();
+        const lastMonth = thisMonth === 1 ? 12 : thisMonth - 1;
+        const lastMonthYear = thisMonth === 1 ? thisYear - 1 : thisYear;
 
-            // Planned disbursement from capital_plans
-            const { data: planData } = await supabase
-                .from('capital_plans')
-                .select('planned_amount')
-                .eq('project_id', project.ProjectID)
-                .eq('year', thisYear);
-            const planned = planData?.reduce((s: number, r: any) => s + (r.planned_amount || 0), 0) || 0;
+        const prevMonthDisbs = capitalSummary.disbursements.filter(d => {
+            if (!d.Date) return false;
+            const dDate = new Date(d.Date);
+            return dDate.getMonth() + 1 === lastMonth && dDate.getFullYear() === lastMonthYear && d.Status === 'Approved';
+        });
 
-            // Previous month disbursement
-            const { data: prevData } = await (supabase
-                .from('disbursements')
-                .select('amount')
-                .eq('project_id', project.ProjectID) as any)
-                .eq('month', lastMonth)
-                .eq('year', lastMonthYear);
-            const prevMonth = (prevData as any[])?.reduce((s: number, r: any) => s + (r.amount || 0), 0) || 0;
+        const prevMonth = prevMonthDisbs.reduce((s, d) => {
+            if (d.Type === 'ThuHoiTamUng') return s - d.Amount;
+            return s + d.Amount;
+        }, 0);
 
-            return { planned, prevMonth };
-        },
-        enabled: !!project.ProjectID,
-        staleTime: 5 * 60 * 1000,
-    });
+        return {
+            planned: capitalSummary.summary.yearlyTarget || 0,
+            prevMonth
+        };
+    }, [capitalSummary]);
 
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-2.5 py-1">

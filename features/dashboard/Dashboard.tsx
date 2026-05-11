@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight uppercase">
-                        Trung tâm điều hành — Ban QLDA ĐTXD Dân dụng & Hạ tầng khu vực
+                        Trung tâm điều hành — Ban QLDA Đầu tư xây dựng Dân dụng & Hạ tầng khu vực
                     </h2>
                     <p className="text-sm font-medium text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-2">
                         <Clock className="w-4 h-4" /> Cập nhật dữ liệu: {new Date().toLocaleDateString('vi-VN')}

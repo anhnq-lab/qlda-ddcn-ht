@@ -488,7 +488,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         </div>
 
                                                         {plan.Notes && (
-                                                            <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 p-2.5 rounded-lg mb-4 text-xs text-gray-600 dark:text-slate-300 italic flex items-start gap-1.5">
+                                                            <div className="bg-bg-app dark:bg-slate-800 p-2.5 rounded-lg mb-4 text-xs text-gray-600 dark:text-slate-300 italic flex items-start gap-1.5">
                                                                 <FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" />
                                                                 <span>{plan.Notes}</span>
                                                             </div>

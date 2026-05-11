@@ -26,8 +26,6 @@ export interface PaginatedProjectsResult {
 }
 
 export function usePaginatedProjects(params?: QueryParams): PaginatedProjectsResult {
-    const queryClient = useQueryClient();
-
     const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: [PROJECTS_QUERY_KEY, JSON.stringify(params)],
         queryFn: () => ProjectService.getPaginated(params),

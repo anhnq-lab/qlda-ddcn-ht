@@ -190,15 +190,15 @@ export const TaskService = {
   // ─── COLLABORATION READ ──────────────────────────────────
   
   /** Lấy bình luận của 1 task */
-  getTaskComments: async (taskId: string) => {
-    const { data, error } = await supabase.rpc('get_task_comments_v2', { p_task_id: taskId });
+  getTaskComments: async (taskId: string): Promise<any[]> => {
+    const { data, error } = await (supabase as any).rpc('get_task_comments_v2', { p_task_id: taskId });
     if (error) throw error;
     return data || [];
   },
   
   /** Lấy nhật ký hoạt động của 1 task */
-  getTaskActivities: async (taskId: string) => {
-    const { data, error } = await supabase.rpc('get_task_activities_v2', { p_task_id: taskId });
+  getTaskActivities: async (taskId: string): Promise<any[]> => {
+    const { data, error } = await (supabase as any).rpc('get_task_activities_v2', { p_task_id: taskId });
     if (error) throw error;
     return data || [];
   },
