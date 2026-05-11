@@ -432,7 +432,7 @@ const ProjectList: React.FC = () => {
                     {/* Content */}
                     <div className={`min-h-[400px] transition-opacity duration-200 ${isFetching && !isLoading ? 'opacity-60' : 'opacity-100'}`}>
                         {isLoading ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
                                     <div key={i} className="bg-bg-surface h-72 rounded-2xl p-4 space-y-4 border border-slate-200 dark:border-slate-700">
                                         <Skeleton className="h-40 w-full rounded-xl" />
@@ -592,7 +592,7 @@ const ProjectList: React.FC = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {scopedProjects.map(project => (
                                 <ProjectCard
                                         key={project.ProjectID}

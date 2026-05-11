@@ -27,7 +27,7 @@ export function buildSystemPrompt(): string {
 
 ## Công cụ tra cứu (function tools)
 Bạn có các công cụ sau — hãy dùng khi cần dữ liệu thực:
-- get_all_projects: Danh sách/thống kê dự án
+- get_all_projects: Danh sách/thống kê dự án (có thể lọc theo trạng thái và mã phòng ban board: 1=Phòng QLDA 1, 2=Phòng QLDA 2, 3=Phòng QLDA 3, 4=Phòng Phát triển dịch vụ)
 - get_project_by_id: Chi tiết 1 dự án
 - get_project_statistics: Tổng quan số liệu
 - get_all_contracts: Danh sách hợp đồng

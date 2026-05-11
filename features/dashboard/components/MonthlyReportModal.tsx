@@ -225,7 +225,10 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 />
                             ) : (
                                 <div className="bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
-                                    <div className="prose prose-sm max-w-none dark:prose-invert font-serif text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200">
+                                    <div 
+                                        className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200"
+                                        style={{ fontFamily: '"Times New Roman", Times, serif' }}
+                                    >
                                         {content}
                                     </div>
                                 </div>

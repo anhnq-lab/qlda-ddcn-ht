@@ -1,115 +1,100 @@
 /**
- * AI Proxy Client — Gọi DeepSeek API thông qua Supabase Edge Function
- * OpenAI-compatible format (messages[], tool_calls)
- * Client → Supabase Edge Function (gemini-proxy) → DeepSeek API
+ * AI Proxy Client — Gọi trực tiếp Google Gemini API sử dụng @google/generative-ai
  */
-import { supabase } from '../../lib/supabase';
+import { GoogleGenerativeAI, ChatSession, GenerativeModel, Part } from '@google/generative-ai';
 
-const FUNCTION_NAME = 'gemini-proxy';
+// Lấy API key từ biến môi trường
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// ── OpenAI-compatible Types ──────────────────────────────────────
-
-export interface OAIToolCall {
-    id: string;
-    type: 'function';
-    function: {
-        name: string;
-        arguments: string; // JSON string
-    };
+let genAI: GoogleGenerativeAI | null = null;
+if (API_KEY) {
+    genAI = new GoogleGenerativeAI(API_KEY);
 }
 
+// Model mặc định theo lựa chọn (2.5 hoặc 1.5)
+const DEFAULT_MODEL = 'gemini-2.5-pro';
+
+// ── Types ────────────────────────────────────────────────────────
+// Dùng lại một số type cũ để các file khác khỏi vỡ nếu import type (mặc dù ta sẽ sửa ở nơi dùng)
 export interface AIMessage {
-    role: 'system' | 'user' | 'assistant' | 'tool';
+    role: 'system' | 'user' | 'assistant' | 'tool' | 'model';
     content: string | null;
-    tool_calls?: OAIToolCall[];
+    tool_calls?: any[];
     tool_call_id?: string;
 }
 
-export interface AIResponse {
-    choices?: Array<{
-        message: {
-            role: string;
-            content: string | null;
-            tool_calls?: OAIToolCall[];
-        };
-        finish_reason: string;
-    }>;
-    error?: string;
-}
+export type GeminiContent = AIMessage;
+export type GeminiPart = { text: string };
 
-// ── Core API Call ────────────────────────────────────────────────
+// ── Core functions ───────────────────────────────────────────────
 
-async function callProxy(body: Record<string, unknown>): Promise<AIResponse> {
-    const { data, error } = await supabase.functions.invoke(FUNCTION_NAME, { body });
-
-    if (error) {
-        throw new Error(`AI proxy error: ${error.message}`);
+export function getGenerativeModel(options?: { model?: string; tools?: any[]; systemInstruction?: string }): GenerativeModel {
+    if (!genAI) {
+        throw new Error('VITE_GEMINI_API_KEY chưa được cấu hình trong .env');
     }
-    if (data?.error) {
-        throw new Error(`AI API error: ${data.error}`);
-    }
-    return data as AIResponse;
-}
-
-// ── Chat with optional function calling ──────────────────────────
-
-export async function sendChatMessage(
-    messages: AIMessage[],
-    options?: {
-        model?: string;
-        tools?: unknown[];
-        tool_choice?: string;
-        max_tokens?: number;
-        temperature?: number;
-    }
-): Promise<AIResponse> {
-    return callProxy({
-        model: options?.model || 'deepseek-chat',
-        messages,
-        tools: options?.tools,
-        tool_choice: options?.tool_choice || 'auto',
-        max_tokens: options?.max_tokens || 4096,
-        temperature: options?.temperature ?? 0.3,
+    
+    return genAI.getGenerativeModel({
+        model: options?.model || DEFAULT_MODEL,
+        tools: options?.tools ? [{ functionDeclarations: options.tools }] : undefined,
+        systemInstruction: options?.systemInstruction,
     });
 }
 
-// ── Simple text generation (no function calling) ─────────────────
+// ── Simple text generation ───────────────────────────────────────
 
 export async function generateContent(
     prompt: string,
     options?: {
         model?: string;
-        max_tokens?: number;
         temperature?: number;
+        responseMimeType?: string;
     }
 ): Promise<string> {
-    const response = await callProxy({
-        model: options?.model || 'deepseek-chat',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: options?.max_tokens || 4096,
-        temperature: options?.temperature ?? 0.2,
+    const model = getGenerativeModel({ model: options?.model });
+    
+    const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+            temperature: options?.temperature ?? 0.2,
+            responseMimeType: options?.responseMimeType,
+        }
     });
-    return response.choices?.[0]?.message?.content || '';
+    
+    return result.response.text();
 }
 
-// ── Image analysis (DeepSeek không hỗ trợ vision — trả lỗi rõ ràng) ──
+// ── Image Analysis ───────────────────────────────────────────────
 
 export async function generateFromImage(
-    _imageBase64: string,
-    _mimeType: string,
-    _prompt: string,
-    _options?: { model?: string }
+    imageBase64: string,
+    mimeType: string,
+    prompt: string,
+    options?: { model?: string; temperature?: number }
 ): Promise<string> {
-    throw new Error('Tính năng phân tích ảnh không khả dụng với DeepSeek. Vui lòng nhập thông tin thủ công.');
+    const model = getGenerativeModel({ model: options?.model || 'gemini-2.5-pro' });
+    
+    // Xóa prefix data:image/...;base64, nếu có
+    const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+    
+    const imagePart: Part = {
+        inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+        }
+    };
+
+    const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [imagePart, { text: prompt }] }],
+        generationConfig: {
+            temperature: options?.temperature ?? 0.2,
+        }
+    });
+
+    return result.response.text();
 }
 
 // ── Availability check ───────────────────────────────────────────
 
 export function isGeminiProxyAvailable(): boolean {
-    return true;
+    return !!API_KEY;
 }
-
-// ── Legacy type exports (backward compat) ────────────────────────
-// Old code that imported GeminiContent/GeminiPart still compiles
-export type GeminiContent = AIMessage;
-export type GeminiPart = { text: string };

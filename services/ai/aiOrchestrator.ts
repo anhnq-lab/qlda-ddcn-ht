@@ -1,8 +1,8 @@
-// AI Orchestrator — DeepSeek function calling loop (OpenAI-compatible)
-// Flow: User → Edge Function (gemini-proxy) → DeepSeek → Tool calls → Execute → Loop → Response
+// AI Orchestrator — Gemini function calling loop
+// Flow: User → Gemini Chat Session → Tool calls → Execute → Loop → Response
 
-import { sendChatMessage, generateContent, AIMessage, OAIToolCall } from './geminiProxy';
-import { AI_TOOLS_OAI } from './aiTools';
+import { getGenerativeModel, generateContent } from './geminiProxy';
+import { AI_TOOLS_GEMINI } from './aiTools';
 import { buildSystemPrompt } from './prompts';
 import { ProjectService } from '../ProjectService';
 import { ContractService } from '../ContractService';
@@ -10,8 +10,7 @@ import { PaymentService } from '../PaymentService';
 import { DashboardService } from '../DashboardService';
 import { supabase } from '../../lib/supabase';
 import type { ChatMessage } from '../aiService';
-
-const MODEL = 'deepseek-chat';
+import { FunctionCall, FunctionResponse, Part } from '@google/generative-ai';
 
 // Từ khóa gợi ý câu hỏi cần dữ liệu thực
 const DATA_KEYWORDS = [
@@ -37,7 +36,10 @@ async function executeFunctionCall(
             case 'get_all_projects': {
                 const params: { search?: string; filters?: Record<string, unknown> } = {};
                 if (args.search) params.search = args.search as string;
-                if (args.status) params.filters = { status: Number(args.status) };
+                const filters: Record<string, unknown> = {};
+                if (args.status) filters.status = Number(args.status);
+                if (args.board) filters.board = Number(args.board);
+                if (Object.keys(filters).length > 0) params.filters = filters;
                 const projects = await ProjectService.getAll(params);
                 return projects.map(p => ({
                     ProjectID: p.ProjectID,
@@ -48,6 +50,8 @@ async function executeFunctionCall(
                     Progress: p.Progress,
                     PaymentProgress: p.PaymentProgress,
                     InvestorName: p.InvestorName,
+                    ManagementBoard: p.ManagementBoard,
+                    CurrentStatusCode: p.CurrentStatusCode,
                 }));
             }
 
@@ -201,109 +205,106 @@ export async function sendContextAwareMessage(
     history: ChatMessage[],
     newMessage: string
 ): Promise<string> {
-    // Build messages array in OpenAI format
-    const messages: AIMessage[] = [
-        { role: 'system', content: buildSystemPrompt() },
-    ];
-
-    // Add relevant history (skip errors, start from first user message)
-    const validHistory = history.filter(msg => !msg.isError);
-    const firstUserIdx = validHistory.findIndex(m => m.sender === 'user');
-    if (firstUserIdx !== -1) {
-        validHistory.slice(firstUserIdx).forEach(msg => {
-            messages.push({
-                role: msg.sender === 'user' ? 'user' : 'assistant',
-                content: msg.text,
-            });
-        });
-    }
-
-    // Add current user message
-    messages.push({ role: 'user', content: newMessage });
-
-    // Only enable tool calling for messages that actually need data
     const useTools = needsDataQuery(newMessage);
 
-    // Initial request
-    let response = await sendChatMessage(messages, {
-        model: MODEL,
-        tools: useTools ? AI_TOOLS_OAI : undefined,
-        tool_choice: useTools ? 'auto' : undefined,
-        max_tokens: 2048,
-        temperature: 0.3,
+    // Initialize Generative Model with tools and system instruction
+    const model = getGenerativeModel({
+        tools: useTools ? AI_TOOLS_GEMINI : undefined,
+        systemInstruction: buildSystemPrompt(),
     });
 
-    if (!useTools) {
-        return response.choices?.[0]?.message?.content || '';
-    }
+    // Build chat history: Gemini requires strictly alternating user/model messages, starting with user.
+    const validHistory = history.filter(msg => !msg.isError);
+    const firstUserIdx = validHistory.findIndex(m => m.sender === 'user');
+    const geminiHistory: { role: string; parts: { text: string }[] }[] = [];
+    
+    if (firstUserIdx !== -1) {
+        let currentRole = 'user';
+        let currentText = '';
 
-    // Function calling loop — max 2 iterations to keep response fast
-    let iterations = 0;
-    while (iterations < 2) {
-        const choice = response.choices?.[0];
-        if (!choice) break;
-
-        const { message, finish_reason } = choice;
-
-        // No more tool calls → done
-        if (finish_reason === 'stop' || !message.tool_calls?.length) break;
-
-        // Append assistant message with tool_calls
-        messages.push({
-            role: 'assistant',
-            content: message.content,
-            tool_calls: message.tool_calls,
-        });
-
-        // Execute each tool call in parallel
-        const toolResults = await Promise.all(
-            message.tool_calls.map(async (toolCall: OAIToolCall) => {
-                const fnName = toolCall.function.name;
-                let fnArgs: Record<string, unknown> = {};
-                try {
-                    fnArgs = JSON.parse(toolCall.function.arguments || '{}');
-                } catch { /* keep empty args */ }
-
-                console.log(`[AI] Calling: ${fnName}`, fnArgs);
-                const result = await executeFunctionCall(fnName, fnArgs);
-                return { toolCall, result };
-            })
-        );
-
-        // Append tool results as tool messages
-        for (const { toolCall, result } of toolResults) {
-            messages.push({
-                role: 'tool',
-                tool_call_id: toolCall.id,
-                content: JSON.stringify(result),
+        for (let i = firstUserIdx; i < validHistory.length; i++) {
+            const msg = validHistory[i];
+            const role = msg.sender === 'user' ? 'user' : 'model';
+            
+            if (role === currentRole) {
+                currentText += (currentText ? '\n' : '') + msg.text;
+            } else {
+                geminiHistory.push({
+                    role: currentRole,
+                    parts: [{ text: currentText }]
+                });
+                currentRole = role;
+                currentText = msg.text;
+            }
+        }
+        
+        if (currentText) {
+            geminiHistory.push({
+                role: currentRole,
+                parts: [{ text: currentText }]
             });
         }
+        
+        // Ensure history ends with 'model' (chat.sendMessage will append 'user')
+        if (geminiHistory.length > 0 && geminiHistory[geminiHistory.length - 1].role === 'user') {
+            geminiHistory.pop();
+        }
+    }
 
-        // Continue with tool results — allow more tools only on first iteration
-        response = await sendChatMessage(messages, {
-            model: MODEL,
-            tools: iterations === 0 ? AI_TOOLS_OAI : undefined,
-            tool_choice: iterations === 0 ? 'auto' : undefined,
-            max_tokens: 2048,
+    // Create Chat Session
+    const chat = model.startChat({
+        history: geminiHistory,
+        generationConfig: {
             temperature: 0.3,
-        });
+            maxOutputTokens: 2048,
+        }
+    });
 
+    // Send the user's message
+    let result = await chat.sendMessage(newMessage);
+    let call = result.response.functionCalls()?.[0];
+    let iterations = 0;
+
+    // Function calling loop
+    while (call && iterations < 2) {
+        console.log(`[AI] Function Call: ${call.name}`, call.args);
+        
+        // Execute the function
+        const fnResult = await executeFunctionCall(call.name, call.args as Record<string, unknown>);
+        
+        // Prepare the response part
+        // Gemini's protobuf Struct requires the top level to be an Object, not an Array.
+        const responseData = Array.isArray(fnResult) 
+            ? { data: fnResult } 
+            : (typeof fnResult === 'object' && fnResult !== null ? fnResult : { result: fnResult });
+
+        const functionResponsePart: Part = {
+            functionResponse: {
+                name: call.name,
+                response: responseData as object,
+            }
+        };
+
+        // Send the function result back to Gemini
+        result = await chat.sendMessage([functionResponsePart]);
+        call = result.response.functionCalls()?.[0];
         iterations++;
     }
 
-    return response.choices?.[0]?.message?.content || '';
+    return result.response.text();
 }
 
 // ── Simple analysis (no function calling) ────────────────────────
 
 export async function generateAIAnalysis(
     prompt: string,
-    data: unknown
+    data: unknown,
+    responseMimeType?: string
 ): Promise<string> {
     const fullPrompt = `${prompt}\n\nDữ liệu:\n${JSON.stringify(data, null, 2)}`;
     return generateContent(fullPrompt, {
-        model: MODEL,
-        max_tokens: 4096,
         temperature: 0.2,
+        responseMimeType: responseMimeType,
     });
 }
+

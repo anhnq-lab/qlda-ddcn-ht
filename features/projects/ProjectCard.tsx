@@ -105,7 +105,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                             )}
                             {board && (
                                 <span className="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: board.hex }}>
-                                    Ban {board.value}
+                                    Phòng QLDA {board.value}
                                 </span>
                             )}
                         </div>
@@ -190,7 +190,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                     </span>
                     {board && (
                         <span className="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: board.hex }}>
-                            Ban {board.value}
+                            Phòng QLDA {board.value}
                         </span>
                     )}
                 </div>

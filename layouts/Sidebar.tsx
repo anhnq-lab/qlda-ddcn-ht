@@ -117,8 +117,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                <LogoDDCN className="w-full h-full" />
             </div>
             <div className="animate-fade-in flex flex-col justify-center min-w-0">
-               <h1 className="text-[11px] font-black text-slate-900 dark:text-slate-100 leading-tight uppercase tracking-tight w-full">Ban QLDA Đầu tư xây dựng Dân dụng & Hạ tầng khu vực</h1>
-               <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">UBND tỉnh Hà Tĩnh</p>
+               <h1 className="text-[14px] font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 drop-shadow-sm leading-tight uppercase tracking-wide w-full">
+                 UBND tỉnh Hà Tĩnh
+               </h1>
+               <p className="text-[8.5px] font-bold text-white animate-pulse uppercase leading-tight tracking-tight mt-0.5">
+                 Ban QLDA Đầu tư xây dựng<br />Dân dụng & Hạ tầng khu vực
+               </p>
             </div>
           </div>
 

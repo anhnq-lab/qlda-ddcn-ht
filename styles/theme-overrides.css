@@ -77,8 +77,8 @@
   border-color: transparent !important;
 }
 
-/* Remove gradient bottom line in sidebar */
-.theme-light .layout-sidebar .bg-gradient-to-r {
+/* Remove gradient bottom line in sidebar without affecting gradient text */
+.theme-light .layout-sidebar .h-\[1px\].bg-gradient-to-r {
   background: var(--color-primary-600) !important;
 }
 

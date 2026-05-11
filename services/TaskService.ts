@@ -122,6 +122,24 @@ export const TaskService = {
     return (data || []) as unknown as DbTask[];
   },
 
+  /** Lấy tasks của 1 nhân viên trong 1 tháng cụ thể */
+  getTasksByEmployeeAndMonth: async (employeeId: string, month: number, year: number): Promise<DbTask[]> => {
+    // Tháng trong JS/Supabase cần format thành khoảng thời gian
+    const startDate = new Date(year, month - 1, 1).toISOString();
+    const endDate = new Date(year, month, 0, 23, 59, 59, 999).toISOString();
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*, projects(project_name)')
+      .eq('assignee_id', employeeId)
+      // Tìm các task có due_date nằm trong tháng, HOẶC start_date nằm trong tháng
+      .or(`and(due_date.gte.${startDate},due_date.lte.${endDate}),and(start_date.gte.${startDate},start_date.lte.${endDate})`)
+      .order('due_date', { ascending: true });
+
+    if (error) throw error;
+    return (data || []) as unknown as DbTask[];
+  },
+
   /** Lấy 1 task theo ID */
   getTaskById: async (taskId: string): Promise<DbTask | null> => {
     const { data, error } = await supabase

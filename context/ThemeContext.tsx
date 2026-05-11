@@ -107,8 +107,6 @@ const CSS_OVERRIDES: Record<Theme, string> = {
 .theme-nature .bg-gray-100, .theme-nature [class~="bg-gray-100"] { background-color: #EDE8DF !important; }
 .theme-nature .bg-slate-50, .theme-nature [class~="bg-slate-50"] { background-color: #F5EFE6 !important; }
 .theme-nature .bg-slate-100, .theme-nature [class~="bg-slate-100"] { background-color: #EDE8DF !important; }
-.theme-nature header { background-color: rgba(252,249,242,0.97) !important; border-bottom-color: #ece7de !important; }
-.theme-nature aside { background-color: #FCF9F2 !important; }
 .theme-nature .border-gray-100, .theme-nature .border-gray-200,
 .theme-nature .border-slate-100, .theme-nature .border-slate-200 { border-color: #ece7de !important; }
 .theme-nature input:not([type="checkbox"]):not([type="radio"]),
@@ -119,8 +117,6 @@ const CSS_OVERRIDES: Record<Theme, string> = {
     `,
     light: `
 /* ===== Light Theme: cát → trắng ===== */
-.theme-light aside { background-color: #ffffff !important; }
-.theme-light header { background-color: rgba(255,255,255,0.97) !important; border-bottom-color: #e2e8f0 !important; }
 .theme-light thead tr, .theme-light th { background-color: #f8fafc !important; }
     `,
     dark: `

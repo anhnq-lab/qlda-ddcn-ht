@@ -34,10 +34,16 @@ const projectId = 'jkaddjllseephsiaqvds';
 const host = 'aws-0-ap-southeast-1.pooler.supabase.com';
 
 async function main() {
-  console.log('Connecting to database...');
+  const args = process.argv.slice(2);
+  if (args.length === 0) {
+    throw new Error('Please provide the path to the SQL file as an argument.');
+  }
+  const migrationFile = path.resolve(process.cwd(), args[0]);
+
+  console.log(`Connecting to database at ${host}...`);
   const client = new Client({
     host: host,
-    port: 6543,
+    port: 5432,
     user: `postgres.${projectId}`,
     password: dbPassword,
     database: 'postgres',
@@ -48,7 +54,6 @@ async function main() {
     await client.connect();
     console.log('Connected successfully!');
 
-    const migrationFile = path.join(__dirname, '../supabase/migrations/20260509_add_project_ingestion_fields.sql');
     console.log(`Reading migration file from ${migrationFile}...`);
     const sql = fs.readFileSync(migrationFile, 'utf8');
 

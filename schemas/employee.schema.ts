@@ -42,7 +42,8 @@ export const EmployeeCreateSchema = z.object({
         .regex(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
         .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số')
         .regex(/[\W_]/, 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt')
-        .optional(),
+        .optional()
+        .or(z.literal('')),
 
     Role: RoleSchema.default(Role.Staff),
     Gender: GenderSchema.optional(),

@@ -42,10 +42,8 @@ export interface RiskAnalysisResult {
 
 export const analyzeRisks = async (projectData: unknown): Promise<RiskAnalysisResult> => {
     try {
-        const raw = await generateAIAnalysis(RISK_ANALYSIS_PROMPT, projectData);
-        // Extract JSON from response (may contain markdown code blocks)
-        const jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        return JSON.parse(jsonStr) as RiskAnalysisResult;
+        const raw = await generateAIAnalysis(RISK_ANALYSIS_PROMPT, projectData, "application/json");
+        return JSON.parse(raw) as RiskAnalysisResult;
     } catch (error) {
         console.error('Error analyzing risks:', error);
         return { risks: [], overallScore: 0, summary: 'Không thể phân tích rủi ro' };
@@ -100,9 +98,8 @@ export interface ComplianceResult {
 
 export const checkCompliance = async (projectData: unknown): Promise<ComplianceResult> => {
     try {
-        const raw = await generateAIAnalysis(COMPLIANCE_PROMPT, projectData);
-        const jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        return JSON.parse(jsonStr) as ComplianceResult;
+        const raw = await generateAIAnalysis(COMPLIANCE_PROMPT, projectData, "application/json");
+        return JSON.parse(raw) as ComplianceResult;
     } catch (error) {
         console.error('Error checking compliance:', error);
         return { checks: [], complianceScore: 0, summary: 'Không thể kiểm tra tuân thủ' };
@@ -128,9 +125,8 @@ export interface ForecastResult {
 
 export const forecastProgress = async (projectData: unknown): Promise<ForecastResult> => {
     try {
-        const raw = await generateAIAnalysis(FORECAST_PROMPT, projectData);
-        const jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        return JSON.parse(jsonStr) as ForecastResult;
+        const raw = await generateAIAnalysis(FORECAST_PROMPT, projectData, "application/json");
+        return JSON.parse(raw) as ForecastResult;
     } catch (error) {
         console.error('Error forecasting:', error);
         throw error;

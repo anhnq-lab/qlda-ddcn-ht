@@ -10,6 +10,10 @@ import { getTemplateConfig } from '../../utils/templateRegistry';
 import { TemplateExportModal } from '../projects/components/TemplateExportModal';
 import { supabase as _supabase } from '../../lib/supabase';
 const supabase = _supabase as any;
+import { TaskInfoPanel } from './components/TaskInfoPanel';
+import { TaskSubtaskList } from './components/TaskSubtaskList';
+import { TaskAttachments } from './components/TaskAttachments';
+import { TaskProgressUpdateModal } from './components/TaskProgressUpdateModal';
 import {
     ArrowLeft, Calendar, FileText, CheckCircle2, Scale, Building2, User, Clock,
     ShieldCheck, DollarSign, Paperclip, Plus, Trash2, ChevronRight, ExternalLink,
@@ -71,14 +75,11 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const { data: employees = [] } = useEmployees();
     const updateTaskMutation = useUpdateTask();
 
-    const [isSubTaskModalOpen, setIsSubTaskModalOpen] = useState(false);
-    const [editingSubTask, setEditingSubTask] = useState<any>(null);
-    const [isUploading, setIsUploading] = useState(false);
     const [activeExportTemplate, setActiveExportTemplate] = useState<TaskTemplate | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // KH tháng liên kết
     const [monthlyPlanItem, setMonthlyPlanItem] = useState<any>(null);
+    const [progressModalTarget, setProgressModalTarget] = useState<TaskStatus | 'progress' | null>(null);
 
     useEffect(() => {
         if (!task?.MonthlyPlanItemID) { setMonthlyPlanItem(null); return; }
@@ -131,50 +132,36 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const isOverdue = task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date();
 
     const handleStatusChange = (s: TaskStatus) => {
-        updateTaskMutation.mutate({ ...task, Status: s, ProgressPercent: s === TaskStatus.Done ? 100 : task.ProgressPercent });
+        setProgressModalTarget(s);
+    };
+
+    const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus) => {
+        if (!task) return;
+        
+        const finalStatus = newStatus || task.Status;
+        updateTaskMutation.mutate({
+            ...task,
+            Status: finalStatus,
+            ProgressPercent: finalStatus === 'done' ? 100 : 0
+        });
+
+        // Tự động ghi nhận báo cáo vào Monthly Plan nếu có liên kết
+        if (task.MonthlyPlanItemID && note) {
+            await supabase
+                .from('monthly_plan_items')
+                .update({ 
+                    completion_result: note,
+                    status: finalStatus === 'done' ? 'completed' : 'incomplete'
+                })
+                .eq('id', task.MonthlyPlanItemID);
+        }
+
+        setProgressModalTarget(null);
     };
 
     const getDependencyTask = (taskId: string) => allTasks.find(t => t.TaskID === taskId);
 
-    // File upload handler
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0 || !task) return;
-        setIsUploading(true);
-        try {
-            const newAttachments: TaskAttachment[] = [...(task.Attachments || [])];
-            for (const file of Array.from(files) as File[]) {
-                const ext = file.name.split('.').pop();
-                const path = `${task.ProjectID}/tasks/${task.TaskID}/${Date.now()}.${ext}`;
-                const { error: uploadError } = await supabase.storage
-                    .from('task-attachments').upload(path, file);
-                if (uploadError) throw uploadError;
-                const { data: urlData } = supabase.storage.from('task-attachments').getPublicUrl(path);
-                newAttachments.push({
-                    id: `ATT-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-                    name: file.name,
-                    url: urlData.publicUrl,
-                    size: file.size < 1024 * 1024
-                        ? `${(file.size / 1024).toFixed(0)} KB`
-                        : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-                    uploadDate: new Date().toLocaleDateString('vi-VN'),
-                    type: 'uploaded',
-                });
-            }
-            updateTaskMutation.mutate({ ...task, Attachments: newAttachments });
-        } catch (err) {
-            console.error('Upload failed:', err);
-        } finally {
-            setIsUploading(false);
-            e.target.value = '';
-        }
-    };
 
-    const handleRemoveAttachment = (attachId: string) => {
-        if (!task || !confirm('Xóa tài liệu này?')) return;
-        const updated = (task.Attachments || []).filter(a => a.id !== attachId);
-        updateTaskMutation.mutate({ ...task, Attachments: updated });
-    };
 
     const templates = getTaskTemplates(task.TimelineStep, task.Title);
 
@@ -280,7 +267,15 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 <span className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                     <BarChart3 className="w-3.5 h-3.5" /> Tiến độ thực hiện
                                 </span>
-                                <span className={`text-sm font-black ${progress >= 100 ? 'text-emerald-600' : progress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>{progress}%</span>
+                                <div className="flex items-center gap-3">
+                                    <span className={`text-sm font-black ${progress >= 100 ? 'text-emerald-600' : progress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>{progress}%</span>
+                                    <button 
+                                        onClick={() => setProgressModalTarget('progress')}
+                                        className="text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+                                    >
+                                        Cập nhật
+                                    </button>
+                                </div>
                             </div>
                             <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                 <div
@@ -389,411 +384,31 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     {/* ── RIGHT 1/3 ── */}
                     <div className="space-y-6">
 
-                        {/* Assignee Card */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-5">Phân công</h3>
+                        <TaskInfoPanel 
+                            task={task} 
+                            assignee={assignee} 
+                            approver={approver} 
+                            isOverdue={isOverdue} 
+                            monthlyPlanItem={monthlyPlanItem} 
+                        />
 
-                            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
-                                <div className="relative">
-                                    <img
-                                        src={assignee?.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee?.FullName || 'U'}&background=6366f1&color=fff&size=48`}
-                                        className="w-12 h-12 rounded-xl ring-2 ring-white shadow-md object-cover"
-                                        alt=""
-                                    />
-                                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{assignee?.FullName || "Chưa phân công"}</p>
-                                    <p className="text-xs text-slate-400 dark:text-slate-400">{assignee?.Position || assignee?.Department || "N/A"}</p>
-                                </div>
-                            </div>
+                        <TaskSubtaskList 
+                            task={task} 
+                            updateTaskMutation={updateTaskMutation} 
+                            employees={employees} 
+                        />
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
-                                        <Calendar className="w-3 h-3" /> Hạn chót
-                                    </label>
-                                    <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-bg-subtle'}`}>
-                                        {task.DueDate ? new Date(task.DueDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Chưa có'}
-                                        {isOverdue && <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
-                                        <User className="w-3 h-3" /> Người phê duyệt
-                                    </label>
-                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                        {approver?.FullName || "Lãnh đạo Ban"}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
-                                        <DollarSign className="w-3 h-3" /> Chi phí dự kiến
-                                    </label>
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                        {task.EstimatedCost ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(task.EstimatedCost) : "Chưa lập dự toán"}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Monthly Plan Item Link */}
-                        {monthlyPlanItem && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm overflow-hidden">
-                                <div className="h-0.5 bg-gradient-to-r from-indigo-400 to-violet-500" />
-                                <div className="p-4">
-                                    <h3 className="text-xs font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <CalendarDays className="w-3.5 h-3.5" />
-                                        Kế hoạch tháng liên kết
-                                    </h3>
-                                    <div className="space-y-2">
-                                        {/* Plan period */}
-                                        {monthlyPlanItem.monthly_plan && (
-                                            <div className="flex items-center gap-2 text-xs">
-                                                <Calendar className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
-                                                    Tháng {monthlyPlanItem.monthly_plan.plan_month}/{monthlyPlanItem.monthly_plan.plan_year}
-                                                </span>
-                                                <span className="text-slate-400">— {monthlyPlanItem.monthly_plan.department_code}</span>
-                                            </div>
-                                        )}
-                                        {/* Task name */}
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">
-                                            {monthlyPlanItem.task_name}
-                                        </p>
-                                        {/* Status + deadline note */}
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            {(() => {
-                                                const statusMap: Record<string, { label: string; cls: string }> = {
-                                                    planned:    { label: 'Kế hoạch', cls: 'bg-slate-100 text-slate-500' },
-                                                    completed:  { label: 'Hoàn thành', cls: 'bg-emerald-50 text-emerald-600' },
-                                                    incomplete: { label: 'Chưa xong', cls: 'bg-red-50 text-red-500' },
-                                                    partial:    { label: 'Hoàn thành 1 phần', cls: 'bg-amber-50 text-amber-600' },
-                                                    deferred:   { label: 'Chuyển sang tháng sau', cls: 'bg-blue-50 text-blue-500' },
-                                                };
-                                                const s = statusMap[monthlyPlanItem.status] ?? { label: monthlyPlanItem.status, cls: 'bg-slate-100 text-slate-500' };
-                                                return (
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.cls}`}>
-                                                        {s.label}
-                                                    </span>
-                                                );
-                                            })()}
-                                            {monthlyPlanItem.deadline_note && (
-                                                <span className="text-xs text-slate-500 dark:text-slate-400">{monthlyPlanItem.deadline_note}</span>
-                                            )}
-                                        </div>
-                                        {/* Result note */}
-                                        {monthlyPlanItem.result_note && (
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 italic border-t border-slate-100 dark:border-slate-700 pt-2 mt-1">
-                                                {monthlyPlanItem.result_note}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Subtasks */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Công việc con</h3>
-                                <button
-                                    onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
-                                    className="p-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl transition-colors"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-
-                            <div className="space-y-2">
-                                {(task.SubTasks || []).length === 0 && (
-                                    <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
-                                        <p className="text-xs text-slate-300 dark:text-slate-600 italic">Chưa có công việc con</p>
-                                    </div>
-                                )}
-
-                                {(task.SubTasks || []).map((sub, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-bg-surface dark:hover:bg-slate-700 transition-all">
-                                        <div
-                                            onClick={() => {
-                                                const updatedSubTasks = [...(task.SubTasks || [])];
-                                                updatedSubTasks[idx].Status = updatedSubTasks[idx].Status === 'done' ? 'todo' : 'done';
-                                                updateTaskMutation.mutate({ ...task, SubTasks: updatedSubTasks });
-                                            }}
-                                            className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200' : 'border-slate-300 bg-bg-surface hover:border-blue-400'
-                                                }`}
-                                        >
-                                            {sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
-                                        </div>
-                                        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'done' ? 'text-slate-400 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
-                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
-                                                    <User className="w-3 h-3" />
-                                                    {sub.AssigneeID ? employees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : "Chưa gán"}
-                                                </span>
-                                                {sub.DueDate && (
-                                                    <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
-                                                        <Calendar className="w-3 h-3" /> {sub.DueDate}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => {
-                                                if (confirm("Xóa công việc con này?")) {
-                                                    const updatedSubTasks = (task.SubTasks || []).filter((_, i) => i !== idx);
-                                                    updateTaskMutation.mutate({ ...task, SubTasks: updatedSubTasks });
-                                                }
-                                            }}
-                                            className="opacity-0 group-hover/sub:opacity-100 transition-opacity text-slate-300 hover:text-red-500 p-1 rounded-lg hover:bg-red-50"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Attachments — Templates + Upload */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                            <div className="h-0.5 bg-gradient-to-r from-violet-400 to-indigo-500" />
-                            <div className="p-4">
-                                <div className="flex justify-between items-center mb-5">
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Paperclip className="w-4 h-4" /> Tài liệu công việc
-                                    </h3>
-                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-bg-subtle dark:bg-slate-700 px-2 py-1 rounded-lg">
-                                        {templates.length} mẫu • {(task.Attachments || []).length} đã tải
-                                    </span>
-                                </div>
-
-                                {/* Template documents */}
-                                {templates.length > 0 && (
-                                    <div className="mb-5">
-                                        <p className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                            <FileText className="w-3 h-3" /> Tài liệu mẫu theo quy định
-                                        </p>
-                                        <div className="space-y-1.5">
-                                            {templates.map((tpl, idx) => {
-                                                const ftc = getFileTypeColor(tpl.fileType);
-                                                const FileIcon = tpl.fileType === 'xlsx' ? FileSpreadsheet : tpl.fileType === 'pdf' ? File : FileText;
-                                                return (
-                                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl hover:bg-violet-50/50 dark:hover:bg-violet-900/10 transition-all ring-1 ring-slate-100 dark:ring-slate-700 group/tpl">
-                                                        <div className={`p-2 rounded-xl shadow-sm ring-1 ring-slate-100 dark:ring-slate-600 shrink-0 ${ftc.bg}`}>
-                                                            <FileIcon className={`w-4 h-4 ${ftc.text}`} />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                                                                {tpl.name}
-                                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${ftc.bg} ${ftc.text}`}>{tpl.fileType}</span>
-                                                            </p>
-                                                            <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 line-clamp-1">{tpl.description}</p>
-                                                            {tpl.legalBasis && (
-                                                                <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-0.5 flex items-center gap-1">
-                                                                    <Scale className="w-2.5 h-2.5" /> {tpl.legalBasis}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        {/* Export button for templates with templatePath */}
-                                                        {tpl.templatePath && getTemplateConfig(tpl.templatePath) && (
-                                                            <button
-                                                                onClick={() => setActiveExportTemplate(tpl)}
-                                                                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 mt-1 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-bold shadow-sm hover:shadow-md hover:from-indigo-600 hover:to-purple-600 transition-all transform active:scale-95"
-                                                                title="Xuất văn bản DOCX tự động điền dữ liệu dự án"
-                                                            >
-                                                                <Download className="w-3 h-3" />
-                                                                Xuất DOCX
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {templates.length === 0 && (
-                                    <div className="text-center py-5 mb-4 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
-                                        <FileText className="w-6 h-6 text-slate-200 dark:text-slate-600 mx-auto mb-1.5" />
-                                        <p className="text-[10px] text-slate-300 dark:text-slate-600 italic">Chưa có mẫu cho bước này</p>
-                                    </div>
-                                )}
-
-                                {/* Uploaded documents */}
-                                {(task.Attachments || []).length > 0 && (
-                                    <div className="mb-4">
-                                        <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                            <Upload className="w-3 h-3" /> Tài liệu đã tải lên
-                                        </p>
-                                        <div className="space-y-1.5">
-                                            {(task.Attachments || []).map((att) => (
-                                                <div key={att.id} className="flex items-center gap-3 p-3 bg-emerald-50/40 dark:bg-emerald-900/10 rounded-xl ring-1 ring-emerald-100 dark:ring-emerald-900/30 hover:ring-emerald-200 dark:hover:ring-emerald-800 transition-all group/att">
-                                                    <div className="p-2 bg-bg-surface rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
-                                                        <FileText className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 truncate block transition-colors">
-                                                            {att.name}
-                                                        </a>
-                                                        <p className="text-[10px] text-slate-400 dark:text-slate-400">{att.size} • {att.uploadDate}</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-1 shrink-0">
-                                                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Tải xuống">
-                                                            <Download className="w-3.5 h-3.5" />
-                                                        </a>
-                                                        <button
-                                                            onClick={() => handleRemoveAttachment(att.id)}
-                                                            className="p-1.5 opacity-0 group-hover/att:opacity-100 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-slate-300 hover:text-red-500 transition-all"
-                                                            title="Xóa"
-                                                        >
-                                                            <Trash2 className="w-3.5 h-3.5" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Upload button */}
-                                <input
-                                    type="file" ref={fileInputRef} className="hidden" multiple
-                                    onChange={handleFileUpload}
-                                    accept=".pdf,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg,.zip,.rar"
-                                />
-                                <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={isUploading}
-                                    className="w-full text-center py-3.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-colors flex items-center justify-center gap-2 border-2 border-dashed border-blue-200 dark:border-blue-800/40 hover:border-blue-300 dark:hover:border-blue-700 disabled:opacity-50"
-                                >
-                                    {isUploading ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                            Đang tải lên...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="w-4 h-4" /> Thêm tài liệu
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
+                        <TaskAttachments 
+                            task={task} 
+                            updateTaskMutation={updateTaskMutation} 
+                            templates={templates} 
+                            setActiveExportTemplate={setActiveExportTemplate} 
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* ══════════ SUBTASK MODAL ══════════ */}
-            {isSubTaskModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
-                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
-                            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
-                            <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">✕</button>
-                        </div>
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            const fd = new FormData(e.currentTarget);
-                            const title = fd.get('title') as string;
-                            const assigneeId = fd.get('assignee') as string;
-                            const dueDate = fd.get('dueDate') as string;
 
-                            let subs = [...(task.SubTasks || [])];
-                            if (editingSubTask) {
-                                subs = subs.map(s => s.SubTaskID === editingSubTask.SubTaskID ? { ...s, Title: title, AssigneeID: assigneeId, DueDate: dueDate } : s);
-                            } else {
-                                subs.push({ SubTaskID: `SUB-${Date.now()}`, Title: title, AssigneeID: assigneeId, DueDate: dueDate, Status: 'todo' as const });
-                            }
-                            updateTaskMutation.mutate({ ...task, SubTasks: subs });
-                            setIsSubTaskModalOpen(false);
-                            setEditingSubTask(null);
-                        }} className="p-4 space-y-4">
-
-                            {/* ── Parent task deadline banner ── */}
-                            {task.DueDate && (
-                                <div className={`flex items-center gap-3 p-3.5 rounded-xl border ${
-                                    new Date(task.DueDate) < new Date()
-                                        ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/50'
-                                        : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800/50'
-                                }`}>
-                                    <div className={`p-2 rounded-lg ${
-                                        new Date(task.DueDate) < new Date()
-                                            ? 'bg-red-100 dark:bg-red-900/40'
-                                            : 'bg-primary-100 dark:bg-primary-900/40'
-                                    }`}>
-                                        <AlertTriangle className={`w-4 h-4 ${
-                                            new Date(task.DueDate) < new Date()
-                                                ? 'text-red-500'
-                                                : 'text-primary-500'
-                                        }`} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                            Hạn công việc cha
-                                        </p>
-                                        <p className={`text-sm font-black ${
-                                            new Date(task.DueDate) < new Date()
-                                                ? 'text-red-600 dark:text-red-400'
-                                                : 'text-primary-700 dark:text-primary-400'
-                                        }`}>
-                                            {new Date(task.DueDate).toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
-                                            {new Date(task.DueDate) < new Date() && (
-                                                <span className="ml-2 text-[10px] font-bold text-red-500 animate-pulse">ĐÃ QUÁ HẠN</span>
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div className="text-right shrink-0">
-                                        {(() => {
-                                            const diffMs = new Date(task.DueDate).getTime() - new Date().getTime();
-                                            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-                                            if (diffDays < 0) return <span className="text-xs font-bold text-red-500">Quá {Math.abs(diffDays)} ngày</span>;
-                                            if (diffDays === 0) return <span className="text-xs font-bold text-red-500">Hôm nay</span>;
-                                            return <span className={`text-xs font-bold ${diffDays <= 7 ? 'text-primary-600' : 'text-emerald-600'}`}>Còn {diffDays} ngày</span>;
-                                        })()}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Nội dung</label>
-                                <input defaultValue={editingSubTask?.Title || ''} name="title" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400" placeholder="Nhập tên công việc..." />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Người thực hiện</label>
-                                <select defaultValue={editingSubTask?.AssigneeID || ''} name="assignee" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400">
-                                    <option value="">-- Chọn --</option>
-                                    {employees.filter(e => e.Status === 1).map(e => (
-                                        <option key={e.EmployeeID} value={e.EmployeeID}>{e.FullName} - {e.Department}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Hạn hoàn thành</label>
-                                <input
-                                    defaultValue={editingSubTask?.DueDate || ''}
-                                    type="date"
-                                    name="dueDate"
-                                    max={task.DueDate || undefined}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                                />
-                                {task.DueDate && (
-                                    <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1.5 flex items-center gap-1">
-                                        <Calendar className="w-3 h-3" />
-                                        Không được vượt quá hạn công việc cha ({new Date(task.DueDate).toLocaleDateString('vi-VN')})
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
-                                <button type="button" onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl">Hủy</button>
-                                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-sm shadow-primary-500/25 hover:shadow-blue-500/40 active:scale-[0.98] transition-all" >
-                                    {editingSubTask ? 'Lưu' : 'Thêm mới'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
 
             {/* ══════════ TEMPLATE EXPORT MODAL ══════════ */}
             {activeExportTemplate?.templatePath && (
@@ -807,9 +422,21 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     stepCode={task.TimelineStep}
                 />
             )}
+
+            {/* ══════════ TASK PROGRESS MODAL ══════════ */}
+            {progressModalTarget && task && (
+                <TaskProgressUpdateModal
+                    task={task}
+                    targetStatus={progressModalTarget === 'progress' ? null : progressModalTarget as TaskStatus}
+                    onClose={() => setProgressModalTarget(null)}
+                    onSubmit={handleProgressUpdateSubmit}
+                    isSaving={updateTaskMutation.isPending}
+                />
+            )}
         </div>
     );
 }
 
 export default TaskDetail;
+
 
