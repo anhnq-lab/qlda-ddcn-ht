@@ -72,6 +72,10 @@ export interface AnnualPlanItem {
     // Link dự án (nullable)
     project_id?: string;
 
+    // Nguồn gốc (nếu xuất từ KHTHDA)
+    source_task_id?: string;
+    source_type?: 'manual' | 'from_project_task';
+
     responsible_text?: string;
     collaborating_text?: string;
     responsible_ids?: string[];
@@ -114,9 +118,14 @@ export interface MonthlyPlanItem {
     id: string;
     monthly_plan_id: string;
 
-    // Links (cả hai nullable)
+    // Links
     annual_plan_item_id?: string;
     project_id?: string;
+
+    // Nguồn gốc (source tracking)
+    source_task_id?: string;      // Task cấp phòng từ KHTHDA
+    source_subtask_id?: string;   // Sub-task cấp cá nhân từ KHTHDA
+    source_type?: 'manual' | 'from_annual' | 'from_project_task' | 'from_subtask';
 
     group_name?: string;
     group_sort_order?: number;
@@ -124,10 +133,13 @@ export interface MonthlyPlanItem {
     task_name: string;
     deliverable?: string;
 
-    deadline_note?: string;  // "Tháng 5", "Tuần 2"
-    due_date?: string;       // ISO date nếu có ngày cụ thể
+    deadline_note?: string;
+    due_date?: string;
 
-    // Phân công
+    // Phân công — nhiều người thực hiện
+    staff_ids?: string[];         // Mảng ID nhân viên
+    staff_names?: string[];       // Mảng tên nhân viên
+    // Legacy single fields (giữ backward compat)
     staff_id?: string;
     staff_name?: string;
     dept_head_id?: string;
@@ -135,7 +147,7 @@ export interface MonthlyPlanItem {
     ban_head_id?: string;
     ban_head_name?: string;
 
-    // Kết quả (điền khi làm BC tháng)
+    // Kết quả
     status: MonthlyTaskStatus;
     completion_result?: string;
     incomplete_reason?: string;
@@ -150,12 +162,25 @@ export interface MonthlyPlanItem {
 
     // Populated khi join
     annual_plan_item?: AnnualPlanItem;
-    tasks?: Task[];  // Công việc con của nhiệm vụ KH tháng
+    tasks?: Task[];
 }
 
-export type MonthlyPlanItemInput = Omit<MonthlyPlanItem, 'id' | 'created_at' | 'updated_at' | 'annual_plan_item'>;
+export type MonthlyPlanItemInput = Omit<MonthlyPlanItem, 'id' | 'created_at' | 'updated_at' | 'annual_plan_item' | 'tasks'>;
 
-// ─── View models (dùng trong UI) ─────────────────────────────
+// Helper: lấy danh sách tên người thực hiện
+export function getStaffDisplay(item: MonthlyPlanItem): string {
+    if (item.staff_names && item.staff_names.length > 0) return item.staff_names.join(', ');
+    if (item.staff_name) return item.staff_name;
+    return '—';
+}
+
+// Helper: source badge
+export const SOURCE_TYPE_CONFIG = {
+    manual:            { label: 'Thủ công', color: 'text-slate-500', bg: 'bg-slate-100',   icon: '✍️' },
+    from_annual:       { label: 'KH Khung',   color: 'text-blue-600',  bg: 'bg-blue-50',    icon: '📂' },
+    from_project_task: { label: 'Dự án',      color: 'text-violet-600',bg: 'bg-violet-50', icon: '📁' },
+    from_subtask:      { label: 'Dự án',      color: 'text-violet-600',bg: 'bg-violet-50', icon: '📁' },
+} as const;
 
 // Nhóm tasks theo group_name trong 1 tháng/phòng
 export interface MonthlyPlanGroup {

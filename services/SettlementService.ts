@@ -95,7 +95,7 @@ const settlementToDb = (r: Partial<SettlementRecord>) => ({
 
 export class AcceptanceService {
     static async getByContractId(contractId: string): Promise<AcceptanceRecord[]> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('acceptance_records')
             .select('*')
             .eq('contract_id', contractId)
@@ -105,7 +105,7 @@ export class AcceptanceService {
     }
 
     static async create(record: Partial<AcceptanceRecord>): Promise<AcceptanceRecord> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('acceptance_records')
             .insert(acceptanceToDb(record))
             .select()
@@ -115,7 +115,7 @@ export class AcceptanceService {
     }
 
     static async update(id: string, record: Partial<AcceptanceRecord>): Promise<AcceptanceRecord> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('acceptance_records')
             .update(acceptanceToDb(record))
             .eq('id', id)
@@ -126,7 +126,7 @@ export class AcceptanceService {
     }
 
     static async delete(id: string): Promise<void> {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('acceptance_records')
             .delete()
             .eq('id', id);
@@ -140,7 +140,7 @@ export class AcceptanceService {
 
 export class SettlementService {
     static async getByContractId(contractId: string): Promise<SettlementRecord | null> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('settlement_records')
             .select('*')
             .eq('contract_id', contractId)
@@ -161,7 +161,7 @@ export class SettlementService {
     }
 
     static async create(record: Partial<SettlementRecord>): Promise<SettlementRecord> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('settlement_records')
             .insert(settlementToDb(record))
             .select()
@@ -171,7 +171,7 @@ export class SettlementService {
     }
 
     static async update(id: string, record: Partial<SettlementRecord>): Promise<SettlementRecord> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
             .from('settlement_records')
             .update(settlementToDb(record))
             .eq('id', id)
@@ -182,7 +182,7 @@ export class SettlementService {
     }
 
     static async delete(id: string): Promise<void> {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('settlement_records')
             .delete()
             .eq('id', id);

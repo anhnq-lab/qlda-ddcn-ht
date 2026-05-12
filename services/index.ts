@@ -14,6 +14,7 @@ export { DashboardService } from './DashboardService';
 export { CDEService } from './CDEService';
 export { CapitalService } from './CapitalService';
 export { NationalGatewayService } from './NationalGatewayService';
+export { SiteClearanceService } from './SiteClearanceService';
 
 // AI Services
 export {

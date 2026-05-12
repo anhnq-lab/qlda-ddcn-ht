@@ -326,7 +326,7 @@ export const TaskService = {
       });
 
       if (subsToUpsert.length > 0) {
-        await supabase.from('tasks').upsert(subsToUpsert);
+        await supabase.from('tasks').upsert(subsToUpsert as any);
       }
 
       // Xóa các subtask bị người dùng gỡ bỏ UI khỏi CSDL

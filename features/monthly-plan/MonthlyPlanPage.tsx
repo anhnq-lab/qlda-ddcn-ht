@@ -3,6 +3,7 @@ import {
     CalendarDays, Plus, ChevronDown, ChevronRight,
     CheckCircle2, XCircle, Clock, AlertCircle,
     ArrowRight, Edit2, Trash2, RefreshCw, Download, Link2, FolderOpen,
+    FolderSync, Users,
 } from 'lucide-react';
 import { exportMonthlyReport } from './exportMonthlyReport';
 import { MonthlyPlanService, MonthlyPlanItemService } from '../../services/PlanService';
@@ -10,7 +11,10 @@ import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
     DepartmentCode, DEPARTMENT_CODES, DEPARTMENT_NAMES,
     MONTHLY_STATUS_LABELS, MonthlyReportSummary,
+    SOURCE_TYPE_CONFIG, getStaffDisplay,
 } from '../../types/plan.types';
+import { useEmployees } from '../../hooks/useEmployees';
+import { useAuth } from '../../context/AuthContext';
 import MonthlyPlanItemModal from './MonthlyPlanItemModal';
 import MonthlyPlanItemDetail from './MonthlyPlanItemDetail';
 import { useSlidePanel } from "../../context/SlidePanelContext";
@@ -42,7 +46,21 @@ const MonthlyPlanPage: React.FC = () => {
     const { openPanel, closePanel } = useSlidePanel();
     const [exporting, setExporting] = useState(false);
     const [seedLoading, setSeedLoading] = useState(false);
-    const [seedResult, setSeedResult] = useState<{ count: number; show: boolean } | null>(null);
+    const [seedProjectLoading, setSeedProjectLoading] = useState(false);
+    const [seedResult, setSeedResult] = useState<{ count: number; source: string; show: boolean } | null>(null);
+
+    const { data: employees = [] } = useEmployees();
+    const { currentUser } = useAuth();
+
+    // Danh sách EmployeeID thuộc phòng đang chọn
+    // Employee.Department là tên đầy đủ, ví dụ "Phòng Quản lý dự án 1"
+    const deptEmployeeIds = useMemo(() => {
+        const deptFullName = DEPARTMENT_NAMES[activeDept];
+        return employees
+            .filter(e => e.Department === deptFullName || e.Department === activeDept)
+            .map(e => e.EmployeeID)
+            .filter(Boolean) as string[];
+    }, [employees, activeDept]);
 
     useEffect(() => { loadPlan(); }, [month, year, activeDept]);
     useEffect(() => { if (viewMode === 'report') loadSummaries(); }, [viewMode, month, year]);
@@ -81,8 +99,7 @@ const MonthlyPlanPage: React.FC = () => {
         setSeedResult(null);
         try {
             const seeded = await MonthlyPlanItemService.seedFromAnnualPlan(currentPlan.id, month, year, activeDept);
-            setSeedResult({ count: seeded.length, show: true });
-            // Ẩn thông báo sau 4 giây
+            setSeedResult({ count: seeded.length, source: 'KH khung', show: true });
             setTimeout(() => setSeedResult(null), 4000);
             await loadPlan();
         } catch (e) {
@@ -90,6 +107,40 @@ const MonthlyPlanPage: React.FC = () => {
             alert('Có lỗi khi sinh nhiệm vụ. Vui lòng thử lại.');
         } finally {
             setSeedLoading(false);
+        }
+    };
+
+    const handleSeedFromProject = async () => {
+        if (!currentPlan) return;
+        if (deptEmployeeIds.length === 0) {
+            alert(`Không tìm thấy nhân viên thuộc phòng ${activeDept}. Vui lòng kiểm tra cấu hình phòng ban.`);
+            return;
+        }
+        if (!confirm(
+            `Sinh nhiệm vụ từ công việc dự án đang chạy cho tháng ${month}/${year}?\n` +
+            `Tiêu chí: công việc có hạn trong tháng AND giao cho nhân viên thuộc phòng ${activeDept}.\n\n` +
+            `(Không tạo trùng nếu đã sinh rồi.)`
+        )) return;
+
+        setSeedProjectLoading(true);
+        setSeedResult(null);
+        try {
+            const result = await MonthlyPlanItemService.seedFromProjectTasks(
+                currentPlan.id,
+                month,
+                year,
+                activeDept,
+                deptEmployeeIds,
+                currentUser?.EmployeeID
+            );
+            setSeedResult({ count: result.inserted.length, source: 'dự án', show: true });
+            setTimeout(() => setSeedResult(null), 4000);
+            await loadPlan();
+        } catch (e) {
+            console.error(e);
+            alert('Có lỗi khi sinh từ dự án. Vui lòng thử lại.');
+        } finally {
+            setSeedProjectLoading(false);
         }
     };
 
@@ -126,36 +177,42 @@ const MonthlyPlanPage: React.FC = () => {
 
     const openFormPanel = (item: MonthlyPlanItem | null) => {
         if (!currentPlan) return;
-        openPanel(
-            <MonthlyPlanItemModal
-                monthlyPlanId={currentPlan.id}
-                month={month}
-                year={year}
-                departmentCode={activeDept}
-                item={item}
-                onSaved={() => {
-                    closePanel();
-                    loadPlan();
-                }}
-                onClose={closePanel}
-            />
-        );
+        openPanel({
+            component: (
+                <MonthlyPlanItemModal
+                    monthlyPlanId={currentPlan.id}
+                    month={month}
+                    year={year}
+                    departmentCode={activeDept}
+                    item={item}
+                    onSaved={() => {
+                        closePanel();
+                        loadPlan();
+                    }}
+                    onClose={closePanel}
+                />
+            ),
+            title: item ? 'Chỉnh sửa nhiệm vụ' : 'Thêm nhiệm vụ',
+        });
     };
 
     const openDetailPanel = (item: MonthlyPlanItem) => {
-        openPanel(
-            <MonthlyPlanItemDetail
-                item={item}
-                month={month}
-                year={year}
-                onEdit={() => openFormPanel(item)}
-                onDelete={() => {
-                    handleDelete(item.id);
-                    closePanel();
-                }}
-                onClose={closePanel}
-            />
-        );
+        openPanel({
+            component: (
+                <MonthlyPlanItemDetail
+                    item={item}
+                    month={month}
+                    year={year}
+                    onEdit={() => openFormPanel(item)}
+                    onDelete={() => {
+                        handleDelete(item.id);
+                        closePanel();
+                    }}
+                    onClose={closePanel}
+                />
+            ),
+            title: 'Chi tiết nhiệm vụ',
+        });
     };
 
     return (
@@ -186,8 +243,8 @@ const MonthlyPlanPage: React.FC = () => {
                                     : 'bg-amber-50 text-amber-700 border border-amber-200'
                             }`}>
                                 {seedResult.count > 0
-                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ từ KH khung`
-                                    : '⚠ Không có nhiệm vụ mới nào (KH khung trống hoặc đã sinh hết)'}
+                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ từ ${seedResult.source}`
+                                    : `⚠ Không có nhiệm vụ mới (${seedResult.source} trống hoặc đã sinh hết)`}
                             </span>
                         )}
                         {/* Export Excel */}
@@ -244,7 +301,20 @@ const MonthlyPlanPage: React.FC = () => {
 
                         {viewMode === 'plan' && (
                             <>
+                                {/* Sinh từ Dự án */}
                                 <button
+                                    id="monthly-plan-seed-project-btn"
+                                    onClick={handleSeedFromProject}
+                                    disabled={seedProjectLoading || loading}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-violet-200 rounded-lg hover:bg-violet-50 hover:text-violet-700 hover:border-violet-300 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title="Sinh nhiệm vụ từ công việc dự án đang chạy"
+                                >
+                                    <FolderSync className={`w-4 h-4 ${seedProjectLoading ? 'animate-spin' : ''}`} />
+                                    {seedProjectLoading ? 'Đang sinh...' : 'Sinh từ dự án'}
+                                </button>
+                                {/* Sinh từ KH khung */}
+                                <button
+                                    id="monthly-plan-seed-annual-btn"
                                     onClick={handleSeedFromAnnual}
                                     disabled={seedLoading || loading}
                                     className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -254,6 +324,7 @@ const MonthlyPlanPage: React.FC = () => {
                                     {seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}
                                 </button>
                                 <button
+                                    id="monthly-plan-add-btn"
                                     onClick={() => openFormPanel(null)}
                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
                                 >
@@ -362,7 +433,11 @@ const MonthlyPlanPage: React.FC = () => {
                     <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400">
                         <CalendarDays className="w-10 h-10 opacity-30" />
                         <p className="text-sm">Chưa có nhiệm vụ nào trong tháng này</p>
-                        <div className="flex gap-2 text-sm">
+                        <div className="flex flex-wrap gap-2 text-sm justify-center">
+                            <button onClick={handleSeedFromProject} className="text-violet-600 hover:underline flex items-center gap-1">
+                                <FolderSync className="w-3.5 h-3.5" /> Sinh từ dự án
+                            </button>
+                            <span className="text-slate-300">|</span>
                             <button onClick={handleSeedFromAnnual} className="text-indigo-600 hover:underline">
                                 Sinh từ KH khung
                             </button>
@@ -465,12 +540,22 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
                     </p>
                 )}
                 <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    {item.annual_plan_item_id && (
+                    {/* Badge nguồn gốc chính xác theo source_type */}
+                    {item.source_type && item.source_type !== 'manual' && (() => {
+                        const cfg = SOURCE_TYPE_CONFIG[item.source_type];
+                        return cfg ? (
+                            <span className={`text-[10px] ${cfg.color} ${cfg.bg} px-1.5 py-0.5 rounded flex items-center gap-0.5 font-medium border border-current/10`}>
+                                {cfg.icon} {cfg.label}
+                            </span>
+                        ) : null;
+                    })()}
+                    {/* Fallback: nếu không có source_type nhưng có annual_plan_item_id */}
+                    {!item.source_type && item.annual_plan_item_id && (
                         <span className="text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-medium border border-blue-100 dark:border-blue-500/20">
                             <Link2 className="w-2.5 h-2.5" />KH Khung
                         </span>
                     )}
-                    {item.project_id && (
+                    {!item.source_type && !item.annual_plan_item_id && item.project_id && (
                         <span className="text-[10px] text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-medium border border-violet-100 dark:border-violet-500/20">
                             <FolderOpen className="w-2.5 h-2.5" />Dự án
                         </span>
@@ -482,8 +567,21 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
                 {item.deadline_note ?? '—'}
             </td>
 
-            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 align-top max-w-[150px] truncate">
-                {item.staff_name ?? '—'}
+            {/* Cột Phụ trách: hiển thị nhiều người */}
+            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 align-top max-w-[160px]">
+                {(() => {
+                    const names = item.staff_names && item.staff_names.length > 0
+                        ? item.staff_names
+                        : item.staff_name ? [item.staff_name] : [];
+                    if (names.length === 0) return <span className="text-slate-400">—</span>;
+                    if (names.length === 1) return <span>{names[0]}</span>;
+                    return (
+                        <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3 text-slate-400" />
+                            <span className="truncate">{names.join(', ')}</span>
+                        </span>
+                    );
+                })()}
             </td>
 
             <td className="px-4 py-3 align-top text-center">

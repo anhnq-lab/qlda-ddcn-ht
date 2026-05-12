@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, FolderOpen, ChevronDown, Calendar, Layers, Filter, X, AlertTriangle, ListTodo, LayoutGrid, Plus, User } from 'lucide-react';
+import { Search, FolderOpen, ChevronDown, Calendar, Layers, Filter, X, AlertTriangle, ListTodo, LayoutGrid, Plus, User, Tag } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
 import { TaskStatus } from '../../../types';
 
@@ -18,6 +18,8 @@ interface TaskFilterBarProps {
     setFilterOverdue: (v: boolean) => void;
     filterPersonal: boolean;
     setFilterPersonal: (v: boolean) => void;
+    filterTaskType: string;
+    setFilterTaskType: (v: string) => void;
     hasActiveFilters: boolean;
     projects: any[];
     departments: string[];
@@ -34,6 +36,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     filterStatus, setFilterStatus,
     filterOverdue, setFilterOverdue,
     filterPersonal, setFilterPersonal,
+    filterTaskType, setFilterTaskType,
     hasActiveFilters,
     projects, departments,
     viewMode, setViewMode,
@@ -134,6 +137,22 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                     </div>
 
+                    {/* Loại công việc */}
+                    <div className="relative">
+                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                        <select
+                            value={filterTaskType}
+                            onChange={(e) => setFilterTaskType(e.target.value)}
+                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all"
+                        >
+                            <option value="All">Tất cả loại</option>
+                            <option value="project">📁 Dự án</option>
+                            <option value="management">📋 Điều hành</option>
+                            <option value="internal">🏢 Nội bộ</option>
+                        </select>
+                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                    </div>
+
                     <div className="relative">
                         <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                         <select
@@ -160,6 +179,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 setFilterDepartment('All'); 
                                 setFilterOverdue(false); 
                                 setFilterPersonal(false);
+                                setFilterTaskType('All');
                             }}
                             className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
                         >

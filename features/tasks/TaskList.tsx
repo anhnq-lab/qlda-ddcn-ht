@@ -65,6 +65,7 @@ const TaskList: React.FC = () => {
     const [filterDepartment, setFilterDepartment] = useState<string>('All');
     const [filterOverdue, setFilterOverdue] = useState(false);
     const [filterPersonal, setFilterPersonal] = useState(false);
+    const [filterTaskType, setFilterTaskType] = useState<string>('All');
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Partial<Task>>({});
@@ -129,8 +130,11 @@ const TaskList: React.FC = () => {
             !!task.DueDate &&
             new Date(task.DueDate) < new Date()
         );
-        return matchSearch && matchStatus && matchProject && matchMonth && matchDepartment && matchOverdue && matchPersonal;
-    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, filterPersonal, currentUser, scopedProjectIds, isGlobalScope, employees]);
+        // Task type filter
+        const matchTaskType = filterTaskType === 'All' || task.TaskType === filterTaskType;
+
+        return matchSearch && matchStatus && matchProject && matchMonth && matchDepartment && matchOverdue && matchPersonal && matchTaskType;
+    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {
@@ -268,7 +272,6 @@ const TaskList: React.FC = () => {
             icon: <CheckCircle2 className="w-5 h-5 text-blue-500" />,
             url: `/tasks/${task.TaskID}`,
             component: <TaskSlidePanel taskId={task.TaskID} onClose={() => {/* context handles close */}} />,
-            maxWidth: 'max-w-4xl'
         });
     };
 
@@ -331,7 +334,7 @@ const TaskList: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || filterMonth !== 'All' || filterDepartment !== 'All' || searchTerm !== '' || filterOverdue || filterPersonal;
+    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || filterMonth !== 'All' || filterDepartment !== 'All' || filterTaskType !== 'All' || searchTerm !== '' || filterOverdue || filterPersonal;
 
     // ═══════════════════════════════════════════════════
     // Render
@@ -366,6 +369,8 @@ const TaskList: React.FC = () => {
                 setFilterOverdue={setFilterOverdue}
                 filterPersonal={filterPersonal}
                 setFilterPersonal={setFilterPersonal}
+                filterTaskType={filterTaskType}
+                setFilterTaskType={setFilterTaskType}
                 hasActiveFilters={hasActiveFilters}
                 projects={projects}
                 departments={departments}

@@ -28,7 +28,7 @@ import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { TableSkeleton } from '@/components/ui';
-import { Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Receipt, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch } from 'lucide-react';
+import { Map, LandPlot, Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Receipt, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch } from 'lucide-react';
 import { AIReportModal } from './components/AIReportModal';
 import { generateMonthlyReport } from '@/services/aiService';
 import { useToast } from '@/components/ui/Toast';
@@ -43,6 +43,7 @@ const ProjectComplianceTab = React.lazy(() => import('./components/tabs/ProjectC
 const ProjectWorkflowTab = React.lazy(() => import('./components/tabs/ProjectWorkflowTab').then(m => ({ default: m.ProjectWorkflowTab })));
 const ProjectSettlementTab = React.lazy(() => import('./components/tabs/ProjectSettlementTab').then(m => ({ default: m.ProjectSettlementTab })));
 const ProjectInspectionTab = React.lazy(() => import('./components/tabs/ProjectInspectionTab').then(m => ({ default: m.ProjectInspectionTab })));
+const ProjectClearanceTab = React.lazy(() => import('./components/tabs/ProjectClearanceTab').then(m => ({ default: m.ProjectClearanceTab })));
 const AISummaryWidget = React.lazy(() => import('@/components/ai/AISummaryWidget').then(m => ({ default: m.AISummaryWidget })));
 const AICompliancePanel = React.lazy(() => import('@/components/ai/AICompliancePanel').then(m => ({ default: m.AICompliancePanel })));
 const AIForecastChart = React.lazy(() => import('@/components/ai/AIForecastChart').then(m => ({ default: m.AIForecastChart })));
@@ -58,6 +59,7 @@ const TAB_DEFINITIONS = [
     { id: 'inspection', label: 'THANH TRA', icon: Shield },
     { id: 'settlement', label: 'QUYẾT TOÁN', icon: Receipt },
     { id: 'workflow', label: 'QUY TRÌNH', icon: GitBranch },
+    { id: 'clearance', label: 'GPMB', icon: LandPlot },
     { id: 'tt24', label: 'ĐỒNG BỘ CSDL', icon: Database },
 ] as const;
 
@@ -174,6 +176,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     const [packagesMounted, setPackagesMounted] = useState(activeTab === 'packages');
     const [capitalMounted, setCapitalMounted] = useState(activeTab === 'capital');
     const [workflowMounted, setWorkflowMounted] = useState(activeTab === 'workflow');
+    const [clearanceMounted, setClearanceMounted] = useState(activeTab === 'clearance');
 
     // Mount heavy tabs on first visit
     useEffect(() => {
@@ -182,7 +185,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
         if (activeTab === 'packages' && !packagesMounted) setPackagesMounted(true);
         if (activeTab === 'capital' && !capitalMounted) setCapitalMounted(true);
         if (activeTab === 'workflow' && !workflowMounted) setWorkflowMounted(true);
-    }, [activeTab, settlementMounted, planMounted, packagesMounted, capitalMounted, workflowMounted]);
+        if (activeTab === 'clearance' && !clearanceMounted) setClearanceMounted(true);
+    }, [activeTab, settlementMounted, planMounted, packagesMounted, capitalMounted, workflowMounted, clearanceMounted]);
 
     // Keyboard: Arrow Left/Right to switch tabs
     const activeTabRef = React.useRef(activeTab);
@@ -580,6 +584,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                     <ErrorBoundary>
                     <React.Suspense fallback={<TableSkeleton columns={4} rows={8} />}>
                     <ProjectWorkflowTab projectID={project.ProjectID} project={project} />
+                    </React.Suspense>
+                    </ErrorBoundary>
+                </div>
+            )}
+            {clearanceMounted && (
+                <div
+                    className={`flex-1 min-h-0 overflow-y-auto px-4 py-3 ${activeTab === 'clearance' ? '' : 'absolute inset-0 pointer-events-none'}`}
+                    style={activeTab === 'clearance' ? undefined : { visibility: 'hidden', zIndex: -1 }}
+                >
+                    <ErrorBoundary>
+                    <React.Suspense fallback={<TableSkeleton columns={4} rows={8} />}>
+                    <ProjectClearanceTab projectId={project.ProjectID} />
                     </React.Suspense>
                     </ErrorBoundary>
                 </div>

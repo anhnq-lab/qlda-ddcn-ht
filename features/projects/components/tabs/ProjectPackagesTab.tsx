@@ -669,6 +669,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                         {visibleColumns.duration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
                                                         {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
                                                         {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
+                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
                                                     </tr>
                                                     <tr className="bg-bg-subtle text-[10px] uppercase font-black tracking-widest">
                                                         <th className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
@@ -703,11 +704,11 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                 {visibleColumns.description && <td className="border border-slate-200 dark:border-slate-700 px-3 py-3 text-slate-600 dark:text-slate-300 align-top leading-snug">{pkg.Description || '-'}</td>}
                                                                 {visibleColumns.price && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-right font-bold tabular-nums text-slate-800 dark:text-slate-200 align-top">{formatCurrency(pkg.Price)}</td>}
                                                                 {visibleColumns.fundingSource && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.FundingSource || '-'}</td>}
-                                                                {visibleColumns.selectionMethod && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionMethod || '-'}</td>}
+                                                                {visibleColumns.selectionMethod && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionMethod === 'OpenBidding' ? 'Đấu thầu rộng rãi' : pkg.SelectionMethod === 'Appointed' ? 'Chỉ định thầu' : pkg.SelectionMethod === 'LimitedBidding' ? 'Đấu thầu hạn chế' : pkg.SelectionMethod === 'CompetitiveNegotiation' ? 'Chào hàng cạnh tranh' : pkg.SelectionMethod === 'DirectShopping' ? 'Mua sắm trực tiếp' : pkg.SelectionMethod === 'SelfExecute' ? 'Tự thực hiện' : pkg.SelectionMethod || '-'}</td>}
                                                                 {visibleColumns.selectionProcedure && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionProcedure || pkg.BidType || '-'}</td>}
                                                                 {visibleColumns.selectionDuration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionDuration || '45 ngày'}</td>}
                                                                 {visibleColumns.selectionStartDate && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionStartDate || '-'}</td>}
-                                                                {visibleColumns.contractType && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.ContractType === 'LumpSum' ? 'Trọn gói' : pkg.ContractType === 'UnitPrice' ? 'Đơn giá CĐ' : pkg.ContractType === 'AdjustableUnitPrice' ? 'Đơn giá ĐC' : pkg.ContractType === 'Mixed' ? 'Hỗn hợp' : pkg.ContractType || '-'}</td>}
+                                                                {visibleColumns.contractType && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.ContractType === 'LumpSum' ? 'Trọn gói' : (pkg.ContractType === 'UnitPrice' || pkg.ContractType === 'FixedUnitPrice') ? 'Đơn giá cố định' : pkg.ContractType === 'AdjustableUnitPrice' ? 'Đơn giá điều chỉnh' : pkg.ContractType === 'TimeBased' ? 'Theo thời gian' : pkg.ContractType === 'Percentage' ? 'Theo tỷ lệ %' : pkg.ContractType === 'Mixed' ? 'Hỗn hợp' : pkg.ContractType || '-'}</td>}
                                                                 {visibleColumns.duration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">{pkg.Duration || '-'}</td>}
                                                                 {visibleColumns.hasOption && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.HasOption ? 'Có' : 'Không'}</td>}
                                                                 {visibleColumns.status && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
@@ -720,6 +721,18 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                         {getStatusLabel(pkg.Status)}
                                                                     </span>
                                                                 </td>}
+                                                                <td className="border border-slate-200 dark:border-slate-700 px-1 py-2 text-center sticky right-0 bg-white dark:bg-slate-900 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]" onClick={(e) => e.stopPropagation()}>
+                                                                    <ActionDropdown
+                                                                        pkg={pkg}
+                                                                        isOpen={openDropdownId === pkg.PackageID}
+                                                                        onToggle={() => setOpenDropdownId(openDropdownId === pkg.PackageID ? null : pkg.PackageID)}
+                                                                        onClose={() => setOpenDropdownId(null)}
+                                                                        onView={handleView}
+                                                                        onEdit={handleEdit}
+                                                                        onDelete={handleDelete}
+                                                                        onCopyTBMT={handleCopyTBMT}
+                                                                    />
+                                                                </td>
                                                             </tr>
                                                         );
                                                     })}
@@ -733,7 +746,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                             {visibleColumns.price && <td className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-right text-slate-900 dark:text-slate-100 tabular-nums text-sm">
                                                                 {formatCurrency(planTotal)}
                                                             </td>}
-                                                            <td colSpan={Object.values(visibleColumns).filter(Boolean).length - (visibleColumns.price ? 1 : 0) - (visibleColumns.description ? 1 : 0) + 1} className="border border-slate-200 dark:border-slate-800"></td>
+                                                            <td colSpan={Object.values(visibleColumns).filter(Boolean).length - (visibleColumns.price ? 1 : 0) - (visibleColumns.description ? 1 : 0) + 2} className="border border-slate-200 dark:border-slate-800"></td>
                                                         </tr>
                                                     </tfoot>
                                                 )}

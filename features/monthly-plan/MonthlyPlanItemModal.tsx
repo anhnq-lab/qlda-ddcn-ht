@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react';
 import { MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlanItem, MonthlyPlanItemInput,
@@ -35,6 +35,8 @@ const DEFAULT_FORM: MonthlyPlanItemInput = {
     incomplete_reason: '',
     notes: '',
     sort_order: 0,
+    staff_ids: [],
+    staff_names: [],
 };
 
 type SectionKey = 'lienket' | 'thongtin' | 'phancong' | 'ketqua';
@@ -71,6 +73,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 due_date: item.due_date,
                 staff_id: item.staff_id,
                 staff_name: item.staff_name ?? '',
+                staff_ids: item.staff_ids ?? (item.staff_id ? [item.staff_id] : []),
+                staff_names: item.staff_names ?? (item.staff_name ? [item.staff_name] : []),
                 dept_head_id: item.dept_head_id,
                 dept_head_name: item.dept_head_name ?? '',
                 ban_head_id: item.ban_head_id,
@@ -92,6 +96,20 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
 
     const set = useCallback((field: keyof MonthlyPlanItemInput, value: any) =>
         setForm(prev => ({ ...prev, [field]: value })), []);
+
+    // Toggle nhân viên trong danh sách staff_ids
+    const toggleStaff = useCallback((id: string, name: string) => {
+        setForm(prev => {
+            const ids = prev.staff_ids ?? [];
+            const names = prev.staff_names ?? [];
+            const idx = ids.indexOf(id);
+            if (idx >= 0) {
+                return { ...prev, staff_ids: ids.filter(i => i !== id), staff_names: names.filter((_, j) => j !== idx) };
+            } else {
+                return { ...prev, staff_ids: [...ids, id], staff_names: [...names, name] };
+            }
+        });
+    }, []);
 
     // Khi chọn từ KH khung → auto-fill
     const handleAnnualItemSelect = (value: string) => {
@@ -234,6 +252,18 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         >
                             <div className="space-y-3 pt-3">
                                 <div>
+                                    <label className="field-label">Loại công việc</label>
+                                    <select
+                                        value={(form as any).task_type ?? 'project'}
+                                        onChange={e => set('task_type' as any, e.target.value)}
+                                        className="field-input"
+                                    >
+                                        <option value="project">📁 Công việc dự án</option>
+                                        <option value="management">📋 Công việc điều hành</option>
+                                        <option value="internal">🏢 Công việc nội bộ</option>
+                                    </select>
+                                </div>
+                                <div>
                                     <label className="field-label">Nhóm công việc</label>
                                     <ComboboxSelect
                                         options={groupOptions}
@@ -333,56 +363,84 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                form.staff_name
-                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_name}</span>
-                                    : null
+                                (form.staff_names && form.staff_names.length > 0)
+                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_names.join(', ')}</span>
+                                    : form.staff_name
+                                        ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_name}</span>
+                                        : null
                             }
                         >
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
+                            <div className="space-y-3 pt-3">
+                                {/* Multi-select cán bộ phụ trách */}
                                 <div>
-                                    <label className="field-label">Cán bộ phụ trách</label>
-                                    <ComboboxSelect
-                                        options={employeeOptions}
-                                        value={form.staff_id}
-                                        displayValue={form.staff_name}
-                                        onChange={(val, opt) => {
-                                            set('staff_id', val || undefined);
-                                            set('staff_name', opt?.label ?? '');
-                                        }}
-                                        placeholder="Chọn nhân viên..."
-                                        loading={empLoading}
-                                        allowCustom
-                                    />
+                                    <label className="field-label">Cán bộ phụ trách <span className="text-slate-400 font-normal">(có thể chọn nhiều người)</span></label>
+                                    {empLoading ? (
+                                        <div className="text-xs text-slate-400 py-2">Đang tải danh sách...</div>
+                                    ) : (
+                                        <div className="border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden max-h-40 overflow-y-auto">
+                                            {employeeOptions.map(opt => {
+                                                const selected = (form.staff_ids ?? []).includes(opt.value);
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => toggleStaff(opt.value, opt.label)}
+                                                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0 ${
+                                                            selected
+                                                            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                                                        }`}
+                                                    >
+                                                        <span className={`w-4 h-4 flex items-center justify-center rounded border ${
+                                                            selected
+                                                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                                                            : 'border-slate-300 dark:border-slate-600'
+                                                        }`}>
+                                                            {selected && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                                                        </span>
+                                                        <span className="truncate flex-1">{opt.label}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                    {(form.staff_ids ?? []).length > 0 && (
+                                        <p className="text-xs text-emerald-600 mt-1">
+                                            ✓ Đã chọn: {(form.staff_names ?? []).join(', ')}
+                                        </p>
+                                    )}
                                 </div>
-                                <div>
-                                    <label className="field-label">Lãnh đạo Phòng</label>
-                                    <ComboboxSelect
-                                        options={employeeOptions}
-                                        value={form.dept_head_id}
-                                        displayValue={form.dept_head_name}
-                                        onChange={(val, opt) => {
-                                            set('dept_head_id', val || undefined);
-                                            set('dept_head_name', opt?.label ?? '');
-                                        }}
-                                        placeholder="Chọn lãnh đạo..."
-                                        loading={empLoading}
-                                        allowCustom
-                                    />
-                                </div>
-                                <div>
-                                    <label className="field-label">Lãnh đạo Ban</label>
-                                    <ComboboxSelect
-                                        options={employeeOptions}
-                                        value={form.ban_head_id}
-                                        displayValue={form.ban_head_name}
-                                        onChange={(val, opt) => {
-                                            set('ban_head_id', val || undefined);
-                                            set('ban_head_name', opt?.label ?? '');
-                                        }}
-                                        placeholder="Chọn lãnh đạo..."
-                                        loading={empLoading}
-                                        allowCustom
-                                    />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                        <label className="field-label">Lãnh đạo Phòng</label>
+                                        <ComboboxSelect
+                                            options={employeeOptions}
+                                            value={form.dept_head_id}
+                                            displayValue={form.dept_head_name}
+                                            onChange={(val, opt) => {
+                                                set('dept_head_id', val || undefined);
+                                                set('dept_head_name', opt?.label ?? '');
+                                            }}
+                                            placeholder="Chọn lãnh đạo..."
+                                            loading={empLoading}
+                                            allowCustom
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="field-label">Lãnh đạo Ban</label>
+                                        <ComboboxSelect
+                                            options={employeeOptions}
+                                            value={form.ban_head_id}
+                                            displayValue={form.ban_head_name}
+                                            onChange={(val, opt) => {
+                                                set('ban_head_id', val || undefined);
+                                                set('ban_head_name', opt?.label ?? '');
+                                            }}
+                                            placeholder="Chọn lãnh đạo..."
+                                            loading={empLoading}
+                                            allowCustom
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </SectionPanel>

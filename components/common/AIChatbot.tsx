@@ -391,7 +391,7 @@ export const AIChatbot: React.FC = () => {
                 </div>
                 <div className="text-center mt-2">
                     <span className="text-[10px] text-slate-400 dark:text-slate-400">
-                        Powered by DeepSeek AI — Kết nối dữ liệu thực
+                        Powered by Google Gemini AI — Kết nối dữ liệu thực
                     </span>
                 </div>
             </div>

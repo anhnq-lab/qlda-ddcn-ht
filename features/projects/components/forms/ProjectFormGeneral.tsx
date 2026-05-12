@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, FileText, Calendar, Shield, DollarSign, Ruler, Layers, MapPin, Clock, User, ChevronDown, Check, ArrowLeftRight } from 'lucide-react';
 import { MANAGEMENT_BOARDS } from '../../../../types';
-import { SectionHeader, FormattedInput, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, PROVINCES } from './FormShared';
+import { SectionHeader, FormattedInput, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, PROVINCES, CONSTRUCTION_GRADES } from './FormShared';
 
 interface ProjectFormGeneralProps {
     formData: Record<string, any>;
@@ -45,6 +45,23 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                     value={formData.ProjectName}
                     onChange={e => updateField('ProjectName', e.target.value)}
                 />
+            </div>
+
+            <div>
+                <label className={labelClass}>Nhóm dự án <span className="text-red-500">*</span></label>
+                <div className="relative">
+                    <select
+                        className={selectWithIconClass + aiHighlight('GroupCode')}
+                        value={formData.GroupCode || 'C'}
+                        onChange={e => updateField('GroupCode', e.target.value)}
+                    >
+                        <option value="QN">Quan trọng Quốc gia</option>
+                        <option value="A">Nhóm A</option>
+                        <option value="B">Nhóm B</option>
+                        <option value="C">Nhóm C</option>
+                    </select>
+                    <Layers className={iconClass} />
+                </div>
             </div>
 
             <div>
@@ -329,6 +346,22 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
             <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
                 <SectionHeader icon={Ruler} title="Quy mô công trình" subtitle="Thông số kỹ thuật: diện tích, tầng, chiều cao" />
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                        <label className={labelClass}>Cấp công trình</label>
+                        <div className="relative">
+                            <select
+                                className={selectWithIconClass + aiHighlight('ConstructionGrade')}
+                                value={formData.ConstructionGrade || ''}
+                                onChange={e => updateField('ConstructionGrade', e.target.value)}
+                            >
+                                <option value="">-- Chọn cấp --</option>
+                                {CONSTRUCTION_GRADES.map(g => (
+                                    <option key={g.value} value={g.value}>{g.label}</option>
+                                ))}
+                            </select>
+                            <Building2 className={iconClass} />
+                        </div>
+                    </div>
                     <div>
                         <label className={labelClass}>Tổng dự toán (VNĐ)</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}

@@ -96,6 +96,79 @@ export const AnnualPlanService = {
         if (error) throw error;
         return data as AnnualPlanItem[];
     },
+
+    /**
+     * Xuất task cấp phòng từ KHTHDA dự án sang KH khung năm.
+     * Chỉ xuất task có responsibility_level = 'team' (bước quy trình cấp phòng).
+     * Kiểm tra trùng theo source_task_id để không seed 2 lần.
+     */
+    async importFromProjectTasks(
+        year: number,
+        deptCode: string,
+        deptName: string,
+        projectId: string,
+        createdBy?: string
+    ): Promise<{ inserted: AnnualPlanItem[]; skipped: number }> {
+        // 1. Lấy tasks cấp phòng của dự án (responsibility_level = 'team')
+        const { data: projectTasks, error } = await supabase
+            .from('tasks')
+            .select('id, title, description, phase, step_code, start_date, due_date, responsible_text, assignee_id, metadata')
+            .eq('project_id', projectId)
+            .eq('task_type', 'project')
+            .eq('responsibility_level', 'team')
+            .order('sort_order');
+        if (error) throw error;
+
+        if (!projectTasks || projectTasks.length === 0) {
+            return { inserted: [], skipped: 0 };
+        }
+
+        // 2. Kiểm tra đã import rồi chưa (theo source_task_id)
+        const taskIds = projectTasks.map((t: any) => t.id);
+        const { data: existing } = await supabase
+            .from('annual_plan_items')
+            .select('source_task_id')
+            .eq('plan_year', year)
+            .eq('department_code', deptCode)
+            .in('source_task_id', taskIds);
+        const existingSourceIds = new Set((existing ?? []).map((e: any) => e.source_task_id));
+
+        // 3. Map và insert những task chưa có
+        const toInsert = (projectTasks as any[])
+            .filter(t => !existingSourceIds.has(t.id))
+            .map((t, idx) => ({
+                plan_year: year,
+                department_code: deptCode,
+                department_name: deptName,
+                group_name: t.phase ?? 'Công việc dự án',
+                group_sort_order: 0,
+                task_name: t.title,
+                deliverable: t.description ?? null,
+                start_period: t.start_date ? `Tháng ${new Date(t.start_date).getMonth() + 1}` : null,
+                end_period: t.due_date ? `Tháng ${new Date(t.due_date).getMonth() + 1}` : null,
+                frequency: 'one_time' as const,
+                project_id: projectId,
+                source_task_id: t.id,
+                source_type: 'from_project_task',
+                sort_order: idx,
+                created_by: createdBy ?? null,
+            }));
+
+        if (toInsert.length === 0) {
+            return { inserted: [], skipped: existingSourceIds.size };
+        }
+
+        const { data: inserted, error: insertErr } = await supabase
+            .from('annual_plan_items')
+            .insert(toInsert)
+            .select();
+        if (insertErr) throw insertErr;
+
+        return {
+            inserted: (inserted ?? []) as AnnualPlanItem[],
+            skipped: existingSourceIds.size,
+        };
+    },
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -249,6 +322,100 @@ export const MonthlyPlanItemService = {
             .select();
         if (insertErr) throw insertErr;
         return data as MonthlyPlanItem[];
+    },
+
+    /**
+     * Sinh nhiệm vụ KH tháng từ sub-tasks (cấp cá nhân) của KHTHDA dự án.
+     * Tiêu chí: due_date trong tháng AND assignee thuộc phòng đang lập KH.
+     * Hỗ trợ nhiều người thực hiện (staff_ids[]).
+     * Không tạo trùng nếu đã seed rồi (kiểm tra source_subtask_id).
+     */
+    async seedFromProjectTasks(
+        monthlyPlanId: string,
+        month: number,
+        year: number,
+        deptCode: string,
+        deptEmployeeIds: string[],  // Danh sách EmployeeID thuộc phòng này
+        createdBy?: string
+    ): Promise<{ inserted: MonthlyPlanItem[]; skipped: number }> {
+        // Khoảng ngày của tháng
+        const startOfMonth = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0]; // Ngày cuối tháng
+
+        // 1. Lấy sub-tasks (cấp cá nhân) của dự án thuộc phòng và trong tháng
+        let query = supabase
+            .from('tasks')
+            .select('id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata')
+            .eq('task_type', 'project')
+            .eq('responsibility_level', 'individual')
+            .gte('due_date', startOfMonth)
+            .lte('due_date', endOfMonth);
+
+        // Lọc theo phòng (chỉ lấy tasks giao cho người thuộc phòng này)
+        if (deptEmployeeIds.length > 0) {
+            query = query.in('assignee_id', deptEmployeeIds);
+        }
+
+        const { data: subtasks, error } = await query.order('due_date');
+        if (error) throw error;
+        if (!subtasks || subtasks.length === 0) return { inserted: [], skipped: 0 };
+
+        // 2. Kiểm tra đã seed rồi chưa
+        const subtaskIds = (subtasks as any[]).map(t => t.id);
+        const { data: existing } = await supabase
+            .from('monthly_plan_items')
+            .select('source_subtask_id')
+            .eq('monthly_plan_id', monthlyPlanId)
+            .in('source_subtask_id', subtaskIds);
+        const existingSourceIds = new Set((existing ?? []).map((e: any) => e.source_subtask_id));
+
+        // 3. Lấy thông tin assignee để điền staff_name
+        const assigneeIds = [...new Set((subtasks as any[]).map(t => t.assignee_id).filter(Boolean))];
+        let employeeMap: Record<string, string> = {};
+        if (assigneeIds.length > 0) {
+            const { data: emps } = await supabase
+                .from('employees')
+                .select('id, full_name')
+                .in('id', assigneeIds);
+            (emps ?? []).forEach((e: any) => { employeeMap[e.id] = e.full_name; });
+        }
+
+        // 4. Map và insert
+        const toInsert = (subtasks as any[])
+            .filter(t => !existingSourceIds.has(t.id))
+            .map((t, idx) => ({
+                monthly_plan_id: monthlyPlanId,
+                project_id: t.project_id ?? null,
+                group_name: t.phase ?? t.step_code ?? 'Công việc dự án',
+                group_sort_order: 0,
+                task_name: t.title,
+                deliverable: t.description ?? null,
+                due_date: t.due_date,
+                deadline_note: t.due_date ? `${new Date(t.due_date).getDate()}/${month}` : `Tháng ${month}`,
+                staff_id: t.assignee_id ?? null,
+                staff_name: t.assignee_id ? (employeeMap[t.assignee_id] ?? null) : null,
+                staff_ids: t.assignee_id ? [t.assignee_id] : [],
+                staff_names: t.assignee_id ? [employeeMap[t.assignee_id] ?? ''] : [],
+                source_task_id: t.metadata?.parent_task_id ?? null,
+                source_subtask_id: t.id,
+                source_type: 'from_subtask' as const,
+                status: 'planned' as MonthlyTaskStatus,
+                sort_order: idx,
+                created_by: createdBy ?? null,
+            }));
+
+        if (toInsert.length === 0) return { inserted: [], skipped: existingSourceIds.size };
+
+        const { data: inserted, error: insertErr } = await supabase
+            .from('monthly_plan_items')
+            .insert(toInsert)
+            .select();
+        if (insertErr) throw insertErr;
+
+        return {
+            inserted: (inserted ?? []) as MonthlyPlanItem[],
+            skipped: existingSourceIds.size,
+        };
     },
 
     async create(input: MonthlyPlanItemInput): Promise<MonthlyPlanItem> {

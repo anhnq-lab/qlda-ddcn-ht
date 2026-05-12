@@ -9,3 +9,4 @@ export * from './document.types';
 export * from './dashboard';
 export * from './database';
 export * from './calendar.types';
+export * from './clearance.types';

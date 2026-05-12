@@ -16,7 +16,21 @@ export enum TaskPriority {
     Urgent = 'urgent'
 }
 
-export type TaskType = 'project' | 'internal';
+export type TaskType = 'project' | 'management' | 'internal';
+
+export const TASK_TYPE_LABELS: Record<TaskType, string> = {
+    project:    'Công việc dự án',
+    management: 'Công việc điều hành',
+    internal:   'Công việc nội bộ',
+};
+
+export const TASK_TYPE_COLORS: Record<TaskType, { bg: string; text: string; border: string }> = {
+    project:    { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+    management: { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200'  },
+    internal:   { bg: 'bg-slate-50',  text: 'text-slate-600',  border: 'border-slate-200'  },
+};
+
+export type ResponsibilityLevel = 'team' | 'individual';
 
 // Main Task interface (maps directly to DB `tasks` table)
 export interface Task {
@@ -25,7 +39,10 @@ export interface Task {
     Description?: string;
     TaskType: TaskType;
     
-    // Project link (null for internal)
+    // Responsibility level (team = cấp phòng, individual = cá nhân)
+    ResponsibilityLevel?: ResponsibilityLevel;
+
+    // Project link (null for internal/management)
     ProjectID: string;
     ProjectName?: string; // Tên dự án từ DB join
     

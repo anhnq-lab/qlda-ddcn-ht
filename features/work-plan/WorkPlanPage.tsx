@@ -1,13 +1,14 @@
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ClipboardList, CalendarDays } from 'lucide-react';
+import { ClipboardList, CalendarDays, ListChecks } from 'lucide-react';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
 
 // Lazy-load each sub-module inside the bundle
 const AnnualPlanPage  = React.lazy(() => import('../annual-plan/AnnualPlanPage'));
 const MonthlyPlanPage = React.lazy(() => import('../monthly-plan/MonthlyPlanPage'));
+const TaskList        = React.lazy(() => import('../tasks/TaskList'));
 
-type TabKey = 'annual' | 'monthly';
+type TabKey = 'tasks' | 'annual' | 'monthly';
 
 interface TabDef {
     key: TabKey;
@@ -16,6 +17,7 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
+    { key: 'tasks',   label: 'Công việc',           icon: ListChecks   },
     { key: 'annual',  label: 'KH khung năm',         icon: ClipboardList },
     { key: 'monthly', label: 'KH tháng / BC tháng',  icon: CalendarDays },
 ];
@@ -36,6 +38,7 @@ const WorkPlanPage: React.FC = () => {
                     {TABS.map(({ key, label, icon: Icon }) => (
                         <button
                             key={key}
+                            id={`work-plan-tab-${key}`}
                             onClick={() => switchTab(key)}
                             className={`
                                 flex items-center gap-2 px-4 py-3 text-[13px] font-semibold
@@ -53,8 +56,13 @@ const WorkPlanPage: React.FC = () => {
             </div>
 
             {/* ── Tab content ── */}
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-auto">
                 <Suspense fallback={<PageLoadingFallback />}>
+                    {active === 'tasks'   && (
+                        <div className="p-4">
+                            <TaskList />
+                        </div>
+                    )}
                     {active === 'annual'  && <AnnualPlanPage />}
                     {active === 'monthly' && <MonthlyPlanPage />}
                 </Suspense>
