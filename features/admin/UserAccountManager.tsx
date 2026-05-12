@@ -5,6 +5,7 @@ import {
     Users, UserPlus, Key, Mail, Phone, User as UserIcon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { UserAccountService, UserAccount } from '../../services/UserAccountService';
 
 // ============================================================
@@ -13,6 +14,7 @@ import { UserAccountService, UserAccount } from '../../services/UserAccountServi
 
 const UserAccountManager: React.FC = () => {
     const { currentUser } = useAuth();
+    const { can } = usePermissionCheck();
     const [accounts, setAccounts] = useState<UserAccount[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -27,8 +29,8 @@ const UserAccountManager: React.FC = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [copiedPassword, setCopiedPassword] = useState(false);
 
-    // Check admin
-    const isAdmin = currentUser?.Role === 'Admin';
+    // Use RBAC permission check instead of legacy Role string comparison
+    const isAdmin = can('admin_accounts', 'view');
 
     const loadAccounts = useCallback(async () => {
         setLoading(true);

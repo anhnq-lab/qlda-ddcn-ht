@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ImpersonationProvider } from './context/ImpersonationContext';
+import { PermissionProvider } from './context/PermissionContext';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import PageLoadingFallback from './components/ui/PageLoadingFallback';
 import MainLayout from './layouts/MainLayout';
@@ -110,6 +111,7 @@ const App: React.FC = () => {
                 <ThemeProvider>
                     <AuthProvider>
                         <ImpersonationProvider>
+                        <PermissionProvider>
                         <ToastProvider>
                             <Router>
                                 <Routes>
@@ -276,6 +278,7 @@ const App: React.FC = () => {
                                 </Routes>
                             </Router>
                         </ToastProvider>
+                        </PermissionProvider>
                         </ImpersonationProvider>
                     </AuthProvider>
                 </ThemeProvider>

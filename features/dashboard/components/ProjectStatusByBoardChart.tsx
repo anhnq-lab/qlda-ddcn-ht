@@ -6,9 +6,10 @@ import { MANAGEMENT_BOARDS, PROJECT_PHASE_COLORS, ProjectStatus } from '../../..
 
 export interface ProjectStatusByBoardChartProps {
     projects: any[];
+    onSegmentClick?: (boardName: string, statusName: string, statusKey: ProjectStatus) => void;
 }
 
-const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ projects }) => {
+const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ projects, onSegmentClick }) => {
     const { theme } = useTheme();
 
     const data = useMemo(() => {
@@ -16,6 +17,7 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
             const boardProjects = projects.filter(p => p.managementBoard === board.value);
             return {
                 name: board.label,
+                boardValue: board.value,
                 prep: boardProjects.filter(p => p.status === ProjectStatus.Preparation).length,
                 exec: boardProjects.filter(p => p.status === ProjectStatus.Execution).length,
                 comp: boardProjects.filter(p => p.status === ProjectStatus.Completion).length,
@@ -75,9 +77,48 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
                             iconType="circle"
                             wrapperStyle={{ fontSize: '11px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : '#6B7280' }}
                         />
-                        <Bar dataKey="prep" name={PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label} fill={prepColor} radius={[2, 2, 0, 0]} maxBarSize={20} />
-                        <Bar dataKey="exec" name={PROJECT_PHASE_COLORS[ProjectStatus.Execution].label} fill={execColor} radius={[2, 2, 0, 0]} maxBarSize={20} />
-                        <Bar dataKey="comp" name={PROJECT_PHASE_COLORS[ProjectStatus.Completion].label} fill={compColor} radius={[2, 2, 0, 0]} maxBarSize={20} />
+                        <Bar 
+                            dataKey="prep" 
+                            name={PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label} 
+                            fill={prepColor} 
+                            radius={[2, 2, 0, 0]} 
+                            maxBarSize={20}
+                            onClick={(data) => {
+                                if (onSegmentClick && data) {
+                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label, ProjectStatus.Preparation);
+                                }
+                            }}
+                            cursor={onSegmentClick ? "pointer" : "default"}
+                            className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
+                        />
+                        <Bar 
+                            dataKey="exec" 
+                            name={PROJECT_PHASE_COLORS[ProjectStatus.Execution].label} 
+                            fill={execColor} 
+                            radius={[2, 2, 0, 0]} 
+                            maxBarSize={20}
+                            onClick={(data) => {
+                                if (onSegmentClick && data) {
+                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Execution].label, ProjectStatus.Execution);
+                                }
+                            }}
+                            cursor={onSegmentClick ? "pointer" : "default"}
+                            className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
+                        />
+                        <Bar 
+                            dataKey="comp" 
+                            name={PROJECT_PHASE_COLORS[ProjectStatus.Completion].label} 
+                            fill={compColor} 
+                            radius={[2, 2, 0, 0]} 
+                            maxBarSize={20}
+                            onClick={(data) => {
+                                if (onSegmentClick && data) {
+                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Completion].label, ProjectStatus.Completion);
+                                }
+                            }}
+                            cursor={onSegmentClick ? "pointer" : "default"}
+                            className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
+                        />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

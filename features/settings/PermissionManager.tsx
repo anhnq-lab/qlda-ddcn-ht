@@ -5,9 +5,10 @@
  * Pattern follows cic-erp-contract/components/settings/PermissionManager.tsx
  */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Shield, Search, Save, RotateCcw, Users, ChevronDown, ChevronRight, Check, X } from 'lucide-react';
+import { Shield, Search, Save, RotateCcw, Users, ChevronDown, ChevronRight, Check, X, AlertCircle, TrendingUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import {
     PermissionAction,
     PermissionResource,
@@ -35,6 +36,7 @@ interface EmployeeInfo {
 const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'approve', 'export'];
 
 const PermissionManager: React.FC = () => {
+    const { can } = usePermissionCheck();
     const [employees, setEmployees] = useState<EmployeeInfo[]>([]);
     const [allPermissions, setAllPermissions] = useState<UserPermission[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeInfo | null>(null);
@@ -44,6 +46,7 @@ const PermissionManager: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [expandedDept, setExpandedDept] = useState<string | null>(null);
+    const [showDiff, setShowDiff] = useState(false);
 
     // Fetch employees on mount
     useEffect(() => {
@@ -154,6 +157,25 @@ const PermissionManager: React.FC = () => {
         setEditedPermissions(empPerms);
     }, [allPermissions]);
 
+    // Compute diff vs role defaults for the selected employee
+    const permissionDiff = useMemo(() => {
+        if (!selectedEmployee) return null;
+        const defaults = DEFAULT_ROLE_PERMISSIONS[selectedEmployee.systemRole] || {};
+        const diff: Record<string, { extra: PermissionAction[]; removed: PermissionAction[] }> = {};
+        for (const resource of ALL_RESOURCES) {
+            const defaultActions: PermissionAction[] = (defaults as any)[resource] || [];
+            const currentActions: PermissionAction[] = editedPermissions[resource] || [];
+            const extra = currentActions.filter(a => !defaultActions.includes(a));
+            const removed = defaultActions.filter(a => !currentActions.includes(a));
+            if (extra.length > 0 || removed.length > 0) {
+                diff[resource] = { extra, removed };
+            }
+        }
+        return diff;
+    }, [selectedEmployee, editedPermissions]);
+
+    const hasDiff = permissionDiff && Object.keys(permissionDiff).length > 0;
+
     // Toggle action
     const toggleAction = useCallback((resource: PermissionResource, action: PermissionAction) => {
         setEditedPermissions(prev => {
@@ -181,6 +203,11 @@ const PermissionManager: React.FC = () => {
     // Save
     const handleSave = useCallback(async () => {
         if (!selectedEmployee) return;
+        // Permission guard: only admin_roles:update can save
+        if (!can('admin_roles', 'update')) {
+            alert('Bạn không có quyền thay đổi phân quyền hệ thống.');
+            return;
+        }
         setSaving(true);
         try {
             for (const resource of ALL_RESOURCES) {
@@ -195,10 +222,15 @@ const PermissionManager: React.FC = () => {
         } finally {
             setSaving(false);
         }
-    }, [selectedEmployee, editedPermissions]);
+    }, [selectedEmployee, editedPermissions, can]);
 
     // Bulk apply defaults for employees that DON'T have DB records yet
     const applyDefaultsForAll = useCallback(async () => {
+        // Permission guard
+        if (!can('admin_roles', 'update')) {
+            alert('Bạn không có quyền thực hiện thao tác này.');
+            return;
+        }
         if (!window.confirm('Khởi tạo quyền mặc định cho nhân viên CHƯA CÓ quyền trong DB?\n(Nhân viên đã có quyền sẽ KHÔNG bị ghi đè)')) return;
         setSaving(true);
         try {
@@ -347,12 +379,29 @@ const PermissionManager: React.FC = () => {
                                         <span className={`px-2 py-0.5 text-xs font-medium rounded ${ROLE_COLORS[selectedEmployee.systemRole]}`}>
                                             {ROLE_LABELS[selectedEmployee.systemRole]}
                                         </span>
+                                        {hasDiff && (
+                                            <span className="px-2 py-0.5 text-xs font-medium rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                                                ⚠️ Có {Object.keys(permissionDiff!).length} thay đổi
+                                            </span>
+                                        )}
                                     </div>
                                     <p className="text-xs text-gray-500 mt-0.5">
                                         {selectedEmployee.department} · {selectedEmployee.position}
                                     </p>
                                 </div>
                                 <div className="flex gap-2">
+                                    {/* Diff toggle */}
+                                    <button
+                                        onClick={() => setShowDiff(prev => !prev)}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                                            showDiff
+                                                ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300'
+                                                : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-bg-subtle dark:hover:bg-gray-700'
+                                        }`}
+                                    >
+                                        <TrendingUp className="w-3.5 h-3.5" />
+                                        {showDiff ? 'Xem tất cả' : 'Xem chênh lệch'}
+                                    </button>
                                     <button
                                         onClick={resetToDefaults}
                                         className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-bg-subtle dark:hover:bg-gray-700 transition-colors"
@@ -373,6 +422,14 @@ const PermissionManager: React.FC = () => {
 
                             {/* Permission matrix table */}
                             <div className="flex-1 overflow-auto">
+                                {/* Diff legend */}
+                                {showDiff && hasDiff && (
+                                    <div className="flex items-center gap-4 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 text-xs">
+                                        <span className="font-semibold text-amber-700 dark:text-amber-400">Chênh lệch so với mặc định:</span>
+                                        <span className="flex items-center gap-1 text-green-700 dark:text-green-400"><span className="w-3 h-3 rounded-sm bg-green-500 inline-block"/>Được thêm</span>
+                                        <span className="flex items-center gap-1 text-red-600 dark:text-red-400"><span className="w-3 h-3 rounded-sm bg-red-400 inline-block"/>Bị bỏ</span>
+                                    </div>
+                                )}
                                 <table className="w-full text-sm">
                                     <thead className="sticky top-0 bg-bg-subtle z-10 shadow-sm border-b border-slate-200 dark:border-slate-700">
                                         <tr>
@@ -385,28 +442,46 @@ const PermissionManager: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {ALL_RESOURCES.map((resource, idx) => {
+                                        {ALL_RESOURCES
+                                            .filter(resource => !showDiff || (permissionDiff && permissionDiff[resource]))
+                                            .map((resource, idx) => {
                                             const hasPermission = editedPermissions[resource] || [];
+                                            const diff = permissionDiff?.[resource];
+                                            const rowHighlight = diff
+                                                ? 'bg-amber-50/60 dark:bg-amber-900/10'
+                                                : idx % 2 === 0 ? 'bg-bg-surface dark:bg-gray-800' : 'bg-bg-subtle dark:bg-gray-900/50';
                                             return (
                                                 <tr
                                                     key={resource}
-                                                    className={`border-t border-gray-100 dark:border-gray-800 ${
-                                                        idx % 2 === 0 ? 'bg-bg-surface dark:bg-gray-800' : 'bg-bg-subtle dark:bg-gray-900/50'
-                                                    }`}
+                                                    className={`border-t border-gray-100 dark:border-gray-800 ${rowHighlight}`}
                                                 >
                                                     <td className="px-4 py-2.5 font-medium text-gray-700 dark:text-gray-300">
-                                                        {RESOURCE_LABELS[resource]}
+                                                        <span>{RESOURCE_LABELS[resource]}</span>
+                                                        {diff && (
+                                                            <span className="ml-2 text-[10px] text-amber-600 dark:text-amber-400">
+                                                                {diff.extra.length > 0 && <span className="text-green-600 dark:text-green-400">+{diff.extra.map(a => ACTION_LABELS[a]).join(',')}</span>}
+                                                                {diff.extra.length > 0 && diff.removed.length > 0 && ' '}
+                                                                {diff.removed.length > 0 && <span className="text-red-500 dark:text-red-400">-{diff.removed.map(a => ACTION_LABELS[a]).join(',')}</span>}
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     {ALL_ACTIONS.map(action => {
                                                         const isChecked = hasPermission.includes(action);
+                                                        const isExtra = diff?.extra.includes(action);
+                                                        const isRemoved = diff?.removed.includes(action);
                                                         return (
                                                             <td key={action} className="text-center px-2 py-2.5">
                                                                 <button
                                                                     onClick={() => toggleAction(resource, action)}
+                                                                    title={isExtra ? 'Quyền được thêm (không có trong mặc định)' : isRemoved ? 'Quyền bị bỏ (có trong mặc định)' : undefined}
                                                                     className={`w-7 h-7 rounded-md border-2 flex items-center justify-center transition-all duration-150 ${
                                                                         isChecked
-                                                                            ? 'bg-blue-500 border-blue-500 text-white shadow-sm'
-                                                                            : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                            ? isExtra
+                                                                                ? 'bg-green-500 border-green-500 text-white shadow-sm'
+                                                                                : 'bg-blue-500 border-blue-500 text-white shadow-sm'
+                                                                            : isRemoved
+                                                                                ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20'
+                                                                                : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500'
                                                                     }`}
                                                                 >
                                                                     {isChecked && <Check className="w-3.5 h-3.5" />}

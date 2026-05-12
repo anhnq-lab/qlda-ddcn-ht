@@ -171,36 +171,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                     <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
                                         <button
                                             onClick={() => setTheme('light')}
-                                            title="Sáng (nền trắng)"
-                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                            title="Sáng"
+                                            className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'light'
                                                     ? 'bg-white text-primary-600 shadow-lg border border-slate-200'
                                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                             }`}
                                         >
-                                            <Sun size={13} /> Sáng
+                                            <Sun size={16} />
                                         </button>
                                         <button
                                             onClick={() => setTheme('nature')}
-                                            title="Bảo vệ mắt (nền cát)"
-                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                            title="Bảo vệ mắt"
+                                            className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'nature'
                                                     ? 'bg-bg-surface text-emerald-600 dark:text-emerald-400 shadow-lg border border-border dark:border-transparent'
                                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                             }`}
                                         >
-                                            <Leaf size={13} /> Bảo mắt
+                                            <Leaf size={16} />
                                         </button>
                                         <button
                                             onClick={() => setTheme('dark')}
-                                            title="Tối (Navy)"
-                                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                            title="Tối"
+                                            className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'dark'
                                                     ? 'bg-slate-800 dark:bg-slate-700 text-primary-400 shadow-lg'
                                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                             }`}
                                         >
-                                            <Moon size={13} /> Tối
+                                            <Moon size={16} />
                                         </button>
                                     </div>
                                 </div>

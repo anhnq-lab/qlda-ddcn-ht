@@ -6,24 +6,28 @@ import { PROJECT_PHASE_COLORS, ProjectStatus } from '../../../types';
 
 export interface ProjectStatusChartProps {
     statusSummary: { prep: number; exec: number; comp: number };
+    onSegmentClick?: (statusName: string, statusValue: number) => void;
 }
 
-const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ statusSummary }) => {
+const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ statusSummary, onSegmentClick }) => {
     const { theme } = useTheme();
 
     const data = [
         { 
             name: PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label, 
+            statusKey: ProjectStatus.Preparation,
             value: statusSummary.prep, 
             color: PROJECT_PHASE_COLORS[ProjectStatus.Preparation].hex 
         },
         { 
             name: PROJECT_PHASE_COLORS[ProjectStatus.Execution].label, 
+            statusKey: ProjectStatus.Execution,
             value: statusSummary.exec, 
             color: PROJECT_PHASE_COLORS[ProjectStatus.Execution].hex 
         },
         { 
             name: PROJECT_PHASE_COLORS[ProjectStatus.Completion].label, 
+            statusKey: ProjectStatus.Completion,
             value: statusSummary.comp, 
             color: PROJECT_PHASE_COLORS[ProjectStatus.Completion].hex 
         },
@@ -49,9 +53,19 @@ const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ statusSummary }
                             paddingAngle={5}
                             dataKey="value"
                             stroke="none"
+                            onClick={(data) => {
+                                if (onSegmentClick && data && data.payload) {
+                                    onSegmentClick(data.name, data.payload.statusKey);
+                                }
+                            }}
+                            className={onSegmentClick ? "cursor-pointer" : ""}
                         >
                             {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={entry.color} 
+                                    className={onSegmentClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+                                />
                             ))}
                         </Pie>
                         <RechartsTooltip

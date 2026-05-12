@@ -7,7 +7,7 @@
  * Pattern follows cic-erp-contract/components/settings/UserImpersonator.tsx
  */
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, UserCheck, X, Search, Shield, ChevronDown, Check, Building2 } from 'lucide-react';
+import { Users, UserCheck, X, Search, Shield, ChevronDown, Check, Building2, Clock, RefreshCw } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Employee, Role } from '../../types';
 import { useImpersonation } from '../../context/ImpersonationContext';
@@ -41,7 +41,8 @@ const UserImpersonator: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<UserTab>('employees');
-    const { impersonatedUser, isImpersonating, startImpersonation, stopImpersonation } = useImpersonation();
+    const { impersonatedUser, isImpersonating, startImpersonation, stopImpersonation,
+        minutesRemaining, expiryWarning, extendSession } = useImpersonation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,7 +75,7 @@ const UserImpersonator: React.FC = () => {
                 }
 
                 // Fetch contractor accounts with contractor names
-                const { data: ctrData, error: ctrErr } = await supabase
+                const { data: ctrData, error: ctrErr } = await (supabase as any)
                     .from('contractor_accounts')
                     .select('id, contractor_id, username, display_name, email, allowed_project_ids, contractors(full_name)')
                     .eq('is_active', true)
@@ -190,13 +191,36 @@ const UserImpersonator: React.FC = () => {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={handleStopImpersonation}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-all shadow-md hover:shadow-lg"
-                        >
-                            <X size={18} />
-                            Dừng giả làm
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* Countdown timer */}
+                            {minutesRemaining !== null && (
+                                <span className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                                    expiryWarning
+                                        ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 animate-pulse'
+                                        : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                                }`}>
+                                    <Clock size={13} />
+                                    {expiryWarning ? '⚠️ ' : ''}{minutesRemaining} phút
+                                </span>
+                            )}
+                            {/* Extend button */}
+                            {expiryWarning && (
+                                <button
+                                    onClick={extendSession}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors shadow-sm"
+                                >
+                                    <RefreshCw size={12} />
+                                    +30 phút
+                                </button>
+                            )}
+                            <button
+                                onClick={handleStopImpersonation}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-all shadow-md hover:shadow-lg"
+                            >
+                                <X size={18} />
+                                Dừng giả làm
+                            </button>
+                        </div>
                     </div>
 
                     {/* Permissions Preview */}

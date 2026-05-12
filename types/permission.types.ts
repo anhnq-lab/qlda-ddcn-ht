@@ -267,6 +267,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
+        admin_accounts: ['view'],
+        calendar: ['view', 'create', 'update', 'delete'],
     },
 
     // ── Kế toán trưởng ──
@@ -287,6 +289,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
+        admin_accounts: ['view'],
+        calendar: ['view'],
     },
 
     // ── Trưởng phòng / Trưởng ban ──
@@ -328,12 +332,13 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
+        calendar: ['view', 'create'],
     },
 
     // ── Chuyên viên / Kỹ sư ──
     specialist: {
         dashboard: ['view'],
-        projects: ['view', 'create', 'update', 'delete'],
+        projects: ['view', 'create', 'update'],  // Removed 'delete' — CV không xóa DA
         tasks: ['view', 'create', 'update'],
         employees: ['view'],
         contractors: ['view', 'create', 'update'],
@@ -348,6 +353,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view'],
         regulations: ['view'],
         workflows: ['view'],
+        calendar: ['view'],
     },
 
     // ── Nhân viên (hành chính) ──
@@ -368,6 +374,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view'],
         regulations: ['view'],
         workflows: ['view'],
+        calendar: ['view'],
     },
 
     // ── Nhà thầu ──
