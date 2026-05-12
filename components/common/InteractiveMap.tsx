@@ -12,10 +12,27 @@ interface Project {
     TotalInvestment: number;
     Coordinates?: { lat: number; lng: number };
     LocationCode?: string;
+    InvestorName?: string;
+    MainContractorName?: string;
+    Progress?: number;
+    ExpectedEndDate?: string;
+}
+
+export interface MaterialMine {
+    id: string;
+    name: string;
+    mine_type: string;
+    status: string;
+    capacity: string;
+    address: string;
+    coordinates: { lat: number; lng: number };
+    notes?: string;
 }
 
 interface InteractiveMapProps {
     projects: Project[];
+    materialMines?: MaterialMine[];
+    showMines?: boolean;
 }
 
 // Vietnamese province center coordinates fallback
@@ -176,6 +193,19 @@ function createMarkerIcon(color: string): L.DivIcon {
     });
 }
 
+function createMineIcon(type: string): L.DivIcon {
+    const color = type === 'Đất' ? '#A0522D' : type === 'Cát' ? '#F4A460' : '#708090'; // Sienne, SandyBrown, SlateGray
+    return L.divIcon({
+        className: 'custom-mine-marker',
+        html: `<div class="mine-marker-pin" style="background-color: ${color}; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 4px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.4 3.4a2.83 2.83 0 0 0-4 4L11 19"/><path d="m9 11 4 4"/><path d="m13 15 6 6"/><path d="m21 21-2-2"/></svg>
+        </div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, -12],
+    });
+}
+
 // Inject global CSS for markers (only once)
 let styleInjected = false;
 function injectMarkerStyles() {
@@ -210,8 +240,8 @@ function injectMarkerStyles() {
         .custom-popup .leaflet-popup-tip { background: white !important; }
         .dark .custom-popup .leaflet-popup-tip { background: #1e293b !important; }
         .popup-title {
-            font-size: 12px; font-weight: 900; color: #1f2937; margin: 0 0 4px 0;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            font-size: 13px; font-weight: 900; color: #1f2937; margin: 0 0 6px 0;
+            line-height: 1.4;
         }
         .dark .popup-title {
             color: #f1f5f9 !important;
@@ -222,11 +252,26 @@ function injectMarkerStyles() {
         .dark .popup-value {
             color: #94a3b8 !important;
         }
+        .popup-detail-row {
+            display: flex; justify-content: space-between; font-size: 11px;
+        }
+        .popup-detail-label {
+            color: #64748b;
+        }
+        .dark .popup-detail-label {
+            color: #94a3b8;
+        }
+        .popup-detail-value {
+            font-weight: 600; color: #334155; text-align: right;
+        }
+        .dark .popup-detail-value {
+            color: #f1f5f9;
+        }
     `;
     document.head.appendChild(style);
 }
 
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines = [], showMines = false }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
@@ -319,14 +364,39 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
 
             const marker = L.marker([p.Coordinates.lat, p.Coordinates.lng], { icon }).addTo(map);
 
+            const progressColor = (p.Progress || 0) >= 80 ? '#10B981' : (p.Progress || 0) >= 50 ? '#F59E0B' : '#EF4444';
             const popupContent = `
-                <div style="padding: 8px; min-width: 200px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                <div style="padding: 10px; min-width: 260px; max-width: 320px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <h4 class="popup-title">${p.ProjectName}</h4>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 12px;">
                         <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; color: white; background-color: ${statusColor}; text-transform: uppercase;">
                             ${statusText}
                         </span>
-                        <p class="popup-value">${formatCurrency(p.TotalInvestment)}</p>
+                        <p class="popup-value" style="color: #4f46e5; font-size: 11px;">${formatCurrency(p.TotalInvestment)}</p>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 10px; margin-top: 6px;">
+                        <div class="popup-detail-row">
+                            <span class="popup-detail-label">Chủ đầu tư:</span>
+                            <span class="popup-detail-value" style="max-width: 150px;" title="${p.InvestorName || 'Chưa cập nhật'}">${p.InvestorName || 'Chưa cập nhật'}</span>
+                        </div>
+                        <div class="popup-detail-row">
+                            <span class="popup-detail-label">Nhà thầu chính:</span>
+                            <span class="popup-detail-value" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.MainContractorName || 'Chưa cập nhật'}">${p.MainContractorName || 'Chưa cập nhật'}</span>
+                        </div>
+                        <div class="popup-detail-row">
+                            <span class="popup-detail-label">Dự kiến H.Thành:</span>
+                            <span class="popup-detail-value">${p.ExpectedEndDate ? new Date(p.ExpectedEndDate).toLocaleDateString('vi-VN') : '---'}</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                            <div class="popup-detail-row">
+                                <span class="popup-detail-label">Tiến độ thi công:</span>
+                                <span style="font-weight: 700; color: ${progressColor};">${p.Progress || 0}%</span>
+                            </div>
+                            <div style="width: 100%; height: 4px; background-color: #f1f5f9; border-radius: 2px; overflow: hidden;">
+                                <div style="height: 100%; width: ${p.Progress || 0}%; background-color: ${progressColor};"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -336,10 +406,56 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
             bounds.extend(marker.getLatLng());
         });
 
+        // Draw Material Mines if toggled
+        if (showMines && materialMines && materialMines.length > 0) {
+            materialMines.forEach((m) => {
+                if (!m.coordinates || !m.coordinates.lat) return;
+
+                const icon = createMineIcon(m.mine_type);
+                const marker = L.marker([m.coordinates.lat, m.coordinates.lng], { icon }).addTo(map);
+                
+                const typeColor = m.mine_type === 'Đất' ? '#A0522D' : m.mine_type === 'Cát' ? '#F4A460' : '#708090';
+
+                const popupContent = `
+                    <div style="padding: 10px; min-width: 240px; max-width: 300px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                            <span style="padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; color: white; background-color: ${typeColor}; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Mỏ ${m.mine_type}
+                            </span>
+                            <span style="font-size: 10px; font-weight: 600; color: ${m.status === 'Đang khai thác' ? '#10B981' : '#F59E0B'}; border: 1px solid currentColor; padding: 1px 4px; border-radius: 4px;">
+                                ${m.status}
+                            </span>
+                        </div>
+                        <h4 class="popup-title" style="margin-bottom: 10px;">${m.name}</h4>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+                            <div class="popup-detail-row">
+                                <span class="popup-detail-label">Trữ lượng:</span>
+                                <span class="popup-detail-value" style="color: #4f46e5;">${m.capacity || 'Không rõ'}</span>
+                            </div>
+                            <div class="popup-detail-row">
+                                <span class="popup-detail-label">Vị trí:</span>
+                                <span class="popup-detail-value" style="max-width: 150px;" title="${m.address || ''}">${m.address || 'Không rõ'}</span>
+                            </div>
+                            ${m.notes ? `
+                            <div class="popup-detail-row" style="margin-top: 4px; border-top: 1px dotted #e2e8f0; padding-top: 4px;">
+                                <span class="popup-detail-value" style="color: #64748b; font-size: 10px; text-align: left; font-weight: 400;">${m.notes}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent, { className: 'custom-popup' });
+                markersRef.current.push(marker);
+                bounds.extend(marker.getLatLng());
+            });
+        }
+
         if (bounds.isValid()) {
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
         }
-    }, [enrichedProjects]);
+    }, [enrichedProjects, materialMines, showMines]);
 
     return (
         <div

@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                <h1 className="text-[14px] font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 drop-shadow-sm leading-tight uppercase tracking-wide w-full">
                  UBND tỉnh Hà Tĩnh
                </h1>
-               <p className="text-[8.5px] font-bold text-white animate-pulse uppercase leading-tight tracking-tight mt-0.5">
+               <p className="text-[8.5px] font-bold text-slate-800 dark:text-slate-200 uppercase leading-tight tracking-tight mt-0.5">
                  Ban QLDA Đầu tư xây dựng<br />Dân dụng & Hạ tầng khu vực
                </p>
             </div>

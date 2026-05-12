@@ -224,16 +224,39 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
                 <p className="text-sm text-gray-700 dark:text-slate-300">Chưa có mô tả.</p>
               )}
             </Section>
-            <div className="grid grid-cols-2 gap-4">
-              <Section title="Căn cứ pháp lý" icon={Gavel} color="amber">
-                <p className="text-xs text-amber-700">{meta.legal_basis || 'Theo quy định'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Section title="Căn cứ pháp lý & Quy định" icon={Gavel} color="amber">
+                <p className="text-sm font-medium text-amber-900 dark:text-amber-200">{meta.legal_basis || 'Thực hiện theo quy định hiện hành'}</p>
               </Section>
-              <Section title="SLA" icon={Clock} color="blue">
-                <p className="text-xs text-blue-700">{node.sla_formula || 'N/A'}</p>
+              <Section title="Cam kết thời gian (SLA)" icon={Clock} color="blue">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-black text-blue-700 dark:text-blue-400">{node.sla_formula || 'N/A'}</span>
+                  <span className="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium">ngày làm việc</span>
+                </div>
               </Section>
             </div>
-            <Section title="Sản phẩm đầu ra" icon={CheckSquare} color="emerald">
-              <p className="text-xs text-emerald-700">{meta.output || 'Hồ sơ đầu ra'}</p>
+            
+            {meta.sub_tasks && meta.sub_tasks.length > 0 && (
+              <Section title="Chi tiết các công việc thành phần" icon={CheckSquare} color="emerald">
+                <ul className="space-y-3">
+                  {meta.sub_tasks.map((st: any) => (
+                    <li key={st.id} className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                      <div className="mt-0.5"><CheckCircle size={16} className="text-slate-300 dark:text-slate-600" /></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">{st.name}</p>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <Users size={12} className="text-slate-400" />
+                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">{st.assignee_role || node.assignee_role}</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            )}
+
+            <Section title="Sản phẩm đầu ra (Deliverables)" icon={FileText} color="purple">
+              <p className="text-sm font-medium text-purple-800 dark:text-purple-300">{meta.output || 'Chưa định nghĩa'}</p>
             </Section>
           </div>
         )}

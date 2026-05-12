@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Project, ProjectStage, Employee, BiddingPackage, Contractor } from '@/types';
 import {
     Pencil, Clock, Info, Maximize, Target,
-    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler
+    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler, Box, Layers, Database
 } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 import { LifecycleStepper, StageHistoryEntry } from '../LifecycleStepper';
@@ -185,6 +185,34 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     // ═══ Calculate disbursed amount from real disbursement data ═══
     const { data: capitalSummary } = useProjectCapitalSummary(project.ProjectID);
     const disbursedAmount = capitalSummary?.summary.totalDisbursed || 0;
+
+    // ═══ Fetch BIM & Asset Data ═══
+    const { data: bimAssetStats } = useQuery({
+        queryKey: ['project-bim-asset-stats', project.ProjectID],
+        queryFn: async () => {
+            // Get BIM models count and sum of elements
+            const { data: models } = await supabase
+                .from('bim_models')
+                .select('id, element_count')
+                .eq('project_id', project.ProjectID);
+            
+            const totalModels = models?.length || 0;
+            const totalElements = models?.reduce((acc, m) => acc + (m.element_count || 0), 0) || 0;
+
+            // Get Facility Assets count
+            const { count: assetsCount } = await supabase
+                .from('facility_assets')
+                .select('*', { count: 'exact', head: true })
+                .eq('project_id', project.ProjectID);
+
+            return {
+                totalModels,
+                totalElements,
+                totalAssets: assetsCount || 0
+            };
+        },
+        enabled: !!project.ProjectID,
+    });
 
     // ═══ FETCH KEY DATES FROM MULTIPLE SOURCES ═══
     const { data: keyDates = [] } = useQuery<KeyDate[]>({
@@ -473,6 +501,47 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             </div>
                         </div>
                     ) : null}
+
+                    {/* ═══ DỮ LIỆU THIẾT KẾ (BIM) & TÀI SẢN ═══ */}
+                    <div className="section-card">
+                        <div className="section-card-header">
+                            <div className="flex items-center gap-2">
+                                <div className="section-icon"><Box className="w-3.5 h-3.5" /></div>
+                                <span>Dữ liệu thiết kế (BIM) & Tài sản</span>
+                            </div>
+                        </div>
+                        <div className="p-2.5 space-y-2">
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="rounded-lg border border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-900/15 py-1.5 px-2 text-center">
+                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Mô hình BIM (IFC)</p>
+                                    <div className="flex items-center justify-center gap-1">
+                                        <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                                        <p className="text-sm font-black tabular-nums text-indigo-600 dark:text-indigo-400">
+                                            {bimAssetStats?.totalModels || 0}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="rounded-lg border border-teal-200 dark:border-teal-800/50 bg-teal-50/50 dark:bg-teal-900/15 py-1.5 px-2 text-center">
+                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Cấu kiện (Elements)</p>
+                                    <div className="flex items-center justify-center gap-1">
+                                        <Box className="w-3.5 h-3.5 text-teal-500" />
+                                        <p className="text-sm font-black tabular-nums text-teal-600 dark:text-teal-400">
+                                            {bimAssetStats?.totalElements ? bimAssetStats.totalElements.toLocaleString('vi-VN') : 0}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="rounded-lg border border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/15 py-1.5 px-2 text-center">
+                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Tài sản (Assets)</p>
+                                    <div className="flex items-center justify-center gap-1">
+                                        <Database className="w-3.5 h-3.5 text-amber-500" />
+                                        <p className="text-sm font-black tabular-nums text-amber-600 dark:text-amber-400">
+                                            {bimAssetStats?.totalAssets || 0}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* ═══ Tiến độ giải ngân ═══ */}
                     <BudgetVarianceCard

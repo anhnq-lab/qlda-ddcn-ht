@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     X, Edit2, Trash2, Link2, Briefcase, Users, ClipboardList,
     Calendar, CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight,
-    Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen
+    Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen, ChevronRight
 } from 'lucide-react';
 import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus } from '../../types/plan.types';
 import { useTasksByMonthlyPlanItem } from '../../hooks/usePlanData';
@@ -71,7 +71,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
             .then(({ data }: any) => setProject(data));
     }, [item.project_id]);
 
-    const tasksDone = tasks.filter(t => t.status === 'done').length;
+    const tasksDone = tasks.filter(t => t.Status === 'done').length;
     const tasksProgress = tasks.length > 0 ? Math.round((tasksDone / tasks.length) * 100) : 0;
 
     const handleDelete = () => {
@@ -250,25 +250,25 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 <div className="space-y-2">
                                     {tasks.map((task: any) => (
                                         <button
-                                            key={task.id}
-                                            onClick={() => handleOpenTask(task.TaskID || task.id)}
-                                            className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:shadow-sm hover:bg-slate-50 transition-all text-left group"
+                                            key={task.TaskID}
+                                            onClick={() => handleOpenTask(task.TaskID)}
+                                            className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50 hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all text-left group"
                                         >
                                             <div className="flex-1 min-w-0">
-                                                <p className={`text-sm font-medium truncate transition-colors ${task.status === 'done' ? 'text-slate-400 line-through' : 'text-slate-700 group-hover:text-indigo-700'}`}>
-                                                    {task.title || task.Title}
+                                                <p className={`text-sm font-medium truncate transition-colors ${task.Status === 'done' ? 'text-slate-400 line-through' : 'text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400'}`}>
+                                                    {task.Title}
                                                 </p>
-                                                {task.due_date && (
+                                                {task.DueDate && (
                                                     <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
                                                         <Calendar className="w-3 h-3" />
-                                                        {new Date(task.due_date).toLocaleDateString('vi-VN')}
+                                                        {new Date(task.DueDate).toLocaleDateString('vi-VN')}
                                                     </p>
                                                 )}
                                             </div>
-                                            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-md shrink-0 ${TASK_STATUS_COLOR[task.status] ?? 'bg-slate-100 text-slate-500'}`}>
-                                                {TASK_STATUS_LABEL[task.status] ?? task.status}
+                                            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-md shrink-0 ${TASK_STATUS_COLOR[task.Status] ?? 'bg-slate-100 text-slate-500'}`}>
+                                                {TASK_STATUS_LABEL[task.Status] ?? task.Status}
                                             </span>
-                                            <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-400 shrink-0" />
+                                            <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 shrink-0" />
                                         </button>
                                     ))}
                                 </div>

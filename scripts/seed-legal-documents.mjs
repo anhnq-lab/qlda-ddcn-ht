@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Seed legal documents into Supabase via Management API (PAT)
  * No pg/psql needed — pure REST API
  */
@@ -9,10 +9,16 @@ import { createRequire } from 'module';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const PAT = process.env.SUPABASE_PAT // set in .env;
-const PROJECT_REF = 'gyuxymbmbfvvygvcyyrd';
-const SUPABASE_URL = `https://${PROJECT_REF}.supabase.co`;
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY // set in .env;
+import dotenv from 'dotenv';
+dotenv.config({ path: join(__dirname, '../.env') });
+
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SERVICE_KEY) {
+    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env');
+    process.exit(1);
+}
 
 // ---- Import legalData ----
 const { legalDocuments } = await import('../features/legal-documents/legalData.ts');
@@ -77,7 +83,7 @@ for (const doc of legalDocuments) {
         }
 
         // 3. Upsert articles in batches of 50
-        const allArticles = chapters.flatMap((ch, ci) =>
+        let allArticles = chapters.flatMap((ch, ci) =>
             (ch.articles ?? []).map((art, ai) => ({
                 id: art.id,
                 chapter_id: ch.id,
@@ -90,6 +96,15 @@ for (const doc of legalDocuments) {
                 sort_order: ai,
             }))
         );
+
+        // Deduplicate articles by ID
+        const seenIds = new Set();
+        allArticles = allArticles.filter(art => {
+            if (seenIds.has(art.id)) return false;
+            seenIds.add(art.id);
+            return true;
+        });
+
 
         for (let i = 0; i < allArticles.length; i += 50) {
             await upsert('legal_articles', allArticles.slice(i, i + 50));

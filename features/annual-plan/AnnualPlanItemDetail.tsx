@@ -8,11 +8,11 @@ import { supabase as _supabase } from '../../lib/supabase';
 const supabase = _supabase as any;
 
 const FREQUENCY_COLORS: Record<string, string> = {
-    one_time:  'bg-slate-100 text-slate-600',
-    monthly:   'bg-blue-50 text-blue-600',
-    quarterly: 'bg-violet-50 text-violet-600',
-    daily:     'bg-emerald-50 text-emerald-700',
-    as_needed: 'bg-amber-50 text-amber-600',
+    one_time:  'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    monthly:   'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+    quarterly: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400',
+    daily:     'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+    as_needed: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
 };
 
 interface Props {
@@ -64,12 +64,12 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
     return (
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
-            <div className="flex-1 bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
+            <div className="flex-1 bg-black/30 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
             {/* Panel */}
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden">
+            <div className="w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden border-l border-slate-200 dark:border-slate-800">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -99,7 +99,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                     <div className="flex gap-2 mt-3">
                         <button
                             onClick={onEdit}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:hover:bg-indigo-500/20 rounded-lg transition-colors border border-indigo-100 dark:border-indigo-500/20"
                         >
                             <Edit2 className="w-3.5 h-3.5" />
                             Sửa
@@ -107,7 +107,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         {onCreateMonthlyTask && (
                             <button
                                 onClick={() => onCreateMonthlyTask(item.id)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 rounded-lg transition-colors border border-emerald-100 dark:border-emerald-500/20"
                             >
                                 <Plus className="w-3.5 h-3.5" />
                                 Tạo KH tháng
@@ -115,7 +115,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         )}
                         <button
                             onClick={handleDelete}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors ml-auto"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 rounded-lg transition-colors ml-auto border border-red-100 dark:border-red-500/20"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             Xóa
@@ -127,7 +127,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                 <div className="flex-1 overflow-y-auto">
 
                     {/* ── Thông tin ── */}
-                    <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-700/60">
+                    <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
                         <p className="section-title"><ClipboardList className="w-3.5 h-3.5" />Thông tin nhiệm vụ</p>
                         <div className="mt-3 space-y-3">
                             {item.deliverable && (
@@ -151,7 +151,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
 
                     {/* ── Phân công ── */}
                     {(item.responsible_text || item.collaborating_text) && (
-                        <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-700/60">
+                        <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
                             <p className="section-title"><Users className="w-3.5 h-3.5" />Phân công</p>
                             <div className="mt-3 grid grid-cols-2 gap-3">
                                 {item.responsible_text && (
@@ -184,14 +184,14 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
 
                     {/* ── Dự án liên kết ── */}
                     {project && (
-                        <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-700/60">
+                        <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
                             <p className="section-title"><Link2 className="w-3.5 h-3.5" />Dự án liên kết</p>
-                            <div className="mt-2 flex items-start gap-2 p-2.5 bg-violet-50 dark:bg-violet-900/20 rounded-lg">
+                            <div className="mt-2 flex items-start gap-2 p-2.5 bg-violet-50 dark:bg-violet-500/10 rounded-lg">
                                 <span className="text-violet-400 text-xs mt-0.5">📁</span>
                                 <div>
-                                    <p className="text-sm font-medium text-violet-700 dark:text-violet-300">{project.ProjectName}</p>
+                                    <p className="text-sm font-medium text-violet-700 dark:text-violet-400">{project.ProjectName}</p>
                                     {project.ProjectCode && (
-                                        <p className="text-xs text-violet-400">{project.ProjectCode}</p>
+                                        <p className="text-xs text-violet-400 dark:text-violet-500">{project.ProjectCode}</p>
                                     )}
                                 </div>
                             </div>
@@ -205,7 +205,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                 <CalendarDays className="w-3.5 h-3.5" />
                                 Kế hoạch tháng đã liên kết
                                 {monthlyLinks.length > 0 && (
-                                    <span className="ml-2 text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 px-1.5 py-0.5 rounded-full font-normal">
+                                    <span className="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded-full font-normal border border-slate-200 dark:border-slate-700">
                                         {monthlyLinks.length}
                                     </span>
                                 )}
@@ -214,7 +214,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         {loadingLinks ? (
                             <p className="text-xs text-slate-400 text-center py-3">Đang tải...</p>
                         ) : monthlyLinks.length === 0 ? (
-                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
+                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 rounded-xl">
                                 <CalendarClock className="w-8 h-8 text-slate-200 dark:text-slate-700 mx-auto mb-2" />
                                 <p className="text-sm text-slate-400">Chưa có kế hoạch tháng nào liên kết</p>
                                 <p className="text-xs text-slate-300 dark:text-slate-600 mt-1">Khi tạo KH tháng, chọn nhiệm vụ này từ KH khung</p>
@@ -224,14 +224,14 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                 {monthlyLinks.map((link: any) => {
                                     const plan = link.monthly_plan;
                                     const statusColors: Record<string, string> = {
-                                        planned: 'bg-slate-100 text-slate-500',
-                                        completed: 'bg-emerald-50 text-emerald-600',
-                                        incomplete: 'bg-red-50 text-red-500',
-                                        partial: 'bg-amber-50 text-amber-600',
-                                        deferred: 'bg-blue-50 text-blue-500',
+                                        planned: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+                                        completed: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+                                        incomplete: 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400',
+                                        partial: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+                                        deferred: 'bg-blue-50 text-blue-500 dark:bg-blue-500/10 dark:text-blue-400',
                                     };
                                     return (
-                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-lg">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{link.task_name}</p>
                                                 {plan && (
@@ -240,7 +240,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                                     </p>
                                                 )}
                                             </div>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${statusColors[link.status] ?? 'bg-slate-100 text-slate-500'}`}>
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${statusColors[link.status] ?? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                                                 {link.deadline_note ?? link.status}
                                             </span>
                                         </div>

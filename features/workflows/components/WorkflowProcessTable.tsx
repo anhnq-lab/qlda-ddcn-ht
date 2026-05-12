@@ -338,6 +338,23 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
         }
     };
 
+    const handleDeleteNode = async (e: React.MouseEvent, node: WorkflowNode) => {
+        e.stopPropagation();
+        if (!window.confirm(`Xác nhận xóa bước "${node.name}"?\n\nBước này sẽ bị ẩn khỏi quy trình.`)) return;
+        try {
+            const { error } = await supabase
+                .from('workflow_nodes')
+                .update({ is_deleted: true } as any)
+                .eq('id', node.id);
+            if (error) throw error;
+            setNodes(prev => prev.filter(n => n.id !== node.id));
+            addToast({ title: 'Đã xóa', message: `Bước "${node.name}" đã được xóa.`, type: 'success' });
+            onUpdate?.();
+        } catch (err: any) {
+            addToast({ title: 'Lỗi xóa', message: err.message, type: 'error' });
+        }
+    };
+
     const openNodePanel = (node: WorkflowNode) => {
         openPanel({
             id: 'node-detail-' + node.id,
@@ -475,7 +492,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                 </>
                             )}
                             {isAdmin && (
-                                <th className="p-2.5 text-center w-16 print:hidden">Sửa</th>
+                                <th className="p-2.5 text-center w-20 print:hidden">Thao tác</th>
                             )}
                         </tr>
                     </thead>
@@ -663,13 +680,22 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                 {/* Admin actions */}
                                                                 {isAdmin && (
                                                                     <td className="p-2 text-center align-top print:hidden">
-                                                                        <button
-                                                                            onClick={(e) => { e.stopPropagation(); openNodePanel(node); }}
-                                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                                                                            title="Chỉnh sửa"
-                                                                        >
-                                                                            <PenLine size={13} />
-                                                                        </button>
+                                                                        <div className="flex items-center justify-center gap-1">
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); openNodePanel(node); }}
+                                                                                className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                                                title="Chỉnh sửa bước"
+                                                                            >
+                                                                                <PenLine size={13} />
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={(e) => handleDeleteNode(e, node)}
+                                                                                className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                                                title="Xóa bước này"
+                                                                            >
+                                                                                <Trash2 size={13} />
+                                                                            </button>
+                                                                        </div>
                                                                     </td>
                                                                 )}
                                                             </tr>

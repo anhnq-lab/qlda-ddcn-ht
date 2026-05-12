@@ -60,8 +60,44 @@ export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, cla
             )}
 
             {summary && (
-                <div className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                    {summary}
+                <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {summary.split('\n').map((line, index) => {
+                        const trimmed = line.trim();
+                        // Horizontal rules
+                        if (trimmed.match(/^(---|--- |- - -|\*\*\*)$/)) {
+                            return <hr key={index} className="my-3 border-blue-200 dark:border-blue-800/50" />;
+                        }
+                        
+                        // Empty lines
+                        if (!trimmed) {
+                            return <div key={index} className="h-2" />;
+                        }
+
+                        // Parse bold and italic
+                        const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+
+                        return (
+                            <p key={index} className="mb-1.5 last:mb-0">
+                                {parts.map((part, i) => {
+                                    if (part.startsWith('**') && part.endsWith('**')) {
+                                        return (
+                                            <strong key={i} className="font-bold text-slate-900 dark:text-white">
+                                                {part.slice(2, -2)}
+                                            </strong>
+                                        );
+                                    }
+                                    if (part.startsWith('*') && part.endsWith('*')) {
+                                        return (
+                                            <em key={i} className="italic text-slate-500 dark:text-slate-400">
+                                                {part.slice(1, -1)}
+                                            </em>
+                                        );
+                                    }
+                                    return <span key={i}>{part}</span>;
+                                })}
+                            </p>
+                        );
+                    })}
                 </div>
             )}
         </div>

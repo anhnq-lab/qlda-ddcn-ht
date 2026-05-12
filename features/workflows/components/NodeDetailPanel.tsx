@@ -210,11 +210,22 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
     };
 
     const removeSubTask = (id: string) => {
-        if (subTasks.length <= 1) {
-            addToast({ title: 'Không thể xóa', message: 'Cần ít nhất 1 công việc con.', type: 'warning' });
-            return;
+        const updated = subTasks.filter(st => st.id !== id);
+        if (updated.length === 0) {
+            // Thêm 1 công việc trống để bước luôn có ít nhất 1
+            updated.push({
+                id: generateSafeId(),
+                name: '',
+                assignee_role: '',
+                output: '',
+                template_forms: '',
+                legal_basis: '',
+                template_url: '',
+                sla: '',
+                sla_unit: 'd'
+            });
         }
-        setSubTasks(subTasks.filter(st => st.id !== id));
+        setSubTasks(updated);
     };
 
     const updateSubTask = (id: string, field: keyof SubTask, value: string) => {

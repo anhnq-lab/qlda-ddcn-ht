@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import { Group, Panel, Separator } from 'react-resizable-panels';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon, ArrowLeft } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon, ArrowLeft, Bot, Sparkles } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
 // BIM hooks and context
@@ -19,6 +19,7 @@ import { BimSectionPanel } from '../bim/BimSectionPanel';
 import { BimPerformanceStats } from '../bim/BimPerformanceStats';
 import { useBimWalkthrough } from '../bim/useBimWalkthrough';
 import { BimWalkthroughHUD } from '../bim/BimWalkthroughHUD';
+import { BIMAgentChat } from '../../../bim-agent/BIMAgentChat';
 
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
@@ -65,6 +66,7 @@ const ProjectBimTabContent: React.FC = () => {
     const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
     const [isDraggingFile, setIsDraggingFile] = useState(false);
     const [showPerfStats, setShowPerfStats] = useState(false);
+    const [showAgent, setShowAgent] = useState(false);
 
     // ── First-person walkthrough ──────────
     const walkthrough = useBimWalkthrough({
@@ -618,6 +620,37 @@ const ProjectBimTabContent: React.FC = () => {
                     >
                         {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
+                )}
+
+                {/* AI Agent toggle */}
+                {engine.viewerReady && (
+                    <button
+                        onClick={() => setShowAgent(prev => !prev)}
+                        title="BIM AI Agent"
+                        className={`
+                            absolute top-16 right-3 z-30 p-2.5 rounded-xl backdrop-blur-xl shadow-sm border
+                            flex items-center justify-center transition-all cursor-pointer group
+                            ${showAgent
+                                ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/40 hover:bg-indigo-500/30'
+                                : isDark
+                                    ? 'bg-slate-900/80 text-indigo-400 border-indigo-500/30 hover:bg-slate-800 hover:text-indigo-300'
+                                    : 'bg-white/90 text-indigo-600 border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700'
+                            }
+                        `}
+                    >
+                        <Bot className={`w-4 h-4 transition-transform ${showAgent ? 'scale-110' : 'group-hover:scale-110'}`} />
+                        <Sparkles className="w-2.5 h-2.5 absolute top-1.5 right-1.5 text-yellow-400 opacity-80" />
+                    </button>
+                )}
+
+                {/* AI Agent Panel */}
+                {showAgent && (
+                    <div className={`absolute top-28 right-3 bottom-3 w-96 z-40 shadow-2xl transition-all duration-300 transform origin-top-right rounded-xl overflow-hidden
+                        ${isDark ? 'border border-slate-700/60 bg-slate-900/95' : 'border border-gray-200 bg-white/95'}
+                        backdrop-blur-xl flex flex-col`}
+                    >
+                        <BIMAgentChat onClose={() => setShowAgent(false)} isDark={isDark} embedded />
+                    </div>
                 )}
 
                 {/* Toolbar */}

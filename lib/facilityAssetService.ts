@@ -13,6 +13,9 @@ export interface FacilityAsset {
     location: string | null;
     manufacturer: string | null;
     model: string | null;
+    contractor: string | null;
+    purchase_cost: number | null;
+    warranty_provider: string | null;
     install_date: string | null;
     warranty_expiry: string | null;
     last_maintenance: string | null;

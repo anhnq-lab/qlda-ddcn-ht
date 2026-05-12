@@ -1,0 +1,23 @@
+# The geometry iterator makes it easy to collect possible geometry in a model
+# geometry iterator processes all 3D geometry in a model from all elements, and returns a list of X Y Z vertex ordinates in a flattened list.
+import multiprocessing
+import ifcopenshell
+import ifcopenshell.geom
+
+ifc_file = ifcopenshell.open('model.ifc')
+
+settings = ifcopenshell.geom.settings()
+iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+if iterator.initialize():
+    while True:
+        shape = iterator.get()
+        element = ifc_file.by_id(shape.id)
+        matrix = shape.transformation.matrix
+        faces = shape.geometry.faces
+        edges = shape.geometry.edges
+        verts = shape.geometry.verts
+        materials = shape.geometry.materials
+        material_ids = shape.geometry.material_ids
+        # ... write code to process geometry here ...
+        if not iterator.next():
+            break

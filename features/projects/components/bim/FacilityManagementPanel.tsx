@@ -42,6 +42,9 @@ const EMPTY_FORM: Partial<FacilityAssetInsert> = {
     location: '',
     manufacturer: '',
     model: '',
+    contractor: '',
+    purchase_cost: null,
+    warranty_provider: '',
     status: 'Active',
     condition: 'Good',
     notes: '',
@@ -155,6 +158,9 @@ export const FacilityManagementPanel: React.FC = () => {
             location: asset.location || '',
             manufacturer: asset.manufacturer || '',
             model: asset.model || '',
+            contractor: asset.contractor || '',
+            purchase_cost: asset.purchase_cost || null,
+            warranty_provider: asset.warranty_provider || '',
             status: asset.status,
             condition: asset.condition,
             notes: asset.notes || '',
@@ -349,6 +355,8 @@ export const FacilityManagementPanel: React.FC = () => {
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tên tài sản</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Phân loại</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Vị trí</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Nhà thầu</th>
+                                <th className="text-right px-3 py-1.5 font-semibold bg-inherit">Giá trị (đ)</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Trạng thái</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tình trạng</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Bảo trì kế tiếp</th>
@@ -401,6 +409,12 @@ export const FacilityManagementPanel: React.FC = () => {
                                                     {asset.location}
                                                 </span>
                                             ) : '—'}
+                                        </td>
+                                        <td className={`px-3 py-1.5 font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                                            {asset.contractor || '—'}
+                                        </td>
+                                        <td className={`px-3 py-1.5 text-right font-mono ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                            {asset.purchase_cost ? asset.purchase_cost.toLocaleString('vi-VN') : '—'}
                                         </td>
                                         <td className="px-3 py-1.5">
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${isDarkMode ? sc.darkColor : sc.color}`}>
@@ -583,6 +597,29 @@ export const FacilityManagementPanel: React.FC = () => {
                                         value={form.model || ''}
                                         onChange={e => setForm(f => ({ ...f, model: e.target.value }))}
                                         placeholder="VD: NEXIEZ-LITE"
+                                        className={inputCls}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Row 4: Procurement */}
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="col-span-2">
+                                    <label className={`block text-[10px] font-bold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Nhà thầu / Đơn vị cung cấp</label>
+                                    <input
+                                        value={form.contractor || ''}
+                                        onChange={e => setForm(f => ({ ...f, contractor: e.target.value }))}
+                                        placeholder="VD: Công ty TNHH ABC"
+                                        className={inputCls}
+                                    />
+                                </div>
+                                <div>
+                                    <label className={`block text-[10px] font-bold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Giá trị (đ)</label>
+                                    <input
+                                        type="number"
+                                        value={form.purchase_cost || ''}
+                                        onChange={e => setForm(f => ({ ...f, purchase_cost: e.target.value ? Number(e.target.value) : null }))}
+                                        placeholder="VD: 50000000"
                                         className={inputCls}
                                     />
                                 </div>

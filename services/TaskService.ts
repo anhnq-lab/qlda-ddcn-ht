@@ -382,29 +382,63 @@ export const TaskService = {
 
   /** Upsert sub-task */
   saveSubTask: async (subTask: Partial<DbSubTask> & { task_id: string }): Promise<DbSubTask> => {
+    // Map DbSubTask structure to tasks structure
+    const payload = {
+      parent_id: subTask.task_id,
+      title: subTask.title,
+      status: subTask.status === 'done' ? 'done' : (subTask.status === 'in_progress' ? 'in_progress' : 'todo'),
+      assignee_id: subTask.assignee_id,
+      due_date: subTask.due_date,
+      sort_order: subTask.sort_order,
+      task_type: 'project',
+      updated_at: new Date().toISOString()
+    };
+
     if (subTask.id) {
       const { data, error } = await (supabase as any)
-        .from('sub_tasks')
-        .update({ ...subTask, updated_at: new Date().toISOString() } as any)
+        .from('tasks')
+        .update(payload)
         .eq('id', subTask.id)
         .select()
         .single();
       if (error) throw error;
-      return data as unknown as DbSubTask;
+      
+      return {
+        id: data.id,
+        task_id: data.parent_id,
+        title: data.title,
+        status: data.status,
+        assignee_id: data.assignee_id,
+        due_date: data.due_date,
+        sort_order: data.sort_order,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      } as unknown as DbSubTask;
     } else {
       const { data, error } = await (supabase as any)
-        .from('sub_tasks')
-        .insert(subTask as any)
+        .from('tasks')
+        .insert({ ...payload, created_at: new Date().toISOString() })
         .select()
         .single();
       if (error) throw error;
-      return data as unknown as DbSubTask;
+      
+      return {
+        id: data.id,
+        task_id: data.parent_id,
+        title: data.title,
+        status: data.status,
+        assignee_id: data.assignee_id,
+        due_date: data.due_date,
+        sort_order: data.sort_order,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      } as unknown as DbSubTask;
     }
   },
 
   /** Xóa sub-task */
   deleteSubTask: async (subTaskId: string): Promise<void> => {
-    const { error } = await (supabase as any).from('sub_tasks').delete().eq('id', subTaskId);
+    const { error } = await (supabase as any).from('tasks').delete().eq('id', subTaskId);
     if (error) throw error;
   },
 

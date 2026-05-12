@@ -90,3 +90,54 @@ CREATE TRIGGER trigger_log_task_activity
 -- =======================================================================================
 -- Bạn copy toàn bộ nội dung này và chạy trong SQL Editor của Supabase nhé!
 -- =======================================================================================
+
+-- 4. RPC Functions for Task Comments and Activities
+CREATE OR REPLACE FUNCTION public.get_task_comments_v2(p_task_id UUID)
+RETURNS TABLE (
+    id UUID,
+    task_id UUID,
+    user_id UUID,
+    content TEXT,
+    attachments JSONB,
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    user_full_name TEXT,
+    user_avatar_url TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        c.id, c.task_id, c.user_id, c.content, c.attachments, c.created_at, c.updated_at,
+        (u.raw_user_meta_data->>'full_name')::TEXT as user_full_name,
+        (u.raw_user_meta_data->>'avatar_url')::TEXT as user_avatar_url
+    FROM public.task_comments c
+    LEFT JOIN auth.users u ON c.user_id = u.id
+    WHERE c.task_id = p_task_id
+    ORDER BY c.created_at DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_task_activities_v2(p_task_id UUID)
+RETURNS TABLE (
+    id UUID,
+    task_id UUID,
+    user_id UUID,
+    action_type VARCHAR(50),
+    old_value TEXT,
+    new_value TEXT,
+    created_at TIMESTAMP WITH TIME ZONE,
+    user_full_name TEXT,
+    user_avatar_url TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        a.id, a.task_id, a.user_id, a.action_type, a.old_value, a.new_value, a.created_at,
+        (u.raw_user_meta_data->>'full_name')::TEXT as user_full_name,
+        (u.raw_user_meta_data->>'avatar_url')::TEXT as user_avatar_url
+    FROM public.task_activities a
+    LEFT JOIN auth.users u ON a.user_id = u.id
+    WHERE a.task_id = p_task_id
+    ORDER BY a.created_at DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

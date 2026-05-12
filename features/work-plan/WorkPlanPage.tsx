@@ -29,9 +29,9 @@ const WorkPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50">
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
             {/* ── Tab bar ── */}
-            <div className="bg-white border-b border-slate-200 px-4">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4">
                 <nav className="flex gap-0.5" aria-label="Work-plan tabs">
                     {TABS.map(({ key, label, icon: Icon }) => (
                         <button
@@ -41,8 +41,8 @@ const WorkPlanPage: React.FC = () => {
                                 flex items-center gap-2 px-4 py-3 text-[13px] font-semibold
                                 border-b-2 transition-colors whitespace-nowrap
                                 ${active === key
-                                    ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-300'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:hover:text-slate-200'}
+                                    ? 'border-primary-600 text-primary-700 dark:border-primary-500 dark:text-primary-400'
+                                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:border-slate-300 dark:hover:text-slate-200 dark:hover:border-slate-700'}
                             `}
                         >
                             <Icon className="w-4 h-4" />

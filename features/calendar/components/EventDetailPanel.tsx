@@ -133,12 +133,12 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
               <p className="font-medium">Người tham dự ({event.attendees?.length || 0})</p>
               {event.attendees && event.attendees.length > 0 ? (
                 <ul className="mt-1 space-y-1">
-                  {event.attendees.map(emp => (
-                    <li key={emp.id} className="flex items-center gap-2">
+                  {event.attendees.map((emp, idx) => (
+                    <li key={emp.EmployeeID || emp.id || idx} className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700">
-                        {emp.full_name.charAt(0)}
+                        {(emp.FullName || emp.full_name || 'NV').charAt(0)}
                       </div>
-                      <span>{emp.full_name}</span>
+                      <span>{emp.FullName || emp.full_name || 'Nhân viên'}</span>
                     </li>
                   ))}
                 </ul>

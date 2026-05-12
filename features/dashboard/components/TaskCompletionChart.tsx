@@ -12,9 +12,10 @@ export interface TaskCompletionChartProps {
         total: number;
     } | undefined;
     loading: boolean;
+    onSegmentClick?: (taskStatusName: string) => void;
 }
 
-const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading }) => {
+const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading, onSegmentClick }) => {
     const { theme } = useTheme();
 
     if (loading || !data) {
@@ -52,9 +53,19 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
                             paddingAngle={5}
                             dataKey="value"
                             stroke="none"
+                            onClick={(data) => {
+                                if (onSegmentClick && data) {
+                                    onSegmentClick(data.name);
+                                }
+                            }}
+                            className={onSegmentClick ? "cursor-pointer" : ""}
                         >
                             {chartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={entry.color} 
+                                    className={onSegmentClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+                                />
                             ))}
                         </Pie>
                         <RechartsTooltip

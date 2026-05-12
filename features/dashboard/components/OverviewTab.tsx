@@ -1,11 +1,12 @@
-import React, { useMemo, Suspense, lazy } from 'react';
+import React, { useMemo, Suspense, lazy, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Wallet, Activity, AlertCircle, CheckCircle2, AlertTriangle, Building2, Map as MapIcon, TrendingUp, ArrowRight, Brain } from 'lucide-react';
+import { Wallet, Activity, AlertCircle, CheckCircle2, AlertTriangle, Building2, Map as MapIcon, TrendingUp, ArrowRight, Brain, Search } from 'lucide-react';
 import { formatShortCurrency } from '../../../utils/format';
 import { DashboardService } from '../../../services/DashboardService';
 import { ProjectStatus, PROJECT_PHASE_COLORS } from '../../../types';
 import { StatCard, ErrorBoundary, EmptyState, TableSkeleton } from '../../../components/ui';
+import { useSlidePanel } from '../../../context/SlidePanelContext';
 
 // Lazy load heavy components
 const CapitalDisbursementChart = lazy(() => import('./CapitalDisbursementChart'));
@@ -20,7 +21,12 @@ const AIResourceOptimizer = lazy(() => import('../../../components/ai/AIResource
 const ProjectStatusChart = lazy(() => import('./ProjectStatusChart'));
 const TaskCompletionChart = lazy(() => import('./TaskCompletionChart'));
 const ProjectStatusByBoardChart = lazy(() => import('./ProjectStatusByBoardChart'));
+const ProjectDetailedStatusWidget = lazy(() => import('./ProjectDetailedStatusWidget'));
 
+// Panels
+const ProjectSlideTable = lazy(() => import('./panels/ProjectSlideTable'));
+const TaskSlideTable = lazy(() => import('./panels/TaskSlideTable'));
+const CapitalSlideTable = lazy(() => import('./panels/CapitalSlideTable'));
 
 // ── Phase Badge ──────────────────────────────────────────
 const PhaseBadge: React.FC<{ status: number }> = ({ status }) => {
@@ -51,6 +57,10 @@ const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color
 
 export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard: string }> = ({ selectedYear, selectedBoard }) => {
     const navigate = useNavigate();
+    const { openPanel } = useSlidePanel();
+    const [activePhaseFilter, setActivePhaseFilter] = useState<number | null>(null);
+    const [mapSearchQuery, setMapSearchQuery] = useState('');
+    const [showMines, setShowMines] = useState(false);
 
     const STALE_5M = 5 * 60 * 1000;
 
@@ -64,6 +74,12 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
     const { data: projectRows, isLoading: loadingProjects } = useQuery({
         queryKey: ['dashboard', 'projectSummary'],
         queryFn: DashboardService.getProjectSummary,
+        staleTime: STALE_5M,
+    });
+
+    const { data: materialMines } = useQuery({
+        queryKey: ['dashboard', 'materialMines'],
+        queryFn: DashboardService.getMaterialMines,
         staleTime: STALE_5M,
     });
 
@@ -113,14 +129,40 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
     }, [filteredRows]);
 
     const filteredProjects = useMemo(() => {
-        return filteredRows.map(r => ({
+        let mapped = filteredRows.map(r => ({
             ProjectID: r.projectId,
             ProjectName: r.projectName,
             Status: r.status,
             TotalInvestment: r.totalInvestment,
-            LocationCode: r.locationCode
+            LocationCode: r.locationCode,
+            Coordinates: r.coordinates,
+            InvestorName: r.investorName,
+            MainContractorName: r.mainContractorName,
+            Progress: r.progress,
+            ExpectedEndDate: r.expectedEndDate
         }));
-    }, [filteredRows]);
+        
+        if (activePhaseFilter !== null) {
+            mapped = mapped.filter(p => p.Status === activePhaseFilter);
+        }
+        
+        if (mapSearchQuery.trim() !== '') {
+            const query = mapSearchQuery.toLowerCase();
+            mapped = mapped.filter(p => p.ProjectName.toLowerCase().includes(query));
+        }
+        
+        return mapped;
+    }, [filteredRows, activePhaseFilter, mapSearchQuery]);
+
+    const filteredMines = useMemo(() => {
+        if (!materialMines) return [];
+        let mapped = [...materialMines];
+        if (mapSearchQuery.trim() !== '') {
+            const query = mapSearchQuery.toLowerCase();
+            mapped = mapped.filter(m => m.name?.toLowerCase().includes(query) || m.mine_type?.toLowerCase().includes(query));
+        }
+        return mapped;
+    }, [materialMines, mapSearchQuery]);
 
     const statusSummary = useMemo(() => {
         const prep = filteredRows.filter(r => r.status === ProjectStatus.Preparation).length;
@@ -128,6 +170,42 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
         const comp = filteredRows.filter(r => r.status === ProjectStatus.Completion).length;
         return { prep, exec, comp };
     }, [filteredRows]);
+
+    // Handlers for Drill-down
+    const handleProjectStatusClick = (statusName: string, statusKey: ProjectStatus) => {
+        openPanel({
+            title: `Dự án: ${statusName}`,
+            component: <Suspense fallback={<TableSkeleton columns={4} rows={5} />}><ProjectSlideTable projects={filteredRows} filterStatus={statusKey} /></Suspense>
+        });
+    };
+
+    const handleProjectBoardStatusClick = (boardName: string, statusName: string, statusKey: ProjectStatus) => {
+        openPanel({
+            title: `Dự án ${statusName} - ${boardName}`,
+            component: <Suspense fallback={<TableSkeleton columns={4} rows={5} />}><ProjectSlideTable projects={filteredRows} filterStatus={statusKey} filterBoardValue={boardName} /></Suspense>
+        });
+    };
+
+    const handleTaskClick = (statusName: string) => {
+        openPanel({
+            title: 'Chi tiết Công việc',
+            component: <Suspense fallback={<TableSkeleton columns={4} rows={5} />}><TaskSlideTable statusName={statusName} /></Suspense>
+        });
+    };
+
+    const handleCapitalClick = (boardName: string) => {
+        openPanel({
+            title: 'Chi tiết Kế hoạch vốn',
+            component: <Suspense fallback={<TableSkeleton columns={4} rows={5} />}><CapitalSlideTable boardName={boardName} year={selectedYear || new Date().getFullYear()} /></Suspense>
+        });
+    };
+
+    const handleDetailedStatusClick = (statusId: number, statusLabel: string) => {
+        openPanel({
+            title: `Dự án: ${statusLabel}`,
+            component: <Suspense fallback={<TableSkeleton columns={4} rows={5} />}><ProjectSlideTable projects={filteredRows} filterCurrentStatusCode={statusId} /></Suspense>
+        });
+    };
 
     return (
         <div className="space-y-6 animate-fade-in fade-in-up">
@@ -199,30 +277,39 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[300px]">
                 <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
-                    <ProjectStatusChart statusSummary={statusSummary} />
+                    <ProjectStatusChart statusSummary={statusSummary} onSegmentClick={handleProjectStatusClick} />
                 </Suspense>
                 
                 <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
-                    <ProjectStatusByBoardChart projects={filteredRows} />
+                    <ProjectStatusByBoardChart projects={filteredRows} onSegmentClick={handleProjectBoardStatusClick} />
                 </Suspense>
 
                 <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
-                    <TaskCompletionChart data={taskCompletion} loading={loadingTasks} />
+                    <ProjectDetailedStatusWidget projects={filteredRows} onSegmentClick={handleDetailedStatusClick} />
                 </Suspense>
             </div>
 
             {/* ═══════════════════════════════════════════════════
-                3. GIẢI NGÂN THEO BAN (full width)
+                3. GIẢI NGÂN THEO BAN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
-            {capitalVsDisbursement && (
-                <Suspense fallback={
-                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-64 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-                    </div>
-                }>
-                    <CapitalDisbursementChart data={capitalVsDisbursement} />
-                </Suspense>
-            )}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[400px]">
+                <div className="lg:col-span-2">
+                    {capitalVsDisbursement && (
+                        <Suspense fallback={
+                            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                            </div>
+                        }>
+                            <CapitalDisbursementChart data={capitalVsDisbursement} onSegmentClick={handleCapitalClick} />
+                        </Suspense>
+                    )}
+                </div>
+                <div className="lg:col-span-1">
+                    <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full animate-pulse" />}>
+                        <TaskCompletionChart data={taskCompletion} loading={loadingTasks} onSegmentClick={handleTaskClick} />
+                    </Suspense>
+                </div>
+            </div>
 
             {/* ═══════════════════════════════════════════════════
                 AI HUB — 4 tính năng AI + Tóm tắt
@@ -251,11 +338,36 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[300px] xl:h-[500px]">
                 {/* Map (2/3) */}
                 <div className="xl:col-span-2 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden h-full flex flex-col">
-                    <div className="flex justify-between items-center mb-4 shrink-0">
-                        <h3 className="section-header">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 shrink-0">
+                        <h3 className="section-header !mb-0">
                             <div className="section-icon"><MapIcon className="w-5 h-5" /></div>
                             Bản đồ vị trí dự án
                         </h3>
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            {/* Toggle Mines Button */}
+                            <button
+                                onClick={() => setShowMines(!showMines)}
+                                className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                                    showMines 
+                                        ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-700/50 dark:text-amber-400' 
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+                                }`}
+                                title="Hiển thị Mỏ vật liệu (Đất, Đá, Cát) trên bản đồ"
+                            >
+                                <span className={`w-2 h-2 rounded-full ${showMines ? 'bg-amber-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                {showMines ? 'Đang hiện Mỏ vật liệu' : 'Hiện Mỏ vật liệu'}
+                            </button>
+                            <div className="relative flex-1 sm:w-64">
+                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm dự án, mỏ vật liệu..."
+                                    value={mapSearchQuery}
+                                    onChange={(e) => setMapSearchQuery(e.target.value)}
+                                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-slate-200 transition-shadow"
+                                />
+                            </div>
+                        </div>
                     </div>
                     <div className="flex-1 w-full bg-gray-100 dark:bg-slate-300 rounded-2xl relative border border-gray-200 dark:border-slate-400 overflow-hidden z-0">
                         {loadingProjects ? (
@@ -268,19 +380,28 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
                                 </div>
                             }>
-                                <InteractiveMap projects={filteredProjects} />
+                                <InteractiveMap projects={filteredProjects} materialMines={filteredMines} showMines={showMines} />
                             </Suspense>
                         )}
                         {/* Legend */}
                         <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000]">
-                            <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Chú thích</h4>
+                            <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích (Bấm để lọc)</h4>
                             <div className="space-y-2">
-                                {Object.entries(PROJECT_PHASE_COLORS).map(([key, phase]) => (
-                                    <div key={key} className="flex items-center gap-2">
-                                        <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm" style={{ backgroundColor: phase.hex }} />
-                                        <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">{phase.label}</span>
-                                    </div>
-                                ))}
+                                {Object.entries(PROJECT_PHASE_COLORS).map(([key, phase]) => {
+                                    const phaseNum = Number(key);
+                                    const isActive = activePhaseFilter === null || activePhaseFilter === phaseNum;
+                                    return (
+                                        <div 
+                                            key={key} 
+                                            className={`flex items-center gap-2 cursor-pointer transition-all duration-200 ${isActive ? 'opacity-100 hover:scale-105' : 'opacity-40 hover:opacity-70'}`}
+                                            onClick={() => setActivePhaseFilter(activePhaseFilter === phaseNum ? null : phaseNum)}
+                                            title={activePhaseFilter === phaseNum ? "Bấm để bỏ lọc" : "Bấm để lọc dự án theo giai đoạn này"}
+                                        >
+                                            <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm transition-transform duration-200" style={{ backgroundColor: phase.hex, transform: isActive ? 'scale(1.2)' : 'scale(1)' }} />
+                                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">{phase.label}</span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

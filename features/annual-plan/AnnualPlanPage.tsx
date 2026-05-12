@@ -93,17 +93,17 @@ const AnnualPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50">
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
             {/* ── Header ── */}
-            <div className="bg-white border-b border-slate-200 px-6 py-4">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
-                            <BookOpen className="w-5 h-5 text-primary-600" />
+                        <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center">
+                            <BookOpen className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-semibold text-slate-800">Kế hoạch khung năm</h1>
-                            <p className="text-xs text-slate-500">Chương trình công tác thường xuyên của các phòng</p>
+                            <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Kế hoạch khung năm</h1>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Chương trình công tác thường xuyên của các phòng</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ const AnnualPlanPage: React.FC = () => {
                         <select
                             value={year}
                             onChange={e => setYear(Number(e.target.value))}
-                            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="text-sm border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             {[CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1].map(y => (
                                 <option key={y} value={y}>Năm {y}</option>
@@ -135,8 +135,8 @@ const AnnualPlanPage: React.FC = () => {
                             onClick={() => setActiveDept(code)}
                             className={`flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                                 activeDept === code
-                                    ? 'bg-primary-600 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    ? 'bg-primary-600 text-white shadow-sm'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                             }`}
                         >
                             {code}
@@ -146,19 +146,19 @@ const AnnualPlanPage: React.FC = () => {
             </div>
 
             {/* ── Thanh công cụ ── */}
-            <div className="px-6 py-3 bg-white border-b border-slate-100 flex items-center gap-3">
+            <div className="px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
                 <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <input
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Tìm kiếm nhiệm vụ..."
-                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
                     />
                 </div>
-                <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
                     <Building2 className="w-4 h-4" />
-                    <span className="font-medium text-slate-700">{DEPARTMENT_NAMES[activeDept]}</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{DEPARTMENT_NAMES[activeDept]}</span>
                     <span>·</span>
                     <span>{items.length} nhiệm vụ</span>
                 </div>
@@ -167,52 +167,50 @@ const AnnualPlanPage: React.FC = () => {
             {/* ── Nội dung ── */}
             <div className="flex-1 overflow-auto px-6 py-4">
                 {loading ? (
-                    <div className="flex items-center justify-center h-40 text-slate-400 text-sm">
+                    <div className="flex items-center justify-center h-40 text-slate-400 dark:text-slate-500 text-sm">
                         Đang tải...
                     </div>
                 ) : groups.size === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400">
+                    <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400 dark:text-slate-500">
                         <BookOpen className="w-10 h-10 opacity-30" />
                         <p className="text-sm">Chưa có nhiệm vụ nào trong kế hoạch khung năm {year}</p>
                         <button
                             onClick={() => { setEditing(null); setModalOpen(true); }}
-                            className="text-primary-600 text-sm hover:underline"
+                            className="text-primary-600 dark:text-primary-400 text-sm hover:underline"
                         >
                             Thêm nhiệm vụ đầu tiên
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                        <table className="w-full text-sm">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
                             <thead className="sticky top-0 z-10">
-                                <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wide border-b border-slate-200">
-                                    <th className="px-4 py-2.5 text-left w-8">TT</th>
-                                    <th className="px-4 py-2.5 text-left">Nội dung nhiệm vụ</th>
-                                    <th className="px-4 py-2.5 text-left w-48">Sản phẩm đầu ra</th>
-                                    <th className="px-4 py-2.5 text-center w-24">Bắt đầu</th>
-                                    <th className="px-4 py-2.5 text-center w-24">Kết thúc</th>
-                                    <th className="px-4 py-2.5 text-center w-28">Tần suất</th>
-                                    <th className="px-4 py-2.5 text-left w-40">Phụ trách</th>
-                                    <th className="px-4 py-2.5 w-16"></th>
+                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-4 py-3 text-center w-12">STT</th>
+                                    <th className="px-4 py-3 text-left">Nội dung nhiệm vụ</th>
+                                    <th className="px-4 py-3 text-left w-48">Sản phẩm đầu ra</th>
+                                    <th className="px-4 py-3 text-center w-24">Bắt đầu</th>
+                                    <th className="px-4 py-3 text-center w-24">Kết thúc</th>
+                                    <th className="px-4 py-3 text-center w-28">Tần suất</th>
+                                    <th className="px-4 py-3 text-left w-40">Phụ trách</th>
+                                    <th className="px-4 py-3 w-16"></th>
                                 </tr>
                             </thead>
 
                             {Array.from(groups.entries()).map(([groupName, groupItems]) => (
-                                <tbody key={groupName} className="divide-y divide-slate-50">
+                                <tbody key={groupName} className="group/tbody">
                                     {/* Group header row */}
                                     <tr
-                                        className="bg-slate-50/80 cursor-pointer hover:bg-slate-100 transition-colors"
+                                        className="bg-slate-50/80 dark:bg-slate-800/30 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-b border-slate-200 dark:border-slate-800"
                                         onClick={() => toggleGroup(groupName)}
                                     >
-                                        <td colSpan={8} className="px-4 py-2.5 border-t border-slate-200">
+                                        <td colSpan={8} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
                                             <div className="flex items-center gap-2">
-                                                {expandedGroups.has(groupName)
-                                                    ? <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                                                    : <ChevronRight className="w-3.5 h-3.5 text-slate-400" />}
-                                                <span className="font-semibold text-xs text-slate-700 uppercase tracking-wide">
+                                                <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${expandedGroups.has(groupName) ? 'rotate-90' : ''}`} />
+                                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                                                     {groupName}
                                                 </span>
-                                                <span className="text-xs text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded-full">
+                                                <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full font-medium">
                                                     {groupItems.length}
                                                 </span>
                                             </div>
@@ -223,46 +221,48 @@ const AnnualPlanPage: React.FC = () => {
                                     {expandedGroups.has(groupName) && groupItems.map((item, idx) => (
                                         <tr
                                             key={item.id}
-                                            className="hover:bg-indigo-50/30 transition-colors cursor-pointer"
+                                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
                                             onClick={() => setDetailItem(item)}
                                         >
-                                            <td className="px-4 py-2.5 text-slate-400 text-xs">{idx + 1}</td>
-                                            <td className="px-4 py-2.5">
-                                                <span className="text-slate-800 leading-snug">{item.task_name}</span>
+                                            <td className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500 text-center align-top">{idx + 1}</td>
+                                            <td className="px-4 py-3 align-top">
+                                                <p className="text-sm text-slate-800 dark:text-slate-200 leading-snug font-medium">{item.task_name}</p>
                                                 {item.project_id && (
-                                                    <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">Dự án</span>
+                                                    <span className="mt-1 text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5 font-medium border border-blue-100 dark:border-blue-500/20">
+                                                        Dự án
+                                                    </span>
                                                 )}
                                             </td>
-                                            <td className="px-4 py-2.5 text-slate-500 text-xs leading-snug">
+                                            <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 leading-snug align-top">
                                                 {item.deliverable ?? '—'}
                                             </td>
-                                            <td className="px-4 py-2.5 text-center text-xs text-slate-600">
+                                            <td className="px-4 py-3 text-center text-xs text-slate-600 dark:text-slate-400 align-top">
                                                 {item.start_period ?? '—'}
                                             </td>
-                                            <td className="px-4 py-2.5 text-center text-xs text-slate-600">
+                                            <td className="px-4 py-3 text-center text-xs text-slate-600 dark:text-slate-400 align-top">
                                                 {item.end_period ?? '—'}
                                             </td>
-                                            <td className="px-4 py-2.5 text-center">
-                                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${FREQ_BADGE[item.frequency].color}`}>
+                                            <td className="px-4 py-3 text-center align-top">
+                                                <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${FREQ_BADGE[item.frequency].color.replace('bg-', 'bg-opacity-10 bg-').replace('text-', 'text-')}`}>
                                                     {FREQ_BADGE[item.frequency].label}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-2.5 text-xs text-slate-500 leading-snug">
+                                            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 leading-snug align-top">
                                                 {item.responsible_text ?? '—'}
                                             </td>
-                                            <td className="px-4 py-2.5" onClick={e => e.stopPropagation()}>
-                                                <div className="flex items-center gap-1 justify-end">
+                                            <td className="px-4 py-3 align-top" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => { setEditing(item); setModalOpen(true); }}
-                                                        className="p-1 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                                                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors"
                                                     >
-                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                        <Edit2 className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(item.id)}
-                                                        className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors"
                                                     >
-                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                        <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </td>

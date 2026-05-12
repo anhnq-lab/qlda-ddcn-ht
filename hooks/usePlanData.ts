@@ -144,9 +144,9 @@ export function useTasksByMonthlyPlanItem(monthlyPlanItemId?: string) {
         setLoading(true);
         supabase
             .from('tasks')
-            .select('id, title, status, priority, progress, assignee_id, due_date')
-            .eq('monthly_plan_item_id', monthlyPlanItemId)
-            .order('sort_order')
+            .select('TaskID, Title, Status, Priority, ProgressPercent, AssigneeID, DueDate, SortOrder')
+            .eq('MonthlyPlanItemID', monthlyPlanItemId)
+            .order('SortOrder')
             .then(({ data }: any) => {
                 if (!cancelled) setTasks((data as any[]) ?? []);
                 setLoading(false);

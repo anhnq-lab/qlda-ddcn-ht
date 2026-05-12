@@ -15,6 +15,8 @@ import { useEvents } from '@/hooks/useCalendar';
 import { AgencyEventWithAttendees, AgencyEventType, AgencyEventRoom } from '@/types/calendar.types';
 import { EventFormModal } from './components/EventFormModal';
 import { EventDetailPanel } from './components/EventDetailPanel';
+import { LobbyDisplay } from './components/LobbyDisplay';
+import { Monitor, Calendar as CalendarIcon } from 'lucide-react';
 
 const locales = {
   'vi': vi,
@@ -31,6 +33,9 @@ const localizer = dateFnsLocalizer({
 export default function CalendarView() {
   const [view, setView] = useState<View>('month');
   const [date, setDate] = useState(new Date());
+  
+  // Tab mode: 'manage' | 'lobby'
+  const [displayMode, setDisplayMode] = useState<'manage' | 'lobby'>('manage');
 
   const [filterType, setFilterType] = useState<AgencyEventType | ''>('');
   const [filterRoom, setFilterRoom] = useState<AgencyEventRoom | ''>('');
@@ -94,14 +99,40 @@ export default function CalendarView() {
         title="Lịch cơ quan" 
         subtitle="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
         actions={
-          <Button onClick={() => { setSelectedEvent(null); setSelectedSlot(undefined); setIsFormOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" /> Đăng ký lịch
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setDisplayMode('manage')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${displayMode === 'manage' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                Quản lý
+              </button>
+              <button
+                onClick={() => setDisplayMode('lobby')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${displayMode === 'lobby' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+              >
+                <Monitor className="w-4 h-4" />
+                Tivi Sảnh
+              </button>
+            </div>
+            
+            {displayMode === 'manage' && (
+              <Button 
+                onClick={() => { setSelectedEvent(null); setSelectedSlot(undefined); setIsFormOpen(true); }}
+                leftIcon={<Plus className="w-4 h-4 shrink-0" />}
+                className="whitespace-nowrap"
+              >
+                Đăng ký lịch
+              </Button>
+            )}
+          </div>
         }
       />
 
-      {/* Filter Toolbar */}
-      <Card className="p-3 flex flex-wrap items-center gap-3">
+      {/* Filter Toolbar (Only show in Manage mode) */}
+      {displayMode === 'manage' && (
+        <Card className="p-3 flex flex-wrap items-center gap-3">
         <div className="w-48">
           <Select
             size="sm"
@@ -137,20 +168,26 @@ export default function CalendarView() {
           </Button>
         )}
       </Card>
+      )}
 
-      <Card className="flex-1 p-4 min-h-[600px] flex flex-col">
+      {displayMode === 'lobby' ? (
+        <div className="flex-1 w-full min-h-[800px]">
+          <LobbyDisplay events={events} />
+        </div>
+      ) : (
+        <Card className="flex-1 p-4 min-h-[800px] flex flex-col">
         {isLoading ? (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center h-full min-h-[800px]">
             <LoadingSpinner size="lg" />
           </div>
         ) : (
-          <div className="flex-1 w-full h-full min-h-[600px]">
+          <div className="flex-1 w-full h-full min-h-[800px]">
             <Calendar
               localizer={localizer}
               events={mappedEvents}
               startAccessor="start"
               endAccessor="end"
-              style={{ height: 600 }}
+              style={{ height: 800 }}
               view={view}
               onView={setView}
               date={date}
@@ -178,6 +215,7 @@ export default function CalendarView() {
           </div>
         )}
       </Card>
+      )}
 
       {/* Modals & Panels */}
       <EventFormModal 

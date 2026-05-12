@@ -38,7 +38,7 @@ const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ statusSummary, 
             <div className="flex justify-between items-center mb-4 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><PieChartIcon className="w-5 h-5" /></div>
-                    Trạng thái Dự án
+                    Giai đoạn dự án
                 </h3>
             </div>
             <div className="flex-1 min-h-[200px]">

@@ -138,14 +138,14 @@ export const EventDetailContent: React.FC<EventDetailContentProps> = ({ eventId,
             </p>
             {event.attendees && event.attendees.length > 0 ? (
               <ul className="mt-2 space-y-2">
-                {event.attendees.map(emp => (
-                  <li key={emp.EmployeeID} className="flex items-center gap-2.5">
+                {event.attendees.map((emp: any, idx: number) => (
+                  <li key={emp.EmployeeID || idx} className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-xs font-semibold text-blue-700 dark:text-blue-300 shrink-0">
-                      {emp.FullName.charAt(0)}
+                      {(emp.FullName || emp.full_name || 'NV').charAt(0)}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate">
-                        {emp.FullName}
+                        {emp.FullName || emp.full_name || 'Nhân viên'}
                       </p>
                       {emp.Department && (
                         <p className="text-xs text-gray-500 dark:text-slate-500 truncate">

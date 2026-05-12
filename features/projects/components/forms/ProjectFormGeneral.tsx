@@ -24,13 +24,14 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
 
             <div>
                 <label className={labelClass}>
-                    Mã dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Tự động theo TT24/2025)</span>
+                    Mã dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Tự động theo TT24/2025 hoặc nhập tay)</span>
                 </label>
                 <input
                     type="text"
-                    readOnly
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-bg-app dark:bg-slate-900 text-gray-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed"
+                    className={`${inputClass} font-mono ${aiHighlight('ProjectID')}`}
                     value={formData.ProjectID}
+                    onChange={e => updateField('ProjectID', e.target.value)}
+                    placeholder="Nhập mã dự án..."
                 />
             </div>
 

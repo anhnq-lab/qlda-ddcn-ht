@@ -5,14 +5,15 @@ import { useTheme } from '../../../context/ThemeContext';
 
 export interface CapitalDisbursementChartProps {
     data: any[];
+    onSegmentClick?: (boardName: string) => void;
 }
 
-const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ data }) => {
+const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ data, onSegmentClick }) => {
     const { theme } = useTheme();
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between items-center mb-4">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col">
+            <div className="flex justify-between items-center mb-4 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><Wallet className="w-5 h-5" /></div>
                     Kế hoạch vốn và Thực giải ngân
@@ -26,7 +27,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                     </span>
                 </div>
             </div>
-            <div className="h-48">
+            <div className="flex-1 min-h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }} barGap={4}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#334155' : '#E5E7EB'} />
@@ -55,8 +56,28 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                             }}
                             cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }}
                         />
-                        <Bar dataKey="planned" fill={theme === 'dark' ? '#475569' : '#E5E7EB'} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                        <Bar dataKey="actual" fill="#4a90e2" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                        <Bar 
+                            dataKey="planned" 
+                            fill={theme === 'dark' ? '#475569' : '#E5E7EB'} 
+                            radius={[4, 4, 0, 0]} 
+                            maxBarSize={40} 
+                            onClick={(data) => {
+                                if (onSegmentClick && data) onSegmentClick(data.name);
+                            }}
+                            cursor={onSegmentClick ? "pointer" : "default"}
+                            className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
+                        />
+                        <Bar 
+                            dataKey="actual" 
+                            fill="#4a90e2" 
+                            radius={[4, 4, 0, 0]} 
+                            maxBarSize={40} 
+                            onClick={(data) => {
+                                if (onSegmentClick && data) onSegmentClick(data.name);
+                            }}
+                            cursor={onSegmentClick ? "pointer" : "default"}
+                            className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
+                        />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

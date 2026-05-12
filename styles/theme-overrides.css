@@ -34,10 +34,12 @@
 }
 
 /* Fix text and icons in Sidebar and Header */
+.theme-light .layout-sidebar .text-slate-800,
 .theme-light .layout-sidebar .text-slate-500,
 .theme-light .layout-sidebar .text-slate-900,
 .theme-light .layout-sidebar .text-slate-700,
 .theme-light .layout-sidebar .text-slate-400,
+.theme-light .layout-header .text-slate-800,
 .theme-light .layout-header .text-slate-500,
 .theme-light .layout-header .text-slate-900,
 .theme-light .layout-header .text-slate-700,

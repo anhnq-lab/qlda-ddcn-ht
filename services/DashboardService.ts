@@ -31,12 +31,16 @@ export interface DashboardProjectRow {
     boardLabel: string;
     status: number;
     statusLabel: string;
+    currentStatusCode?: number;
     progress: number;
     totalInvestment: number;
     paymentProgress: number;
     startDate: string | null;
     expectedEndDate: string | null;
     locationCode?: string;
+    coordinates?: { lat: number; lng: number };
+    investorName?: string;
+    mainContractorName?: string;
 }
 
 export const DashboardService = {
@@ -99,7 +103,7 @@ export const DashboardService = {
     getProjectSummary: async (): Promise<DashboardProjectRow[]> => {
         const { data: projects } = await supabase
             .from('projects')
-            .select('project_id, project_name, management_board, status, progress, total_investment, payment_progress, start_date, expected_end_date, location_code')
+            .select('project_id, project_name, management_board, status, current_status_code, progress, total_investment, payment_progress, start_date, expected_end_date, location_code, coordinates, investor_name, main_contractor_name')
             .order('management_board', { ascending: true });
 
         const statusLabels: Record<number, string> = {
@@ -117,12 +121,16 @@ export const DashboardService = {
                 boardLabel: board?.label || `Ban ${p.management_board}`,
                 status: p.status,
                 statusLabel: statusLabels[p.status] || 'Không rõ',
+                currentStatusCode: p.current_status_code,
                 progress: Number(p.progress) || 0,
                 totalInvestment: Number(p.total_investment) || 0,
                 paymentProgress: Number(p.payment_progress) || 0,
                 startDate: p.start_date,
                 expectedEndDate: p.expected_end_date,
                 locationCode: p.location_code,
+                coordinates: p.coordinates,
+                investorName: p.investor_name,
+                mainContractorName: p.main_contractor_name,
             };
         });
     },
@@ -313,4 +321,24 @@ export const DashboardService = {
             upcomingPlans,
         };
     },
+
+    /** Material Mines */
+    getMaterialMines: async (): Promise<any[]> => {
+        try {
+            const { data, error } = await supabase
+                .from('material_mines')
+                .select('*')
+                .order('name', { ascending: true });
+            
+            if (error) {
+                console.error("Error fetching material mines:", error);
+                return [];
+            }
+            return data || [];
+        } catch (e) {
+            console.error("Error in getMaterialMines:", e);
+            return [];
+        }
+    }
 };
+

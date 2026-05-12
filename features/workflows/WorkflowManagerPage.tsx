@@ -217,6 +217,15 @@ const WorkflowManagerPage: React.FC = () => {
 
     // ─── SEED: Quy trình thực hiện DAXD và Quy trình Nội bộ ───────────
     const handleSeedWorkflows = async (forceQuiet = true) => {
+        if (!forceQuiet) {
+            const confirmed = window.confirm(
+                "CẢNH BÁO: Thao tác này sẽ NẠP LẠI toàn bộ dữ liệu quy trình mẫu hệ thống.\n\n" +
+                "Mọi chỉnh sửa tùy biến (thêm/bớt bước, sửa SLA, gán người dùng) trên các quy trình mẫu này sẽ bị GHI ĐÈ và khôi phục về trạng thái gốc.\n\n" +
+                "Bạn có chắc chắn muốn tiếp tục?"
+            );
+            if (!confirmed) return;
+        }
+
         setIsSeeding(true);
         try {
             // Import dynamically or explicitly if already imported
@@ -283,9 +292,10 @@ const WorkflowManagerPage: React.FC = () => {
                 }
             }
 
+            const internalCount = getInternalWorkflowTemplates().length;
             addToast({ 
                 title: 'Khởi tạo thành công', 
-                message: `Đã nạp ${allTemplates.length} quy trình: 5 QT dự án + 9 QT nội bộ Ban DDCN.`, 
+                message: `Đã nạp ${allTemplates.length} quy trình (${internalCount} QT nội bộ gồm QT.KHTC.04 Quyết toán vốn đầu tư).`, 
                 type: 'success' 
             });
             fetchWorkflows();
