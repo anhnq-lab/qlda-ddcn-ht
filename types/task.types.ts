@@ -2,10 +2,11 @@
 
 // Status & Priority enums (matching DB enums)
 export enum TaskStatus {
-    Todo = 'todo',
-    InProgress = 'in_progress',
-    Review = 'review',
-    Done = 'done'
+    Todo = 'todo',          // Công việc mới
+    InProgress = 'in_progress', // Đang thực hiện
+    Done = 'done',          // Hoàn thành
+    Incomplete = 'incomplete',  // Chưa hoàn thành
+    Review = 'review',      // Legacy – ẩn trên UI, giữ backward-compat
 }
 
 export enum TaskPriority {

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, MessageSquare, Percent, Play, Eye, Target } from 'lucide-react';
+import { X, CheckCircle2, MessageSquare, Play, XCircle, Target } from 'lucide-react';
 import { Task, TaskStatus } from '../../../types';
 
 const getStatusConfig = (s: TaskStatus) => {
     switch (s) {
-        case TaskStatus.Done: return { label: 'Hoàn thành', bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', ring: 'ring-emerald-500/20', icon: <CheckCircle2 className="w-4 h-4" /> };
-        case TaskStatus.InProgress: return { label: 'Đang thực hiện', bg: 'bg-blue-500', text: 'text-blue-600', light: 'bg-blue-50', ring: 'ring-blue-500/20', icon: <Play className="w-4 h-4" /> };
-        case TaskStatus.Review: return { label: 'Chờ duyệt', bg: 'bg-violet-500', text: 'text-violet-600', light: 'bg-violet-50', ring: 'ring-violet-500/20', icon: <Eye className="w-4 h-4" /> };
-        default: return { label: 'Cần làm', bg: 'bg-slate-300', text: 'text-slate-500', light: 'bg-slate-50', ring: 'ring-slate-300/20', icon: <Target className="w-4 h-4" /> };
+        case TaskStatus.Done:       return { label: 'Hoàn thành',      bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', ring: 'ring-2 ring-emerald-200', icon: <CheckCircle2 className="w-4 h-4" /> };
+        case TaskStatus.InProgress: return { label: 'Đang thực hiện',  bg: 'bg-blue-500',    text: 'text-blue-600',    light: 'bg-blue-50',    ring: 'ring-2 ring-blue-200',    icon: <Play className="w-4 h-4" /> };
+        case TaskStatus.Incomplete: return { label: 'Chưa hoàn thành', bg: 'bg-rose-500',    text: 'text-rose-600',    light: 'bg-rose-50',    ring: 'ring-2 ring-rose-200',    icon: <XCircle className="w-4 h-4" /> };
+        default:                    return { label: 'Công việc mới',   bg: 'bg-slate-300',   text: 'text-slate-500',   light: 'bg-slate-50',   ring: 'ring-2 ring-slate-200',   icon: <Target className="w-4 h-4" /> };
     }
 };
 

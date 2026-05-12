@@ -423,7 +423,7 @@ export const TaskService = {
         content,
         attachments
       })
-      .select('*, user:auth.users!user_id(id, email, raw_user_meta_data)')
+      .select()
       .single();
     if (error) throw error;
     return data;

@@ -13,6 +13,7 @@ import {
 } from '../../types/plan.types';
 import MonthlyPlanItemModal from './MonthlyPlanItemModal';
 import MonthlyPlanItemDetail from './MonthlyPlanItemDetail';
+import { useSlidePanel } from "../../context/SlidePanelContext";
 
 const CURRENT_DATE = new Date();
 const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
@@ -40,7 +41,7 @@ const MonthlyPlanPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<MonthlyPlanItem | null>(null);
-    const [detailItem, setDetailItem] = useState<MonthlyPlanItem | null>(null);
+    const { openPanel, closePanel } = useSlidePanel();
     const [exporting, setExporting] = useState(false);
     const [seedLoading, setSeedLoading] = useState(false);
     const [seedResult, setSeedResult] = useState<{ count: number; show: boolean } | null>(null);
@@ -370,7 +371,28 @@ const MonthlyPlanPage: React.FC = () => {
                                                 item={item}
                                                 viewMode={viewMode}
                                                 onStatusChange={handleStatusChange}
-                                                onRowClick={() => setDetailItem(item)}
+                                                onRowClick={() => {
+                                                    openPanel(
+                                                        <MonthlyPlanItemDetail
+                                                            item={item}
+                                                            month={month}
+                                                            year={year}
+                                                            onEdit={() => {
+                                                                setEditingItem(item);
+                                                                setModalOpen(true);
+                                                                closePanel();
+                                                            }}
+                                                            onDelete={() => {
+                                                                handleDelete(item.id);
+                                                                closePanel();
+                                                            }}
+                                                            onClose={closePanel}
+                                                            onAddTask={() => {
+                                                                // Will implement later if needed
+                                                            }}
+                                                        />
+                                                    );
+                                                }}
                                                 onEdit={() => { setEditingItem(item); setModalOpen(true); }}
                                                 onDelete={() => handleDelete(item.id)}
                                             />
@@ -393,29 +415,6 @@ const MonthlyPlanPage: React.FC = () => {
                     item={editingItem}
                     onSaved={() => { setModalOpen(false); setEditingItem(null); loadPlan(); }}
                     onClose={() => { setModalOpen(false); setEditingItem(null); }}
-                />
-            )}
-
-            {/* ── Detail panel ── */}
-            {detailItem && (
-                <MonthlyPlanItemDetail
-                    item={detailItem}
-                    month={month}
-                    year={year}
-                    onEdit={() => {
-                        setEditingItem(detailItem);
-                        setDetailItem(null);
-                        setModalOpen(true);
-                    }}
-                    onDelete={() => {
-                        handleDelete(detailItem.id);
-                        setDetailItem(null);
-                    }}
-                    onClose={() => setDetailItem(null)}
-                    onAddTask={(monthlyPlanItemId) => {
-                        // TODO: mở TaskCreateEditModal với pre-fill monthlyPlanItemId
-                        setDetailItem(null);
-                    }}
                 />
             )}
         </div>

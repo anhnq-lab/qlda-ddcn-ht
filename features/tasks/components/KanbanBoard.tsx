@@ -3,7 +3,7 @@ import { Task, TaskStatus } from '../../../types';
 import { DndContext, DragOverlay, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { CheckCircle2, Play, Eye, Target, CalendarDays, User, FolderOpen } from 'lucide-react';
+import { CheckCircle2, Play, XCircle, Target, CalendarDays, User, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface KanbanBoardProps {
@@ -15,11 +15,12 @@ interface KanbanBoardProps {
 }
 
 const STATUS_COLUMNS = [
-    { id: TaskStatus.Todo, title: 'Cần làm', bg: 'bg-slate-100 dark:bg-slate-800/50', border: 'border-slate-200 dark:border-slate-700' },
-    { id: TaskStatus.InProgress, title: 'Đang thực hiện', bg: 'bg-blue-50 dark:bg-blue-900/10', border: 'border-blue-200 dark:border-blue-800/50' },
-    { id: TaskStatus.Review, title: 'Chờ duyệt', bg: 'bg-violet-50 dark:bg-violet-900/10', border: 'border-violet-200 dark:border-violet-800/50' },
-    { id: TaskStatus.Done, title: 'Hoàn thành', bg: 'bg-emerald-50 dark:bg-emerald-900/10', border: 'border-emerald-200 dark:border-emerald-800/50' }
+    { id: TaskStatus.Todo,       title: 'Công việc mới',     bg: 'bg-slate-100 dark:bg-slate-800/50',       border: 'border-slate-200 dark:border-slate-700',       icon: <Target className="w-4 h-4 text-slate-500" /> },
+    { id: TaskStatus.InProgress, title: 'Đang thực hiện',    bg: 'bg-blue-50 dark:bg-blue-900/10',           border: 'border-blue-200 dark:border-blue-800/50',      icon: <Play className="w-4 h-4 text-blue-500" /> },
+    { id: TaskStatus.Done,       title: 'Hoàn thành',        bg: 'bg-emerald-50 dark:bg-emerald-900/10',     border: 'border-emerald-200 dark:border-emerald-800/50',icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" /> },
+    { id: TaskStatus.Incomplete, title: 'Chưa hoàn thành',   bg: 'bg-rose-50 dark:bg-rose-900/10',           border: 'border-rose-200 dark:border-rose-800/50',      icon: <XCircle className="w-4 h-4 text-rose-500" /> },
 ];
+
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onTaskStatusChange, onTaskClick, getAssignee, getProjectName }) => {
     const [activeId, setActiveId] = React.useState<string | null>(null);
@@ -34,17 +35,17 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onTaskStatusCha
     );
 
     const tasksByStatus = useMemo(() => {
-        const grouped: Record<TaskStatus, Task[]> = {
+        const grouped: Record<string, Task[]> = {
             [TaskStatus.Todo]: [],
             [TaskStatus.InProgress]: [],
-            [TaskStatus.Review]: [],
-            [TaskStatus.Done]: []
+            [TaskStatus.Done]: [],
+            [TaskStatus.Incomplete]: [],
         };
         tasks.forEach(t => {
-            if (grouped[t.Status]) {
+            if (t.Status in grouped) {
                 grouped[t.Status].push(t);
             } else {
-                grouped[TaskStatus.Todo].push(t); // fallback
+                grouped[TaskStatus.Todo].push(t); // fallback (bao gồm legacy review)
             }
         });
         return grouped;
@@ -131,12 +132,14 @@ interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = ({ id, title, bg, border, tasks, onTaskClick, getAssignee, getProjectName }) => {
     const { setNodeRef } = useDroppable({ id });
+    const colConfig = STATUS_COLUMNS.find(c => c.id === id);
 
     return (
         <div className={`flex flex-col w-[320px] shrink-0 rounded-2xl border ${border} ${bg} overflow-hidden shadow-sm`}>
             {/* Column Header */}
             <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm shrink-0">
                 <h3 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                    {colConfig?.icon}
                     {title}
                     <span className="text-xs font-bold text-slate-500 bg-slate-200/50 dark:bg-slate-700 px-2 py-0.5 rounded-full">
                         {tasks.length}

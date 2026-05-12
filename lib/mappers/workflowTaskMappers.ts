@@ -14,13 +14,19 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         case 'in_progress':
             status = TaskStatus.InProgress;
             break;
+        case 'done':
         case 'completed':
         case 'skipped':
             status = TaskStatus.Done;
             break;
+        case 'review':
         case 'rejected':
             status = TaskStatus.Review;
             break;
+        case 'incomplete':
+            status = TaskStatus.Incomplete;
+            break;
+        case 'todo':
         case 'pending':
         default:
             status = TaskStatus.Todo;
@@ -34,14 +40,14 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
 
     return {
         TaskID: wt.id,
-        Title: wt.name || wt.title || 'Không có tiêu đề',
+        Title: wt.title || wt.name || 'Không có tiêu đề',
         TaskType: wt.task_type || metadata.task_type || 'project',
         Description: wt.description || wt.comments || metadata.description || '',
         ProjectID: projectId || wt.project_id || (wt as any).instance?.reference_id || '',
         ProjectName: wt.projects?.project_name || '',
         AssigneeID: wt.assignee_id || metadata.assignee_role || '',
         DueDate: wt.due_date || '',
-        StartDate: wt.start_date || wt.started_at || '',
+        StartDate: wt.start_date || '',
         Status: status,
         Priority: wt.priority || metadata.priority || TaskPriority.Medium,
         ProgressPercent: wt.progress || 0,
@@ -55,8 +61,8 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         ActualCost: Number(metadata.actual_cost) || 0,
         
         // Actual dates
-        ActualStartDate: metadata.actualStartDate || wt.started_at || '',
-        ActualEndDate: metadata.actualEndDate || wt.completed_at || '',
+        ActualStartDate: metadata.actualStartDate || wt.actual_start_date || '',
+        ActualEndDate: metadata.actualEndDate || wt.actual_end_date || '',
         
         // Workflow/Step reference
         TimelineStep: wt.step_code || metadata.step_code || wt.workflow_node_id || wt.node_id || '',
@@ -71,17 +77,18 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
  * Maps UI Task back to DbTask for saving.
  */
 export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<DbTask> => {
-    let dbStatus = 'pending';
+    let dbStatus = 'todo';
     switch (task.Status) {
-        case TaskStatus.Todo: dbStatus = 'pending'; break;
+        case TaskStatus.Todo: dbStatus = 'todo'; break;
         case TaskStatus.InProgress: dbStatus = 'in_progress'; break;
-        case TaskStatus.Review: dbStatus = 'in_progress'; break;
-        case TaskStatus.Done: dbStatus = 'completed'; break;
+        case TaskStatus.Review: dbStatus = 'review'; break;
+        case TaskStatus.Done: dbStatus = 'done'; break;
+        case TaskStatus.Incomplete: dbStatus = 'incomplete'; break;
     }
 
     return {
         id: task.TaskID && !task.TaskID.startsWith('NEW_') ? task.TaskID : undefined,
-        name: task.Title || '',
+        title: task.Title || '',
         description: task.Description,
         project_id: projectId || task.ProjectID,
         status: dbStatus as any,
@@ -89,8 +96,8 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         priority: task.Priority as any,
         start_date: task.StartDate || null,
         due_date: task.DueDate || null,
-        started_at: task.ActualStartDate || null,
-        completed_at: task.ActualEndDate || null,
+        actual_start_date: task.ActualStartDate || null,
+        actual_end_date: task.ActualEndDate || null,
         assignee_id: task.AssigneeID && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(task.AssigneeID)
             ? task.AssigneeID : null,
         workflow_node_id: task.TimelineStep || task.StepCode || null,

@@ -127,10 +127,10 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                             className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all"
                         >
                             <option value="All">Tất cả trạng thái</option>
-                            <option value={TaskStatus.Todo}>Cần làm</option>
+                            <option value={TaskStatus.Todo}>Công việc mới</option>
                             <option value={TaskStatus.InProgress}>Đang thực hiện</option>
-                            <option value={TaskStatus.Review}>Chờ duyệt</option>
                             <option value={TaskStatus.Done}>Hoàn thành</option>
+                            <option value={TaskStatus.Incomplete}>Chưa hoàn thành</option>
                         </select>
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                     </div>

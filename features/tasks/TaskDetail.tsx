@@ -14,24 +14,26 @@ import { TaskInfoPanel } from './components/TaskInfoPanel';
 import { TaskSubtaskList } from './components/TaskSubtaskList';
 import { TaskAttachments } from './components/TaskAttachments';
 import { TaskProgressUpdateModal } from './components/TaskProgressUpdateModal';
+import { TaskCollaboration } from './components/TaskCollaboration';
 import {
     ArrowLeft, Calendar, FileText, CheckCircle2, Scale, Building2, User, Clock,
     ShieldCheck, DollarSign, Paperclip, Plus, Trash2, ChevronRight, ExternalLink,
     Play, Eye, BarChart3, Link2, AlertTriangle, Edit3, Target, Zap, Layers,
-    Upload, Download, FileSpreadsheet, File, CalendarDays
+    Upload, Download, FileSpreadsheet, File, CalendarDays, MessageSquare
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════
-const STATUS_ORDER = [TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Review, TaskStatus.Done];
+// Thứ tự luân chuyển chính (Todo → InProgress → Done)
+const STATUS_ORDER = [TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Done];
 
 const getStatusConfig = (s: TaskStatus) => {
     switch (s) {
-        case TaskStatus.Done: return { label: 'Hoàn thành', bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', ring: 'ring-emerald-500/20', icon: <CheckCircle2 className="w-4 h-4" /> };
-        case TaskStatus.InProgress: return { label: 'Đang thực hiện', bg: 'bg-blue-500', text: 'text-blue-600', light: 'bg-blue-50', ring: 'ring-blue-500/20', icon: <Play className="w-4 h-4" /> };
-        case TaskStatus.Review: return { label: 'Chờ duyệt', bg: 'bg-violet-500', text: 'text-violet-600', light: 'bg-violet-50', ring: 'ring-violet-500/20', icon: <Eye className="w-4 h-4" /> };
-        default: return { label: 'Cần làm', bg: 'bg-slate-300', text: 'text-slate-500', light: 'bg-slate-50', ring: 'ring-slate-300/20', icon: <Target className="w-4 h-4" /> };
+        case TaskStatus.Done:       return { label: 'Hoàn thành',     bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50', ring: 'ring-emerald-500/20', icon: <CheckCircle2 className="w-4 h-4" /> };
+        case TaskStatus.InProgress: return { label: 'Đang thực hiện', bg: 'bg-blue-500',    text: 'text-blue-600',    light: 'bg-blue-50',    ring: 'ring-blue-500/20',    icon: <Play className="w-4 h-4" /> };
+        case TaskStatus.Incomplete: return { label: 'Chưa hoàn thành', bg: 'bg-rose-500',    text: 'text-rose-600',    light: 'bg-rose-50',    ring: 'ring-rose-500/20',    icon: <Eye className="w-4 h-4" /> };
+        default:                    return { label: 'Công việc mới',   bg: 'bg-slate-300',   text: 'text-slate-500',   light: 'bg-slate-50',   ring: 'ring-slate-300/20',   icon: <Target className="w-4 h-4" /> };
     }
 };
 
@@ -54,6 +56,8 @@ const getProgressGradient = (p: number) => {
 
 const getNextStatus = (c: TaskStatus): TaskStatus | null => { const i = STATUS_ORDER.indexOf(c); return i < STATUS_ORDER.length - 1 ? STATUS_ORDER[i + 1] : null; };
 const getPrevStatus = (c: TaskStatus): TaskStatus | null => { const i = STATUS_ORDER.indexOf(c); return i > 0 ? STATUS_ORDER[i - 1] : null; };
+
+const getIncompleteConfig = () => ({ label: 'Chưa hoàn thành', bg: 'bg-rose-500', text: 'text-rose-600', light: 'bg-rose-50', ring: 'ring-rose-500/20' });
 
 // ═══════════════════════════════════════════════════
 // Component
@@ -237,7 +241,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                             </div>
 
                             {/* Right: Actions */}
-                            <div className="flex gap-2 shrink-0 items-start">
+                            <div className="flex gap-2 shrink-0 items-start flex-wrap">
                                 {prevStatus && (
                                     <button
                                         onClick={() => handleStatusChange(prevStatus)}
@@ -246,16 +250,30 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                         ← {getStatusConfig(prevStatus).label}
                                     </button>
                                 )}
+
+                                {/* Nút Hoàn thành / Tiếp theo */}
                                 {nextStatus && (
                                     <button
                                         onClick={() => handleStatusChange(nextStatus)}
-                                        className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all shadow-sm active:scale-[0.98] flex items-center gap-2 ${nextStatus === TaskStatus.Done ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-600/25'
-                                            : nextStatus === TaskStatus.Review ? 'bg-gradient-to-r from-violet-500 to-violet-600 shadow-violet-600/25'
+                                        className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all shadow-sm active:scale-[0.98] flex items-center gap-2 ${
+                                            nextStatus === TaskStatus.Done
+                                                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-600/25'
                                                 : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-blue-600/25'
-                                            }`}
+                                        }`}
                                     >
                                         {getStatusConfig(nextStatus).icon}
                                         {getStatusConfig(nextStatus).label} →
+                                    </button>
+                                )}
+
+                                {/* Nút Chưa hoàn thành — hiển thị khi đang thực hiện */}
+                                {task.Status === TaskStatus.InProgress && (
+                                    <button
+                                        onClick={() => handleStatusChange(TaskStatus.Incomplete)}
+                                        className="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-600/25 transition-all active:scale-[0.98] flex items-center gap-2"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                        Chưa hoàn thành
                                     </button>
                                 )}
                             </div>
@@ -377,6 +395,18 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Thảo luận (Chuyển từ Tab sang) */}
+                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[500px]">
+                            <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 shrink-0">
+                                <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <MessageSquare className="w-4 h-4" /> Thảo luận & Trao đổi
+                                </h3>
+                            </div>
+                            <div className="flex-1 relative overflow-hidden">
+                                <TaskCollaboration taskId={task.TaskID} type="comments" />
                             </div>
                         </div>
                     </div>

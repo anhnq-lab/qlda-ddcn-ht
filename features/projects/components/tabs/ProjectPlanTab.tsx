@@ -359,17 +359,18 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
     const handleQuickStatusChange = (e: React.MouseEvent, task: Task) => {
         e.stopPropagation();
-        const statusCycle: Record<TaskStatus, TaskStatus> = {
+        // Chu kỳ nhanh cho dự án: Todo → InProgress → Done → Todo (không dùng Incomplete ở project plan)
+        const statusCycle: Partial<Record<TaskStatus, TaskStatus>> = {
             [TaskStatus.Todo]: TaskStatus.InProgress,
-            [TaskStatus.InProgress]: TaskStatus.Review,
-            [TaskStatus.Review]: TaskStatus.Done,
-            [TaskStatus.Done]: TaskStatus.Todo
+            [TaskStatus.InProgress]: TaskStatus.Done,
+            [TaskStatus.Done]: TaskStatus.Todo,
+            [TaskStatus.Incomplete]: TaskStatus.Todo,
+            [TaskStatus.Review]: TaskStatus.Done, // Legacy
         };
         const newStatus = statusCycle[task.Status] || TaskStatus.InProgress;
         // Auto-sync progress with status
         let newProgress = task.ProgressPercent || 0;
         if (newStatus === TaskStatus.Done) newProgress = 100;
-        else if (newStatus === TaskStatus.Review && newProgress < 100) newProgress = 100;
         else if (newStatus === TaskStatus.InProgress && newProgress === 0) newProgress = 25;
         else if (newStatus === TaskStatus.Todo) newProgress = 0;
 
@@ -467,10 +468,11 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         // ── Map back to DbTask schema ──
         let mappedDbStatus = 'todo';
         switch (taskData.Status) {
-            case TaskStatus.Todo: mappedDbStatus = 'todo'; break;
+            case TaskStatus.Todo:       mappedDbStatus = 'todo'; break;
             case TaskStatus.InProgress: mappedDbStatus = 'in_progress'; break;
-            case TaskStatus.Review: mappedDbStatus = 'review'; break; 
-            case TaskStatus.Done: mappedDbStatus = 'done'; break;
+            case TaskStatus.Review:     mappedDbStatus = 'review'; break; // Legacy
+            case TaskStatus.Done:       mappedDbStatus = 'done'; break;
+            case TaskStatus.Incomplete: mappedDbStatus = 'incomplete'; break;
             default: mappedDbStatus = 'todo';
         }
 

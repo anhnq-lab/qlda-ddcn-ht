@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Layers,
   CalendarRange,
+  Calendar,
   GitBranch,
   Network,
   LayoutList,
@@ -53,6 +54,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: 'Tổng quan', path: '/', icon: LayoutDashboard, resource: 'dashboard' },
   { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
+  { name: 'Lịch cơ quan', path: '/calendar', icon: Calendar, resource: 'calendar' },
   { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
   { name: 'Quản lý công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
   { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
@@ -236,3 +238,5 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+
+// triggered hot reload

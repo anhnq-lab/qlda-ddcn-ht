@@ -8,3 +8,4 @@ export * from './capital.types';
 export * from './document.types';
 export * from './dashboard';
 export * from './database';
+export * from './calendar.types';

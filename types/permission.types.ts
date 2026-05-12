@@ -30,7 +30,8 @@ export type PermissionResource =
     | 'workflows'
     | 'admin_accounts'
     | 'admin_roles'
-    | 'admin_audit';
+    | 'admin_audit'
+    | 'calendar';
 
 export type SystemRole =
     | 'super_admin'
@@ -76,6 +77,7 @@ export const RESOURCE_LABELS: Record<PermissionResource, string> = {
     admin_accounts: 'Tài khoản',
     admin_roles: 'Phân quyền',
     admin_audit: 'Nhật ký HT',
+    calendar: 'Lịch cơ quan',
 };
 
 export const ACTION_LABELS: Record<PermissionAction, string> = {
@@ -123,7 +125,7 @@ export const ALL_RESOURCES: PermissionResource[] = [
     'bidding', 'contracts', 'payments', 'capital',
     'documents', 'cde', 'bim',
     'legal_docs', 'reports', 'regulations', 'workflows',
-    'admin_accounts', 'admin_roles', 'admin_audit',
+    'admin_accounts', 'admin_roles', 'admin_audit', 'calendar'
 ];
 
 // ═══════════════════════════════════════════
@@ -221,6 +223,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         admin_accounts: ['view', 'create', 'update', 'delete'],
         admin_roles: ['view', 'create', 'update', 'delete'],
         admin_audit: ['view'],
+        calendar: ['view', 'create', 'update', 'delete'],
     },
 
     // ── Giám đốc Ban ──
@@ -243,6 +246,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         workflows: ['view'],
         admin_accounts: ['view'],
         admin_audit: ['view'],
+        calendar: ['view', 'create', 'update', 'delete'],
     },
 
     // ── Phó Giám đốc ──
@@ -303,6 +307,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view', 'create', 'update'],
+        calendar: ['view', 'create'],
     },
 
     // ── Phó phòng ──

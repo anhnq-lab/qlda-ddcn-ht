@@ -56,6 +56,7 @@ const EmployeeList = lazyWithRetry(() => import('./features/employees/EmployeeLi
 const EmployeeDetail = lazyWithRetry(() => import('./features/employees/EmployeeDetail'));
 const TaskList = lazyWithRetry(() => import('./features/tasks/TaskList'));
 const TaskDetail = lazyWithRetry(() => import('./features/tasks/TaskDetail'));
+const CalendarView = lazyWithRetry(() => import('./features/calendar/CalendarView'));
 // PaymentList now loaded inside BiddingContractPage
 // DocumentManager removed — integrated into CDE as 'Kho lưu trữ' tab
 const CDEPage = lazyWithRetry(() => import('./features/cde/CDEPage'));
@@ -149,6 +150,13 @@ const App: React.FC = () => {
                                         <Route path="tasks/:id" element={
                                             <ProtectedRoute resource="tasks">
                                                 <React.Suspense fallback={<PageLoadingFallback />}><TaskDetail /></React.Suspense>
+                                            </ProtectedRoute>
+                                        } />
+                                        
+                                        {/* Calendar Route */}
+                                        <Route path="calendar" element={
+                                            <ProtectedRoute resource="calendar">
+                                                <React.Suspense fallback={<PageLoadingFallback />}><CalendarView /></React.Suspense>
                                             </ProtectedRoute>
                                         } />
 

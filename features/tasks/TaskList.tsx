@@ -32,7 +32,7 @@ const PRIORITY_ORDER: Record<string, number> = {
 };
 
 const STATUS_ORDER: Record<string, number> = {
-    [TaskStatus.InProgress]: 0, [TaskStatus.Review]: 1, [TaskStatus.Todo]: 2, [TaskStatus.Done]: 3,
+    [TaskStatus.InProgress]: 0, [TaskStatus.Todo]: 1, [TaskStatus.Incomplete]: 2, [TaskStatus.Done]: 3,
 };
 
 const PAGE_SIZES = [25, 50, 100] as const;
@@ -176,8 +176,12 @@ const TaskList: React.FC = () => {
             total: filteredTasks.length,
             inProgress: filteredTasks.filter(t => t.Status === TaskStatus.InProgress).length,
             done: filteredTasks.filter(t => t.Status === TaskStatus.Done).length,
-            overdue: filteredTasks.filter(t => t.Status !== TaskStatus.Done && t.DueDate && new Date(t.DueDate) < now).length,
-            review: filteredTasks.filter(t => t.Status === TaskStatus.Review).length,
+            incomplete: filteredTasks.filter(t => t.Status === TaskStatus.Incomplete).length,
+            overdue: filteredTasks.filter(t =>
+                t.Status !== TaskStatus.Done &&
+                t.Status !== TaskStatus.Incomplete &&
+                t.DueDate && new Date(t.DueDate) < now
+            ).length,
             completion: filteredTasks.length > 0
                 ? Math.round((filteredTasks.filter(t => t.Status === TaskStatus.Done).length / filteredTasks.length) * 100)
                 : 0,

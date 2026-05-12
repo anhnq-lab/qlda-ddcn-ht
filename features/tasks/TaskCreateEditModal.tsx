@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus, TaskPriority, Employee } from '../../types';
-import { getTimelineStepOptions } from '../../utils/timelineStepUtils';
 import { useMonthlyPlanItemOptions } from '../../hooks/usePlanData';
 import {
-    X, BarChart3, Layers, CheckCircle2, Clock, AlertCircle,
+    X, CheckCircle2, Clock, AlertCircle, XCircle,
 } from 'lucide-react';
 
 // ── Helpers ──
 export const getStatusInfo = (s: TaskStatus) => {
     switch (s) {
-        case TaskStatus.Done: return { label: 'Hoàn thành', color: 'text-emerald-600', bg: 'bg-emerald-500', ring: 'ring-emerald-500/30', icon: <CheckCircle2 className="w-4 h-4" /> };
-        case TaskStatus.Review: return { label: 'Chờ duyệt', color: 'text-violet-600', bg: 'bg-violet-500', ring: 'ring-violet-500/30', icon: <AlertCircle className="w-4 h-4" /> };
-        case TaskStatus.InProgress: return { label: 'Đang thực hiện', color: 'text-blue-600', bg: 'bg-blue-500', ring: 'ring-blue-500/30', icon: <Clock className="w-4 h-4" /> };
-        default: return { label: 'Cần làm', color: 'text-slate-500', bg: 'bg-slate-300', ring: 'ring-slate-300/30', icon: <div className="w-4 h-4 rounded-full border-2 border-slate-300" /> };
+        case TaskStatus.Done:
+            return { label: 'Hoàn thành', color: 'text-emerald-600', bg: 'bg-emerald-500', ring: 'ring-emerald-500/30', icon: <CheckCircle2 className="w-4 h-4" /> };
+        case TaskStatus.InProgress:
+            return { label: 'Đang thực hiện', color: 'text-orange-600', bg: 'bg-orange-500', ring: 'ring-orange-500/30', icon: <Clock className="w-4 h-4" /> };
+        case TaskStatus.Incomplete:
+            return { label: 'Chưa hoàn thành', color: 'text-rose-600', bg: 'bg-rose-500', ring: 'ring-rose-500/30', icon: <XCircle className="w-4 h-4" /> };
+        case TaskStatus.Review: // Legacy
+            return { label: 'Chờ duyệt (cũ)', color: 'text-violet-600', bg: 'bg-violet-500', ring: 'ring-violet-500/30', icon: <AlertCircle className="w-4 h-4" /> };
+        default: // todo → Công việc mới
+            return { label: 'Công việc mới', color: 'text-blue-600', bg: 'bg-blue-500', ring: 'ring-blue-500/30', icon: <div className="w-4 h-4 rounded-full border-2 border-blue-500" /> };
     }
 };
 
@@ -25,6 +30,14 @@ export const getPriorityInfo = (p: TaskPriority) => {
         default: return { label: p, color: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' };
     }
 };
+
+/** Danh sách trạng thái hiển thị trên UI (bỏ review legacy) */
+export const VISIBLE_STATUSES: TaskStatus[] = [
+    TaskStatus.Todo,
+    TaskStatus.InProgress,
+    TaskStatus.Done,
+    TaskStatus.Incomplete,
+];
 
 interface Project {
     ProjectID: string;
@@ -53,7 +66,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
     presetMonthlyPlanItemId,
 }) => {
     const [formData, setFormData] = useState<Partial<Task>>(initialData);
-    
+
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
     const { options: planItemOptions } = useMonthlyPlanItemOptions(currentMonth, currentYear);
@@ -61,6 +74,8 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             setFormData({
+                Status: TaskStatus.Todo,
+                Priority: TaskPriority.Medium,
                 ...initialData,
                 ...(presetMonthlyPlanItemId && !initialData.MonthlyPlanItemID
                     ? { MonthlyPlanItemID: presetMonthlyPlanItemId }
@@ -76,14 +91,22 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
         onSubmit(formData);
     };
 
+    const needsResultNote =
+        formData.Status === TaskStatus.Done || formData.Status === TaskStatus.Incomplete;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
-                {/* Modal Header */}
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
+
+                {/* ── Modal Header ── */}
                 <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 sticky top-0 z-10">
                     <div>
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{isEditMode ? 'Cập nhật công việc' : 'Tạo công việc mới'}</h3>
-                        <p className="text-xs text-slate-400 mt-0.5">{isEditMode ? 'Chỉnh sửa thông tin' : 'Điền thông tin để tạo công việc'}</p>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                            {isEditMode ? 'Cập nhật công việc' : 'Tạo công việc mới'}
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                            {isEditMode ? 'Chỉnh sửa thông tin' : 'Điền đủ thông tin để thuận tiện đánh giá KPI tháng'}
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -93,122 +116,111 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     </button>
                 </div>
 
-                <form onSubmit={handleSave} className="p-4 space-y-5">
-                    {/* Title */}
+                <form onSubmit={handleSave} className="p-5 space-y-4">
+
+                    {/* Tên công việc */}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Tên công việc *</label>
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            Tên công việc <span className="text-red-500">*</span>
+                        </label>
                         <input
                             required
                             value={formData.Title || ''}
                             onChange={e => setFormData({ ...formData, Title: e.target.value })}
                             type="text"
                             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm dark:text-slate-200 font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
-                            placeholder="Nhập tên đầu việc..."
+                            placeholder="Nhập tên công việc..."
                         />
                     </div>
 
-                    {/* Description */}
+                    {/* Mô tả / Nội dung */}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Mô tả</label>
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            Nội dung / Kết quả yêu cầu <span className="text-red-500">*</span>
+                        </label>
                         <textarea
+                            required
                             rows={3}
                             value={formData.Description || ''}
                             onChange={e => setFormData({ ...formData, Description: e.target.value })}
                             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all resize-none"
-                            placeholder="Mô tả nội dung công việc..."
+                            placeholder="Mô tả nội dung, kết quả cần đạt được, tiêu chí đánh giá..."
                         />
                     </div>
 
-                    {/* Project + Assignee + Monthly Plan */}
+                    {/* Người thực hiện + Người giao */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Dự án liên kết</label>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Người thực hiện <span className="text-red-500">*</span>
+                            </label>
                             <select
-                                value={formData.ProjectID || ''}
-                                onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-                            >
-                                <option value="">-- Thuộc dự án (Tùy chọn) --</option>
-                                {projects.map(p => (
-                                    <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName.substring(0, 28)}...</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Kế hoạch tháng</label>
-                            <select
-                                value={formData.MonthlyPlanItemID || ''}
-                                onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-                            >
-                                <option value="">-- Thuộc KH Tháng (Tùy chọn) --</option>
-                                {planItemOptions.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Phụ trách</label>
-                            <select
+                                required
                                 value={formData.AssigneeID || ''}
                                 onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             >
-                                <option value="">-- Chọn người phụ trách --</option>
+                                <option value="">-- Chọn người thực hiện --</option>
                                 {employees.map(emp => (
                                     <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName}</option>
                                 ))}
                             </select>
                         </div>
-                        <div className="flex flex-col justify-end">
-                             {/* Placeholder for future if needed, to maintain grid layout or span */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Người phê duyệt
+                            </label>
+                            <select
+                                value={formData.ApproverID || ''}
+                                onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="">-- Chọn người duyệt --</option>
+                                {employees.map(emp => (
+                                    <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
-                    {/* TimelineStep */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider flex items-center gap-1">
-                            <Layers className="w-3 h-3" /> Bước thực hiện
-                        </label>
-                        <select
-                            value={formData.TimelineStep || ''}
-                            onChange={e => setFormData({ ...formData, TimelineStep: e.target.value || undefined })}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-                        >
-                            <option value="">-- Không chọn --</option>
-                            {(() => {
-                                const options = getTimelineStepOptions();
-                                const groups = Array.from(new Set(options.map(o => o.group)));
-                                return groups.map(group => (
-                                    <optgroup key={group} label={group}>
-                                        {options.filter(o => o.group === group).map(o => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
-                                        ))}
-                                    </optgroup>
-                                ));
-                            })()}
-                        </select>
-                    </div>
-
-                    {/* Date + Status + Priority */}
-                    <div className="grid grid-cols-3 gap-4">
+                    {/* Ngày bắt đầu + Hạn chót */}
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Hạn chót</label>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Ngày bắt đầu <span className="text-red-500">*</span>
+                            </label>
                             <input
+                                required
+                                type="date"
+                                value={formData.StartDate || ''}
+                                onChange={e => setFormData({ ...formData, StartDate: e.target.value })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Hạn chót <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                required
                                 type="date"
                                 value={formData.DueDate || ''}
                                 onChange={e => setFormData({ ...formData, DueDate: e.target.value })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             />
                         </div>
+                    </div>
+
+                    {/* Trạng thái + Ưu tiên */}
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Trạng thái</label>
                             <select
-                                value={formData.Status}
+                                value={formData.Status || TaskStatus.Todo}
                                 onChange={e => setFormData({ ...formData, Status: e.target.value as TaskStatus })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             >
-                                {Object.values(TaskStatus).map(s => (
+                                {VISIBLE_STATUSES.map(s => (
                                     <option key={s} value={s}>{getStatusInfo(s).label}</option>
                                 ))}
                             </select>
@@ -216,38 +228,70 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         <div>
                             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Ưu tiên</label>
                             <select
-                                value={formData.Priority}
+                                value={formData.Priority || TaskPriority.Medium}
                                 onChange={e => setFormData({ ...formData, Priority: e.target.value as TaskPriority })}
                                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                             >
-                                {Object.values(TaskPriority).map(s => (
-                                    <option key={s} value={s}>{getPriorityInfo(s).label}</option>
+                                {Object.values(TaskPriority).map(p => (
+                                    <option key={p} value={p}>{getPriorityInfo(p).label}</option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
-                    {/* Progress */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                                <BarChart3 className="w-3 h-3" /> Tiến độ
+                    {/* Ghi chú kết quả — bắt buộc khi Hoàn thành / Chưa hoàn thành */}
+                    {needsResultNote && (
+                        <div className={`p-4 rounded-xl border ${formData.Status === TaskStatus.Done
+                            ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800'
+                            : 'bg-rose-50 border-rose-200 dark:bg-rose-900/20 dark:border-rose-800'}`}>
+                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                                Ghi chú kết quả <span className="text-red-500">*</span>
                             </label>
-                            <span className="text-sm font-black text-blue-600 dark:text-blue-400">{formData.ProgressPercent || 0}%</span>
-                        </div>
-                        <div className="relative">
-                            <input
-                                type="range"
-                                min={0}
-                                max={100}
-                                step={5}
-                                value={formData.ProgressPercent || 0}
-                                onChange={e => setFormData({ ...formData, ProgressPercent: parseInt(e.target.value) })}
-                                className="w-full h-2 bg-slate-200 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            <textarea
+                                required
+                                rows={2}
+                                value={formData.Metadata?.resultNote || ''}
+                                onChange={e => setFormData({
+                                    ...formData,
+                                    Metadata: { ...formData.Metadata, resultNote: e.target.value }
+                                })}
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                                placeholder={formData.Status === TaskStatus.Done
+                                    ? 'Mô tả kết quả đã đạt được...'
+                                    : 'Lý do chưa hoàn thành, vướng mắc...'}
                             />
-                            <div className="flex justify-between text-[9px] text-slate-300 dark:text-slate-400 mt-1 px-0.5">
-                                <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
-                            </div>
+                        </div>
+                    )}
+
+                    {/* Dự án + Kế hoạch tháng */}
+                    <div className="grid grid-cols-2 gap-4 pt-1 border-t border-slate-100 dark:border-slate-700">
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider mt-3">Dự án liên kết</label>
+                            <select
+                                value={formData.ProjectID || ''}
+                                onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="">-- Nội bộ (không thuộc dự án) --</option>
+                                {projects.map(p => (
+                                    <option key={p.ProjectID} value={p.ProjectID}>
+                                        {p.ProjectName.length > 28 ? p.ProjectName.substring(0, 28) + '...' : p.ProjectName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider mt-3">Kế hoạch tháng</label>
+                            <select
+                                value={formData.MonthlyPlanItemID || ''}
+                                onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="">-- Liên kết KH tháng (tùy chọn) --</option>
+                                {planItemOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

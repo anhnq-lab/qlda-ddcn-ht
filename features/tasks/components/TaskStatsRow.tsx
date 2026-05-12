@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatCard } from '../../../components/ui';
 import { SkeletonStatCard } from '../../../components/ui/Skeleton';
-import { Target, TrendingUp, AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Target, TrendingUp, AlertCircle, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { TaskStatus } from '../../../types';
 
 interface TaskStatsRowProps {
@@ -9,8 +9,8 @@ interface TaskStatsRowProps {
         total: number;
         inProgress: number;
         done: number;
+        incomplete: number;
         overdue: number;
-        review: number;
         completion: number;
     };
     isLoading: boolean;
@@ -71,15 +71,6 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
                 onClick={() => setFilterStatus(filterStatus === TaskStatus.InProgress ? 'All' : TaskStatus.InProgress)}
             />
 
-            {/* Review */}
-            <StatCard
-                label="Chờ duyệt"
-                value={stats.review}
-                icon={<AlertCircle className="w-5 h-5 flex-shrink-0" />}
-                color="violet"
-                onClick={() => setFilterStatus(filterStatus === TaskStatus.Review ? 'All' : TaskStatus.Review)}
-            />
-
             {/* Done */}
             <StatCard
                 label="Hoàn thành"
@@ -87,6 +78,15 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
                 icon={<CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
                 color="emerald"
                 onClick={() => setFilterStatus(filterStatus === TaskStatus.Done ? 'All' : TaskStatus.Done)}
+            />
+
+            {/* Chưa hoàn thành */}
+            <StatCard
+                label="Chưa hoàn thành"
+                value={stats.incomplete}
+                icon={<XCircle className="w-5 h-5 flex-shrink-0" />}
+                color="rose"
+                onClick={() => setFilterStatus(filterStatus === TaskStatus.Incomplete ? 'All' : TaskStatus.Incomplete)}
             />
 
             {/* Overdue */}

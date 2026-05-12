@@ -1,14 +1,13 @@
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckSquare, ClipboardList, CalendarDays } from 'lucide-react';
+import { ClipboardList, CalendarDays } from 'lucide-react';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
 
 // Lazy-load each sub-module inside the bundle
-const TaskList      = React.lazy(() => import('../tasks/TaskList'));
 const AnnualPlanPage  = React.lazy(() => import('../annual-plan/AnnualPlanPage'));
 const MonthlyPlanPage = React.lazy(() => import('../monthly-plan/MonthlyPlanPage'));
 
-type TabKey = 'tasks' | 'annual' | 'monthly';
+type TabKey = 'annual' | 'monthly';
 
 interface TabDef {
     key: TabKey;
@@ -17,14 +16,13 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-    { key: 'tasks',   label: 'Công việc',           icon: CheckSquare  },
     { key: 'annual',  label: 'KH khung năm',         icon: ClipboardList },
     { key: 'monthly', label: 'KH tháng / BC tháng',  icon: CalendarDays },
 ];
 
 const WorkPlanPage: React.FC = () => {
     const [params, setParams] = useSearchParams();
-    const active = (params.get('tab') as TabKey) || 'tasks';
+    const active = (params.get('tab') as TabKey) || 'monthly';
 
     const switchTab = (key: TabKey) => {
         setParams({ tab: key }, { replace: true });
@@ -57,7 +55,6 @@ const WorkPlanPage: React.FC = () => {
             {/* ── Tab content ── */}
             <div className="flex-1 min-h-0 overflow-hidden">
                 <Suspense fallback={<PageLoadingFallback />}>
-                    {active === 'tasks'   && <TaskList />}
                     {active === 'annual'  && <AnnualPlanPage />}
                     {active === 'monthly' && <MonthlyPlanPage />}
                 </Suspense>

@@ -135,13 +135,14 @@ export const EmptyState: React.FC<{
     icon?: React.ReactNode;
     title: string;
     description?: string;
+    className?: string;
     action?: {
         label: string;
         onClick: () => void;
     };
-}> = ({ icon, title, description, action }) => {
+}> = ({ icon, title, description, className = '', action }) => {
     return (
-        <div className="text-center py-12 px-4">
+        <div className={`text-center py-12 px-4 ${className}`}>
             {icon && (
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     {icon}

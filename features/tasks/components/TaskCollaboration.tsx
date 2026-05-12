@@ -94,7 +94,7 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
                                     ['link', 'clean']
                                 ],
                             }}
-                            className="bg-transparent [&_.ql-editor]:min-h-[100px] [&_.ql-editor]:text-sm [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-container]:border-none"
+                            className="bg-transparent [&_.ql-editor]:min-h-[60px] [&_.ql-editor]:text-sm [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-container]:border-none [&_.ql-editor.ql-blank::before]:text-slate-400 dark:[&_.ql-editor.ql-blank::before]:text-slate-500 [&_.ql-editor.ql-blank::before]:opacity-100"
                         />
                         <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
                             <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition-colors">

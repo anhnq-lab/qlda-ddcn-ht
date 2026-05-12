@@ -17,7 +17,6 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
 
     const tabs: { key: TabKey; label: string; icon: any }[] = [
         { key: 'overview', label: 'Tổng quan', icon: CheckSquare },
-        { key: 'comments', label: 'Thảo luận', icon: MessageSquare },
         { key: 'history', label: 'Lịch sử', icon: History },
     ];
 
@@ -50,9 +49,6 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
             <div className="flex-1 overflow-y-auto relative">
                 {activeTab === 'overview' && (
                     <TaskDetail taskId={taskId} isPanel={true} onClose={onClose} />
-                )}
-                {activeTab === 'comments' && (
-                    <TaskCollaboration taskId={taskId} type="comments" />
                 )}
                 {activeTab === 'history' && (
                     <TaskCollaboration taskId={taskId} type="history" />
