@@ -62,6 +62,7 @@ export const TaskService = {
     let query = supabase
       .from('tasks')
       .select('*, projects(project_name)')
+      .is('parent_id', null)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });
 
@@ -180,9 +181,9 @@ export const TaskService = {
   /** Lấy sub-tasks của 1 task */
   getSubTasks: async (taskId: string): Promise<DbSubTask[]> => {
     const { data, error } = await supabase
-      .from('sub_tasks')
+      .from('tasks')
       .select('*')
-      .eq('task_id', taskId)
+      .eq('parent_id', taskId)
       .order('sort_order', { ascending: true });
 
     if (error) throw error;
@@ -473,7 +474,8 @@ export const TaskService = {
   createTasksFromWorkflow: async (
     projectId: string,
     workflowId: string,
-    startDate: string
+    startDate: string,
+    endDate?: string
   ): Promise<DbTask[]> => {
     // 1. Lấy nodes của workflow template
     const nodes = await WorkflowTemplateService.getTemplateNodes(workflowId);
@@ -614,7 +616,8 @@ export const TaskService = {
         reference_id: projectId,
         reference_type: 'project',
         status: 'in_progress',
-        started_at: new Date().toISOString()
+        started_at: new Date().toISOString(),
+        context_data: endDate ? { target_end_date: endDate } : {}
       } as any);
 
       if (instErr) {

@@ -39,8 +39,6 @@ const MonthlyPlanPage: React.FC = () => {
     const [summaries, setSummaries] = useState<MonthlyReportSummary[]>([]);
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<MonthlyPlanItem | null>(null);
     const { openPanel, closePanel } = useSlidePanel();
     const [exporting, setExporting] = useState(false);
     const [seedLoading, setSeedLoading] = useState(false);
@@ -125,6 +123,40 @@ const MonthlyPlanPage: React.FC = () => {
         incomplete: items.filter(i => i.status === 'incomplete').length,
         planned: items.filter(i => i.status === 'planned').length,
     }), [items]);
+
+    const openFormPanel = (item: MonthlyPlanItem | null) => {
+        if (!currentPlan) return;
+        openPanel(
+            <MonthlyPlanItemModal
+                monthlyPlanId={currentPlan.id}
+                month={month}
+                year={year}
+                departmentCode={activeDept}
+                item={item}
+                onSaved={() => {
+                    closePanel();
+                    loadPlan();
+                }}
+                onClose={closePanel}
+            />
+        );
+    };
+
+    const openDetailPanel = (item: MonthlyPlanItem) => {
+        openPanel(
+            <MonthlyPlanItemDetail
+                item={item}
+                month={month}
+                year={year}
+                onEdit={() => openFormPanel(item)}
+                onDelete={() => {
+                    handleDelete(item.id);
+                    closePanel();
+                }}
+                onClose={closePanel}
+            />
+        );
+    };
 
     return (
         <div className="flex flex-col h-full bg-slate-50">
@@ -222,7 +254,7 @@ const MonthlyPlanPage: React.FC = () => {
                                     {seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}
                                 </button>
                                 <button
-                                    onClick={() => { setEditingItem(null); setModalOpen(true); }}
+                                    onClick={() => openFormPanel(null)}
                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
                                 >
                                     <Plus className="w-4 h-4" />
@@ -335,7 +367,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 Sinh từ KH khung
                             </button>
                             <span className="text-slate-300">|</span>
-                            <button onClick={() => { setEditingItem(null); setModalOpen(true); }} className="text-indigo-600 hover:underline">
+                            <button onClick={() => openFormPanel(null)} className="text-indigo-600 hover:underline">
                                 Thêm thủ công
                             </button>
                         </div>
@@ -385,29 +417,8 @@ const MonthlyPlanPage: React.FC = () => {
                                                     item={item}
                                                     viewMode={viewMode}
                                                     onStatusChange={handleStatusChange}
-                                                    onRowClick={() => {
-                                                        openPanel(
-                                                            <MonthlyPlanItemDetail
-                                                                item={item}
-                                                                month={month}
-                                                                year={year}
-                                                                onEdit={() => {
-                                                                    setEditingItem(item);
-                                                                    setModalOpen(true);
-                                                                    closePanel();
-                                                                }}
-                                                                onDelete={() => {
-                                                                    handleDelete(item.id);
-                                                                    closePanel();
-                                                                }}
-                                                                onClose={closePanel}
-                                                                onAddTask={() => {
-                                                                    // Will implement later if needed
-                                                                }}
-                                                            />
-                                                        );
-                                                    }}
-                                                    onEdit={() => { setEditingItem(item); setModalOpen(true); }}
+                                                    onRowClick={() => openDetailPanel(item)}
+                                                    onEdit={() => openFormPanel(item)}
                                                     onDelete={() => handleDelete(item.id)}
                                                 />
                                             ))}
@@ -419,19 +430,6 @@ const MonthlyPlanPage: React.FC = () => {
                     </div>
                 )}
             </div>
-
-            {/* ── Modal tạo/sửa ── */}
-            {modalOpen && currentPlan && (
-                <MonthlyPlanItemModal
-                    monthlyPlanId={currentPlan.id}
-                    month={month}
-                    year={year}
-                    departmentCode={activeDept}
-                    item={editingItem}
-                    onSaved={() => { setModalOpen(false); setEditingItem(null); loadPlan(); }}
-                    onClose={() => { setModalOpen(false); setEditingItem(null); }}
-                />
-            )}
         </div>
     );
 };

@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { OverviewTab } from './components/OverviewTab';
 import { MonthlyBriefingTab } from './components/MonthlyBriefingTab';
+import { AITab } from './components/AITab';
 import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
 import { MANAGEMENT_BOARDS } from '../../types';
 
 import { Clock, ChevronDown, Building2, Filter, X } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'monthly'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'monthly' | 'ai'>('overview');
 
     // ── Shared Filters (dùng chung cho cả 2 tab) ──
     const currentYear = new Date().getFullYear();
@@ -113,6 +114,16 @@ const Dashboard: React.FC = () => {
                     >
                         Báo cáo giao ban tháng
                     </button>
+                    <button
+                        onClick={() => setActiveTab('ai')}
+                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-bold text-sm transition-colors ${
+                            activeTab === 'ai'
+                                ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-slate-400 dark:hover:text-slate-300'
+                        }`}
+                    >
+                        Trợ lý AI
+                    </button>
                 </nav>
             </div>
 
@@ -126,6 +137,11 @@ const Dashboard: React.FC = () => {
                 {activeTab === 'monthly' && (
                     <ErrorBoundary>
                         <MonthlyBriefingTab selectedYear={selectedYear ?? currentYear} />
+                    </ErrorBoundary>
+                )}
+                {activeTab === 'ai' && (
+                    <ErrorBoundary>
+                        <AITab />
                     </ErrorBoundary>
                 )}
             </div>

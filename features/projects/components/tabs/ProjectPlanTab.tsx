@@ -546,7 +546,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             await TaskService.createTasksFromWorkflow(
                 projectID,
                 workflowId,
-                dateRange.startDate
+                dateRange.startDate,
+                dateRange.endDate
             );
             
             showToast(`✅ Đã thiết lập kế hoạch dựa trên quy trình mẫu`, 'success');

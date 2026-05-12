@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 // TYPES
 // ============================================================
 
-export type RelatedType = 'contract' | 'payment' | 'acceptance' | 'settlement';
+export type RelatedType = 'contract' | 'payment' | 'acceptance' | 'settlement' | 'task';
 
 export interface DocumentAttachment {
     id: string;
@@ -47,6 +47,7 @@ export const FILE_TYPE_LABELS: Record<RelatedType, string[]> = {
     payment: ['Đề nghị thanh toán', 'Hóa đơn', 'Bảng xác nhận KL', 'Chứng từ kho bạc', 'Khác'],
     acceptance: ['Biên bản nghiệm thu', 'Hồ sơ hoàn công', 'Báo cáo chất lượng', 'Khác'],
     settlement: ['Báo cáo quyết toán', 'Biên bản thanh lý HĐ', 'Bảo lãnh bảo hành', 'Khác'],
+    task: ['Tài liệu thiết kế', 'Báo cáo tiến độ', 'Tài liệu tham khảo', 'Khác'],
 };
 
 // ============================================================

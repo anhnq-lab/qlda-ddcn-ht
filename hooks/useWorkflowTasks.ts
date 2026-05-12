@@ -42,6 +42,8 @@ export const useAllTasks = (projectIds?: string[]) => {
       const data = await TaskService.getAllTasks(projectIds);
       return data.map(wt => workflowTaskToTask(wt));
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
@@ -52,7 +54,9 @@ export const useInternalTasks = () => {
     queryFn: async () => {
         const data = await TaskService.getInternalTasks();
         return data.map(wt => workflowTaskToTask(wt));
-    }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
@@ -66,6 +70,8 @@ export const useTask = (taskId?: string) => {
       return data ? workflowTaskToTask(data) : null;
     },
     enabled: !!taskId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
@@ -129,7 +135,7 @@ export const useCreateTasksFromWorkflow = () => {
       workflowId: string;
       startDate: string;
       endDate: string;
-    }) => TaskService.createTasksFromWorkflow(projectId, workflowId, startDate),
+    }) => TaskService.createTasksFromWorkflow(projectId, workflowId, startDate, endDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
     },

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, TaskAttachment } from '../../types';
-import { useTask, useUpdateTask, useTasks } from '../../hooks/useTasks';
+import { useTask, useUpdateTask, useAllTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useEmployees } from '../../hooks/useEmployees';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
@@ -74,7 +74,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const navigate = useNavigate();
 
     const { data: task, isLoading } = useTask(id);
-    const { data: allTasks = [] } = useTasks();
+    const { data: allTasks = [] } = useAllTasks();
     const { projects = [] } = useProjects();
     const { data: employees = [] } = useEmployees();
     const updateTaskMutation = useUpdateTask();
@@ -398,17 +398,6 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                             </div>
                         </div>
 
-                        {/* Thảo luận (Chuyển từ Tab sang) */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-[500px]">
-                            <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 shrink-0">
-                                <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <MessageSquare className="w-4 h-4" /> Thảo luận & Trao đổi
-                                </h3>
-                            </div>
-                            <div className="flex-1 relative overflow-hidden">
-                                <TaskCollaboration taskId={task.TaskID} type="comments" />
-                            </div>
-                        </div>
                     </div>
 
                     {/* ── RIGHT 1/3 ── */}

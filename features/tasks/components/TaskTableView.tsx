@@ -1,13 +1,9 @@
 import React from 'react';
-import { FolderOpen, ExternalLink, Calendar, AlertTriangle, Edit, Trash2, Layers, Sparkles } from 'lucide-react';
+import { FolderOpen, Calendar, AlertTriangle, Edit, Trash2, Layers, Sparkles } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
 import { EmptyState } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
-import { getTimelineStepLabel, getPhaseColor } from '../../../utils/timelineStepUtils';
 import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
-import ProjectDetail from '../../projects/ProjectDetail';
-
-// @ts-ignore (Assuming ProjectDetail component works correctly when passed to panel)
 interface TaskTableViewProps {
     paginatedTasks: Task[];
     tasksByProject: Record<string, Task[]>;

@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Project, ProjectStage, Employee, BiddingPackage, Contractor } from '@/types';
 import {
     Pencil, Clock, Info, Maximize, Target,
-    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler, Box, Layers, Database
+    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler, Box, Layers, Database, Eye, EyeOff
 } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 import { LifecycleStepper, StageHistoryEntry } from '../LifecycleStepper';
@@ -72,6 +72,54 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 }) => {
 
     const { openPanel } = useSlidePanel();
+
+    const [isHiddenOnMap, setIsHiddenOnMap] = useState<boolean>(() => {
+        try {
+            const stored = localStorage.getItem('hiddenProjectIds');
+            if (stored && project.ProjectID) {
+                const hiddenSet = new Set(JSON.parse(stored));
+                return hiddenSet.has(project.ProjectID);
+            }
+        } catch { }
+        return false;
+    });
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            try {
+                const stored = localStorage.getItem('hiddenProjectIds');
+                if (stored && project.ProjectID) {
+                    const hiddenSet = new Set(JSON.parse(stored));
+                    setIsHiddenOnMap(hiddenSet.has(project.ProjectID));
+                } else {
+                    setIsHiddenOnMap(false);
+                }
+            } catch { }
+        };
+        window.addEventListener('hiddenProjectIdsChanged', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener('hiddenProjectIdsChanged', handleStorageChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [project.ProjectID]);
+
+    const toggleHideOnMap = () => {
+        try {
+            const stored = localStorage.getItem('hiddenProjectIds');
+            const hiddenSet = stored ? new Set<string>(JSON.parse(stored)) : new Set<string>();
+            if (isHiddenOnMap) {
+                hiddenSet.delete(project.ProjectID!);
+            } else {
+                hiddenSet.add(project.ProjectID!);
+            }
+            localStorage.setItem('hiddenProjectIds', JSON.stringify(Array.from(hiddenSet)));
+            setIsHiddenOnMap(!isHiddenOnMap);
+            window.dispatchEvent(new Event('hiddenProjectIdsChanged'));
+        } catch (error) {
+            console.error('Failed to toggle hidden state', error);
+        }
+    };
 
     // Fetch real contractors from contracts + contractors + bidding_packages tables
     const { data: projectContractors = [] } = useQuery<ContractorWithPackages[]>({
@@ -409,13 +457,32 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <div className="section-icon"><Info className="w-3.5 h-3.5" /></div>
                                 <span>Thông tin dự án</span>
                             </div>
-                            <button
-                                onClick={onEditProject}
-                                className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold"
-                            >
-                                <Pencil className="w-3 h-3" />
-                                Chỉnh sửa
-                            </button>
+                            <div className="flex items-center gap-3">
+                                {/* Hide on Map Button */}
+                                <button
+                                    onClick={toggleHideOnMap}
+                                    className={`flex items-center gap-1 text-[10px] font-bold ${isHiddenOnMap ? 'text-gray-500 hover:text-gray-700' : 'text-red-500 hover:text-red-700'}`}
+                                >
+                                    {isHiddenOnMap ? (
+                                        <>
+                                            <Eye className="w-3 h-3" />
+                                            Hiện trên bản đồ
+                                        </>
+                                    ) : (
+                                        <>
+                                            <EyeOff className="w-3 h-3" />
+                                            Ẩn khỏi bản đồ
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={onEditProject}
+                                    className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold"
+                                >
+                                    <Pencil className="w-3 h-3" />
+                                    Chỉnh sửa
+                                </button>
+                            </div>
                         </div>
                         <div className="p-2.5">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">

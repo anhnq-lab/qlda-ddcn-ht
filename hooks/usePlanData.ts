@@ -144,11 +144,23 @@ export function useTasksByMonthlyPlanItem(monthlyPlanItemId?: string) {
         setLoading(true);
         supabase
             .from('tasks')
-            .select('TaskID, Title, Status, Priority, ProgressPercent, AssigneeID, DueDate, SortOrder')
-            .eq('MonthlyPlanItemID', monthlyPlanItemId)
-            .order('SortOrder')
+            .select('id, title, status, priority, progress, assignee_id, due_date, sort_order')
+            .eq('monthly_plan_item_id', monthlyPlanItemId)
+            .order('sort_order')
             .then(({ data }: any) => {
-                if (!cancelled) setTasks((data as any[]) ?? []);
+                if (!cancelled) {
+                    const mappedTasks = (data || []).map((t: any) => ({
+                        TaskID: t.id,
+                        Title: t.title,
+                        Status: t.status,
+                        Priority: t.priority,
+                        ProgressPercent: t.progress,
+                        AssigneeID: t.assignee_id,
+                        DueDate: t.due_date,
+                        SortOrder: t.sort_order
+                    }));
+                    setTasks(mappedTasks);
+                }
                 setLoading(false);
             });
         return () => { cancelled = true; };

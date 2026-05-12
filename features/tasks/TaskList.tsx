@@ -279,13 +279,27 @@ const TaskList: React.FC = () => {
     };
 
     const handleTaskStatusChange = async (taskId: string, newStatus: TaskStatus) => {
-        await updateTaskMutation.mutateAsync({ taskId, updates: { status: newStatus as any } });
+        let dbStatus = 'todo';
+        switch (newStatus) {
+            case TaskStatus.InProgress: dbStatus = 'in_progress'; break;
+            case TaskStatus.Done: dbStatus = 'done'; break;
+            case TaskStatus.Review: dbStatus = 'review'; break;
+            case TaskStatus.Incomplete: dbStatus = 'incomplete'; break;
+        }
+        
+        const updates: any = { status: dbStatus };
+        if (newStatus === TaskStatus.Done) {
+            updates.progress = 100;
+        }
+
+        await updateTaskMutation.mutateAsync({ taskId, updates });
     };
 
     const handleSave = async (taskData: Partial<Task>) => {
         // Re-map UI Task structure to DbTask payload for the service
         const workflowPayload: any = {
             id: taskData.TaskID?.startsWith('NEW_') ? undefined : taskData.TaskID,
+            task_type: taskData.ProjectID ? 'project' : 'internal',
             title: taskData.Title,
             progress: taskData.ProgressPercent,
             assignee_id: taskData.AssigneeID,
@@ -304,7 +318,13 @@ const TaskList: React.FC = () => {
         };
 
         if (taskData.Status) {
-            workflowPayload.status = taskData.Status; // Enum value matches exactly with DbTaskStatus
+            switch (taskData.Status) {
+                case TaskStatus.InProgress: workflowPayload.status = 'in_progress'; break;
+                case TaskStatus.Done: workflowPayload.status = 'done'; break;
+                case TaskStatus.Review: workflowPayload.status = 'review'; break;
+                case TaskStatus.Incomplete: workflowPayload.status = 'incomplete'; break;
+                default: workflowPayload.status = 'todo'; break;
+            }
         }
 
         await saveTaskMutation.mutateAsync(workflowPayload);

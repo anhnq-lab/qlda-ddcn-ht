@@ -20,7 +20,6 @@ import {
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import EvaluationSlidePanel from './components/EvaluationSlidePanel';
 import { DEPARTMENT_CODES, DEPARTMENT_NAMES } from '../../types/plan.types';
-import DataTable, { Column } from '../../components/ui/DataTable';
 
 export const EvaluationPage: React.FC = () => {
     const { currentUser } = useAuth();
@@ -100,88 +99,6 @@ export const EvaluationPage: React.FC = () => {
             />
         });
     };
-
-    const columns: Column<EvaluationForm>[] = [
-        {
-            key: 'employee_name',
-            header: 'Nhân sự',
-            sortable: true,
-            render: (_, row) => (
-                <div>
-                    <div className="font-bold text-slate-800 dark:text-slate-100">{row.employee_name}</div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">{row.chuc_vu || row.department_name}</div>
-                </div>
-            )
-        },
-        {
-            key: 'form_type',
-            header: 'Loại phiếu',
-            align: 'center',
-            render: (_, row) => (
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                    PL{row.form_type === 'leader' ? '01' : '02'}
-                </span>
-            )
-        },
-        {
-            key: 'self_score',
-            header: 'Tự chấm',
-            align: 'center',
-            render: (_, row) => {
-                const score = calcSelfTotal(row);
-                return <span className="font-bold text-slate-700 dark:text-slate-200">{score.toFixed(0)}</span>;
-            }
-        },
-        {
-            key: 'manager_score',
-            header: 'Phê duyệt',
-            align: 'center',
-            render: (_, row) => {
-                const score = calcManagerTotal(row);
-                return <span className="font-bold text-primary-600 dark:text-primary-400">{score.toFixed(0)}</span>;
-            }
-        },
-        {
-            key: 'classification',
-            header: 'Xếp loại',
-            align: 'center',
-            render: (_, row) => {
-                const selfTotal = calcSelfTotal(row);
-                const managerTotal = calcManagerTotal(row);
-                const finalScore = row.status === 'approved' ? managerTotal : selfTotal;
-                const cls = getClassification(finalScore);
-                const clsCfg = CLASSIFICATION_CONFIG[cls];
-                return (
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${clsCfg.bg} ${clsCfg.color}`}>
-                        {cls}
-                    </span>
-                );
-            }
-        },
-        {
-            key: 'status',
-            header: 'Trạng thái',
-            align: 'center',
-            render: (_, row) => {
-                const cfg = STATUS_CONFIG[row.status];
-                return (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${cfg.bg} ${cfg.color}`}>
-                        {cfg.label}
-                    </span>
-                );
-            }
-        },
-        {
-            key: 'self_submitted_at',
-            header: 'Ngày nộp',
-            align: 'right',
-            render: (_, row) => (
-                <span className="text-xs text-slate-500">
-                    {row.self_submitted_at ? new Date(row.self_submitted_at).toLocaleDateString('vi-VN') : '—'}
-                </span>
-            )
-        }
-    ];
 
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
@@ -270,13 +187,76 @@ export const EvaluationPage: React.FC = () => {
                         <p className="text-sm">Chưa có phiếu đánh giá nào trong tháng này.</p>
                     </div>
                 ) : (
-                    <DataTable
-                        data={forms}
-                        columns={columns}
-                        keyExtractor={(row) => row.id}
-                        onRowClick={handleViewForm}
-                        sortable
-                    />
+                    <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
+                                    <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-800">Nhân sự</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Loại phiếu</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Tự chấm</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Phê duyệt</th>
+                                    <th className="px-4 py-3 text-center min-w-[140px] border-b border-slate-200 dark:border-slate-800">Xếp loại</th>
+                                    <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-800">Trạng thái</th>
+                                    <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-800">Ngày nộp</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                {forms.map((row) => {
+                                    const selfTotal = calcSelfTotal(row);
+                                    const managerTotal = calcManagerTotal(row);
+                                    const finalScore = row.status === 'approved' ? managerTotal : selfTotal;
+                                    const cls = getClassification(finalScore);
+                                    const clsCfg = CLASSIFICATION_CONFIG[cls];
+                                    const statusCfg = STATUS_CONFIG[row.status];
+
+                                    return (
+                                        <tr
+                                            key={row.id}
+                                            onClick={() => handleViewForm(row)}
+                                            className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700"
+                                        >
+                                            <td className="px-4 py-3.5 text-left">
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm group-hover:text-primary-600 transition-colors truncate">
+                                                        {row.employee_name}
+                                                    </p>
+                                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                                                        {row.chuc_vu || row.department_name}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-center">
+                                                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                                    PL{row.form_type === 'leader' ? '01' : '02'}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-center">
+                                                <span className="font-bold text-slate-700 dark:text-slate-200">{selfTotal.toFixed(0)}</span>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-center">
+                                                <span className="font-bold text-primary-600 dark:text-primary-400">{managerTotal.toFixed(0)}</span>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-center">
+                                                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${clsCfg.bg} ${clsCfg.color}`}>
+                                                    {cls}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-center">
+                                                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${statusCfg.bg} ${statusCfg.color}`}>
+                                                    {statusCfg.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3.5 text-right">
+                                                <span className="text-xs text-slate-500">
+                                                    {row.self_submitted_at ? new Date(row.self_submitted_at).toLocaleDateString('vi-VN') : '—'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>

@@ -145,10 +145,9 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="flex flex-col h-full bg-white dark:bg-slate-900 animate-in fade-in duration-300"
             onKeyDown={handleKeyDown}
         >
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
                     <div>
@@ -458,8 +457,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         </button>
                     </div>
                 </div>
-            </div>
-
             <style>{`
                 .field-label { display: block; font-size: 0.75rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem; }
                 .dark .field-label { color: #94a3b8; }

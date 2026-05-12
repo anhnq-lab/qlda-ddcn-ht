@@ -139,66 +139,100 @@ function buildFlowElements(
 
     const gd = employees.find(e => e.Position === 'Giám đốc Ban');
     const pgds = employees.filter(e => e.Position === 'Phó Giám đốc Ban');
-    const kt = employees.find(e => e.Position === 'Kế toán trưởng');
 
-    const funcDepts = ['Phòng Hành chính – Tổng hợp', 'Phòng Kế hoạch – Đấu thầu', 'Phòng Kỹ thuật – Thẩm định'];
-    const unitDepts = ['Phòng Quản lý dự án 1', 'Phòng Quản lý dự án 2', 'Phòng Quản lý dự án 3', 'Phòng Phát triển dịch vụ'];
 
-    const CX = 600; // center x
+    // --- PGD Selection by Name ---
+    const pgdBao  = pgds.find(p => p.FullName.includes('Bảo'))  || pgds[0];
+    const pgdNhan = pgds.find(p => p.FullName.includes('Nhân')) || pgds[1];
+    const pgdQuy  = pgds.find(p => p.FullName.includes('Quy'))  || pgds[2];
+
+    const edgeType = 'step';
+    const edgeStyle = (color: string) => ({ stroke: color, strokeWidth: 1.5 });
+
+    // Centers of Bottom Row Departments (Spacing = 190 for clean clearance)
+    const X_PTDV = 0;
+    const X_DA1  = 190;
+    const X_DA2  = 380;
+    const X_HCTH = 570;
+    const X_KHDT = 760;
+    const X_DA3  = 950;
+    const X_KTTD = 1140;
+
+    // Centers of Leaders
+    const X_PGD_L = (X_PTDV + X_DA1) / 2; // 95
+    const X_PGD_M = (X_DA2 + X_HCTH) / 2; // 475
+    const X_PGD_R = (X_DA3 + X_KTTD) / 2; // 1045
+
+    const X_GD   = X_HCTH; // 570 (Centered over HCTH for straight drop)
+    const X_UBND = X_HCTH; // 570
+
+    const Y_UBND = 0;
+    const Y_GD = 110;
+    const Y_LEADER = 240;
+    const Y_DEPT = 380;
+
+    const OFF_DIR = 110;
+    const OFF_DEP = 80;
+    const OFF_DEPT = 75;
 
     // Level 0: UBND
-    nodes.push({ id: 'ubnd', type: 'root', position: { x: CX - 120, y: 0 }, data: { label: 'UBND tỉnh Hà Tĩnh', type: 'root' } });
+    nodes.push({ id: 'ubnd', type: 'root', position: { x: X_UBND - 120, y: Y_UBND }, data: { label: 'UBND tỉnh Hà Tĩnh', type: 'root' } });
 
     // Level 1: Giám đốc
-    nodes.push({ id: 'gd', type: 'director', position: { x: CX - 110, y: 130 }, data: { label: 'Giám đốc Ban', subtitle: gd?.FullName, type: 'director' } });
-    edges.push({ id: 'ubnd-gd', source: 'ubnd', target: 'gd', type: 'smoothstep', style: { stroke: '#dc2626', strokeWidth: 2 }, animated: false });
+    nodes.push({ id: 'gd', type: 'director', position: { x: X_GD - OFF_DIR, y: Y_GD }, data: { label: 'Giám đốc Ban', subtitle: gd?.FullName, type: 'director' } });
+    edges.push({ id: 'ubnd-gd', source: 'ubnd', target: 'gd', type: edgeType, style: { stroke: '#dc2626', strokeWidth: 2 }, animated: false });
 
-    // Level 2: Deputies
-    const level2Total = pgds.length + (kt ? 1 : 0);
-    const level2StartX = CX - (level2Total * 190) / 2;
+    // Level 2: Leaders (1=Bảo, 2=Nhân, 3=Quy)
+    nodes.push({ id: 'pgd-left',  type: 'deputy', position: { x: X_PGD_L - OFF_DEP, y: Y_LEADER }, data: { label: 'Phó Giám đốc', subtitle: pgdBao?.FullName  || 'Đang cập nhật', type: 'deputy' } });
+    nodes.push({ id: 'pgd-mid',   type: 'deputy', position: { x: X_PGD_M - OFF_DEP, y: Y_LEADER }, data: { label: 'Phó Giám đốc', subtitle: pgdNhan?.FullName || 'Đang cập nhật', type: 'deputy' } });
+    nodes.push({ id: 'pgd-right', type: 'deputy', position: { x: X_PGD_R - OFF_DEP, y: Y_LEADER }, data: { label: 'Phó Giám đốc', subtitle: pgdQuy?.FullName  || 'Đang cập nhật', type: 'deputy' } });
 
-        pgds.forEach((pgd, i) => {
-            const id = `pgd-${i}`;
-            nodes.push({ id, type: 'deputy', position: { x: level2StartX + i * 190, y: 270 }, data: { label: 'Phó Giám đốc', subtitle: pgd.FullName, type: 'deputy' } });
-            edges.push({ id: `gd-${id}`, source: 'gd', target: id, type: 'smoothstep', style: { stroke: '#4a90e2', strokeWidth: 1.5 } });
+    edges.push({ id: `gd-pgd-left`, source: 'gd', target: 'pgd-left', type: edgeType, style: edgeStyle('#4a90e2') });
+    edges.push({ id: `gd-pgd-mid`, source: 'gd', target: 'pgd-mid', type: edgeType, style: edgeStyle('#4a90e2') });
+    edges.push({ id: `gd-pgd-right`, source: 'gd', target: 'pgd-right', type: edgeType, style: edgeStyle('#4a90e2') });
+
+    // Level 3: Departments
+    const createDept = (id: string, name: string, x: number) => {
+        const cfg = DEPT_CONFIG[name];
+        nodes.push({ 
+            id, 
+            type: 'dept', 
+            position: { x: x - OFF_DEPT, y: Y_DEPT }, 
+            data: { 
+                label: name, 
+                count: deptGroups[name]?.length ?? 0, 
+                type: 'dept', 
+                color: cfg?.color ?? '#64748b' 
+            } 
         });
+        return cfg?.color ?? '#64748b';
+    };
 
-    if (kt) {
-        const ktId = 'kt';
-        nodes.push({ id: ktId, type: 'deputy', position: { x: level2StartX + pgds.length * 190, y: 270 }, data: { label: 'Kế toán trưởng', subtitle: kt.FullName, type: 'deputy' } });
-        edges.push({ id: `gd-kt`, source: 'gd', target: ktId, type: 'smoothstep', style: { stroke: '#3b82f6', strokeWidth: 1.5 } });
-    }
+    const cPtdv = createDept('dept-ptdv', 'Phòng Phát triển dịch vụ', X_PTDV);
+    const cDa1 = createDept('dept-da1', 'Phòng Quản lý dự án 1', X_DA1);
+    const cDa2 = createDept('dept-da2', 'Phòng Quản lý dự án 2', X_DA2);
+    const cHcth = createDept('dept-hc', 'Phòng Hành chính – Tổng hợp', X_HCTH);
+    const cKhdt = createDept('dept-khdt', 'Phòng Kế hoạch – Đấu thầu', X_KHDT);
+    const cDa3 = createDept('dept-da3', 'Phòng Quản lý dự án 3', X_DA3);
+    const cKttd = createDept('dept-kttd', 'Phòng Kỹ thuật – Thẩm định', X_KTTD);
 
-    // Level 3: Functional departments (5)
-    const funcGap = 165;
-    const funcStartX = CX - (funcDepts.length * funcGap) / 2;
-    funcDepts.forEach((dept, i) => {
-        const cfg = DEPT_CONFIG[dept];
-        const id = `dept-func-${i}`;
-        nodes.push({
-            id, type: 'dept',
-            position: { x: funcStartX + i * funcGap, y: 430 },
-            data: { label: dept, count: deptGroups[dept]?.length ?? 0, type: 'dept', color: cfg?.color ?? '#64748b' }
-        });
-        edges.push({ id: `gd-${id}`, source: 'gd', target: id, type: 'smoothstep', style: { stroke: cfg?.color ?? '#64748b', strokeWidth: 1.5, opacity: 0.7 } });
-    });
+    // Edges from GD to Depts
+    edges.push({ id: `gd-dept-hc`, source: 'gd', target: 'dept-hc', type: edgeType, style: edgeStyle(cHcth) });
+    edges.push({ id: `gd-dept-khdt`, source: 'gd', target: 'dept-khdt', type: edgeType, style: edgeStyle(cKhdt) });
 
-    // Level 4: Units (8)
-    const unitGap = 155;
-    const unitStartX = CX - (unitDepts.length * unitGap) / 2 + 20;
-    unitDepts.forEach((dept, i) => {
-        const cfg = DEPT_CONFIG[dept];
-        const id = `dept-unit-${i}`;
-        nodes.push({
-            id, type: 'dept',
-            position: { x: unitStartX + i * unitGap, y: 590 },
-            data: { label: dept, count: deptGroups[dept]?.length ?? 0, type: 'unit', color: cfg?.color ?? '#64748b' }
-        });
-        edges.push({ id: `gd-${id}`, source: 'gd', target: id, type: 'smoothstep', style: { stroke: cfg?.color ?? '#64748b', strokeWidth: 1.5, opacity: 0.6 } });
-    });
+    // Edges from Leaders to Depts
+    edges.push({ id: `pgd-left-dept-ptdv`, source: 'pgd-left', target: 'dept-ptdv', type: edgeType, style: edgeStyle(cPtdv) });
+    edges.push({ id: `pgd-left-dept-da1`, source: 'pgd-left', target: 'dept-da1', type: edgeType, style: edgeStyle(cDa1) });
+
+    edges.push({ id: `pgd-mid-dept-da2`, source: 'pgd-mid', target: 'dept-da2', type: edgeType, style: edgeStyle(cDa2) });
+    edges.push({ id: `pgd-mid-dept-hc`, source: 'pgd-mid', target: 'dept-hc', type: edgeType, style: edgeStyle(cHcth) });
+
+    edges.push({ id: `pgd-right-dept-da3`, source: 'pgd-right', target: 'dept-da3', type: edgeType, style: edgeStyle(cDa3) });
+    edges.push({ id: `pgd-right-dept-kttd`, source: 'pgd-right', target: 'dept-kttd', type: edgeType, style: edgeStyle(cKttd) });
 
     return { nodes, edges };
 }
+
 
 // ══════════════════════════════════════════════════
 // Main Component
@@ -316,7 +350,7 @@ const OrgChartPage: React.FC = () => {
                             size={1}
                             color="#d1c9b8"
                         />
-                        <Controls className="!bg-white dark:!bg-slate-800 !border-slate-200 dark:!border-slate-700 !rounded-xl !shadow-md" />
+                        <Controls className="!bg-white dark:!bg-slate-800 !border-slate-200 dark:!border-slate-700 !rounded-xl !shadow-md [&_button]:dark:!bg-slate-800 [&_button]:dark:!border-slate-700 [&_path]:dark:!fill-slate-300 [&_button:hover]:dark:!bg-slate-700" />
                         <MiniMap
                             className="!bg-white dark:!bg-slate-800 !border-slate-200 dark:!border-slate-700 !rounded-xl"
                             nodeColor={n => {

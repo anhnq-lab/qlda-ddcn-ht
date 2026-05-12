@@ -58,6 +58,19 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         <span className="text-sm font-medium whitespace-nowrap">Việc của tôi</span>
                     </button>
 
+                    <button
+                        onClick={() => setFilterOverdue(!filterOverdue)}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all ${
+                            filterOverdue 
+                            ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-sm' 
+                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-slate-600'
+                        }`}
+                        title={filterOverdue ? "Đang hiện việc quá hạn" : "Hiện việc quá hạn"}
+                    >
+                        <AlertTriangle className={`w-4 h-4 ${filterOverdue ? 'text-rose-500' : ''}`} />
+                        <span className="text-sm font-medium whitespace-nowrap">Quá hạn</span>
+                    </button>
+
                     <div className="relative flex-1 min-w-[200px] max-w-[360px]">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                         <input
@@ -83,7 +96,9 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         >
                             <option value="All">Tất cả dự án</option>
                             {projects.map(p => (
-                                <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName.substring(0, 28)}...</option>
+                                <option key={p.ProjectID} value={p.ProjectID} title={p.ProjectName}>
+                                    {p.ProjectName.length > 28 ? p.ProjectName.substring(0, 28) + '...' : p.ProjectName}
+                                </option>
                             ))}
                         </select>
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
@@ -151,15 +166,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                             Xóa bộ lọc
                         </button>
                     )}
-                    {filterOverdue && (
-                        <span className="inline-flex items-center gap-1 text-xs text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded-lg font-medium">
-                            <AlertTriangle className="w-3 h-3" />
-                            Quá hạn
-                            <button onClick={() => setFilterOverdue(false)} className="ml-1 hover:text-rose-800">
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    )}
+
                 </div>
 
                 {/* Right: View toggle + Create */}

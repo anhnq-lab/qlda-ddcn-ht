@@ -17,10 +17,36 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
 
     const tabs: { key: TabKey; label: string; icon: any }[] = [
         { key: 'overview', label: 'Tổng quan', icon: CheckSquare },
+        { key: 'comments', label: 'Bình luận', icon: MessageSquare },
         { key: 'history', label: 'Lịch sử', icon: History },
     ];
 
-    if (isLoading) return null;
+    if (isLoading) {
+        return (
+            <div className="flex flex-col h-full bg-white dark:bg-slate-900 p-6 space-y-4 animate-pulse">
+                <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/3"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/4 mb-8"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+            </div>
+        );
+    }
+
+    if (!task) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
+                    <X className="w-8 h-8 text-red-500" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Không tìm thấy công việc</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Công việc này có thể đã bị xóa hoặc bạn không có quyền truy cập.</p>
+                <button onClick={onClose} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors">
+                    Đóng panel
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50">
@@ -50,8 +76,15 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
                 {activeTab === 'overview' && (
                     <TaskDetail taskId={taskId} isPanel={true} onClose={onClose} />
                 )}
+                {activeTab === 'comments' && (
+                    <div className="p-4 md:p-6 h-full">
+                        <TaskCollaboration taskId={taskId} type="comments" />
+                    </div>
+                )}
                 {activeTab === 'history' && (
-                    <TaskCollaboration taskId={taskId} type="history" />
+                    <div className="p-4 md:p-6 h-full">
+                        <TaskCollaboration taskId={taskId} type="history" />
+                    </div>
                 )}
             </div>
         </div>

@@ -40,7 +40,7 @@ const ProjectDetailedStatusWidget: React.FC<ProjectDetailedStatusWidgetProps> = 
                 {data.map(item => (
                     <div 
                         key={item.id} 
-                        className={`flex items-center justify-between p-2 rounded-lg border border-transparent transition-colors ${onSegmentClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-200 dark:hover:border-slate-700' : ''}`}
+                        className={`flex items-center justify-between p-2 rounded-lg border border-transparent transition-colors ${onSegmentClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-200 dark:hover:border-slate-600' : ''}`}
                         onClick={() => {
                             if (onSegmentClick && item.value > 0) {
                                 onSegmentClick(item.id, item.label);

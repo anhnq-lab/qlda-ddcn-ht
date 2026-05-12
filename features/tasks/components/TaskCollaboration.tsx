@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TaskService } from '../../../services/TaskService';
+import { DocumentService } from '../../../services/DocumentService';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { MessageSquare, Clock, Send, Paperclip } from 'lucide-react';
+import { MessageSquare, Clock, Send, Paperclip, X } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { useToast } from '../../../components/ui/Toast';
 
 interface TaskCollaborationProps {
     taskId: string;
@@ -15,6 +17,18 @@ interface TaskCollaborationProps {
 export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, type }) => {
     const [commentContent, setCommentContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [attachments, setAttachments] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+        }
+    };
+
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
 
     // Queries
     const { data: comments = [], refetch: refetchComments } = useQuery<any[]>({
@@ -29,16 +43,35 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
         enabled: type === 'history'
     });
 
+    const { addToast } = useToast();
+
     const handleSubmitComment = async () => {
-        if (!commentContent.trim() || commentContent === '<p><br></p>') return;
+        const isContentEmpty = !commentContent.trim() || commentContent === '<p><br></p>';
+        if (isContentEmpty && attachments.length === 0) return;
+        
         setIsSubmitting(true);
         try {
-            await TaskService.addComment(taskId, commentContent);
+            const uploadedFiles = [];
+            for (const file of attachments) {
+                const doc = await DocumentService.upload(file, 'task', taskId, 'Đính kèm thảo luận');
+                if (doc.publicUrl) {
+                    uploadedFiles.push({
+                        name: file.name,
+                        url: doc.publicUrl,
+                        size: file.size,
+                        type: file.type
+                    });
+                }
+            }
+
+            await TaskService.addComment(taskId, commentContent, uploadedFiles);
             setCommentContent('');
+            setAttachments([]);
             refetchComments();
+            addToast({ message: 'Đã thêm bình luận', type: 'success' });
         } catch (error) {
             console.error('Error adding comment', error);
-            alert('Lỗi thêm bình luận!');
+            addToast({ message: 'Lỗi thêm bình luận!', type: 'error' });
         } finally {
             setIsSubmitting(false);
         }
@@ -72,6 +105,24 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
                                         </div>
                                         {/* Render HTML content safely since it comes from our editor */}
                                         <div className="prose prose-sm dark:prose-invert max-w-none text-slate-600 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: comment.content }} />
+                                        
+                                        {comment.attachments && comment.attachments.length > 0 && (
+                                            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 space-y-2">
+                                                {comment.attachments.map((file: any, i: number) => (
+                                                    <a 
+                                                        key={i} 
+                                                        href={file.url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                                                    >
+                                                        <Paperclip className="w-3.5 h-3.5" />
+                                                        <span className="truncate">{file.name}</span>
+                                                        {file.size && <span className="text-xs text-slate-400 ml-1">({DocumentService.formatSize(file.size)})</span>}
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -96,13 +147,39 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
                             }}
                             className="bg-transparent [&_.ql-editor]:min-h-[60px] [&_.ql-editor]:text-sm [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-container]:border-none [&_.ql-editor.ql-blank::before]:text-slate-400 dark:[&_.ql-editor.ql-blank::before]:text-slate-500 [&_.ql-editor.ql-blank::before]:opacity-100"
                         />
+                        {attachments.length > 0 && (
+                            <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
+                                {attachments.map((file, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md px-2 py-1 text-xs">
+                                        <Paperclip className="w-3 h-3 text-slate-400" />
+                                        <span className="truncate max-w-[150px] text-slate-600 dark:text-slate-300">{file.name}</span>
+                                        <button 
+                                            onClick={() => removeAttachment(idx)}
+                                            className="text-slate-400 hover:text-red-500 transition-colors"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
-                            <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                            <input 
+                                type="file" 
+                                className="hidden" 
+                                ref={fileInputRef} 
+                                onChange={handleFileChange} 
+                                multiple 
+                            />
+                            <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                            >
                                 <Paperclip className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={handleSubmitComment}
-                                disabled={isSubmitting || !commentContent.trim() || commentContent === '<p><br></p>'}
+                                disabled={isSubmitting || ((!commentContent.trim() || commentContent === '<p><br></p>') && attachments.length === 0)}
                                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg transition-all"
                             >
                                 {isSubmitting ? 'Đang gửi...' : (

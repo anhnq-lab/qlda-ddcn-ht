@@ -92,7 +92,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
                             if (editingSubTask) {
                                 subs = subs.map(s => s.SubTaskID === editingSubTask.SubTaskID ? { ...s, Title: title, AssigneeID: assigneeId, DueDate: dueDate } : s);
                             } else {
-                                subs.push({ SubTaskID: `SUB-${Date.now()}`, Title: title, AssigneeID: assigneeId, DueDate: dueDate, Status: 'todo' as const });
+                                subs.push({ SubTaskID: crypto.randomUUID(), Title: title, AssigneeID: assigneeId, DueDate: dueDate, Status: 'todo' as const });
                             }
                             updateTaskMutation.mutate({ ...task, SubTasks: subs });
                             setIsSubTaskModalOpen(false);

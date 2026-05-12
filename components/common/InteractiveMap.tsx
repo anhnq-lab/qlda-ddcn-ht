@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ProjectStatus, PROJECT_PHASE_COLORS } from '../../types';
+import { ProjectStatus, PROJECT_PHASE_COLORS, PROJECT_CURRENT_STATUS_CONFIG } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -9,6 +9,7 @@ interface Project {
     ProjectID?: string;
     ProjectName: string;
     Status: ProjectStatus;
+    CurrentStatus?: number;
     TotalInvestment: number;
     Coordinates?: { lat: number; lng: number };
     LocationCode?: string;
@@ -33,6 +34,7 @@ interface InteractiveMapProps {
     projects: Project[];
     materialMines?: MaterialMine[];
     showMines?: boolean;
+    showProjects?: boolean;
 }
 
 // Vietnamese province center coordinates fallback
@@ -176,7 +178,11 @@ async function geocodeLocation(locationCode: string): Promise<{ lat: number; lng
 }
 
 // Get status info from project status
-function getStatusInfo(status: ProjectStatus): { color: string; text: string } {
+function getStatusInfo(status: ProjectStatus, currentStatus?: number): { color: string; text: string } {
+    if (currentStatus && PROJECT_CURRENT_STATUS_CONFIG[currentStatus]) {
+        const config = PROJECT_CURRENT_STATUS_CONFIG[currentStatus];
+        return { color: config.hex, text: config.label };
+    }
     const phase = PROJECT_PHASE_COLORS[status];
     if (phase) return { color: phase.hex, text: phase.label };
     return { color: '#6B7280', text: 'Không rõ' };
@@ -186,7 +192,7 @@ function getStatusInfo(status: ProjectStatus): { color: string; text: string } {
 function createMarkerIcon(color: string): L.DivIcon {
     return L.divIcon({
         className: 'custom-project-marker',
-        html: `<div class="marker-pin pulse-animation" style="background-color: ${color};"></div>`,
+        html: `<div class="marker-pin" style="background-color: ${color};"></div>`,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
         popupAnchor: [0, -10],
@@ -219,12 +225,6 @@ function injectMarkerStyles() {
             border: 2px solid white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); }
-            100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
-        }
-        .pulse-animation { animation: pulse 2s infinite; }
         .custom-popup .leaflet-popup-content-wrapper {
             border-radius: 12px; padding: 0; overflow: hidden;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
@@ -271,11 +271,19 @@ function injectMarkerStyles() {
     document.head.appendChild(style);
 }
 
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines = [], showMines = false }) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines = [], showMines = false, showProjects = true }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
     const [enrichedProjects, setEnrichedProjects] = useState<Project[]>([]);
+    const [hiddenProjectIds, setHiddenProjectIds] = useState<Set<string>>(() => {
+        try {
+            const stored = localStorage.getItem('hiddenProjectIds');
+            return stored ? new Set(JSON.parse(stored)) : new Set();
+        } catch {
+            return new Set();
+        }
+    });
     const { theme } = useTheme();
     const tileLayerRef = useRef<L.TileLayer | null>(null);
 
@@ -284,7 +292,27 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
         injectMarkerStyles();
     }, []);
 
-    // Initialize Leaflet map
+    useEffect(() => {
+        localStorage.setItem('hiddenProjectIds', JSON.stringify(Array.from(hiddenProjectIds)));
+    }, [hiddenProjectIds]);
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            try {
+                const stored = localStorage.getItem('hiddenProjectIds');
+                if (stored) setHiddenProjectIds(new Set(JSON.parse(stored)));
+                else setHiddenProjectIds(new Set());
+            } catch { }
+        };
+        window.addEventListener('hiddenProjectIdsChanged', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener('hiddenProjectIdsChanged', handleStorageChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+    // Initialize Leaflet map and popup click listener
     useEffect(() => {
         if (!mapContainerRef.current || mapRef.current) return;
 
@@ -297,7 +325,27 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
 
         mapRef.current = map;
 
+        const handlePopupClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            const btn = target.closest('.hide-project-btn') as HTMLElement;
+            if (btn) {
+                const projectId = btn.getAttribute('data-project-id');
+                if (projectId) {
+                    setHiddenProjectIds(prev => {
+                        const next = new Set(prev);
+                        next.add(projectId);
+                        return next;
+                    });
+                    map.closePopup();
+                }
+            }
+        };
+        mapContainerRef.current.addEventListener('click', handlePopupClick);
+
         return () => {
+            if (mapContainerRef.current) {
+                mapContainerRef.current.removeEventListener('click', handlePopupClick);
+            }
             map.remove();
             mapRef.current = null;
         };
@@ -356,55 +404,64 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
 
         const bounds = L.latLngBounds([]);
 
-        enrichedProjects.forEach((p) => {
-            if (!p.Coordinates) return;
+        if (showProjects) {
+            enrichedProjects.forEach((p) => {
+                if (!p.Coordinates) return;
+                if (p.ProjectID && hiddenProjectIds.has(p.ProjectID)) return;
 
-            const { color: statusColor, text: statusText } = getStatusInfo(p.Status);
-            const icon = createMarkerIcon(statusColor);
+                const { color: statusColor, text: statusText } = getStatusInfo(p.Status, p.CurrentStatus);
+                const icon = createMarkerIcon(statusColor);
 
-            const marker = L.marker([p.Coordinates.lat, p.Coordinates.lng], { icon }).addTo(map);
+                const marker = L.marker([p.Coordinates.lat, p.Coordinates.lng], { icon }).addTo(map);
 
-            const progressColor = (p.Progress || 0) >= 80 ? '#10B981' : (p.Progress || 0) >= 50 ? '#F59E0B' : '#EF4444';
-            const popupContent = `
-                <div style="padding: 10px; min-width: 260px; max-width: 320px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-                    <h4 class="popup-title">${p.ProjectName}</h4>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 12px;">
-                        <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; color: white; background-color: ${statusColor}; text-transform: uppercase;">
-                            ${statusText}
-                        </span>
-                        <p class="popup-value" style="color: #4f46e5; font-size: 11px;">${formatCurrency(p.TotalInvestment)}</p>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 10px; margin-top: 6px;">
-                        <div class="popup-detail-row">
-                            <span class="popup-detail-label">Chủ đầu tư:</span>
-                            <span class="popup-detail-value" style="max-width: 150px;" title="${p.InvestorName || 'Chưa cập nhật'}">${p.InvestorName || 'Chưa cập nhật'}</span>
+                const progressColor = (p.Progress || 0) >= 80 ? '#10B981' : (p.Progress || 0) >= 50 ? '#F59E0B' : '#EF4444';
+                const popupContent = `
+                    <div style="padding: 10px; min-width: 260px; max-width: 320px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                            <h4 class="popup-title" style="flex: 1; margin-bottom: 0;">${p.ProjectName}</h4>
+                            <button class="hide-project-btn" data-project-id="${p.ProjectID}" style="padding: 3px 6px; background: transparent; color: #ef4444; border: 1px solid #fecaca; border-radius: 4px; font-size: 9px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'" title="Ẩn dự án này khỏi bản đồ">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                                Ẩn
+                            </button>
                         </div>
-                        <div class="popup-detail-row">
-                            <span class="popup-detail-label">Nhà thầu chính:</span>
-                            <span class="popup-detail-value" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.MainContractorName || 'Chưa cập nhật'}">${p.MainContractorName || 'Chưa cập nhật'}</span>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 12px;">
+                            <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; color: white; background-color: ${statusColor}; text-transform: uppercase;">
+                                ${statusText}
+                            </span>
+                            <p class="popup-value" style="color: #4f46e5; font-size: 11px;">${formatCurrency(p.TotalInvestment)}</p>
                         </div>
-                        <div class="popup-detail-row">
-                            <span class="popup-detail-label">Dự kiến H.Thành:</span>
-                            <span class="popup-detail-value">${p.ExpectedEndDate ? new Date(p.ExpectedEndDate).toLocaleDateString('vi-VN') : '---'}</span>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                        
+                        <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 10px; margin-top: 6px;">
                             <div class="popup-detail-row">
-                                <span class="popup-detail-label">Tiến độ thi công:</span>
-                                <span style="font-weight: 700; color: ${progressColor};">${p.Progress || 0}%</span>
+                                <span class="popup-detail-label">Nhà thầu chính:</span>
+                                <span class="popup-detail-value" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.MainContractorName || 'Chưa cập nhật'}">${p.MainContractorName || 'Chưa cập nhật'}</span>
                             </div>
-                            <div style="width: 100%; height: 4px; background-color: #f1f5f9; border-radius: 2px; overflow: hidden;">
-                                <div style="height: 100%; width: ${p.Progress || 0}%; background-color: ${progressColor};"></div>
+                            <div class="popup-detail-row">
+                                <span class="popup-detail-label">Địa điểm:</span>
+                                <span class="popup-detail-value" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p.LocationCode || 'Chưa cập nhật'}">${p.LocationCode || 'Chưa cập nhật'}</span>
+                            </div>
+                            <div class="popup-detail-row">
+                                <span class="popup-detail-label">Dự kiến H.Thành:</span>
+                                <span class="popup-detail-value">${p.ExpectedEndDate ? new Date(p.ExpectedEndDate).toLocaleDateString('vi-VN') : '---'}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                <div class="popup-detail-row">
+                                    <span class="popup-detail-label">Tiến độ thi công:</span>
+                                    <span style="font-weight: 700; color: ${progressColor};">${p.Progress || 0}%</span>
+                                </div>
+                                <div style="width: 100%; height: 4px; background-color: #f1f5f9; border-radius: 2px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${p.Progress || 0}%; background-color: ${progressColor};"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
 
-            marker.bindPopup(popupContent, { className: 'custom-popup' });
-            markersRef.current.push(marker);
-            bounds.extend(marker.getLatLng());
-        });
+                marker.bindPopup(popupContent, { className: 'custom-popup' });
+                markersRef.current.push(marker);
+                bounds.extend(marker.getLatLng());
+            });
+        }
 
         // Draw Material Mines if toggled
         if (showMines && materialMines && materialMines.length > 0) {
@@ -455,14 +512,29 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
         if (bounds.isValid()) {
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
         }
-    }, [enrichedProjects, materialMines, showMines]);
+    }, [enrichedProjects, materialMines, showMines, showProjects, hiddenProjectIds]);
 
     return (
-        <div
-            ref={mapContainerRef}
-            className="w-full h-full rounded-2xl custom-map-container"
-            style={{ width: '100%', height: '100%', minHeight: '500px' }}
-        />
+        <div className="relative w-full h-full">
+            <div
+                ref={mapContainerRef}
+                className="w-full h-full rounded-2xl custom-map-container"
+                style={{ width: '100%', height: '100%', minHeight: '500px' }}
+            />
+            
+            {/* Show reset hidden projects button if any project is hidden */}
+            {hiddenProjectIds.size > 0 && (
+                <div className="absolute bottom-6 left-6 z-[1000]">
+                    <button
+                        onClick={() => setHiddenProjectIds(new Set())}
+                        className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 px-3 py-2 rounded-xl shadow-md text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        Khôi phục {hiddenProjectIds.size} dự án đã ẩn
+                    </button>
+                </div>
+            )}
+        </div>
     );
 };
 

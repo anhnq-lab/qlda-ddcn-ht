@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Wallet, Activity, AlertCircle, CheckCircle2, AlertTriangle, Building2, Map as MapIcon, TrendingUp, ArrowRight, Brain, Search } from 'lucide-react';
 import { formatShortCurrency } from '../../../utils/format';
 import { DashboardService } from '../../../services/DashboardService';
-import { ProjectStatus, PROJECT_PHASE_COLORS } from '../../../types';
+import { ProjectStatus, PROJECT_PHASE_COLORS, PROJECT_CURRENT_STATUS_CONFIG } from '../../../types';
 import { StatCard, ErrorBoundary, EmptyState, TableSkeleton } from '../../../components/ui';
 import { useSlidePanel } from '../../../context/SlidePanelContext';
 
@@ -12,13 +12,7 @@ import { useSlidePanel } from '../../../context/SlidePanelContext';
 const CapitalDisbursementChart = lazy(() => import('./CapitalDisbursementChart'));
 const InteractiveMap = lazy(() => import('../../../components/common/InteractiveMap'));
 const AISummaryWidget = lazy(() => import('../../../components/ai/AISummaryWidget').then(m => ({ default: m.AISummaryWidget })));
-const AIRiskDashboard = lazy(() => import('../../../components/ai/AIRiskDashboard').then(m => ({ default: m.AIRiskDashboard })));
-const AIAnomalyDetector = lazy(() => import('../../../components/ai/AIAnomalyDetector').then(m => ({ default: m.AIAnomalyDetector })));
-const AIContractorScoring = lazy(() => import('../../../components/ai/AIContractorScoring').then(m => ({ default: m.AIContractorScoring })));
-const AIResourceOptimizer = lazy(() => import('../../../components/ai/AIResourceOptimizer').then(m => ({ default: m.AIResourceOptimizer })));
-
 // New charts
-const ProjectStatusChart = lazy(() => import('./ProjectStatusChart'));
 const TaskCompletionChart = lazy(() => import('./TaskCompletionChart'));
 const ProjectStatusByBoardChart = lazy(() => import('./ProjectStatusByBoardChart'));
 const ProjectDetailedStatusWidget = lazy(() => import('./ProjectDetailedStatusWidget'));
@@ -58,9 +52,10 @@ const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color
 export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard: string }> = ({ selectedYear, selectedBoard }) => {
     const navigate = useNavigate();
     const { openPanel } = useSlidePanel();
-    const [activePhaseFilter, setActivePhaseFilter] = useState<number | null>(null);
+    const [activeStatusFilter, setActiveStatusFilter] = useState<number | null>(null);
     const [mapSearchQuery, setMapSearchQuery] = useState('');
     const [showMines, setShowMines] = useState(false);
+    const [showProjects, setShowProjects] = useState(true);
 
     const STALE_5M = 5 * 60 * 1000;
 
@@ -133,6 +128,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             ProjectID: r.projectId,
             ProjectName: r.projectName,
             Status: r.status,
+            CurrentStatus: r.currentStatusCode,
             TotalInvestment: r.totalInvestment,
             LocationCode: r.locationCode,
             Coordinates: r.coordinates,
@@ -142,8 +138,8 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             ExpectedEndDate: r.expectedEndDate
         }));
         
-        if (activePhaseFilter !== null) {
-            mapped = mapped.filter(p => p.Status === activePhaseFilter);
+        if (activeStatusFilter !== null) {
+            mapped = mapped.filter(p => p.CurrentStatus === activeStatusFilter);
         }
         
         if (mapSearchQuery.trim() !== '') {
@@ -152,7 +148,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
         }
         
         return mapped;
-    }, [filteredRows, activePhaseFilter, mapSearchQuery]);
+    }, [filteredRows, activeStatusFilter, mapSearchQuery]);
 
     const filteredMines = useMemo(() => {
         if (!materialMines) return [];
@@ -277,7 +273,9 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[300px]">
                 <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
-                    <ProjectStatusChart statusSummary={statusSummary} onSegmentClick={handleProjectStatusClick} />
+                    <ErrorBoundary>
+                        <AISummaryWidget className="h-full overflow-y-auto" />
+                    </ErrorBoundary>
                 </Suspense>
                 
                 <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
@@ -312,27 +310,6 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             </div>
 
             {/* ═══════════════════════════════════════════════════
-                AI HUB — 4 tính năng AI + Tóm tắt
-            ═══════════════════════════════════════════════════ */}
-            <div className="space-y-4">
-                <h3 className="section-header text-sm">
-                    <div className="section-icon"><Brain className="w-5 h-5" /></div>
-                    Trợ lý AI
-                </h3>
-                <Suspense fallback={<div className="h-32 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
-                    <ErrorBoundary>
-                        <AISummaryWidget />
-                    </ErrorBoundary>
-                </Suspense>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}><ErrorBoundary><AIRiskDashboard /></ErrorBoundary></Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}><ErrorBoundary><AIAnomalyDetector /></ErrorBoundary></Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}><ErrorBoundary><AIContractorScoring /></ErrorBoundary></Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}><ErrorBoundary><AIResourceOptimizer /></ErrorBoundary></Suspense>
-                </div>
-            </div>
-
-            {/* ═══════════════════════════════════════════════════
                 4. MAP + ALERTS
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[300px] xl:h-[500px]">
@@ -344,6 +321,20 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                             Bản đồ vị trí dự án
                         </h3>
                         <div className="flex items-center gap-2 w-full sm:w-auto">
+                            {/* Toggle Projects Button */}
+                            <button
+                                onClick={() => setShowProjects(!showProjects)}
+                                className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                                    showProjects 
+                                        ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/20 dark:border-indigo-700/50 dark:text-indigo-400' 
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+                                }`}
+                                title="Hiển thị Dự án trên bản đồ"
+                            >
+                                <span className={`w-2 h-2 rounded-full ${showProjects ? 'bg-indigo-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                {showProjects ? 'Đang hiện Dự án' : 'Hiện Dự án'}
+                            </button>
+
                             {/* Toggle Mines Button */}
                             <button
                                 onClick={() => setShowMines(!showMines)}
@@ -380,25 +371,25 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
                                 </div>
                             }>
-                                <InteractiveMap projects={filteredProjects} materialMines={filteredMines} showMines={showMines} />
+                                <InteractiveMap projects={filteredProjects} materialMines={filteredMines} showMines={showMines} showProjects={showProjects} />
                             </Suspense>
                         )}
                         {/* Legend */}
-                        <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000]">
-                            <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích (Bấm để lọc)</h4>
-                            <div className="space-y-2">
-                                {Object.entries(PROJECT_PHASE_COLORS).map(([key, phase]) => {
-                                    const phaseNum = Number(key);
-                                    const isActive = activePhaseFilter === null || activePhaseFilter === phaseNum;
+                        <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000] max-h-[80%] overflow-y-auto w-56">
+                            <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích trạng thái (Bấm để lọc)</h4>
+                            <div className="space-y-1.5">
+                                {Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([key, config]) => {
+                                    const statusNum = Number(key);
+                                    const isActive = activeStatusFilter === null || activeStatusFilter === statusNum;
                                     return (
                                         <div 
                                             key={key} 
                                             className={`flex items-center gap-2 cursor-pointer transition-all duration-200 ${isActive ? 'opacity-100 hover:scale-105' : 'opacity-40 hover:opacity-70'}`}
-                                            onClick={() => setActivePhaseFilter(activePhaseFilter === phaseNum ? null : phaseNum)}
-                                            title={activePhaseFilter === phaseNum ? "Bấm để bỏ lọc" : "Bấm để lọc dự án theo giai đoạn này"}
+                                            onClick={() => setActiveStatusFilter(activeStatusFilter === statusNum ? null : statusNum)}
+                                            title={activeStatusFilter === statusNum ? "Bấm để bỏ lọc" : "Bấm để lọc dự án theo trạng thái này"}
                                         >
-                                            <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm transition-transform duration-200" style={{ backgroundColor: phase.hex, transform: isActive ? 'scale(1.2)' : 'scale(1)' }} />
-                                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">{phase.label}</span>
+                                            <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm transition-transform duration-200" style={{ backgroundColor: config.hex, transform: isActive ? 'scale(1.2)' : 'scale(1)' }} />
+                                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300 truncate" title={config.label}>{config.label}</span>
                                         </div>
                                     );
                                 })}

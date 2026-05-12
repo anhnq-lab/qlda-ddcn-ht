@@ -5,11 +5,8 @@ import {
     Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen, ChevronRight
 } from 'lucide-react';
 import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus } from '../../types/plan.types';
-import { useTasksByMonthlyPlanItem } from '../../hooks/usePlanData';
-import { supabase as _supabase } from '../../lib/supabase';
-const supabase = _supabase as any;
 import { useSlidePanel } from "../../context/SlidePanelContext";
-import { TaskSlidePanel } from '../tasks/components/TaskSlidePanel';
+import { supabase } from '../../lib/supabase';
 
 // ─── Status config ────────────────────────────────────────────
 const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; color: string; bg: string; ring: string }> = {
@@ -20,18 +17,7 @@ const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.Reac
     deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   color: 'text-blue-600',   bg: 'bg-blue-50',    ring: 'ring-blue-500/20' },
 };
 
-const TASK_STATUS_COLOR: Record<string, string> = {
-    todo: 'bg-slate-100 text-slate-600 ring-1 ring-slate-300/20',
-    in_progress: 'bg-blue-50 text-blue-600 ring-1 ring-blue-500/20',
-    review: 'bg-amber-50 text-amber-600 ring-1 ring-amber-500/20',
-    done: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20',
-};
-const TASK_STATUS_LABEL: Record<string, string> = {
-    todo: 'Công việc mới',
-    in_progress: 'Đang làm',
-    review: 'Chờ duyệt',
-    done: 'Hoàn thành',
-};
+
 
 interface Props {
     item: MonthlyPlanItem;
@@ -40,13 +26,11 @@ interface Props {
     onEdit: () => void;
     onDelete: () => void;
     onClose: () => void;
-    onAddTask: (monthlyPlanItemId: string) => void;
 }
 
 const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
-    const { item, month, year, onEdit, onDelete, onClose, onAddTask } = props;
-    const cfg = STATUS_CONFIG[item.status];
-    const { tasks, loading: tasksLoading } = useTasksByMonthlyPlanItem(item.id);
+    const { item, month, year, onEdit, onDelete, onClose } = props;
+    const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG['planned'];
     const [annualItem, setAnnualItem] = useState<any>(null);
     const [project, setProject] = useState<any>(null);
     const { openPanel } = useSlidePanel();
@@ -71,22 +55,9 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
             .then(({ data }: any) => setProject(data));
     }, [item.project_id]);
 
-    const tasksDone = tasks.filter(t => t.Status === 'done').length;
-    const tasksProgress = tasks.length > 0 ? Math.round((tasksDone / tasks.length) * 100) : 0;
-
     const handleDelete = () => {
         if (!confirm('Xóa nhiệm vụ này? Thao tác không thể hoàn tác.')) return;
         onDelete();
-    };
-
-    const handleOpenTask = (taskId: string) => {
-        // Open task panel and provide a way to go back to this monthly plan item
-        openPanel(
-            <TaskSlidePanel
-                taskId={taskId}
-                onClose={() => openPanel(<MonthlyPlanItemDetail {...props} />)}
-            />
-        );
     };
 
     return (
@@ -165,31 +136,9 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                     </div>
                                 )}
                             </div>
-                        </div>
-
-                        {/* Progress Bar for subtasks */}
-                        {tasks.length > 0 && (
-                            <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-700">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                        <BarChart3 className="w-3.5 h-3.5" /> Tiến độ công việc con
-                                    </span>
-                                    <span className={`text-sm font-black ${tasksProgress >= 100 ? 'text-emerald-600' : tasksProgress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>
-                                        {tasksProgress}%
-                                    </span>
-                                </div>
-                                <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full rounded-full transition-all duration-700 ${
-                                            tasksProgress >= 100 ? 'bg-emerald-500' : tasksProgress >= 70 ? 'bg-blue-500' : 'bg-indigo-400'
-                                        }`}
-                                        style={{ width: `${tasksProgress}%` }}
-                                    />
-                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
-                </div>
 
                 {/* ══════════ CONTENT GRID ══════════ */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -218,62 +167,6 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 )}
                             </div>
                         )}
-
-                        {/* Task List */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xs font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                                    <CheckSquare className="w-4 h-4" /> Danh sách công việc
-                                </h3>
-                                <button
-                                    onClick={() => onAddTask(item.id)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-                                >
-                                    <Plus className="w-3.5 h-3.5" /> Thêm
-                                </button>
-                            </div>
-
-                            {tasksLoading ? (
-                                <p className="text-xs text-slate-400 text-center py-4">Đang tải...</p>
-                            ) : tasks.length === 0 ? (
-                                <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50/50">
-                                    <p className="text-sm text-slate-500 font-medium mb-1">Chưa có công việc con nào</p>
-                                    <p className="text-xs text-slate-400 mb-3">Thêm các công việc để theo dõi chi tiết quá trình thực hiện nhiệm vụ này.</p>
-                                    <button
-                                        onClick={() => onAddTask(item.id)}
-                                        className="text-xs text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 font-medium transition-colors"
-                                    >
-                                        Thêm công việc đầu tiên
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="space-y-2">
-                                    {tasks.map((task: any) => (
-                                        <button
-                                            key={task.TaskID}
-                                            onClick={() => handleOpenTask(task.TaskID)}
-                                            className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50 hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all text-left group"
-                                        >
-                                            <div className="flex-1 min-w-0">
-                                                <p className={`text-sm font-medium truncate transition-colors ${task.Status === 'done' ? 'text-slate-400 line-through' : 'text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400'}`}>
-                                                    {task.Title}
-                                                </p>
-                                                {task.DueDate && (
-                                                    <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
-                                                        <Calendar className="w-3 h-3" />
-                                                        {new Date(task.DueDate).toLocaleDateString('vi-VN')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-md shrink-0 ${TASK_STATUS_COLOR[task.Status] ?? 'bg-slate-100 text-slate-500'}`}>
-                                                {TASK_STATUS_LABEL[task.Status] ?? task.Status}
-                                            </span>
-                                            <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 shrink-0" />
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     {/* ── RIGHT 1/3 ── */}
