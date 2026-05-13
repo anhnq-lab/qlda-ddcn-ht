@@ -91,7 +91,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     queryClient
 }) => {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 relative">
             {/* Header */}
             <div className="bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-sm">
                 <div>
@@ -194,6 +194,21 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                     </span>
                 </div>
             </div>
+
+            {/* Global Task Header - sticky for better UX */}
+            {tasks.length > 0 && (
+                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-bg-subtle border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-800/90" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
+                    <div className="w-8 shrink-0 px-2"></div>
+                    <div className="flex-1 min-w-[200px] px-2 text-left">Công việc</div>
+                    <div className="w-24 shrink-0 px-2 text-center">Tiến độ</div>
+                    <div className="w-32 shrink-0 px-2 text-left hidden sm:block">Phụ trách</div>
+                    <div className="w-28 shrink-0 px-2 text-left hidden sm:block">Hạn / Bắt đầu</div>
+                    <div className="w-20 shrink-0 px-2 text-center">Ưu tiên</div>
+                    <div className="w-16 shrink-0 px-2 text-center">TL</div>
+                    <div className="w-8 shrink-0 px-2"></div>
+                    <div className="w-8 shrink-0 px-2"></div>
+                </div>
+            )}
 
             {/* Phase Cards with Expandable Items */}
             <div className="space-y-3">
@@ -391,17 +406,17 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                     {linkedTasks.length > 0 && (
                                                         <div className="mt-3 border border-gray-200 dark:border-slate-700 rounded-lg overflow-x-auto">
                                                             <table className="w-full text-xs box-border">
-                                                                <thead>
-                                                                    <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
-                                                                        <th className="px-2 py-2 text-left w-8"></th>
-                                                                        <th className="px-2 py-2 text-left min-w-[200px]">Công việc</th>
-                                                                        <th className="px-2 py-2 text-center w-24">Tiến độ</th>
-                                                                        <th className="px-2 py-2 text-left w-32 hidden sm:table-cell">Phụ trách</th>
-                                                                        <th className="px-2 py-2 text-left w-28 hidden sm:table-cell">Hạn / Bắt đầu</th>
-                                                                        <th className="px-2 py-2 text-center w-20">Ưu tiên</th>
-                                                                        <th className="px-2 py-2 text-center w-16">TL</th>
-                                                                        <th className="px-2 py-2 text-center w-8"></th>
-                                                                        <th className="px-2 py-2 text-center w-8"></th>
+                                                                <thead className="h-0">
+                                                                    <tr className="h-0">
+                                                                        <th className="w-8 p-0 border-0 h-0"></th>
+                                                                        <th className="min-w-[200px] p-0 border-0 h-0"></th>
+                                                                        <th className="w-24 p-0 border-0 h-0"></th>
+                                                                        <th className="w-32 hidden sm:table-cell p-0 border-0 h-0"></th>
+                                                                        <th className="w-28 hidden sm:table-cell p-0 border-0 h-0"></th>
+                                                                        <th className="w-20 p-0 border-0 h-0"></th>
+                                                                        <th className="w-16 p-0 border-0 h-0"></th>
+                                                                        <th className="w-8 p-0 border-0 h-0"></th>
+                                                                        <th className="w-8 p-0 border-0 h-0"></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -441,7 +456,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                             {expandedMasterTasks[t.TaskID] ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> : <ChevronDown className="w-3 h-3" />}
                                                                                         </button>
                                                                                     )}
-                                                                                    <span>{t.Title}</span>
+                                                                                    <span>{t.Title.replace(/^[\d\.\s]+/, '').trim()}</span>
                                                                                     {t.IsCritical && (
                                                                                         <span className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[8px] rounded font-bold shrink-0">
                                                                                             CP
@@ -583,7 +598,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                                 <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate-700/50 rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
                                                                                                     <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${sub.Status === 'Done' ? 'bg-emerald-500' : sub.Status === 'InProgress' ? 'bg-orange-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
                                                                                                     <span className={`flex-1 font-medium ${sub.Status === 'Done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
-                                                                                                        {sub.Title}
+                                                                                                        {sub.Title.replace(/^[\d\.\s]+/, '').trim()}
                                                                                                     </span>
                                                                                                     <div className="flex items-center gap-3 shrink-0 text-[10px]">
                                                                                                         {sub.AssigneeID ? (

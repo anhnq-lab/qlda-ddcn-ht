@@ -84,6 +84,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [capitalSubTab, setCapitalSubTab] = useState<CapitalSubTab>('annual');
     const [expandedMidTermPlan, setExpandedMidTermPlan] = useState<string | null>(null);
     const [annualPeriodFilter, setAnnualPeriodFilter] = useState<string>('all');
+    const [disbYearFilter, setDisbYearFilter] = useState<number | 'all'>('all');
+    const [disbSourceFilter, setDisbSourceFilter] = useState<string>('all');
 
     // ── CRUD State ──
     const [planModalOpen, setPlanModalOpen] = useState(false);
@@ -184,9 +186,25 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     };
 
     // ── Computed Data ──
-    const filteredDisbursements = disbursementFilter === 'all'
-        ? disbursements
-        : disbursements.filter(d => d.Type === disbursementFilter);
+    const filteredDisbursements = disbursements.filter(d => {
+        // 1. Filter by Type
+        if (disbursementFilter !== 'all' && d.Type !== disbursementFilter) return false;
+        
+        // 2. Filter by Year
+        if (disbYearFilter !== 'all') {
+            const y = new Date(d.Date).getFullYear();
+            if (y !== disbYearFilter) return false;
+        }
+
+        // 3. Filter by Source
+        if (disbSourceFilter !== 'all') {
+            const plan = capitalPlans.find(p => p.PlanID === d.CapitalPlanID);
+            const source = plan?.Source || 'Khác';
+            if (source !== disbSourceFilter) return false;
+        }
+
+        return true;
+    });
 
     // Monthly chart data — stacked by type
     const monthlyChartData = useMemo(() => {
@@ -737,9 +755,10 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             </tbody>
                         </table>
                     </div>
-                        );
-                    })()}
                 </div>
+                );
+            })()}
+        </div>
 
                 {/* Donut Chart — Nguồn vốn */}
                 <div className="bg-bg-surface p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
@@ -962,7 +981,29 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         <ArrowDownUp className="w-4 h-4 text-emerald-600" />
                         Lịch sử giải ngân (NĐ 99/2021/NĐ-CP)
                     </h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <select
+                            value={disbYearFilter}
+                            onChange={(e) => setDisbYearFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                            className="px-3 py-1.5 text-xs font-medium bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 dark:text-slate-200"
+                        >
+                            <option value="all">Tất cả năm</option>
+                            {Array.from(new Set(disbursements.map(d => new Date(d.Date).getFullYear()))).sort((a, b) => b - a).map(y => (
+                                <option key={y} value={y}>Năm {y}</option>
+                            ))}
+                        </select>
+                        
+                        <select
+                            value={disbSourceFilter}
+                            onChange={(e) => setDisbSourceFilter(e.target.value)}
+                            className="px-3 py-1.5 text-xs font-medium bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 dark:text-slate-200"
+                        >
+                            <option value="all">Tất cả nguồn vốn</option>
+                            {Object.entries(SOURCE_LABELS).map(([val, label]) => (
+                                <option key={val} value={val}>{label}</option>
+                            ))}
+                        </select>
+
                         <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
                             {([
                                 ['all', 'Tất cả'],
@@ -1188,7 +1229,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 allPlans={disbursementPlanData}
                 annualLimit={capitalPlans.filter(p => p.PlanType === 'annual' && p.Year === planYearFilter).reduce((sum, p) => sum + (p.Amount || 0), 0)}
                 isSaving={bulkSaveDisbPlan.isPending}
-                projectTasks={projectTasks}
+                projectTasks={projectTasks as any[]}
             />
 
             <ImportDisbursementModal

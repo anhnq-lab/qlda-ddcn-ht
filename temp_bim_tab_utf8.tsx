@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+﻿import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
-// react-resizable-panels removed — using CSS flexbox for reliability
+import { Group, Panel, Separator } from 'react-resizable-panels';
 import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon, ArrowLeft, Bot, Sparkles } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
@@ -21,12 +21,12 @@ import { useBimWalkthrough } from '../bim/useBimWalkthrough';
 import { BimWalkthroughHUD } from '../bim/BimWalkthroughHUD';
 import { BIMAgentChat } from '../../../bim-agent/BIMAgentChat';
 
-// ── Types ───────────────────────────────────────────
+// ΓöÇΓöÇ Types ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 interface ProjectBimTabProps {
     projectID: string;
 }
 
-// ── Cursor class for active tool ────────────────────
+// ΓöÇΓöÇ Cursor class for active tool ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function getCursorClass(activeTool: string | null): string {
     if (!activeTool) return '';
     if (activeTool.startsWith('clip') || activeTool === 'section-box') return 'cursor-crosshair';
@@ -37,7 +37,7 @@ function getCursorClass(activeTool: string | null): string {
 
 
 
-// ── Inner Component ───────────────────────────────────────
+// ΓöÇΓöÇ Inner Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 const ProjectBimTabContent: React.FC = () => {
     const {
         projectID,
@@ -57,7 +57,7 @@ const ProjectBimTabContent: React.FC = () => {
         setContextMenu
     } = useBimContext();
 
-    // ── State ──────────────────────────────
+    // ΓöÇΓöÇ State ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const [isTablet, setIsTablet] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
@@ -68,13 +68,13 @@ const ProjectBimTabContent: React.FC = () => {
     const [showPerfStats, setShowPerfStats] = useState(false);
     const [showAgent, setShowAgent] = useState(false);
 
-    // ── First-person walkthrough ──────────
+    // ΓöÇΓöÇ First-person walkthrough ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const walkthrough = useBimWalkthrough({
         worldRef: engine.worldRef,
         containerRef: containerRef as React.RefObject<HTMLDivElement | null>,
     });
 
-    // ── Resizable panels are now managed by react-resizable-panels ──
+    // ΓöÇΓöÇ Resizable panels are now managed by react-resizable-panels ΓöÇΓöÇ
     const wrapperRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
@@ -83,7 +83,7 @@ const ProjectBimTabContent: React.FC = () => {
 
     const cursorClass = getCursorClass(tools.activeTool);
 
-    // ── Responsive check ───────────────────
+    // ΓöÇΓöÇ Responsive check ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     useEffect(() => {
         const check = () => {
             const w = window.innerWidth;
@@ -98,7 +98,7 @@ const ProjectBimTabContent: React.FC = () => {
         return () => window.removeEventListener('resize', check);
     }, [tools]);
 
-    // ── Load existing models + fit camera ──
+    // ΓöÇΓöÇ Load existing models + fit camera ΓöÇΓöÇ
     useEffect(() => {
         if (engine.viewerReady && !modelsLoaded) {
             setModelsLoaded(true);
@@ -110,14 +110,14 @@ const ProjectBimTabContent: React.FC = () => {
         }
     }, [engine.viewerReady, modelsLoaded]);
 
-    // ── Auto-open model tree when models exist ──
+    // ΓöÇΓöÇ Auto-open model tree when models exist ΓöÇΓöÇ
     useEffect(() => {
         if (hasModels && !isMobile && tools.leftPanel === 'none') {
             tools.toggleLeftPanel('tree');
         }
     }, [hasModels]);
 
-    // ── Setup highlighter events ───────────
+    // ΓöÇΓöÇ Setup highlighter events ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     useEffect(() => {
         if (engine.viewerReady) {
             const cleanup = selection.setupHighlighterEvents();
@@ -125,7 +125,7 @@ const ProjectBimTabContent: React.FC = () => {
         }
     }, [engine.viewerReady]);
 
-    // ── Double-click: Measure + Section Plane ──────────
+    // ΓöÇΓöÇ Double-click: Measure + Section Plane ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     // Measure uses OBC LengthMeasurement.create() per OBC docs
     // Section Plane uses OBC Clipper
     useEffect(() => {
@@ -133,7 +133,7 @@ const ProjectBimTabContent: React.FC = () => {
         if (!container) return;
 
         const onDblClick = async (e: MouseEvent) => {
-            // Measure tools: dblclick → create()
+            // Measure tools: dblclick ΓåÆ create()
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -156,7 +156,7 @@ const ProjectBimTabContent: React.FC = () => {
             }
         };
 
-        // Delete/Backspace → delete last measurement
+        // Delete/Backspace ΓåÆ delete last measurement
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.code === 'Delete' || e.code === 'Backspace') &&
                 (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area')) {
@@ -172,7 +172,7 @@ const ProjectBimTabContent: React.FC = () => {
         };
     }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);
 
-    // ── Render mode switching (with material caching) ──
+    // ΓöÇΓöÇ Render mode switching (with material caching) ΓöÇΓöÇ
     useEffect(() => {
         const scene = engine.worldRef.current?.scene?.three;
         if (!scene) return;
@@ -256,7 +256,7 @@ const ProjectBimTabContent: React.FC = () => {
         });
     }, [tools.renderMode, engine.viewerReady]);
 
-    // ── Fullscreen toggle ──────────────────
+    // ΓöÇΓöÇ Fullscreen toggle ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const toggleFullscreen = useCallback(async () => {
         try {
             if (!document.fullscreenElement) {
@@ -314,7 +314,7 @@ const ProjectBimTabContent: React.FC = () => {
         return () => document.removeEventListener('fullscreenchange', handleChange);
     }, [engine.worldRef]);
 
-    // ── Keyboard shortcuts (UI-only — camera/tool shortcuts handled by useBimKeyboard) ─────
+    // ΓöÇΓöÇ Keyboard shortcuts (UI-only ΓÇö camera/tool shortcuts handled by useBimKeyboard) ΓöÇΓöÇΓöÇΓöÇΓöÇ
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -346,7 +346,7 @@ const ProjectBimTabContent: React.FC = () => {
     }, [toggleFullscreen, walkthrough]);
 
 
-    // ── Click-outside to close context menu ──────
+    // ΓöÇΓöÇ Click-outside to close context menu ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     useEffect(() => {
         if (!contextMenu.visible) return;
         const handler = (e: MouseEvent) => {
@@ -365,7 +365,7 @@ const ProjectBimTabContent: React.FC = () => {
         };
     }, [contextMenu.visible, setContextMenu]);
 
-    // ── Context Menu ──────────────────────────────
+    // ΓöÇΓöÇ Context Menu ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const handleContextMenu = useCallback(async (e: React.MouseEvent) => {
         e.preventDefault();
         setContextMenu(prev => ({ ...prev, visible: false }));
@@ -392,7 +392,7 @@ const ProjectBimTabContent: React.FC = () => {
         }
     }, [engine, selection, setContextMenu]);
 
-    // ── Drag & Drop Upload ───────────────────────
+    // ΓöÇΓöÇ Drag & Drop Upload ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -416,7 +416,7 @@ const ProjectBimTabContent: React.FC = () => {
     }, [upload]);
 
 
-    // ── Status icon ────────────────────────
+    // ΓöÇΓöÇ Status icon ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const StatusIcon = () => {
         switch (upload.status) {
             case 'loading': case 'initializing': case 'converting':
@@ -429,22 +429,22 @@ const ProjectBimTabContent: React.FC = () => {
         }
     };
 
-    // ── Active tool indicator ──────────────
+    // ΓöÇΓöÇ Active tool indicator ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const activeToolLabel = useMemo(() => {
         switch (tools.activeTool) {
-            case 'clip-x': return '✂ Clip X';
-            case 'clip-y': return '✂ Clip Y';
-            case 'clip-z': return '✂ Clip Z';
-            case 'section-box': return '📦 Section Box';
-            case 'section-plane': return '✂ Section Plane — Click bề mặt mô hình';
-            case 'measure-length': return '📏 Measure Length — Click to add points';
-            case 'measure-area': return '📐 Measure Area — Click to add points';
+            case 'clip-x': return 'Γ£é Clip X';
+            case 'clip-y': return 'Γ£é Clip Y';
+            case 'clip-z': return 'Γ£é Clip Z';
+            case 'section-box': return '≡ƒôª Section Box';
+            case 'section-plane': return 'Γ£é Section Plane ΓÇö Click bß╗ü mß║╖t m├┤ h├¼nh';
+            case 'measure-length': return '≡ƒôÅ Measure Length ΓÇö Click to add points';
+            case 'measure-area': return '≡ƒôÉ Measure Area ΓÇö Click to add points';
             default: return null;
         }
     }, [tools.activeTool]);
 
-    // ── RENDER ──────────────────────────────
-    const showLeftPanel = hasModels && !isMobile && (tools.leftPanel === 'tree' || tools.rightPanel === 'properties');
+    // ΓöÇΓöÇ RENDER ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    const showLeftPanel = hasModels && !isMobile && tools.leftPanel === 'tree';
     const showBottomPanel = engine.viewerReady && hasModels;
 
     return (
@@ -458,38 +458,46 @@ const ProjectBimTabContent: React.FC = () => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-            {/* ─── MAIN HORIZONTAL LAYOUT (Flexbox) ─── */}
-            <div className="flex w-full h-full">
-            {/* ─── LEFT SIDEBAR ─── */}
+            <Group direction="horizontal" className="w-full h-full" id="bim-main-group" autoSaveId="bim-main-group-layout">
+            {/* ΓöÇΓöÇΓöÇ LEFT SIDEBAR ΓöÇΓöÇΓöÇ */}
             {showLeftPanel && (
-                <div style={{ width: '280px', minWidth: '200px', maxWidth: '400px' }} className="flex flex-col overflow-hidden shrink-0">
+                <>
+                <Panel defaultSize={20} minSize={15} maxSize={40} className="flex flex-col overflow-hidden">
                 <div
                     className={`flex flex-col h-full border-r ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}
                 >
                     {/* Top: Model Tree */}
-                    {tools.leftPanel === 'tree' && (
-                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                            <BimModelTree />
-                        </div>
-                    )}
+                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                        <BimModelTree />
+                    </div>
                     {/* Divider */}
-                    {tools.leftPanel === 'tree' && tools.rightPanel === 'properties' && (
-                        <div className={`h-px shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
-                    )}
+                    <div className={`h-px shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
                     {/* Bottom: Properties */}
-                    {tools.rightPanel === 'properties' && (
-                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                            <BimPropertiesPanel isBottomPanel={false} />
-                        </div>
-                    )}
+                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                        <BimPropertiesPanel isBottomPanel={false} />
+                    </div>
                 </div>
-                </div>
+                </Panel>
+
+            {/* ΓöÇΓöÇΓöÇ LEFT RESIZE HANDLE ΓöÇΓöÇΓöÇ */}
+                <Separator className={`group relative w-1 cursor-col-resize flex items-center justify-center select-none
+                        ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
+                        transition-colors z-20
+                    `}
+                    title="K├⌐o ─æß╗â resize"
+                >
+                    <div className={`w-0.5 h-8 rounded-full transition-all
+                        ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
+                    `} />
+                </Separator>
+                </>
             )}
 
-            {/* ─── MAIN RIGHT REGION (3D Canvas & Bottom Panel) ─── */}
-            <div className="flex flex-col flex-1 min-w-0">
-                {/* ─── MAIN 3D CANVAS ─── */}
-                <div className={`relative flex flex-col ${showBottomPanel ? 'flex-[3]' : 'flex-1'} min-h-[100px] ${cursorClass}`}>
+            {/* ΓöÇΓöÇΓöÇ MAIN RIGHT REGION (3D Canvas & Bottom Panel) ΓöÇΓöÇΓöÇ */}
+            <Panel className="flex flex-col">
+                <Group direction="vertical" id="bim-right-group" autoSaveId="bim-right-group-layout">
+                    {/* ΓöÇΓöÇΓöÇ MAIN 3D CANVAS ΓöÇΓöÇΓöÇ */}
+                    <Panel className={`relative min-h-[100px] flex flex-col flex-1 ${cursorClass}`}>
                 {/* Active tool indicator */}
                 {activeToolLabel && (
                     <div className={`
@@ -565,7 +573,7 @@ const ProjectBimTabContent: React.FC = () => {
                     >
                         <div className="text-center">
                             <FileUp className={`w-12 h-12 mx-auto mb-3 animate-bounce ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
-                            <p className={`text-sm font-semibold ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>Thả file IFC vào đây</p>
+                            <p className={`text-sm font-semibold ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>Thß║ú file IFC v├áo ─æ├óy</p>
                             <p className={`text-xs mt-1 ${isDark ? 'text-cyan-500/60' : 'text-blue-400/60'}`}>.ifc format</p>
                         </div>
                     </div>
@@ -576,7 +584,7 @@ const ProjectBimTabContent: React.FC = () => {
                     <BimViewCube />
                 )}
 
-                {/* Back to Overview button — shown when model is isolated */}
+                {/* Back to Overview button ΓÇö shown when model is isolated */}
                 {upload.isIsolated && (
                     <button
                         onClick={() => upload.restoreAllModels()}
@@ -587,10 +595,10 @@ const ProjectBimTabContent: React.FC = () => {
                             color: 'white',
                             border: '1px solid rgba(255,255,255,0.2)',
                         }}
-                        title="Quay lại tổng quan"
+                        title="Quay lß║íi tß╗òng quan"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        <span className="text-sm font-medium">Quay lại</span>
+                        <span className="text-sm font-medium">Quay lß║íi</span>
                     </button>
                 )}
 
@@ -598,7 +606,7 @@ const ProjectBimTabContent: React.FC = () => {
                 {engine.viewerReady && (
                     <button
                         onClick={toggleFullscreen}
-                        title={isFullscreen ? 'Thoát toàn màn hình (F11)' : 'Toàn màn hình (F11)'}
+                        title={isFullscreen ? 'Tho├ít to├án m├án h├¼nh (F11)' : 'To├án m├án h├¼nh (F11)'}
                         className={`
                             absolute top-3 right-3 z-30 p-2 rounded-lg backdrop-blur-xl shadow-sm border
                             hidden md:flex items-center justify-center transition-colors cursor-pointer
@@ -686,7 +694,7 @@ const ProjectBimTabContent: React.FC = () => {
                 )}
 
                 {/* Empty state */}
-                {engine.viewerReady && !hasModels && (upload.status === 'idle' || upload.status === 'error') && (
+                {engine.viewerReady && !hasModels && upload.status === 'idle' && (
                     <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div className={`
                             text-center p-10 rounded-2xl pointer-events-auto max-w-sm
@@ -701,10 +709,10 @@ const ProjectBimTabContent: React.FC = () => {
                                 <Building2 className={`w-8 h-8 ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
                             </div>
                             <h3 className={`text-xl font-bold mb-3 ${isDark ? 'bg-gradient-to-r from-slate-100 to-cyan-200 bg-clip-text text-transparent' : 'text-gray-800'}`}>
-                                Môi trường BIM 3D
+                                M├┤i tr╞░ß╗¥ng BIM 3D
                             </h3>
                             <p className={`text-sm mb-6 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                Không tìm thấy mô hình BIM nào đang được liên kết với dự án này. Vui lòng tải lên tệp định dạng chuẩn <strong className={isDark ? 'text-slate-300' : 'text-gray-700'}>IFC</strong> để hệ thống tự động khởi tạo Viewport.
+                                Kh├┤ng t├¼m thß║Ñy m├┤ h├¼nh BIM n├áo ─æang ─æ╞░ß╗úc li├¬n kß║┐t vß╗¢i dß╗▒ ├ín n├áy. Vui l├▓ng tß║úi l├¬n tß╗çp ─æß╗ïnh dß║íng chuß║⌐n <strong className={isDark ? 'text-slate-300' : 'text-gray-700'}>IFC</strong> ─æß╗â hß╗ç thß╗æng tß╗▒ ─æß╗Öng khß╗ƒi tß║ío Viewport.
                             </p>
                             <label className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-xl cursor-pointer text-sm font-semibold transition-all duration-300
                                 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white
@@ -712,7 +720,7 @@ const ProjectBimTabContent: React.FC = () => {
                                 hover:-translate-y-0.5
                             `}>
                                 <Upload className="w-5 h-5" />
-                                Tải lên tệp IFC
+                                Tß║úi l├¬n tß╗çp IFC
                                 <input
                                     type="file"
                                     accept=".ifc"
@@ -721,7 +729,7 @@ const ProjectBimTabContent: React.FC = () => {
                                 />
                             </label>
                             <p className={`text-[10px] mt-3 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                Hoặc kéo thả file .ifc vào đây
+                                Hoß║╖c k├⌐o thß║ú file .ifc v├áo ─æ├óy
                             </p>
                         </div>
                     </div>
@@ -738,10 +746,10 @@ const ProjectBimTabContent: React.FC = () => {
                                 <Box className={`absolute inset-0 m-auto w-4 h-4 animate-pulse ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
                             </div>
                             <h3 className={`text-lg font-bold mb-1 ${isDark ? 'bg-gradient-to-r from-slate-200 to-cyan-300 bg-clip-text text-transparent' : 'text-gray-800'}`}>
-                                Đang khởi tạo Engine
+                                ─Éang khß╗ƒi tß║ío Engine
                             </h3>
                             <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                Đang tải WebAssembly và thiết lập WebGL...
+                                ─Éang tß║úi WebAssembly v├á thiß║┐t lß║¡p WebGL...
                             </p>
                         </div>
                     </div>
@@ -756,12 +764,27 @@ const ProjectBimTabContent: React.FC = () => {
                         </div>
                     </div>
                 )}
-                </div>
+                </Panel>
 
-            {/* ─── BOTTOM PANEL: Operations Management ─── */}
+            {/* ΓöÇΓöÇΓöÇ BOTTOM RESIZE HANDLE ΓöÇΓöÇΓöÇ */}
             {showBottomPanel && (
-                <div className={`flex flex-col overflow-hidden border-t z-20 shrink-0`}
-                    style={{ height: '220px', minHeight: '120px', maxHeight: '350px' }}
+                <>
+                <Separator
+                    className={`group relative h-1 cursor-row-resize flex items-center justify-center select-none z-20
+                        ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
+                        transition-colors
+                    `}
+                    title="K├⌐o ─æß╗â resize"
+                >
+                    <div className={`h-0.5 w-12 rounded-full transition-all
+                        ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
+                    `} />
+                </Separator>
+
+            {/* ΓöÇΓöÇΓöÇ BOTTOM PANEL: Operations Management ΓöÇΓöÇΓöÇ */}
+                <Panel defaultSize={25} minSize={15} maxSize={60} className={`flex flex-col overflow-hidden border-t z-20
+                        ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'}
+                    `}
                 >
                     {/* Panel header */}
                     <div className={`
@@ -775,7 +798,7 @@ const ProjectBimTabContent: React.FC = () => {
                                 ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-50 text-blue-600'}
                             `}>
                                 <Building2 className="w-3 h-3" />
-                                Quản lý vận hành
+                                Quß║ún l├╜ vß║¡n h├ánh
                             </span>
                             <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                                 {upload.disciplineModels.length} models
@@ -787,10 +810,12 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className="flex-1 overflow-auto">
                         <FacilityManagementPanel />
                     </div>
-                </div>
+                </Panel>
+                </>
             )}
-            </div>
-            </div>
+            </Group>
+            </Panel>
+            </Group>
 
             {/* Footer when no models */}
             {(!engine.viewerReady || !hasModels) && (
@@ -799,7 +824,7 @@ const ProjectBimTabContent: React.FC = () => {
                     ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'}
                 `}>
                     <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        Kéo thả file IFC hoặc bấm Upload để bắt đầu
+                        K├⌐o thß║ú file IFC hoß║╖c bß║Ñm Upload ─æß╗â bß║»t ─æß║ºu
                     </span>
                 </div>
             )}
@@ -828,7 +853,7 @@ const ProjectBimTabContent: React.FC = () => {
                         }}
                     >
                         <Info className="w-3.5 h-3.5 text-blue-400" />
-                        <span>Xem thuộc tính</span>
+                        <span>Xem thuß╗Öc t├¡nh</span>
                     </button>
                     <button
                         className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
@@ -840,7 +865,7 @@ const ProjectBimTabContent: React.FC = () => {
                         }}
                     >
                         <LocateFixed className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Phóng to đối tượng</span>
+                        <span>Ph├│ng to ─æß╗æi t╞░ß╗úng</span>
                     </button>
                     <div className={`my-0.5 h-px ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`} />
                     <button
@@ -853,7 +878,7 @@ const ProjectBimTabContent: React.FC = () => {
                         }}
                     >
                         <EyeOff className="w-3.5 h-3.5 text-primary-400" />
-                        <span>Ẩn đối tượng</span>
+                        <span>ß║¿n ─æß╗æi t╞░ß╗úng</span>
                     </button>
                     <button
                         className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
@@ -865,12 +890,12 @@ const ProjectBimTabContent: React.FC = () => {
                         }}
                     >
                         <Focus className="w-3.5 h-3.5 text-purple-400" />
-                        <span>Cô lập đối tượng</span>
+                        <span>C├┤ lß║¡p ─æß╗æi t╞░ß╗úng</span>
                     </button>
                 </div>
             )}
 
-            {/* ─── SHORTCUT TOAST ─── */}
+            {/* ΓöÇΓöÇΓöÇ SHORTCUT TOAST ΓöÇΓöÇΓöÇ */}
             {keyboard.lastShortcutLabel && (
                 <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-xl text-xs font-semibold shadow-sm animate-[fadeSlideIn_0.15s_ease-out] backdrop-blur-lg
                     ${isDark ? 'bg-slate-800/90 text-slate-200 border border-slate-700/50' : 'bg-white/95 text-gray-700 border border-gray-200'}
@@ -879,7 +904,7 @@ const ProjectBimTabContent: React.FC = () => {
                 </div>
             )}
 
-            {/* ─── VALIDATION ERROR TOAST ─── */}
+            {/* ΓöÇΓöÇΓöÇ VALIDATION ERROR TOAST ΓöÇΓöÇΓöÇ */}
             {upload.validationError && (
                 <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium shadow-sm animate-[fadeSlideIn_0.2s_ease-out] backdrop-blur-lg
                     ${isDark ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-red-50 text-red-600 border border-red-200'}
@@ -889,7 +914,7 @@ const ProjectBimTabContent: React.FC = () => {
                 </div>
             )}
 
-            {/* ─── SHORTCUTS HELP OVERLAY ─── */}
+            {/* ΓöÇΓöÇΓöÇ SHORTCUTS HELP OVERLAY ΓöÇΓöÇΓöÇ */}
             {keyboard.showShortcutsHelp && (
                 <div className="fixed inset-0 z-[99999] flex items-center justify-center" onClick={keyboard.toggleShortcutsHelp}>
                     <div className={`absolute inset-0 ${isDark ? 'bg-black/60' : 'bg-black/30'} backdrop-blur-sm`} />
@@ -902,7 +927,7 @@ const ProjectBimTabContent: React.FC = () => {
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <Keyboard className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
-                                <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>Phím tắt BIM Viewer</h3>
+                                <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>Ph├¡m tß║»t BIM Viewer</h3>
                             </div>
                             <button onClick={keyboard.toggleShortcutsHelp} className={`p-1 rounded-lg ${isDark ? 'hover:bg-white/10 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
                                 <XIcon className="w-4 h-4" />
@@ -910,9 +935,9 @@ const ProjectBimTabContent: React.FC = () => {
                         </div>
                         <div className="space-y-3">
                             {[
-                                { group: 'Di chuyển', keys: [['W/A/S/D', 'Di chuyển camera'], ['Q/E', 'Lên/Xuống'], ['Mũi tên', 'Xoay camera'], ['+/-', 'Zoom in/out']] },
-                                { group: 'Hiển thị', keys: [['F / Home', 'Fit All'], ['1-7', 'Preset views (Front, Back, Left, Right, Top, Bottom, Iso)'], ['?', 'Bảng phím tắt']] },
-                                { group: 'Tương tác', keys: [['ESC', 'Hủy tool / Bỏ chọn'], ['Delete', 'Xóa clip plane'], ['Double-click', 'Đo lường (khi đang đo)'], ['Shift+Drag', 'Pan camera']] },
+                                { group: 'Di chuyß╗ân', keys: [['W/A/S/D', 'Di chuyß╗ân camera'], ['Q/E', 'L├¬n/Xuß╗æng'], ['M┼⌐i t├¬n', 'Xoay camera'], ['+/-', 'Zoom in/out']] },
+                                { group: 'Hiß╗ân thß╗ï', keys: [['F / Home', 'Fit All'], ['1-7', 'Preset views (Front, Back, Left, Right, Top, Bottom, Iso)'], ['?', 'Bß║úng ph├¡m tß║»t']] },
+                                { group: 'T╞░╞íng t├íc', keys: [['ESC', 'Hß╗ºy tool / Bß╗Å chß╗ìn'], ['Delete', 'X├│a clip plane'], ['Double-click', '─Éo l╞░ß╗¥ng (khi ─æang ─æo)'], ['Shift+Drag', 'Pan camera']] },
                             ].map(section => (
                                 <div key={section.group}>
                                     <p className={`text-[10px] font-bold uppercase mb-1.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{section.group}</p>
@@ -932,7 +957,7 @@ const ProjectBimTabContent: React.FC = () => {
     );
 };
 
-// ── Wrapper Component ───────────────────────────────────────
+// ΓöÇΓöÇ Wrapper Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const { theme } = useTheme();
     const isDark = theme === 'dark';

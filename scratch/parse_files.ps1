@@ -1,5 +1,5 @@
 # parse_files.ps1
-# Script to parse Word (.docx) and Excel (.xlsx) files using COM objects in PowerShell.
+# Script để đọc các file Word (.docx) và Excel (.xlsx) sử dụng COM objects trong PowerShell.
 
 $ksFolder = "d:\QuocAnh\2026\01.Project\qlda-ddcn-ht\Ks"
 $outputFolder = "d:\QuocAnh\2026\01.Project\qlda-ddcn-ht\scratch\output"
@@ -8,7 +8,7 @@ if (!(Test-Path $outputFolder)) {
     New-Item -ItemType Directory -Path $outputFolder -Force | Out-Null
 }
 
-Write-Host "Initializing Word and Excel COM Applications..."
+Write-Host "Khởi tạo Word và Excel COM Applications..."
 $word = New-Object -ComObject Word.Application
 $word.Visible = $false
 $excel = New-Object -ComObject Excel.Application
@@ -21,7 +21,7 @@ function Get-WordSummary {
     )
     
     $fileName = Split-Path $filePath -Leaf
-    Write-Host "Parsing Word: $fileName..."
+    Write-Host "Đang đọc Word: $fileName..."
     $doc = $null
     try {
         $doc = $word.Documents.Open($filePath, $true, $true) # FileName, ConfirmConversions, ReadOnly
@@ -31,14 +31,14 @@ function Get-WordSummary {
         
         $stream = [System.IO.StreamWriter]::new($outputFile)
         $stream.WriteLine("================================================================================")
-        $stream.WriteLine("WORD DOCUMENT SUMMARY: $fileName")
-        $stream.WriteLine("File Path: $filePath")
-        $stream.WriteLine("Total Paragraphs: $pCount")
+        $stream.WriteLine("TÓM TẮT TÀI LIỆU WORD: $fileName")
+        $stream.WriteLine("Đường dẫn file: $filePath")
+        $stream.WriteLine("Tổng số đoạn văn: $pCount")
         $stream.WriteLine("================================================================================")
         $stream.WriteLine()
         
-        # Extract headings and outline
-        $stream.WriteLine("--- TABLE OF CONTENTS / HEADINGS ---")
+        # Trích xuất các tiêu đề và dàn ý
+        $stream.WriteLine("--- MỤC LỤC / CÁC TIÊU ĐỀ ---")
         $headingsFound = 0
         for ($i = 1; $i -le $pCount; $i++) {
             $p = $paragraphs.Item($i)
@@ -55,21 +55,21 @@ function Get-WordSummary {
             }
         }
         if ($headingsFound -eq 0) {
-            $stream.WriteLine("(No formal headings detected via OutlineLevel/Style, scanning for bold text in first 100 paragraphs)")
-            # Fallback scan for bold text
+            $stream.WriteLine("(Không phát hiện tiêu đề chính thức qua OutlineLevel/Style, đang quét văn bản in đậm trong 100 đoạn đầu tiên)")
+            # Quét dự phòng cho văn bản in đậm
             $scanLimit = [math]::Min($pCount, 100)
             for ($i = 1; $i -le $scanLimit; $i++) {
                 $p = $paragraphs.Item($i)
                 $text = $p.Range.Text.Trim()
                 if ($text -and $p.Range.Bold -eq -1 -and $text.Length -lt 200) {
-                    $stream.WriteLine("- [Bold fallback] $text")
+                    $stream.WriteLine("- [In đậm dự phòng] $text")
                 }
             }
         }
         $stream.WriteLine()
         
-        # Extract first 30 non-empty paragraphs for reading
-        $stream.WriteLine("--- SAMPLE CONTENT (FIRST 30 NON-EMPTY PARAGRAPHS) ---")
+        # Trích xuất 30 đoạn văn không rỗng đầu tiên để đọc
+        $stream.WriteLine("--- NỘI DUNG MẪU (30 ĐOẠN VĂN KHÔNG RỖNG ĐẦU TIÊN) ---")
         $contentCount = 0
         for ($i = 1; $i -le $pCount; $i++) {
             $p = $paragraphs.Item($i)
@@ -77,7 +77,7 @@ function Get-WordSummary {
             if ($text) {
                 $styleName = ""
                 try { $styleName = $p.Style.NameLocal } catch {}
-                $stream.WriteLine("[Para $i][$styleName]: $text")
+                $stream.WriteLine("[Đoạn $i][$styleName]: $text")
                 $stream.WriteLine()
                 $contentCount++
                 if ($contentCount -ge 30) { break }
@@ -87,7 +87,7 @@ function Get-WordSummary {
         $stream.Close()
     }
     catch {
-        Write-Host "Error parsing $fileName - $_"
+        Write-Host "Lỗi khi đọc file $fileName - $_"
     }
     finally {
         if ($doc) {
@@ -103,28 +103,28 @@ function Get-ExcelSummary {
     )
     
     $fileName = Split-Path $filePath -Leaf
-    Write-Host "Parsing Excel: $fileName..."
+    Write-Host "Đang đọc Excel: $fileName..."
     $wb = $null
     try {
         $wb = $excel.Workbooks.Open($filePath, $false, $true) # UpdateLinks, ReadOnly
         
         $stream = [System.IO.StreamWriter]::new($outputFile)
         $stream.WriteLine("================================================================================")
-        $stream.WriteLine("EXCEL WORKBOOK SUMMARY: $fileName")
-        $stream.WriteLine("File Path: $filePath")
-        $stream.WriteLine("Total Sheets: $($wb.Sheets.Count)")
+        $stream.WriteLine("TÓM TẮT EXCEL WORKBOOK: $fileName")
+        $stream.WriteLine("Đường dẫn file: $filePath")
+        $stream.WriteLine("Tổng số Sheet: $($wb.Sheets.Count)")
         $stream.WriteLine("================================================================================")
         $stream.WriteLine()
         
-        # Sheet list
-        $stream.WriteLine("--- SHEET LIST ---")
+        # Danh sách Sheet
+        $stream.WriteLine("--- DANH SÁCH SHEET ---")
         for ($s = 1; $s -le $wb.Sheets.Count; $s++) {
             $sheet = $wb.Sheets.Item($s)
-            $stream.WriteLine("- Sheet $($s) : $($sheet.Name) ($($sheet.UsedRange.Rows.Count) rows x $($sheet.UsedRange.Columns.Count) cols)")
+            $stream.WriteLine("- Sheet $($s) : $($sheet.Name) ($($sheet.UsedRange.Rows.Count) dòng x $($sheet.UsedRange.Columns.Count) cột)")
         }
         $stream.WriteLine()
         
-        # Sheet contents
+        # Nội dung Sheet
         for ($s = 1; $s -le $wb.Sheets.Count; $s++) {
             $sheet = $wb.Sheets.Item($s)
             $stream.WriteLine("================================================================================")
@@ -135,7 +135,7 @@ function Get-ExcelSummary {
             $rowCount = [math]::Min($usedRange.Rows.Count, 40)
             $colCount = [math]::Min($usedRange.Columns.Count, 15)
             
-            $stream.WriteLine("(Displaying top $rowCount rows and $colCount columns)")
+            $stream.WriteLine("(Hiển thị $rowCount dòng và $colCount cột đầu tiên)")
             $stream.WriteLine()
             
             for ($r = 1; $r -le $rowCount; $r++) {
@@ -144,14 +144,14 @@ function Get-ExcelSummary {
                     $cell = $usedRange.Cells.Item($r, $c)
                     $val = $cell.Text
                     if ($val -eq $null) { $val = "" }
-                    # Escape tabs and newlines
+                    # Xử lý ký tự tab và xuống dòng
                     $val = $val.Replace("`t", " ").Replace("`r", " ").Replace("`n", " ")
                     $rowVals += $val
                 }
                 $line = $rowVals -join "`t"
-                # Only write line if it's not entirely empty tabs
+                # Chỉ ghi dòng nếu nó không hoàn toàn là các tab trống
                 if ($line.Trim() -ne "") {
-                    $stream.WriteLine("[Row $r]`t$line")
+                    $stream.WriteLine("[Dòng $r]`t$line")
                 }
             }
             $stream.WriteLine()
@@ -160,7 +160,7 @@ function Get-ExcelSummary {
         $stream.Close()
     }
     catch {
-        Write-Host "Error parsing $fileName - $_"
+        Write-Host "Lỗi khi đọc file $fileName - $_"
     }
     finally {
         if ($wb) {
@@ -169,11 +169,11 @@ function Get-ExcelSummary {
     }
 }
 
-# Recursively find all docx and xlsx files in $ksFolder
+# Đệ quy tìm tất cả các file docx và xlsx trong $ksFolder
 $files = Get-ChildItem -Path $ksFolder -Recurse -File -Include *.docx, *.xlsx
 
 foreach ($file in $files) {
-    # Use PowerShell case-insensitive -replace to remove $ksFolder prefix
+    # Sử dụng -replace không phân biệt chữ hoa chữ thường của PowerShell để xóa tiền tố $ksFolder
     $relative = $file.FullName -replace [regex]::Escape($ksFolder), ""
     $relative = $relative.TrimStart("\").TrimStart("/")
     $safeName = $relative.Replace("\", "_").Replace("/", "_").Replace(" ", "_") + ".txt"
@@ -189,4 +189,4 @@ foreach ($file in $files) {
 
 $word.Quit()
 $excel.Quit()
-Write-Host "Parsing completed! Outputs saved to: $outputFolder"
+Write-Host "Đã đọc xong! Kết quả được lưu tại: $outputFolder"
