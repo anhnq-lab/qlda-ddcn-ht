@@ -31,13 +31,13 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
     };
 
     // Queries
-    const { data: comments = [], refetch: refetchComments } = useQuery<any[]>({
+    const { data: comments = [], refetch: refetchComments, isError: isCommentsError } = useQuery<any[]>({
         queryKey: ['task_comments', taskId],
         queryFn: () => TaskService.getTaskComments(taskId),
         enabled: type === 'comments'
     });
 
-    const { data: activities = [] } = useQuery<any[]>({
+    const { data: activities = [], isError: isActivitiesError } = useQuery<any[]>({
         queryKey: ['task_activities', taskId],
         queryFn: () => TaskService.getTaskActivities(taskId),
         enabled: type === 'history'
@@ -82,7 +82,13 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
             <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900/50 relative">
                 {/* Comments List */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-                    {comments.length === 0 ? (
+                    {isCommentsError ? (
+                        <div className="text-center py-12 text-red-500 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                            <X className="w-10 h-10 mx-auto mb-2 text-red-400" />
+                            <p className="font-medium">Không thể tải bình luận.</p>
+                            <p className="text-sm opacity-80 mt-1">Hệ thống chưa được cập nhật database mới.</p>
+                        </div>
+                    ) : comments.length === 0 ? (
                         <div className="text-center py-12 text-slate-400">
                             <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
                             <p>Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!</p>
@@ -200,7 +206,13 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
                     <Clock className="w-4 h-4" /> Nhật ký hoạt động
                 </h3>
                 
-                {activities.length === 0 ? (
+                {isActivitiesError ? (
+                    <div className="text-center py-12 text-red-500 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                        <X className="w-10 h-10 mx-auto mb-2 text-red-400" />
+                        <p className="font-medium">Không thể tải lịch sử hoạt động.</p>
+                        <p className="text-sm opacity-80 mt-1">Hệ thống chưa được cập nhật database mới.</p>
+                    </div>
+                ) : activities.length === 0 ? (
                     <div className="text-center py-12 text-slate-400">
                         <p>Chưa có thay đổi nào được ghi lại.</p>
                     </div>

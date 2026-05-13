@@ -38,7 +38,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
             try {
                 const [wfRes, nodesRes] = await Promise.all([
                     supabase.from('workflows').select('*').eq('id', workflowId).single(),
-                    supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId).or('is_deleted.eq.false,is_deleted.is.null').order('created_at', { ascending: true })
+                    supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId).or('is_deleted.eq.false,is_deleted.is.null').order('sort_order', { ascending: true }).order('created_at', { ascending: true })
                 ]);
                 if (!wfRes.error) setWorkflow(wfRes.data);
                 if (!nodesRes.error) setNodes(nodesRes.data || []);

@@ -376,7 +376,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                         )}
                         {/* Legend */}
                         <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000] max-h-[80%] overflow-y-auto w-56">
-                            <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích trạng thái (Bấm để lọc)</h4>
+                            <h4 className="text-[9px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2 whitespace-nowrap" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích trạng thái (Bấm để lọc)</h4>
                             <div className="space-y-1.5">
                                 {Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([key, config]) => {
                                     const statusNum = Number(key);

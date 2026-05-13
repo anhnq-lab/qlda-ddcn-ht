@@ -92,7 +92,7 @@ const WorkflowManagerPage: React.FC = () => {
         setIsLoadingDetails(true);
         try {
             const [nodesRes, edgesRes] = await Promise.all([
-                supabase.from('workflow_nodes').select('*').eq('workflow_id', wf.id).order('created_at', { ascending: true }),
+                supabase.from('workflow_nodes').select('*').eq('workflow_id', wf.id).order('sort_order', { ascending: true }).order('created_at', { ascending: true }),
                 supabase.from('workflow_edges').select('*').eq('workflow_id', wf.id)
             ]);
 
@@ -318,7 +318,7 @@ const WorkflowManagerPage: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto space-y-6 animate-fade-in relative z-10 pb-20">
+        <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-fade-in relative z-10 pb-20 px-2 sm:px-6">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-bg-surface p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-primary-100 dark:bg-primary-900/10 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
@@ -445,29 +445,29 @@ const WorkflowManagerPage: React.FC = () => {
 
                     {/* Grid View */}
                     {!error && !isLoading && filteredWorkflows.length > 0 && viewMode === 'grid' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                             {filteredWorkflows.map(wf => (
                                 <div key={wf.id} onClick={() => handleViewWorkflowOverview(wf)}
-                                    className="bg-bg-surface p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-primary-500 dark:hover:border-primary-500 transition-all cursor-pointer group flex flex-col h-full relative">
+                                    className="bg-bg-surface p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-primary-500 dark:hover:border-primary-500 transition-all cursor-pointer group flex flex-col h-full relative">
                                     
                                     {/* Delete button */}
                                     <button
                                         onClick={(e) => handleDeleteWorkflow(e, wf)}
-                                        className="absolute top-3 right-3 p-2 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 opacity-0 group-hover:opacity-100 transition-all z-10"
+                                        className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 opacity-0 group-hover:opacity-100 transition-all z-10"
                                         title="Xóa quy trình"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={15} />
                                     </button>
 
-                                    <div className="flex justify-between items-start mb-4 pr-8">
-                                        <div className={`p-2.5 rounded-xl transition-colors ${activeTab === 'project' ? 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/40' : 'bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white dark:bg-teal-900/40'}`}>
-                                            <GitBranch size={22} />
+                                    <div className="flex justify-between items-start mb-3 pr-8">
+                                        <div className={`p-2 rounded-xl transition-colors ${activeTab === 'project' ? 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/40' : 'bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white dark:bg-teal-900/40'}`}>
+                                            <GitBranch size={18} />
                                         </div>
-                                        <span className="text-xs font-black px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg">v{wf.version || 1}.0</span>
+                                        <span className="text-[11px] font-black px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg">v{wf.version || 1}.0</span>
                                     </div>
-                                    <h3 className="text-[17px] font-black tracking-tight text-slate-800 dark:text-white mb-2 group-hover:text-primary-600 transition-colors uppercase font-display">{wf.name}</h3>
-                                    <p className="text-xs font-bold font-mono text-slate-400 dark:text-slate-400 mb-3 uppercase tracking-wider">{wf.code}</p>
-                                    <p className="text-sm text-slate-500 line-clamp-2 mb-6 flex-grow leading-relaxed">{wf.description || 'Chưa có mô tả'}</p>
+                                    <h3 className="text-[14px] font-black tracking-tight text-slate-800 dark:text-white mb-1.5 group-hover:text-primary-600 transition-colors uppercase font-display line-clamp-2">{wf.name}</h3>
+                                    <p className="text-[11px] font-bold font-mono text-slate-400 dark:text-slate-400 mb-2 uppercase tracking-wider">{wf.code}</p>
+                                    <p className="text-[12px] text-slate-500 line-clamp-2 mb-4 flex-grow leading-relaxed">{wf.description || 'Chưa có mô tả'}</p>
                                     
                                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/50 mt-auto">
                                         <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">{getCategoryLabel(wf.category)}</span>

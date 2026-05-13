@@ -479,7 +479,11 @@ export const TaskService = {
   ): Promise<DbTask[]> => {
     // 1. Lấy nodes của workflow template
     const nodes = await WorkflowTemplateService.getTemplateNodes(workflowId);
-    const workNodes = nodes.filter(n => ['approval', 'input', 'automated', 'start'].includes(n.type));
+    // Bao gồm tất cả node types có công việc thực tế.
+    // 'end' = bước kết thúc dự án (Tất toán, Đóng mã DA) — PHẢI được tạo task.
+    // Chỉ loại trừ 'gateway' / 'connector' (nodes định tuyến thuần túy, không có SLA).
+    const SKIP_TYPES = new Set(['gateway', 'connector']);
+    const workNodes = nodes.filter(n => !SKIP_TYPES.has(n.type));
 
     if (workNodes.length === 0) return [];
 
@@ -549,14 +553,22 @@ export const TaskService = {
         due_date: nodeEndDate.toISOString().split('T')[0],
         duration_days: nodeSla,
         phase: nodeMetadata.phase || 'preparation',
-        step_code: nodeMetadata.step_code || (node.name.match(/^(\d+)\./) ? node.name.match(/^(\d+)\./)![1] : (i + 1).toString()),
+        // step_code = node.id (UUID) để WBS view có thể match task với đúng dòng step.
+        // Dùng UUID thay vì số thứ tự để khớp với PhaseItem.code trong useWorkflowPhases.
+        step_code: node.id,
         sort_order: i,
         predecessor_task_id: previousTaskId, // Link for Gantt
-        legal_basis: nodeMetadata.legalBasis || '',
+        legal_basis: nodeMetadata.legalBasis || nodeMetadata.legal_basis || '',
+        output_document: nodeMetadata.output || nodeMetadata.output_document || '',
         metadata: {
           sub_process: nodeMetadata.sub_process || '',
           sla_formula: node.sla_formula,
-          assignee_role: nodeMetadata.assignee_role || '',
+          // assignee_role: ưu tiên trực tiếp trên node, rồi mới sub_task đầu tiên
+          assignee_role: nodeMetadata.assignee_role
+            || nodeMetadata.sub_tasks?.[0]?.assignee_role
+            || nodeMetadata.sub_tasks?.[0]?.actor
+            || '',
+          node_type: node.type,
         },
       } as any);
 

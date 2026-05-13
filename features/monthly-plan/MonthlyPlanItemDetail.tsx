@@ -122,13 +122,13 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 {(project || annualItem) && (
                                     <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400 mt-3">
                                         {project && (
-                                            <span className="flex items-center gap-1.5 bg-violet-50 text-violet-700 px-2 py-1 rounded-md text-xs font-medium">
+                                            <span className="flex items-center gap-1.5 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 px-2 py-1 rounded-md text-xs font-medium border border-violet-100 dark:border-violet-500/20">
                                                 <FolderOpen className="w-3.5 h-3.5" />
                                                 {project.ProjectName}
                                             </span>
                                         )}
                                         {annualItem && (
-                                            <span className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs font-medium">
+                                            <span className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-md text-xs font-medium border border-blue-100 dark:border-blue-500/20">
                                                 <Link2 className="w-3.5 h-3.5" />
                                                 KH Khung năm {year}
                                             </span>
@@ -136,9 +136,9 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                     </div>
                                 )}
                             </div>
-                            </div>
                         </div>
                     </div>
+                </div>
 
                 {/* ══════════ CONTENT GRID ══════════ */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -171,6 +171,35 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
                     {/* ── RIGHT 1/3 ── */}
                     <div className="space-y-6">
+
+                        {/* Nguồn gốc & Liên kết */}
+                        {(project || annualItem) && (
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Link2 className="w-4 h-4" /> Nguồn gốc & Liên kết
+                                </h3>
+                                <div className="space-y-4">
+                                    {project && (
+                                        <div>
+                                            <p className="text-[10px] uppercase font-bold text-violet-500 tracking-wider mb-1">Thuộc dự án</p>
+                                            <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                                <FolderOpen className="w-4 h-4 text-violet-400 shrink-0" />
+                                                {project.ProjectName}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {annualItem && (
+                                        <div>
+                                            <p className="text-[10px] uppercase font-bold text-blue-500 tracking-wider mb-1">Kế hoạch khung năm {year}</p>
+                                            <div className="flex items-start gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                                <Target className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+                                                <span>{annualItem.task_name}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                         
                         {/* Timeline / Deadlines */}
                         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">

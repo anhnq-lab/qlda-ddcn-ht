@@ -142,7 +142,7 @@ const getPriorityConfig = (p?: TaskPriority) => {
 interface ProjectTaskModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (task: Partial<Task>) => void;
+    onSubmit: (task: Partial<Task>) => Promise<void> | void;
     initialData?: Partial<Task>;
     stepName?: string;
     stepCode?: string;
@@ -181,6 +181,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const [activeExportTemplate, setActiveExportTemplate] = useState<TaskTemplate | null>(null);
     const [projectMemberIds, setProjectMemberIds] = useState<string[]>([]);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Load project members to filter employee dropdown
     useEffect(() => {
@@ -226,15 +227,20 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({ ...formData, TimelineStep: stepCode || formData.TimelineStep });
-        if (isEditMode) {
-            // Stay open in edit mode, show save feedback
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 2000);
-        } else {
-            onClose(); // Close only when creating new task
+        setIsSubmitting(true);
+        try {
+            await onSubmit({ ...formData, TimelineStep: stepCode || formData.TimelineStep });
+            if (isEditMode) {
+                // Stay open in edit mode, show save feedback
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 2000);
+            } else {
+                onClose(); // Close only when creating new task
+            }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -888,10 +894,11 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                         )}
                         {!saveSuccess && <div />}
                         <div className="flex gap-3">
-                            <button type="button" onClick={onClose} className="px-5 py-2.5 text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                            <button type="button" onClick={onClose} disabled={isSubmitting} className="px-5 py-2.5 text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50">
                                 {isEditMode ? 'Đóng' : 'Hủy bỏ'}
                             </button>
-                            <button type="submit" className={`px-6 py-2.5 font-bold rounded-lg shadow-sm transition-all active:scale-[0.98] ${saveSuccess ? 'bg-emerald-500 text-white shadow-emerald-500/25' : 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700'}`}>
+                            <button type="submit" disabled={isSubmitting} className={`px-6 py-2.5 font-bold rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${saveSuccess ? 'bg-emerald-500 text-white shadow-emerald-500/25' : 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700'}`}>
+                                {isSubmitting && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                 {isEditMode ? (saveSuccess ? '✅ Đã lưu' : 'Lưu thay đổi') : 'Tạo công việc'}
                             </button>
                         </div>

@@ -150,10 +150,11 @@ export function useWorkflowPhases(groupCode: string = 'C', project?: any) {
             // 3. Fetch nodes for the target workflow
             const { data: nodes, error: nodeErr } = await supabase
                 .from('workflow_nodes')
-                .select('id, name, type, sla_formula, metadata, created_at')
+                .select('id, name, type, sla_formula, metadata, created_at, sort_order')
                 .eq('workflow_id', targetWorkflowId)
                 .eq('is_deleted', false)
-                .order('created_at', { ascending: true });
+                .order('sort_order', { ascending: true })
+                .order('created_at', { ascending: true }); // tiebreaker
 
             if (nodeErr) {
                 console.error('Failed to load workflow nodes:', nodeErr);
@@ -171,10 +172,10 @@ export function useWorkflowPhases(groupCode: string = 'C', project?: any) {
     const phases = useMemo<ProjectPhase[]>(() => {
         if (nodes.length === 0) return [];
 
-        // Filter work nodes (include start for "1. Lập BCNCTKT..." which is type=start)
-        const workNodes = nodes.filter(n => 
-            ['approval', 'input', 'automated', 'start'].includes(n.type)
-        );
+        // Filter work nodes — bao gồm tất cả node thực tế, loại bỏ chỉ node định tuyến
+        // 'end' = bước cuối (Tất toán, Đóng mã DA) — phải hiển thị trong WBS
+        const SKIP_TYPES = new Set(['gateway', 'connector']);
+        const workNodes = nodes.filter(n => !SKIP_TYPES.has(n.type));
 
         // Intermediate structure: phase → sub_process → items
         const phaseMap: Record<string, Record<string, PhaseItem[]>> = {};
@@ -193,11 +194,16 @@ export function useWorkflowPhases(groupCode: string = 'C', project?: any) {
             const stepNum = nameMatch ? nameMatch[1] : String(flatPhaseItems[phase].length + 1);
             const cleanTitle = nameMatch ? node.name.replace(/^\d+\.\s*/, '') : node.name;
 
-            // Extract assignee_role from first sub_task (if available)
-            const firstSubTask = node.metadata?.sub_tasks?.[0];
-            const assigneeRole = firstSubTask?.assignee_role || undefined;
+            // Extract assignee_role: ưu tiên trực tiếp trên node metadata,
+            // rồi mới tới sub_task đầu tiên (field assignee_role hoặc actor)
+            const assigneeRole = node.metadata?.assignee_role
+                || node.metadata?.sub_tasks?.[0]?.assignee_role
+                || node.metadata?.sub_tasks?.[0]?.actor
+                || undefined;
             const slaRaw = node.sla_formula || undefined;
-            const estimatedDays = slaRaw ? parseInt(slaRaw) : undefined;
+            // Parse "30d" → 30 (dùng regex để tránh parseInt("30d") = 30 nhưng nhất quán)
+            const slaMatch = slaRaw?.match(/^(\d+)d$/);
+            const estimatedDays = slaMatch ? parseInt(slaMatch[1]) : undefined;
 
             const item: PhaseItem = {
                 id: stepNum,

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     ReactFlow,
     Background,
@@ -37,6 +37,7 @@ type NodeData = {
 };
 
 const DEPT_CONFIG: Record<string, { gradient: string; color: string; icon: string }> = {
+    'Ban Giám đốc':                 { gradient: 'from-red-500 to-red-700',     color: '#dc2626', icon: '🏛' },
     'Phòng Hành chính – Tổng hợp':  { gradient: 'from-blue-500 to-blue-700',    color: '#3b82f6', icon: '🏛' },
     'Phòng Kế hoạch – Đấu thầu':    { gradient: 'from-emerald-500 to-emerald-700', color: '#10b981', icon: '📊' },
     'Phòng Kỹ thuật – Thẩm định':   { gradient: 'from-purple-500 to-purple-700', color: '#a855f7', icon: '🔧' },
@@ -239,6 +240,7 @@ function buildFlowElements(
 // ══════════════════════════════════════════════════
 
 const DEPARTMENTS = [
+    'Ban Giám đốc',
     'Phòng Hành chính – Tổng hợp',
     'Phòng Kế hoạch – Đấu thầu',
     'Phòng Kỹ thuật – Thẩm định',
@@ -252,6 +254,7 @@ const OrgChartPage: React.FC = () => {
     const navigate = useNavigate();
     const { data: employees = [] } = useEmployees();
     const [activeTab, setActiveTab] = useState<'flow' | 'grid'>('flow');
+    const [, setSearchParams] = useSearchParams();
 
     const deptGroups = useMemo(() => {
         const g: Record<string, typeof employees> = {};
@@ -388,7 +391,24 @@ const OrgChartPage: React.FC = () => {
                 <div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {DEPARTMENTS.map(dept => {
-                            const members = deptGroups[dept] || [];
+                            let members = deptGroups[dept] || [];
+                            
+                            if (dept === 'Ban Giám đốc') {
+                                // Lọc bỏ Quản trị viên
+                                members = members.filter(m => !m.Position.toLowerCase().includes('quản trị') && !m.FullName.toLowerCase().includes('quản trị'));
+                                
+                                // Sắp xếp theo thứ tự yêu cầu
+                                const bgdOrder = ['Nguyễn Quang Linh', 'Trần Ngọc Bảo', 'Nguyễn Văn Nhân', 'Ngô Đức Quy'];
+                                members.sort((a, b) => {
+                                    const indexA = bgdOrder.indexOf(a.FullName);
+                                    const indexB = bgdOrder.indexOf(b.FullName);
+                                    // Nếu không có trong danh sách, đẩy xuống cuối
+                                    const valA = indexA === -1 ? 999 : indexA;
+                                    const valB = indexB === -1 ? 999 : indexB;
+                                    return valA - valB;
+                                });
+                            }
+
                             const cfg = DEPT_CONFIG[dept];
                             const leader = members.find(m =>
                                 m.Position.includes('Trưởng') || m.Position.includes('Chánh') || m.Position.includes('Giám đốc')
@@ -444,7 +464,7 @@ const OrgChartPage: React.FC = () => {
                                         {members.length > 6 && (
                                             <div className="px-5 py-2.5 text-center">
                                                 <button
-                                                    onClick={() => navigate('/employees')}
+                                                    onClick={() => setSearchParams({ tab: 'list' })}
                                                     className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline cursor-pointer"
                                                 >
                                                     +{members.length - 6} người khác →

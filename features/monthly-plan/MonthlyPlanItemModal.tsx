@@ -48,7 +48,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [projectSearch, setProjectSearch] = useState('');
-    const [expanded, setExpanded] = useState<Set<SectionKey>>(new Set(['thongtin', 'phancong']));
+    const [expanded, setExpanded] = useState<Set<SectionKey>>(new Set(['lienket', 'thongtin', 'phancong']));
 
     // Data hooks
     const { options: annualOptions, items: annualItems, loading: annualLoading } =

@@ -431,6 +431,16 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 ]}
             />
 
+            <Divider isDark={isDarkMode} label="PANELS" />
+
+            {/* ── Panels ──── */}
+            <ToolBtn isDark={isDarkMode} active={leftPanel === 'tree'} onClick={() => tools.toggleLeftPanel('tree')} title="Toggle Model Tree" disabled={disabled}>
+                <TreePine className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} active={rightPanel === 'properties'} onClick={() => tools.toggleRightPanel('properties')} title="Toggle Properties" disabled={disabled}>
+                <PanelRight className="w-5 h-5" />
+            </ToolBtn>
+
             <Divider isDark={isDarkMode} label="CUT" />
 
             {/* ── Section ──── */}

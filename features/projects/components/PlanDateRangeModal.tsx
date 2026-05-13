@@ -20,6 +20,7 @@ interface PlanDateRangeModalProps {
     defaultStartDate?: string;
     isLoading?: boolean;
     showWorkflowOption?: boolean;
+    project?: any;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -183,6 +184,7 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
     defaultStartDate,
     isLoading = false,
     showWorkflowOption = false,
+    project,
 }) => {
     // Only 'range' mode is truly relevant here now, but we keep it simple since we only need Start Date for Workflow
     const [startDate, setStartDate] = useState('');
@@ -197,18 +199,31 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
         const fetchWorkflows = async () => {
             const { data, error } = await supabase
                 .from('workflows')
-                .select('id, name')
+                .select('id, name, code')
                 .eq('is_active', true)
                 .eq('category', 'project')
                 .order('created_at', { ascending: false });
             
             if (data && !error) {
                 setWorkflows(data);
-                if (data.length > 0) setSelectedWorkflowId(data[0].id);
+                
+                // Find correct workflow to select by default based on project DesignSteps
+                const designSteps = project?.DesignSteps || project?.design_steps || 1;
+                let targetCode = 'QT-TK1B';
+                if (designSteps === 3) targetCode = 'QT-TK3B';
+                if (designSteps === 2) targetCode = 'QT-TK2B';
+
+                const defaultWf = data.find(w => w.code === targetCode);
+                
+                if (defaultWf) {
+                    setSelectedWorkflowId(defaultWf.id);
+                } else if (data.length > 0) {
+                    setSelectedWorkflowId(data[0].id);
+                }
             }
         };
         fetchWorkflows();
-    }, [isOpen, showWorkflowOption]);
+    }, [isOpen, showWorkflowOption, project]);
 
     // Fetch estimated days when workflow changes
     useEffect(() => {
@@ -324,6 +339,9 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
                                     <option key={wf.id} value={wf.id}>{wf.name}</option>
                                 ))}
                             </select>
+                            {project && (
+                                <p className="text-[10px] text-gray-500 italic">Quy trình mặc định được chọn dựa trên số bước thiết kế của dự án ({project.DesignSteps || project.design_steps || 1} bước). Bạn có thể thay đổi nếu cần.</p>
+                            )}
                         </div>
                     )}
 

@@ -66,6 +66,15 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard)
         : null;
 
+    const totalInvestment = project.TotalInvestment || 0;
+    const khv = project.KHVInfo?.total || 0;
+    const disbursed = project.ImplementationTracking?.totalDisbursed || 0;
+    const volume = project.ImplementationTracking?.totalVolume || 0;
+
+    const khvPercent = totalInvestment > 0 ? Math.min(100, (khv / totalInvestment) * 100) : 0;
+    const disbursedPercent = khv > 0 ? Math.min(100, (disbursed / khv) * 100) : 0;
+    const volumePercent = project.ImplementationTracking?.volumeRate || project.Progress || 0;
+
     if (layout === 'list') {
         return (
             <div
@@ -111,24 +120,34 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 items-end">
+                    <div className="grid grid-cols-4 gap-4 items-end">
+                        <div>
+                            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase mb-1">Tổng mức ĐT</p>
+                            <p className="text-xs font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(totalInvestment)}</p>
+                        </div>
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
-                                <span className="text-gray-500 dark:text-slate-400">Tiến độ</span>
-                                <span className="font-bold text-blue-600 dark:text-blue-400">{project.Progress || 0}%</span>
+                                <span className="text-gray-500 dark:text-slate-400">KH Vốn</span>
+                                <span className="font-bold text-blue-600 dark:text-blue-400">{khvPercent.toFixed(1)}%</span>
                             </div>
-                            <ProgressBar value={project.Progress || 0} color="blue" size="sm" />
+                            <ProgressBar value={khvPercent} color="blue" size="sm" />
+                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(khv)}</p>
                         </div>
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
                                 <span className="text-gray-500 dark:text-slate-400">Giải ngân</span>
-                                <span className="font-bold text-emerald-600 dark:text-emerald-400">{project.PaymentProgress || 0}%</span>
+                                <span className="font-bold text-emerald-600 dark:text-emerald-400">{disbursedPercent.toFixed(1)}%</span>
                             </div>
-                            <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" />
+                            <ProgressBar value={disbursedPercent} color="emerald" size="sm" />
+                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(disbursed)}</p>
                         </div>
-                        <div className="text-right">
-                            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase">Ngân sách</p>
-                            <p className="text-sm font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(project.TotalInvestment)}</p>
+                        <div>
+                            <div className="flex justify-between text-[10px] mb-1">
+                                <span className="text-gray-500 dark:text-slate-400">KL Hoàn thành</span>
+                                <span className="font-bold text-amber-600 dark:text-amber-500">{volumePercent.toFixed(1)}%</span>
+                            </div>
+                            <ProgressBar value={volumePercent} color="amber" size="sm" />
+                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(volume)}</p>
                         </div>
                     </div>
                 </div>
@@ -173,14 +192,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
             </div>
 
             {/* Content */}
-            <div className="p-2.5 flex-1 flex flex-col">
+            <div className="p-3 flex-1 flex flex-col">
                 {/* Title - fixed to 2 lines */}
-                <h3 className="font-bold text-sm text-gray-900 dark:text-slate-100 leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 min-h-[2.25rem]" title={project.ProjectName}>
+                <h3 className="font-bold text-sm text-gray-900 dark:text-slate-100 leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1.5 min-h-[2.5rem]" title={project.ProjectName}>
                     {project.ProjectName}
                 </h3>
 
                 {/* Location + ID + Board */}
-                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400 mb-2">
+                <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-slate-400 mb-3">
                     <span className="flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
                         <span className="truncate">{project.LocationCode}</span>
@@ -188,39 +207,54 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                     <span className="font-mono text-[10px] bg-bg-subtle dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
                         #{(project.ProjectID || '').slice(-5)}
                     </span>
-                    {board && (
-                        <span className="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: board.hex }}>
-                            Phòng QLDA {board.value}
-                        </span>
-                    )}
                 </div>
 
-                {/* Progress */}
-                <div className="space-y-1.5 mb-2">
+                {/* Metrics Stack */}
+                <div className="space-y-2.5 mb-1 flex-1">
+                    {/* Tổng mức */}
+                    <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-gray-500 dark:text-slate-400 uppercase font-medium">Tổng mức</span>
+                        <span className="font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(totalInvestment)}</span>
+                    </div>
+                    
+                    {/* Kế hoạch vốn */}
                     <div>
                         <div className="flex justify-between text-[11px] mb-1">
-                            <span className="text-gray-500 dark:text-slate-400">Tiến độ</span>
-                            <span className="font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.Progress || 0}%</span>
+                            <span className="text-gray-500 dark:text-slate-400 font-medium">Kế hoạch vốn</span>
+                            <div className="text-right">
+                                <span className="font-bold text-blue-600 dark:text-blue-400 tabular-nums">{formatCurrency(khv)}</span>
+                                <span className="text-[10px] text-blue-500/70 ml-1 font-medium">({khvPercent.toFixed(1)}%)</span>
+                            </div>
                         </div>
-                        <ProgressBar value={project.Progress || 0} color="blue" size="sm" />
+                        <ProgressBar value={khvPercent} color="blue" size="sm" />
                     </div>
-                    <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                            <span className="text-gray-500 dark:text-slate-400">Giải ngân</span>
-                            <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.PaymentProgress || 0}%</span>
-                        </div>
-                        <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" />
-                    </div>
-                </div>
 
-                {/* Total Investment Footer */}
-                <div className="mt-auto pt-2 border-t border-gray-200 dark:border-slate-700">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-gray-400 dark:text-slate-400 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
-                        <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
+                    {/* Giải ngân */}
+                    <div>
+                        <div className="flex justify-between text-[11px] mb-1">
+                            <span className="text-gray-500 dark:text-slate-400 font-medium">Giải ngân</span>
+                            <div className="text-right">
+                                <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{formatCurrency(disbursed)}</span>
+                                <span className="text-[10px] text-emerald-500/70 ml-1 font-medium">({disbursedPercent.toFixed(1)}%)</span>
+                            </div>
+                        </div>
+                        <ProgressBar value={disbursedPercent} color="emerald" size="sm" />
+                    </div>
+                    
+                    {/* Khối lượng hoàn thành */}
+                    <div className="pt-1 border-t border-gray-100 dark:border-slate-700/50">
+                        <div className="flex justify-between text-[11px] mb-1">
+                            <span className="text-gray-500 dark:text-slate-400 font-medium">KL Hoàn thành</span>
+                            <div className="text-right">
+                                <span className="font-bold text-amber-600 dark:text-amber-500 tabular-nums">{formatCurrency(volume)}</span>
+                                <span className="text-[10px] text-amber-500/70 ml-1 font-medium">({volumePercent.toFixed(1)}%)</span>
+                            </div>
+                        </div>
+                        <ProgressBar value={volumePercent} color="amber" size="sm" />
                     </div>
                 </div>
             </div>
         </div>
     );
 });
+

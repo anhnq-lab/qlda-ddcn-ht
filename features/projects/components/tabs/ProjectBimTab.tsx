@@ -444,7 +444,7 @@ const ProjectBimTabContent: React.FC = () => {
     }, [tools.activeTool]);
 
     // ── RENDER ──────────────────────────────
-    const showLeftPanel = hasModels && !isMobile && tools.leftPanel === 'tree';
+    const showLeftPanel = hasModels && !isMobile && (tools.leftPanel === 'tree' || tools.rightPanel === 'properties');
     const showBottomPanel = engine.viewerReady && hasModels;
 
     return (
@@ -458,28 +458,35 @@ const ProjectBimTabContent: React.FC = () => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-            <Group direction="horizontal" className="w-full h-full" id="bim-main-group" autoSaveId="bim-main-group-layout">
+            <Group key="bim-main-group-v5" orientation="horizontal" className="w-full h-full" id="bim-main-group">
             {/* ─── LEFT SIDEBAR ─── */}
             {showLeftPanel && (
-                <>
-                <Panel defaultSize={20} minSize={15} maxSize={40} className="flex flex-col overflow-hidden">
+                <Panel id="bim-left-sidebar" order={1} defaultSize={20} minSize={15} maxSize={40} className="flex flex-col overflow-hidden">
                 <div
                     className={`flex flex-col h-full border-r ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}
                 >
                     {/* Top: Model Tree */}
-                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                        <BimModelTree />
-                    </div>
+                    {tools.leftPanel === 'tree' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimModelTree />
+                        </div>
+                    )}
                     {/* Divider */}
-                    <div className={`h-px shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                    {tools.leftPanel === 'tree' && tools.rightPanel === 'properties' && (
+                        <div className={`h-px shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                    )}
                     {/* Bottom: Properties */}
-                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                        <BimPropertiesPanel isBottomPanel={false} />
-                    </div>
+                    {tools.rightPanel === 'properties' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimPropertiesPanel isBottomPanel={false} />
+                        </div>
+                    )}
                 </div>
                 </Panel>
+            )}
 
             {/* ─── LEFT RESIZE HANDLE ─── */}
+            {showLeftPanel && (
                 <Separator className={`group relative w-1 cursor-col-resize flex items-center justify-center select-none
                         ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
                         transition-colors z-20
@@ -490,14 +497,13 @@ const ProjectBimTabContent: React.FC = () => {
                         ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
                     `} />
                 </Separator>
-                </>
             )}
 
             {/* ─── MAIN RIGHT REGION (3D Canvas & Bottom Panel) ─── */}
-            <Panel className="flex flex-col">
-                <Group direction="vertical" id="bim-right-group" autoSaveId="bim-right-group-layout">
+            <Panel id="bim-right-region" order={2} className="flex flex-col">
+                <Group orientation="vertical" id="bim-right-group" autoSaveId="bim-right-group-layout-v3">
                     {/* ─── MAIN 3D CANVAS ─── */}
-                    <Panel className={`relative min-h-[100px] flex flex-col flex-1 ${cursorClass}`}>
+                    <Panel id="bim-canvas-panel" order={1} className={`relative min-h-[100px] flex flex-col flex-1 ${cursorClass}`}>
                 {/* Active tool indicator */}
                 {activeToolLabel && (
                     <div className={`
@@ -694,7 +700,7 @@ const ProjectBimTabContent: React.FC = () => {
                 )}
 
                 {/* Empty state */}
-                {engine.viewerReady && !hasModels && upload.status === 'idle' && (
+                {engine.viewerReady && !hasModels && (upload.status === 'idle' || upload.status === 'error') && (
                     <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div className={`
                             text-center p-10 rounded-2xl pointer-events-auto max-w-sm
@@ -768,7 +774,6 @@ const ProjectBimTabContent: React.FC = () => {
 
             {/* ─── BOTTOM RESIZE HANDLE ─── */}
             {showBottomPanel && (
-                <>
                 <Separator
                     className={`group relative h-1 cursor-row-resize flex items-center justify-center select-none z-20
                         ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
@@ -780,8 +785,10 @@ const ProjectBimTabContent: React.FC = () => {
                         ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
                     `} />
                 </Separator>
+            )}
 
             {/* ─── BOTTOM PANEL: Operations Management ─── */}
+            {showBottomPanel && (
                 <Panel defaultSize={25} minSize={15} maxSize={60} className={`flex flex-col overflow-hidden border-t z-20
                         ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'}
                     `}
@@ -811,7 +818,6 @@ const ProjectBimTabContent: React.FC = () => {
                         <FacilityManagementPanel />
                     </div>
                 </Panel>
-                </>
             )}
             </Group>
             </Panel>

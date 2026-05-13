@@ -77,8 +77,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
         try {
             const stored = localStorage.getItem('hiddenProjectIds');
             if (stored && project.ProjectID) {
-                const hiddenSet = new Set(JSON.parse(stored));
-                return hiddenSet.has(project.ProjectID);
+                const hiddenSet = new Set(JSON.parse(stored).map(String));
+                return hiddenSet.has(String(project.ProjectID));
             }
         } catch { }
         return false;
@@ -89,8 +89,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
             try {
                 const stored = localStorage.getItem('hiddenProjectIds');
                 if (stored && project.ProjectID) {
-                    const hiddenSet = new Set(JSON.parse(stored));
-                    setIsHiddenOnMap(hiddenSet.has(project.ProjectID));
+                    const hiddenSet = new Set(JSON.parse(stored).map(String));
+                    setIsHiddenOnMap(hiddenSet.has(String(project.ProjectID)));
                 } else {
                     setIsHiddenOnMap(false);
                 }
@@ -107,11 +107,12 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     const toggleHideOnMap = () => {
         try {
             const stored = localStorage.getItem('hiddenProjectIds');
-            const hiddenSet = stored ? new Set<string>(JSON.parse(stored)) : new Set<string>();
+            const hiddenSet = stored ? new Set<string>(JSON.parse(stored).map(String)) : new Set<string>();
+            const idStr = String(project.ProjectID);
             if (isHiddenOnMap) {
-                hiddenSet.delete(project.ProjectID!);
+                hiddenSet.delete(idStr);
             } else {
-                hiddenSet.add(project.ProjectID!);
+                hiddenSet.add(idStr);
             }
             localStorage.setItem('hiddenProjectIds', JSON.stringify(Array.from(hiddenSet)));
             setIsHiddenOnMap(!isHiddenOnMap);
@@ -488,7 +489,6 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                                 <EnhancedInfoItem icon={Hash} label="Số dự án" value={project.ProjectNumber || project.ProjectID} copyable />
                                 <EnhancedInfoItem icon={Briefcase} label="Nhóm dự án" value={`Nhóm ${project.GroupCode}`} highlight />
-                                <EnhancedInfoItem icon={Building2} label="Chủ đầu tư" value={project.InvestorName} />
                                 <EnhancedInfoItem icon={MapPin} label="Địa điểm" value={project.LocationCode} />
                                 <EnhancedInfoItem icon={Clock} label="Thời gian thực hiện" value={project.Duration || '—'} />
                                 <EnhancedInfoItem icon={Briefcase} label="Hình thức quản lý" value={project.ManagementForm || 'Chủ đầu tư trực tiếp quản lý'} />

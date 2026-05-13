@@ -65,7 +65,6 @@ const BimPage = lazyWithRetry(() => import('./features/bim/BimPage'));
 const ReportCenter = lazyWithRetry(() => import('./features/reports/ReportCenter'));
 const MidTermCapitalPage = lazyWithRetry(() => import('./features/capital/MidTermCapitalPage'));
 const Regulations = lazyWithRetry(() => import('./features/regulations/Regulations'));
-const EvaluationPage = lazyWithRetry(() => import('./features/evaluation/EvaluationPage'));
 const LegalDocumentSearch = lazyWithRetry(() => import('./features/legal-documents/LegalDocumentSearch'));
 const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
 const AuditLogViewer = lazyWithRetry(() => import('./features/admin/AuditLogViewer'));
@@ -241,9 +240,7 @@ const App: React.FC = () => {
                                         } />
 
                                         {/* Evaluation Module */}
-                                        <Route path="evaluation" element={
-                                            <React.Suspense fallback={<PageLoadingFallback />}><EvaluationPage /></React.Suspense>
-                                        } />
+                                        <Route path="evaluation" element={<Navigate to="/employees?tab=evaluation" replace />} />
 
                                         {/* Admin */}
                                         <Route path="audit-log" element={

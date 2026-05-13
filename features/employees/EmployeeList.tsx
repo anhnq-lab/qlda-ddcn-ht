@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEmployees, useDepartments, useCreateEmployee, useUpdateEmployee, useDeleteEmployee, useEmployeeStats } from '../../hooks/useEmployees';
 import { useTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
@@ -8,7 +8,7 @@ import {
     Search, Phone, Mail, UserPlus, Briefcase, Trash2, Edit, X, Save,
     Shield, User, LayoutGrid, List, Users, Building2, UserCheck,
     ArrowUpRight, ChevronDown, ListTodo, Eye, Calendar, Hash, Lock,
-    Sparkles, ClipboardList, FolderOpen, TrendingUp
+    Sparkles, ClipboardList, FolderOpen, TrendingUp, ClipboardCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSlidePanel } from '../../context/SlidePanelContext';
@@ -24,6 +24,7 @@ import * as z from 'zod';
 type EmployeeFormData = EmployeeCreateInput;
 
 const OrgChartPage = lazy(() => import('../organization/OrgChartPage'));
+const EvaluationPage = lazy(() => import('../evaluation/EvaluationPage'));
 
 // ═══════════════════════════════════════════════════
 // Helpers
@@ -54,7 +55,10 @@ const EmployeeList: React.FC = () => {
     const [selectedDept, setSelectedDept] = useState('All');
     const [filterRole, setFilterRole] = useState('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-    const [activeTab, setActiveTab] = useState<'list' | 'org-chart'>('list');
+    
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'list';
+    const setActiveTab = (tab: string) => setSearchParams({ tab });
 
     // Data Fetching
     const { data: employees = [], isLoading } = useEmployees();
@@ -132,10 +136,16 @@ const EmployeeList: React.FC = () => {
     }, [form]);
 
     const handleDelete = useCallback(async (id: string) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
-            await deleteMutation.mutateAsync(id);
-            showToast('Đã xóa nhân sự thành công', 'success');
-            return true;
+        if (window.confirm('Bạn có chắc chắn muốn xóa nhân sự này? Thao tác này không thể hoàn tác.')) {
+            try {
+                await deleteMutation.mutateAsync(id);
+                showToast('Đã xóa nhân sự thành công', 'success');
+                return true;
+            } catch (err: any) {
+                console.error('Delete employee error:', err);
+                showToast(`Lỗi: ${err.message || 'Không thể xóa nhân sự.'}`, 'error');
+                return false;
+            }
         }
         return false;
     }, [deleteMutation, showToast]);
@@ -183,14 +193,36 @@ const EmployeeList: React.FC = () => {
         return workloadMap;
     }, [employees, tasks, projects]);
 
-    const filteredEmployees = useMemo(() => employees.filter(emp => {
-        const matchesSearch = emp.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            emp.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            emp.EmployeeID.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesDept = selectedDept === 'All' || emp.Department === selectedDept;
-        const matchesRole = filterRole === 'All' || emp.Role === filterRole;
-        return matchesSearch && matchesDept && matchesRole;
-    }), [employees, searchTerm, selectedDept, filterRole]);
+    const filteredEmployees = useMemo(() => {
+        const result = employees.filter(emp => {
+            // Ẩn tài khoản Quản trị viên khỏi danh sách Ban Giám đốc
+            if (emp.Department === 'Ban Giám đốc' && (emp.Position.toLowerCase().includes('quản trị') || emp.FullName.toLowerCase().includes('quản trị'))) {
+                return false;
+            }
+
+            const matchesSearch = emp.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                emp.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                emp.EmployeeID.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesDept = selectedDept === 'All' || emp.Department === selectedDept;
+            const matchesRole = filterRole === 'All' || emp.Role === filterRole;
+            return matchesSearch && matchesDept && matchesRole;
+        });
+
+        // Sắp xếp tùy chỉnh cho Ban Giám đốc
+        const bgdOrder = ['Nguyễn Quang Linh', 'Trần Ngọc Bảo', 'Nguyễn Văn Nhân', 'Ngô Đức Quy'];
+        result.sort((a, b) => {
+            if (a.Department === 'Ban Giám đốc' && b.Department === 'Ban Giám đốc') {
+                const indexA = bgdOrder.indexOf(a.FullName);
+                const indexB = bgdOrder.indexOf(b.FullName);
+                const valA = indexA === -1 ? 999 : indexA;
+                const valB = indexB === -1 ? 999 : indexB;
+                return valA - valB;
+            }
+            return 0; // Giữ nguyên thứ tự nếu không cùng thuộc Ban Giám đốc
+        });
+
+        return result;
+    }, [employees, searchTerm, selectedDept, filterRole]);
 
     const onSubmit = async (data: EmployeeFormData) => {
         try {
@@ -347,6 +379,16 @@ const EmployeeList: React.FC = () => {
                     <Briefcase className="w-4 h-4" />
                     Sơ đồ tổ chức
                 </button>
+                <button
+                    onClick={() => setActiveTab('evaluation')}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === 'evaluation'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                        }`}
+                >
+                    <ClipboardCheck className="w-4 h-4" />
+                    Đánh giá xếp loại
+                </button>
             </div>
 
             {activeTab === 'org-chart' ? (
@@ -356,6 +398,16 @@ const EmployeeList: React.FC = () => {
                     </div>
                 }>
                     <OrgChartPage />
+                </Suspense>
+            ) : activeTab === 'evaluation' ? (
+                <Suspense fallback={
+                    <div className="flex items-center justify-center py-20">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+                    </div>
+                }>
+                    <div className="-mt-6">
+                        <EvaluationPage />
+                    </div>
                 </Suspense>
             ) : (
                 <>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
     FileText, CheckCircle2, XCircle, Search, SlidersHorizontal, Plus, ChevronRight, 
     Calendar, Users, Eye, FileSignature 
@@ -32,6 +32,7 @@ export const EvaluationPage: React.FC = () => {
     const [year, setYear] = useState(new Date().getFullYear());
     const [statusFilter, setStatusFilter] = useState<EvaluationStatus | 'all'>('all');
     const [deptFilter, setDeptFilter] = useState<string>('all');
+    const [activeSubTab, setActiveSubTab] = useState<'leader' | 'staff'>('leader');
     
     // Convert hardcoded departments to the format needed for the select dropdown
     const departments = DEPARTMENT_CODES.map(code => ({
@@ -100,6 +101,70 @@ export const EvaluationPage: React.FC = () => {
         });
     };
 
+    const filteredAndSortedForms = useMemo(() => {
+        let result = forms.filter(f => activeSubTab === 'leader' ? f.form_type === 'leader' : f.form_type === 'staff');
+        
+        if (activeSubTab === 'leader') {
+            const positionOrder = [
+                'Giám đốc Ban',
+                'Phó Giám đốc Ban',
+                'Kế toán trưởng',
+                'Trưởng phòng',
+                'Phó Trưởng phòng',
+                'Phó trưởng phòng'
+            ];
+            
+            result.sort((a, b) => {
+                const posA = a.chuc_vu || '';
+                const posB = b.chuc_vu || '';
+                
+                const getOrder = (pos: string) => {
+                    for (let i = 0; i < positionOrder.length; i++) {
+                        if (pos.includes(positionOrder[i])) return i;
+                    }
+                    return 999;
+                };
+                
+                const indexA = getOrder(posA);
+                const indexB = getOrder(posB);
+                
+                if (indexA !== indexB) {
+                    return indexA - indexB;
+                }
+                
+                // Specific requested name order
+                const exactNameOrder = [
+                    'Nguyễn Quang Linh',
+                    'Trần Ngọc Bảo',
+                    'Ngô Đức Quy'
+                ];
+                
+                const getExactNameOrder = (name: string) => {
+                    const idx = exactNameOrder.findIndex(n => name.includes(n));
+                    return idx === -1 ? 999 : idx;
+                };
+                
+                const nameIdxA = getExactNameOrder(a.employee_name);
+                const nameIdxB = getExactNameOrder(b.employee_name);
+                
+                if (nameIdxA !== nameIdxB) {
+                    return nameIdxA - nameIdxB;
+                }
+                
+                return a.employee_name.localeCompare(b.employee_name);
+            });
+        } else {
+            result.sort((a, b) => {
+                if (a.department_code !== b.department_code) {
+                    return (a.department_name || '').localeCompare(b.department_name || '');
+                }
+                return a.employee_name.localeCompare(b.employee_name);
+            });
+        }
+        
+        return result;
+    }, [forms, activeSubTab]);
+
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
             {/* Header */}
@@ -121,57 +186,83 @@ export const EvaluationPage: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                        <Calendar size={14} className="text-slate-400" />
-                        <select 
-                            value={month} 
-                            onChange={e => setMonth(+e.target.value)}
-                            className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                {/* Tabs & Filters */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    {/* Tabs */}
+                    <div className="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
+                        <button 
+                            onClick={() => setActiveSubTab('leader')}
+                            className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                                activeSubTab === 'leader' 
+                                    ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50' 
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                            }`}
                         >
-                            {MONTHS_VI.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
-                        </select>
-                        <span className="text-slate-300 dark:text-slate-600">/</span>
-                        <select 
-                            value={year} 
-                            onChange={e => setYear(+e.target.value)}
-                            className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                            Lãnh đạo (PL01)
+                        </button>
+                        <button 
+                            onClick={() => setActiveSubTab('staff')}
+                            className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                                activeSubTab === 'staff' 
+                                    ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50' 
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                            }`}
                         >
-                            {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
+                            Nhân viên (PL02)
+                        </button>
                     </div>
 
-                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                        <SlidersHorizontal size={14} className="text-slate-400" />
-                        <select 
-                            value={statusFilter} 
-                            onChange={e => setStatusFilter(e.target.value as any)}
-                            className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none"
-                        >
-                            <option value="all">Tất cả trạng thái</option>
-                            <option value="draft">Nháp</option>
-                            <option value="submitted">Chờ duyệt</option>
-                            <option value="approved">Đã duyệt</option>
-                            <option value="rejected">Từ chối</option>
-                        </select>
-                    </div>
-
-                    {currentUser?.Role === Role.Admin && (
+                    <div className="flex flex-wrap gap-3">
                         <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                            <Users size={14} className="text-slate-400" />
+                            <Calendar size={14} className="text-slate-400" />
                             <select 
-                                value={deptFilter} 
-                                onChange={e => setDeptFilter(e.target.value)}
-                                className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none max-w-[200px] truncate"
+                                value={month} 
+                                onChange={e => setMonth(+e.target.value)}
+                                className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
                             >
-                                <option value="all">Tất cả phòng ban</option>
-                                {departments.map(d => (
-                                    <option key={d.code} value={d.code}>{d.name}</option>
-                                ))}
+                                {MONTHS_VI.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
+                            </select>
+                            <span className="text-slate-300 dark:text-slate-600">/</span>
+                            <select 
+                                value={year} 
+                                onChange={e => setYear(+e.target.value)}
+                                className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                            >
+                                {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
                             </select>
                         </div>
-                    )}
+
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                            <SlidersHorizontal size={14} className="text-slate-400" />
+                            <select 
+                                value={statusFilter} 
+                                onChange={e => setStatusFilter(e.target.value as any)}
+                                className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none"
+                            >
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="draft">Nháp</option>
+                                <option value="submitted">Chờ duyệt</option>
+                                <option value="approved">Đã duyệt</option>
+                                <option value="rejected">Từ chối</option>
+                            </select>
+                        </div>
+
+                        {currentUser?.Role === Role.Admin && (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                                <Users size={14} className="text-slate-400" />
+                                <select 
+                                    value={deptFilter} 
+                                    onChange={e => setDeptFilter(e.target.value)}
+                                    className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none max-w-[200px] truncate"
+                                >
+                                    <option value="all">Tất cả phòng ban</option>
+                                    {departments.map(d => (
+                                        <option key={d.code} value={d.code}>{d.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -181,10 +272,10 @@ export const EvaluationPage: React.FC = () => {
                     <div className="flex items-center justify-center h-40">
                         <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                ) : forms.length === 0 ? (
+                ) : filteredAndSortedForms.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-slate-400">
                         <FileText size={48} className="mb-4 opacity-20" />
-                        <p className="text-sm">Chưa có phiếu đánh giá nào trong tháng này.</p>
+                        <p className="text-sm">Chưa có phiếu đánh giá nào trong nhóm này.</p>
                     </div>
                 ) : (
                     <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
@@ -201,7 +292,7 @@ export const EvaluationPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                                {forms.map((row) => {
+                                {filteredAndSortedForms.map((row) => {
                                     const selfTotal = calcSelfTotal(row);
                                     const managerTotal = calcManagerTotal(row);
                                     const finalScore = row.status === 'approved' ? managerTotal : selfTotal;

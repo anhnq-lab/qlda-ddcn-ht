@@ -184,12 +184,22 @@ export class EmployeeService {
      * Delete an employee
      */
     static async delete(id: string): Promise<void> {
+        // Clean up related data first to avoid FK constraint errors for simple dependencies
+        await supabase.from('project_members').delete().eq('employee_id', id);
+        await supabase.from('user_accounts').delete().eq('employee_id', id);
+
         const { error } = await supabase
             .from('employees')
             .delete()
             .eq('employee_id', id);
 
-        if (error) throw toServiceError(error, 'EmployeeService.delete');
+        if (error) {
+            console.error('[EmployeeService] Delete error:', error);
+            if (error.code === '23503') {
+                throw new Error('Không thể xoá nhân sự vì đã phát sinh dữ liệu liên quan (công việc, hợp đồng...). Hãy chỉnh sửa và chuyển trạng thái thành "Đã nghỉ" thay vì xoá.');
+            }
+            throw toServiceError(error, 'EmployeeService.delete');
+        }
     }
 
     /**

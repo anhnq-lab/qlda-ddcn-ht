@@ -528,6 +528,53 @@ export class CapitalService {
             // Nếu không có disbursements table data → dùng capital_plans.disbursed_amount (đã được map sẵn)
         });
 
+        // Compute actual amount for monthly disbursement plans based on true disbursements
+        if (hasDetailedDisbursements) {
+            // Cập nhật các plan đã có
+            disbursementPlans.forEach(dPlan => {
+                const monthlyDisbs = disbursements.filter(d => {
+                    if (!d.Date) return false;
+                    const date = new Date(d.Date);
+                    return date.getFullYear() === dPlan.Year && (date.getMonth() + 1) === dPlan.Month;
+                });
+                if (monthlyDisbs.length > 0) {
+                    dPlan.ActualAmount = this.calculateTrueDisbursed(monthlyDisbs);
+                } else {
+                    dPlan.ActualAmount = 0; // Override DB value nếu không có giải ngân thực tế trong tháng này
+                }
+            });
+
+            // Tự động tạo các plan ảo cho các tháng có giải ngân nhưng chưa lập kế hoạch
+            const disbMapByYearMonth = new Map<string, Disbursement[]>();
+            disbursements.forEach(d => {
+                if (!d.Date) return;
+                const date = new Date(d.Date);
+                const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                if (!disbMapByYearMonth.has(key)) disbMapByYearMonth.set(key, []);
+                disbMapByYearMonth.get(key)!.push(d);
+            });
+
+            disbMapByYearMonth.forEach((monthlyDisbs, key) => {
+                const [y, m] = key.split('-').map(Number);
+                const existingPlan = disbursementPlans.find(p => p.Year === y && p.Month === m);
+                
+                if (!existingPlan) {
+                    const actual = this.calculateTrueDisbursed(monthlyDisbs);
+                    if (actual !== 0) { // Tạo record ảo nếu có thay đổi thực tế
+                        disbursementPlans.push({
+                            Id: `auto-${y}-${m}`,
+                            ProjectID: projectId,
+                            Year: y,
+                            Month: m,
+                            PlannedAmount: 0,
+                            ActualAmount: actual,
+                            Notes: 'Dữ liệu tự động tổng hợp từ giải ngân thực tế',
+                        });
+                    }
+                }
+            });
+        }
+
         // Summary calculations
         const totalInvestment = Number(projectRes.data?.total_investment) || 0;
         const annualPlans = capitalPlans.filter(p => p.PlanType === 'annual');

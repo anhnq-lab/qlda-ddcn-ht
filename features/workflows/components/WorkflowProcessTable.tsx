@@ -12,6 +12,7 @@ import NodeDetailPanel from './NodeDetailPanel';
 import { SubTaskDetailPanel } from './SubTaskDetailPanel';
 import LegalDocumentSearch from '../../legal-documents/LegalDocumentSearch';
 import { parseSla, resolveLegalReference, uploadTemplateFile } from '../utils/workflowUtils';
+import { PHASE_CONFIG, groupNodesByPhase, computeTotalSla } from '../utils/phaseUtils';
 
 // ─── Inline Component: TemplateCell ────────────────────────────
 function TemplateCell({ 
@@ -125,50 +126,10 @@ interface WorkflowProcessTableProps {
     isAdmin?: boolean;
 }
 
-// ─── Phase config ───────────────────────────────────────────
-const PHASE_CONFIG: Record<string, { title: string; gradient: string; icon: string }> = {
-    preparation: {
-        title: 'GIAI ĐOẠN CHUẨN BỊ DỰ ÁN',
-        gradient: 'from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/10',
-        icon: '📋',
-    },
-    execution: {
-        title: 'GIAI ĐOẠN THỰC HIỆN DỰ ÁN',
-        gradient: 'from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-900/10',
-        icon: '🏗️',
-    },
-    completion: {
-        title: 'GIAI ĐOẠN KẾT THÚC XÂY DỰNG',
-        gradient: 'from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-900/10',
-        icon: '✅',
-    },
-    // Internal workflow phases
-    reception: {
-        title: 'TIẾP NHẬN HỒ SƠ',
-        gradient: 'from-sky-50 to-sky-100/50 dark:from-sky-900/30 dark:to-sky-900/10',
-        icon: '📥',
-    },
-    review: {
-        title: 'THẨM ĐỊNH',
-        gradient: 'from-violet-50 to-violet-100/50 dark:from-violet-900/30 dark:to-violet-900/10',
-        icon: '🔍',
-    },
-    consolidation: {
-        title: 'TỔNG HỢP & THÔNG BÁO',
-        gradient: 'from-teal-50 to-teal-100/50 dark:from-teal-900/30 dark:to-teal-900/10',
-        icon: '📊',
-    },
-    approval: {
-        title: 'PHÊ DUYỆT',
-        gradient: 'from-rose-50 to-rose-100/50 dark:from-rose-900/30 dark:to-rose-900/10',
-        icon: '✍️',
-    },
-    other: {
-        title: 'KHÁC',
-        gradient: 'from-slate-50 to-slate-100/50 dark:from-slate-900/30 dark:to-slate-900/10',
-        icon: '📎',
-    },
-};
+
+// PHASE_CONFIG is now imported from phaseUtils.ts
+// Rename-phase? Just edit features/workflows/utils/phaseUtils.ts
+
 
 // ─── SLA Badge ──────────────────────────────────────────────
 const SlaBadge: React.FC<{ sla: string | null | undefined }> = ({ sla }) => {
@@ -217,6 +178,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                 supabase.from('workflows').select('*').eq('id', workflowId).single(),
                 supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId)
                     .or('is_deleted.eq.false,is_deleted.is.null')
+                    .order('sort_order', { ascending: true })
                     .order('created_at', { ascending: true })
             ]);
             if (wfRes.error) throw wfRes.error;
@@ -264,35 +226,19 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
         });
     }, [nodes, searchQuery]);
 
-    // ─── Group by Phase → SubProcess ─────────────────────────
-    type PhaseGroup = { title: string; sub_processes: Record<string, WorkflowNode[]> };
-    const groupedPhases = useMemo(() => {
-        return filteredNodes.reduce<Record<string, PhaseGroup>>((acc, node) => {
-            const meta = (node.metadata || {}) as WorkflowNodeMetadata;
-            const phaseKey = meta.phase || 'other';
-            const subProcessKey = meta.sub_process || 'Mặc định';
-            const phaseConf = PHASE_CONFIG[phaseKey] || PHASE_CONFIG.other;
-
-            if (!acc[phaseKey]) {
-                acc[phaseKey] = { title: phaseConf.title, sub_processes: {} };
-            }
-            if (!acc[phaseKey].sub_processes[subProcessKey]) {
-                acc[phaseKey].sub_processes[subProcessKey] = [];
-            }
-            acc[phaseKey].sub_processes[subProcessKey].push(node);
-            return acc;
-        }, {});
-    }, [filteredNodes]);
+    // ─── Group by Phase → SubProcess (from phaseUtils) ─────────────
+    const groupedPhases = useMemo(() => groupNodesByPhase(filteredNodes), [filteredNodes]);
 
     // ─── Summary stats ───────────────────────────────────────
     const stats = useMemo(() => {
-        let totalSteps = filteredNodes.length;
+        const totalSteps = filteredNodes.length;
         let totalSubTasks = 0;
         filteredNodes.forEach(n => {
             const meta = (n.metadata || {}) as WorkflowNodeMetadata;
             totalSubTasks += (meta.sub_tasks || []).length;
         });
-        return { totalSteps, totalSubTasks };
+        const totalSla = computeTotalSla(filteredNodes);
+        return { totalSteps, totalSubTasks, totalSla };
     }, [filteredNodes]);
 
     // ─── Toggle helpers ──────────────────────────────────────
@@ -468,39 +414,40 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
             {/* ── TABLE BODY ── */}
             <div className="flex-1 overflow-auto custom-scrollbar print:overflow-visible">
-                <table className="w-full text-left text-[13px] border-collapse table-fixed min-w-[900px]">
+                <table className="w-full text-left text-[12px] border-collapse table-fixed min-w-[1000px]">
                     <thead className="bg-slate-100 dark:bg-slate-900/80 border-b-2 border-slate-300 dark:border-slate-600 sticky top-0 z-[5] print:bg-slate-200">
-                        <tr className="font-bold text-slate-700 dark:text-slate-300 text-[11px] uppercase tracking-wider">
-                            <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
+                        <tr className="font-bold text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider">
+                            <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
                             {isInternalWorkflow ? (
                                 <>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[24%]">Nội dung công việc</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị thực hiện</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị phối hợp</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[14%]">Thời gian</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[16%]">Biểu mẫu</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Ghi chú</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[24%]">Nội dung công việc</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị thực hiện</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị phối hợp</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[14%]">Thời gian</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[16%]">Biểu mẫu</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Ghi chú</th>
                                 </>
                             ) : (
                                 <>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-14 text-center">SLA</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[26%]">Nội dung thực hiện</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đơn vị thực hiện</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đầu ra</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[10%]">Biểu mẫu</th>
-                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Cơ sở pháp lý</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-14 text-center">SLA</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[26%]">Nội dung thực hiện</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đơn vị thực hiện</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đầu ra</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[10%]">Biểu mẫu</th>
+                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Cơ sở pháp lý</th>
                                 </>
                             )}
                             {isAdmin && (
-                                <th className="p-2.5 text-center w-20 print:hidden">Thao tác</th>
+                                <th className="p-1.5 text-center w-16 print:hidden">Thao tác</th>
                             )}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
-                        {(Object.entries(groupedPhases) as [string, PhaseGroup][]).map(([phaseKey, phaseGroup]) => {
+                        {groupedPhases.map((group) => {
+                            const phaseKey = group.phase;
+                            const phaseConf = group.config;
                             const isPhaseExpanded = expandedPhases[phaseKey] !== false;
-                            const phaseConf = PHASE_CONFIG[phaseKey] || PHASE_CONFIG.other;
-                            const phaseNodeCount = Object.values(phaseGroup.sub_processes).reduce((c, arr) => c + arr.length, 0);
+                            const phaseNodeCount = Object.values(group.subProcesses).reduce((c, arr) => c + arr.length, 0);
 
                             return (
                                 <React.Fragment key={phaseKey}>
@@ -510,14 +457,14 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                         onClick={() => togglePhase(phaseKey)}
                                     >
                                         <td colSpan={isAdmin ? colCount + 1 : colCount}
-                                            className="p-3 font-black text-slate-800 dark:text-white uppercase tracking-wide text-[13px] border-b-2 border-slate-300 dark:border-slate-600">
+                                            className="px-3 py-2 font-black text-slate-800 dark:text-white uppercase tracking-wide text-[12px] border-b-2 border-slate-300 dark:border-slate-600">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-slate-500 dark:text-slate-400 print:hidden">
-                                                    {isPhaseExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                                                    {isPhaseExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                                 </span>
-                                                <span className="text-lg print:hidden">{phaseConf.icon}</span>
-                                                <span>{phaseGroup.title}</span>
-                                                <span className="text-slate-500 dark:text-slate-400 font-medium text-[11px] normal-case ml-2">
+                                                <span className="text-base print:hidden">{phaseConf.icon}</span>
+                                                <span>{phaseConf.title}</span>
+                                                <span className="text-slate-500 dark:text-slate-400 font-medium text-[10px] normal-case ml-2">
                                                     ({phaseNodeCount} bước)
                                                 </span>
                                             </div>
@@ -525,7 +472,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                     </tr>
 
                                     {/* ── SUB-PROCESS + NODES ── */}
-                                    {isPhaseExpanded && (Object.entries(phaseGroup.sub_processes) as [string, WorkflowNode[]][]).map(([subKey, subNodes]) => {
+                                    {isPhaseExpanded && (Object.entries(group.subProcesses) as [string, WorkflowNode[]][]).map(([subKey, subNodes]) => {
                                         const spToggleKey = `${phaseKey}-${subKey}`;
                                         const isSpExpanded = expandedSubProcesses[spToggleKey] !== false;
 
@@ -538,14 +485,14 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                         onClick={() => toggleSubProcess(spToggleKey)}
                                                     >
                                                         <td colSpan={isAdmin ? colCount + 1 : colCount}
-                                                            className="p-2 pl-6 font-semibold text-emerald-800 dark:text-emerald-300 tracking-wide text-[12px] border-b border-emerald-200 dark:border-emerald-800/50">
+                                                            className="px-3 py-1.5 pl-6 font-semibold text-emerald-800 dark:text-emerald-300 tracking-wide text-[11px] border-b border-emerald-200 dark:border-emerald-800/50">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-emerald-600 dark:text-emerald-500 print:hidden">
-                                                                    {isSpExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                                                    {isSpExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                                                                 </span>
-                                                                <FileSpreadsheet size={14} className="text-emerald-500" />
+                                                                <FileSpreadsheet size={13} className="text-emerald-500" />
                                                                 <span>{subKey}</span>
-                                                                <span className="text-emerald-600/70 dark:text-emerald-400/70 font-medium text-[11px] normal-case ml-1">
+                                                                <span className="text-emerald-600/70 dark:text-emerald-400/70 font-medium text-[10px] normal-case ml-1">
                                                                     ({subNodes.length} bước)
                                                                 </span>
                                                             </div>
@@ -566,7 +513,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                             {/* Main step row */}
                                                             <tr className="bg-white dark:bg-slate-800/50 group border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 transition-colors">
                                                                 {/* TT */}
-                                                                <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-center font-black text-slate-500 dark:text-slate-400 align-top">
+                                                                <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-center font-black text-slate-500 dark:text-slate-400 align-top">
                                                                     {hasSubTasks ? (
                                                                         <button
                                                                             onClick={() => toggleNode(node.id)}
@@ -583,23 +530,23 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                 {isInternalWorkflow ? (
                                                                     <>
                                                                         {/* Nội dung (Internal) */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
                                                                             onClick={() => openNodePanel(node)}>
-                                                                            <div className="font-bold text-sm text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
-                                                                            {meta.description && <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 whitespace-pre-wrap">{meta.description}</div>}
+                                                                            <div className="font-bold text-[13px] text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
+                                                                            {meta.description && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 whitespace-pre-wrap">{meta.description}</div>}
                                                                         </td>
                                                                         {/* Đơn vị thực hiện */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] whitespace-pre-wrap align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[11px] whitespace-pre-wrap align-top">
                                                                             {node.assignee_role}
                                                                         </td>
                                                                         {/* Đơn vị phối hợp */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] whitespace-pre-wrap align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[11px] whitespace-pre-wrap align-top">
                                                                             {meta.coordinating_role}
                                                                         </td>
                                                                         {/* Thời gian */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[11px] align-top">
                                                                             {meta.sla_regulated && (
-                                                                                <div className="mb-2">
+                                                                                <div className="mb-1">
                                                                                     <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy định:</span><br/>
                                                                                     <span className="whitespace-pre-wrap block leading-snug">{meta.sla_regulated}</span>
                                                                                 </div>
@@ -612,7 +559,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                             )}
                                                                         </td>
                                                                         {/* Biểu mẫu (Internal) */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[11px] align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[10px] align-top">
                                                                             <TemplateCell 
                                                                                 node={node}
                                                                                 initialForms={meta.template_forms || ''}
@@ -622,37 +569,37 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                             />
                                                                         </td>
                                                                         {/* Ghi chú */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] whitespace-pre-wrap leading-snug align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[10px] whitespace-pre-wrap leading-snug align-top">
                                                                             {meta.notes}
                                                                         </td>
                                                                     </>
                                                                 ) : (
                                                                     <>
                                                                         {/* SLA */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-center align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-center align-top">
                                                                             <SlaBadge sla={node.sla_formula} />
                                                                         </td>
                                                                         {/* Nội dung (Project) */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
                                                                             onClick={() => openNodePanel(node)}>
-                                                                            <div className="font-bold text-sm text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
-                                                                            {meta.description && <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{meta.description}</div>}
+                                                                            <div className="font-bold text-[12px] text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
+                                                                            {meta.description && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{meta.description}</div>}
                                                                             {hasSubTasks && (
-                                                                                <div className="mt-1.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                                                                                <div className="mt-1 text-[9px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
                                                                                     <ArrowRight size={10}/> {subTasks.length} công việc con
                                                                                 </div>
                                                                             )}
                                                                         </td>
                                                                         {/* Đơn vị */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] whitespace-pre-wrap align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[10px] whitespace-pre-wrap align-top">
                                                                             {node.assignee_role}
                                                                         </td>
                                                                         {/* Đầu ra */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[10px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap align-top">
                                                                             {meta.output}
                                                                         </td>
                                                                         {/* Biểu mẫu */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 align-top">
                                                                             <TemplateCell 
                                                                                 node={node}
                                                                                 initialForms={meta.template_forms || ''}
@@ -662,7 +609,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                             />
                                                                         </td>
                                                                         {/* CSPL */}
-                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[11px] align-top">
+                                                                        <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-[10px] align-top">
                                                                             {meta.legal_basis ? (
                                                                                 <button
                                                                                     type="button"
@@ -679,21 +626,21 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
                                                                 {/* Admin actions */}
                                                                 {isAdmin && (
-                                                                    <td className="p-2 text-center align-top print:hidden">
+                                                                    <td className="px-1 py-1 text-center align-top print:hidden">
                                                                         <div className="flex items-center justify-center gap-1">
                                                                             <button
                                                                                 onClick={(e) => { e.stopPropagation(); openNodePanel(node); }}
-                                                                                className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                                                className="p-1 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded transition-colors"
                                                                                 title="Chỉnh sửa bước"
                                                                             >
-                                                                                <PenLine size={13} />
+                                                                                <PenLine size={12} />
                                                                             </button>
                                                                             <button
                                                                                 onClick={(e) => handleDeleteNode(e, node)}
-                                                                                className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                                                className="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded transition-colors"
                                                                                 title="Xóa bước này"
                                                                             >
-                                                                                <Trash2 size={13} />
+                                                                                <Trash2 size={12} />
                                                                             </button>
                                                                         </div>
                                                                     </td>
@@ -706,11 +653,11 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
                                                                 return (
                                                                     <tr key={st.id || stIdx}
-                                                                        className="bg-bg-surface hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
+                                                                        className="bg-slate-50/50 dark:bg-slate-800/30 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
                                                                         onClick={() => openSubTaskPanel(node, st, displayIndex, stIdx)}
                                                                     >
                                                                         {/* TT */}
-                                                                        <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-center text-xs font-semibold text-slate-400">
+                                                                        <td className="px-1.5 py-1.5 border-r border-slate-100 dark:border-slate-800 text-center text-[10px] font-semibold text-slate-400">
                                                                             {displayIndex}.{stIdx + 1}
                                                                         </td>
 
@@ -835,6 +782,13 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                         <span className="flex items-center gap-1.5">
                             <FileText size={13} />
                             <strong className="text-slate-700 dark:text-slate-200">{stats.totalSubTasks}</strong> công việc con
+                        </span>
+                    )}
+                    {stats.totalSla && (
+                        <span className="flex items-center gap-1.5 ml-4 px-2 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-800/50 print:border-none print:bg-transparent">
+                            <Clock size={13} />
+                            <span>Tổng T.gian ước tính:</span>
+                            <strong className="font-bold">{stats.totalSla}</strong>
                         </span>
                     )}
                 </div>

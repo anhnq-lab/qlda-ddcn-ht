@@ -28,6 +28,7 @@ export const WorkflowTemplateService = {
       supabase.from('workflow_nodes').select('*')
         .eq('workflow_id', workflowId)
         .eq('is_deleted', false)
+        .order('sort_order', { ascending: true })
         .order('created_at', { ascending: true }),
       supabase.from('workflow_edges').select('*').eq('workflow_id', workflowId),
     ]);
@@ -61,7 +62,8 @@ export const WorkflowTemplateService = {
       .select('*')
       .eq('workflow_id', workflowId)
       .eq('is_deleted', false)
-      .order('created_at', { ascending: true });
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true }); // tiebreaker
 
     if (error) throw error;
     return (data || []) as unknown as WorkflowNode[];

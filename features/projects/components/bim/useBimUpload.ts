@@ -73,7 +73,7 @@ export function useBimUpload(
     const [validationError, setValidationError] = useState<string | null>(null);
 
     // ── File validation ────────────────────────
-    const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
+    const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250MB
     const validateFile = useCallback((file: File): string | null => {
         const ext = file.name.toLowerCase().split('.').pop();
         if (ext !== 'ifc') {

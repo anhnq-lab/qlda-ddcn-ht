@@ -35,6 +35,17 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function seed() {
   console.log('Starting seed process...');
   const allTemplates = [...getStandardWorkflowTemplates(), ...getInternalWorkflowTemplates()];
+  const standardCodes = getStandardWorkflowTemplates().map(t => t.code);
+
+  const { data: existingProjectWfs } = await supabase.from('workflows').select('id, code').eq('category', 'project');
+  if (existingProjectWfs) {
+      for (const wf of existingProjectWfs) {
+          if (!standardCodes.includes(wf.code)) {
+              console.log(`Deleting legacy project workflow: ${wf.code}`);
+              await supabase.from('workflows').delete().eq('id', wf.id);
+          }
+      }
+  }
   
   for (const wfInput of allTemplates) {
     console.log(`Processing workflow: ${wfInput.code} - ${wfInput.name}`);
@@ -59,31 +70,45 @@ async function seed() {
 
     let prevId: string | null = null;
 
+    let sortOrder = 0;
+
     for (const stepInput of wfInput.steps) {
         const s = stepInput as any;
+        // stepInput có 2 shape:
+        //   Shape A: { name, type, role, sla, metadata: { phase, sub_process, sub_tasks, ... } }
+        //   Shape B (spread): { name, type, ..., phase, sub_process, ... } (từ IMPL_* spread)
+        // Cần fallback từ top-level nếu metadata chưa có
+        const meta = s.metadata || {};
+        const phase = meta.phase || s.phase || '';
+        const subProcess = meta.sub_process || s.sub_process || '';
+        const subTasks = meta.sub_tasks || s.sub_tasks || [];
+        const legalBasis = meta.legal_basis || meta.legalBasis || s.legal_basis || '';
+        const output = meta.output || s.output || '';
+
         const { data: node, error: nErr } = await supabase.from('workflow_nodes').insert({
             workflow_id: wf.id,
             name: s.name,
-            step_order: s.step_order || 1,
+            sort_order: sortOrder++,
             type: s.type,
-            assignee_role: s.assignee_role || s.role,
-            sla_formula: s.sla_formula || s.sla,
+            assignee_role: s.assignee_role || s.role || meta.assignee_role || '',
+            sla_formula: s.sla_formula || s.sla || meta.sla || '',
             metadata: {
-                description: s.description,
-                output: s.output,
-                legal_basis: s.legal_basis,
-                guidelines: s.guidelines,
-                sub_tasks: s.sub_tasks,
-                coordinating_role: s.coordinating_role,
-                phase: s.phase,
-                is_parallel: s.is_parallel
+                phase,
+                sub_process: subProcess,
+                legal_basis: legalBasis,
+                output,
+                sub_tasks: subTasks,
+                description: meta.description || s.description || '',
+                coordinating_role: meta.coordinating_role || s.coordinating_role || '',
+                is_parallel: meta.is_parallel || s.is_parallel || false,
             }
         }).select().single();
 
         if (nErr) { 
-            console.error(`Node Insert Error for step ${s.name}:`, nErr); 
+            console.error(`  ❌ Node Insert Error for step ${s.name}:`, nErr.message); 
             continue; 
         }
+        console.log(`  ✓ [${sortOrder - 1}] ${s.name.substring(0, 60)}`);
         
         if (prevId) {
             await supabase.from('workflow_edges').insert({

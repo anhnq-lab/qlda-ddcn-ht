@@ -988,6 +988,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     : undefined}
                 isLoading={planModalLoading}
                 showWorkflowOption={planTrigger?.type === 'all'}
+                project={project}
             />
 
             {/* Step Detail Modal */}

@@ -16,6 +16,7 @@ import {
 import { CapitalPlanModal } from '../CapitalPlanModal';
 import { DisbursementPlanModal } from '../DisbursementPlanModal';
 import { DisbursementModal } from '../DisbursementModal';
+import { ImportDisbursementModal } from '../ImportDisbursementModal';
 import { StatCard } from '../../../../components/ui';
 import { ProjectCapitalKPIDashboard } from './ProjectCapitalKPIDashboard';
 import { EmptyState } from '../../../../components/ui/EmptyState';
@@ -82,6 +83,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [planYearFilter, setPlanYearFilter] = useState<number>(new Date().getFullYear());
     const [capitalSubTab, setCapitalSubTab] = useState<CapitalSubTab>('annual');
     const [expandedMidTermPlan, setExpandedMidTermPlan] = useState<string | null>(null);
+    const [annualPeriodFilter, setAnnualPeriodFilter] = useState<string>('all');
 
     // ── CRUD State ──
     const [planModalOpen, setPlanModalOpen] = useState(false);
@@ -91,6 +93,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'plan' | 'disb' | 'disbPlan'; id: string } | null>(null);
     const [disbPlanModalOpen, setDisbPlanModalOpen] = useState(false);
     const [modalPlanType, setModalPlanType] = useState<CapitalSubTab>('annual');
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     // ── Mutations ──
     const createPlan = useCreateCapitalPlan();
@@ -368,28 +371,41 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 {/* Capital Plan Table with Sub-tabs */}
                 <div className="lg:col-span-2 bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2 bg-bg-subtle dark:bg-slate-700">
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setCapitalSubTab('mid_term')}
-                                className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'mid_term' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-600'}`}
-                            >
-                                <CalendarRange className="w-3.5 h-3.5" /> Trung hạn
-                            </button>
-                            <button
-                                onClick={() => setCapitalSubTab('annual')}
-                                className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'annual' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-600'}`}
-                            >
-                                <Calendar className="w-3.5 h-3.5" /> Hàng năm
-                            </button>
+                        <div className="flex items-center gap-4">
+                            <div className="flex bg-gray-200/60 dark:bg-slate-800 p-1 rounded-xl items-center border border-gray-200/80 dark:border-slate-700">
+                                <button
+                                    onClick={() => setCapitalSubTab('mid_term')}
+                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'mid_term' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                                >
+                                    <CalendarRange className="w-3.5 h-3.5" /> Trung hạn
+                                </button>
+                                <button
+                                    onClick={() => setCapitalSubTab('annual')}
+                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'annual' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                                >
+                                    <Calendar className="w-3.5 h-3.5" /> Hàng năm
+                                </button>
+                            </div>
+
+                            {capitalSubTab === 'annual' && (
+                                <select
+                                    value={annualPeriodFilter}
+                                    onChange={(e) => setAnnualPeriodFilter(e.target.value)}
+                                    className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs text-gray-700 dark:text-slate-300 font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
+                                >
+                                    <option value="all">Tất cả giai đoạn</option>
+                                    {capitalPlans.filter(p => p.PlanType === 'mid_term').sort((a, b) => (b.PeriodStart || 0) - (a.PeriodStart || 0)).map(p => (
+                                        <option key={p.PlanID} value={p.PlanID}>Giai đoạn {p.PeriodStart}-{p.PeriodEnd}</option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
-                        {capitalSubTab === 'annual' && !capitalPlans.some(p => p.PlanType === 'mid_term') ? null : (
-                            <button
-                                onClick={() => { setEditingPlan(null); setModalPlanType(capitalSubTab); setPlanModalOpen(true); }}
-                                className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
-                            >
-                                <Plus className="w-3.5 h-3.5" /> {capitalSubTab === 'mid_term' ? 'Nhập KH trung hạn' : 'Nhập KH hằng năm'}
-                            </button>
-                        )}
+                        <button
+                            onClick={() => { setEditingPlan(null); setModalPlanType(capitalSubTab); setPlanModalOpen(true); }}
+                            className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                        >
+                            <Plus className="w-3.5 h-3.5" /> {capitalSubTab === 'mid_term' ? 'Nhập KH trung hạn' : 'Nhập KH hằng năm'}
+                        </button>
                     </div>
 
                     {/* SUB-TAB: TRUNG HẠN */}
@@ -585,22 +601,67 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     })()}
 
                     {/* SUB-TAB: HÀNG NĂM (bảng cũ) */}
-                    {capitalSubTab === 'annual' && (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-bg-subtle text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
-                                <tr>
-                                    <th className="px-4 py-2.5">Năm</th>
-                                    <th className="px-4 py-2.5">QĐ giao vốn</th>
-                                    <th className="px-4 py-2.5 text-right">Vốn giao</th>
-                                    <th className="px-4 py-2.5 text-right">Đã giải ngân</th>
-                                    <th className="px-4 py-2.5">Tỷ lệ</th>
-                                    <th className="px-4 py-2.5 text-center w-20">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
-                                {[...allocationWithRate].sort((a, b) => a.Year - b.Year).map(a => (
-                                    <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
+                    {capitalSubTab === 'annual' && (() => {
+                        let filteredAnnualPlans = [...allocationWithRate];
+                        if (annualPeriodFilter !== 'all') {
+                            const selectedMidTerm = capitalPlans.find(p => p.PlanID === annualPeriodFilter);
+                            if (selectedMidTerm) {
+                                filteredAnnualPlans = filteredAnnualPlans.filter(a => a.Year >= (selectedMidTerm.PeriodStart || 0) && a.Year <= (selectedMidTerm.PeriodEnd || 0));
+                            }
+                        }
+                        
+                        const totalAnnualPlanAmount = filteredAnnualPlans.reduce((s, p) => s + p.Amount, 0);
+                        const totalAnnualDisbursed = filteredAnnualPlans.reduce((s, p) => s + p.disbursed, 0);
+                        const totalAnnualRate = totalAnnualPlanAmount > 0 ? (totalAnnualDisbursed / totalAnnualPlanAmount) * 100 : 0;
+
+                        return (
+                        <div className="flex flex-col">
+                            {filteredAnnualPlans.length > 0 && (
+                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                                    <div className="text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
+                                        Tổng hợp Kế hoạch Hằng năm
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase mb-0.5">Vốn giao</p>
+                                            <p className="text-xs font-black text-blue-700 dark:text-blue-400">{formatCurrency(totalAnnualPlanAmount)}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase mb-0.5">Đã giải ngân</p>
+                                            <p className="text-xs font-black text-emerald-600">{formatCurrency(totalAnnualDisbursed)}</p>
+                                        </div>
+                                        <div className="w-32">
+                                            <div className="flex justify-between text-[10px] font-bold mb-1">
+                                                <span className="text-gray-500">Tỷ lệ</span>
+                                                <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-blue-600' : 'text-orange-600'}>
+                                                    {totalAnnualRate.toFixed(1)}%
+                                                </span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                <div 
+                                                    className={`h-full rounded-full transition-all duration-500 ${totalAnnualRate >= 90 ? 'bg-emerald-500' : totalAnnualRate >= 50 ? 'bg-blue-500' : 'bg-orange-500'}`} 
+                                                    style={{ width: `${Math.min(totalAnnualRate, 100)}%` }} 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-bg-subtle text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
+                                        <tr>
+                                            <th className="px-4 py-2.5">Năm</th>
+                                            <th className="px-4 py-2.5">QĐ giao vốn</th>
+                                            <th className="px-4 py-2.5 text-right">Vốn giao</th>
+                                            <th className="px-4 py-2.5 text-right">Đã giải ngân</th>
+                                            <th className="px-4 py-2.5">Tỷ lệ</th>
+                                            <th className="px-4 py-2.5 text-center w-20">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
+                                        {filteredAnnualPlans.sort((a, b) => a.Year - b.Year).map(a => (
+                                            <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
                                         <td className="px-4 py-2.5">
                                             <span className="font-bold text-gray-800 dark:text-slate-100">Năm {a.Year}</span>
                                         </td>
@@ -659,24 +720,16 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <tr className="bg-blue-50/50 dark:bg-blue-900/20 font-bold border-t border-blue-200 dark:border-blue-800">
                                     <td className="px-4 py-2.5 text-gray-800 dark:text-slate-100" colSpan={2}>
                                         Tổng cộng
-                                        {(() => {
-                                            const midTermTotal = capitalPlans.filter(p => p.PlanType === 'mid_term').reduce((s, p) => s + (p.Amount || 0), 0);
-                                            if (midTermTotal > 0) {
-                                                const pct = Math.round((summary.totalAllocated / midTermTotal) * 100);
-                                                return <span className="text-[10px] font-normal text-gray-500 dark:text-slate-400 ml-2">({pct}% KH trung hạn)</span>;
-                                            }
-                                            return null;
-                                        })()}
                                     </td>
                                     <td className="px-4 py-2.5 text-right font-mono text-blue-800 dark:text-blue-400 text-xs">
-                                        {formatCurrency(summary.totalAllocated)}
+                                        {formatCurrency(totalAnnualPlanAmount)}
                                     </td>
                                     <td className="px-4 py-2.5 text-right font-mono text-emerald-700 dark:text-emerald-400 text-xs">
-                                        {formatCurrency(summary.totalDisbursed)}
+                                        {formatCurrency(totalAnnualDisbursed)}
                                     </td>
                                     <td className="px-4 py-2.5">
-                                        <span className={`text-xs font-bold ${summary.disbursementRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                                            {summary.disbursementRate}%
+                                        <span className={`text-xs font-bold ${totalAnnualRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                                            {totalAnnualRate.toFixed(1)}%
                                         </span>
                                     </td>
                                     <td className="px-4 py-2.5"></td>
@@ -684,7 +737,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             </tbody>
                         </table>
                     </div>
-                    )}
+                        );
+                    })()}
                 </div>
 
                 {/* Donut Chart — Nguồn vốn */}
@@ -853,18 +907,24 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             <td className="px-3 py-2 text-gray-500 italic max-w-xs truncate" title={d.Notes}>{d.Notes || '—'}</td>
                                             <td className="px-3 py-2 text-center">
                                                 <div className="flex items-center justify-center gap-1">
-                                                    <button
-                                                        onClick={() => handleEditDisbPlan(d)}
-                                                        className="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/40 text-gray-400 hover:text-violet-600 rounded-lg transition-colors"
-                                                    >
-                                                        <Pencil className="w-3.5 h-3.5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setDeleteConfirm({ type: 'disbPlan', id: d.Id })}
-                                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </button>
+                                                    {!d.Id.startsWith('auto-') && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleEditDisbPlan(d)}
+                                                                className="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/40 text-gray-400 hover:text-violet-600 rounded-lg transition-colors"
+                                                                title="Sửa kế hoạch"
+                                                            >
+                                                                <Pencil className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setDeleteConfirm({ type: 'disbPlan', id: d.Id })}
+                                                                className="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                                title="Xóa kế hoạch"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -922,6 +982,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 </button>
                             ))}
                         </div>
+                        <button
+                            onClick={() => setIsImportModalOpen(true)}
+                            className="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-400 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                        >
+                            <ArrowDownUp className="w-3.5 h-3.5" /> Import (Kế toán)
+                        </button>
                         <button
                             onClick={() => { setEditingDisb(null); setDisbModalOpen(true); }}
                             className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
@@ -1123,6 +1189,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 annualLimit={capitalPlans.filter(p => p.PlanType === 'annual' && p.Year === planYearFilter).reduce((sum, p) => sum + (p.Amount || 0), 0)}
                 isSaving={bulkSaveDisbPlan.isPending}
                 projectTasks={projectTasks}
+            />
+
+            <ImportDisbursementModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                projectId={projectID}
             />
 
             {/* Delete Confirmation Dialog */}

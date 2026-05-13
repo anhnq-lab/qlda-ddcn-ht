@@ -83,7 +83,7 @@ export function getInternalWorkflowTemplates(): WorkflowTemplate[] {
     const QT_KHLCNT: WorkflowTemplate = {
         name: 'Lập, thẩm định và phê duyệt Kế hoạch lựa chọn nhà thầu',
         code: 'QT-02/KHLCNT',
-        category: 'procurement',
+        category: 'other', // 'procurement' không có trong enum workflow_category → dùng 'other'
         description: 'Quy trình chuẩn bị, lập, thẩm định và phê duyệt KHLCNT áp dụng trong nội bộ Ban.',
         steps: [
             {

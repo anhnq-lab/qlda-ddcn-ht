@@ -147,6 +147,10 @@ function extractCoords(locationCode: string): { lat: number; lng: number } | nul
 const geocodeCache = new Map<string, { lat: number; lng: number } | null>();
 
 async function geocodeLocation(locationCode: string): Promise<{ lat: number; lng: number } | null> {
+    if (!locationCode || locationCode.trim() === '' || locationCode.includes('Chưa cập nhật') || locationCode.includes('Đang cập nhật')) {
+        return null;
+    }
+
     if (geocodeCache.has(locationCode)) {
         return geocodeCache.get(locationCode) || null;
     }
@@ -279,10 +283,12 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
     const [hiddenProjectIds, setHiddenProjectIds] = useState<Set<string>>(() => {
         try {
             const stored = localStorage.getItem('hiddenProjectIds');
-            return stored ? new Set(JSON.parse(stored)) : new Set();
-        } catch {
-            return new Set();
-        }
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                return new Set(Array.isArray(parsed) ? parsed.map(String) : []);
+            }
+        } catch { }
+        return new Set<string>();
     });
     const { theme } = useTheme();
     const tileLayerRef = useRef<L.TileLayer | null>(null);
@@ -300,8 +306,12 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
         const handleStorageChange = () => {
             try {
                 const stored = localStorage.getItem('hiddenProjectIds');
-                if (stored) setHiddenProjectIds(new Set(JSON.parse(stored)));
-                else setHiddenProjectIds(new Set());
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    setHiddenProjectIds(new Set(Array.isArray(parsed) ? parsed.map(String) : []));
+                } else {
+                    setHiddenProjectIds(new Set());
+                }
             } catch { }
         };
         window.addEventListener('hiddenProjectIdsChanged', handleStorageChange);
@@ -333,7 +343,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
                 if (projectId) {
                     setHiddenProjectIds(prev => {
                         const next = new Set(prev);
-                        next.add(projectId);
+                        next.add(String(projectId));
                         return next;
                     });
                     map.closePopup();
@@ -407,7 +417,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
         if (showProjects) {
             enrichedProjects.forEach((p) => {
                 if (!p.Coordinates) return;
-                if (p.ProjectID && hiddenProjectIds.has(p.ProjectID)) return;
+                if (p.ProjectID && hiddenProjectIds.has(String(p.ProjectID))) return;
 
                 const { color: statusColor, text: statusText } = getStatusInfo(p.Status, p.CurrentStatus);
                 const icon = createMarkerIcon(statusColor);

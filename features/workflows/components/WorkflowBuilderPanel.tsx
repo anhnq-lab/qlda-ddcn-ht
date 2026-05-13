@@ -9,6 +9,7 @@ import { SubTaskDetailPanel } from './SubTaskDetailPanel';
 import LegalDocumentSearch from '../../legal-documents/LegalDocumentSearch';
 
 import { parseSla, resolveLegalReference } from '../utils/workflowUtils';
+import { groupNodesByPhase, PHASE_CONFIG } from '../utils/phaseUtils';
 
 interface WorkflowSlidePanelProps {
     workflowId: string; // empty string = CREATE mode
@@ -69,7 +70,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
             try {
                 const [wfRes, nodesRes] = await Promise.all([
                     supabase.from('workflows').select('*').eq('id', workflowId).single(),
-                    supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId).or('is_deleted.eq.false,is_deleted.is.null').order('created_at', { ascending: true })
+                    supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId).or('is_deleted.eq.false,is_deleted.is.null').order('sort_order', { ascending: true }).order('created_at', { ascending: true })
                 ]);
                 if (wfRes.error) throw wfRes.error;
                 setWorkflow(wfRes.data);
@@ -211,11 +212,10 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
     };
 
     const reorderNodeSortOrders = async (orderedNodes: WorkflowNode[]) => {
-        const baseDate = new Date('2020-01-01T00:00:00Z');
+        // Update sort_order column (integer) — replaces the old created_at timestamp hack
         for (let i = 0; i < orderedNodes.length; i++) {
-            const ts = new Date(baseDate.getTime() + i * 60000).toISOString();
             await supabase.from('workflow_nodes')
-                .update({ created_at: ts })
+                .update({ sort_order: i } as any)
                 .eq('id', orderedNodes[i].id);
         }
         return orderedNodes;
@@ -248,13 +248,15 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
     const addNode = async () => {
         try {
             const newNodeCode = (nodes.length + 1).toString().padStart(2, '0');
+            const nextSortOrder = nodes.length; // 0-indexed, place at end
             const { data, error } = await supabase.from('workflow_nodes')
                 .insert({
                     workflow_id: workflowId,
                     name: `[NEW-${newNodeCode}] Bước mới`,
                     type: 'input',
-                    assignee_role: 'Chưa giao'
-                })
+                    assignee_role: 'Chưa giao',
+                    sort_order: nextSortOrder
+                } as any)
                 .select()
                 .single();
             if (error) throw error;
@@ -338,31 +340,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
 
     const isInternalWorkflow = ['hr', 'finance', 'document', 'asset', 'other'].includes(workflow?.category || 'project');
 
-    const PHASE_NAMES: Record<string, string> = {
-        preparation: 'Chuẩn bị dự án',
-        execution: 'Thực hiện dự án',
-        completion: 'Kết thúc xây dựng'
-    };
-
-    const groupedPhases = displayNodes.reduce((acc: any, node) => {
-        const meta = (node.metadata as any) || {};
-        const phaseKey = meta.phase || 'other';
-        const subProcessKey = meta.sub_process || 'Mặc định';
-
-        if (!acc[phaseKey]) {
-            acc[phaseKey] = {
-                title: PHASE_NAMES[phaseKey] || 'KHÁC',
-                sub_processes: {}
-            };
-        }
-
-        if (!acc[phaseKey].sub_processes[subProcessKey]) {
-            acc[phaseKey].sub_processes[subProcessKey] = [];
-        }
-
-        acc[phaseKey].sub_processes[subProcessKey].push(node);
-        return acc;
-    }, {});
+    const groupedPhases = groupNodesByPhase(displayNodes);
 
     const openEditPanel = (node: WorkflowNode) => {
         openPanel({
@@ -586,7 +564,9 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
-                                        {Object.entries(groupedPhases).map(([phaseKey, phaseGroup]: [string, any]) => {
+                                        {groupedPhases.map((group) => {
+                                            const phaseKey = group.phase;
+                                            const phaseConf = group.config;
                                             const isExpanded = expandedPhases[phaseKey] !== false;
                                             return (
                                                 <React.Fragment key={phaseKey}>
@@ -600,16 +580,16 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                     <span className="text-slate-500 dark:text-slate-400">
                                                                         {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                                                                     </span>
-                                                                    Giai đoạn: {phaseGroup.title} 
+                                                                    Giai đoạn: {phaseConf.title} 
                                                                     <span className="text-slate-500 dark:text-slate-400 font-medium text-xs normal-case ml-2">
-                                                                        ({Object.values(phaseGroup.sub_processes).reduce((count: number, nodes: any) => count + nodes.length, 0)} bước)
+                                                                        ({Object.values(group.subProcesses).reduce((count: number, nodes: any) => count + nodes.length, 0)} bước)
                                                                     </span>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     )}
 
-                                                    {(isExpanded || isInternalWorkflow) && Object.entries(phaseGroup.sub_processes).map(([subKey, subNodes]: [string, any]) => {
+                                                    {(isExpanded || isInternalWorkflow) && Object.entries(group.subProcesses).map(([subKey, subNodes]: [string, any]) => {
                                                         const spToggleKey = `${phaseKey}-${subKey}`;
                                                         const isSpExpanded = expandedSubProcesses[spToggleKey] !== false;
 
