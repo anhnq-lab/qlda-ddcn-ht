@@ -211,9 +211,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             {/* View toggle */}
             {viewMode && onViewModeChange && (
                 <ViewToggle
-                    mode={viewMode}
+                    value={viewMode}
                     onChange={onViewModeChange}
-                    available={availableViews}
                 />
             )}
 

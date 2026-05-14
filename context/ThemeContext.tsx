@@ -21,7 +21,7 @@ interface ThemeContextType {
     setStickyHeader: (val: boolean) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({
+export const ThemeContext = createContext<ThemeContextType>({
     theme: 'nature',
     setTheme: () => { },
     density: 'comfortable',
@@ -149,6 +149,37 @@ const CSS_OVERRIDES: Record<Theme, string> = {
 const THEME_STYLE_ID = 'cic-theme-overrides';
 
 // ============================================================
+// DATA DENSITY — CSS variables cho table row height, padding
+// ============================================================
+const DENSITY_TOKENS: Record<DataDensity, Record<string, string>> = {
+    comfortable: {
+        '--density-row-h':     '3rem',       // table row height
+        '--density-cell-py':   '0.75rem',    // table cell vertical padding
+        '--density-cell-px':   '1rem',       // table cell horizontal padding
+        '--density-card-p':    '1.5rem',     // card padding (p-6)
+        '--density-form-gap':  '1.25rem',    // form field gap
+        '--density-section-gap': '2rem',     // section gap
+    },
+    compact: {
+        '--density-row-h':     '2.25rem',
+        '--density-cell-py':   '0.375rem',
+        '--density-cell-px':   '0.75rem',
+        '--density-card-p':    '1rem',
+        '--density-form-gap':  '0.75rem',
+        '--density-section-gap': '1.25rem',
+    },
+};
+
+function applyDensity(density: DataDensity) {
+    const root = document.documentElement;
+    const tokens = DENSITY_TOKENS[density];
+    Object.entries(tokens).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+    });
+    root.dataset.density = density;
+}
+
+// ============================================================
 // applyTheme — Inject CSS variables vào :root + CSS class overrides
 // ============================================================
 function applyTheme(theme: Theme) {
@@ -224,8 +255,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    // Apply density on mount (initial value from localStorage)
+    useEffect(() => {
+        applyDensity(density);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         localStorage.setItem('data_density', density);
+        applyDensity(density);
     }, [density]);
 
     useEffect(() => {

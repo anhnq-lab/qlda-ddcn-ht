@@ -260,3 +260,27 @@
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
+
+/* ACCESSIBILITY — prefers-reduced-motion
+   Người dùng bật "Reduce motion" ở OS sẽ không thấy animation.
+   Giữ lại opacity transitions (subtle) nhưng tắt transform/bounce.
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Skeleton shimmer stays visible but static */
+  .skeleton {
+    animation: none;
+    background: #e2e8f0;
+  }
+  .dark .skeleton {
+    background: #1e293b;
+  }
+}

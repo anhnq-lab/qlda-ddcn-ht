@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { X, Link2, Users, ClipboardList, CalendarClock, ChevronDown, ChevronUp } from 'lucide-react';
 import { AnnualPlanService } from '../../services/PlanService';
 import {
     AnnualPlanItem, AnnualPlanItemInput,
-    DepartmentCode, PlanFrequency, FREQUENCY_LABELS,
+    DepartmentCode, PlanFrequency, FREQUENCY_LABELS, DEPARTMENT_NAMES,
 } from '../../types/plan.types';
 import ComboboxSelect from '../../components/ui/ComboboxSelect';
-import { useGroupSuggestions, useProjectOptions } from '../../hooks/usePlanData';
+import Select from '../../components/ui/Select';
+import { useGroupSuggestions, useProjectOptions, useEmployeeOptions } from '../../hooks/usePlanData';
 
 interface Props {
     year: number;
@@ -42,6 +43,7 @@ const DEFAULT_FORM: AnnualPlanItemInput = {
     start_period: '',
     end_period: '',
     frequency: 'one_time',
+    responsible_ids: [],
     responsible_text: '',
     collaborating_text: '',
     notes: '',
@@ -60,9 +62,29 @@ const AnnualPlanItemModal: React.FC<Props> = ({
 
     const groups = useGroupSuggestions(year);
     const { options: projectOptions, loading: projLoading } = useProjectOptions();
+    const { options: employeeOptions, loading: empLoading } = useEmployeeOptions();
 
     const groupOptions = groups.map(g => ({ value: g, label: g }));
     const selectedProject = projectOptions.find(o => o.value === form.project_id);
+
+    // Lọc nhân viên theo phòng đang active
+    const deptEmployees = useMemo(() => {
+        const deptName = DEPARTMENT_NAMES[departmentCode];
+        const filtered = employeeOptions.filter(o => o.department === deptName);
+        return (filtered.length > 0 ? filtered : employeeOptions).map(o => ({
+            value: o.value,
+            label: o.label,
+            icon: o.avatar
+                ? <img src={o.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                : undefined,
+        }));
+    }, [employeeOptions, departmentCode]);
+
+    const handleResponsibleChange = useCallback((val: string | number | (string | number)[]) => {
+        const ids = (Array.isArray(val) ? val : val ? [val] : []).map(String);
+        const names = ids.map(id => deptEmployees.find(o => String(o.value) === id)?.label ?? '').filter(Boolean);
+        setForm(prev => ({ ...prev, responsible_ids: ids, responsible_text: names.join(', ') }));
+    }, [deptEmployees]);
 
     useEffect(() => {
         if (item) {
@@ -78,6 +100,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                 end_period: item.end_period ?? '',
                 frequency: item.frequency,
                 project_id: item.project_id,
+                responsible_ids: item.responsible_ids ?? [],
                 responsible_text: item.responsible_text ?? '',
                 collaborating_text: item.collaborating_text ?? '',
                 notes: item.notes ?? '',
@@ -123,10 +146,9 @@ const AnnualPlanItemModal: React.FC<Props> = ({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="flex flex-col h-full bg-white dark:bg-slate-900 animate-in fade-in duration-300"
             onKeyDown={handleKeyDown}
         >
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
                     <div>
@@ -255,20 +277,35 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                             sectionKey="phancong"
                             expanded={expanded}
                             onToggle={toggleSection}
+                            badge={
+                                (form.responsible_ids ?? []).length > 0
+                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
+                                        {(form.responsible_ids ?? []).length} người
+                                    </span>
+                                    : null
+                            }
                         >
-                            <div className="grid grid-cols-2 gap-3 pt-3">
+                            <div className="space-y-3 pt-3">
                                 <div>
-                                    <label className="field-label">Phòng / Cá nhân thực hiện</label>
-                                    <input
-                                        list="dept-suggestions"
-                                        value={form.responsible_text ?? ''}
-                                        onChange={e => set('responsible_text', e.target.value)}
-                                        placeholder="VD: HCTH/ Lộc, Minh"
-                                        className="field-input"
-                                    />
-                                    <datalist id="dept-suggestions">
-                                        {DEPT_SUGGESTIONS.map(d => <option key={d} value={d} />)}
-                                    </datalist>
+                                    <label className="field-label">Nhân viên thực hiện</label>
+                                    {empLoading ? (
+                                        <div className="text-xs text-slate-400 py-2">Đang tải danh sách...</div>
+                                    ) : (
+                                        <Select
+                                            options={deptEmployees}
+                                            value={form.responsible_ids ?? []}
+                                            onChange={handleResponsibleChange}
+                                            multiple
+                                            searchable
+                                            clearable
+                                            placeholder="Chọn nhân viên thực hiện..."
+                                        />
+                                    )}
+                                    {(form.responsible_ids ?? []).length === 0 && !empLoading && (
+                                        <p className="text-xs text-slate-400 mt-1">
+                                            Hiển thị nhân viên {DEPARTMENT_NAMES[departmentCode]}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="field-label">Phòng / Cá nhân phối hợp</label>
@@ -279,6 +316,9 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                         placeholder="VD: KHDT, KTTD"
                                         className="field-input"
                                     />
+                                    <datalist id="dept-suggestions">
+                                        {DEPT_SUGGESTIONS.map(d => <option key={d} value={d} />)}
+                                    </datalist>
                                 </div>
                             </div>
                         </SectionPanel>
@@ -350,7 +390,6 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                         </button>
                     </div>
                 </div>
-            </div>
 
             <style>{`
                 .field-label { display: block; font-size: 0.75rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem; }

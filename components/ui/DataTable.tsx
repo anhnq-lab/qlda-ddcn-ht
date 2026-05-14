@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { ChevronDown, ChevronUp, ChevronsUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // ========================================
@@ -72,6 +73,11 @@ interface DataTableProps<T> {
     footerExtra?: React.ReactNode;
     showFooter?: boolean; // default true if pagination or showFooter prop
     footerLabel?: string; // "Hiển thị X / Y {footerLabel}"
+
+    // Grouping
+    groupBy?: (row: T) => string;
+    renderGroupHeader?: (groupName: string, items: T[], isExpanded: boolean, toggle: () => void) => React.ReactNode;
+    defaultExpandedGroups?: boolean;
 }
 
 function DataTable<T extends Record<string, any>>({
@@ -92,7 +98,7 @@ function DataTable<T extends Record<string, any>>({
     onSelectionChange,
     onRowClick,
     rowClassName,
-    compact = false,
+    compact: compactProp,
     stickyHeader = false,
     maxHeight,
     className = '',
@@ -100,10 +106,17 @@ function DataTable<T extends Record<string, any>>({
     footerExtra,
     showFooter,
     footerLabel = 'bản ghi',
+    groupBy,
+    renderGroupHeader,
+    defaultExpandedGroups = true,
 }: DataTableProps<T>) {
+    const { density } = useTheme();
+    const compact = compactProp ?? (density === 'compact');
+
     const [sortConfig, setSortConfig] = useState<SortConfig>(
         defaultSort || { key: '', direction: null }
     );
+    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
     const handleSort = (key: string) => {
         if (!sortable) return;
@@ -156,8 +169,78 @@ function DataTable<T extends Record<string, any>>({
         return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-400 shrink-0" />;
     };
 
+    const groupedData = useMemo(() => {
+        if (!groupBy) return null;
+        const map = new Map<string, T[]>();
+        sortedData.forEach(item => {
+            const groupName = groupBy(item) || 'Khác';
+            if (!map.has(groupName)) map.set(groupName, []);
+            map.get(groupName)!.push(item);
+        });
+        return map;
+    }, [sortedData, groupBy]);
+
+    const toggleGroup = (groupName: string) => {
+        setCollapsedGroups(prev => {
+            const next = new Set(prev);
+            if (next.has(groupName)) next.delete(groupName);
+            else next.add(groupName);
+            return next;
+        });
+    };
+
+    // Helper to render a single row
+    const renderRow = (row: T, index: number) => {
+        const key = keyExtractor(row);
+        const isSelected = selectedKeys.includes(key);
+        return (
+            <tr
+                key={key}
+                onClick={() => onRowClick?.(row, index)}
+                className={`
+                    group transition-all
+                    ${onRowClick ? 'cursor-pointer' : ''}
+                    ${isSelected
+                        ? 'bg-primary-50 dark:bg-primary-900/20'
+                        : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'
+                    }
+                    ${rowClassName?.(row, index) || ''}
+                `}
+            >
+                {selectable && (
+                    <td className={`${tdPad} w-10`} onClick={e => e.stopPropagation()}>
+                        <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleSelectRow(key)}
+                            className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
+                        />
+                    </td>
+                )}
+                {columns.map(col => {
+                    const value = String(col.key).includes('.')
+                        ? String(col.key).split('.').reduce((o: any, k) => o?.[k], row)
+                        : row[col.key as keyof T];
+                    return (
+                        <td
+                            key={String(col.key)}
+                            className={`
+                                ${tdPad}
+                                text-sm text-slate-700 dark:text-slate-300
+                                ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
+                                ${col.className || ''}
+                            `}
+                        >
+                            {col.render ? col.render(value, row, index) : String(value ?? '—')}
+                        </td>
+                    );
+                })}
+            </tr>
+        );
+    };
+
     // Cell padding theo compact mode
-    const tdPad = compact ? 'px-3 py-2' : 'px-4 py-3.5';
+    const tdPad = compact ? 'px-3 py-2' : 'px-4 py-4';
     const thPad = compact ? 'px-3 py-2.5' : 'px-4 py-3';
 
     // Footer visibility
@@ -184,8 +267,8 @@ function DataTable<T extends Record<string, any>>({
                 >
                     <table className="w-full">
                         {/* ── HEADER ── */}
-                        <thead className={stickyHeader ? 'sticky top-0 z-10' : ''}>
-                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+                        <thead className={stickyHeader ? 'sticky top-0 z-10 shadow-sm' : ''}>
+                            <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest">
                                 {selectable && (
                                     <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
                                         <input
@@ -220,7 +303,7 @@ function DataTable<T extends Record<string, any>>({
                         </thead>
 
                         {/* ── BODY ── */}
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700/70">
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
                             {isLoading ? (
                                 // Skeleton rows
                                 Array.from({ length: loadingRows }).map((_, i) => (
@@ -257,55 +340,31 @@ function DataTable<T extends Record<string, any>>({
                                         )}
                                     </td>
                                 </tr>
-                            ) : (
-                                sortedData.map((row, index) => {
-                                    const key = keyExtractor(row);
-                                    const isSelected = selectedKeys.includes(key);
+                            ) : groupedData ? (
+                                Array.from(groupedData.entries()).map(([groupName, groupItems]) => {
+                                    const isExpanded = defaultExpandedGroups ? !collapsedGroups.has(groupName) : collapsedGroups.has(groupName);
+                                    const toggle = () => toggleGroup(groupName);
+                                    
                                     return (
-                                        <tr
-                                            key={key}
-                                            onClick={() => onRowClick?.(row, index)}
-                                            className={`
-                                                group transition-all
-                                                ${onRowClick ? 'cursor-pointer' : ''}
-                                                ${isSelected
-                                                    ? 'bg-primary-50 dark:bg-primary-900/20'
-                                                    : 'hover:bg-slate-50/80 dark:hover:bg-slate-'
-                                                }
-                                                ${rowClassName?.(row, index) || ''}
-                                            `}
-                                        >
-                                            {selectable && (
-                                                <td className={`${tdPad} w-10`} onClick={e => e.stopPropagation()}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        onChange={() => handleSelectRow(key)}
-                                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
-                                                    />
-                                                </td>
-                                            )}
-                                            {columns.map(col => {
-                                                const value = String(col.key).includes('.')
-                                                    ? String(col.key).split('.').reduce((o: any, k) => o?.[k], row)
-                                                    : row[col.key as keyof T];
-                                                return (
-                                                    <td
-                                                        key={String(col.key)}
-                                                        className={`
-                                                            ${tdPad}
-                                                            text-sm text-slate-700 dark:text-slate-300
-                                                            ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
-                                                            ${col.className || ''}
-                                                        `}
-                                                    >
-                                                        {col.render ? col.render(value, row, index) : String(value ?? '—')}
+                                        <React.Fragment key={groupName}>
+                                            {renderGroupHeader ? (
+                                                renderGroupHeader(groupName, groupItems, isExpanded, toggle)
+                                            ) : (
+                                                <tr className="bg-slate-50 dark:bg-slate-800/50 border-y border-slate-100 dark:border-slate-700/50" onClick={toggle}>
+                                                    <td colSpan={totalCols} className="px-4 py-2 cursor-pointer select-none">
+                                                        <div className="flex items-center gap-2 font-medium text-sm text-slate-700 dark:text-slate-300">
+                                                            <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                                            {groupName} ({groupItems.length})
+                                                        </div>
                                                     </td>
-                                                );
-                                            })}
-                                        </tr>
+                                                </tr>
+                                            )}
+                                            {isExpanded && groupItems.map((row, index) => renderRow(row, index))}
+                                        </React.Fragment>
                                     );
                                 })
+                            ) : (
+                                sortedData.map((row, index) => renderRow(row, index))
                             )}
                         </tbody>
                     </table>

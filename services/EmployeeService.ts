@@ -4,13 +4,14 @@ import { dbToEmployee, employeeToDb } from '../lib/dbMappers';
 import { Employee, EmployeeStatus, Role } from '../types';
 import type { QueryParams } from '../types/api';
 import { ServiceError, toServiceError } from './ServiceError';
+import { UserAccountService } from './UserAccountService';
 
 export class EmployeeService {
     /**
      * Get all employees with optional filtering
      */
     static async getAll(params?: QueryParams): Promise<Employee[]> {
-        let query = supabase.from('employees').select('*');
+        let query = supabase.from('employees').select('*, user_accounts(username)');
 
         if (params?.search) {
             const s = params.search;
@@ -62,7 +63,7 @@ export class EmployeeService {
     static async getById(id: string): Promise<Employee | undefined> {
         const { data, error } = await supabase
             .from('employees')
-            .select('*')
+            .select('*, user_accounts(username)')
             .eq('employee_id', id)
             .single();
 
@@ -159,10 +160,41 @@ export class EmployeeService {
             .from('employees')
             .update(updateData)
             .eq('employee_id', id)
-            .select()
+            .select('*, user_accounts(username)')
             .single();
 
         if (error) throw toServiceError(error, 'EmployeeService.update');
+
+        // Update user_account username if provided
+        if (data.Username) {
+            const { error: accError } = await supabase
+                .from('user_accounts')
+                .update({ username: data.Username })
+                .eq('employee_id', id);
+            
+            if (accError) {
+                console.error('[EmployeeService] Failed to update user account username:', accError);
+                // Non-fatal, proceed
+            } else {
+                // Manually update the returned employee's username since the select might have fetched the old one
+                // depending on race conditions, or we just rely on dbToEmployee if we want, but it's safer:
+                if (updated.user_accounts && Array.isArray(updated.user_accounts) && updated.user_accounts.length > 0) {
+                    updated.user_accounts[0].username = data.Username;
+                } else if (updated.user_accounts && !Array.isArray(updated.user_accounts)) {
+                    (updated.user_accounts as any).username = data.Username;
+                }
+            }
+        }
+
+        // Update auth email if Email is changed
+        if (data.Email) {
+            try {
+                await UserAccountService.updateAuthEmail(id, data.Email);
+            } catch (err) {
+                console.error('[EmployeeService] Failed to update auth email:', err);
+                // Non-fatal, let the DB update succeed but log it
+            }
+        }
 
         const employee = dbToEmployee(updated);
 

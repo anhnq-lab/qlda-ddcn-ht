@@ -644,10 +644,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     {planPackages.length > 0 ? (
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-xs border-collapse">
-                                                <thead>
-                                                    <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] uppercase font-black tracking-widest">
-                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-1 py-3 text-center w-8"></th>
-                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-10">
+                                                <thead className="sticky top-0 z-20 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                                    <tr className="text-slate-500 dark:text-slate-400">
+                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-1 py-3 text-center w-8"></th>
+                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-10">
                                                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                                                 checked={planPackages.length > 0 && planPackages.every(p => selectedPackageIds.has(p.PackageID))}
                                                                 onChange={(e) => {
@@ -657,23 +657,23 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                     setSelectedPackageIds(newSet);
                                                                 }} />
                                                         </th>
-                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-10">TT</th>
-                                                        <th colSpan={visibleColumns.description ? 2 : 1} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center">Tên gói thầu</th>
-                                                        {visibleColumns.price && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[110px]">Giá gói thầu<br />(Đồng)</th>}
-                                                        {visibleColumns.fundingSource && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center min-w-[100px]">Nguồn vốn</th>}
-                                                        {visibleColumns.selectionMethod && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center">Hình thức<br />lựa chọn<br />nhà thầu</th>}
-                                                        {visibleColumns.selectionProcedure && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center">Phương thức<br />lựa chọn<br />nhà thầu</th>}
-                                                        {visibleColumns.selectionDuration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Thời gian<br />tổ chức<br />LCNT</th>}
-                                                        {visibleColumns.selectionStartDate && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />LCNT</th>}
-                                                        {visibleColumns.contractType && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center">Loại<br />hợp đồng</th>}
-                                                        {visibleColumns.duration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
-                                                        {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
-                                                        {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
-                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-800 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
+                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-10">TT</th>
+                                                        <th colSpan={visibleColumns.description ? 2 : 1} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Tên gói thầu</th>
+                                                        {visibleColumns.price && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[110px]">Giá gói thầu<br />(Đồng)</th>}
+                                                        {visibleColumns.fundingSource && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center min-w-[100px]">Nguồn vốn</th>}
+                                                        {visibleColumns.selectionMethod && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Hình thức<br />lựa chọn<br />nhà thầu</th>}
+                                                        {visibleColumns.selectionProcedure && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Phương thức<br />lựa chọn<br />nhà thầu</th>}
+                                                        {visibleColumns.selectionDuration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />tổ chức<br />LCNT</th>}
+                                                        {visibleColumns.selectionStartDate && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />LCNT</th>}
+                                                        {visibleColumns.contractType && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Loại<br />hợp đồng</th>}
+                                                        {visibleColumns.duration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
+                                                        {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
+                                                        {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
+                                                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800/50 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
                                                     </tr>
-                                                    <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] uppercase font-black tracking-widest">
-                                                        <th className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
-                                                        {visibleColumns.description && <th className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-center min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>}
+                                                    <tr className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400">
+                                                        <th className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
+                                                        {visibleColumns.description && <th className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>}
                                                     </tr>
                                                 </thead>
                                                 <tbody>

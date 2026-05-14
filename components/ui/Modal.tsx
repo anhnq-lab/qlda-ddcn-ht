@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
                             if (!closeOnEscape) e.preventDefault();
                         }}
                         className={cn(
-                            "pointer-events-auto relative w-full bg-white dark:bg-slate-800 rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden",
+                            "pointer-events-auto relative w-full bg-[var(--bg-surface)] rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden border border-[var(--border-default)]",
                             "animate-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 duration-200",
                             sizeStyles[size],
                             className
@@ -81,12 +81,12 @@ export const Modal: React.FC<ModalProps> = ({
                             <div className="flex items-start justify-between p-6 pb-0">
                                 <div>
                                     {title && (
-                                        <Dialog.Title id="modal-title" className="text-lg font-bold text-slate-900 dark:text-white">
+                                        <Dialog.Title id="modal-title" className="text-lg font-bold text-[var(--text-primary)]">
                                             {title}
                                         </Dialog.Title>
                                     )}
                                     {description && (
-                                        <Dialog.Description id="modal-description" className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                        <Dialog.Description id="modal-description" className="text-sm text-[var(--text-muted)] mt-1">
                                             {description}
                                         </Dialog.Description>
                                     )}
@@ -94,7 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
                                 {showCloseButton && (
                                     <Dialog.Close asChild>
                                         <button
-                                            className="p-2 -mr-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                            className="p-2 -mr-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] rounded-xl transition-colors"
                                             aria-label="Đóng"
                                         >
                                             <X className="w-5 h-5" />
@@ -111,7 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
 
                         {/* Footer */}
                         {footer && (
-                            <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-800 mt-4">
+                            <div className="p-6 pt-0 border-t border-[var(--border-default)] mt-4">
                                 <div className="flex items-center justify-end gap-3 pt-4">
                                     {footer}
                                 </div>
@@ -176,15 +176,15 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     {variant === 'warning' && <AlertCircle   className="w-6 h-6" />}
                     {variant === 'info'    && <Info           className="w-6 h-6" />}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{message}</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{title}</h3>
+                <p className="text-sm text-[var(--text-muted)]">{message}</p>
             </div>
 
             <div className="flex gap-3 mt-6">
                 <button
                     onClick={onClose}
                     disabled={loading}
-                    className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] rounded-xl font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-50"
                 >
                     {cancelText}
                 </button>

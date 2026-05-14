@@ -415,30 +415,30 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             {/* ── TABLE BODY ── */}
             <div className="flex-1 overflow-auto custom-scrollbar print:overflow-visible">
                 <table className="w-full text-left text-[12px] border-collapse table-fixed min-w-[1000px]">
-                    <thead className="bg-slate-100 dark:bg-slate- border-b-2 border-slate-300 dark:border-slate-600 sticky top-0 z-[5] print:bg-slate-200">
-                        <tr className="font-bold text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider">
-                            <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
+                    <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-[5] shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50 print:bg-slate-200">
+                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                            <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
                             {isInternalWorkflow ? (
                                 <>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[24%]">Nội dung công việc</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị thực hiện</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị phối hợp</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[14%]">Thời gian</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[16%]">Biểu mẫu</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[12%]">Ghi chú</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[24%]">Nội dung công việc</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị thực hiện</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[12%]">Đơn vị phối hợp</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[14%]">Thời gian</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[16%]">Biểu mẫu</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[12%]">Ghi chú</th>
                                 </>
                             ) : (
                                 <>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-14 text-center">SLA</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[26%]">Nội dung thực hiện</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đơn vị thực hiện</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Đầu ra</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[10%]">Biểu mẫu</th>
-                                    <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 w-[13%]">Cơ sở pháp lý</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-14 text-center">SLA</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[26%]">Nội dung thực hiện</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[13%]">Đơn vị thực hiện</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[13%]">Đầu ra</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[10%]">Biểu mẫu</th>
+                                    <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 w-[13%]">Cơ sở pháp lý</th>
                                 </>
                             )}
                             {isAdmin && (
-                                <th className="p-1.5 text-center w-16 print:hidden">Thao tác</th>
+                                <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 text-center w-16 print:hidden">Thao tác</th>
                             )}
                         </tr>
                     </thead>

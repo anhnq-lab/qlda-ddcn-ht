@@ -541,14 +541,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         </div>
                                                         {linkedAnnual.length > 0 ? (
                                                             <table className="w-full text-xs mb-4">
-                                                                <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                                                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                                                     <tr>
-                                                                        <th className="px-3 py-2 text-left">Năm</th>
-                                                                        <th className="px-3 py-2 text-left">QĐ giao vốn</th>
-                                                                        <th className="px-3 py-2 text-right">Vốn giao</th>
-                                                                        <th className="px-3 py-2 text-right">Đã GN</th>
-                                                                        <th className="px-3 py-2 text-right">Tỷ lệ</th>
-                                                                        <th className="px-3 py-2 text-right w-16">Thao tác</th>
+                                                                        <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Năm</th>
+                                                                        <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">QĐ giao vốn</th>
+                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Vốn giao</th>
+                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Đã GN</th>
+                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Tỷ lệ</th>
+                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400 w-16">Thao tác</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -667,14 +667,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             )}
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
+                                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                         <tr>
-                                            <th className="px-4 py-2.5">Năm</th>
-                                            <th className="px-4 py-2.5">QĐ giao vốn</th>
-                                            <th className="px-4 py-2.5 text-right">Vốn giao</th>
-                                            <th className="px-4 py-2.5 text-right">Đã giải ngân</th>
-                                            <th className="px-4 py-2.5">Tỷ lệ</th>
-                                            <th className="px-4 py-2.5 text-center w-20">Thao tác</th>
+                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">Năm</th>
+                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">QĐ giao vốn</th>
+                                            <th className="px-4 py-2.5 text-right text-slate-500 dark:text-slate-400">Vốn giao</th>
+                                            <th className="px-4 py-2.5 text-right text-slate-500 dark:text-slate-400">Đã giải ngân</th>
+                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">Tỷ lệ</th>
+                                            <th className="px-4 py-2.5 text-center text-slate-500 dark:text-slate-400 w-20">Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -899,14 +899,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 {filteredPlanData.length > 0 ? (
                     <div className="px-6 pb-6 mt-4 border-t border-gray-100 dark:border-slate-700/50 pt-4">
                         <table className="w-full text-xs">
-                            <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                 <tr>
-                                    <th className="px-3 py-2 text-left">Tháng</th>
-                                    <th className="px-3 py-2 text-right">KH giải ngân</th>
-                                    <th className="px-3 py-2 text-right">Thực tế</th>
-                                    <th className="px-3 py-2 text-right">Tỷ lệ</th>
-                                    <th className="px-3 py-2 text-left">Việc trong tháng</th>
-                                    <th className="px-3 py-2 text-center w-16">Thao tác</th>
+                                    <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Tháng</th>
+                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">KH giải ngân</th>
+                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Thực tế</th>
+                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Tỷ lệ</th>
+                                    <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Việc trong tháng</th>
+                                    <th className="px-3 py-2 text-center text-slate-500 dark:text-slate-400 w-16">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
@@ -1040,17 +1040,17 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
+                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                             <tr>
-                                <th className="px-4 py-3">Ngày</th>
-                                <th className="px-4 py-3">Nội dung</th>
-                                <th className="px-4 py-3">HĐ số</th>
-                                <th className="px-4 py-3 text-center">Loại</th>
-                                <th className="px-4 py-3 text-center">Biểu mẫu</th>
-                                <th className="px-4 py-3 text-right">Số tiền</th>
-                                <th className="px-4 py-3 text-right">Lũy kế TT</th>
-                                <th className="px-4 py-3 text-center">Trạng thái</th>
-                                <th className="px-4 py-3 text-center w-20">Thao tác</th>
+                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Ngày</th>
+                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Nội dung</th>
+                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">HĐ số</th>
+                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Loại</th>
+                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Biểu mẫu</th>
+                                <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Số tiền</th>
+                                <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Lũy kế TT</th>
+                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Trạng thái</th>
+                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 w-20">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-slate-700">

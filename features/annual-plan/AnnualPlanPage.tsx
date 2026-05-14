@@ -10,6 +10,9 @@ import {
 } from '../../types/plan.types';
 import AnnualPlanItemModal from './AnnualPlanItemModal';
 import AnnualPlanItemDetail from './AnnualPlanItemDetail';
+import { useSlidePanel } from '../../context/SlidePanelContext';
+import { useEmployeeOptions } from '../../hooks/usePlanData';
+import DataTable, { ColumnDef } from '../../components/ui/DataTable';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -22,15 +25,20 @@ const FREQ_BADGE: Record<PlanFrequency, { label: string; color: string }> = {
 };
 
 const AnnualPlanPage: React.FC = () => {
+    const { openPanel, closePanel } = useSlidePanel();
+    const { options: employeeOptions } = useEmployeeOptions();
+    const empMap = useMemo(() => {
+        const m: Record<string, string> = {};
+        for (const o of employeeOptions) m[String(o.value)] = o.label;
+        return m;
+    }, [employeeOptions]);
+
     const [year, setYear] = useState(CURRENT_YEAR);
     const [activeDept, setActiveDept] = useState<DepartmentCode>('HCTH');
     const [items, setItems] = useState<AnnualPlanItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editing, setEditing] = useState<AnnualPlanItem | null>(null);
-    const [detailItem, setDetailItem] = useState<AnnualPlanItem | null>(null);
 
     useEffect(() => {
         loadItems();
@@ -80,20 +88,150 @@ const AnnualPlanPage: React.FC = () => {
         });
     };
 
-    const handleSaved = () => {
-        setModalOpen(false);
-        setEditing(null);
-        loadItems();
-    };
-
     const handleDelete = async (id: string) => {
         if (!confirm('Xóa nhiệm vụ này?')) return;
         await AnnualPlanService.delete(id);
         loadItems();
     };
 
+    const openFormPanel = (item: AnnualPlanItem | null) => {
+        openPanel({
+            title: item ? 'Sửa nhiệm vụ KH khung' : 'Thêm nhiệm vụ KH khung',
+            component: (
+                <AnnualPlanItemModal
+                    year={year}
+                    departmentCode={activeDept}
+                    departmentName={DEPARTMENT_NAMES[activeDept]}
+                    item={item}
+                    onSaved={() => { closePanel(); loadItems(); }}
+                    onClose={closePanel}
+                />
+            ),
+        });
+    };
+
+    const openDetailPanel = (item: AnnualPlanItem) => {
+        openPanel({
+            title: item.task_name.length > 35 ? item.task_name.slice(0, 35) + '…' : item.task_name,
+            component: (
+                <AnnualPlanItemDetail
+                    item={item}
+                    year={year}
+                    onEdit={() => openFormPanel(item)}
+                    onDelete={() => { handleDelete(item.id); closePanel(); }}
+                    onClose={closePanel}
+                />
+            ),
+        });
+    };
+
+    const columns = useMemo<ColumnDef<AnnualPlanItem>[]>(() => [
+        {
+            key: 'stt',
+            header: 'STT',
+            width: '3rem',
+            align: 'center',
+            render: (_, __, idx) => <span className="tabular-nums text-xs text-slate-500">{idx + 1}</span>
+        },
+        {
+            key: 'task_name',
+            header: 'Nội dung nhiệm vụ',
+            render: (_, item) => (
+                <div className="flex flex-col">
+                    <span className="font-medium text-slate-800 dark:text-slate-200 leading-snug">{item.task_name}</span>
+                    {item.project_id && (
+                        <span className="mt-1 text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded inline-flex w-fit items-center gap-0.5 font-medium border border-blue-100 dark:border-blue-500/20">
+                            Dự án
+                        </span>
+                    )}
+                </div>
+            )
+        },
+        {
+            key: 'deliverable',
+            header: 'Sản phẩm đầu ra',
+            width: '12rem',
+            render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.deliverable ?? '—'}</span>
+        },
+        {
+            key: 'start_period',
+            header: 'Bắt đầu',
+            width: '6rem',
+            align: 'center',
+            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{item.start_period ?? '—'}</span>
+        },
+        {
+            key: 'end_period',
+            header: 'Kết thúc',
+            width: '6rem',
+            align: 'center',
+            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{item.end_period ?? '—'}</span>
+        },
+        {
+            key: 'frequency',
+            header: 'Tần suất',
+            width: '7rem',
+            align: 'center',
+            render: (_, item) => {
+                const badge = item.frequency ? FREQ_BADGE[item.frequency] : null;
+                if (!badge) return <span className="text-xs text-slate-400">—</span>;
+                return (
+                    <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${badge.color.replace('bg-', 'bg-opacity-10 bg-').replace('text-', 'text-')}`}>
+                        {badge.label}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'responsible',
+            header: 'Phụ trách',
+            width: '10rem',
+            render: (_, item) => (
+                item.responsible_ids && item.responsible_ids.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                        {item.responsible_ids.map(id => (
+                            <span key={id} className="inline-block text-[11px] bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300 px-1.5 py-0.5 rounded-full font-medium leading-tight">
+                                {empMap[id] ? empMap[id].split(' ').pop() : id}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="text-xs text-slate-400">{item.responsible_text ?? '—'}</span>
+                )
+            )
+        },
+        {
+            key: 'notes',
+            header: 'Ghi chú',
+            width: '12rem',
+            render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.notes ?? '—'}</span>
+        },
+        {
+            key: 'actions',
+            header: '',
+            width: '4rem',
+            align: 'right',
+            render: (_, item) => (
+                <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                    <button
+                        onClick={() => openFormPanel(item)}
+                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors"
+                    >
+                        <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(item.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                </div>
+            )
+        }
+    ], [empMap]);
+
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] overflow-hidden bg-slate-50 dark:bg-slate-900 -mx-3 sm:-mx-4 lg:-mx-6 -mt-4 sm:-mt-6">
+        <div className="flex flex-col h-full min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900">
             {/* ── Header ── */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
@@ -118,7 +256,7 @@ const AnnualPlanPage: React.FC = () => {
                             ))}
                         </select>
                         <button
-                            onClick={() => { setEditing(null); setModalOpen(true); }}
+                            onClick={() => openFormPanel(null)}
                             className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
                         >
                             <Plus className="w-4 h-4" />
@@ -175,139 +313,44 @@ const AnnualPlanPage: React.FC = () => {
                         <BookOpen className="w-10 h-10 opacity-30" />
                         <p className="text-sm">Chưa có nhiệm vụ nào trong kế hoạch khung năm {year}</p>
                         <button
-                            onClick={() => { setEditing(null); setModalOpen(true); }}
+                            onClick={() => openFormPanel(null)}
                             className="text-primary-600 dark:text-primary-400 text-sm hover:underline"
                         >
                             Thêm nhiệm vụ đầu tiên
                         </button>
                     </div>
                 ) : (
-                    <div className="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-auto relative">
-                        <table className="w-full text-left border-collapse">
-                            <thead className="sticky top-0 z-10">
-                                <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                                    <th className="px-4 py-3 text-center w-12">STT</th>
-                                    <th className="px-4 py-3 text-left">Nội dung nhiệm vụ</th>
-                                    <th className="px-4 py-3 text-left w-48">Sản phẩm đầu ra</th>
-                                    <th className="px-4 py-3 text-center w-24">Bắt đầu</th>
-                                    <th className="px-4 py-3 text-center w-24">Kết thúc</th>
-                                    <th className="px-4 py-3 text-center w-28">Tần suất</th>
-                                    <th className="px-4 py-3 text-left w-40">Phụ trách</th>
-                                    <th className="px-4 py-3 text-left w-48">Ghi chú</th>
-                                    <th className="px-4 py-3 w-16"></th>
-                                </tr>
-                            </thead>
-
-                            {Array.from(groups.entries()).map(([groupName, groupItems]) => (
-                                <tbody key={groupName} className="group/tbody">
-                                    {/* Group header row */}
-                                    <tr
-                                        className="bg-slate-50/80 dark:bg-slate- cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-b border-slate-200 dark:border-slate-800"
-                                        onClick={() => toggleGroup(groupName)}
-                                    >
-                                        <td colSpan={9} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
-                                            <div className="flex items-center gap-2">
-                                                <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${expandedGroups.has(groupName) ? 'rotate-90' : ''}`} />
-                                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                                    {groupName}
-                                                </span>
-                                                <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full font-medium">
-                                                    {groupItems.length}
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    {/* Item rows */}
-                                    {expandedGroups.has(groupName) && groupItems.map((item, idx) => (
-                                        <tr
-                                            key={item.id}
-                                            className="hover:bg-slate-50 dark:hover:bg-slate- transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
-                                            onClick={() => setDetailItem(item)}
-                                        >
-                                            <td className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500 text-center align-top">{idx + 1}</td>
-                                            <td className="px-4 py-3 align-top">
-                                                <p className="text-sm text-slate-800 dark:text-slate-200 leading-snug font-medium">{item.task_name}</p>
-                                                {item.project_id && (
-                                                    <span className="mt-1 text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5 font-medium border border-blue-100 dark:border-blue-500/20">
-                                                        Dự án
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 leading-snug align-top">
-                                                {item.deliverable ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 text-center text-xs text-slate-600 dark:text-slate-400 align-top">
-                                                {item.start_period ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 text-center text-xs text-slate-600 dark:text-slate-400 align-top">
-                                                {item.end_period ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 text-center align-top">
-                                                <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${FREQ_BADGE[item.frequency].color.replace('bg-', 'bg-opacity-10 bg-').replace('text-', 'text-')}`}>
-                                                    {FREQ_BADGE[item.frequency].label}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 leading-snug align-top">
-                                                {item.responsible_text ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 leading-snug align-top">
-                                                {item.notes ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 align-top" onClick={e => e.stopPropagation()}>
-                                                <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button
-                                                        onClick={() => { setEditing(item); setModalOpen(true); }}
-                                                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors"
-                                                    >
-                                                        <Edit2 className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(item.id)}
-                                                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            ))}
-                        </table>
-                    </div>
+                    <DataTable
+                        data={filtered}
+                        columns={columns}
+                        keyExtractor={item => item.id}
+                        stickyHeader
+                        maxHeight="calc(100vh - 260px)"
+                        onRowClick={openDetailPanel}
+                        groupBy={(item) => item.group_name || 'Khác'}
+                        defaultExpandedGroups={true}
+                        renderGroupHeader={(groupName, groupItems, isExpanded, toggle) => (
+                            <tr
+                                className="bg-slate-50/80 dark:bg-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border-b border-slate-200 dark:border-slate-800"
+                                onClick={toggle}
+                            >
+                                <td colSpan={9} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
+                                    <div className="flex items-center gap-2">
+                                        <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                            {groupName}
+                                        </span>
+                                        <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full font-medium">
+                                            {groupItems.length}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                    />
                 )}
             </div>
 
-            {/* ── Modal ── */}
-            {modalOpen && (
-                <AnnualPlanItemModal
-                    year={year}
-                    departmentCode={activeDept}
-                    departmentName={DEPARTMENT_NAMES[activeDept]}
-                    item={editing}
-                    onSaved={handleSaved}
-                    onClose={() => { setModalOpen(false); setEditing(null); }}
-                />
-            )}
-
-            {/* ── Detail panel ── */}
-            {detailItem && (
-                <AnnualPlanItemDetail
-                    item={detailItem}
-                    year={year}
-                    onEdit={() => {
-                        setEditing(detailItem);
-                        setDetailItem(null);
-                        setModalOpen(true);
-                    }}
-                    onDelete={() => {
-                        handleDelete(detailItem.id);
-                        setDetailItem(null);
-                    }}
-                    onClose={() => setDetailItem(null)}
-                />
-            )}
         </div>
     );
 };

@@ -297,18 +297,18 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                         <table className="w-full text-left text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-                                    <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Mã TT</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Hợp đồng</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Dự án</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Đợt</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Loại</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right">Số tiền</th>
-                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
-                                    <th className="px-5 py-4 w-10"></th>
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                <tr className="text-slate-500 dark:text-slate-400">
+                                    <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
+                                    <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Mã TT</th>
+                                    <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Hợp đồng</th>
+                                    <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nhà thầu</th>
+                                    <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Dự án</th>
+                                    <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Đợt</th>
+                                    <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Loại</th>
+                                    <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Số tiền</th>
+                                    <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Trạng thái</th>
+                                    <th className="px-5 py-4 w-10 border-b border-slate-200 dark:border-slate-700"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -320,7 +320,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-"
+                                            className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50"
                                             onClick={() => handleNavigateToSource(payment.ContractID)}
                                         >
                                             {/* STT */}

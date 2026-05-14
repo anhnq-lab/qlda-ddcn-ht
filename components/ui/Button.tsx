@@ -29,17 +29,17 @@ const variantStyles: Record<ButtonVariant, string> = {
         focus-visible:ring-primary-500
     `,
     secondary: `
-        bg-white dark:bg-slate-800 text-gray-700 
-        border border-gray-200 shadow-lg
-        hover:bg-slate-50 dark:bg-slate-800 hover:border-gray-300
-        active:bg-gray-100
-        focus-visible:ring-gray-400
+        bg-[var(--bg-surface)] text-[var(--text-secondary)]
+        border border-[var(--border-default)] shadow-sm
+        hover:bg-[var(--bg-muted)] hover:border-[var(--border-subtle)]
+        active:bg-[var(--bg-subtle)]
+        focus-visible:ring-slate-400
     `,
     ghost: `
-        bg-transparent text-gray-600
-        hover:bg-gray-100 hover:text-gray-900
-        active:bg-gray-200
-        focus-visible:ring-gray-400
+        bg-transparent text-[var(--text-secondary)]
+        hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]
+        active:bg-[var(--bg-subtle)]
+        focus-visible:ring-slate-400
     `,
     danger: `
         bg-danger-500 text-white

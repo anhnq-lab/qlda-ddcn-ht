@@ -59,8 +59,8 @@ const Settings: React.FC = () => {
 
     if (!isAdmin) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-slate-400">
-                <ShieldCheck className="w-16 h-16 mb-4 text-gray-300 dark:text-slate-600" />
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500 dark:text-slate-400">
+                <ShieldCheck className="w-16 h-16 mb-4 text-slate-300 dark:text-slate-600" />
                 <h2 className="text-xl font-semibold mb-2">Không có quyền truy cập</h2>
                 <p>Chỉ Admin mới có thể truy cập cài đặt hệ thống.</p>
             </div>
@@ -70,23 +70,23 @@ const Settings: React.FC = () => {
     return (
         <div className="h-full flex flex-col max-w-[1600px] w-full mx-auto">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 pt-5 pb-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 px-6 lg:px-8 pt-8 pb-2">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                         <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm shadow-primary-500/20">
                             <ShieldCheck className="w-6 h-6 text-white" />
                         </div>
                         Cài đặt hệ thống
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 font-medium">
                         Quản trị tài khoản, phân quyền, nhật ký và công cụ hệ thống
                     </p>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="px-6 mt-4 border-b border-gray-200 dark:border-slate-700">
-                <div className="flex gap-1 overflow-x-auto no-scrollbar">
+            {/* Tabs - Segmented Control Style */}
+            <div className="px-6 lg:px-8 mt-4 mb-2">
+                <div className="inline-flex p-1 gap-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl border border-slate-200/50 dark:border-slate-700/50 overflow-x-auto no-scrollbar max-w-full">
                     {TABS.map((tab) => {
                         const isActive = activeTab === tab.key;
                         const Icon = tab.icon;
@@ -95,20 +95,16 @@ const Settings: React.FC = () => {
                                 key={tab.key}
                                 onClick={() => switchTab(tab.key)}
                                 className={`
-                                    flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap
-                                    rounded-t-lg transition-all duration-200 relative
+                                    flex items-center gap-2 px-4 py-2 text-sm font-semibold whitespace-nowrap
+                                    rounded-lg transition-all duration-200
                                     ${isActive
-                                        ? 'text-primary-700 dark:text-primary-400 bg-primary-50/50 dark:bg-slate-800'
-                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-'
+                                        ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-slate-700 shadow-sm ring-1 ring-black/5 dark:ring-white/10'
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
                                     }
                                 `}
                             >
                                 <Icon className="w-4 h-4" />
                                 {tab.label}
-                                {/* Active underline */}
-                                {isActive && (
-                                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 rounded-t-full" />
-                                )}
                             </button>
                         );
                     })}
@@ -151,14 +147,14 @@ const Settings: React.FC = () => {
                     )}
                     {activeTab === 'tools' && (
                         <div className="p-6 lg:p-8 max-w-2xl">
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm">
-                                <div className="p-4 border-b border-gray-200 dark:border-slate-800 flex items-center gap-3">
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                                <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3">
                                     <div className="p-2 bg-warning-50 dark:bg-warning-900/30 rounded-xl">
                                         <Users className="w-5 h-5 text-warning-600 dark:text-warning-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100">Giả làm người dùng</h3>
-                                        <p className="text-xs text-gray-500 dark:text-slate-400">Test phân quyền bằng cách đăng nhập với vai trò khác</p>
+                                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Giả làm người dùng</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Test phân quyền bằng cách đăng nhập với vai trò khác</p>
                                     </div>
                                 </div>
                                 <div className="p-4">

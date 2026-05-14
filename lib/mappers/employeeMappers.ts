@@ -14,7 +14,7 @@ export const dbToEmployee = (row: any): Employee => ({
     AvatarUrl: row.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.full_name || 'NV')}&background=4a90e2&color=fff&bold=true&size=128`,
     Status: row.status as EmployeeStatus,
     JoinDate: row.join_date || '',
-    Username: row.employee_id,
+    Username: Array.isArray(row.user_accounts) && row.user_accounts.length > 0 ? row.user_accounts[0].username : (row.user_accounts?.username || row.employee_id),
     Password: '',
     Gender: row.gender as Gender || undefined,
     JobContent: row.job_content || undefined,

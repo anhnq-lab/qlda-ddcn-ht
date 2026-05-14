@@ -55,7 +55,7 @@ const getProgressGradient = (percent: number) => {
 
 const TaskList: React.FC = () => {
     const navigate = useNavigate();
-    const { openPanel } = useSlidePanel();
+    const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
     
     const [searchTerm, setSearchTerm] = useState('');
@@ -67,9 +67,6 @@ const TaskList: React.FC = () => {
     const [filterPersonal, setFilterPersonal] = useState(false);
     const [filterTaskType, setFilterTaskType] = useState<string>('All');
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentTask, setCurrentTask] = useState<Partial<Task>>({});
-    const [isEditMode, setIsEditMode] = useState(false);
 
     // ── Sort ──
     const [sortField, setSortField] = useState<SortField | null>(null);
@@ -255,15 +252,25 @@ const TaskList: React.FC = () => {
     };
 
     const openCreateModal = () => {
-        setIsEditMode(false);
-        setCurrentTask({
-            Status: TaskStatus.Todo,
-            Priority: TaskPriority.Medium,
-            ProjectID: projects[0]?.ProjectID || '',
-            AssigneeID: employees[0]?.EmployeeID || '',
-            ProgressPercent: 0,
+        openPanel({
+            title: 'Tạo công việc mới',
+            component: (
+                <ProjectTaskModal
+                    isOpen={true}
+                    asSlidePanel={true}
+                    onClose={closePanel}
+                    onSubmit={handleSave}
+                    initialData={{
+                        Status: TaskStatus.Todo,
+                        Priority: TaskPriority.Medium,
+                        ProjectID: projects[0]?.ProjectID || '',
+                        AssigneeID: employees[0]?.EmployeeID || '',
+                        ProgressPercent: 0,
+                    }}
+                    allTasks={tasks}
+                />
+            ),
         });
-        setIsModalOpen(true);
     };
 
     const openTaskPanel = (task: Task) => {
@@ -276,9 +283,20 @@ const TaskList: React.FC = () => {
     };
 
     const openEditModal = (task: Task) => {
-        setIsEditMode(true);
-        setCurrentTask(task);
-        setIsModalOpen(true);
+        openPanel({
+            title: task.Title,
+            url: `/tasks/${task.TaskID}/edit`,
+            component: (
+                <ProjectTaskModal
+                    isOpen={true}
+                    asSlidePanel={true}
+                    onClose={closePanel}
+                    onSubmit={handleSave}
+                    initialData={task}
+                    allTasks={tasks}
+                />
+            ),
+        });
     };
 
     const handleTaskStatusChange = async (taskId: string, newStatus: TaskStatus) => {
@@ -331,7 +349,7 @@ const TaskList: React.FC = () => {
         }
 
         await saveTaskMutation.mutateAsync(workflowPayload);
-        setIsModalOpen(false);
+        closePanel();
     };
 
     const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || filterMonth !== 'All' || filterDepartment !== 'All' || filterTaskType !== 'All' || searchTerm !== '' || filterOverdue || filterPersonal;
@@ -502,14 +520,6 @@ const TaskList: React.FC = () => {
                 />
             )}
 
-            {/* ══════════ MODAL ══════════ */}
-            <ProjectTaskModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSubmit={handleSave}
-                initialData={currentTask}
-                allTasks={tasks}
-            />
         </div>
     );
 };

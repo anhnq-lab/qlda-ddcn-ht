@@ -331,15 +331,15 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                     {/* Table */}
                     <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <table className="w-full text-left">
-                            <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-10">STT</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Tài liệu</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-36">Số công văn</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Ngày ban hành</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-40">CQ ban hành</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-24 text-center">Trạng thái</th>
-                                    <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-20 text-center">Thao tác</th>
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                <tr>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-10">STT</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400">Tài liệu</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-36">Số công văn</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-28">Ngày ban hành</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-40">CQ ban hành</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-24 text-center">Trạng thái</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-20 text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>

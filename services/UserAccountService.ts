@@ -187,6 +187,17 @@ export class UserAccountService {
      * Delete account
      */
     static async delete(id: string): Promise<void> {
+        // Fetch auth_user_id first to delete from Supabase Auth
+        try {
+            const { data: account } = await supabase.from('user_accounts').select('auth_user_id').eq('account_id', id).single();
+            if (account?.auth_user_id) {
+                const { error: authErr } = await supabaseAdmin.auth.admin.deleteUser(account.auth_user_id);
+                if (authErr) console.warn('[UserAccountService] Could not delete Auth user:', authErr);
+            }
+        } catch (e) {
+            console.warn('[UserAccountService] Failed to fetch or delete Supabase Auth user', e);
+        }
+
         const client: any = supabase;
         const { error } = await client
             .from('user_accounts')
@@ -269,6 +280,60 @@ export class UserAccountService {
         }
 
         return null;
+    }
+
+    /**
+     * Verify current password for an employee
+     */
+    static async verifyPassword(employeeId: string, currentPassword: string): Promise<boolean> {
+        const password_hash = await hashPassword(currentPassword);
+        const { data } = await supabase
+            .from('user_accounts')
+            .select('account_id')
+            .eq('employee_id', employeeId)
+            .eq('password_hash', password_hash)
+            .single();
+
+        return !!data;
+    }
+
+    /**
+     * Change password for an employee
+     */
+    static async changePassword(employeeId: string, newPassword: string): Promise<void> {
+        const password_hash = await hashPassword(newPassword);
+
+        // Update Supabase Auth if auth_user_id exists
+        try {
+            const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('employee_id', employeeId).single();
+            if (accountData?.auth_user_id) {
+                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { password: newPassword });
+            }
+        } catch (e) {
+            console.warn('[UserAccountService] Failed to update Supabase Auth password', e);
+        }
+
+        const client: any = supabase;
+        const { error } = await (client.from('user_accounts') as any)
+            .update({ password_hash, updated_at: new Date().toISOString() })
+            .eq('employee_id', employeeId);
+
+        if (error) throw toServiceError(error, 'UserAccountService.changePassword');
+    }
+
+    /**
+     * Update email for an employee in Supabase Auth
+     */
+    static async updateAuthEmail(employeeId: string, newEmail: string): Promise<void> {
+        try {
+            const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('employee_id', employeeId).single();
+            if (accountData?.auth_user_id) {
+                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { email: newEmail, email_confirm: true });
+            }
+        } catch (e) {
+            console.warn('[UserAccountService] Failed to update Supabase Auth email', e);
+            throw new Error(`Không thể cập nhật email xác thực: ${(e as Error).message}`);
+        }
     }
 
     /**

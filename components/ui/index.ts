@@ -1,7 +1,11 @@
-// UI Components - Design System v2.1
-// Export all reusable UI components
+// Design System — UI Primitives v2.2
+// Single import point: import { Button, Badge, Modal, ... } from '@/components/ui'
 
-// Core Components
+// ── Badge ─────────────────────────────────────────────────────
+export { Badge } from './Badge';
+export type { BadgeProps, BadgeVariant as SimpleBadgeVariant } from './Badge';
+
+// ── Button ────────────────────────────────────────────────────
 export { Button, IconButton, ButtonGroup } from './Button';
 export type { ButtonProps, ButtonVariant, ButtonSize, IconButtonProps } from './Button';
 
@@ -21,8 +25,18 @@ export type { ModalProps, ModalSize } from './Modal';
 export { default as DataTable } from './DataTable';
 export type { Column, SortConfig, SortDirection } from './DataTable';
 
-// Table — backward compat alias → DataTable
-export { Table, TablePagination } from './Table';
+// Table — Atomic Components (for complex tables like rowSpan/colSpan/grouping)
+export {
+    TableContainer,
+    Table,
+    TableHeader,
+    TableBody,
+    TableFooter,
+    TableHead,
+    TableRow,
+    TableCell,
+    TablePagination
+} from './Table';
 
 export {
     Skeleton,
@@ -67,7 +81,32 @@ export type { FormSectionProps, FormFieldProps } from './FormSection';
 export { StatCard } from '../common/StatCard';
 export type { StatCardColor } from '../common/StatCard';
 
-// Legacy Components (for backwards compatibility)
+// ── Dropdown Menu (Radix wrapper) ─────────────────────────────
+export {
+    DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuCheckboxItem, DropdownMenuRadioItem, DropdownMenuLabel,
+    DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuGroup,
+    DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent,
+    DropdownMenuSubTrigger, DropdownMenuRadioGroup,
+} from './DropdownMenu';
+
+// ── Popover (Radix wrapper) ───────────────────────────────────
+export { Popover, PopoverTrigger, PopoverContent, PopoverClose, PopoverAnchor } from './Popover';
+
+// ── Slide Panel ───────────────────────────────────────────────
+export { SlidePanelContainer } from './SlidePanel';
+
+// ── Combobox ──────────────────────────────────────────────────
+export { default as ComboboxSelect } from './ComboboxSelect';
+export type { ComboboxOption } from './ComboboxSelect';
+
+// ── Page Loading ──────────────────────────────────────────────
+export { default as PageLoadingFallback } from './PageLoadingFallback';
+
+// ── EmptyState (standalone) ───────────────────────────────────
+export { EmptyState as EmptyStateFull } from './EmptyState';
+
+// ── Legacy (backward compat) ──────────────────────────────────
 export { LoadingSpinner, CardSkeleton, TableRowSkeleton } from './LoadingSpinner';
 export { ErrorBoundary } from './ErrorBoundary';
 export { ErrorMessage, EmptyState } from './ErrorMessage';

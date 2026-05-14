@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualList } from '../../hooks/useVirtualList';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
@@ -6,7 +6,7 @@ import { useProjectsRealtime } from '../../hooks/useProjectsRealtime';
 import { useInvalidateProjects } from '../../hooks/usePaginatedProjects';
 import { ProjectGroup, MANAGEMENT_BOARDS, ProjectStatus, PROJECT_CURRENT_STATUS_CONFIG } from '../../types';
 import { ProjectCard, STATUS_CONFIG } from './ProjectCard';
-import { ProgressBar } from '../../components/ui';
+import { ProgressBar, DataTable, Column } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
@@ -167,6 +167,8 @@ const ProjectList: React.FC = () => {
     const handleOpenProject = useCallback((project: Project) => {
         navigate(`/projects/${project.ProjectID}`);
     }, [navigate]);
+
+
 
 
     return (
@@ -480,65 +482,64 @@ const ProjectList: React.FC = () => {
                                 )}
                             </EmptyState>
                         ) : viewMode === 'list' ? (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm border-collapse">
-                                        <thead>
-                                            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-10">#</th>
-                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest min-w-[280px]">Tên dự án</th>
-                                                <th className="px-3 py-2.5 text-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-20">Nhóm</th>
-                                                <th className="px-3 py-2.5 text-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-24">Ban QLDA</th>
-                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-36">Giai đoạn</th>
-                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Tiến độ</th>
-                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Giải ngân</th>
-                                                <th className="px-3 py-2.5 text-right text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest w-28">Tổng mức ĐT</th>
-                                                <th className="px-3 py-2.5 text-left text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest min-w-[160px]">Nguồn vốn</th>
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                            <tr className="text-slate-500 dark:text-slate-400">
+                                                <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
+                                                <th className="px-4 py-3 min-w-[280px] border-b border-slate-200 dark:border-slate-700">Tên dự án</th>
+                                                <th className="px-4 py-3 text-center w-20 border-b border-slate-200 dark:border-slate-700">Nhóm</th>
+                                                <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Ban QLDA</th>
+                                                <th className="px-4 py-3 text-center w-36 border-b border-slate-200 dark:border-slate-700">Giai đoạn</th>
+                                                <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Tiến độ</th>
+                                                <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Giải ngân</th>
+                                                <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-700">Tổng mức ĐT</th>
+                                                <th className="px-4 py-3 min-w-[160px] border-b border-slate-200 dark:border-slate-700">Nguồn vốn</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                             {scopedProjects.map((project, index) => {
+                                                const board = project.ManagementBoard ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard) : null;
                                                 const currentStatus = project.CurrentStatusCode ? PROJECT_CURRENT_STATUS_CONFIG[project.CurrentStatusCode] : null;
                                                 const status = currentStatus || STATUS_CONFIG[project.Status] || { label: 'N/A', hex: '#9CA3AF' };
-                                                const board = project.ManagementBoard
-                                                    ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard)
-                                                    : null;
-                                                const rowNum = (page - 1) * pageSize + index + 1;
+                                                
                                                 return (
                                                     <tr
                                                         key={project.ProjectID}
+                                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/50"
                                                         onClick={() => handleOpenProject(project)}
-                                                        className="hover:bg-slate-50/80 dark:hover:bg-slate- cursor-pointer transition-colors group"
                                                     >
-                                                        {/* # */}
-                                                        <td className="px-3 py-3 text-xs text-slate-400 dark:text-slate-400 tabular-nums">{rowNum}</td>
-
-                                                        {/* Tên dự án */}
-                                                        <td className="px-3 py-3">
-                                                            <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm leading-snug line-clamp-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
-                                                                {project.ProjectName}
-                                                            </p>
-                                                            <div className="flex items-center gap-2 mt-0.5">
-                                                                <span className="font-mono text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1 rounded">
-                                                                    #{(project.ProjectID || '').slice(-5)}
-                                                                </span>
-                                                                {project.LocationCode && (
-                                                                    <span className="text-[10px] text-slate-400 dark:text-slate-400 truncate max-w-[220px]">
-                                                                        {project.LocationCode}
+                                                        {/* STT */}
+                                                        <td className="px-3 py-4 text-center text-xs text-slate-500 dark:text-slate-400 font-medium tabular-nums">
+                                                            {(page - 1) * pageSize + index + 1}
+                                                        </td>
+                                                        {/* Dự án */}
+                                                        <td className="px-4 py-4">
+                                                            <div className="flex flex-col">
+                                                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm leading-snug line-clamp-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
+                                                                    {project.ProjectName}
+                                                                </p>
+                                                                <div className="flex items-center gap-2 mt-0.5">
+                                                                    <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1 rounded">
+                                                                        #{(project.ProjectID || '').slice(-5)}
                                                                     </span>
-                                                                )}
+                                                                    {project.LocationCode && (
+                                                                        <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[220px]">
+                                                                            {project.LocationCode}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </td>
-
                                                         {/* Nhóm */}
-                                                        <td className="px-3 py-3 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             <span className={`inline-flex items-center justify-center text-[10px] font-bold px-2 py-0.5 rounded-full ${getGroupGradient(project.GroupCode)}`}>
                                                                 Nhóm {project.GroupCode}
                                                             </span>
                                                         </td>
-
                                                         {/* Ban QLDA */}
-                                                        <td className="px-3 py-3 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             {board ? (
                                                                 <span className="inline-flex items-center justify-center text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: board.hex }}>
                                                                     Ban {board.value}
@@ -547,40 +548,35 @@ const ProjectList: React.FC = () => {
                                                                 <span className="text-slate-300 dark:text-slate-600">—</span>
                                                             )}
                                                         </td>
-
                                                         {/* Giai đoạn */}
-                                                        <td className="px-3 py-3">
+                                                        <td className="px-4 py-4 text-center">
                                                             <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full text-white whitespace-nowrap" style={{ backgroundColor: status.hex }}>
                                                                 {status.label}
                                                             </span>
                                                         </td>
-
                                                         {/* Tiến độ */}
-                                                        <td className="px-3 py-3">
+                                                        <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
                                                                 <span className="text-xs font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.Progress || 0}%</span>
-                                                                <ProgressBar value={project.Progress || 0} color="blue" size="sm" className="w-20" />
+                                                                <ProgressBar value={project.Progress || 0} color="blue" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
-
                                                         {/* Giải ngân */}
-                                                        <td className="px-3 py-3">
+                                                        <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
                                                                 <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.PaymentProgress || 0}%</span>
-                                                                <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" className="w-20" />
+                                                                <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
-
                                                         {/* Tổng mức ĐT */}
-                                                        <td className="px-3 py-3 text-right">
-                                                            <span className="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">
+                                                        <td className="px-4 py-4 text-right">
+                                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 tabular-nums whitespace-nowrap">
                                                                 {formatCurrency(project.TotalInvestment)}
                                                             </span>
                                                         </td>
-
                                                         {/* Nguồn vốn */}
-                                                        <td className="px-3 py-3">
-                                                            <span className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">
+                                                        <td className="px-4 py-4">
+                                                            <span className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2">
                                                                 {project.CapitalSource || <span className="text-slate-300 dark:text-slate-600">—</span>}
                                                             </span>
                                                         </td>

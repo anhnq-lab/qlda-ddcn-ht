@@ -51,66 +51,68 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                 icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-400" />}
                 title="Không tìm thấy công việc nào."
                 description="Thử thay đổi bộ lọc hoặc tạo công việc mới."
-                actionLabel="Tạo công việc"
-                onAction={openCreateModal}
+                action={{ label: "Tạo công việc", onClick: openCreateModal }}
+
                 className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
             />
         );
     }
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
-            <table className="w-full">
-                <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
-                        <th className="px-2 py-3 w-8 border-b border-slate-200 dark:border-slate-800 text-center">
-                            <input
-                                type="checkbox"
-                                checked={paginatedTasks.length > 0 && selectedIds.size === paginatedTasks.length}
-                                onChange={toggleSelectAll}
-                                className="w-3.5 h-3.5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500/30 cursor-pointer"
-                            />
-                        </th>
-                        <th className="px-2 py-3 text-left w-10 border-b border-slate-200 dark:border-slate-800"></th>
-                        <th onClick={() => handleSort('Title')} className="group/th px-3 py-3 text-left w-[25%] min-w-[160px] max-w-[200px] cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
-                            <span className="flex items-center gap-1">Công việc <SortIcon field="Title" /></span>
-                        </th>
-                        <th className="px-3 py-3 text-left hidden md:table-cell w-[10%] min-w-[90px] border-b border-slate-200 dark:border-slate-800">Phòng ban</th>
-                        <th onClick={() => handleSort('ProgressPercent')} className="group/th px-3 py-3 text-center w-16 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
-                            <span className="flex items-center justify-center gap-1">Tiến độ <SortIcon field="ProgressPercent" /></span>
-                        </th>
-                        <th className="px-3 py-3 text-left hidden lg:table-cell w-[12%] min-w-[110px] border-b border-slate-200 dark:border-slate-800">Phụ trách</th>
-                        <th onClick={() => handleSort('Status')} className="group/th px-3 py-3 text-left hidden sm:table-cell w-24 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
-                            <span className="flex items-center gap-1">Trạng thái <SortIcon field="Status" /></span>
-                        </th>
-                        <th onClick={() => handleSort('DueDate')} className="group/th px-3 py-3 text-left hidden sm:table-cell w-24 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
-                            <span className="flex items-center gap-1">Hạn chót <SortIcon field="DueDate" /></span>
-                        </th>
-                        <th onClick={() => handleSort('Priority')} className="group/th px-3 py-3 text-center w-16 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-800">
-                            <span className="flex items-center justify-center gap-1">Ưu tiên <SortIcon field="Priority" /></span>
-                        </th>
-                        <th className="px-2 py-3 w-14 border-b border-slate-200 dark:border-slate-800"></th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                    {Object.entries(tasksByProject).map(([projectId, projectTasks]: [string, Task[]]) => (
-                        <React.Fragment key={projectId}>
-                            {/* ── Project Group Separator ── */}
-                            <tr className="bg-slate-50/80 dark:bg-slate- border-t-2 border-slate-200 dark:border-slate-700">
-                                <td colSpan={11} className="px-4 py-2.5">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-1.5 rounded-lg shadow-sm bg-primary-100 dark:bg-primary-500/20" >
-                                            <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+                <table className="w-full">
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <tr className="text-slate-500 dark:text-slate-400">
+                            <th className="px-3 py-3 w-10 border-b border-slate-200 dark:border-slate-700 text-center">
+                                <input
+                                    type="checkbox"
+                                    checked={paginatedTasks.length > 0 && selectedIds.size === paginatedTasks.length}
+                                    onChange={toggleSelectAll}
+                                    className="w-3.5 h-3.5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500/30 cursor-pointer"
+                                />
+                            </th>
+                            <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
+                            <th className="px-2 py-3 text-center w-10 border-b border-slate-200 dark:border-slate-700"></th>
+                            <th onClick={() => handleSort('Title')} className="group/th px-3 py-3 text-left w-[25%] min-w-[160px] max-w-[200px] cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
+                                <span className="flex items-center gap-1">Công việc <SortIcon field="Title" /></span>
+                            </th>
+                            <th className="px-3 py-3 text-left hidden md:table-cell w-[10%] min-w-[90px] border-b border-slate-200 dark:border-slate-700">Phòng ban</th>
+                            <th onClick={() => handleSort('ProgressPercent')} className="group/th px-3 py-3 text-center w-16 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
+                                <span className="flex items-center justify-center gap-1">Tiến độ <SortIcon field="ProgressPercent" /></span>
+                            </th>
+                            <th className="px-3 py-3 text-left hidden lg:table-cell w-[12%] min-w-[110px] border-b border-slate-200 dark:border-slate-700">Phụ trách</th>
+                            <th onClick={() => handleSort('Status')} className="group/th px-3 py-3 text-left hidden sm:table-cell w-24 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
+                                <span className="flex items-center gap-1">Trạng thái <SortIcon field="Status" /></span>
+                            </th>
+                            <th onClick={() => handleSort('DueDate')} className="group/th px-3 py-3 text-left hidden sm:table-cell w-24 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
+                                <span className="flex items-center gap-1">Hạn chót <SortIcon field="DueDate" /></span>
+                            </th>
+                            <th onClick={() => handleSort('Priority')} className="group/th px-3 py-3 text-center w-16 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
+                                <span className="flex items-center justify-center gap-1">Ưu tiên <SortIcon field="Priority" /></span>
+                            </th>
+                            <th className="px-3 py-3 w-14 border-b border-slate-200 dark:border-slate-700"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                        {Object.entries(tasksByProject).map(([projectId, projectTasks]: [string, Task[]]) => (
+                            <React.Fragment key={projectId}>
+                                {/* ── Project Group Separator ── */}
+                                <tr className="bg-slate-50/80 dark:bg-slate-800 border-t-2 border-slate-200 dark:border-slate-700">
+                                    <td colSpan={11} className="px-4 py-2.5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-1.5 rounded-lg shadow-sm bg-primary-100 dark:bg-primary-500/20" >
+                                                <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId, projectTasks)}</h3>
+                                                <p className="text-[10px] text-slate-400 dark:text-slate-400">{projectTasks.length} công việc</p>
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId, projectTasks)}</h3>
-                                            <p className="text-[10px] text-slate-400 dark:text-slate-400">{projectTasks.length} công việc</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
                             {/* ── Tasks for this project ── */}
-                            {projectTasks.map(task => {
+                            {projectTasks.map((task, index) => {
                                 const assignee = getAssignee(task.AssigneeID);
                                 const priorityInfo = getPriorityInfo(task.Priority);
                                 const statusInfo = getStatusInfo(task.Status);
@@ -121,10 +123,10 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                     <tr
                                         key={task.TaskID}
                                         onClick={() => openTaskPanel(task)}
-                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate- ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50 border-b border-slate-100 dark:border-slate-800 last:border-0 ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
                                     >
                                         {/* Checkbox */}
-                                        <td className="px-2 py-3.5" onClick={e => e.stopPropagation()}>
+                                        <td className="px-3 py-3.5 text-center" onClick={e => e.stopPropagation()}>
                                             <input
                                                 type="checkbox"
                                                 checked={selectedIds.has(task.TaskID)}
@@ -132,9 +134,13 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                                 className="w-3.5 h-3.5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500/30 cursor-pointer bg-white dark:bg-slate-900"
                                             />
                                         </td>
+                                        {/* STT */}
+                                        <td className="px-3 py-3.5 text-center text-xs text-slate-500 dark:text-slate-400 font-medium tabular-nums">
+                                            {index + 1}
+                                        </td>
                                         {/* Status */}
-                                        <td className="px-2 py-3.5">
-                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${statusInfo.bg}/10 ${statusInfo.color}`}>
+                                        <td className="px-2 py-3.5 text-center">
+                                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${statusInfo.bg}/10 ${statusInfo.color} mx-auto`}>
                                                 {statusInfo.icon}
                                             </div>
                                         </td>
@@ -203,7 +209,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                         </td>
 
                                         <td className="px-3 py-3.5 hidden sm:table-cell">
-                                            <span className={`inline-flex items-center gap-1 text-[10px] whitespace-nowrap font-bold px-2 py-1 rounded-md ${statusInfo.bg}/10 ${statusInfo.color} border border-dashed ${statusInfo.border || 'border-transparent'}`}>
+                                            <span className={`inline-flex items-center gap-1 text-[10px] whitespace-nowrap font-bold px-2 py-1 rounded-md ${statusInfo.bg}/10 ${statusInfo.color} border border-dashed border-transparent`}>
                                                 {statusInfo.label}
                                             </span>
                                         </td>
@@ -259,6 +265,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                     ))}
                 </tbody>
             </table>
+        </div>
         </div>
     );
 };

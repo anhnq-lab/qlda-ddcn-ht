@@ -159,13 +159,13 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                 </div>
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-400px)]">
                     <table className="w-full">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800">
-                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                                <th className="px-3 py-3 w-16 border-b border-slate-200 dark:border-slate-800 text-center">Bước</th>
-                                <th className="px-4 py-3 text-left min-w-[300px] border-b border-slate-200 dark:border-slate-800">Nội dung công việc</th>
-                                <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-800">Trạng thái</th>
-                                <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-800">Ngày HT</th>
-                                {canEdit && <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Thao tác</th>}
+                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <tr>
+                                <th className="px-3 py-3 w-16 text-center text-slate-500 dark:text-slate-400">Bước</th>
+                                <th className="px-4 py-3 text-left min-w-[300px] text-slate-500 dark:text-slate-400">Nội dung công việc</th>
+                                <th className="px-4 py-3 text-center w-32 text-slate-500 dark:text-slate-400">Trạng thái</th>
+                                <th className="px-4 py-3 text-center w-32 text-slate-500 dark:text-slate-400">Ngày HT</th>
+                                {canEdit && <th className="px-4 py-3 text-center w-24 text-slate-500 dark:text-slate-400">Thao tác</th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">

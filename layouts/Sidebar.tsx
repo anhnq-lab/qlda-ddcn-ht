@@ -185,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={onToggleCollapse}
             className={`
               w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
-              text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400 border-l-[3px] border-l-transparent
+              text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent
               ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
             `}
             aria-label={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}

@@ -1,6 +1,9 @@
-# Kế hoạch Redesign Giao diện — Theo phong cách hcma.vn
+# [ARCHIVED] Kế hoạch Redesign Giao diện — Theo phong cách hcma.vn
 
-> Tạo: 2026-03-06 | Trạng thái: Chưa thực hiện
+> Tạo: 2026-03-06 | Trạng thái: **Đã hủy / Archived 2026-05-14**
+>
+> **Lý do hủy:** Dự án tiếp tục dùng design system hiện tại (Inter + Teal #00668c).
+> File này giữ lại để tham khảo lịch sử, không implement.
 
 Chuyển đổi giao diện ứng dụng **Quản lý Dự án Đầu tư công** theo phong cách cổng thông tin của [Học viện Chính trị Quốc gia HCM](https://hcma.vn/).
 

@@ -270,14 +270,14 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-xs">
-                                <thead>
-                                    <tr className="bg-slate-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
-                                        <th className="px-4 py-2.5 text-left font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Tên hợp đồng</th>
-                                        <th className="px-4 py-2.5 text-right font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Giá trị HĐ</th>
-                                        <th className="px-4 py-2.5 text-right font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Đã thanh toán</th>
-                                        <th className="px-4 py-2.5 text-right font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Còn lại</th>
-                                        <th className="px-4 py-2.5 text-center font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Trạng thái</th>
-                                        <th className="px-4 py-2.5 text-center font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">Ngày kết thúc</th>
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                    <tr>
+                                        <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Tên hợp đồng</th>
+                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Giá trị HĐ</th>
+                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Đã thanh toán</th>
+                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Còn lại</th>
+                                        <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Trạng thái</th>
+                                        <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Ngày kết thúc</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">

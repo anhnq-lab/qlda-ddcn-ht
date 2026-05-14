@@ -92,14 +92,6 @@ const PermissionManager: React.FC = () => {
         load();
     }, []);
 
-    // Auto-select first employee
-    useEffect(() => {
-        if (!loading && employees.length > 0 && !selectedEmployee) {
-            setExpandedDept(employees[0].department || 'Chưa phân');
-            selectEmployee(employees[0]);
-        }
-    }, [loading, employees, selectedEmployee, selectEmployee]);
-
     // Group employees by department
     const departments = useMemo(() => {
         const deptMap = new Map<string, EmployeeInfo[]>();
@@ -187,6 +179,14 @@ const PermissionManager: React.FC = () => {
         console.log(`[PermManager] Final permissions for ${emp.fullName}:`, empPerms);
         setEditedPermissions(empPerms);
     }, [allPermissions, isCopyMode, copySourceEmployee]);
+
+    // Auto-select first employee
+    useEffect(() => {
+        if (!loading && employees.length > 0 && !selectedEmployee) {
+            setExpandedDept(employees[0].department || 'Chưa phân');
+            selectEmployee(employees[0]);
+        }
+    }, [loading, employees, selectedEmployee, selectEmployee]);
 
     // Compute diff vs role defaults for the selected employee
     const permissionDiff = useMemo(() => {
@@ -306,7 +306,7 @@ const PermissionManager: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -316,20 +316,20 @@ const PermissionManager: React.FC = () => {
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="relative max-w-md w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                         type="text"
                         placeholder="Tìm nhân sự..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none transition-shadow shadow-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none transition-shadow shadow-sm"
                     />
                 </div>
                 <div className="flex items-center gap-3">
                     <select
                         value={filterDept}
                         onChange={e => setFilterDept(e.target.value)}
-                        className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-sm"
+                        className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
                     >
                         <option value="">Tất cả phòng ban</option>
                         {departments.map(([dept]) => (
@@ -339,7 +339,7 @@ const PermissionManager: React.FC = () => {
                     <button
                         onClick={applyDefaultsForAll}
                         disabled={saving}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition-colors disabled:opacity-50 shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50 shadow-sm border border-slate-200 dark:border-slate-600"
                     >
                         <Users className="w-4 h-4" />
                         {filterDept ? 'Áp dụng cho phòng này' : 'Áp dụng mặc định tất cả'}
@@ -365,9 +365,9 @@ const PermissionManager: React.FC = () => {
                 </div>
             )}
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden flex-1 flex min-h-0">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex-1 flex min-h-0">
                 {/* Left: Employee List */}
-                <div className="w-80 border-r border-gray-200 dark:border-slate-700 flex flex-col bg-slate-50 dark:bg-slate-800 dark:bg-slate-">
+                <div className="w-80 border-r border-slate-100 dark:border-slate-700 flex flex-col bg-slate-50 dark:bg-slate-800">
                     {/* Employee tree */}
                     <div className="flex-1 overflow-y-auto">
                         {filteredDepts.map(([dept, emps]) => {
@@ -385,11 +385,11 @@ const PermissionManager: React.FC = () => {
                                 <div key={dept}>
                                     <button
                                         onClick={() => setExpandedDept(prev => prev === dept ? null : dept)}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide hover:bg-slate-100 dark:hover:bg-slate-700"
                                     >
                                         {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                                         <span className="truncate">{dept}</span>
-                                        <span className="ml-auto text-gray-400">{filteredEmps.length}</span>
+                                        <span className="ml-auto text-slate-400">{filteredEmps.length}</span>
                                     </button>
                                     {isExpanded && filteredEmps.map(emp => (
                                         <button
@@ -398,14 +398,14 @@ const PermissionManager: React.FC = () => {
                                             className={`w-full flex items-center gap-2 px-4 pl-8 py-2 text-sm transition-colors ${
                                                 selectedEmployee?.employeeId === emp.employeeId
                                                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                                             }`}
                                         >
                                             <div className="flex-1 text-left">
                                                 <div className="font-medium truncate">{emp.fullName}</div>
-                                                <div className="text-xs text-gray-400 truncate">{emp.position}</div>
+                                                <div className="text-xs text-slate-400 truncate">{emp.position}</div>
                                             </div>
-                                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${ROLE_COLORS[emp.systemRole] || 'bg-gray-100 text-gray-600'}`}>
+                                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${ROLE_COLORS[emp.systemRole] || 'bg-slate-100 text-slate-600'}`}>
                                                 {ROLE_LABELS[emp.systemRole]}
                                             </span>
                                         </button>
@@ -419,7 +419,7 @@ const PermissionManager: React.FC = () => {
                 {/* Right: Permission Matrix */}
                 <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-900">
                     {!selectedEmployee ? (
-                        <div className="flex-1 flex items-center justify-center text-gray-400 dark:text-gray-500">
+                        <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500">
                             <div className="text-center">
                                 <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                 <p className="text-sm">Chọn nhân sự ở danh sách bên trái để xem/sửa quyền</p>
@@ -428,10 +428,10 @@ const PermissionManager: React.FC = () => {
                     ) : (
                         <>
                             {/* Employee info + actions */}
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:bg-slate-">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h2 className="font-bold text-gray-900 dark:text-white">{selectedEmployee.fullName}</h2>
+                                        <h2 className="font-bold text-slate-900 dark:text-white">{selectedEmployee.fullName}</h2>
                                         <span className={`px-2 py-0.5 text-xs font-medium rounded ${ROLE_COLORS[selectedEmployee.systemRole]}`}>
                                             {ROLE_LABELS[selectedEmployee.systemRole]}
                                         </span>
@@ -441,7 +441,7 @@ const PermissionManager: React.FC = () => {
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-0.5">
+                                    <p className="text-xs text-slate-500 mt-0.5">
                                         {selectedEmployee.department} · {selectedEmployee.position}
                                     </p>
                                 </div>
@@ -452,7 +452,7 @@ const PermissionManager: React.FC = () => {
                                         className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                                             showDiff
                                                 ? 'bg-warning-50 dark:bg-warning-900/30 border-warning-300 dark:border-warning-600 text-warning-700 dark:text-warning-300'
-                                                : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-gray-700'
+                                                : 'border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                                         }`}
                                     >
                                         <TrendingUp className="w-3.5 h-3.5" />
@@ -461,9 +461,9 @@ const PermissionManager: React.FC = () => {
                                     <button
                                         onClick={handleStartCopy}
                                         className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                                            isCopyMode 
-                                            ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300' 
-                                            : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-gray-700'
+                                            isCopyMode
+                                            ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+                                            : 'border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                                         }`}
                                     >
                                         <Copy className="w-3.5 h-3.5" />
@@ -471,7 +471,7 @@ const PermissionManager: React.FC = () => {
                                     </button>
                                     <button
                                         onClick={resetToDefaults}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
                                     >
                                         <RotateCcw className="w-3.5 h-3.5" />
                                         Reset mặc định
@@ -498,11 +498,11 @@ const PermissionManager: React.FC = () => {
                                     </div>
                                 )}
                                 <table className="w-full text-sm">
-                                    <thead className="sticky top-0 bg-gray-50 dark:bg-slate- backdrop-blur z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)]">
-                                        <tr>
-                                            <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest w-56 text-gray-500 dark:text-slate-400">Chức năng</th>
+                                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                        <tr className="text-slate-500 dark:text-slate-400">
+                                            <th className="text-left px-6 py-3 w-56 border-b border-slate-200 dark:border-slate-700">Chức năng</th>
                                             {ALL_ACTIONS.map(action => (
-                                                <th key={action} className="text-center px-2 py-3 text-[10px] font-black uppercase tracking-widest w-16 text-gray-500 dark:text-slate-400">
+                                                <th key={action} className="text-center px-2 py-3 w-16 border-b border-slate-200 dark:border-slate-700">
                                                     {ACTION_LABELS[action]}
                                                 </th>
                                             ))}
@@ -516,13 +516,13 @@ const PermissionManager: React.FC = () => {
                                             const diff = permissionDiff?.[resource];
                                             const rowHighlight = diff
                                                 ? 'bg-warning-50/60 dark:bg-warning-900/10'
-                                                : idx % 2 === 0 ? 'bg-white dark:bg-slate-800 dark:bg-gray-800' : 'bg-slate-50 dark:bg-slate-800 dark:bg-gray-900/50';
+                                                : idx % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-900/30';
                                             return (
                                                 <tr
                                                     key={resource}
-                                                    className={`border-b border-gray-100 dark:border-slate-700/50 ${rowHighlight} hover:bg-gray-50/50 dark:hover:bg-slate- transition-colors`}
+                                                    className={`border-b border-slate-100 dark:border-slate-700/50 ${rowHighlight} hover:bg-slate-50/80 dark:hover:bg-slate-700 transition-colors`}
                                                 >
-                                                    <td className="px-6 py-3 font-medium text-gray-700 dark:text-slate-300">
+                                                    <td className="px-6 py-3 font-medium text-slate-700 dark:text-slate-300">
                                                         <span>{RESOURCE_LABELS[resource]}</span>
                                                         {diff && (
                                                             <span className="ml-2 text-[10px] text-warning-600 dark:text-warning-400">
@@ -548,7 +548,7 @@ const PermissionManager: React.FC = () => {
                                                                                 : 'bg-blue-500 border-blue-500 text-white shadow-sm'
                                                                             : isRemoved
                                                                                 ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20'
-                                                                                : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                                : 'border-slate-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500'
                                                                     }`}
                                                                 >
                                                                     {isChecked && <Check className="w-3.5 h-3.5" />}

@@ -198,7 +198,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden flex-1 flex flex-col min-h-0">
                 <div className="overflow-auto flex-1">
                     <table className="w-full text-sm relative">
-                        <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)] text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400">
+                        <thead className="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)] text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
                             <tr>
                                 <th className="px-4 py-3 text-left">Thời gian</th>
                                 <th className="px-4 py-3 text-left">Người thực hiện</th>
@@ -226,7 +226,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                 const EntityIcon = entityIcons[log.entityType] || FileText;
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate- border-b border-gray-100 dark:border-slate-700 transition-colors">
+                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/50 border-b border-gray-100 dark:border-slate-700 transition-colors">
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />

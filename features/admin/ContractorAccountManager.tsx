@@ -254,39 +254,36 @@ const ContractorAccountManager: React.FC = () => {
         <div className="space-y-6">
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-primary-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
-                    <Building2 className="absolute -right-3 -top-3 w-20 h-20 text-primary-50 dark:text-slate-700" />
-                    <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-slate-700 flex items-center justify-center">
-                            <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center shrink-0 border border-primary-100 dark:border-primary-800/50">
+                            <Building2 className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.orgs}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đơn vị</p>
+                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đơn vị</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.orgs}</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-slate-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
-                    <UserPlus className="absolute -right-3 -top-3 w-20 h-20 text-slate-100 dark:text-slate-700/50" />
-                    <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                            <UserPlus className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600/50">
+                            <UserPlus className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.total}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Tài khoản</p>
+                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Tài khoản</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.total}</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-emerald-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
-                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-emerald-50 dark:text-slate-700" />
-                    <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-700 flex items-center justify-center">
-                            <ToggleRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800/50">
+                            <ToggleRight className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.active}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đang hoạt động</p>
+                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đang hoạt động</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.active}</p>
                         </div>
                     </div>
                 </div>
@@ -378,13 +375,13 @@ const ContractorAccountManager: React.FC = () => {
                                         <table className="w-full text-sm">
                                             <thead>
                                                 <tr className="bg-gray-50/80 dark:bg-slate-700">
-                                                    <th className="text-left px-5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400 w-8">#</th>
-                                                    <th className="text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Nhân sự</th>
-                                                    <th className="text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Username</th>
-                                                    <th className="text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Liên hệ</th>
-                                                    <th className="text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Dự án</th>
-                                                    <th className="text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Trạng thái</th>
-                                                    <th className="text-right px-5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400">Hành động</th>
+                                                    <th className="text-left px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 w-8">#</th>
+                                                    <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Nhân sự</th>
+                                                    <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Username</th>
+                                                    <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Liên hệ</th>
+                                                    <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Dự án</th>
+                                                    <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Trạng thái</th>
+                                                    <th className="text-right px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Hành động</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50 dark:divide-slate-700/40">
@@ -468,7 +465,7 @@ const ContractorAccountManager: React.FC = () => {
             {/* Password Management Modal */}
             {resetTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setResetTarget(null)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-4 shadow-sm" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-6 shadow-xl" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-1">Quản lý mật khẩu</h3>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mb-5">
                             <strong>{resetTarget.display_name}</strong> · {resetTarget.username}
@@ -508,7 +505,7 @@ const ContractorAccountManager: React.FC = () => {
             {/* Project Assignment Modal */}
             {projectTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setProjectTarget(null)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Gán dự án</h3>
@@ -662,7 +659,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl">
                         <UserPlus className="w-5 h-5 text-white" />

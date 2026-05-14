@@ -539,28 +539,28 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                             </div>
                             <div className="overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm custom-scrollbar">
                                 <table className="w-full text-left text-[13px] border-collapse table-fixed">
-                                    <thead className="bg-slate-100 dark:bg-slate- border-b border-slate-200 dark:border-slate-700 sticky top-0 z-[5]">
-                                        <tr className="font-bold text-slate-700 dark:text-slate-300">
-                                            <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 text-center w-10 align-middle border-b-2">TT</th>
+                                    <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50">
+                                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                                            <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 text-center w-10 align-middle">TT</th>
                                             {isInternalWorkflow ? (
                                                 <>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[30%] align-middle border-b-2">Nội dung công việc</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị thực hiện</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị phối hợp</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[20%] align-middle">Thời gian thực hiện</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[12%] align-middle">Ghi chú</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[30%] align-middle">Nội dung công việc</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị phối hợp</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[20%] align-middle">Thời gian thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Ghi chú</th>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-14 align-middle text-center border-b-2">SLA</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[26%] align-middle border-b-2">Công việc chi tiết</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đơn vị thực hiện</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đầu ra</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[10%] align-middle">Biểu mẫu</th>
-                                                    <th className="p-2.5 border-r border-slate-200 dark:border-slate-700 w-[13%] align-middle">Cơ sở pháp lý</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-14 align-middle text-center">SLA</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[26%] align-middle">Công việc chi tiết</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đơn vị thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đầu ra</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[10%] align-middle">Biểu mẫu</th>
+                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Cơ sở pháp lý</th>
                                                 </>
                                             )}
-                                            <th className="p-2.5 border-slate-200 dark:border-slate-700 text-center w-20 align-middle">Tác vụ</th>
+                                            <th className="p-2.5 border-b border-slate-200 dark:border-slate-700 text-center w-20 align-middle">Tác vụ</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">

@@ -48,47 +48,47 @@ colors:
 typography:
   # ─── Heading Scale ──────────────────────────────────────────────────────────
   h1:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 2.25rem       # text-4xl
     fontWeight: 800
     lineHeight: 2.5rem
   h2:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 1.875rem      # text-3xl
     fontWeight: 700
     lineHeight: 2.25rem
   h3:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 1.5rem        # text-2xl
     fontWeight: 700
     lineHeight: 2rem
   h4:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 1.25rem       # text-xl
     fontWeight: 600
     lineHeight: 1.75rem
 
   # ─── Body Scale ─────────────────────────────────────────────────────────────
   body-lg:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 1.125rem      # text-lg
     lineHeight: 1.75rem
   body-md:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 1rem          # text-base
     lineHeight: 1.5rem
   body-sm:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 0.875rem      # text-sm
     lineHeight: 1.25rem
   body-xs:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 0.75rem       # text-xs
     lineHeight: 1rem
 
   # ─── Label / Caps ───────────────────────────────────────────────────────────
   label-caps:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontSize: 0.625rem      # text-2xs
     fontWeight: 900
     letterSpacing: 0.05em
@@ -216,13 +216,10 @@ kết hợp **Đỏ cờ (#AE1E23)** cho branding tổ chức nhà nước.
 
 ## Typography
 
-Font chính: **Be Vietnam Pro** (Google Fonts) — được thiết kế riêng cho dấu thanh
-tiếng Việt, hiển thị sắc nét trên mọi màn hình.
+Font chính: **Inter** — clean, readable, hỗ trợ đầy đủ Unicode tiếng Việt.
 
 Font mono: **JetBrains Mono** — dùng riêng cho số trong data tables
 (`tabular-nums`, right-aligned).
-
-**Không dùng Inter** — Be Vietnam Pro có hỗ trợ tiếng Việt tốt hơn đáng kể.
 
 ## Spacing & Layout
 

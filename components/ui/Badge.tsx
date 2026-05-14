@@ -1,31 +1,65 @@
-
 import React from 'react';
 
-type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'outline';
+// ========================================
+// BADGE COMPONENT — Design System v2.2
+// Unified: simple variant + dark mode + size support
+// Use StatusBadge for animated/icon badges
+// ========================================
 
-interface BadgeProps {
+export type BadgeVariant =
+    | 'default'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'info'
+    | 'primary'
+    | 'neutral'
+    | 'outline';
+
+export type BadgeSize = 'xs' | 'sm' | 'md';
+
+export interface BadgeProps {
     children: React.ReactNode;
     variant?: BadgeVariant;
+    size?: BadgeSize;
     className?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className = '' }) => {
-    const variants = {
-        default: "bg-gray-100 text-gray-800",
-        success: "bg-emerald-100 text-emerald-700",
-        warning: "bg-warning-100 text-warning-700",
-        danger: "bg-red-100 text-red-700",
-        info: "bg-blue-100 text-blue-700",
-        outline: "bg-transparent border border-gray-200 text-gray-600"
-    };
+const variantStyles: Record<BadgeVariant, string> = {
+    default:  'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+    neutral:  'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+    primary:  'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400',
+    success:  'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400',
+    warning:  'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400',
+    danger:   'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400',
+    info:     'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
+    outline:  'bg-transparent border border-slate-300 text-slate-600 dark:border-slate-600 dark:text-slate-400',
+};
 
+const sizeStyles: Record<BadgeSize, string> = {
+    xs: 'text-[9px] px-1.5 py-0.5',
+    sm: 'text-[10px] px-2 py-0.5',
+    md: 'text-xs px-2.5 py-1',
+};
+
+export const Badge: React.FC<BadgeProps> = ({
+    children,
+    variant = 'default',
+    size = 'sm',
+    className = '',
+}) => {
     return (
-        <span className={`
-            inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
-            ${variants[variant]}
-            ${className}
-        `}>
+        <span
+            className={`
+                inline-flex items-center font-semibold rounded-full whitespace-nowrap
+                ${variantStyles[variant]}
+                ${sizeStyles[size]}
+                ${className}
+            `.replace(/\s+/g, ' ').trim()}
+        >
             {children}
         </span>
     );
 };
+
+export default Badge;

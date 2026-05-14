@@ -278,7 +278,7 @@ const UserImpersonator: React.FC = () => {
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold transition-colors ${
                                     activeTab === 'employees'
                                         ? 'text-primary-700 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10 border-b-2 border-primary-500'
-                                        : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                                 }`}
                             >
                                 <Users size={14} />
@@ -289,7 +289,7 @@ const UserImpersonator: React.FC = () => {
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold transition-colors ${
                                     activeTab === 'contractors'
                                         ? 'text-primary-700 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10 border-b-2 border-primary-500'
-                                        : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                                 }`}
                             >
                                 <Building2 size={14} />

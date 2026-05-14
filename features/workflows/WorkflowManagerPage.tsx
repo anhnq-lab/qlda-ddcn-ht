@@ -485,14 +485,14 @@ const WorkflowManagerPage: React.FC = () => {
                     {!error && !isLoading && filteredWorkflows.length > 0 && viewMode === 'list' && (
                         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left">
-                                <thead className="bg-slate-50 dark:bg-slate- text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-4">Mã QT</th>
-                                        <th scope="col" className="px-6 py-4">Tên Quy Trình</th>
-                                        <th scope="col" className="px-6 py-4">Phân Loại</th>
-                                        <th scope="col" className="px-6 py-4">Trạng Thái</th>
-                                        <th scope="col" className="px-6 py-4 text-right">Phiên Bản</th>
-                                        <th scope="col" className="px-6 py-4 text-center w-20"></th>
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                    <tr className="text-slate-500 dark:text-slate-400">
+                                        <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Mã QT</th>
+                                        <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Tên Quy Trình</th>
+                                        <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Phân Loại</th>
+                                        <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Trạng Thái</th>
+                                        <th scope="col" className="px-6 py-4 text-right border-b border-slate-200 dark:border-slate-700">Phiên Bản</th>
+                                        <th scope="col" className="px-6 py-4 text-center w-20 border-b border-slate-200 dark:border-slate-700"></th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-800 text-sm font-medium">

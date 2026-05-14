@@ -280,15 +280,15 @@ export const EvaluationPage: React.FC = () => {
                 ) : (
                     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
                         <table className="w-full">
-                            <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
-                                    <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-800">Nhân sự</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Loại phiếu</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Tự chấm</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Phê duyệt</th>
-                                    <th className="px-4 py-3 text-center min-w-[140px] border-b border-slate-200 dark:border-slate-800">Xếp loại</th>
-                                    <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-800">Trạng thái</th>
-                                    <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-800">Ngày nộp</th>
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                <tr className="text-slate-500 dark:text-slate-400">
+                                    <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-700">Nhân sự</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Loại phiếu</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Tự chấm</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Phê duyệt</th>
+                                    <th className="px-4 py-3 text-center min-w-[140px] border-b border-slate-200 dark:border-slate-700">Xếp loại</th>
+                                    <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-700">Trạng thái</th>
+                                    <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-700">Ngày nộp</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">

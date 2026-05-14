@@ -58,16 +58,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         const charCount = typeof value === 'string' ? value.length : 0;
 
         const baseInputStyles = `
-            w-full bg-white dark:bg-slate-800 border rounded-xl
-            text-gray-900 placeholder:text-gray-400
+            w-full bg-[var(--input-bg)] border rounded-xl
+            text-[var(--text-primary)] placeholder:text-[var(--text-placeholder)]
             transition-all duration-200
             focus:outline-none focus:ring-2
-            disabled:bg-slate-50 dark:bg-slate-800 disabled:text-gray-500 disabled:cursor-not-allowed
+            disabled:opacity-50 disabled:cursor-not-allowed
         `;
 
         const stateStyles = hasError
             ? 'border-danger-300 focus:border-danger-500 focus:ring-danger-100'
-            : 'border-gray-200 focus:border-primary-500 focus:ring-primary-100';
+            : 'border-[var(--input-border)] focus:border-primary-500 focus:ring-primary-100';
 
         const paddingStyles = {
             left: leftIcon ? 'pl-10' : '',
@@ -80,7 +80,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 {label && (
                     <label
                         htmlFor={inputId}
-                        className="block text-sm font-medium text-gray-700 mb-1.5"
+                        className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
                     >
                         {label}
                         {props.required && <span className="text-danger-500 ml-0.5">*</span>}
@@ -91,7 +91,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 <div className="relative flex">
                     {/* Left Addon */}
                     {leftAddon && (
-                        <div className="flex items-center px-3 bg-slate-50 dark:bg-slate-800 border border-r-0 border-gray-200 rounded-l-xl text-gray-500 text-sm">
+                        <div className="flex items-center px-3 bg-[var(--bg-subtle)] border border-r-0 border-[var(--input-border)] rounded-l-xl text-[var(--text-muted)] text-sm">
                             {leftAddon}
                         </div>
                     )}
@@ -143,7 +143,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
                     {/* Right Addon */}
                     {rightAddon && (
-                        <div className="flex items-center px-3 bg-slate-50 dark:bg-slate-800 border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm">
+                        <div className="flex items-center px-3 bg-[var(--bg-subtle)] border border-l-0 border-[var(--input-border)] rounded-r-xl text-[var(--text-muted)] text-sm">
                             {rightAddon}
                         </div>
                     )}
@@ -153,7 +153,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 {(error || helperText) && (
                     <p
                         id={hasError ? `${inputId}-error` : `${inputId}-helper`}
-                        className={`mt-1.5 text-xs ${hasError ? 'text-danger-500' : 'text-gray-500'}`}
+                        className={`mt-1.5 text-xs ${hasError ? 'text-danger-500' : 'text-[var(--text-muted)]'}`}
                     >
                         {error || helperText}
                     </p>
@@ -201,7 +201,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         return (
             <div className={`${fullWidth ? 'w-full' : ''} ${className}`}>
                 {label && (
-                    <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label htmlFor={inputId} className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
                         {label}
                         {props.required && <span className="text-danger-500 ml-0.5">*</span>}
                     </label>
@@ -214,8 +214,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     maxLength={maxLength}
                     aria-invalid={hasError}
                     className={`
-                        w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-xl
-                        text-gray-900 placeholder:text-gray-400
+                        w-full px-4 py-3 bg-[var(--input-bg)] border rounded-xl
+                        text-[var(--text-primary)] placeholder:text-[var(--text-placeholder)]
                         transition-all duration-200
                         focus:outline-none focus:ring-2
                         resize-y min-h-[100px]
@@ -229,7 +229,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
                 <div className="flex justify-between mt-1.5">
                     {(error || helperText) && (
-                        <p className={`text-xs ${hasError ? 'text-danger-500' : 'text-gray-500'}`}>
+                        <p className={`text-xs ${hasError ? 'text-danger-500' : 'text-[var(--text-muted)]'}`}>
                             {error || helperText}
                         </p>
                     )}
@@ -267,7 +267,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                     type="checkbox"
                     className="
                         w-4 h-4 mt-0.5
-                        text-primary-500 bg-white dark:bg-slate-800 border-gray-300 rounded
+                        text-primary-500 bg-[var(--input-bg)] border-[var(--input-border)] rounded
                         focus:ring-2 focus:ring-primary-100 focus:ring-offset-0
                         transition-colors cursor-pointer
                         disabled:cursor-not-allowed disabled:opacity-50
@@ -279,13 +279,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                         {label && (
                             <label
                                 htmlFor={inputId}
-                                className="text-sm font-medium text-gray-700 cursor-pointer"
+                                className="text-sm font-medium text-[var(--text-secondary)] cursor-pointer"
                             >
                                 {label}
                             </label>
                         )}
                         {description && (
-                            <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+                            <p className="text-xs text-[var(--text-muted)] mt-0.5">{description}</p>
                         )}
                     </div>
                 )}
@@ -316,7 +316,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                     type="radio"
                     className="
                         w-4 h-4
-                        text-primary-500 bg-white dark:bg-slate-800 border-gray-300
+                        text-primary-500 bg-[var(--input-bg)] border-[var(--input-border)]
                         focus:ring-2 focus:ring-primary-100 focus:ring-offset-0
                         transition-colors cursor-pointer
                         disabled:cursor-not-allowed disabled:opacity-50
@@ -326,7 +326,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 {label && (
                     <label
                         htmlFor={inputId}
-                        className="text-sm font-medium text-gray-700 cursor-pointer"
+                        className="text-sm font-medium text-[var(--text-secondary)] cursor-pointer"
                     >
                         {label}
                     </label>

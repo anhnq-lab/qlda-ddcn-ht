@@ -161,14 +161,14 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                         viewMode === 'list' ? (
                             <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
-                                        <tr>
-                                            <th className="px-5 py-3 w-10"></th>
-                                            <th className="px-5 py-3">Tên tài liệu</th>
-                                            <th className="px-5 py-3">Phiên bản</th>
-                                            <th className="px-5 py-3">Trạng thái ISO</th>
-                                            <th className="px-5 py-3 text-right">Ngày tải lên</th>
-                                            <th className="px-5 py-3 w-10"></th>
+                                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                        <tr className="text-slate-500 dark:text-slate-400">
+                                            <th className="px-5 py-3 w-10 border-b border-slate-200 dark:border-slate-700"></th>
+                                            <th className="px-5 py-3 border-b border-slate-200 dark:border-slate-700">Tên tài liệu</th>
+                                            <th className="px-5 py-3 border-b border-slate-200 dark:border-slate-700">Phiên bản</th>
+                                            <th className="px-5 py-3 border-b border-slate-200 dark:border-slate-700">Trạng thái ISO</th>
+                                            <th className="px-5 py-3 text-right border-b border-slate-200 dark:border-slate-700">Ngày tải lên</th>
+                                            <th className="px-5 py-3 w-10 border-b border-slate-200 dark:border-slate-700"></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 dark:divide-slate-700">

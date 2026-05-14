@@ -105,11 +105,11 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                         )}
                     </div>
                 ) : (
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-bold text-gray-400 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 tracking-wider">
-                            <tr>
+                    <table className="w-full text-left text-xs whitespace-nowrap">
+                        <thead className="sticky top-0 z-10">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                                 {onToggleSelect && (
-                                    <th className="px-3 py-3.5 w-10">
+                                    <th className="px-3 py-3 w-10 text-center">
                                         <input
                                             type="checkbox"
                                             checked={filteredDocs.length > 0 && selectedIds.length === filteredDocs.length}
@@ -117,19 +117,19 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                 if (selectedIds.length === filteredDocs.length) filteredDocs.forEach(d => onToggleSelect(d.doc_id));
                                                 else filteredDocs.filter(d => !selectedIds.includes(d.doc_id)).forEach(d => onToggleSelect(d.doc_id));
                                             }}
-                                            className="w-3.5 h-3.5 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                            className="w-3.5 h-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
                                         />
                                     </th>
                                 )}
-                                <th className="px-5 py-3.5">Tên tài liệu</th>
-                                <th className="px-5 py-3.5 w-28 text-center">Phiên bản</th>
-                                <th className="px-5 py-3.5 w-44">Trạng thái</th>
-                                <th className="px-5 py-3.5 w-32">Người nộp</th>
-                                <th className="px-5 py-3.5 w-28">Ngày nộp</th>
-                                <th className="px-5 py-3.5 w-20 text-right">Thao tác</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Tên tài liệu</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Phiên bản</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Trạng thái</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Người nộp</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Ngày nộp</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700/50">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                             {filteredDocs.map((doc) => {
                                 const fileInfo = getFileIcon(doc.doc_name);
                                 const FileTypeIcon = fileInfo.icon;
@@ -141,7 +141,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                     <tr
                                         key={doc.doc_id}
                                         onClick={() => onSelectDoc(doc)}
-                                        className={`hover:bg-blue-50/40 dark:hover:bg-slate-700 cursor-pointer transition-all group ${isSelected ? 'bg-blue-50/70 dark:bg-blue-900/20' : ''} ${isChecked ? 'bg-blue-50/50 dark:bg-blue-900/15' : ''}`}
+                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50 ${isSelected ? 'bg-primary-50/70 dark:bg-primary-900/20' : ''} ${isChecked ? 'bg-primary-50/50 dark:bg-primary-900/15' : ''}`}
                                     >
                                         {onToggleSelect && (
                                             <td className="px-3 py-3.5">
@@ -150,7 +150,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                     checked={isChecked}
                                                     onClick={(e) => e.stopPropagation()}
                                                     onChange={() => onToggleSelect(doc.doc_id)}
-                                                    className="w-3.5 h-3.5 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                                    className="w-3.5 h-3.5 rounded border-gray-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
                                                 />
                                             </td>
                                         )}

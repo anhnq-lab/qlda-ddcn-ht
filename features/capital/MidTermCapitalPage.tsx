@@ -514,8 +514,8 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
                                                 <>
                                                     <h5 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Phân bổ theo năm ({linked.length} KH)</h5>
                                                     <table className="w-full text-xs mb-3">
-                                                        <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
-                                                            <tr><th className="px-3 py-1.5 text-left">Năm</th><th className="px-3 py-1.5 text-left">QĐ</th><th className="px-3 py-1.5 text-right">Vốn giao</th><th className="px-3 py-1.5 text-right">Đã GN</th><th className="px-3 py-1.5 text-right">Tỷ lệ</th></tr>
+                                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                                            <tr className="text-slate-500 dark:text-slate-400"><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">Năm</th><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">QĐ</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Vốn giao</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Đã GN</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Tỷ lệ</th></tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                                             {linked.sort((a:any,b:any) => a.year - b.year).map((ap: any) => {
@@ -570,17 +570,17 @@ const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string;
         <div className="section-card">
             <div className="overflow-x-auto">
                 <table className="w-full text-xs" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[10px] font-bold uppercase tracking-wider">
-                            <th className="px-4 py-3 text-left w-8">STT</th>
-                            <th className="px-4 py-3 text-left">Dự án</th>
-                            <th className="px-4 py-3 text-left">QĐ giao vốn</th>
-                            <th className="px-4 py-3">Nguồn</th>
-                            <th className="px-4 py-3 text-right">KHV {yearFilter}</th>
-                            <th className="px-4 py-3 text-right">Đã giải ngân</th>
-                            <th className="px-4 py-3 text-right">Còn lại</th>
-                            <th className="px-4 py-3 text-center">Tỷ lệ GN</th>
-                            <th className="px-4 py-3 text-center w-16"></th>
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <tr className="text-slate-500 dark:text-slate-400">
+                            <th className="px-4 py-3 text-left w-8 border-b border-slate-200 dark:border-slate-700">STT</th>
+                            <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">Dự án</th>
+                            <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">QĐ giao vốn</th>
+                            <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nguồn</th>
+                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">KHV {yearFilter}</th>
+                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Đã giải ngân</th>
+                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Còn lại</th>
+                            <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ GN</th>
+                            <th className="px-4 py-3 text-center w-16 border-b border-slate-200 dark:border-slate-700"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -667,12 +667,12 @@ const DisbPlanTab: React.FC<{disbPlans: any[]; annualPlans: any[]; yearFilter: n
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-                            <th className="px-3 py-2 text-left text-[10px] font-bold uppercase sticky left-0 z-10 min-w-[200px]" style={{ background: 'inherit' }}>Dự án</th>
-                            <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[80px]">KHV</th>
-                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right text-[10px] font-bold uppercase min-w-[80px] ${i + 1 === currentMonth ? 'bg-primary-100/60 dark:bg-primary-900/20' : ''}`}>{m}</th>)}
-                            <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[90px]">Tổng KH GN</th>
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <tr className="text-slate-500 dark:text-slate-400">
+                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
+                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700">KHV</th>
+                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700 ${i + 1 === currentMonth ? 'bg-primary-100/60 dark:bg-primary-900/20' : ''}`}>{m}</th>)}
+                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-slate-200 dark:border-slate-700">Tổng KH GN</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -752,14 +752,14 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-                            <th className="px-3 py-2 text-left text-[10px] font-bold uppercase sticky left-0 z-10 min-w-[200px]" style={{ background: 'inherit' }}>Dự án</th>
-                            <th className="px-3 py-2 text-center text-[10px] font-bold uppercase min-w-[50px]">Loại</th>
-                            <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[80px]">KHV</th>
-                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right text-[10px] font-bold uppercase min-w-[80px] ${i + 1 === currentMonth ? 'bg-emerald-100/40 dark:bg-emerald-900/20' : ''}`}>{m}</th>)}
-                            <th className="px-3 py-2 text-right text-[10px] font-bold uppercase min-w-[90px]">Tổng</th>
-                            <th className="px-3 py-2 text-center text-[10px] font-bold uppercase min-w-[60px]">Tỷ lệ</th>
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <tr className="text-slate-500 dark:text-slate-400">
+                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
+                            <th className="px-3 py-2 text-center min-w-[50px] border-b border-slate-200 dark:border-slate-700">Loại</th>
+                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700">KHV</th>
+                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700 ${i + 1 === currentMonth ? 'bg-emerald-100/40 dark:bg-emerald-900/20' : ''}`}>{m}</th>)}
+                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-slate-200 dark:border-slate-700">Tổng</th>
+                            <th className="px-3 py-2 text-center min-w-[60px] border-b border-slate-200 dark:border-slate-700">Tỷ lệ</th>
                         </tr>
                     </thead>
                     <tbody>

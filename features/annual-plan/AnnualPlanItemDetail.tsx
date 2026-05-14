@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     X, Edit2, Trash2, Link2, Users, ClipboardList, CalendarClock,
-    Plus, CalendarDays, RefreshCw,
+    Plus, CalendarDays,
 } from 'lucide-react';
 import { AnnualPlanItem, FREQUENCY_LABELS } from '../../types/plan.types';
 import { supabase as _supabase } from '../../lib/supabase';
+import { useSlidePanel } from '../../context/SlidePanelContext';
+import { useEmployeeOptions } from '../../hooks/usePlanData';
+import EmployeeSlideContent from '../employees/EmployeeSlideContent';
 const supabase = _supabase as any;
 
 const FREQUENCY_COLORS: Record<string, string> = {
@@ -25,6 +28,22 @@ interface Props {
 }
 
 const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, onClose, onCreateMonthlyTask }) => {
+    const { openPanel } = useSlidePanel();
+    const { options: employeeOptions } = useEmployeeOptions();
+    const empMap = useMemo(() => {
+        const m: Record<string, { name: string; avatar?: string }> = {};
+        for (const o of employeeOptions) m[String(o.value)] = { name: o.label, avatar: o.avatar };
+        return m;
+    }, [employeeOptions]);
+
+    const openEmployeePanel = (empId: string) => {
+        const emp = empMap[empId];
+        openPanel({
+            title: emp?.name ?? empId,
+            component: <EmployeeSlideContent employeeId={empId} />,
+        });
+    };
+
     const [project, setProject] = useState<any>(null);
     const [monthlyLinks, setMonthlyLinks] = useState<any[]>([]);
     const [loadingLinks, setLoadingLinks] = useState(false);
@@ -62,12 +81,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
     const freqColor = FREQUENCY_COLORS[item.frequency] ?? 'bg-slate-100 text-slate-600';
 
     return (
-        <div className="fixed inset-0 z-50 flex">
-            {/* Backdrop */}
-            <div className="flex-1 bg-black/30 dark:bg-slate- backdrop-blur-sm transition-opacity" onClick={onClose} />
-
-            {/* Panel */}
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden border-l border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden animate-in fade-in duration-300">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-start justify-between gap-3">
@@ -150,32 +164,47 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                     </div>
 
                     {/* ── Phân công ── */}
-                    {(item.responsible_text || item.collaborating_text) && (
+                    {(item.responsible_ids?.length || item.responsible_text || item.collaborating_text) && (
                         <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
                             <p className="section-title"><Users className="w-3.5 h-3.5" />Phân công</p>
-                            <div className="mt-3 grid grid-cols-2 gap-3">
-                                {item.responsible_text && (
+                            <div className="mt-3 space-y-3">
+                                {/* Nhân viên thực hiện — từ responsible_ids */}
+                                {item.responsible_ids && item.responsible_ids.length > 0 ? (
                                     <div>
-                                        <p className="text-xs text-slate-400 mb-1">Thực hiện</p>
-                                        <div className="flex flex-wrap gap-1">
-                                            {item.responsible_text.split(/[,\/]/).map((p, i) => (
-                                                <span key={i} className="text-xs bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300 px-2 py-0.5 rounded-full">
-                                                    {p.trim()}
-                                                </span>
-                                            ))}
+                                        <p className="text-xs text-slate-400 mb-1.5">Thực hiện</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {item.responsible_ids.map(id => {
+                                                const emp = empMap[id];
+                                                return (
+                                                    <button
+                                                        key={id}
+                                                        onClick={() => openEmployeePanel(id)}
+                                                        className="flex items-center gap-1.5 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50 px-2 py-1 rounded-full transition-colors cursor-pointer"
+                                                    >
+                                                        {emp?.avatar ? (
+                                                            <img src={emp.avatar} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+                                                        ) : (
+                                                            <span className="w-4 h-4 rounded-full bg-primary-200 dark:bg-primary-700 flex items-center justify-center text-[9px] font-bold shrink-0">
+                                                                {emp?.name?.charAt(emp.name.lastIndexOf(' ') + 1) ?? '?'}
+                                                            </span>
+                                                        )}
+                                                        {emp?.name ?? id}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
-                                )}
+                                ) : item.responsible_text ? (
+                                    <div>
+                                        <p className="text-xs text-slate-400 mb-1">Thực hiện</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.responsible_text}</p>
+                                    </div>
+                                ) : null}
+                                {/* Phối hợp */}
                                 {item.collaborating_text && (
                                     <div>
                                         <p className="text-xs text-slate-400 mb-1">Phối hợp</p>
-                                        <div className="flex flex-wrap gap-1">
-                                            {item.collaborating_text.split(/[,\/]/).map((p, i) => (
-                                                <span key={i} className="text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full">
-                                                    {p.trim()}
-                                                </span>
-                                            ))}
-                                        </div>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.collaborating_text}</p>
                                     </div>
                                 )}
                             </div>
@@ -258,7 +287,6 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         </div>
                     )}
                 </div>
-            </div>
 
             <style>{`
                 .section-title {

@@ -55,7 +55,11 @@
       "PowerShell($content = Get-Content \"C:\\\\Users\\\\nguye\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\6364dcde-3ce9-45f4-a586-5b7179ee716e\\\\6d6216e7-bdb5-4c7d-9189-c5829b0cd5cc\\\\skills\\\\docx\\\\unpacked_qt\\\\word\\\\document.xml\" -Encoding UTF8 -Raw; $text = [System.Text.RegularExpressions.Regex]::Replace\\($content, '<[^>]+>', ' '\\); $text = [System.Text.RegularExpressions.Regex]::Replace\\($text, '\\\\s+', ' '\\); $text.Substring\\(0, [Math]::Min\\(8000, $text.Length\\)\\))",
       "Bash(xargs -I {} sh -c 'grep -r \"role_permissions\\\\|RoleMatrix\\\\|PermissionMatrix\" \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\src\" 2>/dev/null || echo \"not found\"')",
       "Bash(ls -la \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\\" | head -30)",
-      "Bash(xargs basename -a)"
+      "Bash(xargs basename -a)",
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|js|json|css|md\\)$\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Recurse -Directory -ErrorAction SilentlyContinue)"
     ]
   }
 }

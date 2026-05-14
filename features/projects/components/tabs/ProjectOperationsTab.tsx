@@ -450,17 +450,17 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                             </div>
                         ) : (
                             <table className="w-full text-xs">
-                                <thead className="sticky top-0 z-[5] border-b border-slate-200 dark:border-slate-700">
-                                    <tr className={isDark ? 'bg-slate-800' : 'bg-slate-50 dark:bg-slate-800'}>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Mã TS</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Tên tài sản</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Danh mục</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Vị trí</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Trạng thái</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Tình trạng</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Bảo trì tiếp</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Ghi chú</th>
-                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>BIM</th>
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                    <tr>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Mã TS</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Tên tài sản</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Danh mục</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Vị trí</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Trạng thái</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Tình trạng</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Bảo trì tiếp</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Ghi chú</th>
+                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">BIM</th>
                                     </tr>
                                 </thead>
                                 <tbody>

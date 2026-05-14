@@ -57,6 +57,7 @@
 
 /* Hover effects for buttons/links */
 .theme-light .layout-sidebar a:not(.bg-primary-50):hover,
+.theme-light .layout-sidebar button:not(.bg-primary-50):hover,
 .theme-light .layout-header button.hover\:bg-slate-100:hover,
 .theme-light .layout-header button.hover\:bg-bg-surface:hover,
 .theme-light .layout-header button.hover\:bg-slate-50:hover {
