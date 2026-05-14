@@ -76,7 +76,7 @@ export const VariationOrderTab: React.FC<Props> = ({ contractId }) => {
         mutationSubmit.mutate(form);
     };
 
-    const inputClass = "w-full px-3 py-2 text-sm bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-gray-800 dark:text-slate-200";
+    const inputClass = "w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-gray-800 dark:text-slate-200";
     const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
 
     if (isLoading) return <div className="p-4 text-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></div>;
@@ -162,9 +162,9 @@ export const VariationOrderTab: React.FC<Props> = ({ contractId }) => {
             )}
 
             {variationOrders.length > 0 ? (
-                <div className="bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-bg-subtle text-slate-500 dark:text-slate-400 font-bold uppercase text-xs border-b border-slate-200 dark:border-slate-700">
+                        <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-xs border-b border-slate-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-5 py-3 text-center w-12">STT</th>
                                 <th className="px-5 py-3">Số Phụ lục</th>
@@ -177,7 +177,7 @@ export const VariationOrderTab: React.FC<Props> = ({ contractId }) => {
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700 text-gray-700 dark:text-slate-300">
                             {variationOrders.map((vo, idx) => (
-                                <tr key={vo.VOID} className="hover:bg-bg-subtle dark:hover:bg-slate-700">
+                                <tr key={vo.VOID} className="hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700">
                                     <td className="px-5 py-3 text-center font-mono text-gray-400 dark:text-slate-400">{idx + 1}</td>
                                     <td className="px-5 py-3 font-semibold">{vo.Number}</td>
                                     <td className="px-5 py-3">{vo.SignDate ? new Date(vo.SignDate).toLocaleDateString('vi-VN') : '—'}</td>
@@ -219,7 +219,7 @@ export const VariationOrderTab: React.FC<Props> = ({ contractId }) => {
                 <EmptyState
                     icon={<FileText className="w-12 h-12 text-gray-300 dark:text-slate-600" />}
                     title="Chưa có phụ lục hợp đồng nào"
-                    className="bg-bg-surface rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
+                    className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
                 />
             )}
         </div>

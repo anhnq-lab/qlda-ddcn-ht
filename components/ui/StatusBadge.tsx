@@ -28,10 +28,10 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; ring: stri
         dot: 'bg-emerald-500',
     },
     warning: {
-        bg: 'bg-primary-50 dark:bg-primary-900/20',
-        text: 'text-primary-700 dark:text-primary-400',
-        ring: 'ring-primary-100 dark:ring-primary-900/30',
-        dot: 'bg-primary-500',
+        bg: 'bg-warning-50 dark:bg-warning-900/20',
+        text: 'text-warning-700 dark:text-warning-400',
+        ring: 'ring-warning-100 dark:ring-warning-900/30',
+        dot: 'bg-warning-500',
     },
     danger: {
         bg: 'bg-red-50 dark:bg-red-900/20',
@@ -57,6 +57,7 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; ring: stri
         ring: 'ring-primary-100 dark:ring-primary-900/30',
         dot: 'bg-primary-500',
     },
+    // NOTE: 'warning' = amber/yellow (#f59e0b). 'primary' = teal (#00668c).
 };
 
 const sizeStyles: Record<BadgeSize, string> = {

@@ -6,6 +6,7 @@ import {
     DepartmentCode, MonthlyTaskStatus, MONTHLY_STATUS_LABELS,
 } from '../../types/plan.types';
 import ComboboxSelect from '../../components/ui/ComboboxSelect';
+import Select from '../../components/ui/Select';
 import {
     useAnnualPlanItems,
     useGroupSuggestions,
@@ -244,7 +245,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
 
                         {/* ── SECTION: Thông tin cơ bản ── */}
                         <SectionPanel
-                            icon={<ClipboardList className="w-4 h-4 text-indigo-500" />}
+                            icon={<ClipboardList className="w-4 h-4 text-primary-500" />}
                             title="Thông tin nhiệm vụ"
                             sectionKey="thongtin"
                             expanded={expanded}
@@ -252,16 +253,31 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         >
                             <div className="space-y-3 pt-3">
                                 <div>
-                                    <label className="field-label">Loại công việc</label>
-                                    <select
-                                        value={(form as any).task_type ?? 'project'}
-                                        onChange={e => set('task_type' as any, e.target.value)}
-                                        className="field-input"
-                                    >
-                                        <option value="project">📁 Công việc dự án</option>
-                                        <option value="management">📋 Công việc điều hành</option>
-                                        <option value="internal">🏢 Công việc nội bộ</option>
-                                    </select>
+                                    <label className="field-label mb-2 block">Loại công việc</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { value: 'project', label: 'Công việc dự án', icon: '📁' },
+                                            { value: 'management', label: 'Công việc điều hành', icon: '📋' },
+                                            { value: 'internal', label: 'Công việc nội bộ', icon: '🏢' }
+                                        ].map(type => {
+                                            const isSelected = ((form as any).task_type ?? 'project') === type.value;
+                                            return (
+                                                <button
+                                                    key={type.value}
+                                                    type="button"
+                                                    onClick={() => set('task_type' as any, type.value)}
+                                                    className={`px-3 py-2.5 text-sm rounded-xl font-medium transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 border ${
+                                                        isSelected
+                                                            ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:border-blue-500 dark:text-blue-400 ring-1 ring-blue-500'
+                                                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-'
+                                                    }`}
+                                                >
+                                                    <span className="text-base leading-none">{type.icon}</span>
+                                                    <span className="whitespace-nowrap">{type.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="field-label">Nhóm công việc</label>
@@ -371,74 +387,126 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             }
                         >
                             <div className="space-y-3 pt-3">
-                                {/* Multi-select cán bộ phụ trách */}
+                                {/* Multi-select cán bộ phụ trách / Người thực hiện */}
                                 <div>
-                                    <label className="field-label">Cán bộ phụ trách <span className="text-slate-400 font-normal">(có thể chọn nhiều người)</span></label>
+                                    <label className="field-label">Người thực hiện (Cán bộ phụ trách)</label>
                                     {empLoading ? (
                                         <div className="text-xs text-slate-400 py-2">Đang tải danh sách...</div>
                                     ) : (
-                                        <div className="border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden max-h-40 overflow-y-auto">
-                                            {employeeOptions.map(opt => {
-                                                const selected = (form.staff_ids ?? []).includes(opt.value);
-                                                return (
-                                                    <button
-                                                        key={opt.value}
-                                                        type="button"
-                                                        onClick={() => toggleStaff(opt.value, opt.label)}
-                                                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0 ${
-                                                            selected
-                                                            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                                                        }`}
-                                                    >
-                                                        <span className={`w-4 h-4 flex items-center justify-center rounded border ${
-                                                            selected
-                                                            ? 'bg-emerald-500 border-emerald-500 text-white'
-                                                            : 'border-slate-300 dark:border-slate-600'
-                                                        }`}>
-                                                            {selected && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
-                                                        </span>
-                                                        <span className="truncate flex-1">{opt.label}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                    {(form.staff_ids ?? []).length > 0 && (
-                                        <p className="text-xs text-emerald-600 mt-1">
-                                            ✓ Đã chọn: {(form.staff_names ?? []).join(', ')}
-                                        </p>
+                                        <Select
+                                            options={employeeOptions.map(opt => ({
+                                                value: opt.value,
+                                                label: opt.label,
+                                                icon: opt.avatar ? (
+                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                                                ) : undefined
+                                            }))}
+                                            value={form.staff_ids ?? []}
+                                            onChange={(val) => {
+                                                const ids = val as string[];
+                                                const names = ids.map(id => employeeOptions.find(o => o.value === id)?.label ?? '');
+                                                
+                                                setForm(prev => {
+                                                    const newState = {
+                                                        ...prev,
+                                                        staff_ids: ids,
+                                                        staff_names: names,
+                                                        executor_ids: ids,
+                                                        executor_names: names,
+                                                        staff_id: ids.length > 0 ? ids[0] : undefined,
+                                                        staff_name: names.length > 0 ? names[0] : ''
+                                                    };
+
+                                                    if (ids.length > 0) {
+                                                        const firstEmp = employeeOptions.find(o => o.value === ids[0]);
+                                                        if (firstEmp) {
+                                                            if (firstEmp.department) {
+                                                                const deptHead = employeeOptions.find(o => 
+                                                                    o.department === firstEmp.department && 
+                                                                    o.position && 
+                                                                    /trưởng phòng|chánh văn phòng|giám đốc trung tâm/i.test(o.position)
+                                                                ) || employeeOptions.find(o => 
+                                                                    o.department === firstEmp.department && 
+                                                                    o.position && 
+                                                                    /phó phòng|phó văn phòng|phó giám đốc trung tâm/i.test(o.position)
+                                                                );
+                                                                
+                                                                if (deptHead) {
+                                                                    newState.dept_head_id = deptHead.value;
+                                                                    newState.dept_head_name = deptHead.label;
+                                                                }
+                                                            }
+
+                                                            const banHead = employeeOptions.find(o => 
+                                                                o.position && 
+                                                                /giám đốc ban|trưởng ban/i.test(o.position)
+                                                            ) || employeeOptions.find(o => 
+                                                                o.position && 
+                                                                /phó giám đốc ban|phó trưởng ban/i.test(o.position)
+                                                            );
+                                                            
+                                                            if (banHead) {
+                                                                newState.ban_head_id = banHead.value;
+                                                                newState.ban_head_name = banHead.label;
+                                                            }
+                                                        }
+                                                    }
+                                                    
+                                                    return newState;
+                                                });
+                                            }}
+                                            multiple={true}
+                                            searchable={true}
+                                            clearable={true}
+                                            placeholder="Chọn người thực hiện..."
+                                        />
                                     )}
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                                     <div>
                                         <label className="field-label">Lãnh đạo Phòng</label>
-                                        <ComboboxSelect
-                                            options={employeeOptions}
-                                            value={form.dept_head_id}
-                                            displayValue={form.dept_head_name}
-                                            onChange={(val, opt) => {
+                                        <Select
+                                            options={employeeOptions.filter(o => 
+                                                o.value === form.dept_head_id || (o.position && /trưởng phòng|chánh văn phòng|giám đốc trung tâm|phó phòng|phó văn phòng|phó giám đốc trung tâm|kế toán trưởng/i.test(o.position))
+                                            ).map(opt => ({
+                                                value: opt.value,
+                                                label: opt.label,
+                                                icon: opt.avatar ? (
+                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                                                ) : undefined
+                                            }))}
+                                            value={form.dept_head_id || ''}
+                                            onChange={(val) => {
+                                                const opt = employeeOptions.find(o => o.value === val);
                                                 set('dept_head_id', val || undefined);
                                                 set('dept_head_name', opt?.label ?? '');
                                             }}
-                                            placeholder="Chọn lãnh đạo..."
-                                            loading={empLoading}
-                                            allowCustom
+                                            searchable={true}
+                                            clearable={true}
+                                            placeholder="Chọn lãnh đạo phòng..."
                                         />
                                     </div>
                                     <div>
                                         <label className="field-label">Lãnh đạo Ban</label>
-                                        <ComboboxSelect
-                                            options={employeeOptions}
-                                            value={form.ban_head_id}
-                                            displayValue={form.ban_head_name}
-                                            onChange={(val, opt) => {
+                                        <Select
+                                            options={employeeOptions.filter(o => 
+                                                o.value === form.ban_head_id || (o.position && /giám đốc ban|trưởng ban|phó giám đốc ban|phó trưởng ban/i.test(o.position))
+                                            ).map(opt => ({
+                                                value: opt.value,
+                                                label: opt.label,
+                                                icon: opt.avatar ? (
+                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                                                ) : undefined
+                                            }))}
+                                            value={form.ban_head_id || ''}
+                                            onChange={(val) => {
+                                                const opt = employeeOptions.find(o => o.value === val);
                                                 set('ban_head_id', val || undefined);
                                                 set('ban_head_name', opt?.label ?? '');
                                             }}
-                                            placeholder="Chọn lãnh đạo..."
-                                            loading={empLoading}
-                                            allowCustom
+                                            searchable={true}
+                                            clearable={true}
+                                            placeholder="Chọn lãnh đạo ban..."
                                         />
                                     </div>
                                 </div>
@@ -448,7 +516,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         {/* ── SECTION: Kết quả BC tháng ── */}
                         {showResultFields && (
                             <SectionPanel
-                                icon={<Briefcase className="w-4 h-4 text-amber-500" />}
+                                icon={<Briefcase className="w-4 h-4 text-warning-500" />}
                                 title="Kết quả báo cáo tháng"
                                 sectionKey="ketqua"
                                 expanded={expanded}
@@ -509,7 +577,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         <button
                             onClick={handleSubmit}
                             disabled={saving}
-                            className="px-5 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 font-medium transition-colors"
+                            className="px-5 py-2 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg disabled:opacity-50 font-medium transition-colors"
                         >
                             {saving ? 'Đang lưu...' : item ? 'Cập nhật' : 'Thêm nhiệm vụ'}
                         </button>

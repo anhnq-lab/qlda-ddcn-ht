@@ -58,11 +58,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         const charCount = typeof value === 'string' ? value.length : 0;
 
         const baseInputStyles = `
-            w-full bg-bg-surface border rounded-xl
+            w-full bg-white dark:bg-slate-800 border rounded-xl
             text-gray-900 placeholder:text-gray-400
             transition-all duration-200
             focus:outline-none focus:ring-2
-            disabled:bg-bg-subtle disabled:text-gray-500 disabled:cursor-not-allowed
+            disabled:bg-slate-50 dark:bg-slate-800 disabled:text-gray-500 disabled:cursor-not-allowed
         `;
 
         const stateStyles = hasError
@@ -91,7 +91,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 <div className="relative flex">
                     {/* Left Addon */}
                     {leftAddon && (
-                        <div className="flex items-center px-3 bg-bg-subtle border border-r-0 border-gray-200 rounded-l-xl text-gray-500 text-sm">
+                        <div className="flex items-center px-3 bg-slate-50 dark:bg-slate-800 border border-r-0 border-gray-200 rounded-l-xl text-gray-500 text-sm">
                             {leftAddon}
                         </div>
                     )}
@@ -143,7 +143,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
                     {/* Right Addon */}
                     {rightAddon && (
-                        <div className="flex items-center px-3 bg-bg-subtle border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm">
+                        <div className="flex items-center px-3 bg-slate-50 dark:bg-slate-800 border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm">
                             {rightAddon}
                         </div>
                     )}
@@ -214,7 +214,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                     maxLength={maxLength}
                     aria-invalid={hasError}
                     className={`
-                        w-full px-4 py-3 bg-bg-surface border rounded-xl
+                        w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-xl
                         text-gray-900 placeholder:text-gray-400
                         transition-all duration-200
                         focus:outline-none focus:ring-2
@@ -267,7 +267,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                     type="checkbox"
                     className="
                         w-4 h-4 mt-0.5
-                        text-primary-500 bg-bg-surface border-gray-300 rounded
+                        text-primary-500 bg-white dark:bg-slate-800 border-gray-300 rounded
                         focus:ring-2 focus:ring-primary-100 focus:ring-offset-0
                         transition-colors cursor-pointer
                         disabled:cursor-not-allowed disabled:opacity-50
@@ -316,7 +316,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                     type="radio"
                     className="
                         w-4 h-4
-                        text-primary-500 bg-bg-surface border-gray-300
+                        text-primary-500 bg-white dark:bg-slate-800 border-gray-300
                         focus:ring-2 focus:ring-primary-100 focus:ring-offset-0
                         transition-colors cursor-pointer
                         disabled:cursor-not-allowed disabled:opacity-50

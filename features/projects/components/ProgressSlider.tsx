@@ -26,7 +26,7 @@ export const ProgressSlider: React.FC<ProgressSliderProps> = ({
     const colorStyles = {
         blue: { bg: 'bg-blue-500', light: 'bg-blue-100', text: 'text-blue-700' },
         emerald: { bg: 'bg-emerald-500', light: 'bg-emerald-100', text: 'text-emerald-700' },
-        orange: { bg: 'bg-orange-500', light: 'bg-orange-100', text: 'text-orange-700' },
+        orange: { bg: 'bg-warning-500', light: 'bg-warning-100', text: 'text-warning-700' },
         purple: { bg: 'bg-purple-500', light: 'bg-purple-100', text: 'text-purple-700' }
     };
 
@@ -120,7 +120,7 @@ export const ProgressBadge: React.FC<{
     const getColor = (v: number) => {
         if (v === 100) return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700';
         if (v >= 75) return 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700';
-        if (v >= 50) return 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-700';
+        if (v >= 50) return 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300 border-warning-200 dark:border-warning-700';
         if (v > 0) return 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 border-primary-200 dark:border-primary-700';
         return 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600';
     };
@@ -136,7 +136,7 @@ export const ProgressBadge: React.FC<{
                 <div
                     className={`h-full transition-all ${value === 100 ? 'bg-emerald-500' :
                         value >= 75 ? 'bg-blue-500' :
-                            value >= 50 ? 'bg-orange-500' :
+                            value >= 50 ? 'bg-warning-500' :
                                 'bg-primary-500'
                         }`}
                     style={{ width: `${value}%` }}

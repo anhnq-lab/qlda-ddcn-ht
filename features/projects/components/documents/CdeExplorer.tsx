@@ -82,7 +82,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                 onClick={() => setActiveFolderId((folder as any).id)}
                                 className={`flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all text-sm group ${isActive
                                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold shadow-sm'
-                                    : 'text-gray-600 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700'
+                                    : 'text-gray-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 <FolderIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400 fill-blue-100 dark:fill-blue-900/40' : 'text-gray-400 dark:text-slate-400 group-hover:text-gray-500 dark:group-hover:text-slate-400'}`} />
@@ -102,10 +102,10 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
     };
 
     return (
-        <div className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex h-[600px]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex h-[600px]">
             {/* Folder Tree Sidebar */}
-            <div className="w-[280px] border-r border-gray-200 dark:border-slate-700 bg-bg-subtle dark:bg-slate-900 flex flex-col">
-                <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-bg-surface">
+            <div className="w-[280px] border-r border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900 flex flex-col">
+                <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                     <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                         <FolderOpen className="w-4 h-4 text-blue-600" />
                         Cấu trúc CDE
@@ -143,7 +143,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                     )}
                 </div>
 
-                <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-bg-surface text-xs text-gray-400 dark:text-slate-400 text-center flex items-center justify-center gap-1.5">
+                <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-400 dark:text-slate-400 text-center flex items-center justify-center gap-1.5">
                     <CheckCircle2 className="w-3 h-3" />
                     ISO 19650 Compliant
                 </div>
@@ -152,7 +152,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
             {/* Document List Area */}
             <div className="flex-1 flex flex-col">
                 {/* Breadcrumb */}
-                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-bg-surface">
+                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-800">
                     <FolderIcon className="w-4 h-4 text-gray-300" />
                     {breadcrumbs.map((f, i) => (
                         <React.Fragment key={(f as any).id}>
@@ -193,9 +193,9 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                             )}
                         </div>
                     ) : (
-                        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
+                                <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
                                     <tr>
                                         <th className="px-5 py-3 w-10"></th>
                                         <th className="px-5 py-3">Tên tài liệu</th>

@@ -43,8 +43,8 @@ const REPORTS: {
         desc: 'Tổng hợp các vấn đề khó khăn, vướng mắc cần tháo gỡ trong quá trình thi công.',
         period: 'Theo sự vụ',
         icon: AlertTriangle,
-        iconBg: 'bg-yellow-50 dark:bg-yellow-900/30',
-        iconColor: 'text-yellow-600 dark:text-yellow-400',
+        iconBg: 'bg-warning-50 dark:bg-warning-900/30',
+        iconColor: 'text-warning-600 dark:text-warning-400',
     },
 ];
 
@@ -109,7 +109,7 @@ const ReportCenter: React.FC = () => {
             </div>
 
             {/* BC-03: Đồng bộ CSDL Quốc gia */}
-            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-bg-surface dark:border-slate-700 border-gray-200">
+            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-white dark:bg-slate-800 dark:border-slate-700 border-gray-200">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-blue-50/50 dark:bg-blue-900/10 skew-x-12 transform translate-x-10 pointer-events-none" />
 
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center relative z-10 gap-6">
@@ -188,7 +188,7 @@ const ReportCenter: React.FC = () => {
                         const isExporting = exportingReport === type;
                         const isSuccess = exportSuccess === type;
                         return (
-                            <div key={type} className="bg-bg-surface p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group flex flex-col">
+                            <div key={type} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group flex flex-col">
                                 <div className={`w-12 h-12 ${iconBg} rounded-xl flex items-center justify-center ${iconColor} mb-4 group-hover:scale-110 transition-transform`}>
                                     <Icon className="w-6 h-6" />
                                 </div>

@@ -396,6 +396,8 @@ export const MonthlyPlanItemService = {
                 staff_name: t.assignee_id ? (employeeMap[t.assignee_id] ?? null) : null,
                 staff_ids: t.assignee_id ? [t.assignee_id] : [],
                 staff_names: t.assignee_id ? [employeeMap[t.assignee_id] ?? ''] : [],
+                executor_ids: t.assignee_id ? [t.assignee_id] : [],
+                executor_names: t.assignee_id ? [employeeMap[t.assignee_id] ?? ''] : [],
                 source_task_id: t.metadata?.parent_task_id ?? null,
                 source_subtask_id: t.id,
                 source_type: 'from_subtask' as const,

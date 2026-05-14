@@ -67,8 +67,6 @@ const MidTermCapitalPage = lazyWithRetry(() => import('./features/capital/MidTer
 const Regulations = lazyWithRetry(() => import('./features/regulations/Regulations'));
 const LegalDocumentSearch = lazyWithRetry(() => import('./features/legal-documents/LegalDocumentSearch'));
 const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
-const AuditLogViewer = lazyWithRetry(() => import('./features/admin/AuditLogViewer'));
-const AdminUserManagement = lazyWithRetry(() => import('./features/admin/AdminUserManagement'));
 
 const WorkflowManagerPage = lazyWithRetry(() => import('./features/workflows/WorkflowManagerPage'));
 const WorkPlanPage = lazyWithRetry(() => import('./features/work-plan/WorkPlanPage'));
@@ -242,19 +240,15 @@ const App: React.FC = () => {
                                         {/* Evaluation Module */}
                                         <Route path="evaluation" element={<Navigate to="/employees?tab=evaluation" replace />} />
 
-                                        {/* Admin */}
-                                        <Route path="audit-log" element={
-                                            <ProtectedRoute resource="admin_audit">
-                                                <React.Suspense fallback={<PageLoadingFallback />}><AuditLogViewer /></React.Suspense>
-                                            </ProtectedRoute>
-                                        } />
-                                        <Route path="admin" element={
+                                        {/* Settings (Admin Only) */}
+                                        <Route path="settings" element={
                                             <ProtectedRoute resource="admin_accounts">
                                                 <React.Suspense fallback={<PageLoadingFallback />}>
-                                                    <AdminUserManagement />
+                                                    <Settings />
                                                 </React.Suspense>
                                             </ProtectedRoute>
                                         } />
+                                        
                                         {/* Workflow Manager */}
                                         <Route path="quy-trinh" element={
                                             <ProtectedRoute resource="workflows">
@@ -262,12 +256,12 @@ const App: React.FC = () => {
                                             </ProtectedRoute>
                                         } />
                                         <Route path="workflows" element={<Navigate to="/quy-trinh" replace />} />
+                                        
                                         {/* Backward-compatible redirects */}
-                                        <Route path="user-accounts" element={<Navigate to="/admin?tab=accounts" replace />} />
-                                        <Route path="permissions" element={<Navigate to="/admin?tab=permissions" replace />} />
-
-                                        {/* Settings */}
-                                        <Route path="settings" element={<React.Suspense fallback={<PageLoadingFallback />}><Settings /></React.Suspense>} />
+                                        <Route path="admin" element={<Navigate to="/settings?tab=accounts" replace />} />
+                                        <Route path="user-accounts" element={<Navigate to="/settings?tab=accounts" replace />} />
+                                        <Route path="permissions" element={<Navigate to="/settings?tab=permissions" replace />} />
+                                        <Route path="audit-log" element={<Navigate to="/settings?tab=audit-log" replace />} />
 
                                         {/* Fallback */}
                                         <Route path="*" element={<Navigate to="/" replace />} />

@@ -22,18 +22,18 @@
 .dark .text-slate-500 { color: #64748b !important; }
 
 /* ── 2. BACKGROUND — hardcoded nature/sand colors → dark surface ────────── */
-.dark .bg-white:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
-.dark .bg-gray-50:not([class*="dark:bg-"]) { background-color: #151d2e !important; }
+.dark .bg-white:not([class*="dark:bg-"]) { background-color: #151d2e !important; }
+.dark .bg-gray-50:not([class*="dark:bg-"]) { background-color: #0b1120 !important; }
 .dark .bg-gray-100:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
-.dark .bg-slate-50:not([class*="dark:bg-"]) { background-color: #151d2e !important; }
+.dark .bg-slate-50:not([class*="dark:bg-"]) { background-color: #0b1120 !important; }
 .dark .bg-slate-100:not([class*="dark:bg-"]) { background-color: #1e293b !important; }
 /* Sand/nature colors */
-.dark [class~="bg-[#FCF9F2]"] { background-color: #1e293b !important; }
-.dark [class~="bg-[#F5EFE6]"] { background-color: #151d2e !important; }
-.dark [class~="bg-[#EDE8DF]"] { background-color: #0f1117 !important; }
-.dark [class~="bg-[#FBF8EF]"] { background-color: #1e293b !important; }
-.dark [class~="bg-[#F0ECE1]"] { background-color: #151d2e !important; }
-.dark [class~="bg-[#ece7de]"] { background-color: #1e293b !important; }
+.dark [class~="bg-[#FCF9F2]"] { background-color: #151d2e !important; }
+.dark [class~="bg-[#F5EFE6]"] { background-color: #1e293b !important; }
+.dark [class~="bg-[#EDE8DF]"] { background-color: #0b1120 !important; }
+.dark [class~="bg-[#FBF8EF]"] { background-color: #151d2e !important; }
+.dark [class~="bg-[#F0ECE1]"] { background-color: #1e293b !important; }
+.dark [class~="bg-[#ece7de]"] { background-color: #151d2e !important; }
 
 /* ── 3. BORDER — hardcoded colors → dark border ─────────────────────────── */
 .dark .border-gray-100, .dark .border-gray-200, .dark .border-gray-300,
@@ -45,7 +45,7 @@
 
 /* ── 4. TABLE — vấn đề chính từ screenshot ──────────────────────────────── */
 /* Header */
-.dark thead { background-color: #1e293b !important; }
+.dark thead { background-color: #151d2e !important; }
 .dark thead th {
   color: #94a3b8 !important;
   border-color: #293548 !important;
@@ -53,7 +53,7 @@
 /* Rows */
 .dark tbody td {
   color: #cbd5e1 !important;
-  border-color: #1e293b !important;
+  border-color: #293548 !important;
 }
 .dark tbody td strong,
 .dark tbody td b,
@@ -86,24 +86,24 @@
 .dark tfoot td, .dark tfoot th { color: #cbd5e1 !important; }
 
 /* ── 5. CARD & PANEL ─────────────────────────────────────────────────────── */
-.dark .section-card { background-color: #1e293b !important; border-color: #293548 !important; }
-.dark .section-card-header { background-color: #151d2e !important; border-color: #293548 !important; color: #e2e8f0 !important; }
-.dark .toolbar { background-color: #1e293b !important; border-color: #293548 !important; }
+.dark .section-card { background-color: #151d2e !important; border-color: #293548 !important; }
+.dark .section-card-header { background-color: #1e293b !important; border-color: #293548 !important; color: #e2e8f0 !important; }
+.dark .toolbar { background-color: #151d2e !important; border-color: #293548 !important; }
 .dark .table-footer { background-color: #151d2e !important; border-color: #293548 !important; }
 .dark .table-header-row, .dark .table-header-row th {
-  background-color: #1e293b !important;
+  background-color: #151d2e !important;
   color: #94a3b8 !important;
 }
 
 /* ── 6. MODAL & DIALOG ──────────────────────────────────────────────────── */
-.dark [role="dialog"] { background-color: #1e293b !important; border-color: #293548 !important; }
+.dark [role="dialog"] { background-color: #151d2e !important; border-color: #293548 !important; }
 .dark [role="dialog"] h1, .dark [role="dialog"] h2,
 .dark [role="dialog"] h3, .dark [role="dialog"] h4 { color: #f1f5f9 !important; }
 .dark [role="dialog"] label { color: #94a3b8 !important; }
 .dark [role="dialog"] p { color: #cbd5e1 !important; }
 .dark [role="dialog"] .bg-white, .dark [role="dialog"] .bg-gray-50,
 .dark [role="dialog"] .bg-slate-50, .dark [role="dialog"] [class~="bg-[#FCF9F2]"] {
-  background-color: #151d2e !important;
+  background-color: #1e293b !important;
   border-color: #293548 !important;
 }
 
@@ -123,7 +123,7 @@
 
 /* ── 8. DROPDOWN & LISTBOX ──────────────────────────────────────────────── */
 .dark [role="listbox"], .dark [role="menu"] {
-  background-color: #1e293b !important; border-color: #293548 !important;
+  background-color: #151d2e !important; border-color: #293548 !important;
 }
 .dark [role="option"], .dark [role="menuitem"] { color: #cbd5e1 !important; }
 .dark [role="option"]:hover, .dark [role="menuitem"]:hover { background-color: #293548 !important; }
@@ -155,11 +155,15 @@
 .dark h5:not([class*="text-"]) { color: #cbd5e1 !important; }
 
 /* ── 11. CHART (Recharts) ────────────────────────────────────────────────── */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #1e293b !important;
+}
 .dark .recharts-text,
 .dark .recharts-cartesian-axis-tick-value { fill: #94a3b8 !important; }
 .dark .recharts-legend-item-text { color: #94a3b8 !important; }
 .dark .recharts-default-tooltip {
-  background-color: #1e293b !important;
+  background-color: #151d2e !important;
   border-color: #293548 !important;
   color: #e2e8f0 !important;
 }
@@ -169,7 +173,7 @@
 .dark button[role="tab"][aria-selected="true"] { color: #60a5fa !important; }
 
 /* ── 13. DIVIDERS ────────────────────────────────────────────────────────── */
-.dark hr { border-color: #1e293b !important; }
+.dark hr { border-color: #293548 !important; }
 
 /* ── 14. WORK-PLAN MODULE — từ screenshot ────────────────────────────────── */
 /* Task name column — invisible text fix */

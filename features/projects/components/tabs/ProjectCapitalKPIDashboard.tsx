@@ -21,9 +21,9 @@ interface ProjectCapitalKPIDashboardProps {
 const KPI_TIER_STYLES: Record<string, "blue" | "emerald" | "amber" | "violet" | "rose"> = {
     'bg-slate-100': 'blue',
     'bg-blue-100': 'emerald',
-    'bg-indigo-100': 'amber',
+    'bg-primary-100': 'amber',
     'bg-emerald-100': 'violet',
-    'bg-primary-100': 'rose',
+    'bg-rose-100': 'rose',
     'bg-cyan-100': 'blue',
 };
 
@@ -77,7 +77,7 @@ export const ProjectCapitalKPIDashboard: React.FC<ProjectCapitalKPIDashboardProp
                 value={formatCurrency(summary.yearlyTarget)}
                 sub={`Giải ngân: ${formatCurrency(summary.yearlyDisbursed)}`}
                 icon={<Calendar className="w-5 h-5" />}
-                iconBg="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                iconBg="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
             />
             <KPICard
                 label="Đã giải ngân"

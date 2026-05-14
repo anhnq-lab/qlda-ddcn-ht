@@ -54,7 +54,7 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
 
                             <div className={`p-3.5 rounded-xl border transition-all ml-1 mb-2 ${isCurrent
                                 ? 'bg-blue-50/70 dark:bg-blue-900/15 border-blue-100 dark:border-blue-800'
-                                : 'bg-bg-surface border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
+                                : 'bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
                                 }`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2.5">

@@ -79,7 +79,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         return (
             <div
                 onClick={() => onClick(project)}
-                className="group flex flex-col md:flex-row bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                className="group flex flex-col md:flex-row bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
                 <div className="w-full md:w-56 h-32 md:h-auto relative shrink-0">
                     <LazyImage
@@ -144,9 +144,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
                                 <span className="text-gray-500 dark:text-slate-400">KL Hoàn thành</span>
-                                <span className="font-bold text-amber-600 dark:text-amber-500">{volumePercent.toFixed(1)}%</span>
+                                <span className="font-bold text-warning-600 dark:text-warning-500">{volumePercent.toFixed(1)}%</span>
                             </div>
-                            <ProgressBar value={volumePercent} color="amber" size="sm" />
+                            <ProgressBar value={volumePercent} color="warning" size="sm" />
                             <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(volume)}</p>
                         </div>
                     </div>
@@ -159,7 +159,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     return (
         <div
             onClick={() => onClick(project)}
-            className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
         >
             {/* Image - Only badges */}
             <div className="relative h-28 w-full overflow-hidden shrink-0">
@@ -204,7 +204,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                         <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
                         <span className="truncate">{project.LocationCode}</span>
                     </span>
-                    <span className="font-mono text-[10px] bg-bg-subtle dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="font-mono text-[10px] bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
                         #{(project.ProjectID || '').slice(-5)}
                     </span>
                 </div>
@@ -246,11 +246,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                         <div className="flex justify-between text-[11px] mb-1">
                             <span className="text-gray-500 dark:text-slate-400 font-medium">KL Hoàn thành</span>
                             <div className="text-right">
-                                <span className="font-bold text-amber-600 dark:text-amber-500 tabular-nums">{formatCurrency(volume)}</span>
-                                <span className="text-[10px] text-amber-500/70 ml-1 font-medium">({volumePercent.toFixed(1)}%)</span>
+                                <span className="font-bold text-warning-600 dark:text-warning-500 tabular-nums">{formatCurrency(volume)}</span>
+                                <span className="text-[10px] text-warning-500/70 ml-1 font-medium">({volumePercent.toFixed(1)}%)</span>
                             </div>
                         </div>
-                        <ProgressBar value={volumePercent} color="amber" size="sm" />
+                        <ProgressBar value={volumePercent} color="warning" size="sm" />
                     </div>
                 </div>
             </div>

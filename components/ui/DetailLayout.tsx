@@ -95,7 +95,7 @@ export const TabNav: React.FC<TabNavProps> = ({
 
     // Button variant
     return (
-        <div className={`inline-flex items-center gap-0.5 p-1 bg-bg-subtle rounded-lg ${className}`}>
+        <div className={`inline-flex items-center gap-0.5 p-1 bg-slate-50 dark:bg-slate-800 rounded-lg ${className}`}>
             {visibleTabs.map((tab) => (
                 <button
                     key={tab.id}
@@ -106,7 +106,7 @@ export const TabNav: React.FC<TabNavProps> = ({
                         ${size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-sm'}
                         font-medium transition-all duration-150
                         ${activeTab === tab.id
-                            ? 'bg-bg-surface text-txt-primary dark:text-white shadow-sm'
+                            ? 'bg-white dark:bg-slate-800 text-txt-primary dark:text-white shadow-sm'
                             : 'text-txt-muted dark:text-slate-400 hover:text-txt-secondary dark:hover:text-slate-300'
                         }
                         ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -168,7 +168,7 @@ export const DetailLayout: React.FC<DetailLayoutProps> = ({
 
             {/* Tabs */}
             {tabs && (
-                <div className="shrink-0 px-6 border-b border-border-DEFAULT dark:border-slate-700/60 bg-bg-surface">
+                <div className="shrink-0 px-6 border-b border-border-DEFAULT dark:border-slate-700/60 bg-white dark:bg-slate-800">
                     {tabs}
                 </div>
             )}
@@ -182,7 +182,7 @@ export const DetailLayout: React.FC<DetailLayoutProps> = ({
                             {children}
                         </div>
                         {/* Sidebar */}
-                        <div className={`${sidebarWidth} shrink-0 border-l border-border-DEFAULT dark:border-slate-700/60 overflow-auto bg-bg-surface`}>
+                        <div className={`${sidebarWidth} shrink-0 border-l border-border-DEFAULT dark:border-slate-700/60 overflow-auto bg-white dark:bg-slate-800`}>
                             {sidebar}
                         </div>
                     </div>

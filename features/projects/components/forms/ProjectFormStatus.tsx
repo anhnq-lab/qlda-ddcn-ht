@@ -136,7 +136,7 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             {/* ── Tình hình thanh tra kiểm toán ── */}
             <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
-                    <ClipboardList className="w-4 h-4 text-amber-500" /> Tình hình thanh tra, kiểm toán
+                    <ClipboardList className="w-4 h-4 text-warning-500" /> Tình hình thanh tra, kiểm toán
                 </h4>
                 <textarea
                     placeholder="Mô tả kết quả thanh tra, kiểm toán (nếu có)..."

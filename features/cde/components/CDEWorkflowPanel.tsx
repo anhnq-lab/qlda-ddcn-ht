@@ -75,9 +75,9 @@ const CDEWorkflowPanel: React.FC<CDEWorkflowPanelProps> = ({
     };
 
     return (
-        <div className="w-[340px] bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-300">
+        <div className="w-[340px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-300">
             {/* Header */}
-            <div className="px-4 py-3.5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-bg-subtle">
+            <div className="px-4 py-3.5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
                 <span className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-[0.15em]">Phê duyệt hồ sơ</span>
                 <button onClick={onClose} className="text-gray-400 hover:text-red-500 transition-colors">
                     <X className="w-4 h-4" />
@@ -117,8 +117,8 @@ const CDEWorkflowPanel: React.FC<CDEWorkflowPanelProps> = ({
                                     )}
                                     <div className={`w-6 h-6 rounded-full flex items-center justify-center z-10 text-[9px] font-black border-2 transition-all ${isCompleted
                                         ? 'bg-emerald-500 border-emerald-500 text-white'
-                                        : isCurrent ? 'bg-bg-surface border-blue-600 text-blue-600 ring-2 ring-blue-100 dark:ring-blue-900/40'
-                                            : 'bg-bg-surface border-gray-200 dark:border-slate-600 text-gray-300 dark:text-slate-400'
+                                        : isCurrent ? 'bg-white dark:bg-slate-800 border-blue-600 text-blue-600 ring-2 ring-blue-100 dark:ring-blue-900/40'
+                                            : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 text-gray-300 dark:text-slate-400'
                                         }`}>
                                         {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : (idx + 1)}
                                     </div>
@@ -214,7 +214,7 @@ const CDEWorkflowPanel: React.FC<CDEWorkflowPanelProps> = ({
                                 placeholder="Nhập nhận xét, lý do từ chối hoặc yêu cầu bổ sung..."
                                 rows={2}
                                 disabled={!canPerformAction}
-                                className="w-full text-xs bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2 resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 disabled:opacity-50"
+                                className="w-full text-xs bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2 resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 disabled:opacity-50"
                             />
                         </div>
 
@@ -223,7 +223,7 @@ const CDEWorkflowPanel: React.FC<CDEWorkflowPanelProps> = ({
                                 <button
                                     disabled={isPending}
                                     onClick={handleReturn}
-                                    className="flex-1 py-2.5 bg-bg-surface border border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                                    className="flex-1 py-2.5 bg-white dark:bg-slate-800 border border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                                     title="Yêu cầu bổ sung"
                                 >
                                     <ArrowLeft className="w-3.5 h-3.5" /> Bổ sung
@@ -231,7 +231,7 @@ const CDEWorkflowPanel: React.FC<CDEWorkflowPanelProps> = ({
                                 <button
                                     disabled={isPending}
                                     onClick={handleReject}
-                                    className="flex-1 py-2.5 bg-bg-surface border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                                    className="flex-1 py-2.5 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                                 >
                                     <X className="w-3.5 h-3.5" /> Từ chối
                                 </button>

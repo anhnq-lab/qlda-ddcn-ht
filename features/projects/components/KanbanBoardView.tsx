@@ -28,16 +28,16 @@ const KANBAN_COLUMNS: KanbanColumn[] = [
         title: 'Chờ làm',
         icon: Circle,
         color: 'text-gray-600',
-        bgColor: 'bg-bg-subtle',
+        bgColor: 'bg-slate-50 dark:bg-slate-800',
         borderColor: 'border-gray-200'
     },
     {
         id: TaskStatus.InProgress,
         title: 'Đang làm',
         icon: Clock,
-        color: 'text-orange-600',
-        bgColor: 'bg-orange-50',
-        borderColor: 'border-orange-200'
+        color: 'text-warning-600',
+        bgColor: 'bg-warning-50',
+        borderColor: 'border-warning-200'
     },
     {
         id: TaskStatus.Review,
@@ -187,7 +187,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                     onDragStart={(e) => handleDragStart(e, task)}
                                     onDragEnd={handleDragEnd}
                                     onClick={() => onTaskClick(task)}
-                                    className={`group bg-bg-surface rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
+                                    className={`group bg-white dark:bg-slate-800 rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
                                         } ${isOverdue(task) ? 'bg-red-50/50' : ''}`}
                                 >
                                     {/* Drag Handle + Title */}
@@ -252,7 +252,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
 
                                     {/* Critical Path Indicator */}
                                     {task.IsCritical && (
-                                        <div className="mt-2 flex items-center gap-1 text-[10px] text-amber-600 font-bold">
+                                        <div className="mt-2 flex items-center gap-1 text-[10px] text-warning-600 font-bold">
                                             <ChevronRight className="w-3 h-3" />
                                             Critical Path
                                         </div>

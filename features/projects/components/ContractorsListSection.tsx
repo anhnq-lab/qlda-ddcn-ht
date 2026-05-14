@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
     bidding: { label: 'Đang mời thầu', color: 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30' },
     posted: { label: 'Đã đăng tải', color: 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30' },
     evaluating: { label: 'Đang xét thầu', color: 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30' },
-    pending: { label: 'Chờ phê duyệt', color: 'text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-900/30' },
+    pending: { label: 'Chờ phê duyệt', color: 'text-warning-700 dark:text-warning-300 bg-warning-50 dark:bg-warning-900/30' },
     approved: { label: 'Đã phê duyệt', color: 'text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/30' },
     awarded: { label: 'Đã trúng thầu', color: 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30' },
     completed: { label: 'Đã hoàn thành', color: 'text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30' },

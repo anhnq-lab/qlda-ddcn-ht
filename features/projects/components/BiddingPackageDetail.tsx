@@ -109,9 +109,9 @@ const getLifecycleStages = (field?: string) => {
 const getStatusConfig = (status: PackageStatus) => {
     const configs = {
         [PackageStatus.Planning]: { label: 'Trong kế hoạch', bg: 'bg-gray-100 dark:bg-slate-700', text: 'text-gray-600 dark:text-slate-300', border: 'border-gray-200 dark:border-slate-600', stage: 1 },
-        [PackageStatus.Posted]: { label: 'Đã đăng TBMT', bg: 'bg-indigo-100 dark:bg-indigo-900/40', text: 'text-indigo-700 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-700', stage: 2 },
+        [PackageStatus.Posted]: { label: 'Đã đăng TBMT', bg: 'bg-primary-100 dark:bg-primary-900/40', text: 'text-primary-700 dark:text-primary-300', border: 'border-primary-200 dark:border-primary-700', stage: 2 },
         [PackageStatus.Bidding]: { label: 'Đang mời thầu', bg: 'bg-blue-100 dark:bg-blue-900/40', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-700', stage: 3 },
-        [PackageStatus.Evaluating]: { label: 'Đang xét thầu', bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-primary-700 dark:text-yellow-300', border: 'border-yellow-200 dark:border-yellow-700', stage: 4 },
+        [PackageStatus.Evaluating]: { label: 'Đang xét thầu', bg: 'bg-warning-100 dark:bg-warning-900/40', text: 'text-primary-700 dark:text-warning-300', border: 'border-warning-200 dark:border-warning-700', stage: 4 },
         [PackageStatus.Awarded]: { label: 'Đã có KQLCNT', bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-700', stage: 5 },
         [PackageStatus.Cancelled]: { label: 'Hủy thầu', bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-700', stage: 0 },
     };
@@ -198,9 +198,9 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     ] as const;
 
     const content = (
-        <div className={asSlidePanel ? "flex flex-col h-full bg-bg-surface" : "relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col"}>
+        <div className={asSlidePanel ? "flex flex-col h-full bg-white dark:bg-slate-800" : "relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col"}>
             {/* Header with Package Info */}
-            <div className="shrink-0 px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
+            <div className="shrink-0 px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-blue-50 to-primary-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
                         {!asSlidePanel && (
@@ -219,7 +219,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 </span>
                                 <span className={`px-2 py-0.5 rounded text-xs font-medium border ${pkg.Field === 'Construction' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700' :
                                     pkg.Field === 'Consultancy' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-700' :
-                                        'bg-bg-subtle dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600'
+                                        'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600'
                                     }`}>
                                     {labels.field[pkg.Field as keyof typeof labels.field] || pkg.Field}
                                 </span>
@@ -285,7 +285,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all shadow-sm
                                         ${isCompleted ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-primary-200 dark:shadow-primary-900' :
                                             isCurrent ? 'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-4 ring-primary-100 dark:ring-primary-900 shadow-primary-200 dark:shadow-primary-900' :
-                                                'bg-bg-surface text-gray-400 dark:text-slate-400 border-2 border-gray-200 dark:border-slate-600'}
+                                                'bg-white dark:bg-slate-800 text-gray-400 dark:text-slate-400 border-2 border-gray-200 dark:border-slate-600'}
                                     `}>
                                         {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <stage.icon className="w-5 h-5" />}
                                     </div>
@@ -300,7 +300,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 </div>
 
                 {/* Tabs - 4 Lifecycle Groups */}
-                <div className="shrink-0 flex border-b border-gray-200 dark:border-slate-700 px-6 bg-bg-subtle">
+                <div className="shrink-0 flex border-b border-gray-200 dark:border-slate-700 px-6 bg-slate-50 dark:bg-slate-800">
                     {tabs.map(tab => {
                         const tabHasProgress = tab.stages.some(s => actualStage >= s);
                         return (
@@ -311,7 +311,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     flex items-center gap-2 px-4 py-3 text-sm font-medium 
                                     border-b-2 transition-colors -mb-px
                                     ${activeTab === tab.id
-                                        ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 bg-bg-surface'
+                                        ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-800'
                                         : tabHasProgress
                                             ? 'text-gray-600 dark:text-slate-400 border-transparent hover:text-gray-800 dark:hover:text-slate-200'
                                             : 'text-gray-400 dark:text-slate-600 border-transparent'}
@@ -325,7 +325,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-4 bg-bg-subtle dark:bg-slate-900">
+                <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900">
                     {/* Tab 1: KHLCNT & TBMT */}
                     {activeTab === 'khlcnt' && (
                         <div className="grid grid-cols-2 gap-6">
@@ -367,7 +367,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?noticeNo=${pkg.NotificationCode}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
                                                 >
                                                     <ExternalLink className="w-4 h-4" />
                                                     Xem TBMT trên Hệ thống ĐTQG
@@ -391,7 +391,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {pkg.PlanGroupName && (
                                         <>
                                             <div className="border-t border-gray-200 dark:border-slate-700 my-2" />
-                                            <InfoRow label="Nhóm KH" value={<span className="font-medium text-indigo-600 dark:text-indigo-400">{pkg.PlanGroupName}</span>} />
+                                            <InfoRow label="Nhóm KH" value={<span className="font-medium text-primary-600 dark:text-primary-400">{pkg.PlanGroupName}</span>} />
                                             {pkg.PlanDecisionNumber && <InfoRow label="QĐ phê duyệt KH" value={pkg.PlanDecisionNumber} />}
                                             {pkg.PlanDecisionDate && <InfoRow label="Ngày QĐ" value={formatDate(pkg.PlanDecisionDate)} />}
                                         </>
@@ -446,7 +446,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     )}
                                                     {pkg.NotificationCode && (
                                                         <a href={getMSCPackageLink(pkg.NotificationCode)} target="_blank" rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50">
+                                                            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 rounded hover:bg-primary-100 dark:hover:bg-primary-900/50">
                                                             <ExternalLink className="w-3 h-3" />
                                                             TBMT: {pkg.NotificationCode}
                                                         </a>
@@ -612,10 +612,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             {/* Create contract form */}
                             {!relatedContract && !isCreatingContract && (
                                 <EmptyState
-                                    icon={<FileSignature className="w-10 h-10 text-yellow-500 dark:text-yellow-600" />}
+                                    icon={<FileSignature className="w-10 h-10 text-warning-500 dark:text-warning-600" />}
                                     title="Chưa có hợp đồng"
                                     description="Tạo hợp đồng để quản lý thực hiện gói thầu"
-                                    className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
+                                    className="bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800"
                                 >
                                     {pkg.WinningContractorID ? (
                                         <button
@@ -626,7 +626,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             Tạo hợp đồng
                                         </button>
                                     ) : (
-                                        <p className="text-xs text-orange-500 dark:text-orange-400 mt-3">
+                                        <p className="text-xs text-warning-500 dark:text-warning-400 mt-3">
                                             <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
                                             Cần chọn nhà thầu trúng thầu trước khi tạo hợp đồng
                                         </p>
@@ -653,7 +653,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             {/* Tổng hợp giá trị */}
                             <SectionCard title="Tổng hợp giá trị" icon={Package} color="slate">
                                 <div className="grid grid-cols-4 gap-4">
-                                    <div className="text-center p-3 bg-bg-subtle rounded-lg">
+                                    <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                                         <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">Giá gói thầu</p>
                                         <p className="font-bold text-gray-800 dark:text-slate-100">{formatCurrency(pkg.Price)}</p>
                                     </div>
@@ -694,7 +694,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         </div>
                                         <div className="flex justify-between text-sm mt-2">
                                             <span className="text-gray-500 dark:text-slate-400">Đã thanh toán</span>
-                                            <span className="text-orange-600 dark:text-orange-400 font-medium">Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
+                                            <span className="text-warning-600 dark:text-warning-400 font-medium">Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                         </div>
                                     </SectionCard>
 
@@ -706,7 +706,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     const sc = PaymentService.getStatusColor(payment.Status);
                                                     const transitions = PaymentService.getAvailableTransitions(payment.Status);
                                                     return (
-                                                        <div key={payment.PaymentID} className="p-3 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-bg-subtle dark:hover:bg-slate-800 space-y-2">
+                                                        <div key={payment.PaymentID} className="p-3 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-800 space-y-2">
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
@@ -795,10 +795,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 </>
                             ) : (
                                 <EmptyState
-                                    icon={<AlertTriangle className="w-10 h-10 text-yellow-500 dark:text-yellow-600" />}
+                                    icon={<AlertTriangle className="w-10 h-10 text-warning-500 dark:text-warning-600" />}
                                     title="Chưa có hợp đồng"
                                     description="Cần tạo hợp đồng ở tab &quot;Hợp đồng&quot; trước khi quản lý thanh quyết toán"
-                                    className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
+                                    className="bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800"
                                 />
                             )}
                         </div>
@@ -838,8 +838,8 @@ const SectionCard = ({ title, icon: Icon, color, children, badge }: {
         blue: 'text-blue-600 dark:text-blue-400',
         green: 'text-green-600 dark:text-green-400',
         purple: 'text-purple-600 dark:text-purple-400',
-        indigo: 'text-indigo-600 dark:text-indigo-400',
-        yellow: 'text-primary-600 dark:text-yellow-400',
+        indigo: 'text-primary-600 dark:text-primary-400',
+        yellow: 'text-primary-600 dark:text-warning-400',
         cyan: 'text-cyan-600 dark:text-cyan-400',
         emerald: 'text-emerald-600 dark:text-emerald-400',
         gray: 'text-gray-600 dark:text-slate-400',
@@ -847,7 +847,7 @@ const SectionCard = ({ title, icon: Icon, color, children, badge }: {
     };
 
     return (
-        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
                     <Icon className={`w-4 h-4 ${colorMap[color] || 'text-gray-500 dark:text-slate-400'}`} />
@@ -863,9 +863,9 @@ const SectionCard = ({ title, icon: Icon, color, children, badge }: {
 };
 
 const InfoRow = ({ label, value, highlight }: { label: string; value: React.ReactNode; highlight?: boolean }) => (
-    <div className={`flex justify-between py-1.5 ${highlight ? 'bg-yellow-50 dark:bg-yellow-900/20 -mx-2 px-2 rounded' : ''}`}>
+    <div className={`flex justify-between py-1.5 ${highlight ? 'bg-warning-50 dark:bg-warning-900/20 -mx-2 px-2 rounded' : ''}`}>
         <span className="text-gray-500 dark:text-slate-400">{label}</span>
-        <span className={`font-medium text-gray-800 dark:text-slate-200 text-right ${highlight ? 'text-orange-600 dark:text-orange-400' : ''}`}>{value || '-'}</span>
+        <span className={`font-medium text-gray-800 dark:text-slate-200 text-right ${highlight ? 'text-warning-600 dark:text-warning-400' : ''}`}>{value || '-'}</span>
     </div>
 );
 
@@ -902,7 +902,7 @@ const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; trans
                         value={rejectReason}
                         onChange={e => setRejectReason(e.target.value)}
                         placeholder="Lý do từ chối..."
-                        className="flex-1 px-2.5 py-1.5 text-xs border border-red-200 dark:border-red-800 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-red-500/20 outline-none"
+                        className="flex-1 px-2.5 py-1.5 text-xs border border-red-200 dark:border-red-800 rounded-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-red-500/20 outline-none"
                         autoFocus
                     />
                     <button
@@ -928,7 +928,7 @@ const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; trans
                         value={treasuryRef}
                         onChange={e => setTreasuryRef(e.target.value)}
                         placeholder="Mã giao dịch kho bạc (tùy chọn)..."
-                        className="flex-1 px-2.5 py-1.5 text-xs border border-emerald-200 dark:border-emerald-800 rounded-lg bg-bg-surface text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500/20 outline-none"
+                        className="flex-1 px-2.5 py-1.5 text-xs border border-emerald-200 dark:border-emerald-800 rounded-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500/20 outline-none"
                         autoFocus
                     />
                     <button
@@ -970,7 +970,7 @@ const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; trans
 
                     {/* Rejected → Draft */}
                     {transitions.includes(PaymentStatus.Draft) && (
-                        <button onClick={() => revertMutation.mutate(payment.PaymentID)} disabled={isPending} className={`${btnBase} bg-bg-subtle0 hover:bg-slate-600 text-white`}>
+                        <button onClick={() => revertMutation.mutate(payment.PaymentID)} disabled={isPending} className={`${btnBase} bg-slate-50 dark:bg-slate-8000 hover:bg-slate-600 text-white`}>
                             <Edit className="w-3 h-3" /> Sửa lại
                         </button>
                     )}

@@ -25,7 +25,7 @@ export const HighlightText: React.FC<{ text: string | null; query: string }> = (
         <>
             {parts.map((part, i) =>
                 regex.test(part)
-                    ? <mark key={i} className="bg-yellow-200 dark:bg-primary-700/60 text-inherit rounded px-0.5 font-bold">{part}</mark>
+                    ? <mark key={i} className="bg-warning-200 dark:bg-warning-500/30 dark:text-warning-100 rounded px-0.5 font-bold">{part}</mark>
                     : part
             )}
         </>
@@ -48,18 +48,18 @@ export const DocSidebarItem: React.FC<{
         <button
             onClick={onClick}
             className={`w-full text-left p-3.5 rounded-2xl transition-all group border ${isSelected
-                ? `${typeColor.bg} ${typeColor.border} ${typeColor.darkBg} ${typeColor.darkBorder} shadow-sm`
+                ? `${typeColor.bg} ${typeColor.border} shadow-sm`
                 : 'border-transparent hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700'}`}
         >
             <div className="flex items-start gap-3">
                 <div className={`mt-0.5 p-2 rounded-xl shrink-0 transition-colors ${isSelected
-                    ? `${typeColor.bg} ${typeColor.text} ${typeColor.darkBg} ${typeColor.darkText}`
-                    : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 group-hover:bg-bg-surface dark:group-hover:bg-slate-600'}`}>
+                    ? `${typeColor.bg} ${typeColor.text}`
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 group-hover:bg-white dark:bg-slate-800 dark:group-hover:bg-slate-600'}`}>
                     <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
-                        <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${typeColor.bg} ${typeColor.text} ${typeColor.darkBg} ${typeColor.darkText}`}>
+                        <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${typeColor.bg} ${typeColor.text}`}>
                             {DOC_TYPE_LABELS[doc.type]}
                         </span>
                         <span className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded ${statusColor.bg} ${statusColor.text}`}>
@@ -81,7 +81,7 @@ export const DocSidebarItem: React.FC<{
                         )}
                     </div>
                 </div>
-                {isSelected && <ChevronRight className={`w-4 h-4 mt-1 shrink-0 ${typeColor.text} ${typeColor.darkText}`} />}
+                {isSelected && <ChevronRight className={`w-4 h-4 mt-1 shrink-0 ${typeColor.text}`} />}
             </div>
         </button>
     );
@@ -92,6 +92,8 @@ export const DocSidebarItem: React.FC<{
 // ============================================
 export interface DeepSearchItem {
     docId: string;
+    docCode?: string;
+    docTitle?: string;
     chapterId: string;
     articleId: string;
     articleCode: string;
@@ -101,16 +103,18 @@ export interface DeepSearchItem {
 
 export const DeepSearchResult: React.FC<{
     result: DeepSearchItem; query: string;
-    onNavigate: (docId: string, chapterId: string) => void;
+    onNavigate: (docId: string, chapterId: string, articleId: string) => void;
 }> = ({ result, query, onNavigate }) => (
     <button
-        onClick={() => onNavigate(result.docId, result.chapterId)}
-        className="w-full text-left p-3 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
+        onClick={() => onNavigate(result.docId, result.chapterId, result.articleId)}
+        className="w-full text-left p-3 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-primary-50/50 dark:hover:bg-slate-800 transition-all group"
     >
         <div className="flex items-center gap-2 mb-1">
-            <span className="text-[9px] font-black uppercase tracking-wider text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">
-                Kết quả tìm kiếm
+            <span className="text-[9px] font-black uppercase tracking-wider text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-slate-800 px-1.5 py-0.5 rounded flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                {result.docCode ? result.docCode : 'Kết quả tìm kiếm'}
             </span>
+            {result.docTitle && <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 truncate">{result.docTitle}</span>}
         </div>
         <p className="text-xs font-bold text-gray-700 dark:text-slate-300">
             <span className="font-mono text-[10px] text-gray-400 mr-1">{result.articleCode}</span>

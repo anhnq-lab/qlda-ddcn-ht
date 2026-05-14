@@ -17,7 +17,7 @@ const FREQ_BADGE: Record<PlanFrequency, { label: string; color: string }> = {
     one_time:  { label: 'Một lần',      color: 'bg-blue-100 text-blue-700' },
     monthly:   { label: 'Hàng tháng',   color: 'bg-green-100 text-green-700' },
     quarterly: { label: 'Hàng quý',     color: 'bg-purple-100 text-purple-700' },
-    daily:     { label: 'Hàng ngày',    color: 'bg-orange-100 text-orange-700' },
+    daily:     { label: 'Hàng ngày',    color: 'bg-warning-100 text-warning-700' },
     as_needed: { label: 'Phát sinh',    color: 'bg-slate-100 text-slate-600' },
 };
 
@@ -93,7 +93,7 @@ const AnnualPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col h-[calc(100vh-140px)] overflow-hidden bg-slate-50 dark:bg-slate-900 -mx-3 sm:-mx-4 lg:-mx-6 -mt-4 sm:-mt-6">
             {/* ── Header ── */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
@@ -153,7 +153,7 @@ const AnnualPlanPage: React.FC = () => {
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Tìm kiếm nhiệm vụ..."
-                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate- text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
                     />
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
@@ -165,7 +165,7 @@ const AnnualPlanPage: React.FC = () => {
             </div>
 
             {/* ── Nội dung ── */}
-            <div className="flex-1 overflow-auto px-6 py-4">
+            <div className="flex-1 px-6 py-4 flex flex-col min-h-0">
                 {loading ? (
                     <div className="flex items-center justify-center h-40 text-slate-400 dark:text-slate-500 text-sm">
                         Đang tải...
@@ -182,10 +182,10 @@ const AnnualPlanPage: React.FC = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
+                    <div className="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-auto relative">
                         <table className="w-full text-left border-collapse">
                             <thead className="sticky top-0 z-10">
-                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                                     <th className="px-4 py-3 text-center w-12">STT</th>
                                     <th className="px-4 py-3 text-left">Nội dung nhiệm vụ</th>
                                     <th className="px-4 py-3 text-left w-48">Sản phẩm đầu ra</th>
@@ -193,6 +193,7 @@ const AnnualPlanPage: React.FC = () => {
                                     <th className="px-4 py-3 text-center w-24">Kết thúc</th>
                                     <th className="px-4 py-3 text-center w-28">Tần suất</th>
                                     <th className="px-4 py-3 text-left w-40">Phụ trách</th>
+                                    <th className="px-4 py-3 text-left w-48">Ghi chú</th>
                                     <th className="px-4 py-3 w-16"></th>
                                 </tr>
                             </thead>
@@ -201,10 +202,10 @@ const AnnualPlanPage: React.FC = () => {
                                 <tbody key={groupName} className="group/tbody">
                                     {/* Group header row */}
                                     <tr
-                                        className="bg-slate-50/80 dark:bg-slate-800/30 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-b border-slate-200 dark:border-slate-800"
+                                        className="bg-slate-50/80 dark:bg-slate- cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-b border-slate-200 dark:border-slate-800"
                                         onClick={() => toggleGroup(groupName)}
                                     >
-                                        <td colSpan={8} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
+                                        <td colSpan={9} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
                                             <div className="flex items-center gap-2">
                                                 <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${expandedGroups.has(groupName) ? 'rotate-90' : ''}`} />
                                                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -221,7 +222,7 @@ const AnnualPlanPage: React.FC = () => {
                                     {expandedGroups.has(groupName) && groupItems.map((item, idx) => (
                                         <tr
                                             key={item.id}
-                                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
+                                            className="hover:bg-slate-50 dark:hover:bg-slate- transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
                                             onClick={() => setDetailItem(item)}
                                         >
                                             <td className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500 text-center align-top">{idx + 1}</td>
@@ -249,6 +250,9 @@ const AnnualPlanPage: React.FC = () => {
                                             </td>
                                             <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 leading-snug align-top">
                                                 {item.responsible_text ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 leading-snug align-top">
+                                                {item.notes ?? '—'}
                                             </td>
                                             <td className="px-4 py-3 align-top" onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">

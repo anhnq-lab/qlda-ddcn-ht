@@ -238,7 +238,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
                 
                 {/* 1. Header Info */}
-                <div className="bg-bg-surface rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors col-span-2">
                             <label className="text-xs font-bold text-slate-600 dark:text-slate-400">Tên nội dung thực hiện (Bước)</label>
@@ -273,7 +273,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                            <Clock size={14} className="text-amber-500" /> Tổng thời gian (SLA)
+                            <Clock size={14} className="text-warning-500" /> Tổng thời gian (SLA)
                         </label>
                         <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
                             <input type="number" 
@@ -309,9 +309,9 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
 
                     <div className="space-y-4">
                         {subTasks.map((st, i) => (
-                            <div key={st.id} className="bg-bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group/st">
+                            <div key={st.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group/st">
                                 {/* Header */}
-                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate- border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-bold">
                                             {i + 1}
@@ -362,7 +362,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                                     {/* SLA cho công việc con */}
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                            <Clock size={12} className="text-amber-500" /> Thời gian (SLA)
+                                            <Clock size={12} className="text-warning-500" /> Thời gian (SLA)
                                         </label>
                                         <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
                                             <input type="text" 
@@ -389,7 +389,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
                                             <div className="flex items-center justify-between mb-1.5">
-                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-indigo-500"/> Biểu mẫu</label>
+                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-primary-500"/> Biểu mẫu</label>
                                                 <button type="button" 
                                                     onClick={(e) => { 
                                                         e.preventDefault(); 
@@ -398,7 +398,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                                                         fileInputRef.current?.click();
                                                     }} 
                                                     disabled={isUploading && uploadingId === st.id}
-                                                    className="flex items-center gap-1 px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded block transition-colors text-[10px] font-bold disabled:opacity-50"
+                                                    className="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/60 rounded block transition-colors text-[10px] font-bold disabled:opacity-50"
                                                 >
                                                     {isUploading && uploadingId === st.id ? <Loader2 size={10} className="animate-spin" /> : <Upload size={10} />} Tải file lên
                                                 </button>
@@ -407,7 +407,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                                                 placeholder="VD: Mẫu 01 (ND-112)"
                                                 className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-y min-h-[60px]" />
                                             {st.template_url && (
-                                                <div className="flex items-center gap-1 mt-1 text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                                                <div className="flex items-center gap-1 mt-1 text-[11px] text-primary-600 dark:text-primary-400 font-medium">
                                                     <LinkIcon size={10} />
                                                     <a href={st.template_url} target="_blank" rel="noreferrer" className="hover:underline truncate" title={st.template_url}>
                                                         Đã đính kèm biểu mẫu

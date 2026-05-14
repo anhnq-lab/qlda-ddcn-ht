@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Ensure created_at exists if table already existed without it
+ALTER TABLE public.audit_logs ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+
 -- 2. Index for fast lookups
 CREATE INDEX IF NOT EXISTS idx_audit_logs_target
     ON public.audit_logs (target_entity, target_id);

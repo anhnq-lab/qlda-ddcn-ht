@@ -138,10 +138,10 @@ export const AIReportModal: React.FC<AIReportModalProps> = ({
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-            <div className="relative w-full max-w-4xl max-h-[92vh] bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+            <div className="relative w-full max-w-4xl max-h-[92vh] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
 
                 {/* ── Header ── */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-primary-900/20 dark:to-yellow-900/10">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-primary-900/20 dark:to-warning-900/10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-sm shadow-primary-200/50 dark:shadow-primary-900/30">
                             <Sparkles className="w-4.5 h-4.5 text-white" />
@@ -200,7 +200,7 @@ const ActionBtn: React.FC<{
             highlight ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' :
             accent ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-sm' :
             amber ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-200' :
-            'bg-bg-surface hover:bg-bg-subtle dark:hover:bg-slate-600 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
+            'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
         }`}
     >
         {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Icon className="w-3 h-3" />}

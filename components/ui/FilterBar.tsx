@@ -86,7 +86,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className={`
             flex flex-col sm:flex-row items-start sm:items-center gap-3
             px-4 py-3
-            bg-bg-subtle/50
+            bg-slate-50 dark:bg-slate-
             border-b border-border-DEFAULT dark:border-slate-700/60
             ${className}
         `}>
@@ -104,7 +104,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         placeholder={searchPlaceholder}
                         className="
                             w-full pl-8 pr-8 py-2 text-sm
-                            bg-bg-surface
+                            bg-white dark:bg-slate-800
                             border border-border-DEFAULT dark:border-slate-600
                             rounded-lg
                             text-txt-primary dark:text-slate-200
@@ -133,7 +133,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         onChange={(e) => filter.onChange(e.target.value)}
                         className="
                             appearance-none pl-3 pr-8 py-2 text-sm
-                            bg-bg-surface
+                            bg-white dark:bg-slate-800
                             border border-border-DEFAULT dark:border-slate-600
                             rounded-lg
                             text-txt-secondary dark:text-slate-300
@@ -163,7 +163,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         onChange={(e) => onSortChange(e.target.value)}
                         className="
                             appearance-none pl-3 pr-8 py-2 text-sm
-                            bg-bg-surface
+                            bg-white dark:bg-slate-800
                             border border-border-DEFAULT dark:border-slate-600
                             rounded-lg
                             text-txt-secondary dark:text-slate-300

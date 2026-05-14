@@ -48,7 +48,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   return (
     <div className="w-full h-full min-h-[800px] flex flex-col bg-bg-base rounded-2xl overflow-hidden shadow-sm border border-border relative">
       {/* Header */}
-      <header className="bg-bg-surface border-b border-border p-4 flex justify-between items-center z-10 shadow-sm">
+      <header className="bg-white dark:bg-slate-800 border-b border-border p-4 flex justify-between items-center z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
             <Monitor className="w-6 h-6 text-primary-600 dark:text-primary-400" />
@@ -89,7 +89,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
               return (
                 <div key={dateStr} className="animate-fade-in-up">
                   <div className="flex items-center gap-3 mb-3">
-                    <h2 className={`text-lg font-bold ${isToday ? 'text-amber-600 dark:text-amber-400' : 'text-primary-600 dark:text-primary-400'} uppercase tracking-wider`}>
+                    <h2 className={`text-lg font-bold ${isToday ? 'text-warning-600 dark:text-warning-400' : 'text-primary-600 dark:text-primary-400'} uppercase tracking-wider`}>
                       {isToday ? 'Hôm nay' : format(dayDate, 'EEEE, dd/MM/yyyy', { locale: vi })}
                     </h2>
                     <div className="flex-1 h-px bg-border"></div>
@@ -123,7 +123,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                             <div className="grid grid-cols-2 gap-3 mt-auto">
                               {(event.room || event.location) && (
                                 <div className="flex items-start">
-                                  <div className="p-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-md mr-2 border border-slate-100 dark:border-slate-700">
+                                  <div className="p-1.5 bg-slate-50 dark:bg-slate- rounded-md mr-2 border border-slate-100 dark:border-slate-700">
                                     <MapPin className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                                   </div>
                                   <div>
@@ -136,7 +136,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                               )}
                               
                               <div className="flex items-start">
-                                <div className="p-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-md mr-2 border border-slate-100 dark:border-slate-700">
+                                <div className="p-1.5 bg-slate-50 dark:bg-slate- rounded-md mr-2 border border-slate-100 dark:border-slate-700">
                                   <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                                 </div>
                                 <div>
@@ -154,7 +154,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                               <div className="mt-3 pt-3 border-t border-border">
                                 <div className="flex flex-wrap gap-1.5">
                                   {event.attendees.map((emp: any, idx: number) => (
-                                    <div key={emp.EmployeeID || idx} className="bg-slate-50 dark:bg-slate-800/80 px-2 py-0.5 rounded text-[11px] font-medium text-text-secondary flex items-center border border-border">
+                                    <div key={emp.EmployeeID || idx} className="bg-slate-50 dark:bg-slate- px-2 py-0.5 rounded text-[11px] font-medium text-text-secondary flex items-center border border-border">
                                       <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-1.5"></span>
                                       {emp.FullName || emp.full_name || 'Nhân viên'}
                                     </div>

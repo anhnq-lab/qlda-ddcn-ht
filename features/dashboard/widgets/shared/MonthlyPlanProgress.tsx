@@ -70,7 +70,7 @@ export const MonthlyPlanProgress: React.FC<MonthlyPlanProgressProps> = ({
                                 <span className="font-bold text-gray-800 dark:text-slate-100">{stats.completed}/{stats.total}</span>
                             </div>
                             <div className="flex items-center justify-between text-xs">
-                                <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                                <span className="flex items-center gap-1.5 text-warning-600 dark:text-warning-400">
                                     <Clock className="w-3.5 h-3.5" /> Chưa báo cáo
                                 </span>
                                 <span className="font-bold text-gray-800 dark:text-slate-100">{stats.planned}</span>

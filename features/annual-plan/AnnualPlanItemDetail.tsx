@@ -12,7 +12,7 @@ const FREQUENCY_COLORS: Record<string, string> = {
     monthly:   'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
     quarterly: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400',
     daily:     'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
-    as_needed: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+    as_needed: 'bg-warning-50 text-warning-600 dark:bg-warning-500/10 dark:text-warning-400',
 };
 
 interface Props {
@@ -64,7 +64,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
     return (
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
-            <div className="flex-1 bg-black/30 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
+            <div className="flex-1 bg-black/30 dark:bg-slate- backdrop-blur-sm transition-opacity" onClick={onClose} />
 
             {/* Panel */}
             <div className="w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden border-l border-slate-200 dark:border-slate-800">
@@ -99,7 +99,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                     <div className="flex gap-2 mt-3">
                         <button
                             onClick={onEdit}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:hover:bg-indigo-500/20 rounded-lg transition-colors border border-indigo-100 dark:border-indigo-500/20"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-400 dark:hover:bg-primary-500/20 rounded-lg transition-colors border border-primary-100 dark:border-primary-500/20"
                         >
                             <Edit2 className="w-3.5 h-3.5" />
                             Sửa
@@ -159,7 +159,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                         <p className="text-xs text-slate-400 mb-1">Thực hiện</p>
                                         <div className="flex flex-wrap gap-1">
                                             {item.responsible_text.split(/[,\/]/).map((p, i) => (
-                                                <span key={i} className="text-xs bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 px-2 py-0.5 rounded-full">
+                                                <span key={i} className="text-xs bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300 px-2 py-0.5 rounded-full">
                                                     {p.trim()}
                                                 </span>
                                             ))}
@@ -214,7 +214,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         {loadingLinks ? (
                             <p className="text-xs text-slate-400 text-center py-3">Đang tải...</p>
                         ) : monthlyLinks.length === 0 ? (
-                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 rounded-xl">
+                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate- rounded-xl">
                                 <CalendarClock className="w-8 h-8 text-slate-200 dark:text-slate-700 mx-auto mb-2" />
                                 <p className="text-sm text-slate-400">Chưa có kế hoạch tháng nào liên kết</p>
                                 <p className="text-xs text-slate-300 dark:text-slate-600 mt-1">Khi tạo KH tháng, chọn nhiệm vụ này từ KH khung</p>
@@ -227,11 +227,11 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                         planned: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
                                         completed: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
                                         incomplete: 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400',
-                                        partial: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+                                        partial: 'bg-warning-50 text-warning-600 dark:bg-warning-500/10 dark:text-warning-400',
                                         deferred: 'bg-blue-50 text-blue-500 dark:bg-blue-500/10 dark:text-blue-400',
                                     };
                                     return (
-                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-lg">
+                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate- border border-slate-100 dark:border-slate-800 rounded-lg">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{link.task_name}</p>
                                                 {plan && (

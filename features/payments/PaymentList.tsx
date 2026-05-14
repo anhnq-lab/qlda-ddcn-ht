@@ -224,7 +224,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                 </div>
 
                 {/* === Toolbar === */}
-                <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4">
                     <div className="flex flex-col md:flex-row items-center gap-3">
                         <div className="relative w-full md:w-80">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -251,7 +251,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                                     key={opt.value}
                                     onClick={() => setFilterStatus(opt.value)}
                                     className={`px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${filterStatus === opt.value
-                                        ? 'bg-bg-surface dark:bg-slate-600 text-slate-700 dark:text-slate-200 shadow-sm'
+                                        ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-slate-700 dark:text-slate-200 shadow-sm'
                                         : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                 >
@@ -285,7 +285,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                         </div>
 
                         <div className="ml-auto flex items-center gap-2">
-                            <button className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-600 transition-colors flex items-center gap-2 hover:shadow-lg">
+                            <button className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-600 transition-colors flex items-center gap-2 hover:shadow-lg">
                                 <Download className="w-4 h-4" />
                                 Xuất Excel
                             </button>
@@ -294,11 +294,11 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                 </div>
 
                 {/* === Table === */}
-                <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                                <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                     <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
                                     <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Mã TT</th>
                                     <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Hợp đồng</th>
@@ -320,7 +320,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/60"
+                                            className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-"
                                             onClick={() => handleNavigateToSource(payment.ContractID)}
                                         >
                                             {/* STT */}

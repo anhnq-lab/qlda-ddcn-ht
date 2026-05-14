@@ -114,7 +114,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
 
     // ── Render ──────────────────────────────────────────────────
     return (
-        <div className="h-full overflow-y-auto bg-bg-subtle dark:bg-slate-950">
+        <div className="h-full overflow-y-auto bg-slate-50 dark:bg-slate-800 dark:bg-slate-950">
             <div className="max-w-[1400px] mx-auto p-4 space-y-5">
 
                 {/* ── Header ── */}
@@ -168,7 +168,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                             color: 'violet'
                         },
                     ].map((kpi, i) => (
-                        <div key={i} className="bg-bg-surface dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                        <div key={i} className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                             <div className="flex items-start justify-between mb-2">
                                 <p className="text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{kpi.label}</p>
                                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center
@@ -190,7 +190,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Progress bar ── */}
-                <div className="bg-bg-surface dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                             <BarChart3 className="w-4 h-4 text-violet-500" />
@@ -200,7 +200,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                     </div>
                     <div className="w-full h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-700"
+                            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-primary-500 transition-all duration-700"
                             style={{ width: `${Math.min(100, disbursedPercent)}%` }}
                         />
                     </div>
@@ -211,7 +211,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Settlement Steps ── */}
-                <div className="bg-bg-surface dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
                         <ClipboardCheck className="w-4 h-4 text-violet-500" />
                         <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Thủ tục quyết toán</span>
@@ -252,7 +252,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Contracts table ── */}
-                <div className="bg-bg-surface dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2">
                         <FileText className="w-4 h-4 text-violet-500" />
                         <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Danh sách hợp đồng quyết toán</span>
@@ -288,7 +288,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                         const paidPct = val > 0 ? (paid / val) * 100 : 0;
                                         const isDone = c.status === 2 || c.status === 'completed';
                                         return (
-                                            <tr key={c.contract_id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <tr key={c.contract_id} className="hover:bg-slate-50/50 dark:hover:bg-slate- transition-colors">
                                                 <td className="px-4 py-3">
                                                     <p className="font-semibold text-gray-800 dark:text-slate-200 truncate max-w-[280px]">{c.contract_name || '—'}</p>
                                                     <div className="mt-1 w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
@@ -307,7 +307,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                                         {val > 0 ? `(${paidPct.toFixed(0)}%)` : ''}
                                                     </span>
                                                 </td>
-                                                <td className={`px-4 py-3 text-right font-semibold tabular-nums ${remain > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-slate-600'}`}>
+                                                <td className={`px-4 py-3 text-right font-semibold tabular-nums ${remain > 0 ? 'text-warning-600 dark:text-warning-400' : 'text-gray-400 dark:text-slate-600'}`}>
                                                     {remain > 0 ? `${fmtB(remain)} đ` : '—'}
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
@@ -346,7 +346,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                             <td className="px-4 py-2.5 text-right font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
                                                 {fmtB(stats.totalPaid)} đ
                                             </td>
-                                            <td className="px-4 py-2.5 text-right font-black text-amber-600 dark:text-amber-400 tabular-nums">
+                                            <td className="px-4 py-2.5 text-right font-black text-warning-600 dark:text-warning-400 tabular-nums">
                                                 {fmtB(Math.max(0, stats.totalContractValue - stats.totalPaid))} đ
                                             </td>
                                             <td colSpan={2} className="px-4 py-2.5 text-center text-[10px] text-violet-500 dark:text-violet-400 font-semibold">
@@ -361,12 +361,12 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Ghi chú quyết toán ── */}
-                <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl p-4">
+                <div className="bg-warning-50 dark:bg-warning-900/10 border border-warning-200 dark:border-warning-800/40 rounded-xl p-4">
                     <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                        <AlertTriangle className="w-4 h-4 text-warning-500 mt-0.5 shrink-0" />
                         <div>
-                            <p className="text-xs font-bold text-amber-700 dark:text-amber-400 mb-1">Lưu ý quyết toán vốn đầu tư</p>
-                            <ul className="text-xs text-amber-600 dark:text-amber-500 space-y-0.5 list-disc list-inside">
+                            <p className="text-xs font-bold text-warning-700 dark:text-warning-400 mb-1">Lưu ý quyết toán vốn đầu tư</p>
+                            <ul className="text-xs text-warning-600 dark:text-warning-500 space-y-0.5 list-disc list-inside">
                                 <li>Quyết toán phải hoàn thành trong vòng <b>12 tháng</b> kể từ khi dự án hoàn thành (Nghị định 99/2021/NĐ-CP)</li>
                                 <li>Hồ sơ quyết toán cần bao gồm đầy đủ: biên bản nghiệm thu, thanh lý hợp đồng, và kết quả kiểm toán</li>
                                 <li>Chủ đầu tư chịu trách nhiệm lưu trữ hồ sơ quyết toán tối thiểu <b>10 năm</b></li>

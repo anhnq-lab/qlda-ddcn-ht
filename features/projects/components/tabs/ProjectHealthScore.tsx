@@ -36,14 +36,14 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
     const getScoreInfo = (s: number) => {
         if (s >= 80) return { emoji: '🟢', label: 'Tốt', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500' };
         if (s >= 60) return { emoji: '🟡', label: 'Trung bình', color: 'text-primary-600 dark:text-primary-400', bg: 'bg-primary-500' };
-        if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500' };
+        if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-warning-600 dark:text-warning-400', bg: 'bg-warning-500' };
         return { emoji: '🔴', label: 'Rủi ro cao', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500' };
     };
     
     const info = getScoreInfo(score);
 
     return (
-        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
             <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                 Sức khỏe dự án
             </h4>

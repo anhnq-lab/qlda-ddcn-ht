@@ -58,14 +58,14 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
     };
 
     return (
-        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-            <div className="h-0.5 bg-gradient-to-r from-violet-400 to-indigo-500" />
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="h-0.5 bg-gradient-to-r from-violet-400 to-primary-500" />
             <div className="p-4">
                 <div className="flex justify-between items-center mb-5">
                     <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                         <Paperclip className="w-4 h-4" /> Tài liệu công việc
                     </h3>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-bg-subtle dark:bg-slate-700 px-2 py-1 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 px-2 py-1 rounded-lg">
                         {templates.length} mẫu • {(task.Attachments || []).length} đã tải
                     </span>
                 </div>
@@ -101,7 +101,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
                                         {tpl.templatePath && getTemplateConfig(tpl.templatePath) && (
                                             <button
                                                 onClick={() => setActiveExportTemplate(tpl)}
-                                                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 mt-1 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-bold shadow-sm hover:shadow-md hover:from-indigo-600 hover:to-purple-600 transition-all transform active:scale-95"
+                                                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 mt-1 rounded-lg bg-gradient-to-r from-primary-500 to-purple-500 text-white text-[10px] font-bold shadow-sm hover:shadow-md hover:from-primary-600 hover:to-purple-600 transition-all transform active:scale-95"
                                                 title="Xuất văn bản DOCX tự động điền dữ liệu dự án"
                                             >
                                                 <Download className="w-3 h-3" />
@@ -131,7 +131,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
                         <div className="space-y-1.5">
                             {(task.Attachments || []).map((att) => (
                                 <div key={att.id} className="flex items-center gap-3 p-3 bg-emerald-50/40 dark:bg-emerald-900/10 rounded-xl ring-1 ring-emerald-100 dark:ring-emerald-900/30 hover:ring-emerald-200 dark:hover:ring-emerald-800 transition-all group/att">
-                                    <div className="p-2 bg-bg-surface rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
+                                    <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
                                         <FileText className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">

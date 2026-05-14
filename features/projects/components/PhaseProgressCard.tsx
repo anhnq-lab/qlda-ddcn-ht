@@ -93,8 +93,8 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
         },
         in_progress: {
             icon: Clock,
-            color: 'text-primary-700 dark:text-yellow-400',
-            bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+            color: 'text-primary-700 dark:text-warning-400',
+            bgColor: 'bg-warning-100 dark:bg-warning-900/30',
             progressColor: 'from-primary-500 to-primary-600',
             borderColor: 'border-l-yellow-500'
         },
@@ -111,10 +111,10 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     const StatusIcon = config.icon;
 
     return (
-        <div className={`bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
+        <div className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
             {/* Header */}
             <div
-                className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors"
+                className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
                 onClick={onToggle}
             >
                 <div className="flex items-center gap-4 flex-1">
@@ -134,7 +134,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                             </p>
                             {/* Date Range Badge */}
                             {phaseStartDate && phaseEndDate && (
-                                <span className="hidden md:flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-400 bg-bg-subtle dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shrink-0">
+                                <span className="hidden md:flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shrink-0">
                                     <Calendar className="w-3 h-3" />
                                     {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                                 </span>
@@ -204,7 +204,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                         </div>
 
                         {/* Item Counter */}
-                        <div className="flex flex-col items-center px-3 py-1 bg-bg-subtle dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600">
+                        <div className="flex flex-col items-center px-3 py-1 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600">
                             <span className="text-lg font-bold text-gray-800 dark:text-slate-200 tabular-nums">
                                 {completedItems}/{totalItems}
                             </span>

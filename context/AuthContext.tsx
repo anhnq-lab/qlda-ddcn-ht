@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { Employee } from '../types';
 import { supabase } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
+import { permissionCache } from '../utils/permissionCache';
 
 interface AuthContextType {
     currentUser: Employee | null;
@@ -219,9 +219,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     if (!explicitlyLoggedOut && !autoLoginAttempted) {
                         autoLoginAttempted = true;
                         console.log('[Auth] 🔧 Local Dev: Auto-logging in as Admin...');
+                        // ⚠️ DEV-ONLY: credentials below are stripped from production build by Vite.
+                        // import.meta.env.DEV = false in production → this entire block is dead code.
+                        // To change dev credentials: set VITE_DEV_EMAIL / VITE_DEV_PASSWORD in .env.local
                         const demoLogin = await supabase.auth.signInWithPassword({
-                            email: 'admin@bqlddcn.gov.vn',
-                            password: '@Abc123456',
+                            email: import.meta.env.VITE_DEV_EMAIL ?? 'admin@bqlddcn.gov.vn',
+                            password: import.meta.env.VITE_DEV_PASSWORD ?? '@Abc123456',
                         });
                         
                         if (demoLogin.data?.session) {
@@ -287,12 +290,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         let email = await resolveEmail(identifier);
         console.log('[Auth] Resolved email:', email);
 
-        // DEV fallback: if RPC fails but user typed "admin", use hardcoded email
-        if (!email && import.meta.env.DEV && identifier.toLowerCase() === 'admin') {
-            console.warn('[Auth] ⚠️ DEV fallback: using hardcoded admin email');
-            email = 'admin@bqlddcn.gov.vn';
-        }
-
         if (!email) {
             console.error('[Auth] Could not resolve email for:', identifier);
             return false;
@@ -333,6 +330,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const logout = async () => {
+        permissionCache.invalidateAll(); // Clear all cached permissions on logout
         await supabase.auth.signOut();
         setCurrentUser(null);
         setSupabaseUser(null);

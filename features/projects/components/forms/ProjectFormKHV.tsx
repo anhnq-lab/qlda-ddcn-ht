@@ -146,7 +146,7 @@ export const ProjectFormKHV: React.FC<ProjectFormKHVProps> = ({ formData, update
             {/* ── Số đã giải ngân ── */}
             <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-1 flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-amber-500" /> Số đã giải ngân
+                    <DollarSign className="w-4 h-4 text-warning-500" /> Số đã giải ngân
                 </h4>
                 <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">Theo dõi giải ngân ngân sách (đơn vị: VNĐ)</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -71,21 +71,21 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     const getFilterStyle = (filter: { id: TaskFilter; color: string }, isActive: boolean) => {
-        if (!isActive) return 'bg-bg-surface text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700';
+        if (!isActive) return 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700';
 
         switch (filter.color) {
             case 'blue': return 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-800';
             case 'red': return 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-300 dark:border-red-700 ring-1 ring-red-200 dark:ring-red-800';
-            case 'orange': return 'bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-700 ring-1 ring-orange-200 dark:ring-orange-800';
+            case 'orange': return 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400 border-warning-300 dark:border-warning-700 ring-1 ring-warning-200 dark:ring-warning-800';
             case 'emerald': return 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700 ring-1 ring-emerald-200 dark:ring-emerald-800';
-            case 'purple': return 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 ring-1 ring-amber-200 dark:ring-amber-800';
+            case 'purple': return 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400 border-warning-300 dark:border-warning-700 ring-1 ring-warning-200 dark:ring-warning-800';
             case 'indigo': return 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 border-primary-300 dark:border-primary-700 ring-1 ring-primary-200 dark:ring-primary-800';
             default: return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200 border-gray-300 dark:border-slate-600 ring-1 ring-gray-200 dark:ring-slate-500';
         }
     };
 
     return (
-        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
             {/* Top Row: Search + Add Button */}
             <div className="flex items-center gap-4">
                 {/* Search */}
@@ -97,7 +97,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                             placeholder="Tìm kiếm công việc..."
                             value={searchQuery}
                             onChange={(e) => onSearch(e.target.value)}
-                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-bg-surface text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                         {searchQuery && (
                             <button
@@ -163,7 +163,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 key={view.id}
                                 onClick={() => onViewChange(view.id)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isActive
-                                    ? 'bg-bg-surface dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
+                                    ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
                                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                                 title={view.label}

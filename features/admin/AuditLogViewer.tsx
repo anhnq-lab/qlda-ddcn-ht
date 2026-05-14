@@ -6,88 +6,19 @@ import {
 } from 'lucide-react';
 import { useEmployees } from '../../hooks/useEmployees';
 
-// AuditLog types based on types.ts interface
+import { supabase } from '../../lib/supabase';
+
 interface AuditLog {
     id: string;
     timestamp: string;
     userId: string;
-    action: 'CREATE' | 'UPDATE' | 'DELETE' | 'VIEW' | 'EXPORT' | 'SYNC';
-    entityType: 'Project' | 'Contract' | 'Payment' | 'Task' | 'Document' | 'Employee';
+    action: string;
+    entityType: string;
     entityId: string;
     entityName: string;
     details?: string;
     ipAddress?: string;
 }
-
-// Mock audit log data
-const mockAuditLogs: AuditLog[] = [
-    {
-        id: 'log-001',
-        timestamp: new Date().toISOString(),
-        userId: 'EMP-001',
-        action: 'SYNC',
-        entityType: 'Project',
-        entityId: 'P-001',
-        entityName: 'Đồng bộ Cổng thông tin Quốc gia',
-        details: 'Đồng bộ 5 dự án thành công',
-        ipAddress: '192.168.1.100'
-    },
-    {
-        id: 'log-002',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        userId: 'EMP-002',
-        action: 'CREATE',
-        entityType: 'Payment',
-        entityId: 'PAY-123',
-        entityName: 'Tạo phiếu thanh toán',
-        details: 'Đợt 3 - HĐ-2024-001 - Giá trị: 500,000,000 VND',
-        ipAddress: '192.168.1.105'
-    },
-    {
-        id: 'log-003',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        userId: 'EMP-001',
-        action: 'UPDATE',
-        entityType: 'Contract',
-        entityId: 'HD-2024-001',
-        entityName: 'Cập nhật hợp đồng',
-        details: 'Điều chỉnh tiến độ: 70% -> 75%',
-        ipAddress: '192.168.1.100'
-    },
-    {
-        id: 'log-004',
-        timestamp: new Date(Date.now() - 86400000).toISOString(),
-        userId: 'EMP-003',
-        action: 'EXPORT',
-        entityType: 'Document',
-        entityId: 'DOC-001',
-        entityName: 'Xuất báo cáo giám sát',
-        details: 'BC-01 tháng 01/2026',
-        ipAddress: '192.168.1.110'
-    },
-    {
-        id: 'log-005',
-        timestamp: new Date(Date.now() - 172800000).toISOString(),
-        userId: 'EMP-002',
-        action: 'DELETE',
-        entityType: 'Task',
-        entityId: 'TASK-050',
-        entityName: 'Xóa công việc',
-        details: 'Công việc trùng lặp: "Nghiệm thu phần móng"',
-        ipAddress: '192.168.1.105'
-    },
-    {
-        id: 'log-006',
-        timestamp: new Date(Date.now() - 259200000).toISOString(),
-        userId: 'EMP-001',
-        action: 'VIEW',
-        entityType: 'Project',
-        entityId: 'P-007',
-        entityName: 'Xem chi tiết dự án',
-        details: 'Dự án: Xây dựng Trường Chính trị tỉnh',
-        ipAddress: '192.168.1.100'
-    }
-];
 
 interface AuditLogViewerProps {
     isOpen?: boolean;
@@ -101,7 +32,43 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
     const [filterAction, setFilterAction] = useState<string>('all');
     const [filterEntity, setFilterEntity] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
+    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 10;
+
+    React.useEffect(() => {
+        const fetchLogs = async () => {
+            setLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('audit_logs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const formattedLogs = (data || []).map((item: any) => ({
+                    id: item.id,
+                    timestamp: item.created_at,
+                    userId: item.changed_by,
+                    action: item.action,
+                    entityType: item.target_entity,
+                    entityId: item.target_id,
+                    entityName: `${item.target_entity} - ${item.target_id}`,
+                    details: item.details,
+                    ipAddress: ''
+                }));
+                
+                setLogs(formattedLogs);
+            } catch (err) {
+                console.error("Error fetching audit logs", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLogs();
+    }, []);
 
     const actionIcons: Record<string, React.ElementType> = {
         CREATE: Plus,
@@ -118,7 +85,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
         DELETE: 'bg-red-100 text-red-700',
         VIEW: 'bg-gray-100 text-gray-700',
         EXPORT: 'bg-purple-100 text-purple-700',
-        SYNC: 'bg-indigo-100 text-indigo-700'
+        SYNC: 'bg-primary-100 text-primary-700'
     };
 
     const entityIcons: Record<string, React.ElementType> = {
@@ -131,7 +98,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
     };
 
     const filteredLogs = useMemo(() => {
-        return mockAuditLogs.filter(log => {
+        return logs.filter(log => {
             const matchesSearch =
                 log.entityName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 log.details?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,7 +109,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
 
             return matchesSearch && matchesAction && matchesEntity;
         });
-    }, [searchQuery, filterAction, filterEntity]);
+    }, [logs, searchQuery, filterAction, filterEntity]);
 
     const paginatedLogs = useMemo(() => {
         const start = (currentPage - 1) * itemsPerPage;
@@ -170,24 +137,11 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
     };
 
     const content = (
-        <div className={`space-y-6 ${standalone ? 'animate-in fade-in duration-300' : ''}`}>
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-3">
-                        <History className="w-7 h-7 text-blue-600" />
-                        Nhật ký hệ thống
-                    </h2>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Theo dõi mọi hoạt động và thay đổi trong hệ thống</p>
-                </div>
-                <button className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
-                    <Download className="w-4 h-4" />
-                    Xuất log
-                </button>
-            </div>
+        <div className={`space-y-6 ${standalone ? 'animate-in fade-in duration-300 h-full flex flex-col' : ''}`}>
+
 
             {/* Filters */}
-            <div className="bg-bg-surface p-4 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
                 <div className="flex flex-wrap gap-4">
                     {/* Search */}
                     <div className="flex-1 min-w-[250px] relative">
@@ -197,7 +151,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Tìm kiếm theo tên, ID, chi tiết..."
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-surface text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                     </div>
 
@@ -207,7 +161,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                         <select
                             value={filterAction}
                             onChange={e => setFilterAction(e.target.value)}
-                            className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-surface text-gray-700 dark:text-slate-200"
+                            className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200"
                         >
                             <option value="all">Tất cả hành động</option>
                             <option value="CREATE">Tạo mới</option>
@@ -223,7 +177,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                     <select
                         value={filterEntity}
                         onChange={e => setFilterEntity(e.target.value)}
-                        className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-bg-surface text-gray-700 dark:text-slate-200"
+                        className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200"
                     >
                         <option value="all">Tất cả đối tượng</option>
                         <option value="Project">Dự án</option>
@@ -232,14 +186,19 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                         <option value="Task">Công việc</option>
                         <option value="Document">Tài liệu</option>
                     </select>
+
+                    <button className="ml-auto px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
+                        <Download className="w-4 h-4" />
+                        Xuất log
+                    </button>
                 </div>
             </div>
 
             {/* Log Table */}
-            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-bg-subtle text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden flex-1 flex flex-col min-h-0">
+                <div className="overflow-auto flex-1">
+                    <table className="w-full text-sm relative">
+                        <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)] text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400">
                             <tr>
                                 <th className="px-4 py-3 text-left">Thời gian</th>
                                 <th className="px-4 py-3 text-left">Người thực hiện</th>
@@ -250,12 +209,24 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                            {paginatedLogs.map(log => {
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                                        Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            ) : paginatedLogs.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                                        Không tìm thấy lịch sử nào
+                                    </td>
+                                </tr>
+                            ) : paginatedLogs.map(log => {
                                 const ActionIcon = actionIcons[log.action] || History;
                                 const EntityIcon = entityIcons[log.entityType] || FileText;
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/60 border-b border-gray-100 dark:border-slate-700 transition-colors">
+                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate- border-b border-gray-100 dark:border-slate-700 transition-colors">
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
@@ -310,7 +281,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                 </div>
 
                 {/* Pagination */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between shrink-0 bg-white dark:bg-slate-800">
                     <span className="text-sm text-gray-500 dark:text-slate-400">
                         Hiển thị {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredLogs.length)} / {filteredLogs.length} bản ghi
                     </span>
@@ -318,7 +289,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
+                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
@@ -328,7 +299,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage >= totalPages}
-                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
+                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>
@@ -342,7 +313,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
         if (!isOpen) return null;
         return (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                <div className="bg-bg-surface w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-sm p-4">
+                <div className="bg-white dark:bg-slate-800 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-sm p-4">
                     {content}
                 </div>
             </div>

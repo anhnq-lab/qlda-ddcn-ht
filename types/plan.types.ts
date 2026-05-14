@@ -137,8 +137,11 @@ export interface MonthlyPlanItem {
     due_date?: string;
 
     // Phân công — nhiều người thực hiện
-    staff_ids?: string[];         // Mảng ID nhân viên
-    staff_names?: string[];       // Mảng tên nhân viên
+    staff_ids?: string[];         // Mảng ID nhân viên (Cán bộ phụ trách)
+    staff_names?: string[];       // Mảng tên nhân viên (Cán bộ phụ trách)
+    executor_ids?: string[];      // Mảng ID người thực hiện
+    executor_names?: string[];    // Mảng tên người thực hiện
+    
     // Legacy single fields (giữ backward compat)
     staff_id?: string;
     staff_name?: string;

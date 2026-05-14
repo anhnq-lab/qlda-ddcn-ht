@@ -283,7 +283,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
             />
 
             {/* Header with View Toggle */}
-            <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
                 <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-primary-600" />
@@ -295,7 +295,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                             <input
                                 type="text" placeholder="Tìm kiếm..."
                                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-8 py-2 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200 dark:placeholder-slate-400"
+                                className="pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200 dark:placeholder-slate-400"
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200">
@@ -329,10 +329,10 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                     </div>
 
                     {/* Table */}
-                    <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-bg-subtle border-b border-slate-200 dark:border-slate-700">
+                                <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                                     <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-10">STT</th>
                                     <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Tài liệu</th>
                                     <th className="px-3 py-3 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-36">Số công văn</th>
@@ -355,7 +355,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                         <React.Fragment key={category.stage}>
                                             {/* Stage group header row */}
                                             <tr
-                                                className={`cursor-pointer transition-colors ${isCurrent ? 'bg-blue-50/80 dark:bg-blue-900/20' : 'bg-bg-subtle dark:bg-slate-700 hover:bg-gray-100/50 dark:hover:bg-slate-700'}`}
+                                                className={`cursor-pointer transition-colors ${isCurrent ? 'bg-blue-50/80 dark:bg-blue-900/20' : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 hover:bg-gray-100/50 dark:hover:bg-slate-700'}`}
                                                 onClick={() => toggleCategory(category.stage)}
                                             >
                                                 <td colSpan={7} className="px-3 py-3">
@@ -470,7 +470,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                                                                     <fileInfo.icon className={`w-3.5 h-3.5 ${fileInfo.color}`} />
                                                                                 </div>
                                                                             ) : (
-                                                                                <div className="w-7 h-7 rounded-lg bg-bg-subtle dark:bg-slate-700 border border-dashed border-gray-200 dark:border-slate-600 flex items-center justify-center shrink-0">
+                                                                                <div className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-dashed border-gray-200 dark:border-slate-600 flex items-center justify-center shrink-0">
                                                                                     <FileText className="w-3.5 h-3.5 text-gray-300 dark:text-slate-400" />
                                                                                 </div>
                                                                             )}
@@ -560,7 +560,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
                     {/* Recently uploaded docs */}
                     {uploadedDocs.length > 0 && (
-                        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div className="px-5 py-3 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-800 border-b border-emerald-100 dark:border-emerald-800 flex items-center gap-2">
                                 <Upload className="w-4 h-4 text-emerald-600" />
                                 <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Mới tải lên ({uploadedDocs.length})</span>

@@ -55,7 +55,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
 
     return (
         <div className="space-y-4">
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-5">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
                     <div>
                         <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">

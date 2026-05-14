@@ -87,18 +87,18 @@ export const DOC_STATUS_LABELS: Record<DocStatus, string> = {
     'sap-hieu-luc': 'Sắp có hiệu lực',
 };
 
-export const DOC_TYPE_COLORS: Record<DocType, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
-    'luat': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', darkBg: 'dark:bg-red-900/20', darkText: 'dark:text-red-400', darkBorder: 'dark:border-red-800' },
-    'nghi-dinh': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', darkBg: 'dark:bg-blue-900/20', darkText: 'dark:text-blue-400', darkBorder: 'dark:border-blue-800' },
-    'thong-tu': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', darkBg: 'dark:bg-emerald-900/20', darkText: 'dark:text-emerald-400', darkBorder: 'dark:border-emerald-800' },
-    'qcvn': { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', darkBg: 'dark:bg-purple-900/20', darkText: 'dark:text-purple-400', darkBorder: 'dark:border-purple-800' },
-    'quyet-dinh': { bg: 'bg-primary-50', text: 'text-primary-700', border: 'border-primary-200', darkBg: 'dark:bg-primary-900/20', darkText: 'dark:text-primary-400', darkBorder: 'dark:border-primary-800' },
+export const DOC_TYPE_COLORS: Record<DocType, { bg: string; text: string; border: string }> = {
+    'luat': { bg: 'bg-danger-50 dark:bg-danger-500/10', text: 'text-danger-700 dark:text-danger-400', border: 'border-danger-200 dark:border-danger-500/20' },
+    'nghi-dinh': { bg: 'bg-info-50 dark:bg-info-500/10', text: 'text-info-700 dark:text-info-400', border: 'border-info-200 dark:border-info-500/20' },
+    'thong-tu': { bg: 'bg-success-50 dark:bg-success-500/10', text: 'text-success-700 dark:text-success-400', border: 'border-success-200 dark:border-success-500/20' },
+    'qcvn': { bg: 'bg-warning-50 dark:bg-warning-500/10', text: 'text-warning-700 dark:text-warning-400', border: 'border-warning-200 dark:border-warning-500/20' },
+    'quyet-dinh': { bg: 'bg-primary-50 dark:bg-slate-800', text: 'text-primary-700 dark:text-primary-400', border: 'border-primary-200 dark:border-slate-700' },
 };
 
-export const DOC_STATUS_COLORS: Record<DocStatus, { bg: string; text: string; dot: string }> = {
-    'hieu-luc': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500' },
-    'het-hieu-luc': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
-    'sap-hieu-luc': { bg: 'bg-primary-100 dark:bg-primary-900/30', text: 'text-primary-700 dark:text-primary-400', dot: 'bg-primary-500' },
+export const DOC_STATUS_COLORS: Record<DocStatus, { bg: string; text: string; dot: string; border?: string }> = {
+    'hieu-luc': { bg: 'bg-success-100 dark:bg-success-500/10', text: 'text-success-700 dark:text-success-400', dot: 'bg-success-500', border: 'border-success-200 dark:border-success-500/20' },
+    'het-hieu-luc': { bg: 'bg-gray-100 dark:bg-slate-800', text: 'text-gray-500 dark:text-slate-400', dot: 'bg-gray-400', border: 'border-gray-200 dark:border-slate-700' },
+    'sap-hieu-luc': { bg: 'bg-warning-100 dark:bg-warning-500/10', text: 'text-warning-700 dark:text-warning-400', dot: 'bg-warning-500', border: 'border-warning-200 dark:border-warning-500/20' },
 };
 
 export const LegalDocumentService = {
@@ -199,18 +199,22 @@ export const LegalDocumentService = {
     },
 
     /**
-     * Search within articles of a document (for inline search).
+     * Search within articles (Global or Document-specific Deep Search).
      */
-    async searchArticles(documentId: string, query: string): Promise<LegalArticleDB[]> {
-        const { data, error } = await db
+    async searchArticles(query: string, documentId?: string): Promise<any[]> {
+        let queryBuilder = db
             .from('legal_articles')
-            .select('*')
-            .eq('document_id', documentId)
-            .or(`title.ilike.%${query}%,summary.ilike.%${query}%,content.ilike.%${query}%`)
+            .select('*, document:legal_documents(code, short_title)')
+            .textSearch('fts', query, { type: 'websearch', config: 'simple' })
             .limit(50);
 
+        if (documentId) {
+            queryBuilder = queryBuilder.eq('document_id', documentId);
+        }
+
+        const { data, error } = await queryBuilder;
         if (error) throw new Error(`Failed to search articles: ${error.message}`);
-        return (data as LegalArticleDB[]) ?? [];
+        return data ?? [];
     },
 
     /**

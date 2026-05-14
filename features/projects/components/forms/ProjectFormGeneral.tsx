@@ -121,7 +121,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                         {showCapitalDropdown && (
                             <>
                                 <div className="fixed inset-0 z-10" onClick={() => setShowCapitalDropdown(false)} />
-                                <div className="absolute z-20 mt-1 w-full bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm overflow-hidden py-1">
+                                <div className="absolute z-20 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm overflow-hidden py-1">
                                     {['Ngân sách Trung ương', 'Ngân sách Địa phương', 'Vốn ODA', 'Vốn tư nhân', 'Khác'].map(source => {
                                         const current = formData.CapitalSource ? formData.CapitalSource.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
                                         const isSelected = current.includes(source);
@@ -482,7 +482,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             className={`py-2 px-3 rounded-xl text-sm font-semibold transition-all border-2 text-center ${
                                 formData.ManagementBoard === board.value
                                     ? `${board.color} text-white border-transparent shadow-md scale-[1.02]`
-                                    : 'bg-bg-surface text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700'
                             }`}>
                             {board.label}
                         </button>

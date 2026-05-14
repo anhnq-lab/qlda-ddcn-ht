@@ -128,7 +128,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                        <div className="p-2 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-xl">
                             <FileText className="w-5 h-5" />
                         </div>
                         <div>
@@ -154,8 +154,8 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                     {/* Idle — call to action */}
                     {phase === 'idle' && (
                         <div className="flex flex-col items-center justify-center min-h-[280px] gap-5">
-                            <div className="p-5 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800">
-                                <Sparkles className="w-12 h-12 text-indigo-500" />
+                            <div className="p-5 bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 rounded-2xl border border-primary-100 dark:border-primary-800">
+                                <Sparkles className="w-12 h-12 text-primary-500" />
                             </div>
                             <div className="text-center max-w-sm">
                                 <h3 className="text-base font-black text-gray-700 dark:text-slate-200 mb-2">
@@ -180,8 +180,8 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                     {phase === 'generating' && (
                         <div className="flex flex-col items-center justify-center min-h-[280px] gap-4">
                             <div className="relative">
-                                <div className="w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
-                                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                                <div className="w-16 h-16 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center">
+                                    <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
                                 </div>
                             </div>
                             <div className="text-center">
@@ -190,7 +190,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             </div>
                             <div className="flex gap-1.5 mt-1">
                                 {['Thu thập dữ liệu', 'Phân tích', 'Soạn thảo'].map((step, i) => (
-                                    <span key={i} className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[11px] font-bold rounded-full border border-indigo-200 dark:border-indigo-700">
+                                    <span key={i} className="px-2.5 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-[11px] font-bold rounded-full border border-primary-200 dark:border-primary-700">
                                         {step}
                                     </span>
                                 ))}
@@ -210,7 +210,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 </div>
                                 <button
                                     onClick={() => setIsEditing(!isEditing)}
-                                    className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-bold border border-indigo-200 dark:border-indigo-700 rounded-lg px-2.5 py-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+                                    className="flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-bold border border-primary-200 dark:border-primary-700 rounded-lg px-2.5 py-1 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
                                 >
                                     <Edit3 className="w-3 h-3" />
                                     {isEditing ? 'Xem trước' : 'Chỉnh sửa'}
@@ -221,10 +221,10 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300"
                                 />
                             ) : (
-                                <div className="bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
+                                <div className="bg-gray-50 dark:bg-slate- border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
                                     <div 
                                         className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200"
                                         style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -245,7 +245,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/40 rounded-b-2xl">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate- rounded-b-2xl">
                     <button
                         onClick={onClose}
                         className="btn btn-outline text-sm"
@@ -258,7 +258,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             <button
                                 onClick={generateReport}
                                 disabled={phase === 'generating' as unknown as boolean}
-                                className="btn btn-outline flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
+                                className="btn btn-outline flex items-center gap-1.5 text-sm text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/30"
                             >
                                 <RefreshCw className="w-3.5 h-3.5" />
                                 Tạo lại

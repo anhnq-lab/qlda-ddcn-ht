@@ -24,7 +24,7 @@ const STATUS_CONFIG: Record<AssetStatus, { label: string; color: string; darkCol
     Active: { label: 'Hoạt động', color: 'bg-emerald-100 text-emerald-700', darkColor: 'bg-emerald-500/20 text-emerald-400', icon: <CheckCircle2 className="w-3 h-3" /> },
     Maintenance: { label: 'Bảo trì', color: 'bg-primary-100 text-primary-700', darkColor: 'bg-primary-500/20 text-primary-400', icon: <Wrench className="w-3 h-3" /> },
     Broken: { label: 'Hỏng', color: 'bg-red-100 text-red-700', darkColor: 'bg-red-500/20 text-red-400', icon: <AlertTriangle className="w-3 h-3" /> },
-    Retired: { label: 'Ngừng SD', color: 'bg-gray-100 text-gray-500', darkColor: 'bg-slate-600/30 text-slate-400', icon: <XCircle className="w-3 h-3" /> },
+    Retired: { label: 'Ngừng SD', color: 'bg-gray-100 text-gray-500', darkColor: 'bg-slate- text-slate-400', icon: <XCircle className="w-3 h-3" /> },
 };
 
 const CONDITION_CONFIG: Record<AssetCondition, { label: string; color: string; darkColor: string }> = {
@@ -216,8 +216,8 @@ export const FacilityManagementPanel: React.FC = () => {
 
     // ── Style helpers ────────────────────────
     const inputCls = `w-full px-3 py-2 text-xs rounded-lg border outline-none transition-colors ${isDarkMode
-        ? 'bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500'
-        : 'bg-bg-surface border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
+        ? 'bg-slate- border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500'
+        : 'bg-white dark:bg-slate-800 border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
         }`;
 
     const selectCls = `${inputCls} appearance-none`;
@@ -306,7 +306,7 @@ export const FacilityManagementPanel: React.FC = () => {
 
             {/* Search & Filters */}
             <div className={`flex items-center gap-2 px-3 pb-1.5 ${isMobile ? 'flex-wrap' : ''}`}>
-                <div className={`flex items-center gap-2 flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                <div className={`flex items-center gap-2 flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`}>
                     <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                     <input
                         value={searchQuery}
@@ -323,7 +323,7 @@ export const FacilityManagementPanel: React.FC = () => {
                 <select
                     value={filterCategory}
                     onChange={e => setFilterCategory(e.target.value)}
-                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}`}
+                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate- border-slate-600 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}`}
                 >
                     <option value="">Tất cả loại</option>
                     {ASSET_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -331,7 +331,7 @@ export const FacilityManagementPanel: React.FC = () => {
                 <select
                     value={filterStatus}
                     onChange={e => setFilterStatus(e.target.value)}
-                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/50 border-slate-600 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}`}
+                    className={`text-xs px-2 py-1.5 rounded-lg border ${isDarkMode ? 'bg-slate- border-slate-600 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}`}
                 >
                     <option value="">Tất cả TT</option>
                     {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
@@ -349,7 +349,7 @@ export const FacilityManagementPanel: React.FC = () => {
             {!loading && (
                 <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
                     <table className="w-full text-[11px]">
-                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-bg-surface'}`}>
+                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-white dark:bg-slate-800'}`}>
                             <tr className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Mã TS</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tên tài sản</th>
@@ -370,7 +370,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                 return (
                                     <tr
                                         key={asset.asset_id}
-                                        className={`transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}
+                                        className={`transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}
                                     >
                                         <td className={`px-3 py-1.5 font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.asset_code || '—'}
@@ -385,7 +385,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                         </td>
                                         <td className="px-3 py-1.5">
                                             {asset.category ? (
-                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${isDarkMode ? 'bg-slate-700/50 text-slate-300' : 'bg-gray-100 text-gray-600'
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${isDarkMode ? 'bg-slate- text-slate-300' : 'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     <Settings2 className="w-2.5 h-2.5" />
                                                     {asset.category}
@@ -459,7 +459,7 @@ export const FacilityManagementPanel: React.FC = () => {
                     {/* Empty state */}
                     {filteredAssets.length === 0 && !loading && (
                         <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`}>
                                 <Package className={`w-6 h-6 ${isDarkMode ? 'text-slate-600' : 'text-gray-300'}`} />
                             </div>
                             <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -518,7 +518,7 @@ export const FacilityManagementPanel: React.FC = () => {
             {/* Add/Edit Modal */}
             {showForm && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className={`w-full max-w-lg mx-4 rounded-2xl shadow-sm border overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-bg-surface border-gray-200'
+                    <div className={`w-full max-w-lg mx-4 rounded-2xl shadow-sm border overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white dark:bg-slate-800 border-gray-200'
                         }`}>
                         {/* Modal header */}
                         <div className={`flex items-center justify-between px-5 py-3.5 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>

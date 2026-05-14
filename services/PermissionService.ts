@@ -130,8 +130,8 @@ export const PermissionService = {
      * Initialize default permissions for a user based on their role
      */
     async initializeForUser(userId: string, role: SystemRole): Promise<void> {
-        const defaultPerms = DEFAULT_ROLE_PERMISSIONS[role];
-        if (!defaultPerms) return;
+        const defaultPerms = await this.getDefaultPermissions(role);
+        if (!defaultPerms || Object.keys(defaultPerms).length === 0) return;
 
         const permissions = Object.entries(defaultPerms).map(([resource, actions]) => ({
             user_id: userId,
@@ -174,9 +174,27 @@ export const PermissionService = {
     },
 
     /**
-     * Get default permissions for a role (without DB call)
+     * Get default permissions for a role from DB (fallback to constants)
      */
-    getDefaultPermissions(role: SystemRole): Partial<Record<PermissionResource, PermissionAction[]>> {
+    async getDefaultPermissions(role: SystemRole): Promise<Partial<Record<PermissionResource, PermissionAction[]>>> {
+        try {
+            const { data, error } = await (supabase as any).from('role_permission_defaults')
+                .select('resource, actions')
+                .eq('role', role);
+
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                const perms: Partial<Record<PermissionResource, PermissionAction[]>> = {};
+                data.forEach((row: any) => {
+                    perms[row.resource as PermissionResource] = row.actions;
+                });
+                return perms;
+            }
+        } catch (err) {
+            console.warn('[PermService] Failed to fetch role defaults from DB (migration not applied?), using hardcoded constants.', err);
+        }
+        
         return DEFAULT_ROLE_PERMISSIONS[role] || {};
     },
 

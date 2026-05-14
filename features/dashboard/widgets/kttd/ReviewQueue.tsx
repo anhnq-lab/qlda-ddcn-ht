@@ -58,9 +58,9 @@ export const ReviewQueue: React.FC = () => {
             {/* Stats badges */}
             {taskStats && (
                 <div className="grid grid-cols-3 gap-2 px-4 pb-3">
-                    <div className="text-center p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-                        <p className="text-lg font-black text-amber-700 dark:text-amber-400 tabular-nums">{taskStats.review}</p>
-                        <p className="text-[9px] font-bold text-amber-600/70 dark:text-amber-500/70">Chờ thẩm định</p>
+                    <div className="text-center p-2 rounded-lg bg-warning-50 dark:bg-warning-900/20">
+                        <p className="text-lg font-black text-warning-700 dark:text-warning-400 tabular-nums">{taskStats.review}</p>
+                        <p className="text-[9px] font-bold text-warning-600/70 dark:text-warning-500/70">Chờ thẩm định</p>
                     </div>
                     <div className="text-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
                         <p className="text-lg font-black text-blue-700 dark:text-blue-400 tabular-nums">{taskStats.todo}</p>
@@ -87,7 +87,7 @@ export const ReviewQueue: React.FC = () => {
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{task.title}</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400">
                                             Chờ xử lý
                                         </span>
                                         {isOverdue && (

@@ -164,9 +164,9 @@ function getNodeVisualConfig(
     if (node.type === 'end') return { icon: typeIcon, shape, bg: isCompleted ? 'bg-slate-700 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400', border: 'border-slate-400 dark:border-slate-600', glow: '' };
     if (isRejected) return { icon: <XCircle size={20} />, shape, bg: 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400', border: 'border-red-400 dark:border-red-700', glow: 'shadow-red-500/20' };
     if (isCompleted) return { icon: <CheckCircle2 size={20} />, shape, bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', border: 'border-emerald-400 dark:border-emerald-700', glow: 'shadow-emerald-500/10' };
-    if (isActive) return { icon: <Clock size={20} className="animate-spin-slow" />, shape, bg: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', border: 'border-amber-400 dark:border-amber-600 ring-4 ring-amber-400/30', glow: 'shadow-amber-500/40 shadow-sm scale-105' };
+    if (isActive) return { icon: <Clock size={20} className="animate-spin-slow" />, shape, bg: 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400', border: 'border-warning-400 dark:border-warning-600 ring-4 ring-warning-400/30', glow: 'shadow-warning-500/40 shadow-sm scale-105' };
 
-    return { icon: <CircleDashed size={20} />, shape, bg: 'bg-bg-surface text-slate-600 dark:bg-slate-800 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700', glow: '' };
+    return { icon: <CircleDashed size={20} />, shape, bg: 'bg-white dark:bg-slate-800 text-slate-600 dark:bg-slate-800 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700', glow: '' };
 }
 
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────
@@ -248,9 +248,9 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
     }, []);
 
     return (
-        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden relative">
+        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate- rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden relative">
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate- backdrop-blur-md border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                         <Network size={18} className="text-primary-600 dark:text-primary-400" />
@@ -265,7 +265,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Đã duyệt
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse ring-2 ring-amber-300" /> Đang chờ
+                        <div className="w-2.5 h-2.5 rounded-full bg-warning-500 animate-pulse ring-2 ring-warning-300" /> Đang chờ
                     </div>
                     <div className="flex items-center gap-1.5">
                         <div className="w-2.5 h-2.5 rounded-full bg-red-500" /> Từ chối
@@ -288,7 +288,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                     elementsSelectable={false}
                     minZoom={0.3}
                     maxZoom={2}
-                    className="bg-slate-50 dark:bg-slate-900/20"
+                    className="bg-slate-50 dark:bg-slate-"
                 >
                     <Background color="#cbd5e1" gap={16} size={1.5} />
                     <Controls className="!mb-6 !mr-6 shadow-sm border-none" showInteractive={false} />
@@ -296,7 +296,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                         nodeStrokeColor="#94a3b8"
                         nodeColor="#e2e8f0"
                         maskColor="rgba(0,0,0,0.08)"
-                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate-800/90 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700"
+                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate- rounded-lg shadow-lg border border-gray-200 dark:border-slate-700"
                         pannable
                         zoomable
                     />

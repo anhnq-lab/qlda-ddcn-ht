@@ -219,7 +219,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
             {showForm ? (
                 <div className="space-y-4">
                     {/* Step 1: Chọn nhà thầu */}
-                    <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
                         <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                             <UserCheck className="w-4 h-4 text-blue-500" />
                             Nhà thầu được chỉ định
@@ -254,12 +254,12 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         onFocus={() => setShowContractorList(true)}
                                         placeholder="Tìm nhà thầu (tên hoặc MST)..."
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm 
-                                                   bg-bg-surface text-gray-800 dark:text-slate-200
+                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200
                                                    focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
                                 {showContractorList && (
-                                    <div className="absolute z-10 w-full mt-1 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg shadow-sm max-h-72 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg shadow-sm max-h-72 overflow-y-auto">
                                         {filteredContractors.length > 0 ? filteredContractors.map((c: Contractor) => (
                                             <button
                                                 key={c.ContractorID}
@@ -279,7 +279,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                     </div>
 
                     {/* Step 2: Giá và thương thảo */}
-                    <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
                         <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                             <DollarSign className="w-4 h-4 text-green-500" />
                             Giá đề xuất & thương thảo
@@ -301,7 +301,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         onChange={(e) => setFormData(prev => ({ ...prev, proposed_price: parseFloat(e.target.value) || null }))}
                                         placeholder="0"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                     />
                                     {formData.proposed_price && (
                                         <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(formData.proposed_price)}</p>
@@ -315,7 +315,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         onChange={(e) => setFormData(prev => ({ ...prev, negotiated_price: parseFloat(e.target.value) || null }))}
                                         placeholder="0"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                     />
                                     {formData.negotiated_price && (
                                         <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(formData.negotiated_price)}</p>
@@ -326,7 +326,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                     </div>
 
                     {/* Step 3: Căn cứ pháp lý */}
-                    <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
                         <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                             <FileText className="w-4 h-4 text-purple-500" />
                             Căn cứ pháp lý & Quyết định
@@ -339,7 +339,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                     value={formData.legal_basis}
                                     onChange={(e) => setFormData(prev => ({ ...prev, legal_basis: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                 >
                                     <option value="">-- Chọn căn cứ pháp lý --</option>
                                     {LEGAL_BASIS_OPTIONS.map(opt => (
@@ -357,7 +357,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         onChange={(e) => setFormData(prev => ({ ...prev, decision_number: e.target.value }))}
                                         placeholder="VD: 123/QĐ-BQL"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                                   bg-bg-surface text-gray-800 dark:text-slate-200"
+                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                     />
                                 </div>
                                 <div>
@@ -367,7 +367,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         value={formData.decision_date}
                                         onChange={(e) => setFormData(prev => ({ ...prev, decision_date: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                                   bg-bg-surface text-gray-800 dark:text-slate-200"
+                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                     />
                                 </div>
                             </div>
@@ -380,16 +380,16 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                     placeholder="Mô tả lý do chỉ định thầu..."
                                     rows={2}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200 resize-none"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 resize-none"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Step 4: Hồ sơ & Đánh giá */}
-                    <div className="p-4 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl">
+                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
                         <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-orange-500" />
+                            <Calendar className="w-4 h-4 text-warning-500" />
                             Hồ sơ yêu cầu & Đánh giá
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
@@ -400,7 +400,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                     value={formData.hsyc_date}
                                     onChange={(e) => setFormData(prev => ({ ...prev, hsyc_date: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                 />
                             </div>
                             <div>
@@ -410,7 +410,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                     value={formData.hsdx_date}
                                     onChange={(e) => setFormData(prev => ({ ...prev, hsdx_date: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                 />
                             </div>
                             <div className="col-span-2">
@@ -419,7 +419,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                     value={formData.evaluation_result}
                                     onChange={(e) => setFormData(prev => ({ ...prev, evaluation_result: e.target.value as any }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-bg-surface text-gray-800 dark:text-slate-200"
+                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
                                 >
                                     <option value="pending">⏳ Chưa đánh giá</option>
                                     <option value="qualified">✅ Đạt yêu cầu — Đề nghị chỉ định</option>

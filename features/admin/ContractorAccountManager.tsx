@@ -5,14 +5,15 @@ import {
     FolderOpen, X, Plus, Trash2, Loader2, RotateCcw,
     ChevronDown, ChevronRight, Users
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseAdmin } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 // ============================================================
 // Types
 // ============================================================
 
 interface ContractorAccount {
-    id: string;
+    account_id: string;
     contractor_id: string;
     username: string;
     display_name: string;
@@ -23,7 +24,6 @@ interface ContractorAccount {
     allowed_project_ids: string[] | null;
     auth_user_id: string | null;
     created_at: string | null;
-    current_password: string | null;
     // Joined
     contractor_name?: string;
 }
@@ -52,6 +52,7 @@ interface ContractorGroup {
 // ============================================================
 
 const ContractorAccountManager: React.FC = () => {
+    const { currentUser } = useAuth();
     const [accounts, setAccounts] = useState<ContractorAccount[]>([]);
     const [contractors, setContractors] = useState<ContractorInfo[]>([]);
     const [projects, setProjects] = useState<ProjectInfo[]>([]);
@@ -151,9 +152,39 @@ const ContractorAccountManager: React.FC = () => {
         try {
             await supabase.from('contractor_accounts')
                 .update({ is_active: !account.is_active })
-                .eq('id', account.id);
+                .eq('account_id', account.account_id);
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: !account.is_active ? 'ENABLE_CONTRACTOR_ACCOUNT' : 'DISABLE_CONTRACTOR_ACCOUNT',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'ContractorAccount',
+                    target_id: account.account_id,
+                    details: `Toggled active status for contractor account ${account.username} to ${!account.is_active}`
+                });
+            }
             await loadData();
         } catch (err: any) { setError(err.message); }
+    };
+
+    // ── Delete account ──
+    const handleDeleteAccount = async (account: ContractorAccount) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản của ${account.display_name}? Hành động này không thể hoàn tác.`)) return;
+        try {
+            const { error } = await supabase.from('contractor_accounts').delete().eq('account_id', account.account_id);
+            if (error) throw error;
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: 'DELETE_CONTRACTOR_ACCOUNT',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'ContractorAccount',
+                    target_id: account.account_id,
+                    details: `Deleted contractor account ${account.username}`
+                });
+            }
+            await loadData();
+        } catch (err: any) {
+            setError('Lỗi khi xóa tài khoản: ' + err.message);
+        }
     };
 
     // ── Reset password ──
@@ -161,16 +192,21 @@ const ContractorAccountManager: React.FC = () => {
         if (!resetTarget || !newPassword) return;
         try {
             if (resetTarget.auth_user_id) {
-                const { error: authErr } = await supabase.auth.admin.updateUserById(
+                const { error: authErr } = await supabaseAdmin.auth.admin.updateUserById(
                     resetTarget.auth_user_id,
                     { password: newPassword }
                 );
                 if (authErr) throw authErr;
             }
-            // Save new password to contractor_accounts
-            await supabase.from('contractor_accounts')
-                .update({ current_password: newPassword } as any)
-                .eq('id', resetTarget.id);
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: 'RESET_CONTRACTOR_PASSWORD',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'ContractorAccount',
+                    target_id: resetTarget.account_id,
+                    details: `Reset password for contractor user ${resetTarget.username}`
+                });
+            }
             setResetTarget(null);
             setNewPassword('');
             await loadData();
@@ -201,7 +237,7 @@ const ContractorAccountManager: React.FC = () => {
         try {
             await supabase.from('contractor_accounts')
                 .update({ allowed_project_ids: updated })
-                .eq('id', account.id);
+                .eq('account_id', account.account_id);
             await loadData();
             setProjectTarget(prev => prev ? { ...prev, allowed_project_ids: updated } : null);
         } catch (err: any) { setError(err.message); }
@@ -218,33 +254,39 @@ const ContractorAccountManager: React.FC = () => {
         <div className="space-y-6">
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 border-t-[3px] border-primary-500 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <Building2 className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-primary-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <Building2 className="absolute -right-3 -top-3 w-20 h-20 text-primary-50 dark:text-slate-700" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><Building2 className="w-5 h-5 text-white" /></div>
+                        <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-slate-700 flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{stats.orgs}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đơn vị</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.orgs}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đơn vị</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-gradient-to-br from-slate-700 to-slate-800 border-t-[3px] border-slate-500 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <UserPlus className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-slate-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <UserPlus className="absolute -right-3 -top-3 w-20 h-20 text-slate-100 dark:text-slate-700/50" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><UserPlus className="w-5 h-5 text-white" /></div>
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                            <UserPlus className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                        </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{stats.total}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tài khoản</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.total}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Tài khoản</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-gradient-to-br from-emerald-700 to-emerald-900 border-t-[3px] border-emerald-500 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-emerald-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-emerald-50 dark:text-slate-700" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><ToggleRight className="w-5 h-5 text-white" /></div>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-slate-700 flex items-center justify-center">
+                            <ToggleRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{stats.active}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đang hoạt động</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{stats.active}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đang hoạt động</p>
                         </div>
                     </div>
                 </div>
@@ -252,7 +294,7 @@ const ContractorAccountManager: React.FC = () => {
 
             {/* Error */}
             {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 text-sm">
+                <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-900/50 text-sm">
                     <AlertCircle className="w-4 h-4 shrink-0" />{error}
                     <button onClick={() => setError('')} className="ml-auto text-xs underline">Đóng</button>
                 </div>
@@ -264,7 +306,7 @@ const ContractorAccountManager: React.FC = () => {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input type="text" placeholder="Tìm theo tên, username, đơn vị..."
                         value={search} onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100" />
+                        className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100" />
                 </div>
                 <div className="flex gap-2">
                     {grouped.length > 1 && (
@@ -274,7 +316,7 @@ const ContractorAccountManager: React.FC = () => {
                         </button>
                     )}
                     <button onClick={() => { setCreateForContractor(null); setShowCreateModal(true); }}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-medium shadow-sm shadow-primary-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all whitespace-nowrap">
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-medium shadow-sm shadow-primary-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all whitespace-nowrap">
                         <UserPlus className="w-5 h-5" />Tạo tài khoản
                     </button>
                 </div>
@@ -297,10 +339,10 @@ const ContractorAccountManager: React.FC = () => {
                         const isExpanded = expandedOrgs.has(group.contractor_id);
                         return (
                             <div key={group.contractor_id}
-                                className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
+                                className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
                                 {/* Org Header */}
                                 <div
-                                    className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors select-none"
+                                    className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors select-none"
                                     onClick={() => toggleExpand(group.contractor_id)}
                                 >
                                     {isExpanded
@@ -349,7 +391,7 @@ const ContractorAccountManager: React.FC = () => {
                                                 {group.accounts.map((acc, idx) => {
                                                     const projectCount = acc.allowed_project_ids?.length || 0;
                                                     return (
-                                                        <tr key={acc.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
+                                                        <tr key={acc.account_id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
                                                             <td className="px-5 py-2.5 text-gray-300 dark:text-slate-600 text-xs">{idx + 1}</td>
                                                             <td className="px-4 py-2.5">
                                                                 <div className="flex items-center gap-2.5">
@@ -386,10 +428,17 @@ const ContractorAccountManager: React.FC = () => {
                                                                 </button>
                                                             </td>
                                                             <td className="px-5 py-2.5 text-right">
-                                                                <button onClick={() => openResetModal(acc)}
-                                                                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/15 rounded-md hover:bg-indigo-100 transition-colors">
-                                                                    <Key className="w-3 h-3" />Reset MK
-                                                                </button>
+                                                                <div className="flex items-center justify-end gap-1.5">
+                                                                    <button onClick={() => openResetModal(acc)}
+                                                                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/15 rounded-md hover:bg-primary-100 transition-colors">
+                                                                        <Key className="w-3 h-3" />Reset MK
+                                                                    </button>
+                                                                    <button onClick={() => handleDeleteAccount(acc)}
+                                                                        className="inline-flex items-center justify-center w-6 h-6 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                                                                        title="Xóa tài khoản">
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     );
@@ -419,35 +468,11 @@ const ContractorAccountManager: React.FC = () => {
             {/* Password Management Modal */}
             {resetTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setResetTarget(null)}>
-                    <div className="bg-bg-surface rounded-2xl w-full max-w-md p-4 shadow-sm" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-4 shadow-sm" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-1">Quản lý mật khẩu</h3>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mb-5">
                             <strong>{resetTarget.display_name}</strong> · {resetTarget.username}
                         </p>
-
-                        {/* Current Password Section */}
-                        <div className="mb-5">
-                            <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Mật khẩu hiện tại</label>
-                            <div className="relative">
-                                <input type="text" readOnly
-                                    value={resetTarget.current_password || '(chưa lưu)'}
-                                    className={`w-full px-4 py-3 pr-12 rounded-xl text-sm font-mono border ${
-                                        resetTarget.current_password
-                                            ? 'bg-bg-subtle dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-800 dark:text-slate-200'
-                                            : 'bg-bg-subtle dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-400 dark:text-slate-400 italic'
-                                    }`} />
-                                {resetTarget.current_password && (
-                                    <button type="button"
-                                        onClick={() => { navigator.clipboard.writeText(resetTarget.current_password!); setCopiedPassword(true); setTimeout(() => setCopiedPassword(false), 2000); }}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-primary-600" title="Copy mật khẩu hiện tại">
-                                        {copiedPassword ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="border-t border-gray-200 dark:border-slate-700 my-5" />
 
                         {/* New Password Section */}
                         <div>
@@ -455,7 +480,7 @@ const ContractorAccountManager: React.FC = () => {
                             <div className="relative">
                                 <input type={showNewPassword ? 'text' : 'password'} value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 pr-24 bg-bg-surface border border-primary-300 dark:border-primary-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
+                                    className="w-full px-4 py-3 pr-24 bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
                                     placeholder="Nhập mật khẩu mới..." />
                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                     <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="p-1.5 text-gray-400 hover:text-gray-600">
@@ -483,7 +508,7 @@ const ContractorAccountManager: React.FC = () => {
             {/* Project Assignment Modal */}
             {projectTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setProjectTarget(null)}>
-                    <div className="bg-bg-surface rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Gán dự án</h3>
@@ -551,6 +576,19 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
     const selectedCtr = contractors.find(c => c.contractor_id === selectedContractor);
 
+    // Auto-generate username from display name
+    useEffect(() => {
+        if (!displayName) return;
+        const parts = displayName.trim().split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+            const lastName = parts[parts.length - 1];
+            const initials = parts.slice(0, -1).map(p => p.charAt(0)).join('');
+            setUsername(`${removeVietnamese(lastName)}.${removeVietnamese(initials)}`.toUpperCase());
+        } else if (parts.length === 1) {
+            setUsername(removeVietnamese(parts[0]).toUpperCase());
+        }
+    }, [displayName]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedContractor || !displayName || !username || !password) return;
@@ -560,11 +598,11 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
         setError('');
         try {
             // Create Supabase auth user
-            const authEmail = email || `${username}@cde.local`;
+            const authEmail = email || `${username}@cic.vn`;
             let authUserId: string | null = null;
 
             try {
-                const { data: authData, error: authErr } = await supabase.auth.admin.createUser({
+                const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
                     email: authEmail,
                     password,
                     email_confirm: true,
@@ -573,17 +611,15 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                 authUserId = authData?.user?.id || null;
 
                 if (authErr) {
-                    // Admin API may not be available on client-side, fallback to signUp
-                    const { data: signUpData } = await supabase.auth.signUp({
-                        email: authEmail,
-                        password,
-                        options: { data: { full_name: displayName } },
-                    });
-                    authUserId = signUpData?.user?.id || null;
+                    console.warn('[ContractorAcct] Admin Auth user creation failed, throwing error', authErr);
+                    throw authErr;
                 }
-            } catch {
-                // If auth fails, still create contractor_accounts record
-                console.warn('[ContractorAcct] Auth user creation failed, creating record without auth_user_id');
+            } catch (e: any) {
+                // If auth fails, stop the process instead of inserting an unlinked account
+                console.error('[ContractorAcct] Auth user creation failed', e);
+                setError(`Không thể tạo tài khoản xác thực: ${e.message}`);
+                setSubmitting(false);
+                return;
             }
 
             // Create contractor_accounts record
@@ -597,7 +633,6 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                 auth_user_id: authUserId,
                 is_active: true,
                 allowed_project_ids: selectedProjects.length > 0 ? selectedProjects : null,
-                current_password: password,
             } as any);
 
             if (insertErr) {
@@ -627,7 +662,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-bg-surface rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-4 shadow-sm max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl">
                         <UserPlus className="w-5 h-5 text-white" />
@@ -639,7 +674,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                 </div>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2">
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 border border-red-100 dark:border-red-900/50">
                         <AlertCircle className="w-4 h-4 shrink-0" />{error}
                     </div>
                 )}
@@ -653,7 +688,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                         <select
                             value={selectedContractor}
                             onChange={e => setSelectedContractor(e.target.value)}
-                            className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
                             required
                         >
                             <option value="">-- Chọn nhà thầu --</option>
@@ -672,7 +707,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                             type="text"
                             value={displayName}
                             onChange={e => setDisplayName(e.target.value)}
-                            className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
                             placeholder="Nguyễn Văn A"
                             required
                         />
@@ -685,7 +720,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                 <Mail className="w-3 h-3" /> Email
                             </label>
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
+                                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
                                 placeholder="abc@email.com" />
                         </div>
                         <div>
@@ -693,7 +728,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                 <Phone className="w-3 h-3" /> Điện thoại
                             </label>
                             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                                className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
+                                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
                                 placeholder="0901234567" />
                         </div>
                     </div>
@@ -709,7 +744,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                     Username <span className="text-red-500">*</span>
                                 </label>
                                 <input type="text" value={username} onChange={e => setUsername(e.target.value)}
-                                    className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
+                                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
                                     placeholder="nguyenvana" required />
                             </div>
                             <div>
@@ -721,7 +756,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        className="w-full px-3.5 py-2.5 pr-20 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
+                                        className="w-full px-3.5 py-2.5 pr-20 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
                                         required
                                     />
                                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
@@ -798,6 +833,15 @@ function generatePassword(): string {
         password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return password;
+}
+
+function removeVietnamese(str: string): string {
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .replace(/[^a-zA-Z0-9.]/g, '');
 }
 
 export default ContractorAccountManager;

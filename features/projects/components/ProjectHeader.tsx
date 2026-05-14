@@ -22,16 +22,16 @@ const getGroupBadge = (group: ProjectGroup) => {
         case ProjectGroup.A: return { label: 'Nhóm A', bg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800' };
         case ProjectGroup.B: return { label: 'Nhóm B', bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' };
         case ProjectGroup.C: return { label: 'Nhóm C', bg: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800' };
-        default: return { label: group, bg: 'bg-bg-subtle text-gray-700 border-gray-200' };
+        default: return { label: group, bg: 'bg-slate-50 dark:bg-slate-800 text-gray-700 border-gray-200' };
     }
 };
 
 const getStatusConfig = (status: ProjectStatus) => {
     switch (status) {
         case ProjectStatus.Preparation: return { label: 'CHUẨN BỊ DỰ ÁN', bg: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' };
-        case ProjectStatus.Execution: return { label: 'ĐANG TRIỂN KHAI', bg: 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-100 dark:border-orange-800' };
+        case ProjectStatus.Execution: return { label: 'ĐANG TRIỂN KHAI', bg: 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400 border border-warning-100 dark:border-warning-800' };
         case ProjectStatus.Completion: return { label: 'ĐÃ KẾT THÚC', bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' };
-        default: return { label: 'N/A', bg: 'bg-bg-subtle text-gray-700' };
+        default: return { label: 'N/A', bg: 'bg-slate-50 dark:bg-slate-800 text-gray-700' };
     }
 };
 
@@ -49,7 +49,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
     // ── Compact mode: single-line header for BIM tab ──
     if (compact) {
         return (
-            <div className="bg-bg-surface border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="px-4 py-2 flex items-center gap-3">
                 {!hideBackButton && (
                     <button
@@ -72,7 +72,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                     <span className={`hidden md:inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold border shrink-0 ${groupBadge.bg}`}>
                         {groupBadge.label}
                     </span>
-                    <span className="hidden md:inline-flex text-[11px] font-bold text-gray-600 dark:text-slate-300 bg-bg-subtle px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
+                    <span className="hidden md:inline-flex text-[11px] font-bold text-gray-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
                         {formatShortCurrency(project.TotalInvestment)}
                     </span>
                     {/* Mini progress bar */}
@@ -113,7 +113,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
     }
 
     return (
-        <div className="bg-bg-surface border border-gray-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
             {/* Top section - Header */}
             <div className="px-6 py-6 border-b border-gray-50 dark:border-slate-800/50">
                 <div className="flex flex-wrap items-start justify-between gap-4">
@@ -121,7 +121,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                         {!hideBackButton && (
                             <button
                                 onClick={() => navigate(-1)}
-                                className="p-2 hover:bg-bg-surface dark:hover:bg-slate-700 rounded-xl transition-all border border-transparent hover:border-gray-200 dark:hover:border-slate-600 bg-bg-surface shadow-sm"
+                                className="p-2 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-all border border-transparent hover:border-gray-200 dark:hover:border-slate-600 bg-white dark:bg-slate-800 shadow-sm"
                             >
                                 <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-slate-400" />
                             </button>
@@ -165,7 +165,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                                     {groupBadge.label}
                                 </span>
                                 {/* Budget */}
-                                <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-bg-subtle px-2 py-0.5 rounded-md border border-gray-200 dark:border-slate-700">
+                                <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-slate-700">
                                     {formatShortCurrency(project.TotalInvestment)}
                                 </span>
                             </div>

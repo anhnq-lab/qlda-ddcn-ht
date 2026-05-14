@@ -71,7 +71,7 @@ export const ProjectProgress: React.FC<Props> = ({ data }) => {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                    <div className={`h-full rounded-full transition-all ${(p.Progress || 0) >= 80 ? 'bg-emerald-500' : (p.Progress || 0) >= 50 ? 'bg-amber-500' : 'bg-primary-500'}`} style={{ width: `${p.Progress || 0}%` }} />
+                                    <div className={`h-full rounded-full transition-all ${(p.Progress || 0) >= 80 ? 'bg-emerald-500' : (p.Progress || 0) >= 50 ? 'bg-warning-500' : 'bg-primary-500'}`} style={{ width: `${p.Progress || 0}%` }} />
                                 </div>
                                 <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 w-8 text-right tabular-nums">{p.Progress || 0}%</span>
                             </div>

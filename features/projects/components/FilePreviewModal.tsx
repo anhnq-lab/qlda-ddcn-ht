@@ -34,7 +34,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-[#F1F5F9] w-full max-w-6xl h-[90vh] rounded-3xl shadow-sm overflow-hidden flex flex-col border border-white/20">
                 {/* Header */}
-                <div className="bg-bg-surface px-6 py-4 flex items-center justify-between border-b border-gray-200">
+                <div className="bg-white dark:bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-gray-200">
                     <div className="flex items-center gap-4">
                         <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
                             {isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
@@ -64,7 +64,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
                         if (canViewPDF) {
                             return (
-                                <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
+                                <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
                                     <iframe
                                         src={`${viewUrl}#toolbar=0`}
                                         className="w-full h-full border-0"
@@ -76,7 +76,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
                         if (canViewImage) {
                             return (
-                                <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex items-center justify-center p-4 bg-gray-100">
+                                <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex items-center justify-center p-4 bg-gray-100">
                                     <img src={viewUrl} className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
                                 </div>
                             );
@@ -84,7 +84,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
                         if (isExcel) {
                             return (
-                                <div className="bg-bg-surface w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
+                                <div className="bg-white dark:bg-slate-800 w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
                                     <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Viewer</div>
                                     <div className="overflow-x-auto p-4">
                                         <p className="text-gray-500 text-sm mb-4">
@@ -103,7 +103,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                         // Fallback — try to embed if we have a URL
                         if (viewUrl) {
                             return (
-                                <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
+                                <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
                                     <iframe
                                         src={viewUrl}
                                         className="w-full h-full border-0"
@@ -115,7 +115,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
                         // No URL available — show placeholder
                         return (
-                            <div className="bg-bg-surface w-full max-w-[800px] min-h-[1100px] shadow-sm p-[60px] text-gray-800 font-serif leading-relaxed">
+                            <div className="bg-white dark:bg-slate-800 w-full max-w-[800px] min-h-[1100px] shadow-sm p-[60px] text-gray-800 font-serif leading-relaxed">
                                 <div className="flex justify-between mb-12 italic text-sm">
                                     <div>BAN QLDA ĐẦU TƯ CÔNG<br /><b>SỐ: {f.code || f.number || '00/BQL'}</b></div>
                                     <div className="text-right">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br />Độc lập - Tự do - Hạnh phúc</div>

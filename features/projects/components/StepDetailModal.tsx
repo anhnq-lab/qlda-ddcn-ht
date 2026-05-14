@@ -82,7 +82,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
             <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-white dark:bg-slate-900 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 min-w-0">
                             {/* Status Icon */}
@@ -110,7 +110,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                             {linkedTasks.length > 0 ? (
                                 <button
                                     onClick={() => onEditTask(linkedTasks.find(t => !t.ParentID) || linkedTasks[0])}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-700 hover:bg-amber-50 dark:hover:bg-amber-900/30 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:text-amber-700 dark:hover:text-amber-400 border border-gray-200 dark:border-slate-600 hover:border-amber-200 dark:hover:border-amber-700 rounded-lg shadow-sm transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-700 hover:bg-warning-50 dark:hover:bg-warning-900/30 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:text-warning-700 dark:hover:text-warning-400 border border-gray-200 dark:border-slate-600 hover:border-warning-200 dark:hover:border-warning-700 rounded-lg shadow-sm transition-colors"
                                 >
                                     <Edit3 className="w-3.5 h-3.5" />
                                     Sửa nội dung kế hoạch
@@ -140,8 +140,8 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                     {/* Info Cards */}
                     <div className="px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {/* Đơn vị thực hiện */}
-                        <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-3 border border-amber-200 dark:border-amber-800">
-                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-1">
+                        <div className="bg-warning-50 dark:bg-warning-900/10 rounded-xl p-3 border border-warning-200 dark:border-warning-800">
+                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-warning-600 dark:text-warning-400 uppercase tracking-wide mb-1">
                                 <Building2 className="w-3 h-3" />
                                 Đơn vị thực hiện
                             </div>
@@ -151,7 +151,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                         type="text"
                                         value={roleValue}
                                         onChange={(e) => setRoleValue(e.target.value)}
-                                        className="flex-1 text-sm font-semibold bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded px-2 py-0.5 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-amber-400"
+                                        className="flex-1 text-sm font-semibold bg-white dark:bg-slate-800 border border-warning-300 dark:border-warning-700 rounded px-2 py-0.5 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-warning-400"
                                         autoFocus
                                         onKeyDown={(e) => e.key === 'Enter' && handleSaveRole()}
                                     />
@@ -161,13 +161,13 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-1 group/role">
-                                    <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                    <span className="text-sm font-semibold text-warning-800 dark:text-warning-300">
                                         {item.assigneeRole || 'Chưa chỉ định'}
                                     </span>
                                     {onUpdateStepMeta && (
                                         <button
                                             onClick={() => setEditingRole(true)}
-                                            className="opacity-0 group-hover/role:opacity-100 p-0.5 text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded transition-opacity"
+                                            className="opacity-0 group-hover/role:opacity-100 p-0.5 text-warning-500 hover:bg-warning-100 dark:hover:bg-warning-900/30 rounded transition-opacity"
                                         >
                                             <Edit3 className="w-3 h-3" />
                                         </button>
@@ -194,12 +194,12 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         </div>
 
                         {/* Thời gian dự kiến */}
-                        <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-xl p-3 border border-indigo-200 dark:border-indigo-800">
-                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wide mb-1">
+                        <div className="bg-primary-50 dark:bg-primary-900/10 rounded-xl p-3 border border-primary-200 dark:border-primary-800">
+                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-primary-600 dark:text-primary-400 uppercase tracking-wide mb-1">
                                 <Timer className="w-3 h-3" />
                                 SLA Dự kiến
                             </div>
-                            <div className="text-sm font-semibold text-indigo-800 dark:text-indigo-300">
+                            <div className="text-sm font-semibold text-primary-800 dark:text-primary-300">
                                 {item.estimatedDays ? `${item.estimatedDays} ngày` : '---'}
                             </div>
                         </div>
@@ -262,7 +262,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         </div>
 
                         {linkedTasks.length === 0 ? (
-                            <div className="text-center py-10 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+                            <div className="text-center py-10 bg-gray-50 dark:bg-slate- rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
                                 <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
                                 <p className="text-sm text-gray-500 dark:text-slate-400">
                                     Chưa có công việc nào trong bước này
@@ -318,7 +318,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                             {task.Title}
                                                         </span>
                                                         {task.IsCritical && (
-                                                            <span className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[8px] rounded font-bold">CP</span>
+                                                            <span className="px-1 py-0.5 bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400 text-[8px] rounded font-bold">CP</span>
                                                         )}
                                                     </div>
 
@@ -381,7 +381,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 flex items-center justify-between">
+                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate- flex items-center justify-between">
                     <span className="text-xs text-gray-400 dark:text-slate-400">
                         Mã bước: {item.code.substring(0, 8)}...
                     </span>

@@ -62,17 +62,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                         className={`
                             pointer-events-auto relative overflow-hidden flex flex-col px-4 py-3 rounded-xl shadow-xl border
-                            ${toast.type === 'success' ? 'bg-bg-surface border-emerald-200/50 text-emerald-800' : ''}
-                            ${toast.type === 'error' ? 'bg-bg-surface border-red-200/50 text-red-800' : ''}
-                            ${toast.type === 'info' ? 'bg-bg-surface border-blue-200/50 text-blue-800' : ''}
-                            ${toast.type === 'warning' ? 'bg-bg-surface border-orange-200/50 text-orange-800' : ''}
+                            ${toast.type === 'success' ? 'bg-white dark:bg-slate-800 border-emerald-200/50 text-emerald-800' : ''}
+                            ${toast.type === 'error' ? 'bg-white dark:bg-slate-800 border-red-200/50 text-red-800' : ''}
+                            ${toast.type === 'info' ? 'bg-white dark:bg-slate-800 border-blue-200/50 text-blue-800' : ''}
+                            ${toast.type === 'warning' ? 'bg-white dark:bg-slate-800 border-warning-200/50 text-warning-800' : ''}
                         `}
                     >
                         <div className="flex items-center gap-3 w-full">
                             {toast.type === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
                             {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-red-500" />}
                             {toast.type === 'info' && <Info className="w-5 h-5 text-blue-500" />}
-                            {toast.type === 'warning' && <AlertTriangle className="w-5 h-5 text-orange-500" />}
+                            {toast.type === 'warning' && <AlertTriangle className="w-5 h-5 text-warning-500" />}
 
                             <p className="text-sm font-medium flex-1">{toast.message}</p>
 
@@ -94,7 +94,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                                 ${toast.type === 'success' ? 'bg-emerald-500/30' : ''}
                                 ${toast.type === 'error' ? 'bg-red-500/30' : ''}
                                 ${toast.type === 'info' ? 'bg-blue-500/30' : ''}
-                                ${toast.type === 'warning' ? 'bg-orange-500/30' : ''}
+                                ${toast.type === 'warning' ? 'bg-warning-500/30' : ''}
                             `}
                         />
                     </motion.div>

@@ -143,7 +143,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative">
             <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
-                <div className="bg-bg-surface rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
                     <div className="space-y-1.5 p-1">
                         <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">Nội dung công việc <span className="text-rose-500">*</span></label>
                         <textarea value={subTask.name} onChange={e => handleChange('name', e.target.value)}
@@ -182,7 +182,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                            <Clock size={12} className="text-amber-500" /> Thời gian (SLA)
+                            <Clock size={12} className="text-warning-500" /> Thời gian (SLA)
                         </label>
                         <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
                             <input type="text" 
@@ -209,7 +209,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between mb-1.5">
-                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-indigo-500"/> Biểu mẫu</label>
+                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-primary-500"/> Biểu mẫu</label>
                                 <button type="button" 
                                     onClick={(e) => { 
                                         e.preventDefault(); 
@@ -217,7 +217,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                                         fileInputRef.current?.click();
                                     }} 
                                     disabled={isUploading}
-                                    className="flex items-center gap-1 px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded block transition-colors text-[10px] font-bold disabled:opacity-50"
+                                    className="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/60 rounded block transition-colors text-[10px] font-bold disabled:opacity-50"
                                 >
                                     {isUploading ? <Loader2 size={10} className="animate-spin" /> : <Upload size={10} />} Tải file lên
                                 </button>
@@ -226,7 +226,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                                 placeholder="VD: Mẫu 01 (ND-112)"
                                 className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-y min-h-[60px]" />
                             {subTask.template_url && (
-                                <div className="flex items-center gap-1 mt-1 text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                                <div className="flex items-center gap-1 mt-1 text-[11px] text-primary-600 dark:text-primary-400 font-medium">
                                     <LinkIcon size={10} />
                                     <a href={subTask.template_url} target="_blank" rel="noreferrer" className="hover:underline truncate" title={subTask.template_url}>
                                         Đã đính kèm biểu mẫu
@@ -260,7 +260,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
             </div>
 
             {/* Sticky Footer Actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 z-10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate- backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 z-10">
                 <button onClick={closePanel} className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                     Hủy bỏ
                 </button>

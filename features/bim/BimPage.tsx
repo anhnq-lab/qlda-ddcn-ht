@@ -58,7 +58,7 @@ class BimErrorBoundary extends React.Component<BimEBProps, BimEBState> {
 // ─── Loading Skeleton ───
 const BimViewerSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
     <div className="flex items-center justify-center h-full">
-        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate-900/92 border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
+        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate- border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
             <div className="relative w-16 h-16 mx-auto mb-4">
                 <div className={`absolute inset-0 border-4 border-t-transparent rounded-full animate-spin ${isDark ? 'border-blue-500' : 'border-blue-600'}`} />
                 <div className={`absolute inset-2 border-4 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse] ${isDark ? 'border-cyan-400' : 'border-cyan-500'}`} />
@@ -72,9 +72,9 @@ const BimViewerSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
 // ─── Constants ───
 const DISCIPLINE_LABELS: Record<string, { label: string; color: string; darkColor: string }> = {
     ARCH: { label: 'Kiến trúc', color: 'bg-blue-100 text-blue-700', darkColor: 'bg-blue-500/20 text-blue-300' },
-    STRU: { label: 'Kết cấu', color: 'bg-orange-100 text-orange-700', darkColor: 'bg-orange-500/20 text-orange-300' },
+    STRU: { label: 'Kết cấu', color: 'bg-warning-100 text-warning-700', darkColor: 'bg-warning-500/20 text-warning-300' },
     MEP: { label: 'MEP', color: 'bg-green-100 text-green-700', darkColor: 'bg-green-500/20 text-green-300' },
-    ELEC: { label: 'Điện', color: 'bg-yellow-100 text-primary-700', darkColor: 'bg-yellow-500/20 text-yellow-300' },
+    ELEC: { label: 'Điện', color: 'bg-warning-100 text-primary-700', darkColor: 'bg-warning-500/20 text-warning-300' },
     HVAC: { label: 'HVAC', color: 'bg-cyan-100 text-cyan-700', darkColor: 'bg-cyan-500/20 text-cyan-300' },
     PLUM: { label: 'Cấp thoát nước', color: 'bg-teal-100 text-teal-700', darkColor: 'bg-teal-500/20 text-teal-300' },
     FIRE: { label: 'PCCC', color: 'bg-red-100 text-red-700', darkColor: 'bg-red-500/20 text-red-300' },
@@ -309,7 +309,7 @@ const BimPage: React.FC = () => {
                         }}
                     >
                         {/* Header bar */}
-                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}>
+                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-white dark:bg-slate-800'}`}>
                             <button onClick={handleBack} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isDark ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
                                 <ArrowLeft className="w-4 h-4" />Quay lại
                             </button>
@@ -392,7 +392,7 @@ const BimPage: React.FC = () => {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border transition-all ${isDark
                                         ? 'bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-cyan-500/50'
-                                        : 'bg-bg-surface border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
+                                        : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
                                 />
                             </div>
 
@@ -475,12 +475,12 @@ const BimPage: React.FC = () => {
                                                     onClick={() => handleOpenBim(ps.projectId)}
                                                     className={`group flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-200
                                                         ${isDark
-                                                            ? 'bg-slate-800/40 border-slate-700/40 hover:border-slate-600 hover:bg-slate-800/70'
-                                                            : 'bg-bg-subtle border-gray-200 hover:border-gray-300 hover:bg-bg-surface'
+                                                            ? 'bg-slate- border-slate-700/40 hover:border-slate-600 hover:bg-slate-'
+                                                            : 'bg-slate-50 dark:bg-slate-800 border-gray-200 hover:border-gray-300 hover:bg-white dark:bg-slate-800'
                                                         }
                                                     `}
                                                 >
-                                                    <div className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                                                    <div className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-slate-' : 'bg-gray-100'}`}>
                                                         <Building2 className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
                                                     </div>
                                                     <div className="min-w-0 flex-1">
@@ -518,10 +518,10 @@ const BimProjectCard: React.FC<{
     // Gradient based on primary discipline
     const primaryDiscipline = summary.disciplines[0];
     const gradientMap: Record<string, string> = {
-        ARCH: isDark ? 'from-blue-600/25 via-indigo-600/15 to-slate-900/0' : 'from-blue-100 via-indigo-50 to-white',
-        STRU: isDark ? 'from-orange-600/25 via-primary-600/15 to-slate-900/0' : 'from-orange-100 via-primary-50 to-white',
+        ARCH: isDark ? 'from-blue-600/25 via-primary-600/15 to-slate-900/0' : 'from-blue-100 via-primary-50 to-white',
+        STRU: isDark ? 'from-warning-600/25 via-primary-600/15 to-slate-900/0' : 'from-warning-100 via-primary-50 to-white',
         MEP: isDark ? 'from-green-600/25 via-emerald-600/15 to-slate-900/0' : 'from-green-100 via-emerald-50 to-white',
-        ELEC: isDark ? 'from-primary-600/25 via-primary-600/15 to-slate-900/0' : 'from-yellow-100 via-primary-50 to-white',
+        ELEC: isDark ? 'from-primary-600/25 via-primary-600/15 to-slate-900/0' : 'from-warning-100 via-primary-50 to-white',
         HVAC: isDark ? 'from-cyan-600/25 via-teal-600/15 to-slate-900/0' : 'from-cyan-100 via-teal-50 to-white',
         FIRE: isDark ? 'from-red-600/25 via-rose-600/15 to-slate-900/0' : 'from-red-100 via-rose-50 to-white',
         COMBINE: isDark ? 'from-purple-600/25 via-violet-600/15 to-slate-900/0' : 'from-purple-100 via-violet-50 to-white',
@@ -537,8 +537,8 @@ const BimProjectCard: React.FC<{
             onClick={onClick}
             className={`group relative w-full text-left rounded-2xl border transition-all duration-300 overflow-hidden
                 ${isDark
-                    ? 'bg-slate-800/80 border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
-                    : 'bg-bg-surface border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
+                    ? 'bg-slate- border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
+                    : 'bg-white dark:bg-slate-800 border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
                 }
             `}
         >
@@ -560,7 +560,7 @@ const BimProjectCard: React.FC<{
                             {/* Progress ring */}
                             <circle cx="20" cy="20" r="18" fill="none" strokeWidth="2.5"
                                 strokeLinecap="round"
-                                className={errorCount > 0 ? 'stroke-red-400' : processingCount > 0 ? 'stroke-amber-400' : isDark ? 'stroke-cyan-400' : 'stroke-blue-500'}
+                                className={errorCount > 0 ? 'stroke-red-400' : processingCount > 0 ? 'stroke-warning-400' : isDark ? 'stroke-cyan-400' : 'stroke-blue-500'}
                                 strokeDasharray={circumference}
                                 strokeDashoffset={circumference - (readyPercent / 100) * circumference}
                                 style={{ transition: 'stroke-dashoffset 0.5s ease' }}

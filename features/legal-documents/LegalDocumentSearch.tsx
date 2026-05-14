@@ -54,6 +54,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     const [showDeepSearch, setShowDeepSearch] = useState(false);
     const [expandedArticles, setExpandedArticles] = useState<Set<string>>(new Set());
     const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
+    const [pendingScroll, setPendingScroll] = useState<{articleId: string, chapterId: string} | null>(null);
 
     // Hooks
     const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
@@ -80,11 +81,17 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     });
     const { data: statsData } = useLegalStats();
     const { data: selectedDocRaw, isLoading: isDetailLoading } = useDocumentDetail(selectedDocId || null);
-    const { data: deepSearchRaw } = useDeepSearch(selectedDocId || null, debouncedSearchQuery);
+    const { data: deepSearchRaw } = useDeepSearch(debouncedSearchQuery);
     const prefetchDocument = usePrefetchDocument();
 
     // Mapping raw data directly since components have been updated
-    const filteredDocs = useMemo(() => listResult?.documents ?? [], [listResult]);
+    const filteredDocs = useMemo(() => {
+        const docs = listResult?.documents ?? [];
+        if (selectedDocRaw && !docs.some(d => d.id === selectedDocRaw.id)) {
+            return [selectedDocRaw, ...docs];
+        }
+        return docs;
+    }, [listResult, selectedDocRaw]);
     const selectedDoc = useMemo(() => selectedDocRaw ?? null, [selectedDocRaw]);
     const stats = useMemo(() => ({
         total: statsData?.total ?? 0,
@@ -95,6 +102,8 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
         if (!deepSearchRaw || debouncedSearchQuery.length < 2) return [];
         return deepSearchRaw.slice(0, 10).map(art => ({
             docId: art.document_id,
+            docCode: art.document?.code,
+            docTitle: art.document?.short_title,
             chapterId: art.chapter_id,
             articleId: art.id,
             articleCode: art.code,
@@ -145,6 +154,15 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
         }
     }, [selectedDocId, selectedDoc, isEmbedded, fromPath, initialArticleId, urlArticleId]);
 
+    // Handle deep search scrolling robustly after doc loaded
+    useEffect(() => {
+        if (selectedDoc && pendingScroll && selectedDoc.id === selectedDocId) {
+            // Document has loaded and matches the target docId
+            scrollToArticle(pendingScroll.articleId, pendingScroll.chapterId);
+            setPendingScroll(null);
+        }
+    }, [selectedDoc, selectedDocId, pendingScroll]);
+
     // Handlers
     const toggleChapter = (chapterId: string) => {
         setExpandedChapters(prev => {
@@ -194,11 +212,11 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
         }, 100);
     };
 
-    const navigateDeepSearch = (docId: string, chapterId: string) => {
+    const navigateDeepSearch = (docId: string, chapterId: string, articleId: string) => {
         setSelectedDocId(docId);
         setShowDeepSearch(false);
-        setExpandedChapters(new Set([chapterId]));
         setShowPdfViewer(false);
+        setPendingScroll({ articleId, chapterId });
     };
 
     const handleCopy = (text: string, id: string) => {
@@ -244,13 +262,13 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     }
 
     return (
-        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-bg-surface p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
+        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-white dark:bg-slate-800 p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
             {/* Back Navigation Banner */}
             {!isEmbedded && fromPath && fromLabel && (
                 <div className="shrink-0 mb-2">
                     <button
                         onClick={() => navigate(-1)}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-info-600 dark:text-info-400 hover:text-info-800 dark:hover:text-info-200 bg-info-50 dark:bg-info-900/20 hover:bg-info-100 dark:hover:bg-info-900/40 rounded-lg border border-info-200 dark:border-info-800 transition-colors"
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -291,7 +309,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
                     setShowDeepSearch={setShowDeepSearch}
                 />
 
-                <div className="flex-1 bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
                     {/* Content Area with optional TOC */}
                     {selectedDoc ? (
                         <LegalDetail

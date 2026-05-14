@@ -143,7 +143,7 @@ export const MONTHS_VI = [
 
 export const STATUS_CONFIG: Record<EvaluationStatus,{label:string;color:string;bg:string;darkBg:string;darkColor:string}> = {
     draft:     {label:'Nháp',       color:'text-slate-600', bg:'bg-slate-100',  darkBg:'dark:bg-slate-800',      darkColor:'dark:text-slate-300'},
-    submitted: {label:'Chờ duyệt', color:'text-amber-700', bg:'bg-amber-50',   darkBg:'dark:bg-amber-900/30',   darkColor:'dark:text-amber-300'},
+    submitted: {label:'Chờ duyệt', color:'text-warning-700', bg:'bg-warning-50',   darkBg:'dark:bg-warning-900/30',   darkColor:'dark:text-warning-300'},
     approved:  {label:'Đã duyệt',  color:'text-emerald-700',bg:'bg-emerald-50',darkBg:'dark:bg-emerald-900/30', darkColor:'dark:text-emerald-300'},
     rejected:  {label:'Từ chối',   color:'text-red-700',   bg:'bg-red-50',     darkBg:'dark:bg-red-900/30',     darkColor:'dark:text-red-300'},
 };

@@ -77,7 +77,7 @@ const ToolBtn: React.FC<{
                         animate-[tooltipFadeIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
                         shadow-sm border backdrop-blur-xl
                         ${isDark
-                            ? 'bg-slate-800/95 text-slate-200 border-slate-600/40'
+                            ? 'bg-slate- text-slate-200 border-slate-600/40'
                             : 'bg-gray-800/95 text-white border-gray-600/30'
                         }
                     `}
@@ -88,7 +88,7 @@ const ToolBtn: React.FC<{
                             <kbd className={`
                                 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold leading-none
                                 ${isDark
-                                    ? 'bg-slate-700/80 text-slate-400 border border-slate-600/50'
+                                    ? 'bg-slate- text-slate-400 border border-slate-600/50'
                                     : 'bg-gray-700/80 text-gray-300 border border-gray-600/50'
                                 }
                             `}>
@@ -168,7 +168,7 @@ const ToolDropdown: React.FC<{
                     absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[210px] rounded-xl border shadow-sm z-50
                     py-1.5 overflow-hidden backdrop-blur-2xl
                     animate-[dropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
-                    ${isDark ? 'bg-slate-800/95 border-slate-600/40' : 'bg-white/98 border-gray-200'}
+                    ${isDark ? 'bg-slate- border-slate-600/40' : 'bg-white/98 border-gray-200'}
                 `}>
                     {items.map((item, i) => (
                         <React.Fragment key={item.id}>
@@ -183,7 +183,7 @@ const ToolDropdown: React.FC<{
                                         ? isDark ? 'bg-cyan-500/10 text-cyan-400 font-medium border-l-2 border-cyan-400 pl-2.5' : 'bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500 pl-2.5'
                                         : item.danger
                                             ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
-                                            : isDark ? 'text-slate-300 hover:bg-white/5 hover:pl-4' : 'text-gray-700 hover:bg-bg-subtle hover:pl-4'}
+                                            : isDark ? 'text-slate-300 hover:bg-white/5 hover:pl-4' : 'text-gray-700 hover:bg-slate-50 dark:bg-slate-800 hover:pl-4'}
                                 `}
                             >
                                 <span className="w-5 h-5 flex items-center justify-center shrink-0">{item.icon}</span>
@@ -214,7 +214,7 @@ const Divider: React.FC<{ isDark: boolean; label?: string }> = ({ isDark, label 
                 {label}
             </span>
         )}
-        <div className={`w-px h-5 ${isDark ? 'bg-slate-700/60' : 'bg-gray-200'}`} />
+        <div className={`w-px h-5 ${isDark ? 'bg-slate-' : 'bg-gray-200'}`} />
     </div>
 );
 
@@ -319,7 +319,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             <div className={`
                 absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 rounded-2xl z-30
                 backdrop-blur-xl shadow-sm border
-                ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
+                ${isDarkMode ? 'bg-slate- border-slate-700/50' : 'bg-white/95 border-gray-200'}
             `}>
                 <ToolBtn isDark={isDarkMode} active={activeTool === 'select'} onClick={() => tools.activateTool('select')} title="Select">
                     <MousePointer2 className="w-5 h-5" />
@@ -344,7 +344,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 <label className={`
                     flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer
                     transition-all duration-150
-                    ${isDarkMode ? 'text-slate-400 hover:bg-slate-700/50 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'}
+                    ${isDarkMode ? 'text-slate-400 hover:bg-slate- hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'}
                 `} title="Upload IFC">
                     <FileUp className="w-5 h-5" />
                     <input type="file" accept=".ifc" className="hidden" onChange={onUpload} />
@@ -363,7 +363,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                     flex items-center gap-1.5 px-3 py-1.5 rounded-full
                     backdrop-blur-xl shadow-sm border cursor-pointer
                     transition-all hover:scale-105
-                    ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50 text-slate-400 hover:text-white' : 'bg-white/90 border-gray-200 text-gray-500 hover:text-gray-800'}
+                    ${isDarkMode ? 'bg-slate- border-slate-700/50 text-slate-400 hover:text-white' : 'bg-white/90 border-gray-200 text-gray-500 hover:text-gray-800'}
                 `}
                 title="Show Toolbar (T)"
             >
@@ -381,7 +381,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 flex items-center gap-1 px-2.5 py-2 rounded-2xl z-30
                 backdrop-blur-2xl shadow-[0_8px_32px_rgb(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.05)] border transition-all duration-300
                 hover:shadow-[0_12px_40px_rgb(0,0,0,0.18),0_0_0_1px_rgba(255,255,255,0.08)]
-                ${isDarkMode ? 'bg-slate-800/85 border-slate-600/30' : 'bg-white/92 border-gray-200/80'}
+                ${isDarkMode ? 'bg-slate- border-slate-600/30' : 'bg-white/92 border-gray-200/80'}
             `}
             style={dragPos ? { left: dragPos.x, top: dragPos.y } : undefined}
         >
@@ -538,7 +538,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 }
                 items={[
                     { id: 'sys-hvac', icon: <Box className="w-5 h-5 text-blue-400" />, label: 'HVAC System', active: operations.activeSystem === 'HVAC', onClick: () => operations.toggleSystemMapping('HVAC') },
-                    { id: 'sys-elec', icon: <Zap className="w-5 h-5 text-yellow-400" />, label: 'Electrical System', active: operations.activeSystem === 'Electrical', onClick: () => operations.toggleSystemMapping('Electrical') },
+                    { id: 'sys-elec', icon: <Zap className="w-5 h-5 text-warning-400" />, label: 'Electrical System', active: operations.activeSystem === 'Electrical', onClick: () => operations.toggleSystemMapping('Electrical') },
                     { id: 'sys-plumb', icon: <Activity className="w-5 h-5 text-cyan-400" />, label: 'Plumbing System', active: operations.activeSystem === 'Plumbing', onClick: () => operations.toggleSystemMapping('Plumbing') },
                     { id: 'sys-fire', icon: <ShieldAlert className="w-5 h-5 text-red-400" />, label: 'Fire Protection', active: operations.activeSystem === 'Fire', onClick: () => operations.toggleSystemMapping('Fire') },
                     { id: 'sys-clear', icon: <Trash2 className="w-5 h-5" />, label: 'Clear System Filter', divider: true, danger: true, onClick: () => operations.toggleSystemMapping(null) },

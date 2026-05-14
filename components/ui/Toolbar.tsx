@@ -34,7 +34,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     return (
         <div
             className={`
-                bg-bg-surface
+                bg-white dark:bg-slate-800
                 rounded-2xl shadow-lg
                 border border-slate-200 dark:border-slate-700
                 p-4
@@ -53,7 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                             placeholder={searchPlaceholder}
                             className={`
                                 w-full pl-10 pr-8 py-2.5
-                                bg-bg-subtle dark:bg-slate-700
+                                bg-slate-50 dark:bg-slate-800 dark:bg-slate-700
                                 border border-slate-200 dark:border-slate-600
                                 rounded-xl text-sm font-medium
                                 text-slate-800 dark:text-slate-100

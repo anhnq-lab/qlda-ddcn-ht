@@ -33,6 +33,7 @@ import {
     PROJECT_SCOPED_DEPARTMENTS,
     resolveSystemRole,
 } from '../types/permission.types';
+import { permissionCache } from '../utils/permissionCache';
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -59,6 +60,9 @@ interface PermissionContextType extends PermissionCacheState {
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
 
+// In-memory cache for role defaults to avoid repeated DB calls across users
+const roleDefaultsCache = new Map<SystemRole, Map<string, PermissionAction[]>>();
+
 // ─── Provider ─────────────────────────────────────────────
 
 export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -79,6 +83,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         loaded: false,
         cachedForUserId: null,
     });
+
+    const [dbRoleDefaults, setDbRoleDefaults] = useState<Map<string, PermissionAction[]>>(new Map());
 
     // Prevent concurrent fetches for the same user
     const fetchingRef = useRef<string | null>(null);
@@ -101,9 +107,38 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         );
     }, [effectiveUser, systemRole]);
 
+    // Fetch role defaults from DB
+    const fetchRoleDefaults = useCallback(async (role: SystemRole) => {
+        if (role === 'super_admin' || role === 'contractor') return; // Not handled by DB yet
+        if (roleDefaultsCache.has(role)) {
+            setDbRoleDefaults(roleDefaultsCache.get(role)!);
+            return;
+        }
+        try {
+            const { data, error } = await supabase
+                .from('role_permission_defaults')
+                .select('resource, actions')
+                .eq('role', role);
+
+            if (!error && data && data.length > 0) {
+                const map = new Map<string, PermissionAction[]>();
+                data.forEach((row: any) => {
+                    map.set(row.resource, row.actions || []);
+                });
+                roleDefaultsCache.set(role, map);
+                setDbRoleDefaults(map);
+            }
+        } catch (e) {
+            console.error('[PermissionContext] Failed to load role defaults:', e);
+        }
+    }, []);
+
     // ── Fetch permissions from DB ──────────────────────────
     const fetchPermissions = useCallback(async () => {
         const userId = effectiveUser?.EmployeeID;
+
+        // Fetch DB role defaults concurrently or fallback to cache
+        fetchRoleDefaults(systemRole);
 
         // Not logged in → clear state
         if (!userId || !isAuthenticated) {
@@ -118,9 +153,27 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             return;
         }
 
-        // Already cached for this user → skip
+        // Already cached in React state for this user → skip
         if (state.cachedForUserId === userId && state.loaded && !state.loading) {
             return;
+        }
+
+        // ── Check sessionStorage cache ────────────────────────
+        const cached = permissionCache.get(userId);
+        if (cached) {
+            const map = new Map<string, PermissionAction[]>(
+                cached.permissionPairs as [string, PermissionAction[]][]
+            );
+            fetchingRef.current = null;
+            setState({
+                permissionMap: map,
+                systemRole: cached.systemRole as SystemRole,
+                isGlobalScope: cached.isGlobalScope,
+                loading: false,
+                loaded: true,
+                cachedForUserId: userId,
+            });
+            return; // ← Cache hit: skip DB query
         }
 
         // Prevent duplicate concurrent fetches
@@ -131,6 +184,11 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
         // super_admin: skip DB query (full access handled in can())
         if (systemRole === 'super_admin') {
+            permissionCache.set(userId, {
+                permissionPairs: [],
+                systemRole,
+                isGlobalScope: true,
+            });
             fetchingRef.current = null;
             setState({
                 permissionMap: new Map(),
@@ -164,6 +222,15 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 console.error('[PermissionContext] DB fetch failed:', error);
             }
 
+            // ── Save to sessionStorage cache ──────────────────
+            if (!error) {
+                permissionCache.set(userId, {
+                    permissionPairs: [...map.entries()],
+                    systemRole,
+                    isGlobalScope,
+                });
+            }
+
             fetchingRef.current = null;
             setState({
                 permissionMap: map,
@@ -185,7 +252,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 cachedForUserId: userId,
             }));
         }
-    }, [effectiveUser?.EmployeeID, systemRole, isGlobalScope, isAuthenticated]);
+    }, [effectiveUser?.EmployeeID, systemRole, isGlobalScope, isAuthenticated, fetchRoleDefaults]);
 
     // Re-fetch when effective user or impersonation changes
     useEffect(() => {
@@ -198,11 +265,18 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
     // Public refresh (e.g., after admin saves permissions for themselves)
     const refreshPermissions = useCallback(async () => {
+        // Invalidate sessionStorage cache for this user first
+        const userId = effectiveUser?.EmployeeID;
+        if (userId) permissionCache.invalidate(userId);
+        
+        // Also invalidate role cache to ensure fresh role defaults
+        roleDefaultsCache.delete(state.systemRole);
+
         // Force re-fetch by clearing cachedForUserId
         setState(prev => ({ ...prev, cachedForUserId: null, loaded: false, loading: true }));
         fetchingRef.current = null;
         await fetchPermissions();
-    }, [fetchPermissions]);
+    }, [fetchPermissions, effectiveUser?.EmployeeID, state.systemRole]);
 
     // ── Core permission check ──────────────────────────────
     const can = useCallback(
@@ -219,13 +293,19 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 return actions ? actions.includes(action) : false;
             }
 
-            // 2) Fallback to role defaults
+            // 2) Fallback to DB role defaults if available
+            if (dbRoleDefaults.size > 0) {
+                const actions = dbRoleDefaults.get(resource);
+                return actions ? actions.includes(action) : false;
+            }
+
+            // 3) Fallback to hardcoded role defaults (Safety Net)
             const defaults = DEFAULT_ROLE_PERMISSIONS[state.systemRole];
             if (!defaults) return false;
             const defaultActions = defaults[resource as keyof typeof defaults];
             return defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
         },
-        [state.permissionMap, state.loaded, state.systemRole]
+        [state.permissionMap, state.loaded, state.systemRole, dbRoleDefaults]
     );
 
     // ── Project-scoped check ───────────────────────────────
@@ -235,17 +315,16 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             if (state.isGlobalScope) return true;
 
             if (effectiveUser?.Department && projectManagementUnit) {
-                // Exact match first, then partial
-                const isSameBan = PROJECT_SCOPED_DEPARTMENTS.some(dept =>
-                    effectiveUser.Department === dept && projectManagementUnit === dept
-                ) || PROJECT_SCOPED_DEPARTMENTS.some(dept =>
-                    effectiveUser.Department?.includes(dept) && projectManagementUnit.includes(dept)
-                );
+                const userDept = effectiveUser.Department;
+                
+                // Exact match only to prevent permission leakage between units
+                // e.g. "Ban Điều hành dự án 1" vs "Ban Điều hành dự án 10"
+                const isSameBan = PROJECT_SCOPED_DEPARTMENTS.includes(userDept) && userDept === projectManagementUnit;
+                
                 if (isSameBan) return true;
 
-                const isInAnyBan = PROJECT_SCOPED_DEPARTMENTS.some(dept =>
-                    effectiveUser.Department?.includes(dept) || dept.includes(effectiveUser.Department || '')
-                );
+                // If user is in ANY project-scoped department but didn't match the project's unit exactly, deny access.
+                const isInAnyBan = PROJECT_SCOPED_DEPARTMENTS.includes(userDept);
                 if (isInAnyBan) return false;
             }
 

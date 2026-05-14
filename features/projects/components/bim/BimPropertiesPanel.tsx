@@ -229,7 +229,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
 
     // Property row
     const PropRow: React.FC<{ name: string; value: string; isQuantity?: boolean }> = ({ name, value, isQuantity }) => (
-        <div className={`flex justify-between items-start group py-1 px-0.5 rounded ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}>
+        <div className={`flex justify-between items-start group py-1 px-0.5 rounded ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}>
             <span className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-500'} truncate max-w-[45%] flex items-center gap-1.5`} title={name}>
                 {isQuantity && getQuantityIcon(name)}
                 {searchQuery ? highlightMatch(name, searchQuery, isDarkMode) : name}
@@ -252,7 +252,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
     return (
         <div className={`
             ${isBottomPanel ? 'w-full' : isMobile ? 'absolute inset-y-0 right-0 z-30 w-80' : 'w-full h-full'}
-            ${isBottomPanel ? '' : isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-bg-surface border-gray-200'}
+            ${isBottomPanel ? '' : isDarkMode ? 'bg-slate- border-slate-700/50' : 'bg-white dark:bg-slate-800 border-gray-200'}
             flex flex-col shrink-0 ${isBottomPanel ? '' : 'backdrop-blur-xl'}
         `}>
             {/* Header — hidden in bottom panel mode */}
@@ -311,7 +311,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                     {/* Search (Properties tab only) */}
                     {activeTab === 'properties' && (
                         <div className={`p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
-                            <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                            <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`}>
                                 <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                                 <input
                                     value={searchQuery}
@@ -334,7 +334,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                             <div className={`divide-y ${isDarkMode ? 'divide-slate-700/30' : 'divide-gray-100'}`}>
                                 {/* Identity */}
                                 <div>
-                                    <button onClick={() => toggleSet('identity')} className={`w-full p-3 flex items-center gap-2 transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}>
+                                    <button onClick={() => toggleSet('identity')} className={`w-full p-3 flex items-center gap-2 transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}>
                                         {expandedSets['identity'] ? <ChevronDown className="w-3.5 h-3.5 text-blue-400" /> : <ChevronRight className="w-3.5 h-3.5 text-blue-400" />}
                                         <Hash className="w-3.5 h-3.5 text-blue-400" />
                                         <span className={`text-[10px] font-bold uppercase tracking-wide ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Identity</span>
@@ -354,7 +354,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                                     const isQty = isQuantitySet(pset.name);
                                     return (
                                         <div key={pset.name}>
-                                            <button onClick={() => toggleSet(pset.name)} className={`w-full p-3 flex items-center justify-between transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}>
+                                            <button onClick={() => toggleSet(pset.name)} className={`w-full p-3 flex items-center justify-between transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}>
                                                 <div className="flex items-center gap-2">
                                                     {expandedSets[pset.name] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
                                                     {isQty ? <Ruler className="w-3.5 h-3.5 text-cyan-400" /> : <Layers className="w-3.5 h-3.5 text-slate-500" />}
@@ -362,7 +362,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                                                         {pset.name}
                                                     </span>
                                                 </div>
-                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate-700/40 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
+                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate- text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
                                                     {pset.properties.length}
                                                 </span>
                                             </button>
@@ -380,11 +380,11 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                                 {/* Materials */}
                                 {selectedElement.materials.length > 0 && (
                                     <div>
-                                        <button onClick={() => toggleSet('materials')} className={`w-full p-3 flex items-center gap-2 transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}>
+                                        <button onClick={() => toggleSet('materials')} className={`w-full p-3 flex items-center gap-2 transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}>
                                             {expandedSets['materials'] ? <ChevronDown className="w-3.5 h-3.5 text-primary-500" /> : <ChevronRight className="w-3.5 h-3.5 text-primary-500" />}
                                             <Box className="w-3.5 h-3.5 text-primary-500" />
                                             <span className={`text-[10px] font-bold uppercase tracking-wide ${isDarkMode ? 'text-primary-500' : 'text-primary-600'}`}>Materials</span>
-                                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate-700/40 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
+                                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate- text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
                                                 {selectedElement.materials.length}
                                             </span>
                                         </button>
@@ -421,7 +421,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                                                 onClick={() => onHighlightElement?.(rel.targetId)}
                                                 className={`
                                                     w-full text-left p-2.5 rounded-lg border transition-all
-                                                    ${isDarkMode ? 'bg-slate-700/30 border-slate-700/50 hover:bg-slate-700/60' : 'bg-bg-subtle border-gray-200 hover:bg-gray-100'}
+                                                    ${isDarkMode ? 'bg-slate- border-slate-700/50 hover:bg-slate-' : 'bg-slate-50 dark:bg-slate-800 border-gray-200 hover:bg-gray-100'}
                                                 `}
                                             >
                                                 <div className="flex items-center gap-2 mb-1">
@@ -448,7 +448,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                                 {selectedElement.classifications && selectedElement.classifications.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedElement.classifications.map((cls, i) => (
-                                            <div key={i} className={`p-2.5 rounded-lg border ${isDarkMode ? 'bg-slate-700/30 border-slate-700/50' : 'bg-bg-subtle border-gray-200'}`}>
+                                            <div key={i} className={`p-2.5 rounded-lg border ${isDarkMode ? 'bg-slate- border-slate-700/50' : 'bg-slate-50 dark:bg-slate-800 border-gray-200'}`}>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Tag className="w-3 h-3 text-purple-400" />
                                                     <span className={`text-[10px] font-bold uppercase ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>{cls.system}</span>
@@ -472,7 +472,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
             ) : (
                 /* Empty state */
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`}>
                         <Crosshair className={`w-8 h-8 ${isDarkMode ? 'text-slate-600' : 'text-gray-300'}`} />
                     </div>
                     <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>No element selected</p>

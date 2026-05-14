@@ -79,7 +79,7 @@ const CDEDropZone: React.FC<CDEDropZoneProps> = ({
                 onDragLeave={() => setIsDragging(false)}
                 onClick={() => !disabled && inputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-200 ${disabled
-                    ? 'border-gray-200 bg-bg-subtle cursor-not-allowed opacity-60'
+                    ? 'border-gray-200 bg-slate-50 dark:bg-slate-800 cursor-not-allowed opacity-60'
                     : isDragging
                         ? 'border-blue-400 bg-blue-50/50 dark:border-blue-500 dark:bg-blue-900/20 scale-[1.01] shadow-sm shadow-primary-100 dark:shadow-primary-900/20'
                         : 'border-gray-200 dark:border-slate-600 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/10'

@@ -85,7 +85,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
             case 'danger':
                 return 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200';
             default:
-                return 'bg-bg-surface hover:bg-gray-50 dark:hover:bg-slate-600/50 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
+                return 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate- text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
         }
     };
 
@@ -115,7 +115,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     const [primary, ...rest] = actionsToRender;
 
     return (
-        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="section-card-header">
                 <div className="flex items-center gap-2">

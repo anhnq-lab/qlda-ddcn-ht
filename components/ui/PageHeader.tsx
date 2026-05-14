@@ -63,7 +63,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
     return (
         <div className={`
-            bg-bg-surface
+            bg-white dark:bg-slate-800
             border-b border-border-DEFAULT dark:border-slate-700/60
             ${sticky ? 'sticky top-0 z-20' : ''}
             ${className}

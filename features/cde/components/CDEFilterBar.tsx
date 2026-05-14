@@ -43,7 +43,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                     onClick={() => setExpandedFilter(isOpen ? null : filterKey)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCount > 0
                         ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300'
-                        : 'bg-bg-surface border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300'
+                        : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300'
                         }`}
                 >
                     {icon}
@@ -55,7 +55,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                 </button>
 
                 {isOpen && (
-                    <div className="absolute top-full mt-1 left-0 w-56 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm z-30 p-2 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full mt-1 left-0 w-56 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm z-30 p-2 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
                         {options.map(opt => {
                             const isSelected = (filters as any)[filterKey]?.includes(opt.value);
                             return (
@@ -64,7 +64,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                                     onClick={() => toggleArrayItem(filterKey as any, opt.value)}
                                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-left transition-all ${isSelected
                                         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold'
-                                        : 'text-gray-600 dark:text-slate-300 hover:bg-bg-subtle dark:hover:bg-slate-700'
+                                        : 'text-gray-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                                         }`}
                                 >
                                     {opt.color && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
@@ -108,13 +108,13 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
 
             {/* Date Range */}
             <div className="flex items-center gap-1.5">
-                <div className="flex items-center gap-1 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
+                <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
                     <Calendar className="w-3 h-3 text-gray-400" />
                     <input type="date" value={filters.dateFrom} onChange={e => onChange({ ...filters, dateFrom: e.target.value })}
                         className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200" placeholder="Từ ngày" />
                 </div>
                 <span className="text-gray-300 text-xs">—</span>
-                <div className="flex items-center gap-1 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
+                <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
                     <input type="date" value={filters.dateTo} onChange={e => onChange({ ...filters, dateTo: e.target.value })}
                         className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200" placeholder="Đến ngày" />
                 </div>

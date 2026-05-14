@@ -21,7 +21,7 @@ interface SettlementSectionProps {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    pending: { label: 'Chờ quyết toán', color: 'bg-yellow-100 dark:bg-yellow-900/40 text-primary-600 dark:text-yellow-400' },
+    pending: { label: 'Chờ quyết toán', color: 'bg-warning-100 dark:bg-warning-900/40 text-primary-600 dark:text-warning-400' },
     approved: { label: 'Đã duyệt', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' },
     completed: { label: 'Hoàn thành', color: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' },
 };
@@ -29,7 +29,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 const WARRANTY_STATUS: Record<string, { label: string; color: string }> = {
     pending: { label: 'Chưa bảo hành', color: 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400' },
     active: { label: 'Đang bảo hành', color: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' },
-    expired: { label: 'Hết hạn BH', color: 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400' },
+    expired: { label: 'Hết hạn BH', color: 'bg-warning-100 dark:bg-warning-900/40 text-warning-600 dark:text-warning-400' },
     released: { label: 'Đã hoàn trả', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' },
 };
 
@@ -123,7 +123,7 @@ export const SettlementSection: React.FC<SettlementSectionProps> = ({
         });
     };
 
-    const inputClass = "w-full px-3 py-2 text-sm bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
+    const inputClass = "w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
     const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
 
     if (isLoading) {
@@ -157,19 +157,19 @@ export const SettlementSection: React.FC<SettlementSectionProps> = ({
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Giá trị quyết toán</span>
                             <span className="font-bold text-blue-600 dark:text-blue-400">{formatCurrency(settlement.settlementValue)}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Số QĐ</span>
                             <span className="font-medium text-gray-800 dark:text-slate-200">{settlement.decisionNumber || '-'}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Ngày quyết toán</span>
                             <span className="font-medium text-gray-800 dark:text-slate-200">{settlement.settlementDate ? formatDate(settlement.settlementDate) : '-'}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Trạng thái</span>
                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${stStatus.color}`}>{stStatus.label}</span>
                         </div>
@@ -183,23 +183,23 @@ export const SettlementSection: React.FC<SettlementSectionProps> = ({
                         Bảo hành
                     </h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Thời gian BH</span>
                             <span className="font-medium text-gray-800 dark:text-slate-200">{settlement.warrantyMonths} tháng</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Giữ lại BH</span>
-                            <span className="font-bold text-orange-600 dark:text-orange-400">{formatCurrency(settlement.retentionAmount)}</span>
+                            <span className="font-bold text-warning-600 dark:text-warning-400">{formatCurrency(settlement.retentionAmount)}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Bắt đầu</span>
                             <span className="font-medium">{settlement.warrantyStartDate ? formatDate(settlement.warrantyStartDate) : '-'}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                             <span className="text-gray-500 dark:text-slate-400">Kết thúc</span>
                             <span className="font-medium">{settlement.warrantyEndDate ? formatDate(settlement.warrantyEndDate) : '-'}</span>
                         </div>
-                        <div className="flex justify-between p-2 bg-bg-subtle rounded-lg col-span-2">
+                        <div className="flex justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg col-span-2">
                             <span className="text-gray-500 dark:text-slate-400">Trạng thái BH</span>
                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${wStatus.color}`}>{wStatus.label}</span>
                         </div>
@@ -207,7 +207,7 @@ export const SettlementSection: React.FC<SettlementSectionProps> = ({
                 </div>
 
                 {settlement.notes && (
-                    <div className="text-sm text-gray-500 dark:text-slate-400 bg-bg-subtle rounded-lg p-3">
+                    <div className="text-sm text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
                         <span className="font-medium text-gray-600 dark:text-slate-300">Ghi chú:</span> {settlement.notes}
                     </div>
                 )}

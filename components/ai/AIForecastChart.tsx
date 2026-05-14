@@ -48,7 +48,7 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
         : simpleForecast.projectedYearEnd;
 
     return (
-        <div className={`bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
+        <div className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
             {/* Header */}
             <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">

@@ -15,7 +15,7 @@ export const getPriorityColor = (priority?: string): string => {
         case 'low':
             return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700';
         default:
-            return 'text-gray-600 dark:text-gray-400 bg-bg-subtle dark:bg-slate-700 border-gray-200 dark:border-slate-600';
+            return 'text-gray-600 dark:text-gray-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
     }
 };
 
@@ -69,7 +69,7 @@ export const getStatusConfig = (status?: TaskStatus | string): StatusConfig => {
             return {
                 label: 'Chờ thực hiện',
                 color: 'text-gray-500 dark:text-slate-400',
-                bg: 'bg-gray-50 dark:bg-slate-700/50',
+                bg: 'bg-gray-50 dark:bg-slate-',
                 border: 'border-gray-200 dark:border-slate-600',
                 dot: 'bg-gray-300 dark:bg-slate-500',
             };
@@ -85,8 +85,8 @@ export const getRelativeTimeLabel = (dueDate: string): { text: string; color: st
     const diff = Math.round((due.getTime() - now.getTime()) / 86400000);
 
     if (diff < 0) return { text: `Quá hạn ${Math.abs(diff)} ngày`, color: 'text-red-500 dark:text-red-400' };
-    if (diff === 0) return { text: 'Hôm nay!', color: 'text-orange-500 dark:text-orange-400' };
-    if (diff <= 3) return { text: `Còn ${diff} ngày`, color: 'text-orange-500 dark:text-orange-400' };
+    if (diff === 0) return { text: 'Hôm nay!', color: 'text-warning-500 dark:text-warning-400' };
+    if (diff <= 3) return { text: `Còn ${diff} ngày`, color: 'text-warning-500 dark:text-warning-400' };
     if (diff <= 7) return { text: `Còn ${diff} ngày`, color: 'text-blue-500 dark:text-blue-400' };
     return null;
 };

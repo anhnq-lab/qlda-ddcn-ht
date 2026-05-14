@@ -19,7 +19,7 @@ interface AcceptanceSectionProps {
 
 const QUALITY_LABELS: Record<string, { label: string; color: string }> = {
     passed: { label: 'Đạt yêu cầu', color: 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' },
-    conditional: { label: 'Đạt có điều kiện', color: 'bg-yellow-100 dark:bg-yellow-900/40 text-primary-600 dark:text-yellow-400' },
+    conditional: { label: 'Đạt có điều kiện', color: 'bg-warning-100 dark:bg-warning-900/40 text-primary-600 dark:text-warning-400' },
     failed: { label: 'Không đạt', color: 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400' },
 };
 
@@ -94,7 +94,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
     };
 
     const hasFinalAcceptance = records.some(r => r.acceptanceType === 'final');
-    const inputClass = "w-full px-3 py-2 text-sm bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
+    const inputClass = "w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
     const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
 
     return (

@@ -39,11 +39,11 @@ const getStatusConfig = (s: TaskStatus) => {
 
 const getPriorityConfig = (p?: TaskPriority) => {
     switch (p) {
-        case TaskPriority.Urgent: return { label: 'Khẩn cấp', color: 'text-red-600 bg-red-50 ring-1 ring-red-500/20' };
-        case TaskPriority.High: return { label: 'Cao', color: 'text-orange-600 bg-orange-50 ring-1 ring-orange-500/20' };
+        case TaskPriority.Urgent: return { label: 'Khẩn cấp', color: 'text-danger-600 bg-danger-50 ring-1 ring-danger-500/20' };
+        case TaskPriority.High:   return { label: 'Cao',      color: 'text-warning-700 bg-warning-50 ring-1 ring-warning-500/20' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'text-sky-600 bg-sky-50 ring-1 ring-sky-500/20' };
-        case TaskPriority.Low: return { label: 'Thấp', color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
-        default: return { label: 'N/A', color: 'text-slate-400 bg-bg-subtle' };
+        case TaskPriority.Low:    return { label: 'Thấp',    color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
+        default: return { label: 'N/A', color: 'text-slate-400 bg-slate-50 dark:bg-slate-800' };
     }
 };
 
@@ -197,7 +197,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                 )}
 
                 {/* ══════════ HEADER CARD ══════════ */}
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
                     {/* Top accent */}
                     <div className={`h-1 ${statusCfg.bg}`} />
 
@@ -245,7 +245,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 {prevStatus && (
                                     <button
                                         onClick={() => handleStatusChange(prevStatus)}
-                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
+                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
                                     >
                                         ← {getStatusConfig(prevStatus).label}
                                     </button>
@@ -312,7 +312,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     <div className="lg:col-span-2 space-y-6">
 
                         {/* Description */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
                             <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <FileText className="w-4 h-4" /> Nội dung thực hiện
                             </h3>
@@ -322,7 +322,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                         </div>
 
                         {/* Regulatory */}
-                        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
                             <div className="h-1" style={{ background: 'linear-gradient(90deg, #fb923c, #4a90e2)' }} />
                             <div className="p-4">
                                 <h3 className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -381,7 +381,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                                                     navigate(`/tasks/${dep.TaskID}`);
                                                                 }
                                                             }}
-                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
+                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate- hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
                                                         >
                                                             <Link2 className="w-3 h-3 shrink-0 text-slate-400 group-hover/dep:text-blue-500 transition-colors" />
                                                             <span className="truncate font-medium">{depTask ? depTask.Title : dep.TaskID}</span>

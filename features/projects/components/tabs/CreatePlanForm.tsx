@@ -53,11 +53,11 @@ export const CreatePlanForm: React.FC<CreatePlanFormProps> = ({
         createPlanMutation.mutate();
     };
 
-    const inputClass = "px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-bg-surface dark:text-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500";
+    const inputClass = "px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500";
 
     return (
-        <div className="bg-bg-surface rounded-xl border-2 border-primary-300 dark:border-primary-700 shadow-sm overflow-hidden">
-            <div className="px-5 py-3 bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-primary-950/40 dark:to-yellow-950/40 border-b border-primary-200 dark:border-primary-800">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border-2 border-primary-300 dark:border-primary-700 shadow-sm overflow-hidden">
+            <div className="px-5 py-3 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-primary-950/40 dark:to-warning-950/40 border-b border-primary-200 dark:border-primary-800">
                 <h3 className="text-sm font-bold text-primary-800 dark:text-primary-300 flex items-center gap-2">
                     <FolderPlus size={16} />
                     Tạo KHLCNT mới
@@ -86,7 +86,7 @@ export const CreatePlanForm: React.FC<CreatePlanFormProps> = ({
                     <button
                         onClick={() => handleSave(false)}
                         disabled={!planName.trim() || createPlanMutation.isPending}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-bg-surface border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg disabled:opacity-50 hover:bg-primary-50 dark:hover:bg-slate-600 transition-colors shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg disabled:opacity-50 hover:bg-primary-50 dark:hover:bg-slate-600 transition-colors shadow-sm"
                     >
                         {createPlanMutation.isPending && !shouldImport ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={14} />}
                         <span>Lưu & Đóng</span>

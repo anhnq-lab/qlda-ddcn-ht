@@ -92,7 +92,7 @@ const Dashboard: React.FC = () => {
             )}
 
             {/* ── TABS NAVIGATION ── */}
-            <div className="border-b border-border bg-bg-surface px-6 pt-4 rounded-t-2xl">
+            <div className="border-b border-border bg-white dark:bg-slate-800 px-6 pt-4 rounded-t-2xl">
                 <nav className="-mb-px flex space-x-8">
                     <button
                         onClick={() => setActiveTab('overview')}

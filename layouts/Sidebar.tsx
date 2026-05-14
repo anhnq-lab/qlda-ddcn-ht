@@ -67,8 +67,6 @@ const navItems: NavItem[] = [
   { name: 'Báo cáo', path: '/reports', icon: BarChart2, resource: 'reports' },
   { name: 'Quy chế làm việc', path: '/regulations', icon: BookOpen, resource: 'regulations' },
   { name: 'Quy trình', path: '/quy-trinh', icon: GitBranch, resource: 'workflows' },
-  { name: 'Quản lý tài khoản', path: '/admin', icon: ShieldCheck, resource: 'admin_accounts' },
-  { name: 'Nhật ký hệ thống', path: '/audit-log', icon: Network, resource: 'admin_audit' },
 ];
 
 // Contractor-only: limited menu
@@ -102,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div
       className={`layout-sidebar
         h-full flex flex-col justify-between
-        transition-all duration-300 ease-out bg-bg-surface border-r border-border z-50
+        transition-all duration-300 ease-out bg-white dark:bg-slate-800 border-r border-border z-50
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}
     >
@@ -114,11 +112,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logo - Expanded state */}
           <div className={`flex items-center overflow-hidden transition-all duration-300 gap-3 ${isCollapsed ? 'md:hidden' : 'w-auto'}`}>
-            <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
+            <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
                <LogoDDCN className="w-full h-full" />
             </div>
             <div className="animate-fade-in flex flex-col justify-center min-w-0">
-               <h1 className="text-[14px] font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 drop-shadow-sm leading-tight uppercase tracking-wide w-full">
+               <h1 className="text-[14px] font-black text-transparent bg-clip-text bg-gradient-to-r from-warning-400 via-warning-200 to-warning-400 drop-shadow-sm leading-tight uppercase tracking-wide w-full">
                  UBND tỉnh Hà Tĩnh
                </h1>
                <p className="text-[8.5px] font-bold text-slate-800 dark:text-slate-200 uppercase leading-tight tracking-tight mt-0.5">
@@ -129,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logo - Collapsed state */}
           <div className={`hidden transition-all duration-300 ${isCollapsed ? 'md:flex justify-center' : ''}`}>
-             <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
+             <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
                <LogoDDCN className="w-full h-full" />
              </div>
           </div>
@@ -204,19 +202,21 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         )}
 
-        {/* Settings */}
-        <NavLink
-          to="/settings"
-          className={`
-            w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
-            text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent
-            ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
-          `}
-          title={isCollapsed ? 'Cài đặt' : undefined}
-        >
-          <Settings className="w-[18px] h-[18px]" />
-          {!isCollapsed && <span className="flex-1 text-left">Cài đặt</span>}
-        </NavLink>
+        {/* Settings (Admin Only) */}
+        {can('admin_accounts', 'view') && (
+          <NavLink
+            to="/settings"
+            className={`
+              w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
+              text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent
+              ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
+            `}
+            title={isCollapsed ? 'Cài đặt hệ thống' : undefined}
+          >
+            <Settings className="w-[18px] h-[18px]" />
+            {!isCollapsed && <span className="flex-1 text-left">Cài đặt hệ thống</span>}
+          </NavLink>
+        )}
 
         {/* Logout */}
         <button

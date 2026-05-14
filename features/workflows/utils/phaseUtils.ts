@@ -20,7 +20,7 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
     },
     execution: {
         title: 'Thực hiện dự án',
-        gradient: 'from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-900/10',
+        gradient: 'from-warning-50 to-warning-100/50 dark:from-warning-900/30 dark:to-warning-900/10',
         icon: '🏗️',
     },
     completion: {

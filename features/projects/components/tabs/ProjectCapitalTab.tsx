@@ -387,8 +387,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                ════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Capital Plan Table with Sub-tabs */}
-                <div className="lg:col-span-2 bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2 bg-bg-subtle dark:bg-slate-700">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700">
                         <div className="flex items-center gap-4">
                             <div className="flex bg-gray-200/60 dark:bg-slate-800 p-1 rounded-xl items-center border border-gray-200/80 dark:border-slate-700">
                                 <button
@@ -452,7 +452,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         return (
                                             <div key={plan.PlanID} className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden">
                                                 <div
-                                                    className="px-5 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 cursor-pointer hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-colors"
+                                                    className="px-5 py-3 bg-gradient-to-r from-blue-50 to-primary-50 dark:from-blue-900/20 dark:to-primary-900/20 cursor-pointer hover:from-blue-100 hover:to-primary-100 dark:hover:from-blue-900/30 dark:hover:to-primary-900/30 transition-colors"
                                                     onClick={() => setExpandedMidTermPlan(isExpanded ? null : plan.PlanID)}
                                                 >
                                                     <div className="flex items-center justify-between">
@@ -501,7 +501,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                 </div>
 
                                                 {isExpanded && (
-                                                    <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-surface">
+                                                    <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                                                         <div className="grid grid-cols-4 gap-3 mb-4">
                                                             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
                                                                 <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">Tổng KH trung hạn</p>
@@ -541,7 +541,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         </div>
                                                         {linkedAnnual.length > 0 ? (
                                                             <table className="w-full text-xs mb-4">
-                                                                <thead className="bg-bg-subtle text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                                                                <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
                                                                     <tr>
                                                                         <th className="px-3 py-2 text-left">Năm</th>
                                                                         <th className="px-3 py-2 text-left">QĐ giao vốn</th>
@@ -563,7 +563,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                                 <td className="px-3 py-2 text-right">
                                                                                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                                                                                         apRate >= 90 ? 'bg-emerald-100 text-emerald-600' :
-                                                                                        apRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
+                                                                                        apRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-warning-100 text-warning-600'
                                                                                     }`}>{apRate.toFixed(1)}%</span>
                                                                                 </td>
                                                                                 <td className="px-3 py-2 text-right">
@@ -635,7 +635,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         return (
                         <div className="flex flex-col">
                             {filteredAnnualPlans.length > 0 && (
-                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate- flex items-center justify-between">
                                     <div className="text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                                         Tổng hợp Kế hoạch Hằng năm
                                     </div>
@@ -651,13 +651,13 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         <div className="w-32">
                                             <div className="flex justify-between text-[10px] font-bold mb-1">
                                                 <span className="text-gray-500">Tỷ lệ</span>
-                                                <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-blue-600' : 'text-orange-600'}>
+                                                <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-blue-600' : 'text-warning-600'}>
                                                     {totalAnnualRate.toFixed(1)}%
                                                 </span>
                                             </div>
                                             <div className="h-1.5 w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <div 
-                                                    className={`h-full rounded-full transition-all duration-500 ${totalAnnualRate >= 90 ? 'bg-emerald-500' : totalAnnualRate >= 50 ? 'bg-blue-500' : 'bg-orange-500'}`} 
+                                                    className={`h-full rounded-full transition-all duration-500 ${totalAnnualRate >= 90 ? 'bg-emerald-500' : totalAnnualRate >= 50 ? 'bg-blue-500' : 'bg-warning-500'}`} 
                                                     style={{ width: `${Math.min(totalAnnualRate, 100)}%` }} 
                                                 />
                                             </div>
@@ -667,7 +667,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             )}
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-bg-subtle text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
+                                    <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
                                         <tr>
                                             <th className="px-4 py-2.5">Năm</th>
                                             <th className="px-4 py-2.5">QĐ giao vốn</th>
@@ -697,11 +697,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             <div className="flex items-center gap-2">
                                                 <div className="w-16 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                                                     <div
-                                                        className={`h-full rounded-full ${a.rate >= 90 ? 'bg-emerald-500' : a.rate >= 50 ? 'bg-blue-500' : 'bg-orange-500'}`}
+                                                        className={`h-full rounded-full ${a.rate >= 90 ? 'bg-emerald-500' : a.rate >= 50 ? 'bg-blue-500' : 'bg-warning-500'}`}
                                                         style={{ width: `${Math.min(a.rate, 100)}%` }}
                                                     />
                                                 </div>
-                                                <span className={`text-[10px] font-bold ${a.rate >= 90 ? 'text-emerald-600 dark:text-emerald-400' : a.rate >= 50 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                                                <span className={`text-[10px] font-bold ${a.rate >= 90 ? 'text-emerald-600 dark:text-emerald-400' : a.rate >= 50 ? 'text-blue-600 dark:text-blue-400' : 'text-warning-600 dark:text-warning-400'}`}>
                                                     {a.rate.toFixed(0)}%
                                                 </span>
                                             </div>
@@ -746,7 +746,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         {formatCurrency(totalAnnualDisbursed)}
                                     </td>
                                     <td className="px-4 py-2.5">
-                                        <span className={`text-xs font-bold ${totalAnnualRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                                        <span className={`text-xs font-bold ${totalAnnualRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-warning-600 dark:text-warning-400'}`}>
                                             {totalAnnualRate.toFixed(1)}%
                                         </span>
                                     </td>
@@ -761,7 +761,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         </div>
 
                 {/* Donut Chart — Nguồn vốn */}
-                <div className="bg-bg-surface p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                         <Wallet className="w-4 h-4 text-purple-600" />
                         Phân bổ nguồn vốn
@@ -806,8 +806,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION C — Kế hoạch giải ngân theo tháng
                ════════════════════════════════════════════ */}
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3 bg-bg-subtle dark:bg-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
                         <CalendarRange className="w-4 h-4 text-violet-600" />
                         Kế hoạch giải ngân theo tháng
@@ -819,7 +819,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     key={year}
                                     onClick={() => setPlanYearFilter(year)}
                                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${planYearFilter === year
-                                        ? 'bg-bg-surface dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
+                                        ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
                                         : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
                                     }`}
                                 >
@@ -899,7 +899,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 {filteredPlanData.length > 0 ? (
                     <div className="px-6 pb-6 mt-4 border-t border-gray-100 dark:border-slate-700/50 pt-4">
                         <table className="w-full text-xs">
-                            <thead className="bg-bg-subtle text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                            <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
                                 <tr>
                                     <th className="px-3 py-2 text-left">Tháng</th>
                                     <th className="px-3 py-2 text-right">KH giải ngân</th>
@@ -920,7 +920,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             <td className="px-3 py-2 text-right">
                                                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                                                     mRate >= 90 ? 'bg-emerald-100 text-emerald-600' :
-                                                    mRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
+                                                    mRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-warning-100 text-warning-600'
                                                 }`}>{mRate.toFixed(1)}%</span>
                                             </td>
                                             <td className="px-3 py-2 text-gray-500 italic max-w-xs truncate" title={d.Notes}>{d.Notes || '—'}</td>
@@ -955,7 +955,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     <td className="px-3 py-2 text-right font-mono text-violet-700 dark:text-violet-400">{formatCurrency(planSummary.totalPlanned)}</td>
                                     <td className="px-3 py-2 text-right font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(planSummary.totalActual)}</td>
                                     <td className="px-3 py-2 text-right">
-                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${planSummary.rate >= 90 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' : planSummary.rate >= 50 ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400'}`}>{planSummary.rate.toFixed(1)}%</span>
+                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${planSummary.rate >= 90 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' : planSummary.rate >= 50 ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-warning-100 text-warning-600 dark:bg-warning-900/40 dark:text-warning-400'}`}>{planSummary.rate.toFixed(1)}%</span>
                                     </td>
                                     <td className="px-3 py-2"></td>
                                     <td className="px-3 py-2"></td>
@@ -975,7 +975,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION D — Lịch sử giải ngân chi tiết
                ════════════════════════════════════════════ */}
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
                     <h3 className="font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                         <ArrowDownUp className="w-4 h-4 text-emerald-600" />
@@ -1015,7 +1015,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     key={key}
                                     onClick={() => setDisbursementFilter(key)}
                                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${disbursementFilter === key
-                                        ? 'bg-bg-surface dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
+                                        ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
                                         : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
                                         }`}
                                 >
@@ -1040,7 +1040,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-bg-subtle text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
+                        <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-slate-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-4 py-3">Ngày</th>
                                 <th className="px-4 py-3">Nội dung</th>
@@ -1095,11 +1095,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
-                                            d.Status === 'Pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                                            d.Status === 'Pending' ? 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300' :
                                                 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-green-500' :
-                                                d.Status === 'Pending' ? 'bg-orange-500' : 'bg-red-500'
+                                                d.Status === 'Pending' ? 'bg-warning-500' : 'bg-red-500'
                                                 }`} />
                                             {d.Status === 'Approved' ? 'Đã duyệt' :
                                                 d.Status === 'Pending' ? 'Chờ duyệt' : 'Từ chối'}
@@ -1141,9 +1141,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 SECTION E — Cảnh báo rủi ro
                ════════════════════════════════════════════ */}
             {alerts.length > 0 && (
-                <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-orange-50/50 dark:bg-orange-900/20">
-                        <h3 className="text-sm font-bold text-orange-800 dark:text-orange-400 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-warning-50/50 dark:bg-warning-900/20">
+                        <h3 className="text-sm font-bold text-warning-800 dark:text-warning-400 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" />
                             Cảnh báo giải ngân
                         </h3>
@@ -1165,27 +1165,27 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION F — Xuất văn bản (Toolbar)
                ════════════════════════════════════════════ */}
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
                 <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-600" />
                     Xuất văn bản thanh toán (NĐ 99/2021/NĐ-CP)
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-primary-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 25</div>
                             <div className="text-[10px] text-gray-400 dark:text-slate-400 -mt-0.5">Đề nghị thanh toán vốn</div>
                         </div>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-blue-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 26</div>
                             <div className="text-[10px] text-gray-400 dark:text-slate-400 -mt-0.5">Đề nghị rút vốn</div>
                         </div>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-green-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 27</div>
@@ -1241,7 +1241,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* Delete Confirmation Dialog */}
             {deleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)}>
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-sm mx-4 p-4 border border-gray-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-sm mx-4 p-4 border border-gray-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
                                 <Trash2 className="w-5 h-5 text-red-600" />

@@ -20,20 +20,20 @@ export interface CardProps {
 // Dùng CSS variables (--bg-surface, --border-default) thay hardcoded colors
 const variantStyles: Record<CardVariant, string> = {
     default: `
-        bg-bg-surface border border-border-DEFAULT shadow-card
+        bg-white dark:bg-slate-800 border border-border-DEFAULT shadow-card
         dark:bg-slate-800 dark:border-slate-700/60
     `,
     outlined: `
-        bg-bg-surface border-2 border-border-DEFAULT
+        bg-white dark:bg-slate-800 border-2 border-border-DEFAULT
         dark:bg-slate-800 dark:border-slate-600
     `,
     elevated: `
-        bg-bg-surface border border-border-subtle shadow-lg
+        bg-white dark:bg-slate-800 border border-border-subtle shadow-lg
         dark:bg-slate-800 dark:border-slate-700/40 dark:shadow-slate-900/40
     `,
     glass: `
         bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg
-        dark:bg-slate-800/70 dark:border-slate-600/30 dark:shadow-slate-900/40
+        dark:bg-slate- dark:border-slate-600/30 dark:shadow-slate-900/40
     `,
     gradient: `
         bg-gradient-to-br from-bg-surface to-bg-subtle border border-border-DEFAULT shadow-card

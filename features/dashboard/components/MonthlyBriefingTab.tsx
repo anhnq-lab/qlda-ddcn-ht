@@ -25,7 +25,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
             </div>
         );
     }
@@ -48,7 +48,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
     return (
         <><div className="space-y-6 animate-fade-in fade-in-up">
             {/* ── Toolbar ── */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-surface p-4 rounded-xl border border-border shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-border shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                         <CalendarDays className="w-5 h-5 text-gray-500" />
@@ -81,7 +81,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
 
             {/* ── KPI Cards ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">
                             <TrendingUp className="w-5 h-5" />
@@ -101,7 +101,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                     </p>
                 </div>
 
-                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
                             <Building2 className="w-5 h-5" />
@@ -111,9 +111,9 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                     <span className="text-2xl font-black text-gray-800 dark:text-slate-100">{stats.newProjectsStarted}</span>
                 </div>
 
-                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
+                        <div className="p-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-lg">
                             <CheckCircle2 className="w-5 h-5" />
                         </div>
                     </div>
@@ -121,9 +121,9 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                     <span className="text-2xl font-black text-gray-800 dark:text-slate-100">{stats.projectsCompleted}</span>
                 </div>
 
-                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-border shadow-sm">
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
+                        <div className="p-2 bg-warning-100 dark:bg-warning-900/30 text-warning-600 rounded-lg">
                             <FileText className="w-5 h-5" />
                         </div>
                     </div>
@@ -137,7 +137,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                 
                 {/* Cột 1: Kết quả */}
                 <div className="space-y-6">
-                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm h-full">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-border shadow-sm h-full">
                         <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
                             <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg"><Target className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">KẾT QUẢ NỔI BẬT TRONG THÁNG</h3>
@@ -163,7 +163,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
 
                 {/* Cột 2: Tồn tại & Kế hoạch */}
                 <div className="space-y-6 h-full flex flex-col">
-                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm flex-1">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-border shadow-sm flex-1">
                         <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
                             <div className="p-1.5 bg-red-100 text-red-600 rounded-lg"><AlertTriangle className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">TỒN TẠI & VƯỚNG MẮC</h3>
@@ -173,10 +173,10 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                             {stats.roadblocks.map((rb) => (
                                 <div key={rb.id} className={`p-3 rounded-xl border flex items-start gap-3
                                     ${rb.severity === 'high' ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800' : 
-                                      rb.severity === 'medium' ? 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800' : 
+                                      rb.severity === 'medium' ? 'bg-warning-50 border-warning-200 dark:bg-warning-900/20 dark:border-warning-800' : 
                                       'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}`}>
                                     <AlertCircle className={`w-4 h-4 mt-0.5 shrink-0 ${
-                                        rb.severity === 'high' ? 'text-red-500' : rb.severity === 'medium' ? 'text-amber-500' : 'text-slate-400'
+                                        rb.severity === 'high' ? 'text-red-500' : rb.severity === 'medium' ? 'text-warning-500' : 'text-slate-400'
                                     }`} />
                                     <p className="text-[13px] font-medium text-gray-800 dark:text-slate-200">{rb.content}</p>
                                 </div>
@@ -184,9 +184,9 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                         </div>
                     </div>
 
-                    <div className="bg-bg-surface p-6 rounded-2xl border border-border shadow-sm flex-1">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-border shadow-sm flex-1">
                         <div className="flex items-center gap-2 mb-6 border-b border-border pb-3">
-                            <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg"><Calendar className="w-5 h-5" /></div>
+                            <div className="p-1.5 bg-primary-100 text-primary-600 rounded-lg"><Calendar className="w-5 h-5" /></div>
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">KẾ HOẠCH THÁNG TỚI</h3>
                         </div>
                         
@@ -194,7 +194,7 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                             {stats.upcomingPlans.map((plan, index) => (
                                 <div key={plan.id} className="flex gap-3">
                                     <div className="mt-1 shrink-0 group">
-                                        <div className="w-5 h-5 rounded bg-indigo-100 text-indigo-600 font-black text-[10px] flex items-center justify-center border border-indigo-200">
+                                        <div className="w-5 h-5 rounded bg-primary-100 text-primary-600 font-black text-[10px] flex items-center justify-center border border-primary-200">
                                             {index + 1}
                                         </div>
                                     </div>

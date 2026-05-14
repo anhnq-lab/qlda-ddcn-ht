@@ -65,7 +65,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-slate- backdrop-blur-sm z-40 transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -73,7 +73,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
 
       {/* Slide Panel */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-[420px] bg-bg-surface shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-slate-200 dark:border-slate-800 flex flex-col ${
+        className={`fixed top-0 right-0 bottom-0 w-[420px] bg-white dark:bg-slate-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-l border-slate-200 dark:border-slate-800 flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -100,7 +100,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
               placeholder="Tìm kiếm tài liệu hướng dẫn nhanh..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-transparent rounded-xl text-sm focus:bg-bg-surface dark:focus:bg-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all dark:text-white dark:placeholder-slate-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-transparent rounded-xl text-sm focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all dark:text-white dark:placeholder-slate-500"
             />
           </div>
         </div>
@@ -121,7 +121,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
               filteredArticles.map((article) => (
                 <div
                   key={article.id}
-                  className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 bg-bg-surface hover:shadow-md transition-all cursor-pointer"
+                  className="group block p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 bg-white dark:bg-slate-800 hover:shadow-md transition-all cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 shrink-0">
@@ -153,7 +153,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
             href="https://help.cic.vn"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-bg-surface dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200 focus:outline-none"
+            className="flex items-center justify-between w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200 focus:outline-none"
           >
             <div className="flex items-center gap-2">
               <BookOpen size={18} className="text-indigo-600 dark:text-indigo-400" />

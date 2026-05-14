@@ -90,7 +90,7 @@ const DateInputVN: React.FC<{
     };
 
     return (
-        <div className={`relative flex items-center w-full rounded-xl border bg-bg-surface group transition-all duration-200 focus-within:ring-2 focus-within:ring-primary-500/30 ${borderClass}`}>
+        <div className={`relative flex items-center w-full rounded-xl border bg-white dark:bg-slate-800 group transition-all duration-200 focus-within:ring-2 focus-within:ring-primary-500/30 ${borderClass}`}>
             <Calendar className="absolute left-3.5 w-4 h-4 text-gray-400 dark:text-slate-400 pointer-events-none group-focus-within:text-primary-500 transition-colors" />
             <input
                 type="text"
@@ -124,7 +124,7 @@ const getStatusConfig = (s?: TaskStatus) => {
     switch (s) {
         case TaskStatus.Done: return { label: 'Hoàn thành', bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50 dark:bg-emerald-900/30', ring: 'ring-emerald-500/20' };
         case TaskStatus.InProgress: return { label: 'Đang thực hiện', bg: 'bg-primary-500', text: 'text-primary-600', light: 'bg-primary-50 dark:bg-primary-900/30', ring: 'ring-primary-500/20' };
-        case TaskStatus.Review: return { label: 'Chờ duyệt', bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50 dark:bg-amber-900/30', ring: 'ring-amber-500/20' };
+        case TaskStatus.Review: return { label: 'Chờ duyệt', bg: 'bg-warning-500', text: 'text-warning-600', light: 'bg-warning-50 dark:bg-warning-900/30', ring: 'ring-warning-500/20' };
         default: return { label: 'Cần làm', bg: 'bg-slate-300', text: 'text-slate-500', light: 'bg-slate-50 dark:bg-slate-700', ring: 'ring-slate-300/20' };
     }
 };
@@ -132,10 +132,10 @@ const getStatusConfig = (s?: TaskStatus) => {
 const getPriorityConfig = (p?: TaskPriority) => {
     switch (p) {
         case TaskPriority.Urgent: return { label: 'Khẩn cấp', color: 'text-red-600 bg-red-50 ring-1 ring-red-500/20' };
-        case TaskPriority.High: return { label: 'Cao', color: 'text-orange-600 bg-orange-50 ring-1 ring-orange-500/20' };
+        case TaskPriority.High: return { label: 'Cao', color: 'text-warning-600 bg-warning-50 ring-1 ring-warning-500/20' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'text-sky-600 bg-sky-50 ring-1 ring-sky-500/20' };
         case TaskPriority.Low: return { label: 'Thấp', color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
-        default: return { label: 'N/A', color: 'text-slate-400 bg-bg-subtle' };
+        default: return { label: 'N/A', color: 'text-slate-400 bg-slate-50 dark:bg-slate-800' };
     }
 };
 
@@ -343,8 +343,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
             {/* Main Container */}
             <div className={asSlidePanel
-                ? 'flex flex-col h-full bg-bg-surface relative'
-                : 'fixed inset-y-0 right-0 z-50 w-full max-w-4xl flex flex-col bg-bg-surface shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300'
+                ? 'flex flex-col h-full bg-white dark:bg-slate-800 relative'
+                : 'fixed inset-y-0 right-0 z-50 w-full max-w-4xl flex flex-col bg-white dark:bg-slate-800 shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300'
             }>
 
                 {/* ══════════ HEADER ══════════ */}
@@ -396,7 +396,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.Todo, ProgressPercent: 0, ActualStartDate: '', ActualEndDate: '' };
                                                 setFormData(updates);
                                                 onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
-                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
+                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
                                                 ← Chưa bắt đầu
                                             </button>
                                         );
@@ -407,7 +407,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.InProgress, ProgressPercent: 90, ActualEndDate: '' };
                                                 setFormData(updates);
                                                 onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
-                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
+                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
                                                 ← Trả lại
                                             </button>
                                         );
@@ -432,7 +432,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.Review, ProgressPercent: 100 };
                                                 setFormData(updates);
                                                 onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
-                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-lg shadow-sm shadow-amber-500/25 transition-all active:scale-[0.97] animate-pulse">
+                                            }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-warning-500 hover:bg-warning-600 rounded-lg shadow-sm shadow-warning-500/25 transition-all active:scale-[0.97] animate-pulse">
                                                 📋 Báo cáo hoàn thành →
                                             </button>
                                         );
@@ -526,7 +526,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <CheckSquare className="w-4 h-4 text-gray-400" /> Tên công việc <span className="text-red-500">*</span>
                                     </label>
                                     <input type="text" required
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                                         placeholder="VD: Lập tờ trình thẩm định..."
                                         value={formData.Title}
                                         onChange={e => setFormData({ ...formData, Title: e.target.value })}
@@ -538,7 +538,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <AlignLeft className="w-4 h-4 text-gray-400" /> Diễn giải chi tiết
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none h-24 resize-none"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none h-24 resize-none"
                                         placeholder="Nhập ghi chú, yêu cầu kỹ thuật..."
                                         value={formData.Description}
                                         onChange={e => setFormData({ ...formData, Description: e.target.value })}
@@ -551,7 +551,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <Folder className="w-4 h-4 text-gray-400" /> Dự án liên kết
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
                                             value={formData.ProjectID || ''}
                                             onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
                                         >
@@ -566,7 +566,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <Calendar className="w-4 h-4 text-gray-400" /> Kế hoạch tháng
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
                                             value={formData.MonthlyPlanItemID || ''}
                                             onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
                                         >
@@ -584,7 +584,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <User className="w-4 h-4 text-gray-400" /> Người thực hiện
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
                                             value={formData.AssigneeID || ''}
                                             onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
                                         >
@@ -597,7 +597,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Trạng thái</label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
                                             value={formData.Status}
                                             onChange={e => {
                                                 const newStatus = e.target.value as TaskStatus;
@@ -627,7 +627,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <Flag className="w-4 h-4 text-gray-400" /> Ưu tiên
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50 text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
                                             value={formData.Priority}
                                             onChange={e => setFormData({ ...formData, Priority: e.target.value as TaskPriority })}
                                         >
@@ -660,7 +660,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                 </div>
 
                                 {/* Actual dates */}
-                                <div className={`grid grid-cols-2 gap-4 p-3 rounded-lg border ${(formData.ActualStartDate || formData.ActualEndDate) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700' : 'bg-bg-subtle border-gray-200 dark:border-slate-700'}`}>
+                                <div className={`grid grid-cols-2 gap-4 p-3 rounded-lg border ${(formData.ActualStartDate || formData.ActualEndDate) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700' : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'}`}>
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-emerald-500" /> Bắt đầu thực tế
@@ -724,22 +724,22 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         </div>
                                     )}
                                     {(formData.SubTasks || []).map((sub, idx) => (
-                                        <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl group/sub border border-transparent hover:border-gray-200 dark:hover:border-slate-600 hover:bg-bg-surface dark:hover:bg-slate-700 transition-all">
+                                        <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl group/sub border border-transparent hover:border-gray-200 dark:hover:border-slate-600 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-all">
                                             <div
                                                 onClick={() => toggleSubTaskDone(idx)}
-                                                className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'Done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-gray-300 bg-bg-surface hover:border-primary-400'}`}
+                                                className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'Done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-gray-300 bg-white dark:bg-slate-800 hover:border-primary-400'}`}
                                             >
                                                 {sub.Status === 'Done' && <CheckCircle2 className="w-3 h-3" />}
                                             </div>
                                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
                                                 <p className={`text-xs font-semibold ${sub.Status === 'Done' ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                    <span className="text-[10px] text-gray-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
+                                                    <span className="text-[10px] text-gray-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
                                                         <User className="w-3 h-3" />
                                                         {sub.AssigneeID ? employees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : 'Chưa gán'}
                                                     </span>
                                                     {sub.DueDate && (
-                                                        <span className="text-[10px] text-gray-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
+                                                        <span className="text-[10px] text-gray-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
                                                             <Calendar className="w-3 h-3" /> {sub.DueDate}
                                                         </span>
                                                     )}
@@ -761,7 +761,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                 {/* Template documents */}
                                 {templates.length > 0 && (
                                     <div>
-                                        <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <p className="text-[10px] font-bold text-warning-600 dark:text-warning-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                             <Scale className="w-3 h-3" /> Tài liệu mẫu theo quy định
                                         </p>
                                         <div className="space-y-1.5">
@@ -769,7 +769,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 const ftc = getFileTypeColor(tpl.fileType);
                                                 const FileIcon = tpl.fileType === 'xlsx' ? FileSpreadsheet : tpl.fileType === 'pdf' ? File : FileText;
                                                 return (
-                                                    <div key={idx} className="flex items-center gap-3 p-3 bg-bg-subtle rounded-xl ring-1 ring-gray-100 dark:ring-slate-700 hover:ring-amber-200 transition-all">
+                                                    <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl ring-1 ring-gray-100 dark:ring-slate-700 hover:ring-warning-200 transition-all">
                                                         <div className={`p-2 rounded-xl ${ftc.bg}`}>
                                                             <FileIcon className={`w-4 h-4 ${ftc.text}`} />
                                                         </div>
@@ -782,7 +782,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                         </div>
                                                         {tpl.templatePath && getTemplateConfig(tpl.templatePath) && (
                                                             <button type="button" onClick={() => setActiveExportTemplate(tpl)}
-                                                                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-primary-500 to-amber-500 text-white text-[10px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95">
+                                                                className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-primary-500 to-warning-500 text-white text-[10px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95">
                                                                 <Download className="w-3 h-3" /> Xuất DOCX
                                                             </button>
                                                         )}
@@ -802,7 +802,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <div className="space-y-1.5">
                                             {(formData.Attachments || []).map(att => (
                                                 <div key={att.id} className="flex items-center gap-3 p-3 bg-emerald-50/40 dark:bg-emerald-900/10 rounded-xl ring-1 ring-emerald-100 dark:ring-emerald-900/30 group/att">
-                                                    <div className="p-2 bg-bg-surface rounded-xl shadow-sm ring-1 ring-emerald-100 shrink-0">
+                                                    <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-emerald-100 shrink-0">
                                                         <FileText className="w-4 h-4 text-emerald-500" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -832,7 +832,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                         {activeSection === 'advanced' && (
                             <>
                                 {timelineStep && (
-                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-subtle border border-gray-200 dark:border-slate-700">
+                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
                                         <Layers className="w-4 h-4 text-gray-400" />
                                         <div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bước quy trình</p>
@@ -841,35 +841,35 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 )}
 
-                                <div className="p-4 bg-bg-subtle rounded-xl border border-gray-200 dark:border-slate-700">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700">
                                     <TaskDependencyManager task={formData as Task} allTasks={allTasks} onUpdate={handleDependencyUpdate} />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Căn cứ pháp lý</label>
-                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Điều 24 Luật ĐTC" value={formData.LegalBasis || ''} onChange={e => setFormData({ ...formData, LegalBasis: e.target.value })} />
+                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Điều 24 Luật ĐTC" value={formData.LegalBasis || ''} onChange={e => setFormData({ ...formData, LegalBasis: e.target.value })} />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Sản phẩm đầu ra</label>
-                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Quyết định phê duyệt" value={formData.OutputDocument || ''} onChange={e => setFormData({ ...formData, OutputDocument: e.target.value })} />
+                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Quyết định phê duyệt" value={formData.OutputDocument || ''} onChange={e => setFormData({ ...formData, OutputDocument: e.target.value })} />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Thời gian (ngày)</label>
-                                        <input type="number" min="1" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="15" value={formData.DurationDays || ''} onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })} />
+                                        <input type="number" min="1" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="15" value={formData.DurationDays || ''} onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })} />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Chi phí dự kiến (VNĐ)</label>
-                                        <input type="number" min="0" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="50,000,000" value={formData.EstimatedCost || ''} onChange={e => setFormData({ ...formData, EstimatedCost: parseInt(e.target.value) || undefined })} />
+                                        <input type="number" min="0" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="50,000,000" value={formData.EstimatedCost || ''} onChange={e => setFormData({ ...formData, EstimatedCost: parseInt(e.target.value) || undefined })} />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Người phê duyệt</label>
-                                    <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-gray-900 dark:text-slate-50" value={formData.ApproverID || ''} onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}>
+                                    <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50" value={formData.ApproverID || ''} onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}>
                                         <option value="">-- Chọn --</option>
                                         {availableEmployees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc')).map(emp => (
                                             <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
@@ -877,16 +877,16 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </select>
                                 </div>
 
-                                <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
-                                    <input type="checkbox" id="isCritical" className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked={formData.IsCritical || false} onChange={e => setFormData({ ...formData, IsCritical: e.target.checked })} />
-                                    <label htmlFor="isCritical" className="text-sm font-medium text-amber-700 dark:text-amber-300">Critical Path (ảnh hưởng tiến độ dự án)</label>
+                                <div className="flex items-center gap-3 p-3 bg-warning-50 dark:bg-warning-900/20 rounded-lg border border-warning-200 dark:border-warning-700">
+                                    <input type="checkbox" id="isCritical" className="w-4 h-4 text-warning-600 border-warning-300 rounded focus:ring-warning-500" checked={formData.IsCritical || false} onChange={e => setFormData({ ...formData, IsCritical: e.target.checked })} />
+                                    <label htmlFor="isCritical" className="text-sm font-medium text-warning-700 dark:text-warning-300">Critical Path (ảnh hưởng tiến độ dự án)</label>
                                 </div>
                             </>
                         )}
                     </div>
 
                     {/* ══════════ FOOTER ══════════ */}
-                    <div className="sticky bottom-0 px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-surface flex items-center justify-between shrink-0">
+                    <div className="sticky bottom-0 px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-between shrink-0">
                         {saveSuccess && (
                             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 animate-in fade-in duration-200">
                                 ✅ Đã lưu thành công
@@ -909,7 +909,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
             {/* ══════════ SUBTASK INLINE MODAL ══════════ */}
             {isSubTaskModalOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md overflow-hidden ring-1 ring-black/5">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md overflow-hidden ring-1 ring-black/5">
                         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
                             <h3 className="text-base font-bold text-gray-800 dark:text-slate-200">{editingSubTask ? 'Sửa công việc con' : 'Thêm công việc con'}</h3>
                             <button type="button" onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl text-gray-400">✕</button>

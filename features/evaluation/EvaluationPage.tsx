@@ -189,7 +189,7 @@ export const EvaluationPage: React.FC = () => {
                 {/* Tabs & Filters */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     {/* Tabs */}
-                    <div className="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
+                    <div className="flex bg-slate-100 dark:bg-slate- p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
                         <button 
                             onClick={() => setActiveSubTab('leader')}
                             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
@@ -278,10 +278,10 @@ export const EvaluationPage: React.FC = () => {
                         <p className="text-sm">Chưa có phiếu đánh giá nào trong nhóm này.</p>
                     </div>
                 ) : (
-                    <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
                         <table className="w-full">
                             <thead>
-                                <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
+                                <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
                                     <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-800">Nhân sự</th>
                                     <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Loại phiếu</th>
                                     <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-800">Tự chấm</th>

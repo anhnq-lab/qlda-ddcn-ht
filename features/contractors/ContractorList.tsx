@@ -189,7 +189,7 @@ const ContractorList: React.FC = () => {
     const stats = [
         { label: 'Tổng nhà thầu', value: totalContractors, icon: Users, color: 'blue' as const },
         { label: 'Thi công', value: typeCounts['Construction'] || 0, icon: HardHat, color: 'emerald' as const },
-        { label: 'Tư vấn / Giám sát', value: (typeCounts['Consultancy'] || 0) + (typeCounts['Supervision'] || 0), icon: Ruler, color: 'amber' as const },
+        { label: 'Tư vấn / Giám sát', value: (typeCounts['Consultancy'] || 0) + (typeCounts['Supervision'] || 0), icon: Ruler, color: 'warning' as const },
         { label: 'Khác', value: totalContractors - (typeCounts['Construction'] || 0) - (typeCounts['Consultancy'] || 0) - (typeCounts['Supervision'] || 0), icon: Eye, color: 'violet' as const },
     ];
 
@@ -199,7 +199,7 @@ const ContractorList: React.FC = () => {
         Supervision: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
         Survey: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
         Appraisal: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
-        Supplier: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300',
+        Supplier: 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300',
         Other: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
     };
 
@@ -233,7 +233,7 @@ const ContractorList: React.FC = () => {
             )}
 
             {/* Toolbar */}
-            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="relative max-w-sm flex-1">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
                         <input
@@ -280,11 +280,11 @@ const ContractorList: React.FC = () => {
             </div>
 
             {/* Danh sách */}
-            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                 <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
                                 <SortHeader label="Mã số thuế" field="TaxCode" />
                                 <SortHeader label="Tên nhà thầu" field="FullName" />
@@ -437,7 +437,7 @@ const ContractorList: React.FC = () => {
             {/* Add/Edit Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
                         <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
                                 {isEditing ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
@@ -615,7 +615,7 @@ const ContractorList: React.FC = () => {
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-sm border border-gray-200 dark:border-slate-700 p-4 animate-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-sm border border-gray-200 dark:border-slate-700 p-4 animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />

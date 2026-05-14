@@ -43,8 +43,8 @@ const DEPT_CONFIG: Record<string, { gradient: string; color: string; icon: strin
     'Phòng Kỹ thuật – Thẩm định':   { gradient: 'from-purple-500 to-purple-700', color: '#a855f7', icon: '🔧' },
     'Phòng Quản lý dự án 1':         { gradient: 'from-sky-500 to-sky-700',     color: '#0ea5e9', icon: '🏗' },
     'Phòng Quản lý dự án 2':         { gradient: 'from-teal-500 to-teal-700',   color: '#14b8a6', icon: '🏗' },
-    'Phòng Quản lý dự án 3':         { gradient: 'from-indigo-500 to-indigo-700', color: '#6366f1', icon: '🏗' },
-    'Phòng Phát triển dịch vụ':     { gradient: 'from-amber-500 to-amber-700', color: '#f59e0b', icon: '🎯' },
+    'Phòng Quản lý dự án 3':         { gradient: 'from-primary-500 to-primary-700', color: '#6366f1', icon: '🏗' },
+    'Phòng Phát triển dịch vụ':     { gradient: 'from-warning-500 to-warning-700', color: '#f59e0b', icon: '🎯' },
 };
 
 // ══════════════════════════════════════════════════
@@ -300,7 +300,7 @@ const OrgChartPage: React.FC = () => {
                 {/* Stats badges */}
                 <div className="flex items-center gap-2 flex-wrap">
                     {[
-                        { label: 'Giám đốc', val: 1, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700' },
+                        { label: 'Giám đốc', val: 1, color: 'bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border-warning-200 dark:border-warning-700' },
                         { label: 'Phó Giám đốc', val: leadership.pgds.length, color: 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-700' },
                         { label: 'Phòng/Đơn vị', val: 7, color: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700' },
                         { label: 'Tổng nhân sự', val: employees.length, color: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' },
@@ -368,7 +368,7 @@ const OrgChartPage: React.FC = () => {
                     </ReactFlow>
 
                     {/* Legend */}
-                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
+                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate- backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
                         <p className="text-[9px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Chú giải</p>
                         {[
                             { color: 'bg-red-600', label: 'UBND tỉnh Hà Tĩnh' },

@@ -52,7 +52,10 @@
       "Read(//c/Users/nguye/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/6364dcde-3ce9-45f4-a586-5b7179ee716e/6d6216e7-bdb5-4c7d-9189-c5829b0cd5cc/skills/docx/**)",
       "Bash(pandoc \"D:\\\\01_Projects\\\\qlda-ddcn-ht\\\\ks\\\\Quy trình quyết toán vốn đầu tư dự án hoàn thành\\\\QT.04.QTVDTDAHT.docx\" -o output.md)",
       "Bash(python scripts/office/unpack.py \"D:\\\\01_Projects\\\\qlda-ddcn-ht\\\\ks\\\\Quy trình quyết toán vốn đầu tư dự án hoàn thành\\\\QT.04.QTVDTDAHT.docx\" unpacked_qt/)",
-      "PowerShell($content = Get-Content \"C:\\\\Users\\\\nguye\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\6364dcde-3ce9-45f4-a586-5b7179ee716e\\\\6d6216e7-bdb5-4c7d-9189-c5829b0cd5cc\\\\skills\\\\docx\\\\unpacked_qt\\\\word\\\\document.xml\" -Encoding UTF8 -Raw; $text = [System.Text.RegularExpressions.Regex]::Replace\\($content, '<[^>]+>', ' '\\); $text = [System.Text.RegularExpressions.Regex]::Replace\\($text, '\\\\s+', ' '\\); $text.Substring\\(0, [Math]::Min\\(8000, $text.Length\\)\\))"
+      "PowerShell($content = Get-Content \"C:\\\\Users\\\\nguye\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\6364dcde-3ce9-45f4-a586-5b7179ee716e\\\\6d6216e7-bdb5-4c7d-9189-c5829b0cd5cc\\\\skills\\\\docx\\\\unpacked_qt\\\\word\\\\document.xml\" -Encoding UTF8 -Raw; $text = [System.Text.RegularExpressions.Regex]::Replace\\($content, '<[^>]+>', ' '\\); $text = [System.Text.RegularExpressions.Regex]::Replace\\($text, '\\\\s+', ' '\\); $text.Substring\\(0, [Math]::Min\\(8000, $text.Length\\)\\))",
+      "Bash(xargs -I {} sh -c 'grep -r \"role_permissions\\\\|RoleMatrix\\\\|PermissionMatrix\" \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\src\" 2>/dev/null || echo \"not found\"')",
+      "Bash(ls -la \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\\" | head -30)",
+      "Bash(xargs basename -a)"
     ]
   }
 }

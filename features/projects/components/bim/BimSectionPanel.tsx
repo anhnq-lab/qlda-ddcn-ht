@@ -82,7 +82,7 @@ export const BimSectionPanel: React.FC<BimSectionPanelProps> = ({
         <div className={`
             absolute left-2 bottom-14 z-30 w-64 rounded-xl overflow-hidden
             backdrop-blur-xl shadow-sm border
-            ${isDark ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
+            ${isDark ? 'bg-slate- border-slate-700/50' : 'bg-white/95 border-gray-200'}
         `}>
             {/* Header */}
             <div className={`

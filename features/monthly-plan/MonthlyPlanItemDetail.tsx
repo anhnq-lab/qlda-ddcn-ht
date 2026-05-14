@@ -13,7 +13,7 @@ const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.Reac
     planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        color: 'text-slate-600',  bg: 'bg-slate-100',  ring: 'ring-slate-300/20' },
     completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, color: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-500/20' },
     incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      color: 'text-red-600',    bg: 'bg-red-50',     ring: 'ring-red-500/20' },
-    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  color: 'text-amber-600',  bg: 'bg-amber-50',   ring: 'ring-amber-500/20' },
+    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  color: 'text-warning-600',  bg: 'bg-warning-50',   ring: 'ring-warning-500/20' },
     deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   color: 'text-blue-600',   bg: 'bg-blue-50',    ring: 'ring-blue-500/20' },
 };
 
@@ -61,17 +61,17 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50 animate-in fade-in duration-300">
+        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate- animate-in fade-in duration-300">
             {/* Header Toolbar */}
             <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 shadow-sm shrink-0">
                 <h3 className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-indigo-500" />
+                    <CalendarDays className="w-4 h-4 text-primary-500" />
                     Chi tiết Kế hoạch tháng
                 </h3>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={onEdit}
-                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
                         title="Sửa"
                     >
                         <Edit2 className="w-4 h-4" />
@@ -160,7 +160,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 border border-slate-100">
+                                    <div className="bg-slate-50 dark:bg-slate- rounded-xl p-3 border border-slate-100">
                                         <p className="text-xs font-bold text-slate-500 mb-1">Ghi chú</p>
                                         <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.notes}</p>
                                     </div>
@@ -231,25 +231,31 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 <Users className="w-4 h-4" /> Phân công
                             </h3>
                             <div className="space-y-4">
-                                {item.staff_name && (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
-                                            <span className="text-xs font-bold text-indigo-600">{item.staff_name.charAt(0).toUpperCase()}</span>
+                                {(() => {
+                                    const names = item.staff_names && item.staff_names.length > 0
+                                        ? item.staff_names
+                                        : item.staff_name ? [item.staff_name] : [];
+                                    if (names.length === 0) return null;
+                                    return names.map((name, idx) => (
+                                        <div key={idx} className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center shrink-0 border border-primary-100">
+                                                <span className="text-xs font-bold text-primary-600">{name.charAt(0).toUpperCase()}</span>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-slate-700">{name}</p>
+                                                <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider">Phụ trách / Thực hiện</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-slate-700">{item.staff_name}</p>
-                                            <p className="text-[10px] uppercase font-bold text-indigo-500 tracking-wider">Phụ trách</p>
-                                        </div>
-                                    </div>
-                                )}
+                                    ));
+                                })()}
                                 {item.dept_head_name && (
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center shrink-0 border border-amber-100">
-                                            <span className="text-xs font-bold text-amber-600">{item.dept_head_name.charAt(0).toUpperCase()}</span>
+                                        <div className="w-8 h-8 rounded-full bg-warning-50 flex items-center justify-center shrink-0 border border-warning-100">
+                                            <span className="text-xs font-bold text-warning-600">{item.dept_head_name.charAt(0).toUpperCase()}</span>
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium text-slate-700">{item.dept_head_name}</p>
-                                            <p className="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Lãnh đạo phòng</p>
+                                            <p className="text-[10px] uppercase font-bold text-warning-500 tracking-wider">Lãnh đạo phòng</p>
                                         </div>
                                     </div>
                                 )}

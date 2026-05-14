@@ -25,12 +25,12 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
     setExpandedChapters, setShowPdfViewer, setShowDeepSearch
 }) => {
     return (
-        <div className={`${readingMode ? 'hidden' : 'w-96'} bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden`}>
+        <div className={`${readingMode ? 'hidden' : 'w-80'} bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden`}>
             {/* Sidebar Header with tabs */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-bg-subtle">
+            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                 <div className="flex items-center gap-2">
                     <button onClick={() => setShowBookmarks(false)}
-                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-primary-600 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
                         <FileText className="w-4 h-4 inline" /> Văn bản ({filteredDocs.length})
                     </button>
                     <button onClick={() => setShowBookmarks(true)}

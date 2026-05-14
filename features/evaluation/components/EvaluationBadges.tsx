@@ -21,7 +21,7 @@ export const EvaluationStatusBadge: React.FC<StatusBadgeProps> = ({ status, size
 
     const dotColor: Record<EvaluationStatus, string> = {
         draft: 'bg-slate-400',
-        submitted: 'bg-amber-500',
+        submitted: 'bg-warning-500',
         approved: 'bg-emerald-500',
         rejected: 'bg-red-500',
     };

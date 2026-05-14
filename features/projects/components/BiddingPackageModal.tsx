@@ -357,7 +357,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             />
 
             {/* Modal */}
-            <div className="relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-4xl max-h-[90vh] overflow-hidden animate-scale-in">
+            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-4xl max-h-[90vh] overflow-hidden animate-scale-in">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                     <div>

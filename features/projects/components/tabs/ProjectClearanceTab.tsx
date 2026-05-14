@@ -56,7 +56,7 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
 
     if (!clearance && !initializeClearance.isPending) {
         return (
-            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 dark:bg-slate- rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
                 <Map className="w-12 h-12 text-slate-400 mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Chưa có thông tin Giải phóng mặt bằng</h3>
                 <p className="text-slate-500 text-center max-w-md mb-6">
@@ -126,9 +126,9 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                         title="Hộ dân Tái định cư" 
                         value={`${clearance?.resettled_households || 0} / ${clearance?.total_households || 0}`}
                         unit="hộ"
-                        icon={<Home className="w-5 h-5 text-orange-500" />}
+                        icon={<Home className="w-5 h-5 text-warning-500" />}
                         progress={clearance?.total_households ? ((clearance.resettled_households || 0) / clearance.total_households) * 100 : 0}
-                        colorClass="bg-orange-500"
+                        colorClass="bg-warning-500"
                     />
                     <DashboardCard 
                         title="Giải ngân GPMB" 
@@ -150,8 +150,8 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
             )}
 
             {/* 16 Steps Timeline */}
-            <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm mt-6">
-                <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm mt-6">
+                <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-">
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <FileText className="w-4 h-4 text-slate-500" />
                         Quy trình thực hiện 16 bước
@@ -160,7 +160,7 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-400px)]">
                     <table className="w-full">
                         <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800">
-                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                 <th className="px-3 py-3 w-16 border-b border-slate-200 dark:border-slate-800 text-center">Bước</th>
                                 <th className="px-4 py-3 text-left min-w-[300px] border-b border-slate-200 dark:border-slate-800">Nội dung công việc</th>
                                 <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-800">Trạng thái</th>
@@ -191,7 +191,7 @@ const DashboardCard = ({ title, value, subValue, unit, icon, progress, colorClas
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                <div className="p-2 bg-slate-50 dark:bg-slate- rounded-lg">
                     {icon}
                 </div>
             </div>
@@ -231,7 +231,7 @@ const ClearanceGlobalEditor = ({ clearance, projectId, onClose }: { clearance: S
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-inner">
+        <form onSubmit={handleSubmit} className="bg-slate-50 dark:bg-slate- rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-inner">
             <h3 className="text-sm font-semibold mb-4 text-slate-700 dark:text-slate-300">Cập nhật số liệu tổng quan GPMB</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
                 <div>
@@ -369,7 +369,7 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
     }
 
     return (
-        <tr className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50">
+        <tr className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-">
             {/* Bước */}
             <td className="px-3 py-3.5 text-center">
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">B.{milestone.step_number}</span>
@@ -396,7 +396,7 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
                     milestone.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20' :
                     milestone.status === 'in_progress' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' :
                     milestone.status === 'blocked' ? 'bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/20' :
-                    'bg-slate-500/10 text-slate-600 dark:text-slate-400 ring-1 ring-slate-500/20'
+                    'bg-slate- text-slate-600 dark:text-slate-400 ring-1 ring-slate-500/20'
                 }`}>
                     {getStatusText(milestone.status)}
                 </span>

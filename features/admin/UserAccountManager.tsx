@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
     ShieldCheck, Plus, RotateCcw, ToggleLeft, ToggleRight,
     Copy, Check, Search, AlertCircle, Eye, EyeOff,
-    Users, UserPlus, Key, Mail, Phone, User as UserIcon
+    Users, UserPlus, Key, Mail, Phone, User as UserIcon, Trash2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { UserAccountService, UserAccount } from '../../services/UserAccountService';
+import { supabase } from '../../lib/supabase';
 
 // ============================================================
 // ADMIN USER ACCOUNT MANAGER
@@ -28,6 +29,9 @@ const UserAccountManager: React.FC = () => {
     const [newPassword, setNewPassword] = useState('');
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [copiedPassword, setCopiedPassword] = useState(false);
+
+    // View details modal
+    const [viewingAccount, setViewingAccount] = useState<UserAccount | null>(null);
 
     // Use RBAC permission check instead of legacy Role string comparison
     const isAdmin = can('admin_accounts', 'view');
@@ -65,10 +69,39 @@ const UserAccountManager: React.FC = () => {
     // Toggle active
     const handleToggleActive = async (account: UserAccount) => {
         try {
-            await UserAccountService.toggleActive(account.id, !account.is_active);
+            await UserAccountService.toggleActive(account.account_id, !account.is_active);
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: !account.is_active ? 'ENABLE_ACCOUNT' : 'DISABLE_ACCOUNT',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'UserAccount',
+                    target_id: account.account_id,
+                    details: `Toggled active status for user ${account.username} to ${!account.is_active}`
+                });
+            }
             await loadAccounts();
         } catch (err: any) {
             setError(err.message);
+        }
+    };
+
+    // Delete account
+    const handleDelete = async (account: UserAccount) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản của ${account.full_name || account.username}? Hành động này không thể hoàn tác.`)) return;
+        try {
+            await UserAccountService.delete(account.account_id);
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: 'DELETE_ACCOUNT',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'UserAccount',
+                    target_id: account.account_id,
+                    details: `Deleted user account ${account.username}`
+                });
+            }
+            setAccounts(prev => prev.filter(a => a.account_id !== account.account_id));
+        } catch (err: any) {
+            setError(err.message || 'Lỗi khi xóa tài khoản');
         }
     };
 
@@ -76,7 +109,16 @@ const UserAccountManager: React.FC = () => {
     const handleResetPassword = async () => {
         if (!resetTarget || !newPassword) return;
         try {
-            await UserAccountService.resetPassword(resetTarget.id, newPassword);
+            await UserAccountService.resetPassword(resetTarget.account_id, newPassword);
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: 'RESET_PASSWORD',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'UserAccount',
+                    target_id: resetTarget.account_id,
+                    details: `Reset password for user ${resetTarget.username}`
+                });
+            }
             setResetTarget(null);
             setNewPassword('');
             await loadAccounts();
@@ -119,64 +161,44 @@ const UserAccountManager: React.FC = () => {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 flex items-center gap-3">
-                        <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm shadow-primary-500/20">
-                            <ShieldCheck className="w-6 h-6 text-white" />
-                        </div>
-                        Quản lý tài khoản
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-                        Tạo và quản lý tài khoản đăng nhập cho nhân viên
-                    </p>
-                </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-medium shadow-sm shadow-primary-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
-                >
-                    <UserPlus className="w-5 h-5" />
-                    Tạo tài khoản
-                </button>
-            </div>
+        <div className="space-y-6 h-full flex flex-col">
+
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="relative overflow-hidden bg-gradient-to-br from-slate-700 to-slate-800 border-t-[3px] border-slate-500 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <Users className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-slate-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <Users className="absolute -right-3 -top-3 w-20 h-20 text-slate-100 dark:text-slate-700/50" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                            <Users className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{accounts.length}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tổng tài khoản</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{accounts.length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Tổng tài khoản</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 border-t-[3px] border-primary-500 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-primary-500 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-primary-50 dark:text-slate-700" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                            <ToggleRight className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-slate-700 flex items-center justify-center">
+                            <ToggleRight className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{accounts.filter(a => a.is_active).length}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đang hoạt động</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{accounts.filter(a => a.is_active).length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đang hoạt động</p>
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden bg-gradient-to-br from-slate-500 to-slate-600 border-t-[3px] border-slate-400 rounded-2xl p-5 shadow-sm ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
-                    <ToggleLeft className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                <div className="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-[4px] border-l-red-400 rounded-2xl p-5 shadow-sm hover:scale-[1.02] hover:shadow-lg transition-all duration-300">
+                    <ToggleLeft className="absolute -right-3 -top-3 w-20 h-20 text-red-50 dark:text-slate-700" />
                     <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                            <ToggleLeft className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-slate-700 flex items-center justify-center">
+                            <ToggleLeft className="w-5 h-5 text-red-600 dark:text-red-400" />
                         </div>
                         <div>
-                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-lg">{accounts.filter(a => !a.is_active).length}</p>
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đã tắt</p>
+                            <p className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{accounts.filter(a => !a.is_active).length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 mt-0.5">Đã tắt</p>
                         </div>
                     </div>
                 </div>
@@ -184,30 +206,39 @@ const UserAccountManager: React.FC = () => {
 
             {/* Error */}
             {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 text-sm">
+                <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-900/50 text-sm">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                     <button onClick={() => setError('')} className="ml-auto text-xs underline">Đóng</button>
                 </div>
             )}
 
-            {/* Search */}
-            <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                    type="text"
-                    placeholder="Tìm theo tên, username, email, SĐT..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-gray-900 dark:text-slate-100"
-                />
+            {/* Toolbar */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Tìm theo tên, username, email, SĐT..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100"
+                    />
+                </div>
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-medium shadow-sm shadow-primary-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all whitespace-nowrap"
+                >
+                    <UserPlus className="w-5 h-5" />
+                    Tạo tài khoản
+                </button>
             </div>
 
             {/* Table */}
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden flex-1 flex flex-col min-h-0">
                 {loading ? (
                     <div className="p-4 text-center text-gray-400">
-                        <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-3" />
+                        <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-3" />
                         Đang tải...
                     </div>
                 ) : filtered.length === 0 ? (
@@ -216,10 +247,10 @@ const UserAccountManager: React.FC = () => {
                         {search ? 'Không tìm thấy kết quả' : 'Chưa có tài khoản nào'}
                     </div>
                 ) : (
-                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                    <div className="overflow-auto flex-1">
+                        <table className="w-full text-sm relative">
+                            <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)]">
+                                <tr>
                                     <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">#</th>
                                     <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Nhân viên</th>
                                     <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Username</th>
@@ -237,7 +268,11 @@ const UserAccountManager: React.FC = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-slate-700/50">
                                 {filtered.map((account, idx) => (
-                                    <tr key={account.id} className="group transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-700/50">
+                                    <tr 
+                                        key={account.account_id} 
+                                        onClick={() => setViewingAccount(account)}
+                                        className="group transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-700/50 cursor-pointer"
+                                    >
                                         <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3">
@@ -267,7 +302,7 @@ const UserAccountManager: React.FC = () => {
                                                 {account.role || 'Staff'}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                                             <button
                                                 onClick={() => handleToggleActive(account)}
                                                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${account.is_active
@@ -283,14 +318,23 @@ const UserAccountManager: React.FC = () => {
                                         <td className="px-4 py-3 text-xs text-gray-500 dark:text-slate-400">
                                             {formatDate(account.last_login)}
                                         </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <button
-                                                onClick={() => openResetModal(account)}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
-                                            >
-                                                <Key className="w-3.5 h-3.5" />
-                                                Reset MK
-                                            </button>
+                                        <td className="px-4 py-3 text-right" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                <button
+                                                    onClick={() => openResetModal(account)}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors"
+                                                >
+                                                    <Key className="w-3.5 h-3.5" />
+                                                    Reset MK
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(account)}
+                                                    className="inline-flex items-center justify-center w-7 h-7 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                    title="Xóa tài khoản"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -301,7 +345,7 @@ const UserAccountManager: React.FC = () => {
             </div>
 
             {/* Ghi chú */}
-            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-xl p-4 text-sm text-blue-700 dark:text-blue-400">
+            <div className="bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-xl p-4 text-sm text-blue-700 dark:text-blue-400">
                 <div className="flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                     <div>
@@ -326,7 +370,7 @@ const UserAccountManager: React.FC = () => {
             {/* Reset Password Modal */}
             {resetTarget && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setResetTarget(null)}>
-                    <div className="bg-bg-surface rounded-2xl w-full max-w-md p-4 shadow-sm" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-4 shadow-sm" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-1">Reset mật khẩu</h3>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
                             Đặt mật khẩu mới cho <strong>{resetTarget.full_name}</strong> ({resetTarget.username})
@@ -338,7 +382,7 @@ const UserAccountManager: React.FC = () => {
                                     type={showNewPassword ? 'text' : 'password'}
                                     value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 pr-24 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-gray-900 dark:text-slate-100"
+                                    className="w-full px-4 py-3 pr-24 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
                                     placeholder="Mật khẩu mới"
                                 />
                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -352,7 +396,7 @@ const UserAccountManager: React.FC = () => {
                                     <button
                                         type="button"
                                         onClick={copyPassword}
-                                        className="p-1.5 text-gray-400 hover:text-indigo-600"
+                                        className="p-1.5 text-gray-400 hover:text-primary-600"
                                         title="Copy mật khẩu"
                                     >
                                         {copiedPassword ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
@@ -365,7 +409,7 @@ const UserAccountManager: React.FC = () => {
                                     setNewPassword(UserAccountService.generatePassword());
                                     setCopiedPassword(false);
                                 }}
-                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                                className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
                             >
                                 ↻ Sinh mật khẩu ngẫu nhiên
                             </button>
@@ -381,9 +425,104 @@ const UserAccountManager: React.FC = () => {
                             <button
                                 onClick={handleResetPassword}
                                 disabled={!newPassword}
-                                className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm shadow-indigo-500/25"
+                                className="flex-1 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 shadow-sm shadow-primary-500/25"
                             >
                                 Xác nhận
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* View Details Modal */}
+            {viewingAccount && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setViewingAccount(null)}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-4">
+                                <img
+                                    src={viewingAccount.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(viewingAccount.full_name || 'U')}&background=0D8ABC&color=fff&size=64`}
+                                    alt=""
+                                    className="w-16 h-16 rounded-full border-4 border-white dark:border-slate-800 shadow-sm"
+                                />
+                                <div>
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                        {viewingAccount.full_name || viewingAccount.username}
+                                    </h2>
+                                    <p className="text-sm text-gray-500 dark:text-slate-400 font-medium mt-1">
+                                        {viewingAccount.department || 'Chưa phân phòng'} • {viewingAccount.position || 'Nhân viên'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Username</span>
+                                    <p className="font-mono text-sm font-medium text-gray-900 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded inline-block">
+                                        {viewingAccount.username}
+                                    </p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Phân quyền</span>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-slate-200">
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${viewingAccount.role === 'Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
+                                            viewingAccount.role === 'Manager' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                                'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
+                                            }`}>
+                                            {viewingAccount.role || 'Staff'}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                    <ShieldCheck className="w-4 h-4 text-primary-500" />
+                                    Bảo mật & Đăng nhập
+                                </h3>
+                                
+                                <div className="grid grid-cols-[120px_1fr] gap-2 text-sm">
+                                    <div className="text-gray-500 dark:text-slate-400">Email:</div>
+                                    <div className="font-medium text-gray-900 dark:text-slate-200">{viewingAccount.email || '—'}</div>
+                                    
+                                    <div className="text-gray-500 dark:text-slate-400">SĐT:</div>
+                                    <div className="font-medium text-gray-900 dark:text-slate-200">{viewingAccount.phone || '—'}</div>
+                                    
+                                    <div className="text-gray-500 dark:text-slate-400">Đăng nhập cuối:</div>
+                                    <div className="font-medium text-gray-900 dark:text-slate-200">{formatDate(viewingAccount.last_login)}</div>
+                                    
+                                    <div className="text-gray-500 dark:text-slate-400">Trạng thái:</div>
+                                    <div>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${viewingAccount.is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                                            {viewingAccount.is_active ? 'Đang hoạt động' : 'Đã khóa'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="text-gray-500 dark:text-slate-400 mt-2">Mật khẩu:</div>
+                                    <div className="mt-2 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono text-lg tracking-widest text-slate-400">••••••••</span>
+                                            <span className="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                Đã mã hóa 1 chiều (Bảo mật)
+                                            </span>
+                                        </div>
+                                        <p className="text-slate-500 mt-1 italic text-[11px]">
+                                            * Hệ thống chỉ lưu mã băm (hash) của mật khẩu. Không ai có thể xem được mật khẩu gốc kể cả Admin. 
+                                            Để cấp mật khẩu mới, vui lòng nhấn nút <strong className="text-primary-600 cursor-pointer" onClick={() => { setViewingAccount(null); openResetModal(viewingAccount); }}>Reset MK</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate- flex justify-end">
+                            <button
+                                onClick={() => setViewingAccount(null)}
+                                className="px-5 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                            >
+                                Đóng
                             </button>
                         </div>
                     </div>
@@ -442,6 +581,11 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
         e.preventDefault();
         if (!selectedEmployee || !username || !password) return;
 
+        if (!selectedEmp?.email) {
+            setError('Nhân viên này chưa có email trên hệ thống. Vui lòng cập nhật email trước.');
+            return;
+        }
+
         setSubmitting(true);
         setError('');
         try {
@@ -449,6 +593,7 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
                 employee_id: selectedEmployee,
                 username,
                 password,
+                email: selectedEmp.email,
             }, createdBy);
             onCreated();
         } catch (err: any) {
@@ -468,7 +613,7 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-bg-surface rounded-2xl w-full max-w-lg p-4 shadow-sm" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-4 shadow-sm" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl">
                         <UserPlus className="w-5 h-5 text-white" />
@@ -500,7 +645,7 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
                             <select
                                 value={selectedEmployee}
                                 onChange={e => setSelectedEmployee(e.target.value)}
-                                className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-slate-100"
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
                                 required
                             >
                                 <option value="">-- Chọn nhân viên --</option>
@@ -515,12 +660,12 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
 
                     {/* Selected employee info */}
                     {selectedEmp && (
-                        <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 rounded-xl p-3 text-sm">
-                            <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400">
+                        <div className="bg-primary-50 dark:bg-slate-800 border border-primary-100 dark:border-slate-700 rounded-xl p-3 text-sm">
+                            <div className="flex items-center gap-2 text-primary-700 dark:text-primary-400">
                                 <UserIcon className="w-4 h-4" />
                                 <strong>{selectedEmp.full_name}</strong>
                             </div>
-                            <div className="mt-1 space-y-0.5 text-indigo-600/70 dark:text-indigo-400/70 text-xs">
+                            <div className="mt-1 space-y-0.5 text-primary-600/70 dark:text-primary-400/70 text-xs">
                                 {selectedEmp.email && <p className="flex items-center gap-1"><Mail className="w-3 h-3" /> {selectedEmp.email}</p>}
                                 {selectedEmp.phone && <p className="flex items-center gap-1"><Phone className="w-3 h-3" /> {selectedEmp.phone}</p>}
                             </div>
@@ -538,7 +683,7 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
                                 type="text"
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-gray-900 dark:text-slate-100"
+                                className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
                                 placeholder="VD: NGUYEN.VA"
                                 required
                             />
@@ -556,20 +701,20 @@ const CreateAccountModal: React.FC<CreateModalProps> = ({ onClose, onCreated, cr
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-11 pr-28 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-gray-900 dark:text-slate-100"
+                                className="w-full pl-11 pr-28 py-3 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
                                 required
                             />
                             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1.5 text-gray-400 hover:text-gray-600">
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
-                                <button type="button" onClick={copyPwd} className="p-1.5 text-gray-400 hover:text-indigo-600" title="Copy">
+                                <button type="button" onClick={copyPwd} className="p-1.5 text-gray-400 hover:text-primary-600" title="Copy">
                                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => { setPassword(UserAccountService.generatePassword()); setCopied(false); }}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-600"
+                                    className="p-1.5 text-gray-400 hover:text-primary-600"
                                     title="Sinh mới"
                                 >
                                     <RotateCcw className="w-4 h-4" />

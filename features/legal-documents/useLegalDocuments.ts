@@ -90,15 +90,15 @@ export function useRelatedDocuments(docId: string | null) {
 }
 
 // ------------------------------------------------------------------ //
-// Hook: useDeepSearch — article-level search for a document
+// Hook: useDeepSearch — global article-level search
 // ------------------------------------------------------------------ //
-export function useDeepSearch(documentId: string | null, query: string) {
+export function useDeepSearch(query: string, documentId?: string | null) {
     const debouncedQuery = useDebounce(query, 350);
 
     return useQuery({
-        queryKey: ['legal-deep-search', documentId, debouncedQuery],
-        queryFn: () => LegalDocumentService.searchArticles(documentId!, debouncedQuery),
-        enabled: !!documentId && debouncedQuery.length >= 2,
+        queryKey: ['legal-deep-search', debouncedQuery, documentId],
+        queryFn: () => LegalDocumentService.searchArticles(debouncedQuery, documentId || undefined),
+        enabled: debouncedQuery.length >= 2,
         staleTime: 2 * 60 * 1000,
     });
 }

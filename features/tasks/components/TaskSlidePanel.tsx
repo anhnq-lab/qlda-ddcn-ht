@@ -49,7 +49,7 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
     }
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-">
             {/* ═══ TABS ═══ */}
             <div className="px-5 border-b border-gray-200 dark:border-slate-700 flex gap-2 shrink-0 bg-white dark:bg-slate-900 shadow-sm z-10 relative">
                 {tabs.map(tab => (

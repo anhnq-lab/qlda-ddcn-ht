@@ -4,7 +4,7 @@
  * Login hỗ trợ: username, email, hoặc phone
  * Password hash: SHA-256 (client-side)
  */
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseAdmin } from '../lib/supabase';
 import { toServiceError, ServiceError } from './ServiceError';
 
 // ============================================================
@@ -12,7 +12,7 @@ import { toServiceError, ServiceError } from './ServiceError';
 // ============================================================
 
 export interface UserAccount {
-    id: string;
+    account_id: string;
     employee_id: string;
     username: string;
     is_active: boolean;
@@ -33,6 +33,7 @@ export interface CreateAccountInput {
     employee_id: string;
     username: string;
     password: string;
+    email: string;
 }
 
 // ============================================================
@@ -74,7 +75,7 @@ export class UserAccountService {
         if (error) throw toServiceError(error, 'UserAccountService.getAll');
 
         return (data || []).map((row: any) => ({
-            id: row.id,
+            account_id: row.account_id,
             employee_id: row.employee_id,
             username: row.username,
             is_active: row.is_active,
@@ -95,7 +96,30 @@ export class UserAccountService {
      * Create a new user account
      */
     static async create(input: CreateAccountInput, createdBy?: string): Promise<UserAccount> {
+        if (!input.email) throw new Error("Bắt buộc phải có email để tạo tài khoản");
         const password_hash = await hashPassword(input.password);
+
+        let authUserId: string | null = null;
+        try {
+            // Get employee full name
+            const { data: empData } = await supabase.from('employees').select('full_name').eq('employee_id', input.employee_id).single();
+            
+            const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
+                email: input.email,
+                password: input.password,
+                email_confirm: true,
+                user_metadata: { employee_id: input.employee_id, full_name: empData?.full_name || input.username },
+            });
+            authUserId = authData?.user?.id || null;
+
+            if (authErr) {
+                console.warn('[UserAccountService] Admin Auth user creation failed, throwing error', authErr);
+                throw authErr; // Don't fallback to signUp as it will log the current admin out or leave unconfirmed accounts
+            }
+        } catch (e: any) {
+            console.error('[UserAccountService] Auth user creation failed', e);
+            throw new Error(`Không thể tạo tài khoản xác thực: ${e.message}`);
+        }
 
         const { data, error } = await supabase
             .from('user_accounts')
@@ -103,7 +127,7 @@ export class UserAccountService {
                 employee_id: input.employee_id,
                 username: input.username,
                 password_hash,
-                created_by: createdBy || 'Admin',
+                auth_user_id: authUserId
             })
             .select()
             .single();
@@ -129,10 +153,20 @@ export class UserAccountService {
     static async resetPassword(id: string, newPassword: string): Promise<void> {
         const password_hash = await hashPassword(newPassword);
 
+        // Attempt to update Supabase Auth password
+        try {
+            const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('account_id', id).single();
+            if (accountData?.auth_user_id) {
+                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { password: newPassword });
+            }
+        } catch (e) {
+            console.warn('[UserAccountService] Failed to reset Supabase Auth password', e);
+        }
+
         const client: any = supabase;
         const { error } = await (client.from('user_accounts') as any)
             .update({ password_hash, updated_at: new Date().toISOString() })
-            .eq('id', id);
+            .eq('account_id', id);
 
         if (error) throw toServiceError(error, 'UserAccountService.resetPassword');
     }
@@ -144,7 +178,7 @@ export class UserAccountService {
         const client: any = supabase;
         const { error } = await (client.from('user_accounts') as any)
             .update({ is_active, updated_at: new Date().toISOString() })
-            .eq('id', id);
+            .eq('account_id', id);
 
         if (error) throw toServiceError(error, 'UserAccountService.toggleActive');
     }
@@ -157,7 +191,7 @@ export class UserAccountService {
         const { error } = await client
             .from('user_accounts')
             .delete()
-            .eq('id', id);
+            .eq('account_id', id);
 
         if (error) throw toServiceError(error, 'UserAccountService.delete');
     }

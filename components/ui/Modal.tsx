@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { X, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 // ========================================
@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
                             if (!closeOnEscape) e.preventDefault();
                         }}
                         className={cn(
-                            "pointer-events-auto relative w-full bg-bg-surface rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden",
+                            "pointer-events-auto relative w-full bg-white dark:bg-slate-800 rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden",
                             "animate-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 duration-200",
                             sizeStyles[size],
                             className
@@ -153,13 +153,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
     const variantStyles = {
         danger: 'bg-red-500 hover:bg-red-600 focus-visible:ring-red-500',
-        warning: 'bg-orange-500 hover:bg-orange-600 focus-visible:ring-orange-500',
+        warning: 'bg-warning-500 hover:bg-warning-600 focus-visible:ring-warning-500',
         info: 'bg-primary-500 hover:bg-primary-600 focus-visible:ring-primary-500',
     };
 
     const iconStyles = {
         danger: 'bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400',
-        warning: 'bg-orange-100 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400',
+        warning: 'bg-warning-100 dark:bg-warning-950/50 text-warning-600 dark:text-warning-400',
         info: 'bg-primary-100 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400',
     };
 
@@ -172,21 +172,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         >
             <div className="text-center">
                 <div className={cn("w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center", iconStyles[variant])}>
-                    {variant === 'danger' && (
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    )}
-                    {variant === 'warning' && (
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    )}
-                    {variant === 'info' && (
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    )}
+                    {variant === 'danger'  && <AlertTriangle className="w-6 h-6" />}
+                    {variant === 'warning' && <AlertCircle   className="w-6 h-6" />}
+                    {variant === 'info'    && <Info           className="w-6 h-6" />}
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">{message}</p>
@@ -196,7 +184,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 <button
                     onClick={onClose}
                     disabled={loading}
-                    className="flex-1 px-4 py-2.5 bg-bg-surface border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
                 >
                     {cancelText}
                 </button>

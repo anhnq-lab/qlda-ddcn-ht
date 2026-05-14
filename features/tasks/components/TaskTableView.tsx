@@ -53,16 +53,16 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                 description="Thử thay đổi bộ lọc hoặc tạo công việc mới."
                 actionLabel="Tạo công việc"
                 onAction={openCreateModal}
-                className="bg-bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
             />
         );
     }
 
     return (
-        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
             <table className="w-full">
                 <thead>
-                    <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
+                    <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
                         <th className="px-2 py-3 w-8 border-b border-slate-200 dark:border-slate-800 text-center">
                             <input
                                 type="checkbox"
@@ -96,11 +96,11 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                     {Object.entries(tasksByProject).map(([projectId, projectTasks]: [string, Task[]]) => (
                         <React.Fragment key={projectId}>
                             {/* ── Project Group Separator ── */}
-                            <tr className="bg-slate-50/80 dark:bg-slate-800/50 border-t-2 border-slate-200 dark:border-slate-700">
+                            <tr className="bg-slate-50/80 dark:bg-slate- border-t-2 border-slate-200 dark:border-slate-700">
                                 <td colSpan={11} className="px-4 py-2.5">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-1.5 rounded-lg shadow-sm bg-indigo-100 dark:bg-indigo-500/20" >
-                                            <FolderOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                        <div className="p-1.5 rounded-lg shadow-sm bg-primary-100 dark:bg-primary-500/20" >
+                                            <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId, projectTasks)}</h3>
@@ -121,7 +121,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                     <tr
                                         key={task.TaskID}
                                         onClick={() => openTaskPanel(task)}
-                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-800/50 ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate- ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
                                     >
                                         {/* Checkbox */}
                                         <td className="px-2 py-3.5" onClick={e => e.stopPropagation()}>

@@ -158,13 +158,13 @@ const UserImpersonator: React.FC = () => {
         <div className="space-y-6">
             {/* Active Impersonation Banner */}
             {isImpersonating && impersonatedUser && (
-                <div className="bg-gradient-to-r from-primary-50 to-orange-50 dark:from-primary-900/30 dark:to-orange-900/30 border border-primary-400 rounded-lg p-5">
+                <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-primary-900/30 dark:to-warning-900/30 border border-primary-400 rounded-lg p-5">
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-4">
                             <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${
                                 impersonatedUser.Role === 'contractor'
                                     ? 'bg-gradient-to-br from-primary-500 to-primary-600'
-                                    : 'bg-gradient-to-br from-primary-400 to-orange-500'
+                                    : 'bg-gradient-to-br from-primary-400 to-warning-500'
                             }`}>
                                 {impersonatedUser.Role === 'contractor'
                                     ? <Building2 className="w-7 h-7" />
@@ -197,7 +197,7 @@ const UserImpersonator: React.FC = () => {
                                 <span className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold ${
                                     expiryWarning
                                         ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 animate-pulse'
-                                        : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                                        : 'bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300'
                                 }`}>
                                     <Clock size={13} />
                                     {expiryWarning ? '⚠️ ' : ''}{minutesRemaining} phút
@@ -207,7 +207,7 @@ const UserImpersonator: React.FC = () => {
                             {expiryWarning && (
                                 <button
                                     onClick={extendSession}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-warning-500 hover:bg-warning-600 text-white rounded-lg transition-colors shadow-sm"
                                 >
                                     <RefreshCw size={12} />
                                     +30 phút
@@ -234,7 +234,7 @@ const UserImpersonator: React.FC = () => {
                                 {ALL_RESOURCES.map(resource => {
                                     const actions = (permissions as any)[resource] || [];
                                     return (
-                                        <div key={resource} className={`rounded-lg p-2 text-xs ${actions.length > 0 ? 'bg-bg-surface' : 'bg-slate-100 dark:bg-slate-800 opacity-50'}`}>
+                                        <div key={resource} className={`rounded-lg p-2 text-xs ${actions.length > 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-800 opacity-50'}`}>
                                             <span className="font-semibold text-slate-700 dark:text-slate-300 block">
                                                 {RESOURCE_LABELS[resource]}
                                             </span>
@@ -260,7 +260,7 @@ const UserImpersonator: React.FC = () => {
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     disabled={loading}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-bg-surface border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
                 >
                     <span className={loading ? 'text-slate-400' : 'text-slate-700 dark:text-slate-300'}>
                         {loading ? 'Đang tải danh sách...' : `${totalCount} người dùng có sẵn (${employees.length} NV + ${contractorAccounts.length} NT)`}
@@ -270,7 +270,7 @@ const UserImpersonator: React.FC = () => {
 
                 {/* Dropdown Content */}
                 {isDropdownOpen && !loading && (
-                    <div className="absolute z-50 w-full mt-2 left-0 right-0 bg-bg-surface border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm dark:shadow-black/40 overflow-hidden">
+                    <div className="absolute z-50 w-full mt-2 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm dark:shadow-black/40 overflow-hidden">
                         {/* Tab Switcher */}
                         <div className="flex border-b border-slate-100 dark:border-slate-700">
                             <button
@@ -306,7 +306,7 @@ const UserImpersonator: React.FC = () => {
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
                                     placeholder={activeTab === 'employees' ? 'Tìm theo tên, chức vụ, phòng ban...' : 'Tìm theo tên, đơn vị, username...'}
-                                    className="w-full pl-9 pr-3 py-2 bg-bg-subtle dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200"
+                                    className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200"
                                     autoFocus
                                 />
                             </div>

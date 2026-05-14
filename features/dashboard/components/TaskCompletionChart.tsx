@@ -21,7 +21,7 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
     if (loading || !data) {
         return (
             <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col justify-center items-center min-h-[260px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
             </div>
         );
     }

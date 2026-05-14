@@ -72,7 +72,7 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -103,9 +103,9 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">Bên nhận *</label>
                             <input placeholder="Tên đơn vị" value={form.to_org} onChange={e => setForm(f => ({ ...f, to_org: e.target.value }))}
-                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                             <input placeholder="Người nhận" value={form.to_person} onChange={e => setForm(f => ({ ...f, to_person: e.target.value }))}
-                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                         </div>
                     </div>
 
@@ -113,21 +113,21 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-500 uppercase">Tiêu đề *</label>
                         <input placeholder="Chuyển giao hồ sơ thiết kế..." value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-medium dark:text-slate-200" />
+                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-medium dark:text-slate-200" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">Mục đích</label>
                             <select value={form.purpose} onChange={e => setForm(f => ({ ...f, purpose: e.target.value as TransmittalPurpose }))}
-                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
                                 {PURPOSES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                             </select>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">CC (phân cách dấu phẩy)</label>
                             <input placeholder="abc@email.com, xyz@email.com" value={form.cc} onChange={e => setForm(f => ({ ...f, cc: e.target.value }))}
-                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                         </div>
                     </div>
 
@@ -158,7 +158,7 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-500 uppercase">Ghi chú</label>
                         <textarea rows={3} placeholder="Ghi chú bổ sung..." value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-xs resize-none dark:text-slate-200" />
+                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-xs resize-none dark:text-slate-200" />
                     </div>
                 </div>
 

@@ -40,7 +40,7 @@ const useInstanceSteps = (instanceId: string | null) =>
 const StepStatusBadge: React.FC<{ status: InternalStepStatus }> = ({ status }) => {
     const cfg: Record<InternalStepStatus, { label: string; cls: string; icon: React.ElementType }> = {
         waiting:  { label: 'Chờ xử lý', cls: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400', icon: Clock },
-        pending:  { label: 'Cần xử lý', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 animate-pulse', icon: AlertCircle },
+        pending:  { label: 'Cần xử lý', cls: 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300 animate-pulse', icon: AlertCircle },
         done:     { label: 'Hoàn thành', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', icon: CheckCircle2 },
         rejected: { label: 'Trả lại', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: XCircle },
         skipped:  { label: 'Bỏ qua', cls: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400', icon: ChevronRight },
@@ -140,7 +140,7 @@ const InstanceDetail: React.FC<{
                             <div
                                 className={`flex gap-3 p-3 rounded-xl border transition-all cursor-pointer
                                     ${isCurrent && instance.status === 'in_progress'
-                                        ? 'border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/10 shadow-sm'
+                                        ? 'border-warning-300 bg-warning-50 dark:border-warning-700 dark:bg-warning-900/10 shadow-sm'
                                         : stepStatus === 'done'
                                             ? 'border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10'
                                             : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
@@ -151,7 +151,7 @@ const InstanceDetail: React.FC<{
                                 <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-xs font-bold border-2
                                     ${stepStatus === 'done' ? 'bg-emerald-500 border-emerald-500 text-white'
                                         : stepStatus === 'rejected' ? 'bg-red-500 border-red-500 text-white'
-                                        : isCurrent && instance.status === 'in_progress' ? 'bg-amber-500 border-amber-500 text-white'
+                                        : isCurrent && instance.status === 'in_progress' ? 'bg-warning-500 border-warning-500 text-white'
                                         : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-400'
                                     }`}>
                                     {stepStatus === 'done' ? <CheckCircle2 className="w-4 h-4" />
@@ -163,7 +163,7 @@ const InstanceDetail: React.FC<{
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex-1">
-                                            <p className={`text-sm font-semibold leading-tight ${isCurrent ? 'text-amber-800 dark:text-amber-200' : 'text-gray-800 dark:text-slate-200'}`}>
+                                            <p className={`text-sm font-semibold leading-tight ${isCurrent ? 'text-warning-800 dark:text-warning-200' : 'text-gray-800 dark:text-slate-200'}`}>
                                                 {stepDef.name}
                                             </p>
                                             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -224,8 +224,8 @@ const InstanceDetail: React.FC<{
             {canAct && (
                 <div className="border-t border-gray-200 dark:border-slate-700 pt-4 space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                        <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                        <div className="w-2 h-2 bg-warning-500 rounded-full animate-pulse" />
+                        <p className="text-sm font-semibold text-warning-700 dark:text-warning-300">
                             Đến lượt bạn xử lý: {currentStepDef?.action_label}
                         </p>
                     </div>
@@ -234,7 +234,7 @@ const InstanceDetail: React.FC<{
                         onChange={e => setComment(e.target.value)}
                         placeholder="Ghi chú / ý kiến xử lý (bắt buộc khi trả lại)…"
                         rows={3}
-                        className="w-full text-sm border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 bg-bg-surface text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
+                        className="w-full text-sm border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                     />
                     <div className="flex gap-2">
                         <button
@@ -285,7 +285,7 @@ const CreateInstanceModal: React.FC<{
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-bg-surface rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 w-full max-w-lg">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 w-full max-w-lg">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                     <h3 className="text-base font-bold text-gray-900 dark:text-white">Khởi tạo quy trình nội bộ</h3>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">Chọn quy trình và nhập tiêu đề hồ sơ cần xử lý</p>
@@ -315,7 +315,7 @@ const CreateInstanceModal: React.FC<{
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             placeholder="VD: Quyết toán A-B Gói thầu XD01 – Hạng mục móng"
-                            className="w-full text-sm border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 bg-bg-surface text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                            className="w-full text-sm border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-400"
                         />
                     </div>
 
@@ -352,7 +352,7 @@ const CreateInstanceModal: React.FC<{
 
 const statusConfig = {
     draft:       { label: 'Nháp',          cls: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
-    in_progress: { label: 'Đang xử lý',    cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+    in_progress: { label: 'Đang xử lý',    cls: 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300' },
     completed:   { label: 'Hoàn thành',    cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
     rejected:    { label: 'Từ chối',       cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
     on_hold:     { label: 'Tạm dừng',      cls: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
@@ -393,14 +393,14 @@ const CDEInternalWorkflowPanel: React.FC<CDEInternalWorkflowPanelProps> = ({
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${isSelected
                     ? 'border-primary-400 bg-primary-50 dark:border-primary-600 dark:bg-primary-900/10 shadow-sm'
                     : needsMyAction
-                        ? 'border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-900/10 hover:shadow-sm'
+                        ? 'border-warning-300 bg-warning-50/60 dark:border-warning-700 dark:bg-warning-900/10 hover:shadow-sm'
                         : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                     }`}
             >
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            {needsMyAction && <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse shrink-0" />}
+                            {needsMyAction && <div className="w-2 h-2 bg-warning-500 rounded-full animate-pulse shrink-0" />}
                             <p className="text-sm font-semibold text-gray-800 dark:text-slate-200 truncate">{inst.title}</p>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-slate-400">{inst.template_name}</p>
@@ -408,7 +408,7 @@ const CDEInternalWorkflowPanel: React.FC<CDEInternalWorkflowPanelProps> = ({
                             <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${sc.cls}`}>{sc.label}</span>
                             <span className="text-[11px] text-gray-400">Bước {inst.current_step_no}/{totalSteps}</span>
                             {needsMyAction && (
-                                <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">• Cần xử lý</span>
+                                <span className="text-[11px] font-semibold text-warning-700 dark:text-warning-400">• Cần xử lý</span>
                             )}
                         </div>
                     </div>
@@ -486,7 +486,7 @@ const CDEInternalWorkflowPanel: React.FC<CDEInternalWorkflowPanelProps> = ({
                     {/* Cần xử lý */}
                     {pending.length > 0 && (
                         <div>
-                            <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <p className="text-xs font-bold text-warning-700 dark:text-warning-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                 <AlertCircle className="w-3.5 h-3.5" />Đang xử lý ({pending.length})
                             </p>
                             <div className="space-y-2">{pending.map(renderInstanceCard)}</div>

@@ -388,7 +388,7 @@ const TaskList: React.FC = () => {
                     <div className="flex items-center gap-2">
                         <select
                             onChange={(e) => { if (e.target.value) handleBatchStatus(e.target.value as TaskStatus); e.target.value = ''; }}
-                            className="text-xs px-3 py-1.5 bg-bg-surface border border-blue-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer"
+                            className="text-xs px-3 py-1.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer"
                             defaultValue=""
                         >
                             <option value="" disabled>Đổi trạng thái...</option>
@@ -415,8 +415,8 @@ const TaskList: React.FC = () => {
 
             {/* ══════════ TASK LIST ══════════ */}
             {isLoading ? (
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="h-10 bg-bg-subtle dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="h-10 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-slate-100 dark:border-slate-700 last:border-0">
                             <div className="w-4 h-4 rounded bg-slate-200 dark:bg-slate-600 shrink-0" />
@@ -452,7 +452,7 @@ const TaskList: React.FC = () => {
 
                 {/* ══════════ PAGINATION ══════════ */}
                 {sortedTasks.length > pageSize && (
-                    <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                         <div className="flex items-center gap-3">
                             <span className="text-xs text-slate-500 dark:text-slate-400">
                                 Hiển thị {page * pageSize + 1}–{Math.min((page + 1) * pageSize, sortedTasks.length)} / {sortedTasks.length}
@@ -460,7 +460,7 @@ const TaskList: React.FC = () => {
                             <select
                                 value={pageSize}
                                 onChange={e => { setPageSize(Number(e.target.value)); setPage(0); }}
-                                className="text-xs px-2 py-1 bg-bg-subtle dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+                                className="text-xs px-2 py-1 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
                             >
                                 {PAGE_SIZES.map(s => <option key={s} value={s}>{s} / trang</option>)}
                             </select>

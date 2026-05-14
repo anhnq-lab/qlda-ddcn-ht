@@ -41,7 +41,7 @@ const CDEHeader: React.FC<CDEHeaderProps> = ({
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-3 min-w-[320px]">
+                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-3 min-w-[320px]">
                         <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                         <select
                             value={selectedProjectId}

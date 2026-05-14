@@ -21,7 +21,7 @@ interface Props {
 const priorityColors: Record<string, string> = {
     [TaskPriority.Urgent]: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
     [TaskPriority.High]: 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400',
-    [TaskPriority.Medium]: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    [TaskPriority.Medium]: 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400',
     [TaskPriority.Low]: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
 };
 

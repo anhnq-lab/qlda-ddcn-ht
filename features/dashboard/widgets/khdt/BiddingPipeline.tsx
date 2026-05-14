@@ -16,7 +16,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: str
     'Draft': { label: 'Nháp', color: 'text-gray-600 dark:text-slate-400', bgColor: 'bg-gray-100 dark:bg-slate-700' },
     'Planning': { label: 'Lập kế hoạch', color: 'text-blue-700 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-900/30' },
     'Approved': { label: 'Đã duyệt', color: 'text-emerald-700 dark:text-emerald-400', bgColor: 'bg-emerald-50 dark:bg-emerald-900/30' },
-    'Bidding': { label: 'Đang đấu thầu', color: 'text-amber-700 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-900/30' },
+    'Bidding': { label: 'Đang đấu thầu', color: 'text-warning-700 dark:text-warning-400', bgColor: 'bg-warning-50 dark:bg-warning-900/30' },
     'Evaluating': { label: 'Đánh giá', color: 'text-purple-700 dark:text-purple-400', bgColor: 'bg-purple-50 dark:bg-purple-900/30' },
     'Awarded': { label: 'Đã chọn thầu', color: 'text-teal-700 dark:text-teal-400', bgColor: 'bg-teal-50 dark:bg-teal-900/30' },
     'Completed': { label: 'Hoàn thành', color: 'text-emerald-700 dark:text-emerald-400', bgColor: 'bg-emerald-50 dark:bg-emerald-900/30' },
@@ -78,9 +78,9 @@ export const BiddingPipeline: React.FC = () => {
                         <p className="text-lg font-black text-blue-700 dark:text-blue-400 tabular-nums">{pipelineStats.planning}</p>
                         <p className="text-[9px] font-bold text-blue-600/70 dark:text-blue-500/70">Chuẩn bị</p>
                     </div>
-                    <div className="text-center p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-                        <p className="text-lg font-black text-amber-700 dark:text-amber-400 tabular-nums">{pipelineStats.active}</p>
-                        <p className="text-[9px] font-bold text-amber-600/70 dark:text-amber-500/70">Đang thầu</p>
+                    <div className="text-center p-2 rounded-lg bg-warning-50 dark:bg-warning-900/20">
+                        <p className="text-lg font-black text-warning-700 dark:text-warning-400 tabular-nums">{pipelineStats.active}</p>
+                        <p className="text-[9px] font-bold text-warning-600/70 dark:text-warning-500/70">Đang thầu</p>
                     </div>
                     <div className="text-center p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
                         <p className="text-lg font-black text-emerald-700 dark:text-emerald-400 tabular-nums">{pipelineStats.awarded}</p>

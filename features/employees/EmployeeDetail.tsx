@@ -21,9 +21,9 @@ import { EmptyState } from '../../components/ui/EmptyState';
 const getPriorityInfo = (p: TaskPriority) => {
     switch (p) {
         case TaskPriority.Urgent: return { label: 'Khẩn cấp', color: 'bg-red-500/10 text-red-600 ring-1 ring-red-500/20', dot: 'bg-red-500' };
-        case TaskPriority.High: return { label: 'Cao', color: 'bg-orange-500/10 text-orange-600 ring-1 ring-orange-500/20', dot: 'bg-orange-500' };
+        case TaskPriority.High: return { label: 'Cao', color: 'bg-warning-500/10 text-warning-600 ring-1 ring-warning-500/20', dot: 'bg-warning-500' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/20', dot: 'bg-sky-500' };
-        case TaskPriority.Low: return { label: 'Thấp', color: 'bg-slate-500/10 text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+        case TaskPriority.Low: return { label: 'Thấp', color: 'bg-slate- text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
         default: return { label: p, color: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' };
     }
 };
@@ -41,7 +41,7 @@ const getRoleInfo = (role: Role) => {
     switch (role) {
         case Role.Admin: return { label: 'Quản trị viên', color: 'bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20' };
         case Role.Manager: return { label: 'Quản lý', color: 'bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20' };
-        default: return { label: 'Nhân viên', color: 'bg-slate-500/10 text-slate-500 ring-1 ring-slate-500/20' };
+        default: return { label: 'Nhân viên', color: 'bg-slate- text-slate-500 ring-1 ring-slate-500/20' };
     }
 };
 
@@ -200,7 +200,7 @@ const EmployeeDetail: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
                 {/* Contact Info Card */}
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> Thông tin liên hệ
                     </h3>
@@ -232,7 +232,7 @@ const EmployeeDetail: React.FC = () => {
                 </div>
 
                 {/* Task Stats Card */}
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <ClipboardList className="w-3.5 h-3.5" /> Thống kê công việc
                     </h3>
@@ -249,7 +249,7 @@ const EmployeeDetail: React.FC = () => {
                             <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{completedTasks.length}</p>
                             <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Hoàn thành</p>
                         </div>
-                        <div className={`rounded-xl p-3 text-center ${overdueTasks.length > 0 ? 'bg-red-50' : 'bg-bg-subtle'}`}>
+                        <div className={`rounded-xl p-3 text-center ${overdueTasks.length > 0 ? 'bg-red-50' : 'bg-slate-50 dark:bg-slate-800'}`}>
                             <p className={`text-2xl font-black ${overdueTasks.length > 0 ? 'text-red-600' : 'text-slate-400'}`}>{overdueTasks.length}</p>
                             <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Quá hạn</p>
                         </div>
@@ -257,7 +257,7 @@ const EmployeeDetail: React.FC = () => {
                 </div>
 
                 {/* Workload Donut Chart */}
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <Target className="w-3.5 h-3.5" /> Phân bổ công việc
                     </h3>
@@ -303,17 +303,17 @@ const EmployeeDetail: React.FC = () => {
                 </div>
 
                 {/* Cross-Module Summary */}
-                <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <TrendingUp className="w-3.5 h-3.5" /> Tổng quan kết nối
                     </h3>
                     <div className="space-y-3">
-                        <div className="flex items-center justify-between bg-indigo-50 dark:bg-indigo-900/20 rounded-xl px-4 py-3">
+                        <div className="flex items-center justify-between bg-primary-50 dark:bg-primary-900/20 rounded-xl px-4 py-3">
                             <div className="flex items-center gap-2.5">
-                                <FolderOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Dự án</span>
                             </div>
-                            <span className="text-lg font-black text-indigo-600">{empProjects.length}</span>
+                            <span className="text-lg font-black text-primary-600">{empProjects.length}</span>
                         </div>
                         <div className="flex items-center justify-between bg-sky-50 dark:bg-sky-900/20 rounded-xl px-4 py-3">
                             <div className="flex items-center gap-2.5">
@@ -334,9 +334,9 @@ const EmployeeDetail: React.FC = () => {
             </div>
 
             {/* ══════════ TABS ══════════ */}
-            <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                 {/* Tab Navigation */}
-                <div className="border-b border-slate-100 dark:border-slate-700 bg-bg-subtle px-5">
+                <div className="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-5">
                     <div className="flex gap-1">
                         {[
                             { key: 'tasks' as const, label: 'Công việc', icon: <ClipboardList className="w-4 h-4" />, count: empTasks.length },
@@ -468,7 +468,7 @@ const EmployeeDetail: React.FC = () => {
                                             <div
                                                 key={project.ProjectID}
                                                 onClick={() => navigate(`/projects/${project.ProjectID}`)}
-                                                className="bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-md transition-all cursor-pointer group p-5"
+                                                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-md transition-all cursor-pointer group p-5"
                                             >
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
@@ -526,7 +526,7 @@ const EmployeeDetail: React.FC = () => {
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
                                         <thead>
-                                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                                 <th className="px-4 py-2.5 text-left text-[10px] font-black uppercase tracking-widest">Mã HĐ</th>
                                                 <th className="px-4 py-2.5 text-left text-[10px] font-black uppercase tracking-widest">Gói thầu</th>
                                                 <th className="px-4 py-2.5 text-right text-[10px] font-black uppercase tracking-widest">Giá trị</th>

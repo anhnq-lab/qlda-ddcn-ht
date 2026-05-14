@@ -42,7 +42,7 @@ const CDEDigitalSign: React.FC<CDEDigitalSignProps> = ({ file, isOpen, onClose, 
 
     return (
         <div className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-bg-surface w-full max-w-md rounded-[32px] shadow-sm overflow-hidden p-4 animate-in zoom-in-95">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-[32px] shadow-sm overflow-hidden p-4 animate-in zoom-in-95">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <h3 className="text-xl font-black text-gray-800 dark:text-slate-200 flex items-center gap-3 tracking-tight">
@@ -89,7 +89,7 @@ const CDEDigitalSign: React.FC<CDEDigitalSignProps> = ({ file, isOpen, onClose, 
                         <form onSubmit={handlePinSubmit} className="space-y-5">
                             <div className="text-left">
                                 <label className="block text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">Chứng thư số</label>
-                                <select className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-bold text-gray-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                <select className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-bold text-gray-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                                     <option>NGUYEN VAN A - VNPT CA (Hạn: 2026)</option>
                                 </select>
                             </div>
@@ -97,7 +97,7 @@ const CDEDigitalSign: React.FC<CDEDigitalSignProps> = ({ file, isOpen, onClose, 
                                 <label className="block text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">Mã PIN</label>
                                 <input
                                     type="password" autoFocus
-                                    className="w-full px-4 py-3 bg-bg-surface dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-center text-lg font-black tracking-[1em] outline-none focus:ring-2 focus:ring-blue-500 dark:text-slate-200 transition-all"
+                                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-center text-lg font-black tracking-[1em] outline-none focus:ring-2 focus:ring-blue-500 dark:text-slate-200 transition-all"
                                     placeholder="******"
                                 />
                             </div>

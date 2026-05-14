@@ -41,3 +41,15 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
 export const isSupabaseConfigured = (): boolean => {
     return !!(supabaseUrl && supabaseKey);
 };
+
+// Admin client for user creation (bypassing RLS and anon key restrictions)
+export const supabaseAdmin: SupabaseClient<Database> = createClient<Database>(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || supabaseKey || 'placeholder-key',
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    }
+);

@@ -265,7 +265,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
             {/* HEADER */}
             <div className="h-12 bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700/50 flex items-center justify-between px-4 shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 rounded-lg border border-slate-600/30">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate- rounded-lg border border-slate-600/30">
                         <div className={`w-2 h-2 rounded-full ${modelLoaded ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
                         <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">xeokit BIM</span>
                     </div>
@@ -275,7 +275,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
 
                 <div className="flex items-center gap-2">
                     {/* View buttons */}
-                    <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/50">
+                    <div className="flex bg-slate- rounded-lg p-0.5 border border-slate-700/50">
                         {[
                             { view: 'top', icon: ArrowUp },
                             { view: 'front', icon: Square },
@@ -306,14 +306,14 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* LEFT TOOLBAR */}
-                <div className="w-12 bg-slate-800/50 border-r border-slate-700/30 flex flex-col items-center py-3 gap-1 shrink-0">
+                <div className="w-12 bg-slate- border-r border-slate-700/30 flex flex-col items-center py-3 gap-1 shrink-0">
                     <ToolBtn active title="Select"><MousePointer className="w-4 h-4" /></ToolBtn>
                     <ToolBtn onClick={fitToView} title="Fit to View"><Home className="w-4 h-4" /></ToolBtn>
-                    <div className="h-px w-6 bg-slate-700/50 my-1" />
+                    <div className="h-px w-6 bg-slate- my-1" />
                     <ToolBtn active={sectionEnabled} onClick={toggleSection} title="Section"><Slice className="w-4 h-4" /></ToolBtn>
                     <ToolBtn title="Measure"><Ruler className="w-4 h-4" /></ToolBtn>
                     <ToolBtn onClick={fitToView} title="Focus"><Focus className="w-4 h-4" /></ToolBtn>
-                    <div className="h-px w-6 bg-slate-700/50 my-1" />
+                    <div className="h-px w-6 bg-slate- my-1" />
                     <ToolBtn active={showModelTree} onClick={() => setShowModelTree(!showModelTree)} title="Tree"><List className="w-4 h-4" /></ToolBtn>
                     <div className="flex-1" />
                     <ToolBtn title="Settings"><Settings2 className="w-4 h-4" /></ToolBtn>
@@ -321,7 +321,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
 
                 {/* MODEL TREE */}
                 {showModelTree && (
-                    <div className="w-56 bg-slate-800/80 border-r border-slate-700/30 flex flex-col shrink-0">
+                    <div className="w-56 bg-slate- border-r border-slate-700/30 flex flex-col shrink-0">
                         <div className="p-2.5 border-b border-slate-700/30 flex items-center justify-between">
                             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wide">Model Tree</span>
                             <button onClick={() => setShowModelTree(false)} className="text-slate-500 hover:text-white p-0.5">
@@ -358,7 +358,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
 
                     {/* Loading overlay */}
                     {isLoading && (
-                        <div className="absolute inset-0 bg-slate-900/90 flex items-center justify-center z-10 backdrop-blur-sm">
+                        <div className="absolute inset-0 bg-slate- flex items-center justify-center z-10 backdrop-blur-sm">
                             <div className="flex flex-col items-center gap-3">
                                 <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
                                 <p className="text-sm font-medium text-cyan-300">Loading model...</p>
@@ -384,7 +384,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
                     {/* Model loaded badge */}
                     {modelLoaded && !isLoading && (
                         <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-sm shadow-emerald-500/30">
-                            <div className="w-1.5 h-1.5 rounded-full bg-bg-surface animate-pulse" /> Model Loaded
+                            <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-800 animate-pulse" /> Model Loaded
                         </div>
                     )}
 
@@ -404,7 +404,7 @@ export const XeokitViewer: React.FC<XeokitViewerProps> = ({ projectId }) => {
                 </div>
 
                 {/* PROPERTIES PANEL */}
-                <div className="w-64 bg-slate-800/80 border-l border-slate-700/30 flex flex-col shrink-0">
+                <div className="w-64 bg-slate- border-l border-slate-700/30 flex flex-col shrink-0">
                     <div className="p-3 border-b border-slate-700/30 bg-gradient-to-r from-slate-800 to-slate-800/50">
                         <h3 className="text-[11px] font-bold text-slate-300 uppercase tracking-wide">Properties</h3>
                     </div>

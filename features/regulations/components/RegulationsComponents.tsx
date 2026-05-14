@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RegulationsComponents.tsx - All visual sub-components used within the Regulations viewer.
  * Extracted from the monolithic Regulations.tsx to improve code-splitting.
  */
@@ -39,7 +39,7 @@ const OrgChart = () => {
 
                 {/* Level 1: Giám đốc Ban */}
                 <div className="relative z-10 mb-4 group">
-                    <div className="text-white px-10 py-3 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center relative cursor-default hover:scale-105 transition-transform bg-gradient-to-br from-amber-500 to-yellow-600">
+                    <div className="text-white px-10 py-3 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center relative cursor-default hover:scale-105 transition-transform bg-gradient-to-br from-warning-500 to-warning-600">
                         <h4 className="font-black text-sm uppercase tracking-tight">Giám đốc Ban</h4>
                         <div className="w-2 h-2 bg-white dark:bg-slate-800 rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
@@ -49,10 +49,10 @@ const OrgChart = () => {
                 {/* Level 2: Phó GĐ + Kế toán trưởng */}
                 <div className="relative z-10 mb-6 flex justify-center gap-5">
                     <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
-                        <h4 className="font-bold text-xs uppercase text-yellow-700 dark:text-amber-500">Phó Giám đốc Ban</h4>
+                        <h4 className="font-bold text-xs uppercase text-warning-700 dark:text-warning-500">Phó Giám đốc Ban</h4>
                     </div>
                     <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
-                        <h4 className="font-bold text-xs uppercase text-yellow-700 dark:text-amber-500">Phó Giám đốc Ban</h4>
+                        <h4 className="font-bold text-xs uppercase text-warning-700 dark:text-warning-500">Phó Giám đốc Ban</h4>
                     </div>
                     <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
                         <h4 className="font-bold text-xs uppercase text-blue-700">Kế toán trưởng</h4>
@@ -90,9 +90,9 @@ const OrgChart = () => {
 
                 {/* Stats */}
                 <div className="mt-6 flex gap-4">
-                    <div className="rounded-lg px-4 py-2 text-center border bg-yellow-50 dark:bg-amber-900/30 border-yellow-200 dark:border-amber-800/50">
-                        <p className="text-lg font-black text-yellow-700 dark:text-amber-500">01</p>
-                        <p className="text-[9px] font-bold uppercase text-yellow-600 dark:text-amber-600">Giám đốc Ban</p>
+                    <div className="rounded-lg px-4 py-2 text-center border bg-warning-50 dark:bg-warning-900/30 border-warning-200 dark:border-warning-800/50">
+                        <p className="text-lg font-black text-warning-700 dark:text-warning-500">01</p>
+                        <p className="text-[9px] font-bold uppercase text-warning-600 dark:text-warning-600">Giám đốc Ban</p>
                     </div>
                     <div className="bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800/50 rounded-lg px-4 py-2 text-center">
                         <p className="text-lg font-black text-blue-700">02</p>
@@ -156,7 +156,7 @@ const SubmissionProcessChart = () => {
             actor: "Giám đốc Ban",
             desc: "Quyết định cuối cùng đối với các vấn đề thuộc thẩm quyền.",
             icon: Gavel,
-            color: "bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/50"
+            color: "bg-warning-50 dark:bg-warning-900/30 text-warning-600 dark:text-warning-400 border-warning-200 dark:border-warning-800/50"
         }
     ];
 
@@ -210,7 +210,7 @@ const RelationshipMap = () => {
                 </div>
 
                 {/* Center Node */}
-                <div className="relative z-20 w-32 h-32 rounded-full shadow-xl shadow-blue-200 flex flex-col items-center justify-center text-white border-4 border-white ring-4 ring-blue-50 bg-gradient-to-br from-amber-500 to-yellow-600">
+                <div className="relative z-20 w-32 h-32 rounded-full shadow-xl shadow-blue-200 flex flex-col items-center justify-center text-white border-4 border-white ring-4 ring-blue-50 bg-gradient-to-br from-warning-500 to-warning-600">
                     <Layout className="w-8 h-8 mb-1" />
                     <span className="font-black text-xs text-center uppercase leading-tight">Ban QLDA<br />ĐTXD DDCN</span>
                 </div>
@@ -257,7 +257,7 @@ const RelationshipMap = () => {
 
                 {/* Node: Đơn vị sử dụng (Left) */}
                 <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col items-center z-10 group">
-                    <div className="w-14 h-14 bg-orange-50 text-orange-600 border border-orange-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-14 h-14 bg-warning-50 text-warning-600 border border-warning-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Map className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
@@ -265,7 +265,7 @@ const RelationshipMap = () => {
                         <p className="text-[8px] text-gray-500">Bàn giao & Vận hành</p>
                     </div>
                     {/* Connector */}
-                    <div className="absolute left-14 top-5 w-24 h-0.5 bg-orange-200"></div>
+                    <div className="absolute left-14 top-5 w-24 h-0.5 bg-warning-200"></div>
                 </div>
 
             </div>
@@ -351,7 +351,7 @@ const Article2Visual = () => {
 const DeptTasksLayout: React.FC<{
     functionContent: string[],
     tasks: { id: string, short: string, title: string, full: string }[],
-    baseColor: 'blue' | 'emerald' | 'purple' | 'orange' | 'teal',
+    baseColor: 'blue' | 'emerald' | 'purple' | 'warning' | 'teal',
     icon: React.ElementType
 }> = ({ functionContent, tasks, baseColor, icon: Icon }) => {
     const [hoveredTask, setHoveredTask] = useState('a');
@@ -361,7 +361,7 @@ const DeptTasksLayout: React.FC<{
         blue: { bg: 'bg-blue-50', text: 'text-blue-800', border: 'border-blue-100', active: 'bg-blue-600', activeText: 'text-white' },
         emerald: { bg: 'bg-emerald-50', text: 'text-emerald-800', border: 'border-emerald-100', active: 'bg-emerald-600', activeText: 'text-white' },
         purple: { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-100', active: 'bg-purple-600', activeText: 'text-white' },
-        orange: { bg: 'bg-orange-50', text: 'text-orange-800', border: 'border-orange-100', active: 'bg-orange-600', activeText: 'text-white' },
+        warning: { bg: 'bg-warning-50', text: 'text-warning-800', border: 'border-warning-100', active: 'bg-warning-600', activeText: 'text-white' },
         teal: { bg: 'bg-teal-50', text: 'text-teal-800', border: 'border-teal-100', active: 'bg-teal-600', activeText: 'text-white' },
     };
 
@@ -630,7 +630,7 @@ Ban ĐH dự án 4, 5: Quản lý các dự án sửa chữa, cải tạo, nâng
         }
     ];
 
-    return <DeptTasksLayout functionContent={functionContent} tasks={tasks} baseColor="orange" icon={Briefcase} />;
+    return <DeptTasksLayout functionContent={functionContent} tasks={tasks} baseColor="warning" icon={Briefcase} />;
 };
 
 const ServiceDevDeptDetail = () => {

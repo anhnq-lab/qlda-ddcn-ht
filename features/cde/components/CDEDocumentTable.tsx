@@ -47,9 +47,9 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
     }, [docs, searchQuery]);
 
     return (
-        <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden min-w-0">
+        <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden min-w-0">
             {/* Toolbar */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-bg-subtle">
+            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 min-w-0">
                     {breadcrumbs.map((f, i) => (
                         <React.Fragment key={f.id}>
@@ -71,7 +71,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                             placeholder="Tìm kiếm..."
                             value={searchQuery}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            className="pl-8 pr-3 py-1.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs w-48 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200"
+                            className="pl-8 pr-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs w-48 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200"
                         />
                     </div>
                     <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">
@@ -88,7 +88,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                     </div>
                 ) : filteredDocs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full p-4 text-gray-400">
-                        <div className="w-20 h-20 bg-bg-subtle dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
+                        <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
                             <FolderOpen className="w-10 h-10 text-gray-200 dark:text-slate-400" />
                         </div>
                         <h3 className="text-base font-bold text-gray-600 dark:text-slate-300 mb-1">Thư mục trống</h3>
@@ -106,7 +106,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                     </div>
                 ) : (
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-bg-surface text-[10px] uppercase font-bold text-gray-400 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 tracking-wider">
+                        <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-bold text-gray-400 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 tracking-wider">
                             <tr>
                                 {onToggleSelect && (
                                     <th className="px-3 py-3.5 w-10">
@@ -206,7 +206,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                 )}
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onDownload(doc); }}
-                                                    className="p-1.5 text-gray-400 hover:bg-bg-subtle dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                                    className="p-1.5 text-gray-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors"
                                                     title="Tải xuống"
                                                 >
                                                     <Download className="w-4 h-4" />

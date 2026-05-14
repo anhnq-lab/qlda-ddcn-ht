@@ -224,8 +224,8 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                 Chuẩn bị: {statusSummary.prep}
                             </span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/20">
-                                <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-warning-500" />
                                 Thực hiện: {statusSummary.exec}
                             </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
@@ -295,7 +295,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     {capitalVsDisbursement && (
                         <Suspense fallback={
                             <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex items-center justify-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
                             </div>
                         }>
                             <CapitalDisbursementChart data={capitalVsDisbursement} onSegmentClick={handleCapitalClick} />
@@ -326,12 +326,12 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 onClick={() => setShowProjects(!showProjects)}
                                 className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
                                     showProjects 
-                                        ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/20 dark:border-indigo-700/50 dark:text-indigo-400' 
+                                        ? 'bg-primary-50 border-primary-200 text-primary-700 dark:bg-primary-900/20 dark:border-primary-700/50 dark:text-primary-400' 
                                         : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
                                 }`}
                                 title="Hiển thị Dự án trên bản đồ"
                             >
-                                <span className={`w-2 h-2 rounded-full ${showProjects ? 'bg-indigo-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                <span className={`w-2 h-2 rounded-full ${showProjects ? 'bg-primary-500 animate-pulse' : 'bg-gray-400'}`}></span>
                                 {showProjects ? 'Đang hiện Dự án' : 'Hiện Dự án'}
                             </button>
 
@@ -340,12 +340,12 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 onClick={() => setShowMines(!showMines)}
                                 className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
                                     showMines 
-                                        ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-700/50 dark:text-amber-400' 
+                                        ? 'bg-warning-50 border-warning-200 text-warning-700 dark:bg-warning-900/20 dark:border-warning-700/50 dark:text-warning-400' 
                                         : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
                                 }`}
                                 title="Hiển thị Mỏ vật liệu (Đất, Đá, Cát) trên bản đồ"
                             >
-                                <span className={`w-2 h-2 rounded-full ${showMines ? 'bg-amber-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                <span className={`w-2 h-2 rounded-full ${showMines ? 'bg-warning-500 animate-pulse' : 'bg-gray-400'}`}></span>
                                 {showMines ? 'Đang hiện Mỏ vật liệu' : 'Hiện Mỏ vật liệu'}
                             </button>
                             <div className="relative flex-1 sm:w-64">
@@ -355,7 +355,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                     placeholder="Tìm dự án, mỏ vật liệu..."
                                     value={mapSearchQuery}
                                     onChange={(e) => setMapSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-slate-200 transition-shadow"
+                                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:text-slate-200 transition-shadow"
                                 />
                             </div>
                         </div>
@@ -363,12 +363,12 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     <div className="flex-1 w-full bg-gray-100 dark:bg-slate-300 rounded-2xl relative border border-gray-200 dark:border-slate-400 overflow-hidden z-0">
                         {loadingProjects ? (
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
                             </div>
                         ) : (
                             <Suspense fallback={
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
                                 </div>
                             }>
                                 <InteractiveMap projects={filteredProjects} materialMines={filteredMines} showMines={showMines} showProjects={showProjects} />

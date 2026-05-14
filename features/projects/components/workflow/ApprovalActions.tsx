@@ -25,7 +25,7 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md border border-gray-200 dark:border-slate-700 max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md border border-gray-200 dark:border-slate-700 max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="p-5 border-b border-gray-200 dark:border-slate-700">
                     <h2 className="text-lg font-black text-gray-900 dark:text-white">Xử lý bước quy trình</h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{node.step_name}</p>
@@ -131,7 +131,7 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                     )}
                 </div>
                 
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-2 bg-gray-50 dark:bg-slate-900/50 rounded-b-2xl">
+                <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-2 bg-gray-50 dark:bg-slate- rounded-b-2xl">
                     <button onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         Hủy
                     </button>

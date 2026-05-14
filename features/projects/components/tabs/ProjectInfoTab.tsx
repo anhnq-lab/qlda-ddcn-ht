@@ -579,11 +579,11 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         </div>
                         <div className="p-2.5 space-y-2">
                             <div className="grid grid-cols-3 gap-2">
-                                <div className="rounded-lg border border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-900/15 py-1.5 px-2 text-center">
+                                <div className="rounded-lg border border-primary-200 dark:border-primary-800/50 bg-primary-50/50 dark:bg-primary-900/15 py-1.5 px-2 text-center">
                                     <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Mô hình BIM (IFC)</p>
                                     <div className="flex items-center justify-center gap-1">
-                                        <Layers className="w-3.5 h-3.5 text-indigo-500" />
-                                        <p className="text-sm font-black tabular-nums text-indigo-600 dark:text-indigo-400">
+                                        <Layers className="w-3.5 h-3.5 text-primary-500" />
+                                        <p className="text-sm font-black tabular-nums text-primary-600 dark:text-primary-400">
                                             {bimAssetStats?.totalModels || 0}
                                         </p>
                                     </div>
@@ -597,11 +597,11 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                         </p>
                                     </div>
                                 </div>
-                                <div className="rounded-lg border border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/15 py-1.5 px-2 text-center">
+                                <div className="rounded-lg border border-warning-200 dark:border-warning-800/50 bg-warning-50/50 dark:bg-warning-900/15 py-1.5 px-2 text-center">
                                     <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Tài sản (Assets)</p>
                                     <div className="flex items-center justify-center gap-1">
-                                        <Database className="w-3.5 h-3.5 text-amber-500" />
-                                        <p className="text-sm font-black tabular-nums text-amber-600 dark:text-amber-400">
+                                        <Database className="w-3.5 h-3.5 text-warning-500" />
+                                        <p className="text-sm font-black tabular-nums text-warning-600 dark:text-warning-400">
                                             {bimAssetStats?.totalAssets || 0}
                                         </p>
                                     </div>
@@ -682,7 +682,7 @@ const EnhancedInfoItem: React.FC<{
     }, [value]);
 
     return (
-        <div className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 dark:border-slate-700/50 last:border-b-0 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors">
+        <div className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
             <div className="w-6 h-6 rounded-md bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
                 <Icon className="w-3 h-3 text-gray-400 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
             </div>

@@ -93,7 +93,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     return (
         <div className="space-y-4 relative">
             {/* Header */}
-            <div className="bg-gradient-to-r from-primary-50 to-yellow-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-sm">
+            <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-sm">
                 <div>
                     <h3 className="text-primary-900 dark:text-slate-100 font-bold flex items-center gap-2">
                         <FileText className="w-5 h-5 text-primary-600 dark:text-slate-300" />
@@ -114,7 +114,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                     </button>
                     <button
                         onClick={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm text-gray-600 bg-bg-surface hover:bg-bg-subtle border-gray-200 dark:bg-slate-800 dark:text-gray-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm text-gray-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-800 border-gray-200 dark:bg-slate-800 dark:text-gray-300 dark:border-slate-700 dark:hover:bg-slate-700"
                         title="Tải lại dữ liệu từ máy chủ (Xóa Cache)"
                     >
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,7 +153,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                             onClick={onDeleteAllTasks}
                             disabled={isDeletingAll}
                             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm ${isDeletingAll
-                                    ? 'text-gray-400 bg-bg-subtle border-gray-200 cursor-wait'
+                                    ? 'text-gray-400 bg-slate-50 dark:bg-slate-800 border-gray-200 cursor-wait'
                                     : deleteConfirmStep === 1
                                         ? 'text-white bg-red-600 border-red-700 animate-pulse hover:bg-red-700'
                                         : 'text-red-600 bg-red-50 hover:bg-red-100 border-red-200 dark:border-red-800 dark:bg-red-900/30 hover:border-red-300'
@@ -179,7 +179,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                     )}
                     <button
                         onClick={() => navigate(`/tasks`, { state: { filterProject: projectID } })}
-                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-bg-surface hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors shadow-sm"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors shadow-sm"
                     >
                         <ExternalLink className="w-3 h-3" />
                         Tất cả
@@ -197,7 +197,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
             {/* Global Task Header - sticky for better UX */}
             {tasks.length > 0 && (
-                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-bg-subtle border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-800/90" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
+                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
                     <div className="w-8 shrink-0 px-2"></div>
                     <div className="flex-1 min-w-[200px] px-2 text-left">Công việc</div>
                     <div className="w-24 shrink-0 px-2 text-center">Tiến độ</div>
@@ -224,14 +224,14 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
                         {/* Expanded Items */}
                         {expandedPhases[phase.id] && tasks.length === 0 && (
-                            <div className="mt-2 ml-4 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-xl border border-indigo-100/50 dark:border-slate-700/50 text-center shadow-sm">
-                                <div className="w-12 h-12 bg-indigo-100 dark:bg-slate-700 text-indigo-500 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                            <div className="mt-2 ml-4 p-5 bg-gradient-to-br from-primary-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-100/50 dark:border-slate-700/50 text-center shadow-sm">
+                                <div className="w-12 h-12 bg-primary-100 dark:bg-slate-700 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                                     <Layers className="w-6 h-6" />
                                 </div>
-                                <h4 className="text-indigo-900 dark:text-slate-200 font-semibold mb-1">
+                                <h4 className="text-primary-900 dark:text-slate-200 font-semibold mb-1">
                                     Kế hoạch chưa được khởi tạo
                                 </h4>
-                                <p className="text-xs text-indigo-600/70 dark:text-slate-400 max-w-sm mx-auto">
+                                <p className="text-xs text-primary-600/70 dark:text-slate-400 max-w-sm mx-auto">
                                     Bấm vào "Tạo kế hoạch tổng thể" ở tiêu đề để tự động phân bổ tài nguyên, quy trình và các đầu việc cần thiết.
                                 </p>
                             </div>
@@ -244,17 +244,17 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                         {sp.fullTitle && (
                                             <button
                                                 onClick={() => onSetExpandedPhases(prev => ({ ...prev, [`sp_${sp.id}`]: !prev[`sp_${sp.id}`] }))}
-                                                className="w-full flex items-center gap-2 px-3 py-2 mb-1 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-700/40 hover:bg-amber-100/80 dark:hover:bg-amber-900/30 transition-colors group/sp"
+                                                className="w-full flex items-center gap-2 px-3 py-2 mb-1 rounded-lg bg-warning-50/80 dark:bg-warning-900/20 border border-warning-200/60 dark:border-warning-700/40 hover:bg-warning-100/80 dark:hover:bg-warning-900/30 transition-colors group/sp"
                                             >
                                                 {expandedPhases[`sp_${sp.id}`] === false
-                                                    ? <ChevronRight className="w-4 h-4 text-amber-500 shrink-0" />
-                                                    : <ChevronDown className="w-4 h-4 text-amber-500 shrink-0" />
+                                                    ? <ChevronRight className="w-4 h-4 text-warning-500 shrink-0" />
+                                                    : <ChevronDown className="w-4 h-4 text-warning-500 shrink-0" />
                                                 }
-                                                <Layers className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                                                <span className="text-sm font-semibold text-amber-800 dark:text-amber-300 text-left">
+                                                <Layers className="w-4 h-4 text-warning-600 dark:text-warning-400 shrink-0" />
+                                                <span className="text-sm font-semibold text-warning-800 dark:text-warning-300 text-left">
                                                     {sp.fullTitle}
                                                 </span>
-                                                <span className="text-[10px] text-amber-500 dark:text-amber-400 ml-auto shrink-0">
+                                                <span className="text-[10px] text-warning-500 dark:text-warning-400 ml-auto shrink-0">
                                                     {sp.items.length} bước
                                                 </span>
                                             </button>
@@ -262,7 +262,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
                                         {/* Steps inside sub-process */}
                                         {expandedPhases[`sp_${sp.id}`] !== false && (
-                                        <div className={`space-y-2 ${sp.fullTitle ? 'ml-3 border-l border-amber-200/40 dark:border-amber-700/30 pl-3' : ''}`}>
+                                        <div className={`space-y-2 ${sp.fullTitle ? 'ml-3 border-l border-warning-200/40 dark:border-warning-700/30 pl-3' : ''}`}>
                                         {sp.items.map((item) => {
                                             const linkedTasks = filteredTasks
                                                 .filter(t => t.TimelineStep === item.code)
@@ -284,7 +284,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                     : 'border-l-gray-200 dark:border-l-slate-700';
 
                                             return (
-                                                <div key={item.id} className={`bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-lg p-3 hover:border-gray-200 dark:hover:border-slate-600 transition-colors group border-l-4 ${stepBorderColor}`}>
+                                                <div key={item.id} className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-3 hover:border-gray-200 dark:hover:border-slate-600 transition-colors group border-l-4 ${stepBorderColor}`}>
                                                     {/* Step Header Row */}
                                                     <div className="flex items-center gap-3">
                                                         {/* Status Icon */}
@@ -314,12 +314,12 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                             {/* Assignee & Meta under title */}
                                                             {item.assigneeRole && (
                                                                 <div className="mt-1.5 flex items-center gap-2">
-                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700">
-                                                                        <Building2 className="w-3 h-3 text-amber-500" />
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700">
+                                                                        <Building2 className="w-3 h-3 text-warning-500" />
                                                                         {item.assigneeRole}
                                                                     </span>
                                                                     {item.estimatedDays && (
-                                                                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700">
+                                                                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700">
                                                                             <Timer className="w-3 h-3" />
                                                                             {item.estimatedDays} ngày
                                                                         </span>
@@ -424,7 +424,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         <React.Fragment key={t.TaskID}>
                                                                         <tr
                                                                             onClick={() => onEditTask(t)}
-                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-700/50 ${isOverdue(t) ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
+                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate- ${isOverdue(t) ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
                                                                         >
                                                                             {/* Status Dot */}
                                                                             <td className="px-2 py-2 text-center">
@@ -443,7 +443,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 dark:text-slate-400' :
                                                                                 isOverdue(t) ? 'text-red-700 dark:text-red-400' :
                                                                                     t.Status === 'Review' ? 'text-primary-700 dark:text-primary-400' :
-                                                                                        t.Status === 'InProgress' ? 'text-orange-700 dark:text-orange-400' :
+                                                                                        t.Status === 'InProgress' ? 'text-warning-700 dark:text-warning-400' :
                                                                                             'text-gray-700 dark:text-slate-300'
                                                                                 }`}>
                                                                                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -458,7 +458,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     )}
                                                                                     <span>{t.Title.replace(/^[\d\.\s]+/, '').trim()}</span>
                                                                                     {t.IsCritical && (
-                                                                                        <span className="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[8px] rounded font-bold shrink-0">
+                                                                                        <span className="px-1 py-0.5 bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400 text-[8px] rounded font-bold shrink-0">
                                                                                             CP
                                                                                         </span>
                                                                                     )}
@@ -505,8 +505,8 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                             const due = new Date(t.DueDate); due.setHours(0,0,0,0);
                                                                                             const diff = Math.round((due.getTime() - now.getTime()) / 86400000);
                                                                                             if (diff < 0) return <span className="text-[9px] text-red-500 dark:text-red-400 font-bold">Quá hạn {Math.abs(diff)} ngày</span>;
-                                                                                            if (diff === 0) return <span className="text-[9px] text-orange-500 dark:text-orange-400 font-bold">Hôm nay!</span>;
-                                                                                            if (diff <= 3) return <span className="text-[9px] text-orange-500 dark:text-orange-400">Còn {diff} ngày</span>;
+                                                                                            if (diff === 0) return <span className="text-[9px] text-warning-500 dark:text-warning-400 font-bold">Hôm nay!</span>;
+                                                                                            if (diff <= 3) return <span className="text-[9px] text-warning-500 dark:text-warning-400">Còn {diff} ngày</span>;
                                                                                             if (diff <= 7) return <span className="text-[9px] text-blue-500 dark:text-blue-400">Còn {diff} ngày</span>;
                                                                                             return null;
                                                                                         })()}
@@ -586,7 +586,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         
                                                                         {/* Subtask Row */}
                                                                         {t.SubTasks && t.SubTasks.length > 0 && expandedMasterTasks[t.TaskID] && (
-                                                                            <tr className="bg-[#FAF8F5] dark:bg-slate-800/40 border-b border-gray-100 dark:border-slate-700/50">
+                                                                            <tr className="bg-[#FAF8F5] dark:bg-slate- border-b border-gray-100 dark:border-slate-700/50">
                                                                                 <td></td>
                                                                                 <td colSpan={8} className="p-3">
                                                                                     <div className="pl-4 sm:pl-8 border-l-2 border-primary-200 dark:border-slate-600">
@@ -595,8 +595,8 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                         </h6>
                                                                                         <div className="space-y-1.5">
                                                                                             {t.SubTasks.map(sub => (
-                                                                                                <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate-700/50 rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
-                                                                                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${sub.Status === 'Done' ? 'bg-emerald-500' : sub.Status === 'InProgress' ? 'bg-orange-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
+                                                                                                <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate- rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
+                                                                                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${sub.Status === 'Done' ? 'bg-emerald-500' : sub.Status === 'InProgress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
                                                                                                     <span className={`flex-1 font-medium ${sub.Status === 'Done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                                                         {sub.Title.replace(/^[\d\.\s]+/, '').trim()}
                                                                                                     </span>

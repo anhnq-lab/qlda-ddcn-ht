@@ -354,7 +354,7 @@ const CDEPage: React.FC = () => {
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab.key
-                                ? 'bg-bg-surface text-gray-800 dark:text-slate-100 shadow-sm'
+                                ? 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 shadow-sm'
                                 : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
                                 }`}
                         >

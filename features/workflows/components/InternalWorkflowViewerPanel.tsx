@@ -53,7 +53,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
 
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-bg-surface p-4 pt-16">
+            <div className="flex flex-col h-full bg-white dark:bg-slate-800 p-4 pt-16">
                 <div className="animate-pulse space-y-4">
                     {[...Array(4)].map((_, i) => <div key={i} className="h-8 bg-slate-200 rounded" />)}
                 </div>
@@ -72,7 +72,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                 <div className="relative z-10 flex items-start justify-between mb-4">
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="px-2.5 py-1 text-xs font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 rounded-md">Quy trình nội bộ</span>
+                            <span className="px-2.5 py-1 text-xs font-bold bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 rounded-md">Quy trình nội bộ</span>
                             <span className="text-xs font-mono text-slate-500">{workflow.code}</span>
                         </div>
                         <h2 className="text-2xl font-black text-slate-800 dark:text-white leading-tight font-display mb-3">
@@ -109,7 +109,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                     </div>
 
                                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow">
-                                        <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                        <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-">
                                             <h4 className="text-[17px] font-bold text-primary-700 dark:text-primary-400 mb-3">{node.name}</h4>
                                             
                                             <div className="flex flex-wrap gap-4 text-sm mt-3">
@@ -118,7 +118,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                                     <span className="font-semibold">{node.assignee_role || 'Chưa phân công'}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                                                    <Clock size={15} className="text-amber-500" />
+                                                    <Clock size={15} className="text-warning-500" />
                                                     <span className="font-semibold">Thời gian: {node.sla_formula || 'Chưa có'}</span>
                                                 </div>
                                                 {meta.phase && (

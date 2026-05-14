@@ -110,7 +110,7 @@ const StatusActionDropdown: React.FC<{
             {open && (
                 <div
                     ref={dropRef}
-                    className="fixed bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[200px]"
+                    className="fixed bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[200px]"
                     style={{ top: pos.top, right: pos.right, zIndex: 9999 }}
                     onClick={e => e.stopPropagation()}
                 >
@@ -119,7 +119,7 @@ const StatusActionDropdown: React.FC<{
                         <button
                             key={status}
                             onClick={() => { onChangeStatus(status); setOpen(false); }}
-                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors text-gray-700 dark:text-slate-300"
+                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors text-gray-700 dark:text-slate-300"
                         >
                             {t.labels[status]}
                         </button>
@@ -275,14 +275,14 @@ const InspectionFormModal: React.FC<{
         }
     };
 
-    const inputCls = "w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all";
+    const inputCls = "w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all";
     const labelCls = "text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1 block";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <div className="relative bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 sticky top-0 bg-bg-surface z-10">
+            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 z-10">
                     <h3 className="text-base font-black text-gray-800 dark:text-slate-100 flex items-center gap-2">
                         <Shield className="w-5 h-5 text-red-600" />
                         {editData ? 'Sửa thông tin thanh tra' : 'Thêm đợt thanh tra/kiểm toán'}
@@ -486,10 +486,10 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Tìm kiếm..."
-                            className="pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-red-500 outline-none w-56"
+                            className="pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-red-500 outline-none w-56"
                         />
                     </div>
-                    <select value={filterType} onChange={e => setFilterType(e.target.value)} className="px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-bg-surface text-gray-800 dark:text-slate-100">
+                    <select value={filterType} onChange={e => setFilterType(e.target.value)} className="px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100">
                         <option value="all">Tất cả loại</option>
                         {Object.entries(INSPECTION_TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                     </select>
@@ -516,7 +516,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                     {filteredInspections.map(item => {
                         const isExpanded = expandedId === item.InspectionID;
                         return (
-                            <div key={item.InspectionID} className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
+                            <div key={item.InspectionID} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
                                 {/* Header Row */}
                                 <div
                                     className="px-5 py-4 flex items-center justify-between cursor-pointer"

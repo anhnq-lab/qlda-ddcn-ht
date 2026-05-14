@@ -179,7 +179,7 @@ const RegulationsViewer: React.FC = () => {
                                 <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl group-hover:scale-110 transition-transform">
                                     <BookOpen className="w-6 h-6" />
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${doc.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400'}`}>
+                                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${doc.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-warning-100 text-warning-700 dark:bg-warning-900/50 dark:text-warning-400'}`}>
                                     {doc.status === 'active' ? 'Có Hiệu Lực' : 'Dự Thảo'}
                                 </span>
                             </div>
@@ -269,13 +269,13 @@ const RegulationsViewer: React.FC = () => {
 
                 <div className="p-4 border-t border-gray-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900 backdrop-blur-md shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400' : 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400'}`}>
+                        <div className={`p-2 rounded-full ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400' : 'bg-warning-100 dark:bg-warning-900/50 text-warning-700 dark:text-warning-400'}`}>
                             <FileCheck2 className="w-4 h-4" />
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
                                 <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase">Trạng thái</p>
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400' : 'bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-400'}`}>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider ${selectedDocument.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400' : 'bg-warning-100 dark:bg-warning-900/60 text-warning-700 dark:text-warning-400'}`}>
                                     {selectedDocument.status === 'active' ? 'Có Hiệu Lực' : 'Dự Thảo'}
                                 </span>
                             </div>
@@ -354,7 +354,7 @@ const RegulationsViewer: React.FC = () => {
                                                 </button>
                                                 <button 
                                                     onClick={(e) => toggleBookmark(article.id, e)}
-                                                    className={`p-1.5 rounded-lg transition-all ${savedArticles.includes(article.id) ? 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
+                                                    className={`p-1.5 rounded-lg transition-all ${savedArticles.includes(article.id) ? 'bg-warning-50 dark:bg-warning-900/30 text-warning-600 dark:text-warning-500' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
                                                     title={savedArticles.includes(article.id) ? "Bỏ lưu" : "Lưu điều khoản này"}
                                                 >
                                                     <Bookmark className="w-4 h-4" strokeWidth={savedArticles.includes(article.id) ? 3 : 2} fill={savedArticles.includes(article.id) ? "currentColor" : "none"} />
@@ -379,7 +379,7 @@ const RegulationsViewer: React.FC = () => {
                                             <textarea 
                                                 value={editContent}
                                                 onChange={(e) => setEditContent(e.target.value)}
-                                                className="w-full min-h-[200px] p-3 border border-blue-300 dark:border-blue-600 rounded-lg bg-blue-50/50 dark:bg-slate-800/50 text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs leading-relaxed"
+                                                className="w-full min-h-[200px] p-3 border border-blue-300 dark:border-blue-600 rounded-lg bg-blue-50/50 dark:bg-slate- text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs leading-relaxed"
                                             />
                                         ) : (
                                             typeof (editedArticles[article.id]?.content || article.content) === 'string' ? (
@@ -405,7 +405,7 @@ const RegulationsViewer: React.FC = () => {
                                                         <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs shrink-0 border border-blue-200 dark:border-blue-800">
                                                             {comment.user.charAt(0)}
                                                         </div>
-                                                        <div className="bg-gray-50 dark:bg-slate-700/50 rounded-2xl rounded-tl-none p-3 flex-1 border border-gray-100 dark:border-slate-600/50">
+                                                        <div className="bg-gray-50 dark:bg-slate- rounded-2xl rounded-tl-none p-3 flex-1 border border-gray-100 dark:border-slate-600/50">
                                                             <div className="flex justify-between items-center mb-1">
                                                                 <span className="text-xs font-bold text-gray-800 dark:text-slate-200">{comment.user}</span>
                                                                 <span className="text-[10px] text-gray-400 dark:text-slate-400">{comment.date}</span>
@@ -451,8 +451,8 @@ const RegulationsViewer: React.FC = () => {
 
                         {/* Footer Notes */}
                         {displayChapter?.type === 'chart' && (
-                            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800/50 rounded-xl text-xs text-yellow-800 dark:text-yellow-400 flex items-start gap-3 mt-4 shadow-sm">
-                                <Info className="w-5 h-5 text-yellow-600 dark:text-yellow-500 shrink-0" />
+                            <div className="p-4 bg-warning-50 dark:bg-warning-900/20 border border-warning-100 dark:border-warning-800/50 rounded-xl text-xs text-warning-800 dark:text-warning-400 flex items-start gap-3 mt-4 shadow-sm">
+                                <Info className="w-5 h-5 text-warning-600 dark:text-warning-500 shrink-0" />
                                 <div>
                                     <p className="font-bold mb-1">Lưu ý về sơ đồ:</p>
                                     <p>Sơ đồ trên thể hiện mối quan hệ báo cáo trực tiếp. Các phòng ban có trách nhiệm phối hợp ngang hàng để giải quyết công việc chung của Ban QLDA.</p>
@@ -469,7 +469,7 @@ const RegulationsViewer: React.FC = () => {
                 {savedArticles.length > 0 && (
                     <div className="p-5 border-b border-gray-200 dark:border-slate-800 section-card-header shrink-0 z-10 shadow-sm">
                         <h3 className="text-xs font-black text-gray-800 dark:text-slate-200 uppercase tracking-widest flex items-center gap-2">
-                            <Bookmark className="w-3.5 h-3.5 text-yellow-500" fill="currentColor" />
+                            <Bookmark className="w-3.5 h-3.5 text-warning-500" fill="currentColor" />
                             Đã lưu ({savedArticles.length})
                         </h3>
                     </div>

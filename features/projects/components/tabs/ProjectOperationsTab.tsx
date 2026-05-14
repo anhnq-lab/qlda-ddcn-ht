@@ -179,7 +179,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
 
     // ── RENDER ──
     return (
-        <div className={`h-full overflow-y-auto ${isDark ? 'bg-slate-950' : 'bg-bg-subtle'}`}>
+        <div className={`h-full overflow-y-auto ${isDark ? 'bg-slate-950' : 'bg-slate-50 dark:bg-slate-800'}`}>
             <div className="max-w-[1400px] mx-auto p-4 space-y-6">
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between">
@@ -196,7 +196,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                         <button
                             onClick={() => window.location.reload()}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors
-                                ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700' : 'bg-bg-surface hover:bg-bg-subtle text-gray-600 border border-gray-200'}
+                                ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700' : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-800 text-gray-600 border border-gray-200'}
                             `}
                         >
                             <RefreshCw className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 {/* ── Charts Row ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Chart: By Category */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'} shadow-sm`}>
+                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm`}>
                         <div className="flex items-center gap-2 mb-3">
                             <BarChart3 className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
                             <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo danh mục</span>
@@ -266,7 +266,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                     </div>
 
                     {/* Chart: By Status */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'} shadow-sm`}>
+                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm`}>
                         <div className="flex items-center gap-2 mb-3">
                             <PieChart className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
                             <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo trạng thái</span>
@@ -276,7 +276,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 const count = stats.byStatus[key as keyof typeof stats.byStatus] || 0;
                                 const Icon = cfg.icon;
                                 return (
-                                    <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-bg-subtle'}`}>
+                                    <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-' : 'bg-slate-50 dark:bg-slate-800'}`}>
                                         <Icon className={`w-4 h-4 text-${cfg.color}-500`} />
                                         <div>
                                             <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{count}</div>
@@ -290,7 +290,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Maintenance Timeline ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'} shadow-sm overflow-hidden`}>
+                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm overflow-hidden`}>
                     <div className={`px-4 py-3 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
                         <div className="flex items-center gap-2">
                             <Calendar className={`w-4 h-4 ${isDark ? 'text-primary-400' : 'text-primary-500'}`} />
@@ -311,7 +311,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 {maintenanceTimeline.map((item, idx) => (
                                     <div
                                         key={item.asset.asset_id}
-                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-blue-50/30'}`}
+                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-' : 'hover:bg-blue-50/30'}`}
                                     >
                                         {/* Timeline dot */}
                                         <div className="flex flex-col items-center gap-0.5 shrink-0">
@@ -360,10 +360,10 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Asset Inventory ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-bg-surface border-gray-200'} shadow-sm overflow-hidden`}>
+                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm overflow-hidden`}>
                     {/* Inventory header — sticky */}
                     <div className={`px-4 py-3 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 z-10
-                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-bg-surface'}
+                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-white dark:bg-slate-800'}
                     `}>
                         <div className="flex items-center gap-2">
                             <Layers className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
@@ -379,7 +379,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                         <div className="flex items-center gap-2 flex-wrap">
                             {/* Search */}
                             <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs border
-                                ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}
+                                ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
                             `}>
                                 <Search className="w-3.5 h-3.5 opacity-50" />
                                 <input
@@ -396,7 +396,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 value={statusFilter}
                                 onChange={e => setStatusFilter(e.target.value)}
                                 className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}
+                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
                                 `}
                             >
                                 <option value="all">Tất cả trạng thái</option>
@@ -410,7 +410,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 value={categoryFilter}
                                 onChange={e => setCategoryFilter(e.target.value)}
                                 className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}
+                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
                                 `}
                             >
                                 <option value="all">Tất cả danh mục</option>
@@ -424,7 +424,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 value={groupBy}
                                 onChange={e => setGroupBy(e.target.value as any)}
                                 className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-bg-surface border-gray-200 text-gray-600'}
+                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
                                 `}
                             >
                                 <option value="none">Không nhóm</option>
@@ -451,7 +451,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                         ) : (
                             <table className="w-full text-xs">
                                 <thead className="sticky top-0 z-[5] border-b border-slate-200 dark:border-slate-700">
-                                    <tr className={isDark ? 'bg-slate-800' : 'bg-bg-subtle'}>
+                                    <tr className={isDark ? 'bg-slate-800' : 'bg-slate-50 dark:bg-slate-800'}>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Mã TS</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Tên tài sản</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Danh mục</th>
@@ -469,7 +469,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                             {/* Group header */}
                                             {groupBy !== 'none' && (
                                                 <tr
-                                                    className={`cursor-pointer ${isDark ? 'bg-slate-800/30 hover:bg-slate-800/50' : 'bg-bg-subtle hover:bg-gray-100'}`}
+                                                    className={`cursor-pointer ${isDark ? 'bg-slate- hover:bg-slate-' : 'bg-slate-50 dark:bg-slate-800 hover:bg-gray-100'}`}
                                                     onClick={() => toggleGroup(group)}
                                                 >
                                                     <td colSpan={9} className={`px-3 py-2 font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
@@ -491,7 +491,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                 return (
                                                     <tr
                                                         key={a.asset_id}
-                                                        className={`border-t transition-colors ${isDark ? 'border-slate-800/50 hover:bg-slate-800/30' : 'border-gray-50 hover:bg-blue-50/30'}`}
+                                                        className={`border-t transition-colors ${isDark ? 'border-slate-800/50 hover:bg-slate-' : 'border-gray-50 hover:bg-blue-50/30'}`}
                                                     >
                                                         <td className={`px-3 py-2 font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                                                             {a.asset_code || '—'}

@@ -53,7 +53,7 @@ const CONTRACTOR_TYPE_COLORS: Record<string, string> = {
     Supervision: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
     Survey: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
     Appraisal: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
-    Supplier: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300',
+    Supplier: 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300',
     Other: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
 };
 
@@ -149,11 +149,11 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
             />
 
             {/* Panel */}
-            <div className="fixed right-0 top-0 bottom-0 left-64 bg-bg-surface z-50 shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300 flex flex-col">
+            <div className="fixed right-0 top-0 bottom-0 left-64 bg-white dark:bg-slate-800 z-50 shadow-sm border-l border-gray-200 dark:border-slate-700 animate-in slide-in-from-right duration-300 flex flex-col">
 
                 {/* ═══ HEADER ═══ */}
                 <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-start gap-4 shrink-0">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-primary-500/20">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-warning-500 flex items-center justify-center shrink-0 shadow-sm shadow-primary-500/20">
                         <Building2 className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -242,13 +242,13 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                             </div>
 
                             {/* Info */}
-                            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                                 <div className="px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Thông tin tổ chức</h3>
                                 </div>
                                 <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
                                     {infoItems.length > 0 ? infoItems.map(item => (
-                                        <div key={item.label} className="flex items-center gap-3 px-4 py-3 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors">
+                                        <div key={item.label} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
                                             <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
                                                 <item.icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
                                             </div>
@@ -265,7 +265,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
 
                             {/* Recent contracts preview */}
                             {contracts.length > 0 && (
-                                <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                                     <div className="px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
                                             <Briefcase className="w-3.5 h-3.5" /> Hợp đồng gần đây
@@ -283,7 +283,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                             return (
                                                 <div
                                                     key={ct.contract_id}
-                                                    className="p-3.5 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                                                    className="p-3.5 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                                     onClick={() => navigate(`/contracts/${ct.contract_id}`)}
                                                 >
                                                     <div className="flex items-start justify-between gap-2">
@@ -338,7 +338,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                     return (
                                         <div
                                             key={ct.contract_id}
-                                            className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+                                            className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
                                             onClick={() => navigate(`/contracts/${ct.contract_id}`)}
                                         >
                                             <div className="flex items-start justify-between gap-2 mb-2">
@@ -395,7 +395,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                 biddingPackages.map(pkg => (
                                     <div
                                         key={pkg.package_id}
-                                        className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                                        className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
                                     >
                                         <div className="flex items-start justify-between gap-2 mb-2">
                                             <div className="flex-1 min-w-0">

@@ -26,7 +26,7 @@ interface Props {
 }
 
 const WidgetSkeleton = () => (
-    <div className="bg-bg-surface rounded-2xl animate-pulse h-[280px]" />
+    <div className="bg-white dark:bg-slate-800 rounded-2xl animate-pulse h-[280px]" />
 );
 
 export const ManagerDashboard: React.FC<Props> = ({ config, data }) => {

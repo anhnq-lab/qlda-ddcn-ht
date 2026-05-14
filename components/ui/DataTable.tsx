@@ -172,7 +172,7 @@ function DataTable<T extends Record<string, any>>({
             {/* ── TABLE CARD ── */}
             <div
                 className={`
-                    bg-bg-surface
+                    bg-white dark:bg-slate-800
                     rounded-2xl border border-slate-100 dark:border-slate-700
                     shadow-sm overflow-hidden
                     ${className}
@@ -185,7 +185,7 @@ function DataTable<T extends Record<string, any>>({
                     <table className="w-full">
                         {/* ── HEADER ── */}
                         <thead className={stickyHeader ? 'sticky top-0 z-10' : ''}>
-                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
+                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
                                 {selectable && (
                                     <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
                                         <input
@@ -270,7 +270,7 @@ function DataTable<T extends Record<string, any>>({
                                                 ${onRowClick ? 'cursor-pointer' : ''}
                                                 ${isSelected
                                                     ? 'bg-primary-50 dark:bg-primary-900/20'
-                                                    : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/60'
+                                                    : 'hover:bg-slate-50/80 dark:hover:bg-slate-'
                                                 }
                                                 ${rowClassName?.(row, index) || ''}
                                             `}
@@ -314,7 +314,7 @@ function DataTable<T extends Record<string, any>>({
 
             {/* ── FOOTER (Pagination / Counter) ── */}
             {shouldShowFooter && !isLoading && (
-                <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                     {/* Left: count info */}
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                         {pagination ? (

@@ -29,9 +29,9 @@ const variantStyles: Record<ButtonVariant, string> = {
         focus-visible:ring-primary-500
     `,
     secondary: `
-        bg-bg-surface text-gray-700 
+        bg-white dark:bg-slate-800 text-gray-700 
         border border-gray-200 shadow-lg
-        hover:bg-bg-subtle hover:border-gray-300
+        hover:bg-slate-50 dark:bg-slate-800 hover:border-gray-300
         active:bg-gray-100
         focus-visible:ring-gray-400
     `,

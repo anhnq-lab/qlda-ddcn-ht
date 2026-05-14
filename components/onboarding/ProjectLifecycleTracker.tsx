@@ -40,7 +40,7 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
   const currentIndex = PHASES.findIndex((p) => p.id === currentPhase);
 
   return (
-    <div className="bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg mb-6 w-full">
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg mb-6 w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -68,7 +68,7 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
               <div key={phase.id} className="group relative flex flex-col items-center w-1/4">
                 {/* Node Status Indicator */}
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-bg-surface ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-white dark:bg-slate-800 ${
                     isCompleted
                       ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400'
                       : isCurrent

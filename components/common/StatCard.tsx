@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
-export type StatCardColor = 'blue' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan' | 'indigo' | 'orange' | 'purple' | 'slate' | 'gray';
+export type StatCardColor = 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'slate' | 'gray' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan' | 'indigo' | 'orange' | 'purple';
 
 interface StatCardProps {
     /** Tiêu đề chính của thẻ */
@@ -34,32 +34,64 @@ interface StatCardProps {
     onClick?: () => void;
 }
 
+// COLOR_MAP: icon container color classes per StatCard color prop
+// NOTE: 'amber' → warning-* (amber/yellow). Do NOT alias to primary-* (teal).
 const COLOR_MAP: Record<StatCardColor, string> = {
-    blue:    'text-blue-600 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400',
-    emerald: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-400',
-    amber:   'text-primary-600 bg-primary-50 dark:bg-primary-500/10 dark:text-primary-400',
-    rose:    'text-rose-600 bg-rose-50 dark:bg-rose-500/10 dark:text-rose-400',
-    violet:  'text-violet-600 bg-violet-50 dark:bg-violet-500/10 dark:text-violet-400',
-    cyan:    'text-cyan-600 bg-cyan-50 dark:bg-cyan-500/10 dark:text-cyan-400',
-    indigo:  'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 dark:text-indigo-400',
-    orange:  'text-orange-600 bg-orange-50 dark:bg-orange-500/10 dark:text-orange-400',
-    purple:  'text-purple-600 bg-purple-50 dark:bg-purple-500/10 dark:text-purple-400',
-    slate:   'text-slate-600 bg-slate-50 dark:bg-slate-500/10 dark:text-slate-400',
+    primary: 'text-primary-600 bg-primary-50 dark:bg-primary-900/30 dark:text-primary-400',
+    success: 'text-success-600 bg-success-50 dark:bg-success-900/30 dark:text-success-400',
+    warning: 'text-warning-700 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
+    danger:  'text-danger-600 bg-danger-50 dark:bg-danger-900/30 dark:text-danger-400',
+    info:    'text-info-600 bg-info-50 dark:bg-info-900/30 dark:text-info-400',
+    blue:    'text-info-600 bg-info-50 dark:bg-info-900/30 dark:text-info-400',
+    emerald: 'text-success-600 bg-success-50 dark:bg-success-900/30 dark:text-success-400',
+    amber:   'text-warning-700 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
+    rose:    'text-danger-600 bg-danger-50 dark:bg-danger-900/30 dark:text-danger-400',
+    violet:  'text-primary-600 bg-primary-50 dark:bg-primary-900/30 dark:text-primary-400',
+    cyan:    'text-info-600 bg-info-50 dark:bg-info-900/30 dark:text-info-400',
+    indigo:  'text-primary-600 bg-primary-50 dark:bg-primary-900/30 dark:text-primary-400',
+    orange:  'text-warning-600 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
+    purple:  'text-warning-600 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
+    slate:   'text-slate-600 bg-slate-50 dark:bg-slate- dark:text-slate-400',
     gray:    'text-gray-600 bg-gray-50 dark:bg-gray-500/10 dark:text-gray-400',
 };
 
 const BG_MAP: Record<StatCardColor, string> = {
-    blue:    'bg-blue-500',
-    emerald: 'bg-emerald-500',
-    amber:   'bg-primary-500',
-    rose:    'bg-rose-500',
-    violet:  'bg-violet-500',
-    cyan:    'bg-cyan-500',
-    indigo:  'bg-indigo-500',
-    orange:  'bg-orange-500',
-    purple:  'bg-purple-500',
+    primary: 'bg-primary-500',
+    success: 'bg-success-500',
+    warning: 'bg-warning-500',
+    danger:  'bg-danger-500',
+    info:    'bg-info-500',
+    blue:    'bg-info-500',
+    emerald: 'bg-success-500',
+    amber:   'bg-warning-500',
+    rose:    'bg-danger-500',
+    violet:  'bg-primary-500',
+    cyan:    'bg-info-500',
+    indigo:  'bg-primary-500',
+    orange:  'bg-warning-500',
+    purple:  'bg-warning-500',
     slate:   'bg-slate-500',
     gray:    'bg-gray-500',
+};
+
+// BORDER_TOP_MAP: Accent top border color per color prop
+const BORDER_TOP_MAP: Record<StatCardColor, string> = {
+    primary: 'dark:border-t-primary-500 border-t-transparent',
+    success: 'dark:border-t-success-500 border-t-transparent',
+    warning: 'dark:border-t-warning-500 border-t-transparent',
+    danger:  'dark:border-t-danger-500 border-t-transparent',
+    info:    'dark:border-t-info-500 border-t-transparent',
+    blue:    'dark:border-t-info-500 border-t-transparent',
+    emerald: 'dark:border-t-success-500 border-t-transparent',
+    amber:   'dark:border-t-warning-500 border-t-transparent',
+    rose:    'dark:border-t-danger-500 border-t-transparent',
+    violet:  'dark:border-t-primary-500 border-t-transparent',
+    cyan:    'dark:border-t-info-500 border-t-transparent',
+    indigo:  'dark:border-t-primary-500 border-t-transparent',
+    orange:  'dark:border-t-warning-500 border-t-transparent',
+    purple:  'dark:border-t-warning-500 border-t-transparent',
+    slate:   'dark:border-t-slate-500 border-t-transparent',
+    gray:    'dark:border-t-gray-500 border-t-transparent',
 };
 
 /**
@@ -84,13 +116,14 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => {
     const iconCls = COLOR_MAP[color] || COLOR_MAP.blue;
     const bgCls = BG_MAP[color] || BG_MAP.blue;
+    const borderTopCls = BORDER_TOP_MAP[color] || BORDER_TOP_MAP.blue;
 
     return (
         <div
             className={`
                 relative overflow-hidden flex flex-col gap-2 p-4 rounded-xl
-                bg-bg-surface border border-border-DEFAULT dark:border-slate-700/60
-                shadow-sm h-full transition-all duration-200
+                bg-white dark:bg-slate-900 border border-border-DEFAULT dark:border-slate-700
+                shadow-sm h-full transition-all duration-200 border-t-[3px] ${borderTopCls}
                 ${onClick ? 'cursor-pointer hover:shadow-md hover:border-primary-200 dark:hover:border-slate-600' : ''}
                 ${className}
             `}

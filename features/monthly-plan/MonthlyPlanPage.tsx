@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<MonthlyTaskStatus, { icon: React.ReactNode; color: s
     planned:    { icon: <Clock className="w-3.5 h-3.5" />,         color: 'text-slate-500',  bg: 'bg-slate-100' },
     completed:  { icon: <CheckCircle2 className="w-3.5 h-3.5" />,  color: 'text-emerald-600', bg: 'bg-emerald-50' },
     incomplete: { icon: <XCircle className="w-3.5 h-3.5" />,       color: 'text-red-500',    bg: 'bg-red-50' },
-    partial:    { icon: <AlertCircle className="w-3.5 h-3.5" />,   color: 'text-amber-500',  bg: 'bg-amber-50' },
+    partial:    { icon: <AlertCircle className="w-3.5 h-3.5" />,   color: 'text-warning-500',  bg: 'bg-warning-50' },
     deferred:   { icon: <ArrowRight className="w-3.5 h-3.5" />,    color: 'text-blue-500',   bg: 'bg-blue-50' },
 };
 
@@ -216,13 +216,13 @@ const MonthlyPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50">
+        <div className="flex flex-col h-[calc(100vh-140px)] overflow-hidden bg-slate-50 dark:bg-slate-900 -mx-3 sm:-mx-4 lg:-mx-6 -mt-4 sm:-mt-6">
             {/* ── Header ── */}
             <div className="bg-white border-b border-slate-200 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-indigo-100 flex items-center justify-center">
-                            <CalendarDays className="w-5 h-5 text-indigo-600" />
+                        <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
+                            <CalendarDays className="w-5 h-5 text-primary-600" />
                         </div>
                         <div>
                             <h1 className="text-lg font-semibold text-slate-800">
@@ -240,7 +240,7 @@ const MonthlyPlanPage: React.FC = () => {
                             <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium animate-in fade-in duration-300 ${
                                 seedResult.count > 0
                                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    : 'bg-warning-50 text-warning-700 border border-warning-200'
                             }`}>
                                 {seedResult.count > 0
                                     ? `✓ Đã sinh ${seedResult.count} nhiệm vụ từ ${seedResult.source}`
@@ -281,7 +281,7 @@ const MonthlyPlanPage: React.FC = () => {
                         <select
                             value={month}
                             onChange={e => setMonth(Number(e.target.value))}
-                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             {MONTH_NAMES.slice(1).map((name, i) => (
                                 <option key={i + 1} value={i + 1}>{name}</option>
@@ -292,7 +292,7 @@ const MonthlyPlanPage: React.FC = () => {
                         <select
                             value={year}
                             onChange={e => setYear(Number(e.target.value))}
-                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
                         >
                             {[year - 1, year, year + 1].map(y => (
                                 <option key={y} value={y}>{y}</option>
@@ -326,7 +326,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 <button
                                     id="monthly-plan-add-btn"
                                     onClick={() => openFormPanel(null)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Thêm nhiệm vụ
@@ -343,7 +343,7 @@ const MonthlyPlanPage: React.FC = () => {
                             key={code}
                             onClick={() => setActiveDept(code)}
                             className={`flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                                activeDept === code ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                activeDept === code ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                         >
                             {code}
@@ -388,7 +388,7 @@ const MonthlyPlanPage: React.FC = () => {
                                     <th className="px-3 py-2 text-left">Phòng/Ban</th>
                                     <th className="px-3 py-2 text-center">Tổng</th>
                                     <th className="px-3 py-2 text-center text-emerald-600">Hoàn thành</th>
-                                    <th className="px-3 py-2 text-center text-amber-500">Một phần</th>
+                                    <th className="px-3 py-2 text-center text-warning-500">Một phần</th>
                                     <th className="px-3 py-2 text-center text-red-500">Chưa HT</th>
                                     <th className="px-3 py-2 text-center text-blue-500">Chuyển tháng</th>
                                     <th className="px-3 py-2 text-center">Tỷ lệ HT</th>
@@ -400,13 +400,13 @@ const MonthlyPlanPage: React.FC = () => {
                                         <td className="px-3 py-2 font-medium text-slate-700">{s.department_name}</td>
                                         <td className="px-3 py-2 text-center text-slate-600">{s.total_tasks}</td>
                                         <td className="px-3 py-2 text-center text-emerald-600 font-medium">{s.completed}</td>
-                                        <td className="px-3 py-2 text-center text-amber-500">{s.partial}</td>
+                                        <td className="px-3 py-2 text-center text-warning-500">{s.partial}</td>
                                         <td className="px-3 py-2 text-center text-red-500">{s.incomplete}</td>
                                         <td className="px-3 py-2 text-center text-blue-500">{s.deferred}</td>
                                         <td className="px-3 py-2 text-center">
                                             <span className={`font-semibold ${
                                                 s.completion_rate >= 80 ? 'text-emerald-600'
-                                                : s.completion_rate >= 50 ? 'text-amber-500'
+                                                : s.completion_rate >= 50 ? 'text-warning-500'
                                                 : 'text-red-500'
                                             }`}>
                                                 {s.completion_rate}%
@@ -426,7 +426,7 @@ const MonthlyPlanPage: React.FC = () => {
             )}
 
             {/* ── Danh sách nhiệm vụ ── */}
-            <div className="flex-1 overflow-auto px-6 py-4">
+            <div className="flex-1 px-6 py-4 flex flex-col min-h-0">
                 {loading ? (
                     <div className="flex items-center justify-center h-40 text-slate-400 text-sm">Đang tải...</div>
                 ) : groups.size === 0 ? (
@@ -438,24 +438,24 @@ const MonthlyPlanPage: React.FC = () => {
                                 <FolderSync className="w-3.5 h-3.5" /> Sinh từ dự án
                             </button>
                             <span className="text-slate-300">|</span>
-                            <button onClick={handleSeedFromAnnual} className="text-indigo-600 hover:underline">
+                            <button onClick={handleSeedFromAnnual} className="text-primary-600 hover:underline">
                                 Sinh từ KH khung
                             </button>
                             <span className="text-slate-300">|</span>
-                            <button onClick={() => openFormPanel(null)} className="text-indigo-600 hover:underline">
+                            <button onClick={() => openFormPanel(null)} className="text-primary-600 hover:underline">
                                 Thêm thủ công
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
+                    <div className="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-auto relative">
                         <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                            <thead className="sticky top-0 z-10">
+                                <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                     <th className="px-4 py-3 w-12 border-b border-slate-200 dark:border-slate-800 text-center">STT</th>
                                     <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 min-w-[300px]">Nhiệm vụ</th>
                                     <th className="px-4 py-3 w-32 border-b border-slate-200 dark:border-slate-800 text-center">Thời hạn</th>
-                                    <th className="px-4 py-3 w-40 border-b border-slate-200 dark:border-slate-800">Phụ trách</th>
+                                    <th className="px-4 py-3 w-40 border-b border-slate-200 dark:border-slate-800">Phụ trách / Thực hiện</th>
                                     <th className="px-4 py-3 w-40 border-b border-slate-200 dark:border-slate-800 text-center">Trạng thái</th>
                                     <th className="px-4 py-3 w-20 border-b border-slate-200 dark:border-slate-800 text-center"></th>
                                 </tr>
@@ -463,7 +463,7 @@ const MonthlyPlanPage: React.FC = () => {
                             {Array.from(groups.entries()).map(([groupName, groupItems]) => (
                                 <tbody key={groupName} className="group/tbody">
                                     {groupName !== 'Công việc khác' && (
-                                        <tr className="bg-slate-50/80 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+                                        <tr className="bg-slate-50/80 dark:bg-slate- border-b border-slate-200 dark:border-slate-800">
                                             <td colSpan={6} className="px-2 py-2">
                                                 <button
                                                     onClick={() => toggleGroup(groupName)}
@@ -471,7 +471,7 @@ const MonthlyPlanPage: React.FC = () => {
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${expandedGroups.has(groupName) ? 'rotate-90' : ''}`} />
-                                                        <FolderOpen className="w-4 h-4 text-indigo-500" />
+                                                        <FolderOpen className="w-4 h-4 text-primary-500" />
                                                         <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{groupName}</span>
                                                         <span className="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-medium">
                                                             {groupItems.length}
@@ -527,7 +527,7 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
     const cfg = STATUS_CONFIG[item.status];
     return (
         <tr
-            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
+            className="hover:bg-slate-50 dark:hover:bg-slate- transition-colors group cursor-pointer border-b border-slate-100 dark:border-slate-800 last:border-0"
             onClick={onRowClick}
         >
             <td className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500 text-center align-top">{idx}</td>
@@ -591,7 +591,7 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
                     <select
                         value={item.status}
                         onChange={e => onStatusChange(item, e.target.value as MonthlyTaskStatus)}
-                        className={`text-xs px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer`}
+                        className={`text-xs px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer`}
                         onClick={e => e.stopPropagation()}
                     >
                         {Object.entries(MONTHLY_STATUS_LABELS).map(([v, l]) => (
@@ -604,7 +604,7 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
                             item.status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' :
                             item.status === 'incomplete' ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400' :
                             item.status === 'planned' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' :
-                            item.status === 'partial' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' :
+                            item.status === 'partial' ? 'bg-warning-100 text-warning-700 dark:bg-warning-500/10 dark:text-warning-400' :
                             'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
                         }`}>
                             {cfg.icon}
@@ -616,7 +616,7 @@ const TaskRow: React.FC<TaskRowProps> = ({ idx, item, viewMode, onStatusChange, 
 
             <td className="px-4 py-3 align-top">
                 <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                    <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 rounded-lg transition-colors">
+                    <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors">
                         <Edit2 className="w-4 h-4" />
                     </button>
                     <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors">

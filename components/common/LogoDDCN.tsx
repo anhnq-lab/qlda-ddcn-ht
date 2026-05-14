@@ -10,7 +10,7 @@ export const LogoDDCN = ({ className = "w-16 h-16" }: { className?: string }) =>
     >
       <g transform="translate(0, -5)">
         {/* Mái vòm vàng phía sau */}
-        <path d="M50 10 L35 25 L65 25 Z" className="fill-amber-500" />
+        <path d="M50 10 L35 25 L65 25 Z" className="fill-warning-500" />
         
         {/* --- KHỐI BÊN TRÁI (Far Left) --- */}
         <path d="M20 60 L35 45 V90 H20 Z" className="fill-primary-800 dark:fill-primary-500" />

@@ -150,7 +150,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
 
                         {/* ── Thông tin nhiệm vụ ── */}
                         <SectionPanel
-                            icon={<ClipboardList className="w-4 h-4 text-indigo-500" />}
+                            icon={<ClipboardList className="w-4 h-4 text-primary-500" />}
                             title="Thông tin nhiệm vụ"
                             sectionKey="thongtin"
                             expanded={expanded}
@@ -196,14 +196,14 @@ const AnnualPlanItemModal: React.FC<Props> = ({
 
                         {/* ── Thời gian & Tần suất ── */}
                         <SectionPanel
-                            icon={<CalendarClock className="w-4 h-4 text-amber-500" />}
+                            icon={<CalendarClock className="w-4 h-4 text-warning-500" />}
                             title="Thời gian & Tần suất"
                             sectionKey="thoigian"
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
                                 form.frequency !== 'one_time'
-                                    ? <span className="text-xs bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-full">
+                                    ? <span className="text-xs bg-warning-50 text-warning-600 px-1.5 py-0.5 rounded-full">
                                         {FREQUENCY_LABELS[form.frequency]}
                                     </span>
                                     : null

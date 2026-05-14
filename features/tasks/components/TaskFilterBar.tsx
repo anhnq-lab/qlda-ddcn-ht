@@ -194,13 +194,13 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
                         <button
                             onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-bg-surface dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <ListTodo className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setViewMode('board')}
-                            className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-bg-surface dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <LayoutGrid className="w-4 h-4" />
                         </button>

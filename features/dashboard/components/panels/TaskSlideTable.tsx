@@ -48,7 +48,7 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
                 let label = value;
                 if (value === TaskStatus.Done) { color = 'bg-emerald-50 text-emerald-700 border-emerald-200'; label = 'Hoàn thành'; }
                 else if (value === TaskStatus.InProgress) { color = 'bg-blue-50 text-blue-700 border-blue-200'; label = 'Đang xử lý'; }
-                else if (value === TaskStatus.Todo) { color = 'bg-amber-50 text-amber-700 border-amber-200'; label = 'Chờ xử lý'; }
+                else if (value === TaskStatus.Todo) { color = 'bg-warning-50 text-warning-700 border-warning-200'; label = 'Chờ xử lý'; }
                 
                 return (
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap border ${color}`}>
@@ -82,14 +82,14 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
 
     if (isLoading) {
         return (
-            <div className="p-4 h-full flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-900/20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div className="p-4 h-full flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-900/20">
+        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-">
             <DataTable
                 data={filteredTasks}
                 columns={columns}

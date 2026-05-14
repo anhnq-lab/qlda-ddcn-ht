@@ -75,7 +75,7 @@ const Section: React.FC<{
     
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-3">
-            <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+            <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-">
                 <div className="flex-1 text-left">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{title}</span>
@@ -415,13 +415,13 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         {loadingTasks ? (
                             <div className="text-xs text-slate-400 italic">Đang tải danh sách công việc...</div>
                         ) : employeeTasks.length === 0 ? (
-                            <div className="text-xs text-slate-400 italic p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 text-center">
+                            <div className="text-xs text-slate-400 italic p-4 bg-slate-50 dark:bg-slate- rounded-lg border border-dashed border-slate-200 dark:border-slate-700 text-center">
                                 Không có công việc nào được ghi nhận trong tháng {month}/{year}
                             </div>
                         ) : (
                             <div className="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
                                 {employeeTasks.map(t => (
-                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
+                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate- hover:bg-slate-100 dark:hover:bg-slate- transition-colors">
                                         <div className="flex items-start justify-between gap-3">
                                             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 leading-snug flex-1">{t.title}</p>
                                             <span className={`shrink-0 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${

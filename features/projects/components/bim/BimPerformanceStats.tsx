@@ -72,13 +72,13 @@ export const BimPerformanceStats: React.FC<{ visible: boolean; onClose: () => vo
     return (
         <div
             className={`absolute bottom-14 left-3 z-40 rounded-xl backdrop-blur-xl border shadow-sm overflow-hidden select-none
-                ${isDarkMode ? 'bg-slate-900/90 border-slate-700/50 text-slate-300' : 'bg-white/90 border-gray-200 text-gray-700'}
+                ${isDarkMode ? 'bg-slate- border-slate-700/50 text-slate-300' : 'bg-white/90 border-gray-200 text-gray-700'}
             `}
             style={{ minWidth: 180, fontSize: '11px' }}
         >
             {/* Header */}
             <div className={`flex items-center justify-between px-3 py-1.5 border-b
-                ${isDarkMode ? 'border-slate-700/50 bg-slate-800/50' : 'border-gray-200 bg-bg-subtle'}
+                ${isDarkMode ? 'border-slate-700/50 bg-slate-' : 'border-gray-200 bg-slate-50 dark:bg-slate-800'}
             `}>
                 <div className="flex items-center gap-1.5">
                     <Activity className="w-3 h-3 text-blue-400" />
@@ -94,11 +94,11 @@ export const BimPerformanceStats: React.FC<{ visible: boolean; onClose: () => vo
                 <StatRow label="FPS" value={String(stats.fps)} valueClass={fpsColor} />
                 <StatRow label="Triangles" value={fmt(stats.triangles)} />
                 <StatRow label="Draw Calls" value={fmt(stats.calls)} />
-                <div className={`h-px my-1 ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`} />
+                <div className={`h-px my-1 ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`} />
                 <StatRow label="Geometries" value={fmt(stats.geometries)} />
                 <StatRow label="Textures" value={fmt(stats.textures)} />
                 <StatRow label="Programs" value={fmt(stats.programs)} />
-                <div className={`h-px my-1 ${isDarkMode ? 'bg-slate-700/30' : 'bg-gray-100'}`} />
+                <div className={`h-px my-1 ${isDarkMode ? 'bg-slate-' : 'bg-gray-100'}`} />
                 <StatRow label="Models" value={String(modelCount)} />
             </div>
         </div>

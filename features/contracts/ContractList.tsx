@@ -204,7 +204,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             </div>
 
             {/* === Toolbar === */}
-            <div className="bg-bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
                 <div className="flex flex-col md:flex-row items-center gap-3">
                     <div className="relative w-full md:w-80">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
@@ -227,7 +227,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 key={opt.value}
                                 onClick={() => setStatusFilter(opt.value)}
                                 className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${statusFilter === opt.value
-                                    ? 'bg-bg-surface dark:bg-slate-600 text-gray-900 dark:text-slate-200 shadow-sm'
+                                    ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-900 dark:text-slate-200 shadow-sm'
                                     : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                             >
@@ -258,11 +258,11 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             </div>
 
             {/* === Contract Table === */}
-            <div className="bg-bg-surface rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                 <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Số hợp đồng</th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
@@ -283,7 +283,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 return (
                                     <tr
                                         key={contract.ContractID}
-                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/60"
+                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-"
                                         onClick={() => navigate(`/contracts/${encodeURIComponent(contract.ContractID)}`)}
                                     >
                                         {/* STT */}

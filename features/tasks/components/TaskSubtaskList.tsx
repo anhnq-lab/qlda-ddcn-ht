@@ -13,7 +13,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
     const [editingSubTask, setEditingSubTask] = useState<any>(null);
 
     return (
-        <div className="bg-bg-surface rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Công việc con</h3>
                 <button
@@ -32,14 +32,14 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
                 )}
 
                 {(task.SubTasks || []).map((sub, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-bg-surface dark:hover:bg-slate-700 transition-all">
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-all">
                         <div
                             onClick={() => {
                                 const updatedSubTasks = [...(task.SubTasks || [])];
                                 updatedSubTasks[idx].Status = updatedSubTasks[idx].Status === 'done' ? 'todo' : 'done';
                                 updateTaskMutation.mutate({ ...task, SubTasks: updatedSubTasks });
                             }}
-                            className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200' : 'border-slate-300 bg-bg-surface hover:border-blue-400'
+                            className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200' : 'border-slate-300 bg-white dark:bg-slate-800 hover:border-blue-400'
                                 }`}
                         >
                             {sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
@@ -47,12 +47,12 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
                         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
                             <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'done' ? 'text-slate-400 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
+                                <span className="text-[10px] text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                     <User className="w-3 h-3" />
                                     {sub.AssigneeID ? employees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : "Chưa gán"}
                                 </span>
                                 {sub.DueDate && (
-                                    <span className="text-[10px] text-slate-400 bg-bg-surface px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
+                                    <span className="text-[10px] text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                         <Calendar className="w-3 h-3" /> {sub.DueDate}
                                     </span>
                                 )}
@@ -76,7 +76,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
             {/* ══════════ SUBTASK MODAL ══════════ */}
             {isSubTaskModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
                             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
                             <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">✕</button>

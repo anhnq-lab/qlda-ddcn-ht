@@ -90,7 +90,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
             {!collapsed && (
                 <div className={`
                     grid ${GRID_COLS[columns]} gap-4
-                    ${contentPadding ? 'p-4 bg-bg-subtle/50 rounded-xl' : ''}
+                    ${contentPadding ? 'p-4 bg-slate-50 dark:bg-slate- rounded-xl' : ''}
                 `}>
                     {children}
                 </div>

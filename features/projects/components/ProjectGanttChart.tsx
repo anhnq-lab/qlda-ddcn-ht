@@ -7,7 +7,7 @@ interface ProjectGanttChartProps {
 
 export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) => {
     if (tasks.length === 0) return (
-        <div className="py-12 text-center text-gray-400 italic bg-bg-subtle rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+        <div className="py-12 text-center text-gray-400 italic bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
             Chưa có dữ liệu tiến độ để hiển thị biểu đồ.
         </div>
     );
@@ -60,31 +60,30 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
     const COL_WIDTH = 48; // px per month column
     const totalWidth = timeline.length * COL_WIDTH;
 
-    // Status colors
     const getBarColor = (status: TaskStatus) => {
         switch (status) {
-            case TaskStatus.Done: return 'bg-emerald-500';
-            case TaskStatus.Review: return 'bg-indigo-500';
-            case TaskStatus.InProgress: return 'bg-orange-500';
-            default: return 'bg-blue-400';
+            case TaskStatus.Done:       return 'bg-emerald-500';
+            case TaskStatus.Review:     return 'bg-primary-500';
+            case TaskStatus.InProgress: return 'bg-warning-500';
+            default:                    return 'bg-blue-400';
         }
     };
 
     const getBarShadow = (status: TaskStatus) => {
         switch (status) {
-            case TaskStatus.Done: return 'shadow-emerald-200';
-            case TaskStatus.Review: return 'shadow-indigo-200';
-            case TaskStatus.InProgress: return 'shadow-orange-200';
-            default: return 'shadow-primary-200';
+            case TaskStatus.Done:       return 'shadow-emerald-200';
+            case TaskStatus.Review:     return 'shadow-primary-200';
+            case TaskStatus.InProgress: return 'shadow-warning-200';
+            default:                    return 'shadow-primary-200';
         }
     };
 
     const getDotColor = (status: TaskStatus) => {
         switch (status) {
-            case TaskStatus.Done: return 'bg-emerald-500';
-            case TaskStatus.Review: return 'bg-indigo-500';
-            case TaskStatus.InProgress: return 'bg-orange-500';
-            default: return 'bg-gray-300';
+            case TaskStatus.Done:       return 'bg-emerald-500';
+            case TaskStatus.Review:     return 'bg-primary-500';
+            case TaskStatus.InProgress: return 'bg-warning-500';
+            default:                    return 'bg-gray-300';
         }
     };
 
@@ -92,7 +91,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
         <div className="overflow-x-auto pb-4 rounded-xl border border-gray-200 dark:border-slate-700">
             <div style={{ minWidth: `${280 + totalWidth}px` }}>
                 {/* Year Header */}
-                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-bg-subtle">
+                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                     <div className="w-[280px] shrink-0" />
                     <div className="flex">
                         {yearGroups.map(yg => (
@@ -108,7 +107,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                 </div>
 
                 {/* Month Header */}
-                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-bg-subtle sticky top-0 z-10">
+                <div className="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
                     <div className="w-[280px] shrink-0 px-4 py-2 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                         Hạng mục công việc
                     </div>
@@ -127,7 +126,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                 </div>
 
                 {/* Body - ALL tasks */}
-                <div className="divide-y divide-gray-50 dark:divide-slate-800 bg-bg-surface">
+                <div className="divide-y divide-gray-50 dark:divide-slate-800 bg-white dark:bg-slate-800">
                     {sortedTasks.map((task, idx) => {
                         const dueDate = new Date(task.DueDate);
                         let startDate = task.StartDate ? new Date(task.StartDate) : null;

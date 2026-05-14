@@ -74,7 +74,7 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                     <LayoutList className="w-4 h-4 text-violet-500" /> Hạng mục chi phí trong tổng mức đầu tư
                 </h4>
                 <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">Phân tích theo cơ cấu hạng mục (đơn vị: VNĐ)</p>
-                <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-slate-700 bg-bg-surface shadow-sm">
+                <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300">
                             <tr>
@@ -92,7 +92,7 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                                 { key: 'other', label: 'Chi phí khác' },
                                 { key: 'contingency', label: 'Dự phòng' },
                             ].map((item) => (
-                                <tr key={item.key} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                <tr key={item.key} className="hover:bg-gray-50/50 dark:hover:bg-slate- transition-colors">
                                     <td className="px-4 py-3 font-medium text-gray-700 dark:text-slate-300">
                                         {item.label}
                                     </td>

@@ -40,7 +40,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
 }) => {
     if (!selectedDoc) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-4 bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700">
+            <div className="flex-1 flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700">
                 <Scale className="w-16 h-16 text-gray-200 dark:text-slate-700 mb-4" />
                 <h3 className="text-lg font-bold text-gray-400 dark:text-slate-400">Chọn văn bản để xem chi tiết</h3>
                 <p className="text-sm text-gray-300 dark:text-slate-600 mt-1">Sử dụng thanh tìm kiếm hoặc bộ lọc bên trên</p>
@@ -55,11 +55,11 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
     return (
         <div className="flex-1 flex flex-col h-full">
             {/* Document Header */}
-            <div className="px-8 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-slate-800/80 dark:to-slate-800 shrink-0">
+            <div className={`border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-slate-800 dark:to-slate-900 shrink-0 transition-all ${readingMode ? 'px-4 py-2' : 'px-6 py-3'}`}>
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
-                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider title-shadow ${typeColor.bg} ${typeColor.text} ${typeColor.border} border ${typeColor.darkBg} ${typeColor.darkText} ${typeColor.darkBorder}`}>
+                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider title-shadow border ${typeColor.bg} ${typeColor.text} ${typeColor.border}`}>
                                 <TypeIcon className="w-3.5 h-3.5" />
                                 {DOC_TYPE_LABELS[selectedDoc.type]}
                             </span>
@@ -72,19 +72,19 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                 {selectedDoc.code}
                             </span>
                         </div>
-                        <h1 className="text-xl md:text-2xl font-black text-gray-900 dark:text-gray-100 leading-tight mb-2 tracking-tight">
+                        <h1 className={`font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight transition-all ${readingMode ? 'text-base mb-1' : 'text-lg md:text-xl mb-1.5'}`}>
                             {selectedDoc.title}
                         </h1>
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] font-medium text-gray-500 dark:text-slate-400">
                             <p className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-gray-400" /> Ban hành: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issued_date}</span></p>
-                            <p className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effective_date}</span></p>
-                            <p className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issued_by}</span></p>
+                            <p className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-success-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effective_date}</span></p>
+                            <p className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-primary-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issued_by}</span></p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                         <button onClick={() => setShowPdfViewer(!showPdfViewer)}
-                            className={`p-2 rounded-xl transition-all ${showPdfViewer ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
+                            className={`p-2 rounded-xl transition-all ${showPdfViewer ? 'bg-primary-100 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
                             title={showPdfViewer ? "Đóng PDF" : "Xem PDF bản gốc"}>
                             <FileDown className="w-5 h-5" />
                         </button>
@@ -98,17 +98,17 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                             <Download className="w-5 h-5" />
                         </button>
                         <button onClick={() => setReadingMode(!readingMode)}
-                            className={`p-2 rounded-xl transition-all ${readingMode ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
+                            className={`p-2 rounded-xl transition-all ${readingMode ? 'bg-primary-600 text-white shadow-md' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
                             title={readingMode ? "Mặc định" : "Chế độ đọc tập trung"}>
                             {readingMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
                         </button>
                     </div>
                 </div>
 
-                {!showPdfViewer && selectedDoc.summary && (
-                    <div className="mt-4 p-3.5 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100/50 dark:border-indigo-800/30 rounded-2xl flex items-start gap-3">
-                        <Info className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
-                        <p className="text-xs leading-relaxed text-indigo-900/80 dark:text-indigo-200/80 font-medium">
+                {!showPdfViewer && selectedDoc.summary && !readingMode && (
+                    <div className="mt-4 p-3.5 bg-primary-50/50 dark:bg-slate-800 border border-primary-100/50 dark:border-slate-700 rounded-2xl flex items-start gap-3">
+                        <Info className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
+                        <p className="text-xs leading-relaxed text-primary-900/80 dark:text-slate-300 font-medium">
                             {selectedDoc.summary}
                         </p>
                     </div>
@@ -123,12 +123,12 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                     <div ref={contentRef} className="absolute inset-0 overflow-y-auto custom-scrollbar">
                         {showPdfViewer ? (
                             <div className="h-full w-full bg-gray-100/50 dark:bg-slate-900 p-4">
-                                <div className="w-full h-full bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col">
+                                <div className="w-full h-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col">
                                     <div className="bg-gray-100 dark:bg-slate-700 px-4 py-2 border-b border-gray-200 dark:border-slate-600 flex justify-between items-center">
                                         <span className="text-xs font-bold text-gray-600 dark:text-slate-300 flex items-center gap-2">
                                             <FileDown className="w-4 h-4" /> Bản gốc PDF
                                         </span>
-                                        <span className="text-[10px] bg-bg-surface px-2 py-1 rounded font-mono text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-600">{selectedDoc.file_size}</span>
+                                        <span className="text-[10px] bg-white dark:bg-slate-800 px-2 py-1 rounded font-mono text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-600">{selectedDoc.file_size}</span>
                                     </div>
                                     <iframe src={`${selectedDoc.file_path}#toolbar=0&navpanes=0`} className="w-full flex-1" title="PDF Viewer" />
                                 </div>
@@ -142,14 +142,14 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                             className="sticky top-0 z-10 bg-white/95 dark:bg-slate-800 backdrop-blur-md py-3 -mx-4 px-4 mb-4 border-b-2 border-gray-200 dark:border-slate-700 flex items-center justify-between cursor-pointer group"
                                         >
                                             <div>
-                                                <h3 className="text-sm font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">{chapter.code}</h3>
-                                                <h4 className="text-lg font-bold text-gray-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{chapter.title}</h4>
+                                                <h3 className="text-sm font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest mb-1">{chapter.code}</h3>
+                                                <h4 className="text-lg font-bold text-gray-800 dark:text-slate-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{chapter.title}</h4>
                                             </div>
-                                            <div className="p-2 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 rounded-xl group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 transition-colors">
+                                            <div className="p-2 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 rounded-xl group-hover:bg-primary-50 dark:group-hover:bg-primary-900/30 transition-colors">
                                                 {expandedChapters.has(chapter.id) ? (
-                                                    <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-indigo-500" />
+                                                    <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                                                 ) : (
-                                                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-500" />
+                                                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary-500" />
                                                 )}
                                             </div>
                                         </div>

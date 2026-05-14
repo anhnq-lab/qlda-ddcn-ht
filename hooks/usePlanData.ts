@@ -79,17 +79,25 @@ export function useEmployeeOptions() {
         setLoading(true);
         supabase
             .from('employees')
-            .select('id, full_name, position, department_code, avatar_url')
-            .eq('is_active', true)
+            .select('employee_id, full_name, position, department, avatar_url')
+            .eq('status', 1)
             .order('full_name')
-            .then(({ data }: any) => {
+            .then(({ data, error }: any) => {
                 if (cancelled) return;
+                if (error) {
+                    console.error('Error fetching employee options:', error);
+                    setOptions([]);
+                    setLoading(false);
+                    return;
+                }
                 setOptions(
                     ((data as any[]) ?? []).map(e => ({
-                        value: e.id,
+                        value: e.employee_id,
                         label: e.full_name,
-                        sublabel: [e.position, e.department_code].filter(Boolean).join(' · '),
+                        sublabel: [e.position, e.department].filter(Boolean).join(' · '),
                         avatar: e.avatar_url ?? undefined,
+                        department: e.department,
+                        position: e.position,
                     }))
                 );
                 setLoading(false);

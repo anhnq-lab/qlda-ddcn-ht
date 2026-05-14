@@ -7,6 +7,8 @@ export interface ComboboxOption {
     sublabel?: string;
     avatar?: string;
     disabled?: boolean;
+    department?: string;
+    position?: string;
 }
 
 interface ComboboxSelectProps {

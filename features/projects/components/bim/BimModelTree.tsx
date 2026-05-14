@@ -44,14 +44,14 @@ function getTypeIcon(type: string) {
     if (t.includes('site')) return <MapPin className="w-3.5 h-3.5 text-green-400" />;
     if (t.includes('building') && !t.includes('storey')) return <Building2 className="w-3.5 h-3.5 text-primary-400" />;
     if (t.includes('storey')) return <Layers className="w-3.5 h-3.5 text-purple-400" />;
-    if (t.includes('wall')) return <Square className="w-3.5 h-3.5 text-orange-400" />;
+    if (t.includes('wall')) return <Square className="w-3.5 h-3.5 text-warning-400" />;
     if (t.includes('slab') || t.includes('floor')) return <Columns3 className="w-3.5 h-3.5 text-teal-400" />;
     if (t.includes('column')) return <Box className="w-3.5 h-3.5 text-red-400" />;
     if (t.includes('beam')) return <Columns3 className="w-3.5 h-3.5 text-cyan-400" />;
     if (t.includes('door')) return <Square className="w-3.5 h-3.5 text-primary-400" />;
     if (t.includes('window')) return <Square className="w-3.5 h-3.5 text-sky-400" />;
     if (t.includes('stair')) return <Layers className="w-3.5 h-3.5 text-rose-400" />;
-    if (t.includes('roof')) return <Square className="w-3.5 h-3.5 text-indigo-400" />;
+    if (t.includes('roof')) return <Square className="w-3.5 h-3.5 text-primary-400" />;
     if (t.includes('space') || t.includes('room')) return <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />;
     return <CircleDot className="w-3.5 h-3.5 text-slate-400" />;
 }
@@ -59,11 +59,11 @@ function getTypeIcon(type: string) {
 // Discipline color
 function getDisciplineColor(d: string | null) {
     const c: Record<string, string> = {
-        ARCH: 'bg-blue-500', STRU: 'bg-red-500', ELEC: 'bg-yellow-500',
-        HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-orange-500',
+        ARCH: 'bg-blue-500', STRU: 'bg-red-500', ELEC: 'bg-warning-500',
+        HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-warning-500',
         LAND: 'bg-emerald-500', MEP: 'bg-purple-500', COMBINE: 'bg-slate-400',
     };
-    return c[d || ''] || 'bg-bg-subtle0';
+    return c[d || ''] || 'bg-slate-50 dark:bg-slate-8000';
 }
 
 // ── Component ────────────────────────────────────────
@@ -186,7 +186,7 @@ export const BimModelTree: React.FC = () => {
                                 <span className={`text-xs flex-1 truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                                     {group.type.replace('Ifc', '')}
                                 </span>
-                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate-700/40 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
+                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate- text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
                                     {group.count}
                                 </span>
                                 <button
@@ -211,7 +211,7 @@ export const BimModelTree: React.FC = () => {
                                             }}
                                             className={`
                                                 flex items-center gap-2 py-1 px-2 rounded cursor-pointer text-xs truncate
-                                                ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-bg-subtle'}
+                                                ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-slate-50 dark:bg-slate-800'}
                                             `}
                                             title="Double-click to zoom"
                                         >
@@ -293,7 +293,7 @@ export const BimModelTree: React.FC = () => {
     return (
         <div className={`
             ${isMobile ? 'absolute inset-y-0 left-0 z-30 w-72 border-r' : 'w-full h-full'}
-            ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-bg-surface border-gray-200'}
+            ${isDarkMode ? 'bg-slate- border-slate-700/50' : 'bg-white dark:bg-slate-800 border-gray-200'}
             flex flex-col shrink-0 backdrop-blur-xl
         `}>
             {/* Header */}
@@ -317,7 +317,7 @@ export const BimModelTree: React.FC = () => {
             {/* Search (spatial + types only) */}
             {(mode === 'spatial' || mode === 'types') && (
                 <div className={`p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
-                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-slate-700/50 focus-within:ring-1 focus-within:ring-cyan-500/30' : 'bg-gray-100 focus-within:ring-1 focus-within:ring-blue-300'}`}>
+                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-slate- focus-within:ring-1 focus-within:ring-cyan-500/30' : 'bg-gray-100 focus-within:ring-1 focus-within:ring-blue-300'}`}>
                         <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                         <input
                             value={searchQuery}

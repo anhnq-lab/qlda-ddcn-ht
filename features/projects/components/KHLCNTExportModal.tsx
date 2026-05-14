@@ -127,9 +127,9 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
             />
 
             {/* Modal */}
-            <div className="relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-3xl max-h-[90vh] overflow-hidden animate-scale-in">
+            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-3xl max-h-[90vh] overflow-hidden animate-scale-in">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-yellow-50">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-warning-50">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-xl">
                             <FileText className="w-5 h-5 text-blue-700" />
@@ -153,7 +153,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
 
                 <div className="p-4 overflow-y-auto max-h-[calc(90vh-180px)]">
                     {/* Summary Banner */}
-                    <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-yellow-50 rounded-xl border border-primary-100">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-warning-50 rounded-xl border border-primary-100">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Gói thầu đã chọn</p>
@@ -166,7 +166,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                         </div>
                         <div className="flex gap-3 mt-3">
                             {Object.entries(stats.byField).map(([field, count]) => (
-                                <span key={field} className="px-2 py-1 text-xs font-medium bg-bg-surface rounded-lg text-gray-600 shadow-sm">
+                                <span key={field} className="px-2 py-1 text-xs font-medium bg-white dark:bg-slate-800 rounded-lg text-gray-600 shadow-sm">
                                     {FIELD_LABELS[field] || field}: {count}
                                 </span>
                             ))}
@@ -201,7 +201,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                                         type="text"
                                         value={formData.projectName}
                                         onChange={e => handleChange('projectName', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-bg-surface"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white dark:bg-slate-800"
                                         placeholder="Tên đầy đủ của dự án"
                                     />
                                 </div>
@@ -269,7 +269,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                         </div>
 
                         {/* Section: Cơ quan ban hành */}
-                        <div className="p-4 bg-bg-subtle rounded-xl">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
                             <h4 className="flex items-center gap-2 font-semibold text-gray-700 mb-3">
                                 <Building2 className="w-4 h-4" />
                                 Cơ quan ban hành / Người có thẩm quyền
@@ -335,7 +335,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                                 Thông tin văn bản
                             </h4>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-3 bg-bg-surface rounded-lg border">
+                                <div className="p-3 bg-white dark:bg-slate-800 rounded-lg border">
                                     <p className="text-xs font-semibold text-primary-700 mb-2"><ClipboardList className="w-3.5 h-3.5 inline" /> Tờ trình (Mẫu 07)</p>
                                     <div className="space-y-3">
                                         <div>
@@ -359,7 +359,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-bg-surface rounded-lg border">
+                                <div className="p-3 bg-white dark:bg-slate-800 rounded-lg border">
                                     <p className="text-xs font-semibold text-blue-700 mb-2">📜 Quyết định (Mẫu 09)</p>
                                     <div className="space-y-3">
                                         <div>
@@ -398,7 +398,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                 </div>
 
                 {/* Footer — Two export buttons */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-bg-subtle">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-slate-50 dark:bg-slate-800">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors text-sm"

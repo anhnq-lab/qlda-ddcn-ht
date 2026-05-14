@@ -45,7 +45,7 @@ export const AISmartApproval: React.FC<AISmartApprovalProps> = ({
     };
 
     return (
-        <div className={`bg-bg-surface rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
+        <div className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
             <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${result?.canApprove === true ? 'bg-gradient-to-br from-emerald-500 to-green-500'

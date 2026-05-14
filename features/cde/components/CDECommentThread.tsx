@@ -145,7 +145,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                     placeholder="Viết nhận xét..."
                     rows={1}
-                    className="flex-1 resize-none text-xs bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
+                    className="flex-1 resize-none text-xs bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
                 />
                 <button
                     onClick={handleSubmit}

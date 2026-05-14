@@ -108,6 +108,17 @@ export function toServiceError(error: unknown, defaultMessage?: string): Service
         );
     }
 
+    if (error && typeof error === 'object') {
+        const errObj = error as Record<string, any>;
+        if (errObj.message) {
+            return new ServiceError(
+                errObj.message || defaultMessage || 'Đã xảy ra lỗi',
+                errObj.code ? `PG_${errObj.code}` : 'UNKNOWN_ERROR',
+                error
+            );
+        }
+    }
+
     return new ServiceError(
         defaultMessage || 'Đã xảy ra lỗi không xác định',
         'UNKNOWN_ERROR',

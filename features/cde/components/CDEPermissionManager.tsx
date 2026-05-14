@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, Plus, Search, Building2, UserPlus, Key, Eye, Upload, CheckCircle2, Settings, Trash2, ChevronDown, ChevronRight, Users, Mail, Phone, Lock, Loader2, X } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import { useAuth } from '@/context/AuthContext';
 
 interface Contractor { contractor_id: string; full_name: string; representative: string | null; contact_info: string; }
 interface ContractorAccount { id: string; contractor_id: string; username: string; display_name: string; email: string | null; phone: string | null; is_active: boolean; }
@@ -16,6 +17,7 @@ const ROLES = [
 ];
 
 const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) => {
+    const { currentUser } = useAuth();
     const [contractors, setContractors] = useState<Contractor[]>([]);
     const [accounts, setAccounts] = useState<ContractorAccount[]>([]);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -83,6 +85,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             user_role: 'contributor', container_access: ['WIP'], can_upload: true,
             can_approve: false, can_delete: false, can_manage: false, granted_by: 'admin',
         });
+
+        if (currentUser) {
+            await supabase.from('audit_logs').insert({
+                action: 'ADD_CDE_ORG',
+                changed_by: currentUser.employee_id,
+                target_entity: 'CDEPermission',
+                target_id: org.contractor_id,
+                details: { project_id: projectId }
+            });
+        }
+
         setShowAddOrg(false);
         setOrgSearch('');
         await loadData();
@@ -93,6 +106,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         if (!confirm(`Xóa đơn vị khỏi dự án? Tất cả tài khoản sẽ mất quyền truy cập.`)) return;
         await supabase.from('cde_permissions').delete().eq('project_id', projectId).like('user_id', `${orgId}%`);
         await supabase.from('contractor_accounts').update({ allowed_project_ids: [] }).eq('contractor_id', orgId);
+
+        if (currentUser) {
+            await supabase.from('audit_logs').insert({
+                action: 'REMOVE_CDE_ORG',
+                changed_by: currentUser.employee_id,
+                target_entity: 'CDEPermission',
+                target_id: orgId,
+                details: { project_id: projectId }
+            });
+        }
+
         await loadData();
     };
 
@@ -106,6 +130,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             admin: { can_upload: true, can_approve: true, can_delete: true, can_manage: true, container_access: ['WIP', 'SHARED', 'PUBLISHED', 'ARCHIVED'] },
         }[role] || {};
         await supabase.from('cde_permissions').update({ user_role: role, ...caps }).eq('id', permId);
+
+        if (currentUser) {
+            await supabase.from('audit_logs').insert({
+                action: 'UPDATE_CDE_ROLE',
+                changed_by: currentUser.employee_id,
+                target_entity: 'CDEPermission',
+                target_id: permId,
+                details: { role, project_id: projectId }
+            });
+        }
+
         await loadData();
     };
 
@@ -117,18 +152,26 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         if (staffForm.password.length < 6) { alert('Mật khẩu tối thiểu 6 ký tự'); return; }
         setSaving(true);
         try {
-            // Create Supabase auth user
+            // Create Supabase auth user using supabaseAdmin
             const email = staffForm.email || `${staffForm.username}@cde.local`;
-            const { data: authData, error: authErr } = await supabase.auth.admin.createUser({
-                email, password: staffForm.password, email_confirm: true,
-                user_metadata: { full_name: staffForm.display_name, contractor_id: contractorId },
-            });
+            
+            let authUserId: string | null = null;
+            try {
+                const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
+                    email, password: staffForm.password, email_confirm: true,
+                    user_metadata: { full_name: staffForm.display_name, contractor_id: contractorId },
+                });
 
-            let authUserId = authData?.user?.id || null;
-            // If admin API fails (expected for client), use signUp
-            if (authErr) {
-                const { data: signUpData } = await supabase.auth.signUp({ email, password: staffForm.password, options: { data: { full_name: staffForm.display_name } } });
-                authUserId = signUpData?.user?.id || null;
+                authUserId = authData?.user?.id || null;
+
+                if (authErr) {
+                    throw authErr;
+                }
+            } catch (e: any) {
+                console.error('[CDE] Auth user creation failed', e);
+                alert(`Không thể tạo tài khoản xác thực: ${e.message}`);
+                setSaving(false);
+                return;
             }
 
             // Create contractor_account — store email used for auth
@@ -149,6 +192,16 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                 can_approve: false, can_delete: false, can_manage: false,
                 granted_by: 'admin',
             });
+
+            if (currentUser) {
+                await supabase.from('audit_logs').insert({
+                    action: 'CREATE_CDE_STAFF_ACCOUNT',
+                    changed_by: currentUser.employee_id,
+                    target_entity: 'ContractorAccount',
+                    target_id: staffForm.username,
+                    details: { contractor_id: contractorId, project_id: projectId, role: staffForm.role }
+                });
+            }
 
             setStaffForm({ display_name: '', email: '', phone: '', username: '', password: '', role: 'contributor' });
             setShowAddStaff(null);
@@ -196,7 +249,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                 <div className="relative max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm đơn vị..."
-                        className="w-full pl-9 pr-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                        className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                 </div>
             )}
 
@@ -206,7 +259,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                     icon={<Building2 className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
                     title="Chưa có đơn vị nào tham gia"
                     description={'Bấm "Thêm đơn vị" để mời nhà thầu, tư vấn tham gia dự án'}
-                    className="bg-bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                    className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
                 />
             ) : (
                 <div className="space-y-3">
@@ -216,7 +269,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                         const isExpanded = expandedOrg === org.id;
                         const orgPerm = perms.find(p => p.user_id === org.id);
                         return (
-                            <div key={org.id} className="bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                            <div key={org.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                                 {/* Org Header */}
                                 <div className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors" onClick={() => setExpandedOrg(isExpanded ? null : org.id)}>
                                     <div className="flex items-center gap-3">
@@ -288,7 +341,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Org */}
             {showAddOrg && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddOrg(false)}>
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                             <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Thêm đơn vị vào dự án</h3>
                             <button onClick={() => setShowAddOrg(false)} className="text-gray-400 hover:text-red-500"><X className="w-5 h-5" /></button>
@@ -321,7 +374,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Staff */}
             {showAddStaff && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddStaff(null)}>
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                             <div>
                                 <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Tạo tài khoản nhân sự</h3>
@@ -333,18 +386,18 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                             <div>
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Họ tên <span className="text-red-500">*</span></label>
                                 <input value={staffForm.display_name} onChange={e => setStaffForm(f => ({ ...f, display_name: e.target.value }))} placeholder="Nguyễn Văn A"
-                                    className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                    className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Mail className="w-3 h-3" /> Email</label>
                                     <input value={staffForm.email} onChange={e => setStaffForm(f => ({ ...f, email: e.target.value }))} placeholder="abc@email.com"
-                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Phone className="w-3 h-3" /> Điện thoại</label>
                                     <input value={staffForm.phone} onChange={e => setStaffForm(f => ({ ...f, phone: e.target.value }))} placeholder="0901234567"
-                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                             </div>
                             <div className="border-t border-gray-100 dark:border-slate-700 pt-3.5">
@@ -353,12 +406,12 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Tên đăng nhập <span className="text-red-500">*</span></label>
                                         <input value={staffForm.username} onChange={e => setStaffForm(f => ({ ...f, username: e.target.value }))} placeholder="nguyenvana"
-                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Mật khẩu <span className="text-red-500">*</span></label>
                                         <input type="password" value={staffForm.password} onChange={e => setStaffForm(f => ({ ...f, password: e.target.value }))} placeholder="••••••"
-                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                 </div>
                             </div>
@@ -367,7 +420,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                 <div className="flex gap-2 flex-wrap">
                                     {ROLES.map(r => (
                                         <button key={r.value} onClick={() => setStaffForm(f => ({ ...f, role: r.value }))}
-                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-bg-subtle dark:bg-slate-700 text-gray-400 border-transparent'}`}>
+                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-gray-400 border-transparent'}`}>
                                             <r.icon className="w-3 h-3" />{r.label}
                                         </button>
                                     ))}

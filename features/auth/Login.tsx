@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Lock, User, Eye, EyeOff, LayoutDashboard, BrainCircuit, ShieldCheck, Smartphone, Sun, Moon } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, LayoutDashboard, BrainCircuit, ShieldCheck, Smartphone, Sun, Moon, Timer } from 'lucide-react';
 import { LogoDDCN } from '../../components/common/LogoDDCN';
+import { useLoginRateLimit } from './useLoginRateLimit';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('Admin');
-    const [password, setPassword] = useState('@Abc123456');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showForgotModal, setShowForgotModal] = useState(false);
+
+    const { isLocked, secondsRemaining, attemptCount, canAttempt, recordFailedAttempt, resetAttempts } = useLoginRateLimit();
     
     const { login, isAuthenticated } = useAuth();
     const { theme, setTheme } = useTheme();
@@ -28,17 +33,36 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        // Brute-force guard
+        if (!canAttempt) {
+            setError(`Tài khoản tạm khóa. Vui lòng chờ ${secondsRemaining} giây.`);
+            return;
+        }
+
+        if (!username.trim() || !password.trim()) {
+            setError('Vui lòng nhập đầy đủ tài khoản và mật khẩu.');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 600));
+            await new Promise(resolve => setTimeout(resolve, 400));
 
-            const success = await login(username, password);
+            const success = await login(username.trim(), password);
             if (success) {
+                resetAttempts();
                 const from = (location.state as any)?.from || '/dashboard';
                 navigate(from, { replace: true });
             } else {
-                setError('Tên đăng nhập hoặc mật khẩu không đúng.');
+                recordFailedAttempt();
+                const remaining = 5 - (attemptCount + 1);
+                if (remaining <= 0) {
+                    setError('Quá nhiều lần thử. Tài khoản bị tạm khóa 60 giây.');
+                } else {
+                    setError(`Tên đăng nhập hoặc mật khẩu không đúng. Còn ${remaining} lần thử.`);
+                }
                 setIsLoading(false);
             }
         } catch (err: any) {
@@ -54,7 +78,7 @@ const Login: React.FC = () => {
             <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-bg-surface dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
+                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate- backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
                 title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'}
             >
                 {theme === 'dark' ? <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
@@ -63,7 +87,7 @@ const Login: React.FC = () => {
             {/* ─── LEFT COLUMN: BRANDING & FEATURES (Hidden on Mobile) ─── */}
             <div className="hidden lg:flex w-1/2 flex-col justify-between relative overflow-hidden bg-[#F2EDE4] dark:bg-[#0A101D] border-r border-[#E8E1D5] dark:border-white/5 p-12 xl:p-20 transition-colors duration-300">
                 {/* Background ambient accents - CIC style */}
-                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-slate-400/5 dark:bg-white/[0.02] blur-[120px] pointer-events-none" />
+                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-slate- dark:bg-white/[0.02] blur-[120px] pointer-events-none" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/5 dark:bg-primary-500/[0.03] blur-[100px] pointer-events-none" />
                 
                 {/* Diagonal lines pattern / Grid pattern */}
@@ -153,7 +177,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* ─── RIGHT COLUMN: LOGIN FORM ─── */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-bg-surface dark:bg-[#060A14] transition-colors duration-300">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-white dark:bg-slate-800 dark:bg-[#060A14] transition-colors duration-300">
                 <div className="w-full max-w-[420px] lg:-mt-16">
                     
                     {/* Logo & Headers */}
@@ -187,6 +211,14 @@ const Login: React.FC = () => {
                             </div>
                         )}
 
+                        {/* Lockout Banner */}
+                        {isLocked && (
+                            <div className="p-3 bg-warning-50/80 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400 text-sm font-medium rounded-xl border border-warning-200 dark:border-warning-500/20 flex items-center gap-2 animate-in fade-in">
+                                <Timer className="w-4 h-4 flex-shrink-0" />
+                                <span>Tài khoản tạm khóa. Mở khóa sau <strong>{secondsRemaining}s</strong></span>
+                            </div>
+                        )}
+
                         {/* Username Input */}
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
@@ -197,7 +229,8 @@ const Login: React.FC = () => {
                                 placeholder="Tài khoản hoặc Email"
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                disabled={isLocked || isLoading}
+                                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 autoFocus
                             />
                         </div>
@@ -212,7 +245,8 @@ const Login: React.FC = () => {
                                 placeholder="Mật khẩu"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-11 pr-12 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm"
+                                disabled={isLocked || isLoading}
+                                className="w-full pl-11 pr-12 py-3 bg-white dark:bg-slate-800 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                             <button
                                 type="button"
@@ -229,18 +263,27 @@ const Login: React.FC = () => {
                                 <span className="text-xs text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">Ghi nhớ đăng nhập</span>
                             </label>
                             
-                            <a href="#" className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                            <button
+                                type="button"
+                                onClick={() => setShowForgotModal(true)}
+                                className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 transition-colors"
+                            >
                                 Quên mật khẩu?
-                            </a>
+                            </button>
                         </div>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || isLocked}
                             className="relative w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white font-bold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-sm border border-transparent"
                         >
-                            {isLoading ? (
+                            {isLocked ? (
+                                <>
+                                    <Timer className="w-4 h-4" />
+                                    <span>Mở khóa sau {secondsRemaining}s</span>
+                                </>
+                            ) : isLoading ? (
                                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -258,6 +301,12 @@ const Login: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Forgot Password Modal */}
+            <ForgotPasswordModal 
+                isOpen={showForgotModal} 
+                onClose={() => setShowForgotModal(false)} 
+            />
         </div>
     );
 };

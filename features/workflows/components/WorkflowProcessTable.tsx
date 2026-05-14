@@ -81,7 +81,7 @@ function TemplateCell({
             {initialUrl ? (
                 <a href={initialUrl} target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 transition-colors border border-indigo-100 dark:border-indigo-800/50 text-[11px] max-w-full"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 transition-colors border border-primary-100 dark:border-primary-800/50 text-[11px] max-w-full"
                     title="Tải biểu mẫu">
                     <Download size={12} className="shrink-0" />
                     <span className="font-medium truncate">{formsStr || 'Biểu mẫu'}</span>
@@ -143,7 +143,7 @@ const SlaBadge: React.FC<{ sla: string | null | undefined }> = ({ sla }) => {
     const color = days <= 7 
         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
         : days <= 30 
-            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+            ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-400 border-warning-200 dark:border-warning-800'
             : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400 border-rose-200 dark:border-rose-800';
     
     return (
@@ -334,12 +334,12 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     // ─── Loading state ───────────────────────────────────────
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-bg-surface p-6">
+            <div className="flex flex-col h-full bg-white dark:bg-slate-800 p-6">
                 <div className="animate-pulse space-y-4">
                     <div className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl w-2/3" />
                     <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/2" />
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="h-10 bg-slate-100 dark:bg-slate-800/50 rounded-lg" />
+                        <div key={i} className="h-10 bg-slate-100 dark:bg-slate- rounded-lg" />
                     ))}
                 </div>
             </div>
@@ -353,7 +353,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     return (
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative print:bg-white">
             {/* ── HEADER ── */}
-            <div className="px-5 py-4 bg-bg-surface border-b border-slate-200 dark:border-slate-700 print:border-b-2 print:border-slate-300 flex-shrink-0">
+            <div className="px-5 py-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 print:border-b-2 print:border-slate-300 flex-shrink-0">
                 {/* Title row */}
                 <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -415,7 +415,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             {/* ── TABLE BODY ── */}
             <div className="flex-1 overflow-auto custom-scrollbar print:overflow-visible">
                 <table className="w-full text-left text-[12px] border-collapse table-fixed min-w-[1000px]">
-                    <thead className="bg-slate-100 dark:bg-slate-900/80 border-b-2 border-slate-300 dark:border-slate-600 sticky top-0 z-[5] print:bg-slate-200">
+                    <thead className="bg-slate-100 dark:bg-slate- border-b-2 border-slate-300 dark:border-slate-600 sticky top-0 z-[5] print:bg-slate-200">
                         <tr className="font-bold text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider">
                             <th className="p-1.5 border-r border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
                             {isInternalWorkflow ? (
@@ -511,7 +511,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                     return (
                                                         <React.Fragment key={node.id}>
                                                             {/* Main step row */}
-                                                            <tr className="bg-white dark:bg-slate-800/50 group border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 transition-colors">
+                                                            <tr className="bg-white dark:bg-slate- group border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 transition-colors">
                                                                 {/* TT */}
                                                                 <td className="px-2 py-1.5 border-r border-slate-200 dark:border-slate-700 text-center font-black text-slate-500 dark:text-slate-400 align-top">
                                                                     {hasSubTasks ? (
@@ -653,7 +653,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
 
                                                                 return (
                                                                     <tr key={st.id || stIdx}
-                                                                        className="bg-slate-50/50 dark:bg-slate-800/30 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
+                                                                        className="bg-slate-50/50 dark:bg-slate- hover:bg-blue-50/50 dark:hover:bg-slate- transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800"
                                                                         onClick={() => openSubTaskPanel(node, st, displayIndex, stIdx)}
                                                                     >
                                                                         {/* TT */}
@@ -772,7 +772,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             </div>
 
             {/* ── FOOTER ── */}
-            <div className="px-5 py-3 bg-bg-surface/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
+            <div className="px-5 py-3 bg-white dark:bg-slate- dark:bg-slate- backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
                 <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400 font-medium">
                     <span className="flex items-center gap-1.5">
                         <LayoutList size={13} />
@@ -785,7 +785,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                         </span>
                     )}
                     {stats.totalSla && (
-                        <span className="flex items-center gap-1.5 ml-4 px-2 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-800/50 print:border-none print:bg-transparent">
+                        <span className="flex items-center gap-1.5 ml-4 px-2 py-1 bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400 rounded-lg border border-warning-200 dark:border-warning-800/50 print:border-none print:bg-transparent">
                             <Clock size={13} />
                             <span>Tổng T.gian ước tính:</span>
                             <strong className="font-bold">{stats.totalSla}</strong>

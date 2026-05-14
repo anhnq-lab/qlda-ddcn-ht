@@ -658,7 +658,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             case 'High': return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700';
             case 'Medium': return 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700';
             case 'Low': return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700';
-            default: return 'text-gray-600 dark:text-gray-400 bg-bg-subtle dark:bg-slate-700 border-gray-200 dark:border-slate-600';
+            default: return 'text-gray-600 dark:text-gray-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
         }
     };
 
@@ -751,7 +751,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
                 const pct = total > 0 ? Math.round((done / total) * 100) : 0;
                 return (
-                    <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
                             <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
@@ -829,8 +829,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     )}
 
                     {currentView === 'gantt' && (
-                        <div className="bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
-                            <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-bg-subtle dark:bg-slate-700 flex justify-between items-center">
+                        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 flex justify-between items-center">
                                 <h4 className="font-bold text-gray-700 dark:text-slate-200 text-xs uppercase flex items-center gap-2">
                                     <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
                                 </h4>
@@ -901,13 +901,13 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                             const getScoreInfo = (s: number) => {
                                 if (s >= 80) return { emoji: '🟢', label: 'Tốt', color: 'text-emerald-600', bg: 'bg-emerald-500' };
                                 if (s >= 60) return { emoji: '🟡', label: 'Trung bình', color: 'text-primary-600', bg: 'bg-primary-500' };
-                                if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-orange-600', bg: 'bg-orange-500' };
+                                if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-warning-600', bg: 'bg-warning-500' };
                                 return { emoji: '🔴', label: 'Rủi ro cao', color: 'text-red-600', bg: 'bg-red-500' };
                             };
                             const info = getScoreInfo(score);
 
                             return (
-                                <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                                     <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                                         Sức khỏe dự án
                                     </h4>

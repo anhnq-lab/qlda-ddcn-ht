@@ -70,7 +70,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
     const dueSoonCount = dates.filter(d => d.status === 'due-soon').length;
 
     return (
-        <div className="bg-bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="section-card-header">
                 <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                         return (
                             <div
                                 key={date.id}
-                                className={`px-3 py-2 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
+                                className={`px-3 py-2 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
                             >
                                 <div className="flex items-start gap-2">
                                     <div className={`w-7 h-7 rounded-lg ${style.bg} ${style.border} border flex items-center justify-center shrink-0`}>

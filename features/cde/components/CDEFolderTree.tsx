@@ -11,7 +11,7 @@ const phaseIcons: Record<string, React.ElementType> = {
     preparation: Compass, implementation: HardHat, completion: FlagTriangleRight,
 };
 const phaseColors: Record<string, string> = {
-    preparation: 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20',
+    preparation: 'text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20',
     implementation: 'text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20',
     completion: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/20',
 };
@@ -99,9 +99,9 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
     };
 
     return (
-        <div className="w-[280px] bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0">
+        <div className="w-[280px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0">
             {/* Phase tabs */}
-            <div className="px-3 py-2.5 border-b border-gray-200 dark:border-slate-700 bg-bg-subtle">
+            <div className="px-3 py-2.5 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
                     <FileStack className="w-3 h-3" /> Giai đoạn dự án
                 </p>

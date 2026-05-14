@@ -275,7 +275,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                         key={m.contractor_id}
                         className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${m.role === 'lead'
                             ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                            : 'bg-bg-subtle border-gray-200 dark:border-slate-700'
+                            : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
                             }`}
                     >
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'lead'
@@ -330,7 +330,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     key={m.contractor_id}
                     className={`flex items-center gap-2 p-2.5 rounded-lg border ${m.role === 'lead'
                         ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                        : 'bg-bg-subtle border-gray-200 dark:border-slate-700'
+                        : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
                         }`}
                 >
                     <button
@@ -366,7 +366,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
             {/* Search & Add */}
             <div ref={dropdownRef} className="relative">
-                <div className="flex items-center gap-2 px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-400">
+                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-400">
                     <Search className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
                     <input
                         ref={searchRef}
@@ -389,7 +389,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
                 {/* Dropdown results */}
                 {isDropdownOpen && (
-                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-bg-surface border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-48 overflow-y-auto">
+                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-48 overflow-y-auto">
                         {filteredContractors.length > 0 ? (
                             filteredContractors.map(c => (
                                 <button

@@ -73,13 +73,13 @@ export const PackageStatsDashboard: React.FC<PackageStatsDashboardProps> = ({ pa
                     <div className="h-full bg-emerald-500 transition-all" style={{ width: `${pct(awardedCount)}%` }} title="Đã có kết quả" />
                     <div className="h-full bg-primary-500 transition-all" style={{ width: `${pct(evaluatingCount)}%` }} title="Đang xét thầu" />
                     <div className="h-full bg-blue-500 transition-all" style={{ width: `${pct(biddingCount)}%` }} title="Đang mời thầu" />
-                    <div className="h-full bg-indigo-500 transition-all" style={{ width: `${pct(postedCount)}%` }} title="Đã đăng tải" />
+                    <div className="h-full bg-primary-500 transition-all" style={{ width: `${pct(postedCount)}%` }} title="Đã đăng tải" />
                 </div>
                 <div className="flex flex-wrap gap-4 mt-2 text-xs">
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span className="text-gray-600 dark:text-slate-400">Đã có kết quả ({awardedCount})</span></span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span><span className="text-gray-600 dark:text-slate-400">Đang xét thầu ({evaluatingCount})</span></span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span className="text-gray-600 dark:text-slate-400">Đang mời thầu ({biddingCount})</span></span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-400"></span><span className="text-gray-600 dark:text-slate-400">Đã đăng tải ({postedCount})</span></span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-primary-400"></span><span className="text-gray-600 dark:text-slate-400">Đã đăng tải ({postedCount})</span></span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span><span className="text-gray-600 dark:text-slate-400">Trong kế hoạch ({planningCount})</span></span>
                 </div>
             </div>

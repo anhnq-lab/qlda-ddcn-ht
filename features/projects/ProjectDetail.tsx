@@ -71,7 +71,7 @@ const ProjectDetailSkeleton: React.FC = () => (
     <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900 animate-pulse">
         <div className="shrink-0 px-4 pt-4 space-y-4">
             {/* Header skeleton */}
-            <div className="bg-bg-surface rounded-2xl p-4 border border-gray-200 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-200 dark:border-slate-700">
                 <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-xl" />
                     <div className="flex-1 space-y-3">
@@ -101,7 +101,7 @@ const ProjectDetailSkeleton: React.FC = () => (
         </div>
         {/* Content skeleton */}
         <div className="flex-1 p-4 mt-2">
-            <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-700 h-[calc(100vh-220px)] overflow-hidden p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 h-[calc(100vh-220px)] overflow-hidden p-4">
                 <TableSkeleton columns={5} rows={10} />
             </div>
         </div>
@@ -338,7 +338,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     return (
-        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-bg-surface' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
+        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-white dark:bg-slate-800' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
             {/* Fixed Header + Tabs — does NOT scroll */}
             <div className={`shrink-0 px-4 ${inPanel ? 'pt-1' : 'pt-2'}`}>
                 {/* 1. Minimal Header — just title + actions */}
@@ -352,7 +352,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         <h1 className="text-base font-black text-gray-900 dark:text-white truncate">{project.ProjectName}</h1>
                         <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide border ${
                             Number(project.Status) === 3 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
-                            Number(project.Status) === 2 ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800' :
+                            Number(project.Status) === 2 ? 'bg-warning-50 text-warning-700 border-warning-200 dark:bg-warning-900/30 dark:text-warning-400 dark:border-warning-800' :
                             'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
                         }`}>
                             {Number(project.Status) === 3 ? 'Kết thúc XD' : Number(project.Status) === 2 ? 'Đang triển khai' : 'Chuẩn bị dự án'}
@@ -379,7 +379,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                                 <MoreVertical className="w-4 h-4 text-gray-400" />
                             </button>
-                            <div className="absolute right-0 top-full mt-1 bg-bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                                 <button
                                     onClick={() => setShowDeleteModal(true)}
                                     className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -679,7 +679,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
             {/* ─── AI Summary Popup Dialog ─── */}
             {showAISummary && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAISummary(false)}>
-                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700">
                             <div className="flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-blue-500" />

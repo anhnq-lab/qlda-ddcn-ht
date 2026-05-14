@@ -38,9 +38,9 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-[#F1F5F9] dark:bg-slate-800 w-full max-w-6xl h-[90vh] rounded-3xl shadow-sm overflow-hidden flex flex-col border border-white/20 dark:border-slate-700">
-                <div className="bg-bg-surface px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700">
+                <div className="bg-white dark:bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-4">
-                        <div className={`p-2 rounded-xl ${isIFC ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
+                        <div className={`p-2 rounded-xl ${isIFC ? 'bg-warning-50 text-warning-600' : 'bg-blue-50 text-blue-600'}`}>
                             {isIFC ? <Box className="w-6 h-6" /> : isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                         </div>
                         <div>
@@ -61,7 +61,7 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
                 <div className="flex-1 overflow-auto p-4 flex justify-center bg-[#525659]">
                     {f.isLocal && (isPDF || isImage) ? (
                         /* REAL CONTENT VIEW FOR LOCAL PDF/IMAGES */
-                        <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
+                        <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
                             {isPDF ? (
                                 <iframe
                                     src={`${blobUrl}#toolbar=0`}
@@ -83,7 +83,7 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
                             </div>
                         </div>
                     ) : isExcel ? (
-                        <div className="bg-bg-surface w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
+                        <div className="bg-white dark:bg-slate-800 w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
                             <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Online Preview</div>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse text-[12px]">
@@ -99,9 +99,9 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
                                         {[1, 2, 3, 4, 5, 6, 7, 8].map(row => (
                                             <tr key={row}>
                                                 <td className="bg-[#E6E6E6] border border-gray-300 text-center text-gray-500 py-1">{row}</td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface">Dữ liệu dòng {row}</td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface"></td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-bg-surface"></td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-white dark:bg-slate-800">Dữ liệu dòng {row}</td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-white dark:bg-slate-800"></td>
+                                                <td className="border border-gray-200 px-3 py-1 bg-white dark:bg-slate-800"></td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -110,7 +110,7 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
                         </div>
                     ) : (
                         /* MOCK TEMPLATE VIEW FOR NON-PDF/IMG OR REMOTE DOCS */
-                        <div className="bg-bg-surface w-full max-w-[800px] min-h-[1100px] shadow-sm p-[80px] text-gray-800 font-serif relative">
+                        <div className="bg-white dark:bg-slate-800 w-full max-w-[800px] min-h-[1100px] shadow-sm p-[80px] text-gray-800 font-serif relative">
                             <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12 pointer-events-none select-none">
                                 <h1 className="text-9xl font-black">CONFIDENTIAL</h1>
                             </div>
@@ -150,8 +150,8 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in zoom-in-95">
-            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-bg-subtle">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Lịch sử phiên bản</h3>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 truncate max-w-md">{file.DocName}</p>
@@ -160,7 +160,7 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                 </div>
                 <div className="p-0">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-bg-subtle text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                        <thead className="bg-slate-50 dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-6 py-4">Phiên bản</th>
                                 <th className="px-6 py-4">Thời gian cập nhật</th>
@@ -176,7 +176,7 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                                             <span className={`px-2 py-1 rounded-md font-mono text-xs font-bold ${ver.isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {ver.Version}
                                             </span>
-                                            {ver.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600 bg-bg-surface border border-emerald-200 px-1.5 rounded">Hiện tại</span>}
+                                            {ver.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600 bg-white dark:bg-slate-800 border border-emerald-200 px-1.5 rounded">Hiện tại</span>}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{ver.Date}</td>
@@ -192,8 +192,8 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-bg-subtle border-t border-gray-200 dark:border-slate-700 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-bg-surface border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 text-right">
+                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
                 </div>
             </div>
         </div>
@@ -213,7 +213,7 @@ const FilterChip: React.FC<{ label: string, active: boolean, onClick: () => void
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${active
             ? 'bg-primary-600 text-white border-blue-600 shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-            : 'bg-bg-surface text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-gray-700 dark:hover:text-slate-300'
+            : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 hover:text-gray-700 dark:hover:text-slate-300'
             }`}
     >
         {icon}
@@ -435,7 +435,7 @@ const DocumentManager: React.FC = () => {
                 {/* MIDDLE ROW: Project Context & Search */}
                 <div className="flex items-stretch gap-4">
                     {/* Project Selector Card */}
-                    <div className="w-[450px] bg-bg-surface p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col">
+                    <div className="w-[450px] bg-white dark:bg-slate-800 p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col">
                         <div className="flex items-center gap-3 px-4 py-3 h-full">
                             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                                 <Box className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -457,7 +457,7 @@ const DocumentManager: React.FC = () => {
                     </div>
 
                     {/* Smart Search Bar */}
-                    <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/40 focus-within:border-blue-400">
+                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/40 focus-within:border-blue-400">
                         <Search className="w-5 h-5 text-gray-400 dark:text-slate-400 mr-3" />
                         <input
                             type="text"
@@ -486,14 +486,14 @@ const DocumentManager: React.FC = () => {
             </div>
 
             <div className="flex flex-1 gap-6 overflow-hidden">
-                <div className="w-80 bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-5 flex flex-col overflow-y-auto">
+                <div className="w-80 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-5 flex flex-col overflow-y-auto">
                     <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-[0.2em] mb-6 px-2">Cấu trúc thư mục</h3>
                     <div className="space-y-2">
                         {folders.map(folder => (
                             <div
                                 key={folder.id}
                                 onClick={() => setSelectedFolder(folder.id)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all ${selectedFolder === folder.id ? 'bg-primary-600 text-white shadow-sm shadow-primary-100 dark:shadow-primary-900/30' : 'text-gray-500 dark:text-slate-400 hover:bg-bg-subtle dark:hover:bg-slate-700'
+                                className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all ${selectedFolder === folder.id ? 'bg-primary-600 text-white shadow-sm shadow-primary-100 dark:shadow-primary-900/30' : 'text-gray-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 <Folder className={`w-4 h-4 ${selectedFolder === folder.id ? 'fill-white/30' : ''}`} />
@@ -506,18 +506,18 @@ const DocumentManager: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 bg-bg-surface rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
-                    <div className="p-5 border-b border-gray-50 dark:border-slate-700 bg-bg-subtle flex justify-between items-center">
+                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+                    <div className="p-5 border-b border-gray-50 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center">
                         <h3 className="font-black text-gray-800 dark:text-slate-200 text-sm flex items-center gap-2 uppercase tracking-widest">
                             <Folder className="w-4 h-4 text-blue-500 dark:text-blue-400" /> {folders.find(f => f.id === selectedFolder)?.name}
                         </h3>
-                        <span className="bg-bg-surface text-gray-400 dark:text-slate-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-200 dark:border-slate-600">{allDocs.length} TÀI LIỆU</span>
+                        <span className="bg-white dark:bg-slate-800 text-gray-400 dark:text-slate-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-200 dark:border-slate-600">{allDocs.length} TÀI LIỆU</span>
                     </div>
 
                     <div className="flex-1 overflow-y-auto relative">
                         {allDocs.length === 0 ? (
                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-300">
-                                <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center mb-6">
+                                <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
                                     <Folder className="w-10 h-10 text-gray-300" />
                                 </div>
                                 <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-2">Chưa có tài liệu nào</h3>
@@ -531,7 +531,7 @@ const DocumentManager: React.FC = () => {
                             </div>
                         ) : (
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-bg-surface text-[10px] uppercase font-black text-gray-400 dark:text-slate-400 sticky top-0 z-20 border-b border-slate-200 dark:border-slate-700 tracking-[0.1em] shadow-sm">
+                                <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-black text-gray-400 dark:text-slate-400 sticky top-0 z-20 border-b border-slate-200 dark:border-slate-700 tracking-[0.1em] shadow-sm">
                                     <tr>
                                         <th className="px-6 py-5">Tên tài liệu</th>
                                         <th className="px-6 py-5 w-32 text-center">Phiên bản</th>
@@ -544,7 +544,7 @@ const DocumentManager: React.FC = () => {
                                         <tr key={idx} className="hover:bg-blue-50/40 dark:hover:bg-slate-700 transition-all group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
-                                                    <div className={`p-3 rounded-2xl shadow-sm ${doc.DocName.toLowerCase().endsWith('.ifc') ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'} ${doc.isLocal ? 'ring-2 ring-emerald-400/30' : ''}`}>
+                                                    <div className={`p-3 rounded-2xl shadow-sm ${doc.DocName.toLowerCase().endsWith('.ifc') ? 'bg-warning-50 text-warning-600' : 'bg-blue-50 text-blue-600'} ${doc.isLocal ? 'ring-2 ring-emerald-400/30' : ''}`}>
                                                         {doc.DocName.toLowerCase().endsWith('.ifc') ? <Box className="w-6 h-6" /> : (doc.DocName.toLowerCase().endsWith('.png') || doc.DocName.toLowerCase().endsWith('.jpg')) ? <ImageIcon className="w-6 h-6" /> : <FileIcon className="w-6 h-6" />}
                                                     </div>
                                                     <div>
@@ -570,14 +570,14 @@ const DocumentManager: React.FC = () => {
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                                                     <button
                                                         onClick={() => setPreviewFile(doc)}
-                                                        className="p-2.5 bg-bg-surface text-blue-600 rounded-xl hover:bg-primary-600 hover:text-white shadow-sm border border-gray-200 transition-all"
+                                                        className="p-2.5 bg-white dark:bg-slate-800 text-blue-600 rounded-xl hover:bg-primary-600 hover:text-white shadow-sm border border-gray-200 transition-all"
                                                         title="Xem nội dung"
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={() => handleSignClick(doc)} className="p-2.5 bg-bg-surface text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Ký số"><PenTool className="w-4 h-4" /></button>
-                                                    <button onClick={() => setHistoryFile(doc)} className="p-2.5 bg-bg-surface text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Lịch sử"><History className="w-4 h-4" /></button>
-                                                    <button className="p-2.5 bg-bg-surface text-gray-400 rounded-xl hover:bg-gray-600 hover:text-white shadow-sm border border-gray-200 transition-all"><Download className="w-4 h-4" /></button>
+                                                    <button onClick={() => handleSignClick(doc)} className="p-2.5 bg-white dark:bg-slate-800 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Ký số"><PenTool className="w-4 h-4" /></button>
+                                                    <button onClick={() => setHistoryFile(doc)} className="p-2.5 bg-white dark:bg-slate-800 text-warning-600 rounded-xl hover:bg-warning-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Lịch sử"><History className="w-4 h-4" /></button>
+                                                    <button className="p-2.5 bg-white dark:bg-slate-800 text-gray-400 rounded-xl hover:bg-gray-600 hover:text-white shadow-sm border border-gray-200 transition-all"><Download className="w-4 h-4" /></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -594,7 +594,7 @@ const DocumentManager: React.FC = () => {
 
             {isSignModalOpen && (
                 <div className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-bg-surface w-full max-w-md rounded-[32px] shadow-sm overflow-hidden p-4 animate-in zoom-in-95">
+                    <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-[32px] shadow-sm overflow-hidden p-4 animate-in zoom-in-95">
                         <div className="flex justify-between items-center mb-8">
                             <h3 className="text-xl font-black text-gray-800 dark:text-slate-200 flex items-center gap-3 tracking-tight">
                                 <ShieldCheck className="w-6 h-6 text-emerald-600" /> Ký số văn bản (CA)
@@ -626,13 +626,13 @@ const DocumentManager: React.FC = () => {
                                 <form onSubmit={handlePinSubmit} className="space-y-5">
                                     <div className="text-left">
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Chứng thư số</label>
-                                        <select className="w-full px-4 py-3 bg-bg-subtle border border-gray-200 rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <select className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                                             <option>NGUYEN VAN A - VNPT CA (Hạn: 2026)</option>
                                         </select>
                                     </div>
                                     <div className="text-left">
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Mã PIN</label>
-                                        <input type="password" autoFocus className="w-full px-4 py-3 bg-bg-surface border border-gray-200 rounded-xl text-center text-lg font-black tracking-[1em] outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="******" />
+                                        <input type="password" autoFocus className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 rounded-xl text-center text-lg font-black tracking-[1em] outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="******" />
                                     </div>
                                     <button type="submit" className="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 shadow-sm shadow-emerald-100 uppercase tracking-widest text-xs transition-all">Xác nhận Ký số</button>
                                 </form>

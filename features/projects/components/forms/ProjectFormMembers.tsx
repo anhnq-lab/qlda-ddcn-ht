@@ -104,7 +104,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                 {showMemberDropdown && (
                     <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowMemberDropdown(false)} />
-                        <div className="absolute z-20 mt-1 w-full bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm max-h-56 overflow-y-auto">
+                        <div className="absolute z-20 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm max-h-56 overflow-y-auto">
                             {Object.keys(groupedEmployees).length === 0 ? (
                                 <div className="p-4 text-center text-sm text-gray-400 dark:text-slate-400">Không tìm thấy nhân sự</div>
                             ) : (
@@ -171,7 +171,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                 const emp = employees.find(e => e.EmployeeID === sm.employeeId);
                                 if (!emp) return null;
                                 return (
-                                    <tr key={sm.employeeId} className="border-t border-gray-100 dark:border-slate-700/50 hover:bg-gray-50/50 dark:hover:bg-slate-800/50">
+                                    <tr key={sm.employeeId} className="border-t border-gray-100 dark:border-slate-700/50 hover:bg-gray-50/50 dark:hover:bg-slate-">
                                         <td className="px-4 py-2.5">
                                             <div className="flex items-center gap-2">
                                                 <img

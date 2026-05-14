@@ -11,7 +11,7 @@ export const getStatusInfo = (s: TaskStatus) => {
         case TaskStatus.Done:
             return { label: 'Hoàn thành', color: 'text-emerald-600', bg: 'bg-emerald-500', ring: 'ring-emerald-500/30', icon: <CheckCircle2 className="w-4 h-4" /> };
         case TaskStatus.InProgress:
-            return { label: 'Đang thực hiện', color: 'text-orange-600', bg: 'bg-orange-500', ring: 'ring-orange-500/30', icon: <Clock className="w-4 h-4" /> };
+            return { label: 'Đang thực hiện', color: 'text-warning-700', bg: 'bg-warning-500', ring: 'ring-warning-500/30', icon: <Clock className="w-4 h-4" /> };
         case TaskStatus.Incomplete:
             return { label: 'Chưa hoàn thành', color: 'text-rose-600', bg: 'bg-rose-500', ring: 'ring-rose-500/30', icon: <XCircle className="w-4 h-4" /> };
         case TaskStatus.Review: // Legacy
@@ -23,10 +23,10 @@ export const getStatusInfo = (s: TaskStatus) => {
 
 export const getPriorityInfo = (p: TaskPriority) => {
     switch (p) {
-        case TaskPriority.Urgent: return { label: 'KHẨN CẤP', color: 'bg-red-500/10 text-red-600 ring-1 ring-red-500/20', dot: 'bg-red-500' };
-        case TaskPriority.High: return { label: 'CAO', color: 'bg-orange-500/10 text-orange-600 ring-1 ring-orange-500/20', dot: 'bg-orange-500' };
+        case TaskPriority.Urgent: return { label: 'KHẨN CẤP', color: 'bg-danger-500/10 text-danger-600 ring-1 ring-danger-500/20', dot: 'bg-danger-500' };
+        case TaskPriority.High:   return { label: 'CAO',      color: 'bg-warning-500/10 text-warning-700 ring-1 ring-warning-500/20', dot: 'bg-warning-500' };
         case TaskPriority.Medium: return { label: 'TRUNG BÌNH', color: 'bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/20', dot: 'bg-sky-500' };
-        case TaskPriority.Low: return { label: 'THẤP', color: 'bg-slate-500/10 text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+        case TaskPriority.Low:    return { label: 'THẤP',    color: 'bg-slate- text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
         default: return { label: p, color: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' };
     }
 };
@@ -96,7 +96,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
 
                 {/* ── Modal Header ── */}
                 <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 sticky top-0 z-10">

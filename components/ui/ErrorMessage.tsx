@@ -20,7 +20,7 @@ const getErrorDetails = (error: Error | string | null): {
 
     if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
         return {
-            icon: <WifiOff className="w-8 h-8 text-orange-500" />,
+            icon: <WifiOff className="w-8 h-8 text-warning-500" />,
             title: 'Lỗi kết nối',
             message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.',
         };
@@ -36,7 +36,7 @@ const getErrorDetails = (error: Error | string | null): {
 
     if (errorMessage.includes('404') || errorMessage.includes('not found')) {
         return {
-            icon: <FileWarning className="w-8 h-8 text-yellow-500" />,
+            icon: <FileWarning className="w-8 h-8 text-warning-500" />,
             title: 'Không tìm thấy',
             message: 'Dữ liệu yêu cầu không tồn tại hoặc đã bị xóa.',
         };

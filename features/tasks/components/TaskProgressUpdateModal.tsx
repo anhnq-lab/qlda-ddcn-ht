@@ -34,8 +34,8 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-            <div className="bg-bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate- backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                     <div>
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
@@ -71,11 +71,11 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                             onChange={(e) => setNote(e.target.value)}
                             rows={3}
                             placeholder="Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc..."
-                            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-bg-surface focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
+                            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
                             required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done}
                         />
                         {(targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done) && (
-                            <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                            <p className="text-xs text-warning-600 dark:text-warning-400 font-medium">
                                 * Bắt buộc nhập ghi chú khi chuyển sang {targetStatusCfg?.label.toLowerCase()}
                             </p>
                         )}

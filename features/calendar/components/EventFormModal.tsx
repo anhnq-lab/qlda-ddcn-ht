@@ -233,7 +233,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
                     placeholder="-- Không chọn --"
                   />
                   {roomConflicts.length > 0 && (
-                    <div className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+                    <div className="mt-1.5 flex items-start gap-1.5 text-xs text-warning-600 dark:text-warning-400">
                       <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                       <span>
                         Phòng đã có lịch trùng:{' '}

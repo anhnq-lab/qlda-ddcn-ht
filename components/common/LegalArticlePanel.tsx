@@ -64,12 +64,12 @@ const ArticleCard: React.FC<{
             id={`panel-article-${article.id}`}
             className={`rounded-xl border transition-all duration-300 ${isTarget
                 ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-300 dark:border-primary-700 shadow-lg ring-1 ring-primary-400/30'
-                : 'bg-bg-surface border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
+                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                 }`}
         >
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-bg-subtle dark:hover:bg-slate-700 rounded-xl transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors"
             >
                 <div className="flex items-center gap-2 min-w-0">
                     <span className={`text-xs font-black shrink-0 ${isTarget ? 'text-primary-600 dark:text-primary-400' : 'text-indigo-600 dark:text-indigo-400'}`}>

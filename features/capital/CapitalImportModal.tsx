@@ -247,7 +247,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-bg-surface w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                 
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
@@ -328,13 +328,13 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
                                             {previewData.map((row, idx) => (
-                                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-">
                                                     <td className="px-4 py-2">
                                                         {row.status === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                                                         {row.status === 'error' && <AlertCircle className="w-5 h-5 text-red-500" title={row.errorMsg} />}
                                                         {row.status === 'pending' && (
                                                             row.isNewProject 
-                                                                ? <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">Dự án mới</span>
+                                                                ? <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-100 text-warning-800">Dự án mới</span>
                                                                 : <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Cập nhật</span>
                                                         )}
                                                     </td>
