@@ -355,8 +355,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                 <Section title="I. Ý thức tổ chức kỷ luật, phẩm chất đạo đức lối sống" maxScore={20} selfScore={calcG1(scores)} managerScore={calcG1(managerScores)} showManager={showManager}>
                     {G1_ITEMS.map(c=>(
                         <ScoreRow key={c.key} label={c.label} max={c.max} 
-                            selfValue={(scores.g1 as Record<string,number>)[c.key]} 
-                            managerValue={(managerScores.g1 as Record<string,number>)[c.key]}
+                            selfValue={(scores.g1 as unknown as Record<string,number>)[c.key]}
+                            managerValue={(managerScores.g1 as unknown as Record<string,number>)[c.key]}
                             onSelfChange={v=>setG1(c.key,v)} 
                             onManagerChange={v=>setManagerG1(c.key,v)}
                             disabledSelf={!isSelfEditable}
@@ -370,8 +370,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                 <Section title="II.1 Năng lực và kỹ năng" maxScore={20} selfScore={calcG2_1(scores)} managerScore={calcG2_1(managerScores)} showManager={showManager}>
                     {g2_1items.map(c=>(
                         <ScoreRow key={c.key} code={c.code} label={c.label} max={c.max}
-                            selfValue={(scores.g2_1 as Record<string,number>)[c.key]??0}
-                            managerValue={(managerScores.g2_1 as Record<string,number>)[c.key]??0}
+                            selfValue={(scores.g2_1 as unknown as Record<string,number>)[c.key]??0}
+                            managerValue={(managerScores.g2_1 as unknown as Record<string,number>)[c.key]??0}
                             onSelfChange={v=>setG2_1(c.key,v)} 
                             onManagerChange={v=>setManagerG2_1(c.key,v)}
                             disabledSelf={!isSelfEditable}
@@ -465,8 +465,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="space-y-1.5 pt-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tự đánh giá</label>
                             {[{k:'bonus1',label:'Được Ban giám đốc tuyên dương',pts:3},{k:'bonus2',label:'Tham mưu đột phá; tham mưu ≥10 văn bản',pts:2}].map(b=>(
-                                <label key={`self_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g3 as Record<string,boolean>)[b.k]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
-                                    <input type="checkbox" checked={(scores.g3 as Record<string,boolean>)[b.k]} disabled={!isSelfEditable} onChange={e=>setG3(b.k,e.target.checked)} className="accent-slate-500"/>
+                                <label key={`self_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g3 as unknown as Record<string,boolean>)[b.k]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                    <input type="checkbox" checked={(scores.g3 as unknown as Record<string,boolean>)[b.k]} disabled={!isSelfEditable} onChange={e=>setG3(b.k,e.target.checked)} className="accent-slate-500"/>
                                     <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{b.label}</span>
                                     <span className="text-xs font-black text-slate-600">+{b.pts} đ</span>
                                 </label>
@@ -476,8 +476,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                             <div className="space-y-1.5 pt-1">
                                 <label className="text-[10px] font-bold text-emerald-500 uppercase block mb-2">Quản lý phê duyệt</label>
                                 {[{k:'bonus1',label:'Được Ban giám đốc tuyên dương',pts:3},{k:'bonus2',label:'Tham mưu đột phá; tham mưu ≥10 văn bản',pts:2}].map(b=>(
-                                    <label key={`mgr_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g3 as Record<string,boolean>)[b.k]?'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
-                                        <input type="checkbox" checked={(managerScores.g3 as Record<string,boolean>)[b.k]} disabled={!isManagerEditable} onChange={e=>setManagerG3(b.k,e.target.checked)} className="accent-emerald-500"/>
+                                    <label key={`mgr_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g3 as unknown as Record<string,boolean>)[b.k]?'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                        <input type="checkbox" checked={(managerScores.g3 as unknown as Record<string,boolean>)[b.k]} disabled={!isManagerEditable} onChange={e=>setManagerG3(b.k,e.target.checked)} className="accent-emerald-500"/>
                                         <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{b.label}</span>
                                         <span className="text-xs font-black text-emerald-600">+{b.pts} đ</span>
                                     </label>
@@ -493,8 +493,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="space-y-1.5 pt-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tự đánh giá</label>
                             {g4items.map(d=>(
-                                <label key={`self_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g4 as Record<string,boolean>)[d.key]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
-                                    <input type="checkbox" checked={(scores.g4 as Record<string,boolean>)[d.key]} disabled={!isSelfEditable} onChange={e=>setG4(d.key,e.target.checked)} className="accent-slate-500 mt-0.5"/>
+                                <label key={`self_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g4 as unknown as Record<string,boolean>)[d.key]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                    <input type="checkbox" checked={(scores.g4 as unknown as Record<string,boolean>)[d.key]} disabled={!isSelfEditable} onChange={e=>setG4(d.key,e.target.checked)} className="accent-slate-500 mt-0.5"/>
                                     <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 leading-snug">{d.label}</span>
                                     <span className="text-xs font-black text-slate-600 shrink-0">-{d.points} đ</span>
                                 </label>
@@ -504,8 +504,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                             <div className="space-y-1.5 pt-1">
                                 <label className="text-[10px] font-bold text-red-500 uppercase block mb-2">Quản lý phê duyệt</label>
                                 {g4items.map(d=>(
-                                    <label key={`mgr_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g4 as Record<string,boolean>)[d.key]?'border-red-400 bg-red-50 dark:bg-red-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
-                                        <input type="checkbox" checked={(managerScores.g4 as Record<string,boolean>)[d.key]} disabled={!isManagerEditable} onChange={e=>setManagerG4(d.key,e.target.checked)} className="accent-red-500 mt-0.5"/>
+                                    <label key={`mgr_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g4 as unknown as Record<string,boolean>)[d.key]?'border-red-400 bg-red-50 dark:bg-red-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                        <input type="checkbox" checked={(managerScores.g4 as unknown as Record<string,boolean>)[d.key]} disabled={!isManagerEditable} onChange={e=>setManagerG4(d.key,e.target.checked)} className="accent-red-500 mt-0.5"/>
                                         <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 leading-snug">{d.label}</span>
                                         <span className="text-xs font-black text-red-600 shrink-0">-{d.points} đ</span>
                                     </label>

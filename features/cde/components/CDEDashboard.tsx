@@ -74,10 +74,10 @@ const CDEDashboard: React.FC<CDEDashboardProps> = ({ stats, docs, projectName })
     );
 
     const kpis = [
-        { label: 'Tổng hồ sơ', value: stats?.total || 0, icon: FileText, color: 'slate' as const, change: 12, up: true },
-        { label: 'Đang xử lý', value: stats?.wip || 0, icon: Clock, color: 'amber' as const, change: null, up: false },
-        { label: 'Tỷ lệ duyệt', value: `${analytics.approvalRate}%`, icon: CheckCircle2, color: 'emerald' as const, change: 5, up: true },
-        { label: 'Bị từ chối', value: analytics.totalRejected, icon: XCircle, color: 'rose' as const, change: null, up: false },
+        { label: 'Tổng hồ sơ', value: stats?.total || 0, icon: FileText, color: 'slate' as const, change: 12 as number | null, up: true },
+        { label: 'Đang xử lý', value: stats?.wip || 0, icon: Clock, color: 'amber' as const, change: null as number | null, up: false },
+        { label: 'Tỷ lệ duyệt', value: `${analytics.approvalRate}%`, icon: CheckCircle2, color: 'emerald' as const, change: 5 as number | null, up: true },
+        { label: 'Bị từ chối', value: analytics.totalRejected, icon: XCircle, color: 'rose' as const, change: null as number | null, up: false },
     ];
 
     return (

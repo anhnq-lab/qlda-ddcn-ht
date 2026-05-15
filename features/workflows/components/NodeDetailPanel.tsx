@@ -167,7 +167,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
         setIsSaving(true);
         try {
             // Aggregate legacy fields for backwards compatibility (optional, but good)
-            const primarySubTask = subTasks[0] || {};
+            const primarySubTask: any = subTasks[0] || {};
             
             const updatedData = {
                 name,
@@ -183,7 +183,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                     // Keep legacy structure lightly synced so standard queries don't break
                     legal_basis: primarySubTask.legal_basis || '',
                     output: primarySubTask.output || '',
-                    template_forms: primarySubTask.template_forms ? primarySubTask.template_forms.split(',').map(s=>s.trim()) : []
+                    template_forms: primarySubTask.template_forms ? primarySubTask.template_forms.split(',').map((s: string) => s.trim()) : []
                 }
             };
             await onSave(node.id, updatedData);

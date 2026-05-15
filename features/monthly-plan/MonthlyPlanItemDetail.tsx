@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus } from '../../types/plan.types';
 import { useSlidePanel } from "../../context/SlidePanelContext";
-import { supabase } from '../../lib/supabase';
+import { supabaseExt as supabase } from '../../lib/supabase'; // avoid deep type instantiation
 
 // ─── Status config ────────────────────────────────────────────
 const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; color: string; bg: string; ring: string }> = {

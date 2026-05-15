@@ -153,7 +153,7 @@ export const TaskService = {
     if (!data) return null;
     
     // Lấy sub tasks (nếu có)
-    const { data: subData } = await supabase
+    const { data: subData } = await (supabase as any)
       .from('tasks')
       .select('*')
       .eq('parent_id', taskId)
@@ -180,7 +180,7 @@ export const TaskService = {
 
   /** Lấy sub-tasks của 1 task */
   getSubTasks: async (taskId: string): Promise<DbSubTask[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('tasks')
       .select('*')
       .eq('parent_id', taskId)
@@ -300,8 +300,8 @@ export const TaskService = {
     // Sync sub-tasks if provided
     if (subTasks !== null) {
       // Get existing subtasks to detect deletions
-      const { data: existingSubs } = await supabase.from('tasks').select('id').eq('parent_id', taskId);
-      const existingIds = (existingSubs || []).map(s => s.id);
+      const { data: existingSubs } = await (supabase as any).from('tasks').select('id').eq('parent_id', taskId);
+      const existingIds = (existingSubs || []).map((s: any) => s.id);
       
       const newIds: string[] = [];
       const subsToUpsert = subTasks.map(st => {
@@ -330,7 +330,7 @@ export const TaskService = {
       }
 
       // Xóa các subtask bị người dùng gỡ bỏ UI khỏi CSDL
-      const toDelete = existingIds.filter(id => !newIds.includes(id));
+      const toDelete = existingIds.filter((id: any) => !newIds.includes(id));
       if (toDelete.length > 0) {
         await supabase.from('tasks').delete().in('id', toDelete);
       }

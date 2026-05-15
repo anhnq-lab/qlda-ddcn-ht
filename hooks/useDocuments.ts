@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DocumentService } from '../services/DocumentService';
 import { Document, Folder } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabaseExt as supabase } from '../lib/supabase'; // cde_folders not yet in generated types
 
 export const useFolders = (projectId: string) => {
     return useQuery({

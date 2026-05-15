@@ -354,7 +354,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                                 >
                                                     {/* Status icon */}
                                                     <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${statusInfo.bg}/10 ${statusInfo.color}`}>
-                                                        {React.cloneElement(statusInfo.icon as React.ReactElement, { className: 'w-3.5 h-3.5' })}
+                                                        {React.cloneElement(statusInfo.icon as React.ReactElement<any>, { className: 'w-3.5 h-3.5' })}
                                                     </div>
 
                                                     {/* Task info */}

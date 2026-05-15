@@ -11,7 +11,7 @@ import { LifecycleStepper, StageHistoryEntry } from '../LifecycleStepper';
 import { GanttChartWidget } from '../GanttChartWidget';
 import { ProjectTeamSection } from '../ProjectTeamSection';
 import { ContractorsListSection } from '../ContractorsListSection';
-import { ContractorDetailPanel } from '../ContractorDetailPanel';
+import { ContractorDetailPanel } from '@/components/common/ContractorDetailPanel';
 import { RiskIndicators } from '../RiskIndicators';
 import { BudgetVarianceCard } from '../BudgetVarianceCard';
 import { KeyDatesWidget, KeyDate } from '../KeyDatesWidget';
@@ -273,14 +273,14 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
             // ── Source 1: Tasks (overdue + upcoming with priority) ──
             // Overdue tasks (no date limit — show ALL overdue)
-            const { data: overdueTasks } = await supabase
+            const { data: overdueTasks } = await (supabase as any)
                 .from('tasks')
                 .select('task_id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
                 .not('status', 'in', '("Done")')
                 .lt('due_date', nowISO)
                 .order('due_date', { ascending: true })
-                .limit(5);
+                .limit(5) as { data: any[] | null };
 
             for (const t of overdueTasks || []) {
                 const dueDate = new Date(t.due_date);
@@ -297,7 +297,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
             // Upcoming tasks — high/critical priority: up to 6 months, others: up to 90 days
             const in6Months = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
-            const { data: upcomingTasks } = await supabase
+            const { data: upcomingTasks } = await (supabase as any)
                 .from('tasks')
                 .select('task_id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
@@ -305,7 +305,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 .gte('due_date', nowISO)
                 .lte('due_date', in6Months)
                 .order('due_date', { ascending: true })
-                .limit(10);
+                .limit(10) as { data: any[] | null };
 
             for (const t of upcomingTasks || []) {
                 const dueDate = new Date(t.due_date);

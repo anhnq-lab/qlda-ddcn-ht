@@ -43,7 +43,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
         return '#9CA3AF';
     };
 
-    const activeFolder = folders.find(f => (f as any).id === activeFolderId);
+    const activeFolder = folders.find((f: any) => f.id === activeFolderId);
 
     const breadcrumbs = useMemo(() => {
         const path: Folder[] = [];
@@ -51,7 +51,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
         while (current) {
             path.unshift(current as any);
             if (!(current as any).parent_id) break;
-            current = folders.find(f => (f as any).id === (current as any).parent_id);
+            current = folders.find((f: any) => f.id === (current as any).parent_id);
         }
         return path;
     }, [activeFolder, folders]);
@@ -83,14 +83,14 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
 
 
     const renderFolderTree = (parentId: string | undefined, level = 0) => {
-        const children = folders.filter(f => (f as any).parent_id === parentId);
+        const children = folders.filter((f: any) => f.parent_id === parentId);
         if (children.length === 0) return null;
 
         return (
             <div className={`space-y-1 ${level > 0 ? 'ml-4 border-l border-gray-200 dark:border-slate-700 pl-2' : ''}`}>
-                {children.map(folder => {
-                    const isActive = (folder as any).id === activeFolderId;
-                    const hasChildren = folders.some(f => (f as any).parent_id === (folder as any).id);
+                {children.map((folder: any) => {
+                    const isActive = folder.id === activeFolderId;
+                    const hasChildren = folders.some((f: any) => f.parent_id === folder.id);
 
                     return (
                         <div key={(folder as any).id}>
@@ -172,8 +172,8 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                                        {documents.map((doc) => (
-                                            <tr key={doc.doc_id} onClick={() => setSelectedDoc(doc)} className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors ${selectedDoc?.doc_id === doc.doc_id ? 'bg-blue-50/80 dark:bg-blue-900/30' : ''}`}>
+                                        {documents.map((doc: any) => (
+                                            <tr key={doc.doc_id} onClick={() => setSelectedDoc(doc)} className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors ${(selectedDoc as any)?.doc_id === doc.doc_id ? 'bg-blue-50/80 dark:bg-blue-900/30' : ''}`}>
                                                 <td className="px-5 py-3 text-center">
                                                     {(doc as any).doc_name?.endsWith('.pdf') ? <FileText className="w-5 h-5 text-red-500" /> : <FileText className="w-5 h-5 text-blue-500" />}
                                                 </td>
@@ -204,8 +204,8 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {documents.map(doc => (
-                                    <div key={doc.doc_id} onClick={() => setSelectedDoc(doc)} className={`bg-white dark:bg-slate-800 p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${selectedDoc?.doc_id === doc.doc_id ? 'border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900/50' : 'border-gray-200 dark:border-slate-700'}`}>
+                                {documents.map((doc: any) => (
+                                    <div key={doc.doc_id} onClick={() => setSelectedDoc(doc)} className={`bg-white dark:bg-slate-800 p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${(selectedDoc as any)?.doc_id === doc.doc_id ? 'border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900/50' : 'border-gray-200 dark:border-slate-700'}`}>
                                         <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-2xl flex items-center justify-center text-gray-400">
                                             {(doc as any).doc_name?.endsWith('.pdf') ? <FileText className="w-8 h-8 text-red-500" /> : <FileText className="w-8 h-8 text-blue-500" />}
                                         </div>
@@ -242,7 +242,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                             </div>
                             <div>
                                 <h4 className="text-sm font-black text-gray-800 dark:text-slate-100 line-clamp-2">{(selectedDoc as any).doc_name}</h4>
-                                <p className="text-[10px] font-mono text-gray-400 mt-1 uppercase">Mã: {selectedDoc.doc_id} • v{(selectedDoc as any).version}</p>
+                                <p className="text-[10px] font-mono text-gray-400 mt-1 uppercase">Mã: {(selectedDoc as any).doc_id} • v{(selectedDoc as any).version}</p>
                             </div>
                         </div>
 

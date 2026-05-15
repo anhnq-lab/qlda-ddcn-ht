@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, Plus, Search, Building2, UserPlus, Key, Eye, Upload, CheckCircle2, Settings, Trash2, ChevronDown, ChevronRight, Users, Mail, Phone, Lock, Loader2, X } from 'lucide-react';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { supabase, adminUserOp, supabaseExt } from '@/lib/supabase';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { useAuth } from '@/context/AuthContext';
 
@@ -39,8 +39,8 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
     const loadData = useCallback(async () => {
         setLoading(true);
         const [permRes, accRes] = await Promise.all([
-            supabase.from('cde_permissions').select('*').eq('project_id', projectId),
-            supabase.from('contractor_accounts').select('*').contains('allowed_project_ids', [projectId]),
+            supabaseExt.from('cde_permissions').select('*').eq('project_id', projectId),
+            supabaseExt.from('contractor_accounts').select('*').contains('allowed_project_ids', [projectId]),
         ]);
         const perms = permRes.data || [];
         const accs = accRes.data || [];
@@ -48,7 +48,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         setAccounts(accs);
 
         // Get unique contractor IDs from permissions & accounts
-        const orgIds = [...new Set([...perms.map(p => p.user_id.split('/')[0]), ...accs.map(a => a.contractor_id)])].filter(Boolean);
+        const orgIds = [...new Set([...perms.map((p: any) => p.user_id.split('/')[0]), ...accs.map((a: any) => a.contractor_id)])].filter(Boolean);
         if (orgIds.length > 0) {
             const { data } = await supabase.from('contractors').select('*').in('contractor_id', orgIds);
             setContractors(data || []);
@@ -80,16 +80,16 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         const exists = contractors.find(c => c.contractor_id === org.contractor_id);
         if (exists) { alert('Đơn vị đã có trong dự án'); return; }
         // Add a default permission entry
-        await supabase.from('cde_permissions').insert({
+        await supabaseExt.from('cde_permissions').insert({
             project_id: projectId, user_id: org.contractor_id, user_name: org.full_name,
             user_role: 'contributor', container_access: ['WIP'], can_upload: true,
             can_approve: false, can_delete: false, can_manage: false, granted_by: 'admin',
         });
 
         if (currentUser) {
-            await supabase.from('audit_logs').insert({
+            await (supabase as any).from('audit_logs').insert({
                 action: 'ADD_CDE_ORG',
-                changed_by: currentUser.employee_id,
+                changed_by: currentUser.EmployeeID,
                 target_entity: 'CDEPermission',
                 target_id: org.contractor_id,
                 details: { project_id: projectId }
@@ -104,13 +104,13 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
     // Remove org
     const removeOrg = async (orgId: string) => {
         if (!confirm(`Xóa đơn vị khỏi dự án? Tất cả tài khoản sẽ mất quyền truy cập.`)) return;
-        await supabase.from('cde_permissions').delete().eq('project_id', projectId).like('user_id', `${orgId}%`);
-        await supabase.from('contractor_accounts').update({ allowed_project_ids: [] }).eq('contractor_id', orgId);
+        await supabaseExt.from('cde_permissions').delete().eq('project_id', projectId).like('user_id', `${orgId}%`);
+        await supabaseExt.from('contractor_accounts').update({ allowed_project_ids: [] }).eq('contractor_id', orgId);
 
         if (currentUser) {
-            await supabase.from('audit_logs').insert({
+            await (supabase as any).from('audit_logs').insert({
                 action: 'REMOVE_CDE_ORG',
-                changed_by: currentUser.employee_id,
+                changed_by: currentUser.EmployeeID,
                 target_entity: 'CDEPermission',
                 target_id: orgId,
                 details: { project_id: projectId }
@@ -129,12 +129,12 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             approver: { can_upload: true, can_approve: true, can_delete: false, can_manage: false, container_access: ['WIP', 'SHARED', 'PUBLISHED'] },
             admin: { can_upload: true, can_approve: true, can_delete: true, can_manage: true, container_access: ['WIP', 'SHARED', 'PUBLISHED', 'ARCHIVED'] },
         }[role] || {};
-        await supabase.from('cde_permissions').update({ user_role: role, ...caps }).eq('id', permId);
+        await supabaseExt.from('cde_permissions').update({ user_role: role, ...caps }).eq('id', permId);
 
         if (currentUser) {
-            await supabase.from('audit_logs').insert({
+            await (supabase as any).from('audit_logs').insert({
                 action: 'UPDATE_CDE_ROLE',
-                changed_by: currentUser.employee_id,
+                changed_by: currentUser.EmployeeID,
                 target_entity: 'CDEPermission',
                 target_id: permId,
                 details: { role, project_id: projectId }
@@ -152,21 +152,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         if (staffForm.password.length < 6) { alert('Mật khẩu tối thiểu 6 ký tự'); return; }
         setSaving(true);
         try {
-            // Create Supabase auth user using supabaseAdmin
+            // Create Supabase auth user via the admin-user-ops Edge Function
             const email = staffForm.email || `${staffForm.username}@cde.local`;
-            
+
             let authUserId: string | null = null;
             try {
-                const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
+                const authData = await adminUserOp<{ user: { id: string } | null }>('createUser', {
                     email, password: staffForm.password, email_confirm: true,
                     user_metadata: { full_name: staffForm.display_name, contractor_id: contractorId },
                 });
 
                 authUserId = authData?.user?.id || null;
-
-                if (authErr) {
-                    throw authErr;
-                }
             } catch (e: any) {
                 console.error('[CDE] Auth user creation failed', e);
                 alert(`Không thể tạo tài khoản xác thực: ${e.message}`);
@@ -175,7 +171,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             }
 
             // Create contractor_account — store email used for auth
-            await supabase.from('contractor_accounts').insert({
+            await supabaseExt.from('contractor_accounts').insert({
                 contractor_id: contractorId, username: staffForm.username,
                 display_name: staffForm.display_name, email: email,
                 phone: staffForm.phone || null, auth_user_id: authUserId,
@@ -185,7 +181,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
 
             // Add CDE permission for this person
             const org = contractors.find(c => c.contractor_id === contractorId);
-            await supabase.from('cde_permissions').insert({
+            await supabaseExt.from('cde_permissions').insert({
                 project_id: projectId, user_id: `${contractorId}/${staffForm.username}`,
                 user_name: staffForm.display_name, user_role: staffForm.role,
                 container_access: ['WIP'], can_upload: true,
@@ -194,9 +190,9 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             });
 
             if (currentUser) {
-                await supabase.from('audit_logs').insert({
+                await (supabase as any).from('audit_logs').insert({
                     action: 'CREATE_CDE_STAFF_ACCOUNT',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'ContractorAccount',
                     target_id: staffForm.username,
                     details: { contractor_id: contractorId, project_id: projectId, role: staffForm.role }

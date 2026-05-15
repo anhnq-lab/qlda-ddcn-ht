@@ -75,8 +75,8 @@ const RegulationsViewer: React.FC = () => {
         if (!searchQuery) return currentChapters;
         const lowerQ = searchQuery.toLowerCase();
         
-        return currentChapters.map(chapter => {
-            const matchingArticles = chapter.articles.filter(a => {
+        return currentChapters.map((chapter: any) => {
+            const matchingArticles = chapter.articles.filter((a: any) => {
                 const matchCodeAndTitle = a.title.toLowerCase().includes(lowerQ) || a.code.toLowerCase().includes(lowerQ);
                 // Simple raw text matching using JSON.stringify for the react nodes, naive but effective for filtering
                 const rawString = typeof a.content === 'string' ? a.content : JSON.stringify(a.content);
@@ -89,11 +89,11 @@ const RegulationsViewer: React.FC = () => {
                 articles: matchingArticles,
                 isMatch: chapter.title.toLowerCase().includes(lowerQ) || chapter.code.toLowerCase().includes(lowerQ) || matchingArticles.length > 0
             };
-        }).filter(c => c.isMatch);
+        }).filter((c: any) => c.isMatch);
     }, [searchQuery, currentChapters]);
 
     // Active displayed chapter (could be filtered)
-    const displayChapter = filteredChapters.find(c => c.id === selectedChapterId) || filteredChapters[0];
+    const displayChapter = filteredChapters.find((c: any) => c.id === selectedChapterId) || filteredChapters[0];
 
     const toggleBookmark = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -233,7 +233,7 @@ const RegulationsViewer: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
-                    {filteredChapters.map(chapter => (
+                    {filteredChapters.map((chapter: any) => (
                         <button
                             key={chapter.id}
                             onClick={() => setSelectedChapterId(chapter.id)}
@@ -316,7 +316,7 @@ const RegulationsViewer: React.FC = () => {
                 {/* Content Scroll Area */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-transparent dark:bg-slate-950" id="scrollable-content">
                     <div className="max-w-4xl mx-auto space-y-6 pb-20">
-                        {displayChapter?.articles.map((article, idx) => (
+                        {displayChapter?.articles.map((article: any, idx: number) => (
                             <div key={idx} id={article.id} className="group relative transition-all duration-500 animate-in slide-in-from-bottom-2 scroll-mt-24">
                                 {/* Article Header Badge */}
                                 <div className="flex items-center gap-3 mb-3 ml-1">
@@ -400,7 +400,7 @@ const RegulationsViewer: React.FC = () => {
                                             </div>
 
                                             <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                                                {article.comments?.map(comment => (
+                                                {article.comments?.map((comment: any) => (
                                                     <div key={comment.id} className="flex gap-3 items-start">
                                                         <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs shrink-0 border border-blue-200 dark:border-blue-800">
                                                             {comment.user.charAt(0)}
@@ -480,16 +480,16 @@ const RegulationsViewer: React.FC = () => {
                         {savedArticles.map(id => {
                             let articleMatch: any = null;
                             for (const chap of currentChapters) {
-                                const match = chap.articles.find(a => a.id === id);
+                                const match = chap.articles.find((a: any) => a.id === id);
                                 if (match) { articleMatch = match; break; }
                             }
                             if (!articleMatch) return null;
                             return (
-                                <button 
+                                <button
                                     key={id}
                                     onClick={() => {
                                         // If article is not in current chapter, switch chapter then scroll
-                                        const parentChap = currentChapters.find(c => c.articles.some(a => a.id === id));
+                                        const parentChap = currentChapters.find((c: any) => c.articles.some((a: any) => a.id === id));
                                         if (parentChap && selectedChapterId !== parentChap.id) {
                                             setSelectedChapterId(parentChap.id);
                                             setTimeout(() => handleScrollToArticle(id), 100);
@@ -520,7 +520,7 @@ const RegulationsViewer: React.FC = () => {
 
                 <div className="flex-1 p-4 overflow-y-auto custom-scrollbar bg-transparent dark:bg-slate-900">
                     <div className="relative border-l-2 border-gray-200 dark:border-slate-700 ml-1.5 space-y-4">
-                        {displayChapter?.articles.map((article, idx) => (
+                        {displayChapter?.articles.map((article: any, idx: number) => (
                             <div key={idx} className="relative pl-4 group">
                                 <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600 group-hover:bg-blue-500 dark:group-hover:bg-blue-400 transition-colors z-10 ring-4 ring-slate-50 dark:ring-slate-900" />
                                 

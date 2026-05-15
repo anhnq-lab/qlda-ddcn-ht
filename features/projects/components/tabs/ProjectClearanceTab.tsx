@@ -34,7 +34,7 @@ interface ProjectClearanceTabProps {
 }
 
 export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projectId }) => {
-    const { user } = useAuth();
+    const { currentUser: user } = useAuth();
     
     // Robust permission check
     const userRole = (user?.Role || (user as any)?.role || '').toLowerCase();

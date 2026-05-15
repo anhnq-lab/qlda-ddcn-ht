@@ -1,5 +1,5 @@
 // Dashboard Service - Supabase queries (simplified for leadership focus)
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseExt } from '../lib/supabase';
 import { ProjectStatus, MANAGEMENT_BOARDS } from '../types';
 
 export interface DashboardOverviewMetrics {
@@ -57,7 +57,7 @@ export const DashboardService = {
             supabase.from('disbursements').select('project_id, amount, date')
                 .gte('date', `${year}-01-01`)
                 .lte('date', `${year}-12-31`),
-            supabase.from('tasks').select('*', { count: 'exact', head: true })
+            (supabase as any).from('tasks').select('*', { count: 'exact', head: true })
                 .neq('status', 'Done').lt('due_date', today),
             supabase.from('package_issues').select('*', { count: 'exact', head: true })
                 .eq('status', 'Open'),
@@ -120,18 +120,18 @@ export const DashboardService = {
                 managementBoard: p.management_board,
                 boardLabel: board?.label || `Ban ${p.management_board}`,
                 status: p.status,
-                statusLabel: statusLabels[p.status] || 'Không rõ',
-                currentStatusCode: p.current_status_code,
+                statusLabel: statusLabels[p.status as number] || 'Không rõ',
+                currentStatusCode: p.current_status_code ?? undefined,
                 progress: Number(p.progress) || 0,
                 totalInvestment: Number(p.total_investment) || 0,
                 paymentProgress: Number(p.payment_progress) || 0,
                 startDate: p.start_date,
                 expectedEndDate: p.expected_end_date,
                 locationCode: p.location_code,
-                coordinates: p.coordinates,
+                coordinates: p.coordinates as any,
                 investorName: p.investor_name,
                 mainContractorName: p.main_contractor_name,
-            };
+            } as DashboardProjectRow;
         });
     },
 
@@ -217,10 +217,10 @@ export const DashboardService = {
         const today = new Date().toISOString();
 
         const [overdueTasks, issues] = await Promise.all([
-            supabase.from('tasks')
+            (supabase as any).from('tasks')
                 .select('task_id, title, due_date, project_id')
                 .neq('status', 'Done').lt('due_date', today)
-                .order('due_date', { ascending: true }).limit(5),
+                .order('due_date', { ascending: true }).limit(5) as Promise<{ data: any[] | null }>,
             supabase.from('package_issues')
                 .select('issue_id, title, reported_date, severity')
                 .eq('status', 'Open')
@@ -325,7 +325,7 @@ export const DashboardService = {
     /** Material Mines */
     getMaterialMines: async (): Promise<any[]> => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('material_mines')
                 .select('*')
                 .order('name', { ascending: true });

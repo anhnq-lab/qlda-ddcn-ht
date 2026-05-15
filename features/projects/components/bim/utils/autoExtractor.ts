@@ -261,7 +261,7 @@ export async function extractFacilityAssetsFromIFC(
                                 condition: (cicFm['CIC_FM_Condition'] as any) || 'Good',
                                 notes: `IFC: ${typeName}`,
                                 bim_element_id: String(id)
-                            });
+                            } as FacilityAssetInsert);
                         } catch { /* skip invalid line */ }
                     }
                 } catch { /* type not in model */ }
@@ -314,7 +314,7 @@ export async function extractFacilityAssetsFromIFC(
                                 condition: (cicFm['CIC_FM_Condition'] as any) || 'Good',
                                 notes: `IFC: ${typeName} | ObjectType: ${objectType}`,
                                 bim_element_id: String(id)
-                            });
+                            } as FacilityAssetInsert);
                         } catch { /* skip */ }
                     }
                 } catch { /* type not in model */ }

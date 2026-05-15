@@ -640,7 +640,7 @@ export class CapitalService {
         return (plans || []).map((p: any) => {
             // Find related disbursements for this plan
             // For annual plans, match by year. For mid-term, match by period_start/period_end.
-            let relatedDisbs = [];
+            let relatedDisbs: any[] = [];
             const projectDisbs = (disbs || []).filter((d: any) => d.project_id === p.project_id);
             
             if (p.plan_type === 'annual' && p.year) {

@@ -76,8 +76,37 @@ export const PaymentUpdateSchema = PaymentCreateSchema.partial().extend({
     PaymentID: z.coerce.number().int(),
 });
 
+// ─── Contract Modal Form Schema ────────────────────────────
+/**
+ * Form schema for ContractModal — all fields are strings because they
+ * come from HTML inputs; numeric conversion happens on submit.
+ */
+export const ContractFormSchema = z.object({
+    projectId: z.string().min(1, 'Vui lòng chọn Dự án'),
+    packageId: z.string().min(1, 'Vui lòng chọn Gói thầu'),
+    contractorId: z.string().min(1, 'Vui lòng chọn Nhà thầu'),
+    contractId: z.string().min(1, 'Vui lòng nhập số hợp đồng'),
+    contractName: z.string().optional().default(''),
+    signDate: z.string().min(1, 'Vui lòng chọn ngày ký'),
+    value: z.string().refine(
+        (v) => v !== '' && Number(v) > 0,
+        { message: 'Giá trị phải > 0' }
+    ),
+    advanceRate: z.string().optional().default('15'),
+    warranty: z.string().optional().default('12'),
+    scope: z.string().optional().default(''),
+    durationMonths: z.string().optional().default(''),
+    startDate: z.string().optional().default(''),
+    endDate: z.string().optional().default(''),
+    paymentTerms: z.string().optional().default(''),
+});
+
 // ─── Types ────────────────────────────────────────────────
 export type ContractCreateInput = z.infer<typeof ContractCreateSchema>;
 export type ContractUpdateInput = z.infer<typeof ContractUpdateSchema>;
 export type PaymentCreateInput = z.infer<typeof PaymentCreateSchema>;
 export type PaymentUpdateInput = z.infer<typeof PaymentUpdateSchema>;
+/** Output type (after parse/transform) */
+export type ContractFormValues = z.infer<typeof ContractFormSchema>;
+/** Input type (what useForm<> needs — matches the resolver's TFieldValues) */
+export type ContractFormInput = z.input<typeof ContractFormSchema>;

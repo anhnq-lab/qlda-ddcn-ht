@@ -58,12 +58,12 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                         bookmarks.map(bm => {
                             return (
                                 <button key={bm.articleId}
-                                    onClick={() => { setSelectedDocId(bm.docId); setShowBookmarks(false); if (bm.chapterId) scrollToArticle(bm.articleId, bm.chapterId); }}
+                                    onClick={() => { setSelectedDocId(bm.docId); setShowBookmarks(false); if ((bm as any).chapterId) scrollToArticle(bm.articleId, (bm as any).chapterId); }}
                                     className="w-full text-left p-3 rounded-xl border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-900/10 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all">
-                                    <p className="text-[9px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-wider">{bm.docShortTitle || 'Văn bản đã lưu'}</p>
+                                    <p className="text-[9px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-wider">{(bm as any).docShortTitle || 'Văn bản đã lưu'}</p>
                                     <p className="text-xs font-bold text-gray-700 dark:text-slate-300 mt-0.5">
-                                        <span className="text-gray-400 font-mono text-[10px] mr-1">{bm.articleCode || ''}</span>
-                                        {bm.articleTitle || 'Điều khoản đã lưu'}
+                                        <span className="text-gray-400 font-mono text-[10px] mr-1">{(bm as any).articleCode || ''}</span>
+                                        {(bm as any).articleTitle || 'Điều khoản đã lưu'}
                                     </p>
                                 </button>
                             );

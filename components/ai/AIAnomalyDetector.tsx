@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { ScanSearch, RefreshCw, AlertTriangle, AlertCircle, Info, ChevronRight } from 'lucide-react';
-import { scanAllAnomalies, AnomalyReport, Anomaly } from '../../services/ai/anomalyDetector';
+import { useAIAnomaly, AnomalyReport, Anomaly } from '../../hooks/ai/useAIAnomaly';
 
 const levelConfig = {
     critical: { bg: 'bg-red-50 dark:bg-red-950', border: 'border-red-200 dark:border-red-800', icon: AlertTriangle, iconClass: 'text-red-600 dark:text-red-400', badge: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300', label: 'Nghiêm trọng' },
@@ -9,21 +9,8 @@ const levelConfig = {
 };
 
 export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className = '' }) => {
-    const [report, setReport] = useState<AnomalyReport | null>(null);
-    const [loading, setLoading] = useState(false);
+    const { report, loading, scan: loadScan } = useAIAnomaly();
     const [expanded, setExpanded] = useState<string | null>(null);
-
-    const loadScan = useCallback(async () => {
-        setLoading(true);
-        try {
-            const data = await scanAllAnomalies();
-            setReport(data);
-        } catch (e) {
-            console.error('Anomaly scan error:', e);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
 
     return (
         <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>

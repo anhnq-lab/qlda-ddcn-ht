@@ -102,10 +102,11 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                       const typeColor = getEventTypeColor(event.event_type);
                       
                       return (
-                        <Card key={event.id} className="border-l-4 shadow-sm hover:shadow-md transition-shadow overflow-hidden" style={{ borderLeftColor: typeColor === 'blue' ? 'var(--color-primary-500, #3b82f6)' : '#f97316' }}>
+                        <div key={event.id} style={{ borderLeftColor: typeColor === 'blue' ? 'var(--color-primary-500, #3b82f6)' : '#f97316' }}>
+                        <Card className="border-l-4 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
                           <div className="p-4 flex flex-col h-full">
                             <div className="flex justify-between items-start mb-3">
-                              <Badge color={typeColor as any} className="text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wider">
+                              <Badge variant={typeColor as any} className="text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wider">
                                 {getEventTypeName(event.event_type)}
                               </Badge>
                               <div className="flex items-center text-text-primary font-mono text-base bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-border shadow-sm">
@@ -164,6 +165,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                             )}
                           </div>
                         </Card>
+                        </div>
                       );
                     })}
                   </div>

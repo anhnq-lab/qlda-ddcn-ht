@@ -6,6 +6,8 @@
 
 import { supabase } from '../lib/supabase';
 import type { CDEFolder, CDEDocument, CDEWorkflowEntry, CDEStats, CDEStatusCode, CDETransmittal, CDEPermission, InternalWorkflowInstance, InternalWorkflowStepRecord, InternalDepartment } from '../features/cde/types';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cde: any = supabase;
 import { CDE_WORKFLOW_STEPS, getContainerFromStatus, formatFileSize } from '../features/cde/constants';
 
 // ═══════════════════════════════════════════════════════════════
@@ -18,7 +20,7 @@ export class CDEService {
      * Get all CDE folders for a project, with document counts.
      */
     static async getFolders(projectId: string): Promise<CDEFolder[]> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('cde_folders')
             .select('*')
             .eq('project_id', projectId)
@@ -27,19 +29,19 @@ export class CDEService {
         if (error) throw new Error(`Failed to fetch CDE folders: ${error.message}`);
 
         // Count docs per folder
-        const { data: counts } = await supabase
+        const { data: counts } = await cde
             .from('documents')
             .select('cde_folder_id')
             .eq('project_id', projectId)
             .not('cde_folder_id', 'is', null);
 
         const countMap: Record<string, number> = {};
-        (counts || []).forEach(row => {
+        (counts || []).forEach((row: any) => {
             const fid = row.cde_folder_id;
             if (fid) countMap[fid] = (countMap[fid] || 0) + 1;
         });
 
-        return (data || []).map(f => ({
+        return (data || []).map((f: any) => ({
             ...f,
             doc_count: countMap[f.id] || 0,
         })) as CDEFolder[];
@@ -49,7 +51,7 @@ export class CDEService {
      * Create a new folder.
      */
     static async createFolder(folder: Partial<CDEFolder>): Promise<CDEFolder> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('cde_folders')
             .insert(folder as any)
             .select()
@@ -64,7 +66,7 @@ export class CDEService {
      */
     static async seedPhaseFolders(projectId: string, phase: string, folderNames: string[]): Promise<void> {
         // Guard: check if folders for this phase already exist
-        const { data: existing } = await supabase
+        const { data: existing } = await cde
             .from('cde_folders')
             .select('id')
             .eq('project_id', projectId)
@@ -73,7 +75,7 @@ export class CDEService {
         if (existing && existing.length > 0) return; // Already seeded
 
         // Find existing root containers (phase=null) to attach subfolders to
-        const { data: roots } = await supabase
+        const { data: roots } = await cde
             .from('cde_folders')
             .select('id, container_type')
             .eq('project_id', projectId)
@@ -83,7 +85,7 @@ export class CDEService {
         if (!roots || roots.length === 0) return;
 
         const rootMap: Record<string, string> = {};
-        roots.forEach(r => { rootMap[r.container_type] = r.id; });
+        roots.forEach((r: any) => { rootMap[r.container_type] = r.id; });
 
         // Create WIP subfolders (main working folders from phase config)
         if (rootMap['WIP']) {
@@ -96,7 +98,7 @@ export class CDEService {
                 sort_order: i + 1,
                 phase,
             }));
-            await supabase.from('cde_folders').insert(wipSubs);
+            await cde.from('cde_folders').insert(wipSubs);
         }
 
         // Create generic subfolders for SHARED/PUBLISHED/ARCHIVED
@@ -117,7 +119,7 @@ export class CDEService {
                 sort_order: i + 1,
                 phase,
             }));
-            await supabase.from('cde_folders').insert(subs);
+            await cde.from('cde_folders').insert(subs);
         }
     }
 
@@ -129,21 +131,21 @@ export class CDEService {
      * Get documents by folder.
      */
     static async getDocuments(folderId: string): Promise<CDEDocument[]> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('documents')
             .select('*')
             .eq('cde_folder_id', folderId)
             .order('upload_date', { ascending: false });
 
         if (error) throw new Error(`Failed to fetch documents: ${error.message}`);
-        return (data || []) as CDEDocument[];
+        return (data || []) as unknown as CDEDocument[];
     }
 
     /**
      * Get ALL CDE documents for a project (used for Analytics Dashboard).
      */
     static async getProjectDocuments(projectId: string): Promise<CDEDocument[]> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('documents')
             .select('*')
             .eq('project_id', projectId)
@@ -151,7 +153,7 @@ export class CDEService {
             .order('upload_date', { ascending: false });
 
         if (error) throw new Error(`Failed to fetch project documents: ${error.message}`);
-        return (data || []) as CDEDocument[];
+        return (data || []) as unknown as CDEDocument[];
     }
 
 
@@ -185,7 +187,7 @@ export class CDEService {
         if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
         // Insert document record
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('documents')
             .insert({
                 project_id: projectId,
@@ -212,7 +214,7 @@ export class CDEService {
             .single();
 
         if (error) throw new Error(`Failed to save document: ${error.message}`);
-        const doc = data as CDEDocument;
+        const doc = data as unknown as CDEDocument;
 
         // Auto audit log
         await CDEService.logAudit({
@@ -232,7 +234,7 @@ export class CDEService {
      * Move document to a different folder.
      */
     static async moveDocument(docId: number, newFolderId: string, actorId?: string, actorName?: string, projectId?: string): Promise<void> {
-        const { error } = await supabase
+        const { error } = await cde
             .from('documents')
             .update({ cde_folder_id: newFolderId })
             .eq('doc_id', docId);
@@ -307,7 +309,7 @@ export class CDEService {
         }
 
         // Build revision list from actual documents
-        const revisions = docs.map(doc => ({
+        const revisions = docs.map((doc: any) => ({
             doc_id: doc.doc_id,
             version: doc.version || 'P01.01',
             revision: doc.revision || 'P01',
@@ -330,7 +332,7 @@ export class CDEService {
      * Get workflow history for a document.
      */
     static async getWorkflowHistory(docId: number): Promise<CDEWorkflowEntry[]> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('cde_workflow_history')
             .select('*')
             .eq('doc_id', docId)
@@ -357,7 +359,7 @@ export class CDEService {
         const { docId, stepName, stepCode, actorId, actorName, actorRole, status, comment } = params;
 
         // Insert workflow history
-        const { error: wfError } = await supabase
+        const { error: wfError } = await cde
             .from('cde_workflow_history')
             .insert({
                 doc_id: docId,
@@ -388,7 +390,7 @@ export class CDEService {
                 const newIsoStatus = newContainer;
 
                 // If container changes, find a matching folder
-                const { data: currentDoc } = await supabase
+                const { data: currentDoc } = await cde
                     .from('documents')
                     .select('project_id, cde_folder_id')
                     .eq('doc_id', docId)
@@ -398,7 +400,7 @@ export class CDEService {
 
                 if (currentDoc && step.containerFrom !== step.containerTo) {
                     // Find first subfolder in target container
-                    const { data: targetFolders } = await supabase
+                    const { data: targetFolders } = await cde
                         .from('cde_folders')
                         .select('id')
                         .eq('project_id', currentDoc.project_id)
@@ -574,7 +576,7 @@ export class CDEService {
         details?: Record<string, any>;
     }): Promise<void> {
         try {
-            await supabase.from('cde_audit_log').insert({
+            await cde.from('cde_audit_log').insert({
                 project_id: params.projectId,
                 entity_type: params.entityType,
                 entity_id: params.entityId,
@@ -597,7 +599,7 @@ export class CDEService {
      * Get all transmittals for a project.
      */
     static async getTransmittals(projectId: string): Promise<CDETransmittal[]> {
-        const { data, error } = await supabase
+        const { data, error } = await cde
             .from('cde_transmittals')
             .select('*')
             .eq('project_id', projectId)
@@ -616,7 +618,7 @@ export class CDEService {
      * Returns null if no permission found (treat as viewer).
      */
     static async getUserPermission(projectId: string, userId: string): Promise<CDEPermission | null> {
-        const { data } = await supabase
+        const { data } = await cde
             .from('cde_permissions')
             .select('*')
             .eq('project_id', projectId)

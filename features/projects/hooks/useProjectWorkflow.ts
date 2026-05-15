@@ -95,7 +95,7 @@ export const useProjectWorkflow = (projectID: string) => {
                 due_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
             }));
 
-            const { error } = await supabase.from('tasks').insert(tasksToInsert);
+            const { error } = await supabase.from('tasks').insert(tasksToInsert as any);
             if (error) throw error;
             
             addToast({ title: 'Thành công', message: `Tạo quy trình ${template.name} thành công`, type: 'success' });
@@ -142,13 +142,13 @@ export const useProjectWorkflow = (projectID: string) => {
             
             if (uploadedFiles.length > 0) {
                 // Chúng ta sẽ lưu file vào mảng attachments hoặc metadata.attachments
-                updatePayload.metadata = { 
-                    ...(nodes.find(n => n.id === taskID)?.metadata || {}),
+                (updatePayload as any).metadata = {
+                    ...((nodes.find(n => n.id === taskID) as any)?.metadata || {}),
                     attached_files: uploadedFiles
                 };
             }
 
-            const { error } = await supabase
+            const { error } = await (supabase as any)
                 .from('tasks')
                 .update(updatePayload)
                 .eq('task_id', taskID);
@@ -161,7 +161,7 @@ export const useProjectWorkflow = (projectID: string) => {
                 if (currentNodeInfo) {
                     const nextNode = nodes.find(n => n.sort_order === currentNodeInfo.sort_order + 1 && n.workflow_template === currentNodeInfo.workflow_template);
                     if (nextNode && nextNode.status === 'pending') {
-                        await supabase
+                        await (supabase as any)
                             .from('tasks')
                             .update({ status: 'in_progress' })
                             .eq('task_id', nextNode.id);

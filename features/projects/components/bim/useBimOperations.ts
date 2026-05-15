@@ -41,10 +41,10 @@ export function useBimOperations(
 
             // Setup highlight configs if needed
             try {
-                highlighter.add('hm-Active', new THREE.Color(0x10b981));
-                highlighter.add('hm-Maintenance', new THREE.Color(0xf59e0b));
-                highlighter.add('hm-Broken', new THREE.Color(0xef4444));
-                highlighter.add('hm-Retired', new THREE.Color(0x64748b));
+                (highlighter as any).add('hm-Active', new THREE.Color(0x10b981));
+                (highlighter as any).add('hm-Maintenance', new THREE.Color(0xf59e0b));
+                (highlighter as any).add('hm-Broken', new THREE.Color(0xef4444));
+                (highlighter as any).add('hm-Retired', new THREE.Color(0x64748b));
             } catch (e) {
                 // Ignore if already added
             }
@@ -58,7 +58,7 @@ export function useBimOperations(
                 if (!asset.bim_element_id || !asset.status) continue;
                 const expressId = parseInt(asset.bim_element_id, 10);
                 if (isNaN(expressId)) continue;
-                for (const [, model] of fragments.groups) {
+                for (const [, model] of (fragments as any).groups || fragments.list) {
                     const fragmentMap = model.getFragmentMap([expressId]);
                     if (Object.keys(fragmentMap).length > 0) {
                         const s = asset.status;
@@ -112,7 +112,7 @@ export function useBimOperations(
         // For now, toggle visibility state only (full type-based isolation requires IFC data parsing)
         // This provides visual feedback to the user
         for (const [, model] of fragments.list) {
-            try { model.setVisibility(true); } catch { /* skip */ }
+            try { (model as any).setVisible ? (model as any).setVisible(true) : (model as any).setVisibility(true); } catch { /* skip */ }
         }
     }, [activeSystem, componentsRef, worldRef]);
 

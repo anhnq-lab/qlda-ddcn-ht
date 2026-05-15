@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, Reply, CornerDownRight, User } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseExt } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 
 interface Comment {
@@ -30,7 +30,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
     // Fetch comments
     useEffect(() => {
         (async () => {
-            const { data } = await supabase
+            const { data } = await supabaseExt
                 .from('cde_comments')
                 .select('*')
                 .eq('doc_id', docId)
@@ -42,7 +42,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
     const handleSubmit = async () => {
         if (!newComment.trim() || !currentUser) return;
         setIsLoading(true);
-        const { data, error } = await supabase.from('cde_comments').insert({
+        const { data, error } = await supabaseExt.from('cde_comments').insert({
             doc_id: docId,
             author_id: currentUser.EmployeeID,
             author_name: currentUser.FullName,

@@ -12,9 +12,10 @@ interface BIMAgentChatProps {
     onClose?: () => void;
     isDark?: boolean;
     embedded?: boolean;
+    selectedElement?: any;
 }
 
-export const BIMAgentChat: React.FC<BIMAgentChatProps> = ({ onClose, isDark = false, embedded = false }) => {
+export const BIMAgentChat: React.FC<BIMAgentChatProps> = ({ onClose, isDark = false, embedded = false, selectedElement }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -39,13 +40,24 @@ export const BIMAgentChat: React.FC<BIMAgentChatProps> = ({ onClose, isDark = fa
 
     const sendQuery = async () => {
         if (!input.trim() || loading) return;
+
+        let contextualInput = input;
+        if (selectedElement) {
+            // Include context about the currently selected element
+            contextualInput = `[Context: The user has selected a 3D element in the viewer. 
+Element Name: ${selectedElement.name}
+IFC Type: ${selectedElement.type}
+ExpressID: ${selectedElement.id}
+Properties: ${JSON.stringify(selectedElement.propertySets)}]\n\nQuestion: ${input}`;
+        }
+
         const userMsg: Message = { role: 'user', content: input };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
 
         try {
-            const data = await bimAgentService.query(userMsg.content);
+            const data = await bimAgentService.query(contextualInput);
             setMessages(prev => [...prev, {
                 role: 'assistant',
                 content: data.success ? (data.results?.length > 0 ? '' : 'Đã thực hiện xong yêu cầu.') : (data.error || 'Đã xảy ra lỗi khi xử lý yêu cầu.'),

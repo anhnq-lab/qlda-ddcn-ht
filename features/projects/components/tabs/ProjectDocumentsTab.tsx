@@ -21,8 +21,9 @@ import { formatCurrency } from '@/utils/format';
 import { useProjectDocuments } from '../../hooks/useProjectDocuments';
 import { VersionHistoryModal } from '../documents/VersionHistoryModal';
 import { DocMetadataPanel } from '../documents/DocMetadataPanel';
+import { UploadDocumentSlidePanel } from '../documents/UploadDocumentSlidePanel';
 import { StatCard } from '../../../../components/ui';
-// CdeExplorer removed — CDE now has dedicated /cde page
+import { useSlidePanel } from '../../../../context/SlidePanelContext';
 
 interface ProjectDocumentsTabProps {
     projectID: string;
@@ -99,7 +100,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     const [historyDoc, setHistoryDoc] = useState<Document | null>(null);
 
     // Upload
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { openPanel, closePanel } = useSlidePanel();
     const [pendingDocType, setPendingDocType] = useState<string>('');
 
     // Doc metadata editing
@@ -111,16 +112,16 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     // Data from custom hook
     const {
         folders, documents, dbDocs, setDbDocs,
-        uploadedDocs, setUploadedDocs,
+        uploadedDocs, setUploadedDocs, projectDocuments,
         isLoading, stats, matchDocToCategory, folderDocCount,
     } = useProjectDocuments(projectID, projectStage);
 
     // Search filter
     const filteredDocuments = useMemo(() => {
-        if (!searchQuery.trim()) return documents;
+        if (!searchQuery.trim()) return projectDocuments;
         const q = searchQuery.toLowerCase();
-        return documents.filter((d: any) => (d.DocName || d.doc_name || '').toLowerCase().includes(q));
-    }, [documents, searchQuery]);
+        return projectDocuments.filter((d: any) => (d.DocName || d.doc_name || '').toLowerCase().includes(q));
+    }, [projectDocuments, searchQuery]);
 
     // Toggle category expansion
     const toggleCategory = (stage: string) => {
@@ -129,108 +130,25 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         );
     };
 
-    /** Extract document metadata using Gemini AI via Edge Function */
-    const extractDocMetadata = async (file: File): Promise<Record<string, string>> => {
-        try {
-            const buffer = await file.arrayBuffer();
-            const base64 = btoa(
-                new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-            );
-
-            const prompt = `Bạn là chuyên gia pháp lý xây dựng Việt Nam. Đọc văn bản đính kèm và trích xuất thông tin.
-
-Trả về JSON object với đúng các key:
-{
-  "document_number": "Số hiệu văn bản (VD: 123/QĐ-TTg)",
-  "issue_date": "Ngày ban hành dạng YYYY-MM-DD",
-  "issuing_authority": "Đơn vị / cơ quan ban hành",
-  "notes": "Tóm tắt ngắn gọn nội dung chính (1-2 câu)"
-}
-
-Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KHÔNG markdown.`;
-
-            const text = await generateFromImage(base64, file.type || 'application/pdf', prompt);
-            const jsonStr = text.trim().replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
-            return JSON.parse(jsonStr);
-        } catch (err) {
-            console.error('Gemini extract error:', err);
-            return {};
-        }
-    };
-
-    // Upload handler
+    // Upload handler using SlidePanel
     const handleUpload = (docTypeName?: string, docKey?: string) => {
-        if (docTypeName) setPendingDocType(docTypeName);
-        if (docKey) setExtractingDoc(docKey);
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-        for (const file of Array.from(files) as File[]) {
-            try {
-                const ext = file.name.split('.').pop();
-                const path = `${projectID}/docs/${Date.now()}.${ext}`;
-                const { error: uploadError } = await (supabase as any).storage
-                    .from('documents').upload(path, file, { cacheControl: '3600', upsert: false });
-                if (uploadError) throw uploadError;
-
-                const { data: urlData } = (supabase as any).storage.from('documents').getPublicUrl(path);
-                const finalDocName = pendingDocType ? `${pendingDocType} - ${file.name}` : file.name;
-
-                const { data: insertedDoc } = await (supabase.from('documents') as any).insert({
-                    project_id: projectID,
-                    doc_name: finalDocName,
-                    storage_path: urlData.publicUrl,
-                    size: `${(file.size / 1024).toFixed(0)} KB`,
-                    category: 0,
-                    source: 'manual',
-                    is_digitized: true,
-                    doc_type: pendingDocType || null,
-                }).select('doc_id').single();
-
-                const docId = insertedDoc?.doc_id || Math.floor(Math.random() * 100000);
-
-                const newDoc: any = {
-                    DocID: docId, ReferenceID: projectID, ProjectID: projectID,
-                    Category: DocCategory.Legal,
-                    DocName: finalDocName,
-                    StoragePath: urlData.publicUrl, IsDigitized: true,
-                    UploadDate: new Date().toLocaleDateString('vi-VN'),
-                    Version: 'P01.01', Size: `${(file.size / 1024).toFixed(0)} KB`,
-                    ISOStatus: ISO19650Status.S0, source: 'manual',
-                };
-                setDbDocs(prev => [newDoc, ...prev]);
-
-                // AI extraction
-                const currentDocKey = extractingDoc;
-                if (currentDocKey) {
-                    try {
-                        const extracted = await extractDocMetadata(file);
-                        if (extracted && Object.keys(extracted).length > 0) {
-                            const metaUpdate: any = {};
-                            if (extracted.document_number) metaUpdate.document_number = extracted.document_number;
-                            if (extracted.issue_date) metaUpdate.issue_date = extracted.issue_date;
-                            if (extracted.issuing_authority) metaUpdate.issuing_authority = extracted.issuing_authority;
-                            if (extracted.notes) metaUpdate.notes = extracted.notes;
-                            if (Object.keys(metaUpdate).length > 0) {
-                                await (supabase.from('documents') as any).update(metaUpdate).eq('doc_id', docId);
-                            }
-                            setDbDocs(prev => prev.map(d => d.DocID === docId ? { ...d, ...metaUpdate } : d));
-                            setEditingMeta(prev => ({ ...prev, [currentDocKey]: { ...extracted } }));
-                            setExpandedDocIdx(currentDocKey);
-                        }
-                    } catch { /* user can fill manually */ }
-                    setExtractingDoc(null);
-                }
-            } catch (err) {
-                console.error('Upload failed:', err);
-            }
-        }
-        e.target.value = '';
-        setPendingDocType('');
-        setExtractingDoc(null);
+        openPanel({
+            id: 'upload-doc',
+            title: 'Tải hồ sơ dự án',
+            icon: <Upload size={14} />,
+            width: 500,
+            component: (
+                <UploadDocumentSlidePanel 
+                    projectId={projectID}
+                    initialDocType={docTypeName}
+                    docKey={docKey}
+                    onUploadSuccess={(newDoc) => {
+                        setDbDocs(prev => [newDoc, ...prev]);
+                        closePanel('upload-doc');
+                    }}
+                />
+            )
+        });
     };
 
     // Save document metadata
@@ -243,6 +161,13 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
             if (meta.updated_by !== undefined) updateData.updated_by = meta.updated_by;
             if (meta.notes !== undefined) updateData.notes = meta.notes;
             if (meta.legal_status !== undefined) updateData.legal_status = meta.legal_status;
+            if (meta.issuing_authority !== undefined) updateData.issuing_authority = meta.issuing_authority;
+            if (meta.document_symbol !== undefined) updateData.document_symbol = meta.document_symbol;
+            if (meta.summary !== undefined) updateData.summary = meta.summary;
+            if (meta.signer !== undefined) updateData.signer = meta.signer;
+            if (meta.drafter !== undefined) updateData.drafter = meta.drafter;
+            if (meta.drafting_department !== undefined) updateData.drafting_department = meta.drafting_department;
+            if (meta.doc_type !== undefined) updateData.doc_type = meta.doc_type;
 
             await (supabase.from('documents') as any).update(updateData).eq('doc_id', docId);
             setDbDocs(prev => prev.map(d => d.DocID === docId ? { ...d, ...meta } : d));
@@ -255,16 +180,34 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
         }
     };
 
-    // Compute legal doc stats from LEGAL_DOC_CATEGORIES
+    // Delete document
+    const handleDeleteDocument = async (docId: number) => {
+        if (!confirm('Bạn có chắc chắn muốn xóa văn bản này? Dữ liệu sẽ không thể khôi phục.')) return;
+        try {
+            const { error } = await supabase.from('documents').delete().eq('doc_id', docId);
+            if (error) throw error;
+            
+            setDbDocs(prev => prev.filter(d => d.DocID !== docId));
+            setExpandedDocIdx(null);
+            setEditingMeta(prev => {
+                const newMeta = { ...prev };
+                delete newMeta[docId.toString()];
+                return newMeta;
+            });
+        } catch (err) {
+            console.error('Delete document failed:', err);
+            alert('Có lỗi xảy ra khi xóa văn bản!');
+        }
+    };
+
+    // Compute legal doc stats
     const legalStats = useMemo(() => {
-        const totalTypes = LEGAL_DOC_CATEGORIES.reduce((sum, cat) => sum + cat.docs.length, 0);
-        const matched = LEGAL_DOC_CATEGORIES.reduce(
-            (sum, cat) => sum + cat.docs.filter(d => matchDocToCategory(d.keywords)).length, 0
-        );
-        const missing = totalTypes - matched;
-        const pct = totalTypes > 0 ? Math.round((matched / totalTypes) * 100) : 0;
+        const matched = projectDocuments.length;
+        const missing = 0; // Removing missing stats since we only show uploaded docs
+        const totalTypes = matched;
+        const pct = 100;
         return { totalTypes, matched, missing, pct };
-    }, [matchDocToCategory]);
+    }, [projectDocuments]);
 
     const statCards = [
         { label: 'Tổng loại VB', value: legalStats.totalTypes, icon: FileText, color: 'blue' as const },
@@ -275,12 +218,6 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500">
-            {/* Hidden file input */}
-            <input
-                type="file" ref={fileInputRef} className="hidden" multiple
-                onChange={handleFileChange}
-                accept=".pdf,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg"
-            />
 
             {/* Header with View Toggle */}
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
@@ -315,18 +252,6 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
             {/* ═══ TABLE-BASED LEGAL DOCUMENTS VIEW ═══ */}
             <div className="space-y-4">
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-4 gap-4 mb-6">
-                        {statCards.map((stat, idx) => (
-                            <StatCard
-                                key={idx}
-                                label={stat.label}
-                                value={stat.value.toString()}
-                                icon={<stat.icon className="w-5 h-5 flex-shrink-0" />}
-                                color={stat.color}
-                            />
-                        ))}
-                    </div>
 
                     {/* Table */}
                     <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
@@ -334,226 +259,153 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                             <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                 <tr>
                                     <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-10">STT</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400">Tài liệu</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-36">Số công văn</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-1/3">Tài liệu</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-32">Số công văn</th>
                                     <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-28">Ngày ban hành</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-40">CQ ban hành</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-24 text-center">Trạng thái</th>
+                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400">Cơ quan ban hành</th>
                                     <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-20 text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {LEGAL_DOC_CATEGORIES.map((category) => {
-                                    const isExpanded = expandedCategories.includes(category.stage);
-                                    const isCurrent = category.stage === projectStage;
-                                    const colors = getStageColor(category.color);
-                                    const CategoryIcon = category.icon;
-                                    const matchedCount = category.docs.filter(d => matchDocToCategory(d.keywords)).length;
-                                    const totalCount = category.docs.length;
+                                {filteredDocuments.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-slate-400">
+                                            <div className="flex flex-col items-center justify-center">
+                                                <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center mb-4">
+                                                    <FileText className="w-8 h-8 text-gray-300 dark:text-slate-500" />
+                                                </div>
+                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-1">Chưa có tài liệu nào</p>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400">Bảng dữ liệu đang trống, vui lòng tải tài liệu lên để hệ thống ghi nhận.</p>
+                                                <button
+                                                    onClick={() => handleUpload()}
+                                                    className="mt-4 flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 text-sm font-bold rounded-lg transition-colors"
+                                                >
+                                                    <Upload className="w-4 h-4" /> Tải tài liệu đầu tiên
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredDocuments.map((doc: any, idx: number) => {
+                                        const docKey = doc.DocID.toString();
+                                        const isDocExpanded = expandedDocIdx === docKey;
+                                        const fileInfo = getFileIcon(doc.DocName);
+                                        const currentMeta = editingMeta[docKey] || {
+                                            document_number: doc.document_number || '',
+                                            issue_date: doc.issue_date || '',
+                                            issuing_authority: doc.issuing_authority || '',
+                                            updated_by: doc.updated_by || '',
+                                            notes: doc.notes || '',
+                                            legal_status: doc.legal_status || 'active',
+                                            document_symbol: doc.document_symbol || '',
+                                            summary: doc.summary || '',
+                                            signer: doc.signer || '',
+                                            drafter: doc.drafter || '',
+                                            drafting_department: doc.drafting_department || '',
+                                            doc_type: doc.doc_type || '',
+                                        };
 
-                                    return (
-                                        <React.Fragment key={category.stage}>
-                                            {/* Stage group header row */}
-                                            <tr
-                                                className={`cursor-pointer transition-colors ${isCurrent ? 'bg-blue-50/80 dark:bg-blue-900/20' : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 hover:bg-gray-100/50 dark:hover:bg-slate-700'}`}
-                                                onClick={() => toggleCategory(category.stage)}
-                                            >
-                                                <td colSpan={7} className="px-3 py-3">
-                                                    <div className="flex items-center justify-between">
+                                        const formatAuthority = (text: string) => {
+                                            if (!text) return '—';
+                                            const acronyms = ['UBND', 'HĐND', 'QLDA', 'BQLDA', 'SXD', 'STC', 'SKHĐT', 'CP', 'TTG', 'BXD', 'SXD'];
+                                            if (text === text.toUpperCase()) {
+                                                return text.split(' ').map((word, index) => {
+                                                    if (acronyms.includes(word)) return word;
+                                                    if (index === 0) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                                                    return word.toLowerCase();
+                                                }).join(' ');
+                                            }
+                                            return text;
+                                        };
+
+                                        return (
+                                            <React.Fragment key={docKey}>
+                                                <tr
+                                                    className={`border-b border-gray-100 dark:border-slate-700/50 cursor-pointer transition-colors ${isDocExpanded ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
+                                                    onClick={() => {
+                                                        setExpandedDocIdx(isDocExpanded ? null : docKey);
+                                                        if (!isDocExpanded) {
+                                                            setEditingMeta(prev => ({
+                                                                ...prev,
+                                                                [docKey]: {
+                                                                    document_number: doc.document_number || '',
+                                                                    issue_date: doc.issue_date || '',
+                                                                    issuing_authority: doc.issuing_authority || '',
+                                                                    updated_by: doc.updated_by || '',
+                                                                    notes: doc.notes || '',
+                                                                    legal_status: doc.legal_status || 'active',
+                                                                    document_symbol: doc.document_symbol || '',
+                                                                    summary: doc.summary || '',
+                                                                    signer: doc.signer || '',
+                                                                    drafter: doc.drafter || '',
+                                                                    drafting_department: doc.drafting_department || '',
+                                                                    doc_type: doc.doc_type || '',
+                                                                }
+                                                            }));
+                                                        }
+                                                    }}
+                                                >
+                                                    {/* STT */}
+                                                    <td className="px-3 py-2.5 text-xs text-gray-400 dark:text-slate-400 text-center font-medium">
+                                                        {idx + 1}
+                                                    </td>
+                                                    {/* Tài liệu */}
+                                                    <td className="px-3 py-2.5">
                                                         <div className="flex items-center gap-2">
-                                                            {isExpanded ? <ChevronDown className={`w-4 h-4 ${colors.text}`} /> : <ChevronRight className={`w-4 h-4 ${colors.text}`} />}
-                                                            <CategoryIcon className={`w-4 h-4 ${colors.text}`} />
-                                                            <span className={`text-sm font-bold ${colors.text}`}>{category.label}</span>
-                                                            {isCurrent && <span className="px-2 py-0.5 bg-primary-600 text-white text-[10px] font-bold rounded-full uppercase">Hiện tại</span>}
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`text-xs font-bold ${matchedCount === totalCount ? 'text-emerald-600' : 'text-gray-500 dark:text-slate-400'}`}>
-                                                                {matchedCount}/{totalCount}
-                                                            </span>
-                                                            <div className="w-20 h-1.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                                                <div className={`h-full rounded-full transition-all ${matchedCount === totalCount ? 'bg-emerald-500' : matchedCount > 0 ? `bg-${category.color}-500` : 'bg-gray-300'}`} style={{ width: `${totalCount > 0 ? (matchedCount / totalCount) * 100 : 0}%` }} />
+                                                            <div className={`w-7 h-7 rounded-lg ${fileInfo.bg} flex items-center justify-center shrink-0`}>
+                                                                <fileInfo.icon className={`w-3.5 h-3.5 ${fileInfo.color}`} />
                                                             </div>
+                                                            <span className="text-sm text-gray-800 dark:text-slate-100 font-medium line-clamp-2" title={doc.DocName}>
+                                                                {doc.DocName}
+                                                            </span>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    {/* Số công văn */}
+                                                    <td className="px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-slate-300">
+                                                        {doc.document_number || '—'}
+                                                    </td>
+                                                    {/* Ngày ban hành */}
+                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">
+                                                        {doc.issue_date || doc.UploadDate || '—'}
+                                                    </td>
+                                                    {/* CQ ban hành */}
+                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400 pr-4">
+                                                        <span className="normal-case line-clamp-2" title={doc.issuing_authority}>{formatAuthority(doc.issuing_authority)}</span>
+                                                    </td>
+                                                    {/* Thao tác */}
+                                                    <td className="px-3 py-2.5 text-center">
+                                                        <div className="flex items-center justify-center gap-1">
+                                                            {(doc as any).source && (
+                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${(doc as any).source === 'task' ? 'bg-violet-100 text-violet-600' : (doc as any).source === 'tt24' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                                    {(doc as any).source === 'task' ? 'CV' : (doc as any).source === 'tt24' ? 'TT24' : 'UP'}
+                                                                </span>
+                                                            )}
+                                                            {isDocExpanded ? <ChevronDown className="w-4 h-4 text-blue-500" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
-                                            {/* Document rows for this stage */}
-                                            {isExpanded && (
-                                                <>
-                                                    {/* Investment Policy special row */}
-                                                    {category.stage === ProjectStage.Preparation && investmentPolicy && (
-                                                        <tr className="bg-blue-50/40 dark:bg-blue-900/10 border-b border-blue-100 dark:border-blue-900/30">
-                                                            <td className="px-3 py-2.5 text-xs text-gray-400 text-center">—</td>
-                                                            <td className="px-3 py-2.5">
-                                                                <div className="flex items-center gap-2">
-                                                                    <FileCheck className="w-4 h-4 text-blue-600 shrink-0" />
-                                                                    <span className="text-sm font-bold text-gray-800 dark:text-slate-100">QĐ Chủ trương đầu tư</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-slate-300">{investmentPolicy.DecisionNumber}</td>
-                                                            <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">{investmentPolicy.DecisionDate}</td>
-                                                            <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">{investmentPolicy.Authority}</td>
-                                                            <td className="px-3 py-2.5 text-center">
-                                                                <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-bold rounded-full">Đã có</span>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 text-center text-xs text-gray-400">
-                                                                <span className="text-[10px] text-blue-600 font-bold">{formatCurrency(investmentPolicy.PreliminaryInvestment)}</span>
-                                                            </td>
-                                                        </tr>
-                                                    )}
-
-                                                    {/* Feasibility Study special row */}
-                                                    {category.stage === ProjectStage.Preparation && feasibilityStudy && (
-                                                        <tr className="bg-emerald-50/40 dark:bg-emerald-900/10 border-b border-emerald-100 dark:border-emerald-900/30">
-                                                            <td className="px-3 py-2.5 text-xs text-gray-400 text-center">—</td>
-                                                            <td className="px-3 py-2.5">
-                                                                <div className="flex items-center gap-2">
-                                                                    <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                                                                    <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Báo cáo NCKT (F/S)</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-slate-300">{feasibilityStudy.ApprovalNumber}</td>
-                                                            <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">{feasibilityStudy.ApprovalDate}</td>
-                                                            <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">{feasibilityStudy.ApprovalAuthority}</td>
-                                                            <td className="px-3 py-2.5 text-center">
-                                                                <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full">Đã có</span>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 text-center text-xs text-gray-400">
-                                                                <span className="text-[10px] text-emerald-600 font-bold">{formatCurrency(feasibilityStudy.TotalInvestment)}</span>
-                                                            </td>
-                                                        </tr>
-                                                    )}
-
-                                                    {/* Regular document type rows */}
-                                                    {category.docs.map((docType, idx) => {
-                                                        const matchedDoc = matchDocToCategory(docType.keywords);
-                                                        const hasDoc = !!matchedDoc;
-                                                        const fileInfo = hasDoc ? getFileIcon(matchedDoc!.DocName) : null;
-                                                        const docKey = `${category.stage}-${idx}`;
-                                                        const isDocExpanded = expandedDocIdx === docKey;
-                                                        const currentMeta = editingMeta[docKey] || {};
-                                                        const md = matchedDoc as any;
-
-                                                        return (
-                                                            <React.Fragment key={idx}>
-                                                                <tr
-                                                                    className={`border-b border-gray-100 dark:border-slate-700/50 cursor-pointer transition-colors ${isDocExpanded ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
-                                                                    onClick={() => {
-                                                                        if (hasDoc) {
-                                                                            setExpandedDocIdx(isDocExpanded ? null : docKey);
-                                                                            if (!isDocExpanded) {
-                                                                                setEditingMeta(prev => ({
-                                                                                    ...prev,
-                                                                                    [docKey]: {
-                                                                                        document_number: md?.document_number || '',
-                                                                                        issue_date: md?.issue_date || '',
-                                                                                        issuing_authority: md?.issuing_authority || '',
-                                                                                        updated_by: md?.updated_by || '',
-                                                                                        notes: md?.notes || '',
-                                                                                        legal_status: md?.legal_status || 'active',
-                                                                                    }
-                                                                                }));
-                                                                            }
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    {/* STT */}
-                                                                    <td className="px-3 py-2.5 text-xs text-gray-400 dark:text-slate-400 text-center font-medium">
-                                                                        {idx + 1}
-                                                                    </td>
-                                                                    {/* Tài liệu */}
-                                                                    <td className="px-3 py-2.5">
-                                                                        <div className="flex items-center gap-2">
-                                                                            {hasDoc && fileInfo ? (
-                                                                                <div className={`w-7 h-7 rounded-lg ${fileInfo.bg} flex items-center justify-center shrink-0`}>
-                                                                                    <fileInfo.icon className={`w-3.5 h-3.5 ${fileInfo.color}`} />
-                                                                                </div>
-                                                                            ) : (
-                                                                                <div className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-dashed border-gray-200 dark:border-slate-600 flex items-center justify-center shrink-0">
-                                                                                    <FileText className="w-3.5 h-3.5 text-gray-300 dark:text-slate-400" />
-                                                                                </div>
-                                                                            )}
-                                                                            <span className={`text-sm ${hasDoc ? 'text-gray-800 dark:text-slate-100 font-medium' : 'text-gray-400 dark:text-slate-400'}`}>
-                                                                                {docType.name}
-                                                                            </span>
-                                                                        </div>
-                                                                    </td>
-                                                                    {/* Số công văn */}
-                                                                    <td className="px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-slate-300">
-                                                                        {md?.document_number || '—'}
-                                                                    </td>
-                                                                    {/* Ngày ban hành */}
-                                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">
-                                                                        {md?.issue_date || matchedDoc?.UploadDate || '—'}
-                                                                    </td>
-                                                                    {/* CQ ban hành */}
-                                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400 truncate max-w-[160px]">
-                                                                        {md?.issuing_authority || '—'}
-                                                                    </td>
-                                                                    {/* Trạng thái */}
-                                                                    <td className="px-3 py-2.5 text-center">
-                                                                        {hasDoc ? (
-                                                                            <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full inline-flex items-center gap-1">
-                                                                                <CheckCircle2 className="w-3 h-3" /> Đã có
-                                                                            </span>
-                                                                        ) : (
-                                                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-400 text-[10px] font-medium rounded-full">
-                                                                                Chưa có
-                                                                            </span>
-                                                                        )}
-                                                                    </td>
-                                                                    {/* Thao tác */}
-                                                                    <td className="px-3 py-2.5 text-center">
-                                                                        {hasDoc ? (
-                                                                            <div className="flex items-center justify-center gap-1">
-                                                                                {(matchedDoc as any)?.source && (
-                                                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${(matchedDoc as any).source === 'task' ? 'bg-violet-100 text-violet-600' : (matchedDoc as any).source === 'tt24' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                                                                        {(matchedDoc as any).source === 'task' ? 'CV' : (matchedDoc as any).source === 'tt24' ? 'TT24' : 'UP'}
-                                                                                    </span>
-                                                                                )}
-                                                                                {isDocExpanded ? <ChevronDown className="w-4 h-4 text-blue-500" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-                                                                            </div>
-                                                                        ) : (
-                                                                            extractingDoc === docKey ? (
-                                                                                <RefreshCw className="w-4 h-4 text-blue-500 animate-spin mx-auto" />
-                                                                            ) : (
-                                                                                <button
-                                                                                    onClick={(e) => { e.stopPropagation(); handleUpload(docType.name, docKey); }}
-                                                                                    className="p-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 transition-all mx-auto block"
-                                                                                    title="Tải lên văn bản"
-                                                                                >
-                                                                                    <Plus className="w-4 h-4" />
-                                                                                </button>
-                                                                            )
-                                                                        )}
-                                                                    </td>
-                                                                </tr>
-
-                                                                {/* Expanded metadata panel row */}
-                                                                {isDocExpanded && hasDoc && (
-                                                                    <tr>
-                                                                        <td colSpan={7} className="p-0">
-                                                                            <DocMetadataPanel
-                                                                                doc={matchedDoc!}
-                                                                                meta={currentMeta}
-                                                                                onMetaChange={(field, value) => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], [field]: value } }))}
-                                                                                onSave={() => handleSaveMetadata(matchedDoc!.DocID, currentMeta)}
-                                                                                onClose={() => setExpandedDocIdx(null)}
-                                                                                onPreview={() => setPreviewFile(matchedDoc)}
-                                                                                savingMeta={savingMeta}
-                                                                            />
-                                                                        </td>
-                                                                    </tr>
-                                                                )}
-                                                            </React.Fragment>
-                                                        );
-                                                    })}
-                                                </>
-                                            )}
-                                        </React.Fragment>
-                                    );
-                                })}
+                                                {/* Expanded metadata panel row */}
+                                                {isDocExpanded && (
+                                                    <tr>
+                                                        <td colSpan={6} className="p-0">
+                                                            <DocMetadataPanel
+                                                                doc={doc}
+                                                                meta={currentMeta}
+                                                                onMetaChange={(field, value) => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], [field]: value } }))}
+                                                                onSave={() => handleSaveMetadata(doc.DocID, currentMeta)}
+                                                                onClose={() => setExpandedDocIdx(null)}
+                                                                onPreview={() => setPreviewFile(doc)}
+                                                                onDelete={() => handleDeleteDocument(doc.DocID)}
+                                                                savingMeta={savingMeta}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })
+                                )}
                             </tbody>
                         </table>
                     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseExt } from '../../lib/supabase';
 import { Save, RefreshCw, LayoutDashboard } from 'lucide-react';
 import { ALL_ROLES, ROLE_LABELS } from '../../types/permission.types';
 
@@ -34,7 +34,7 @@ export const DashboardWidgetManager: React.FC = () => {
     const loadConfig = async (role: string) => {
         setIsLoading(true);
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('dashboard_widget_config')
                 .select('widget_id, is_active')
                 .eq('role', role);
@@ -42,7 +42,7 @@ export const DashboardWidgetManager: React.FC = () => {
             if (error) throw error;
 
             const map: Record<string, boolean> = {};
-            data?.forEach(row => {
+            data?.forEach((row: any) => {
                 map[row.widget_id] = row.is_active;
             });
             setConfigMap(map);
@@ -71,7 +71,7 @@ export const DashboardWidgetManager: React.FC = () => {
                 updated_at: new Date().toISOString()
             }));
 
-            const { error } = await supabase
+            const { error } = await supabaseExt
                 .from('dashboard_widget_config')
                 .upsert(updates, { onConflict: 'role,widget_id' });
 

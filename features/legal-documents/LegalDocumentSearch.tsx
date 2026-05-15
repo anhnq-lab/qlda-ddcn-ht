@@ -41,7 +41,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
     const [selectedDocId, setSelectedDocId] = useState<string>(initialDocId || urlDocId || '');
-    const [filterType, setFilterType] = useState<DocType | ''>('');
+    const [filterType, setFilterType] = useState<'all' | DocType>('all');
 
     // UI State
     const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
@@ -76,7 +76,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     // ---- Supabase data fetching ----
     const { data: listResult, isLoading: isListLoading } = useDocumentList({
         searchQuery: debouncedSearchQuery,
-        type: filterType,
+        type: filterType === 'all' ? '' : filterType,
         pageSize: 100,
     });
     const { data: statsData } = useLegalStats();

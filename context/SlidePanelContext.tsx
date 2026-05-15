@@ -20,9 +20,9 @@ interface SlidePanelContextType {
     /** Current stack of open panels (bottom → top) */
     panels: PanelEntry[];
     /** Push a new panel onto the stack. If a panel with the same `url` exists, focuses it instead. Returns its unique ID. */
-    openPanel: (entry: Omit<PanelEntry, 'id'>) => string;
+    openPanel: (entry: Omit<PanelEntry, 'id'> & { id?: string }) => string;
     /** Replace the top-most panel with a new one (no animation gap) */
-    replacePanel: (entry: Omit<PanelEntry, 'id'>) => string;
+    replacePanel: (entry: Omit<PanelEntry, 'id'> & { id?: string }) => string;
     /** Close a specific panel by ID, or close the top-most panel if no ID given. Returns false if blocked. */
     closePanel: (id?: string) => boolean | undefined;
     /** Close ALL panels at once */
@@ -134,7 +134,7 @@ export const SlidePanelProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }, []);
 
     // ─── Open panel (with duplicate prevention) ───────────────────
-    const openPanel = useCallback((entry: Omit<PanelEntry, 'id'>): string => {
+    const openPanel = useCallback((entry: Omit<PanelEntry, 'id'> & { id?: string }): string => {
         // Duplicate prevention: if a panel with the same url already exists, focus it
         if (entry.url) {
             const currentPanels = panelsRef.current;
@@ -163,14 +163,14 @@ export const SlidePanelProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             }
         }
 
-        const id = `panel-${++panelCounter}-${Date.now()}`;
+        const id = entry.id ?? `panel-${++panelCounter}-${Date.now()}`;
         setPanels(prev => [...prev, { ...entry, id }]);
         return id;
     }, []);
 
     // ─── Replace top panel ────────────────────────────────────────
-    const replacePanel = useCallback((entry: Omit<PanelEntry, 'id'>): string => {
-        const id = `panel-${++panelCounter}-${Date.now()}`;
+    const replacePanel = useCallback((entry: Omit<PanelEntry, 'id'> & { id?: string }): string => {
+        const id = entry.id ?? `panel-${++panelCounter}-${Date.now()}`;
         setPanels(prev => {
             if (prev.length === 0) return [{ ...entry, id }];
             // Replace the last panel

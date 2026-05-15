@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { X, Loader2, Save, Calendar, FileText, Building2, AlertCircle, Lightbulb } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { BiddingPackage, PackageStatus, BIDDING_THRESHOLDS } from '../../../types';
 import { formatCurrency } from '../../../utils/format';
 import ApiClient from '../../../services/api';
 import { detectApplicableMethod, getMethodGuidance, checkPackageCompliance } from '../../../utils/biddingCompliance';
 import { LegalReferenceLink } from '../../../components/common/LegalReferenceLink';
+import { BiddingPackageFormSchema, type BiddingPackageFormValues } from '../../../schemas/biddingPackage.schema';
 
 // ========================================
 // BIDDING PACKAGE MODAL - NĐ 214/2025 Compliance
@@ -70,42 +73,6 @@ const STATUS_OPTIONS = [
     { value: PackageStatus.Cancelled, label: 'Hủy thầu' },
 ];
 
-interface FormData {
-    PackageNumber: string;
-    PackageName: string;
-    Price: string;
-    Duration: string;
-    Field: string;
-    SelectionMethod: string;
-    SelectionProcedure: string;
-    BidType: string;
-    ContractType: string;
-    Status: string;
-    KHLCNTCode: string;
-    NotificationCode: string;
-    DecisionNumber: string;
-    DecisionDate: string;
-    PostingDate: string;
-    BidClosingDate: string;
-    BidOpeningDate: string;
-    WinningContractorID: string;
-    WinningPrice: string;
-    ApprovalDate_Result: string;
-    // KHLCNT specific fields
-    FundingSource: string;
-    Description: string;
-    SelectionDuration: string;
-    SelectionStartDate: string;
-    HasOption: string;
-    // Plan Group fields
-    PlanGroupName: string;
-    PlanDecisionNumber: string;
-    PlanDecisionDate: string;
-    // Báo cáo đấu thầu
-    BiddingScope: string;
-    BiddersCount: string;
-    EvaluationBiddersCount: string;
-}
 
 const FUNDING_SOURCE_OPTIONS = [
     'Ngân sách Nhà nước',
@@ -119,7 +86,7 @@ const FUNDING_SOURCE_OPTIONS = [
     'Khác',
 ];
 
-const initialFormData: FormData = {
+const initialFormData: BiddingPackageFormValues = {
     PackageNumber: '',
     PackageName: '',
     Price: '',
@@ -165,50 +132,67 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
     const queryClient = useQueryClient();
     const isEditMode = !!packageToEdit;
 
-    const [formData, setFormData] = useState<FormData>(initialFormData);
-    const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
     const [activeTab, setActiveTab] = useState<'basic' | 'legal' | 'timeline' | 'result'>('basic');
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        reset,
+        formState: { errors },
+    } = useForm<BiddingPackageFormValues>({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: zodResolver(BiddingPackageFormSchema) as any,
+        defaultValues: initialFormData,
+    });
+
+    // Watch fields needed for computed values
+    const watchPrice = watch('Price');
+    const watchField = watch('Field');
+    const watchSelectionMethod = watch('SelectionMethod');
+    const watchStatus = watch('Status');
+    const watchWinningPrice = watch('WinningPrice');
 
     // Fetch contractors for winner selection
     const { data: contractors } = useQuery({
         queryKey: ['contractors'],
-        queryFn: () => ApiClient.get('/api/contractors', () => []),
+        queryFn: (): Promise<any[]> => ApiClient.get('/api/contractors', (): any[] => []),
         enabled: isOpen,
     });
 
     // NĐ 214/2025: Auto-detect applicable selection method based on price + field
     const methodGuidance = useMemo(() => {
-        const price = parseFloat(formData.Price) || 0;
+        const price = parseFloat(watchPrice) || 0;
         if (price === 0) return null;
 
-        const field = formData.Field as BiddingPackage['Field'];
+        const field = watchField as BiddingPackage['Field'];
         const method = detectApplicableMethod(price, field, true);
         return getMethodGuidance(method);
-    }, [formData.Price, formData.Field]);
+    }, [watchPrice, watchField]);
 
     // Live Compliance Check
     const complianceResult = useMemo(() => {
         const compliancePkg = {
-            Price: parseFloat(formData.Price) || 0,
-            Field: formData.Field,
-            SelectionMethod: formData.SelectionMethod
+            Price: parseFloat(watchPrice) || 0,
+            Field: watchField,
+            SelectionMethod: watchSelectionMethod
         } as BiddingPackage;
         return checkPackageCompliance(compliancePkg, true);
-    }, [formData.Price, formData.Field, formData.SelectionMethod]);
+    }, [watchPrice, watchField, watchSelectionMethod]);
 
     // Initialize form when editing
     useEffect(() => {
         if (packageToEdit) {
-            setFormData({
+            reset({
                 PackageNumber: packageToEdit.PackageNumber || '',
                 PackageName: packageToEdit.PackageName || '',
                 Price: packageToEdit.Price?.toString() || '',
                 Duration: packageToEdit.Duration || '',
-                Field: packageToEdit.Field || 'Construction',
-                SelectionMethod: packageToEdit.SelectionMethod || 'OpenBidding',
-                SelectionProcedure: packageToEdit.SelectionProcedure || 'OneStageOneEnvelope',
-                BidType: packageToEdit.BidType || 'Online',
-                ContractType: packageToEdit.ContractType || 'LumpSum',
+                Field: (packageToEdit.Field as BiddingPackageFormValues['Field']) || 'Construction',
+                SelectionMethod: (packageToEdit.SelectionMethod as BiddingPackageFormValues['SelectionMethod']) || 'OpenBidding',
+                SelectionProcedure: (packageToEdit.SelectionProcedure as BiddingPackageFormValues['SelectionProcedure']) || 'OneStageOneEnvelope',
+                BidType: (packageToEdit.BidType as BiddingPackageFormValues['BidType']) || 'Online',
+                ContractType: (packageToEdit.ContractType as BiddingPackageFormValues['ContractType']) || 'LumpSum',
                 Status: packageToEdit.Status || PackageStatus.Planning,
                 KHLCNTCode: packageToEdit.KHLCNTCode || '',
                 NotificationCode: packageToEdit.NotificationCode || '',
@@ -225,17 +209,15 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 SelectionDuration: packageToEdit.SelectionDuration || '45 ngày',
                 SelectionStartDate: packageToEdit.SelectionStartDate || '',
                 HasOption: packageToEdit.HasOption ? 'true' : 'false',
-                BiddingScope: packageToEdit.BiddingScope || 'Domestic',
+                BiddingScope: (packageToEdit.BiddingScope as BiddingPackageFormValues['BiddingScope']) || 'Domestic',
                 BiddersCount: packageToEdit.BiddersCount?.toString() || '',
                 EvaluationBiddersCount: packageToEdit.EvaluationBiddersCount?.toString() || '',
-                PlanID: planId || undefined,
             });
         } else {
-            setFormData(initialFormData);
+            reset(initialFormData);
         }
-        setErrors({});
         setActiveTab('basic');
-    }, [packageToEdit, isOpen]);
+    }, [packageToEdit, isOpen, reset]);
 
     // Create mutation
     const createMutation = useMutation({
@@ -259,77 +241,43 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
 
     const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
-    const handleChange = (field: keyof FormData, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: undefined }));
-        }
-    };
-
-    const validate = (): boolean => {
-        const newErrors: Partial<Record<keyof FormData, string>> = {};
-
-        if (!formData.PackageNumber.trim()) {
-            newErrors.PackageNumber = 'Số hiệu gói thầu là bắt buộc';
-        }
-        if (!formData.PackageName.trim()) {
-            newErrors.PackageName = 'Tên gói thầu là bắt buộc';
-        }
-        if (!formData.Price || parseFloat(formData.Price) <= 0) {
-            newErrors.Price = 'Giá gói thầu phải lớn hơn 0';
-        }
-        if (!formData.Duration.trim()) {
-            newErrors.Duration = 'Thời gian thực hiện là bắt buộc';
-        }
-
-        if (!complianceResult.isValid) {
-            newErrors.SelectionMethod = complianceResult.errors.join(' ');
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validate()) return;
-
+    const onFormSubmit = handleSubmit((data) => {
         const payload: Partial<BiddingPackage> = {
             ProjectID: projectId,
-            PackageNumber: formData.PackageNumber,
-            PackageName: formData.PackageName,
-            Price: parseFloat(formData.Price),
-            Duration: formData.Duration,
-            Field: formData.Field as any,
-            SelectionMethod: formData.SelectionMethod as any,
-            SelectionProcedure: formData.SelectionProcedure as any,
-            BidType: formData.BidType as any,
-            ContractType: formData.ContractType as any,
-            Status: formData.Status as PackageStatus,
-            KHLCNTCode: formData.KHLCNTCode || undefined,
-            NotificationCode: formData.NotificationCode || undefined,
-            DecisionNumber: formData.DecisionNumber || undefined,
-            DecisionDate: formData.DecisionDate || undefined,
-            PostingDate: formData.PostingDate || undefined,
-            BidClosingDate: formData.BidClosingDate || undefined,
-            BidOpeningDate: formData.BidOpeningDate || undefined,
-            WinningContractorID: formData.WinningContractorID || undefined,
-            WinningPrice: formData.WinningPrice ? parseFloat(formData.WinningPrice) : undefined,
-            ApprovalDate_Result: formData.ApprovalDate_Result || undefined,
-            FundingSource: formData.FundingSource || undefined,
-            Description: formData.Description || undefined,
-            SelectionDuration: formData.SelectionDuration || undefined,
-            SelectionStartDate: formData.SelectionStartDate || undefined,
-            HasOption: formData.HasOption === 'true',
+            PackageNumber: data.PackageNumber,
+            PackageName: data.PackageName,
+            Price: parseFloat(data.Price),
+            Duration: data.Duration,
+            Field: data.Field as any,
+            SelectionMethod: data.SelectionMethod as any,
+            SelectionProcedure: data.SelectionProcedure as any,
+            BidType: data.BidType as any,
+            ContractType: data.ContractType as any,
+            Status: data.Status as PackageStatus,
+            KHLCNTCode: data.KHLCNTCode || undefined,
+            NotificationCode: data.NotificationCode || undefined,
+            DecisionNumber: data.DecisionNumber || undefined,
+            DecisionDate: data.DecisionDate || undefined,
+            PostingDate: data.PostingDate || undefined,
+            BidClosingDate: data.BidClosingDate || undefined,
+            BidOpeningDate: data.BidOpeningDate || undefined,
+            WinningContractorID: data.WinningContractorID || undefined,
+            WinningPrice: data.WinningPrice ? parseFloat(data.WinningPrice) : undefined,
+            ApprovalDate_Result: data.ApprovalDate_Result || undefined,
+            FundingSource: data.FundingSource || undefined,
+            Description: data.Description || undefined,
+            SelectionDuration: data.SelectionDuration || undefined,
+            SelectionStartDate: data.SelectionStartDate || undefined,
+            HasOption: data.HasOption === 'true',
             PlanID: planId || undefined,
             // Plan Group
-            PlanGroupName: formData.PlanGroupName || undefined,
-            PlanDecisionNumber: formData.PlanDecisionNumber || undefined,
-            PlanDecisionDate: formData.PlanDecisionDate || undefined,
+            PlanGroupName: data.PlanGroupName || undefined,
+            PlanDecisionNumber: data.PlanDecisionNumber || undefined,
+            PlanDecisionDate: data.PlanDecisionDate || undefined,
             // Báo cáo đấu thầu
-            BiddingScope: (formData.BiddingScope as any) || 'Domestic',
-            BiddersCount: formData.BiddersCount ? parseInt(formData.BiddersCount) : undefined,
-            EvaluationBiddersCount: formData.EvaluationBiddersCount ? parseInt(formData.EvaluationBiddersCount) : undefined,
+            BiddingScope: (data.BiddingScope as any) || 'Domestic',
+            BiddersCount: data.BiddersCount ? parseInt(data.BiddersCount) : undefined,
+            EvaluationBiddersCount: data.EvaluationBiddersCount ? parseInt(data.EvaluationBiddersCount) : undefined,
         };
 
         if (isEditMode) {
@@ -337,7 +285,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
         } else {
             createMutation.mutate(payload);
         }
-    };
+    });
 
     if (!isOpen) return null;
 
@@ -397,7 +345,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={onFormSubmit}>
                     <div className="p-4 overflow-y-auto max-h-[calc(90vh-200px)]">
                         {/* Tab: Basic Info */}
                         {activeTab === 'basic' && (
@@ -409,12 +357,11 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     <input
                                         type="text"
                                         placeholder="VD: XL-01"
-                                        value={formData.PackageNumber}
-                                        onChange={(e) => handleChange('PackageNumber', e.target.value)}
+                                        {...register('PackageNumber')}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all dark:bg-slate-700 dark:text-slate-100 ${errors.PackageNumber ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
                                     {errors.PackageNumber && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.PackageNumber}</p>
+                                        <p className="mt-1 text-xs text-red-500">{errors.PackageNumber.message}</p>
                                     )}
                                 </div>
 
@@ -423,8 +370,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Trạng thái <span className="text-red-500">*</span>
                                     </label>
                                     <select
-                                        value={formData.Status}
-                                        onChange={(e) => handleChange('Status', e.target.value)}
+                                        {...register('Status')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                     >
                                         {STATUS_OPTIONS.map(opt => (
@@ -439,13 +385,12 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     </label>
                                     <textarea
                                         placeholder="Nhập tên đầy đủ của gói thầu..."
-                                        value={formData.PackageName}
-                                        onChange={(e) => handleChange('PackageName', e.target.value)}
+                                        {...register('PackageName')}
                                         rows={2}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none dark:bg-slate-700 dark:text-slate-100 ${errors.PackageName ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
                                     {errors.PackageName && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.PackageName}</p>
+                                        <p className="mt-1 text-xs text-red-500">{errors.PackageName.message}</p>
                                     )}
                                 </div>
 
@@ -456,17 +401,16 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     <input
                                         type="text"
                                         placeholder="0"
-                                        value={formData.Price ? Number(formData.Price).toLocaleString('vi-VN') : ''}
-                                        onChange={(e) => handleChange('Price', e.target.value.replace(/\D/g, ''))}
+                                        {...register('Price')}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-slate-700 dark:text-slate-100 ${errors.Price ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
-                                    {formData.Price && (
+                                    {watchPrice && (
                                         <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                                            {formatCurrency(parseFloat(formData.Price) || 0)}
+                                            {formatCurrency(parseFloat(watchPrice) || 0)}
                                         </p>
                                     )}
                                     {errors.Price && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.Price}</p>
+                                        <p className="mt-1 text-xs text-red-500">{errors.Price.message}</p>
                                     )}
                                 </div>
 
@@ -477,12 +421,11 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     <input
                                         type="text"
                                         placeholder="VD: 360 ngày"
-                                        value={formData.Duration}
-                                        onChange={(e) => handleChange('Duration', e.target.value)}
+                                        {...register('Duration')}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-slate-700 dark:text-slate-100 ${errors.Duration ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
                                     {errors.Duration && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.Duration}</p>
+                                        <p className="mt-1 text-xs text-red-500">{errors.Duration.message}</p>
                                     )}
                                 </div>
 
@@ -493,8 +436,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     </label>
                                     <textarea
                                         placeholder="Mô tả ngắn gọn nội dung công việc chính của gói thầu..."
-                                        value={formData.Description}
-                                        onChange={(e) => handleChange('Description', e.target.value)}
+                                        {...register('Description')}
                                         rows={2}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                                     />
@@ -506,8 +448,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Nguồn vốn
                                     </label>
                                     <select
-                                        value={formData.FundingSource}
-                                        onChange={(e) => handleChange('FundingSource', e.target.value)}
+                                        {...register('FundingSource')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         {FUNDING_SOURCE_OPTIONS.map(opt => (
@@ -522,8 +463,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Tùy chọn mua thêm
                                     </label>
                                     <select
-                                        value={formData.HasOption}
-                                        onChange={(e) => handleChange('HasOption', e.target.value)}
+                                        {...register('HasOption')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         <option value="false">Không</option>
@@ -598,8 +538,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Lĩnh vực
                                     </label>
                                     <select
-                                        value={formData.Field}
-                                        onChange={(e) => handleChange('Field', e.target.value)}
+                                        {...register('Field')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         {FIELD_OPTIONS.map(opt => (
@@ -613,8 +552,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Hình thức lựa chọn nhà thầu
                                     </label>
                                     <select
-                                        value={formData.SelectionMethod}
-                                        onChange={(e) => handleChange('SelectionMethod', e.target.value)}
+                                        {...register('SelectionMethod')}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 transition-colors dark:bg-slate-700 dark:text-slate-100 ${!complianceResult.isValid ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     >
                                         {SELECTION_METHOD_OPTIONS.map(opt => (
@@ -633,8 +571,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Phương thức lựa chọn
                                     </label>
                                     <select
-                                        value={formData.SelectionProcedure}
-                                        onChange={(e) => handleChange('SelectionProcedure', e.target.value)}
+                                        {...register('SelectionProcedure')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         {SELECTION_PROCEDURE_OPTIONS.map(opt => (
@@ -648,8 +585,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Hình thức đấu thầu
                                     </label>
                                     <select
-                                        value={formData.BidType}
-                                        onChange={(e) => handleChange('BidType', e.target.value)}
+                                        {...register('BidType')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         {BID_TYPE_OPTIONS.map(opt => (
@@ -663,8 +599,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Loại hợp đồng
                                     </label>
                                     <select
-                                        value={formData.ContractType}
-                                        onChange={(e) => handleChange('ContractType', e.target.value)}
+                                        {...register('ContractType')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         {CONTRACT_TYPE_OPTIONS.map(opt => (
@@ -679,8 +614,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         Phạm vi đấu thầu
                                     </label>
                                     <select
-                                        value={formData.BiddingScope}
-                                        onChange={(e) => handleChange('BiddingScope', e.target.value)}
+                                        {...register('BiddingScope')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     >
                                         <option value="Domestic">Trong nước</option>
@@ -697,8 +631,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         type="number"
                                         min="0"
                                         placeholder="0"
-                                        value={formData.BiddersCount}
-                                        onChange={(e) => handleChange('BiddersCount', e.target.value)}
+                                        {...register('BiddersCount')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     />
                                 </div>
@@ -712,8 +645,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         type="number"
                                         min="0"
                                         placeholder="0"
-                                        value={formData.EvaluationBiddersCount}
-                                        onChange={(e) => handleChange('EvaluationBiddersCount', e.target.value)}
+                                        {...register('EvaluationBiddersCount')}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                     />
                                 </div>
@@ -734,8 +666,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: PL202400001"
-                                                value={formData.KHLCNTCode}
-                                                onChange={(e) => handleChange('KHLCNTCode', e.target.value)}
+                                                {...register('KHLCNTCode')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -746,8 +677,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: 123/QĐ-UBND"
-                                                value={formData.DecisionNumber}
-                                                onChange={(e) => handleChange('DecisionNumber', e.target.value)}
+                                                {...register('DecisionNumber')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -757,8 +687,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             </label>
                                             <input
                                                 type="date"
-                                                value={formData.DecisionDate}
-                                                onChange={(e) => handleChange('DecisionDate', e.target.value)}
+                                                {...register('DecisionDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -769,8 +698,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: 45 ngày"
-                                                value={formData.SelectionDuration}
-                                                onChange={(e) => handleChange('SelectionDuration', e.target.value)}
+                                                {...register('SelectionDuration')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -781,8 +709,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: Quý I/2026 hoặc Tháng 3/2026"
-                                                value={formData.SelectionStartDate}
-                                                onChange={(e) => handleChange('SelectionStartDate', e.target.value)}
+                                                {...register('SelectionStartDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -801,8 +728,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: KHLCNT giai đoạn 1 - Tư vấn"
-                                                value={formData.PlanGroupName}
-                                                onChange={(e) => handleChange('PlanGroupName', e.target.value)}
+                                                {...register('PlanGroupName')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -813,8 +739,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: 456/QĐ-UBND"
-                                                value={formData.PlanDecisionNumber}
-                                                onChange={(e) => handleChange('PlanDecisionNumber', e.target.value)}
+                                                {...register('PlanDecisionNumber')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -824,8 +749,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             </label>
                                             <input
                                                 type="date"
-                                                value={formData.PlanDecisionDate}
-                                                onChange={(e) => handleChange('PlanDecisionDate', e.target.value)}
+                                                {...register('PlanDecisionDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -842,8 +766,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             <input
                                                 type="text"
                                                 placeholder="VD: IB2400001234"
-                                                value={formData.NotificationCode}
-                                                onChange={(e) => handleChange('NotificationCode', e.target.value)}
+                                                {...register('NotificationCode')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -853,8 +776,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             </label>
                                             <input
                                                 type="date"
-                                                value={formData.PostingDate}
-                                                onChange={(e) => handleChange('PostingDate', e.target.value)}
+                                                {...register('PostingDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -864,8 +786,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             </label>
                                             <input
                                                 type="date"
-                                                value={formData.BidClosingDate}
-                                                onChange={(e) => handleChange('BidClosingDate', e.target.value)}
+                                                {...register('BidClosingDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -875,8 +796,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                             </label>
                                             <input
                                                 type="date"
-                                                value={formData.BidOpeningDate}
-                                                onChange={(e) => handleChange('BidOpeningDate', e.target.value)}
+                                                {...register('BidOpeningDate')}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>
@@ -888,7 +808,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                         {/* Tab: Result */}
                         {activeTab === 'result' && (
                             <div className="space-y-4">
-                                {formData.Status !== PackageStatus.Awarded && formData.Status !== 'Awarded' ? (
+                                {watchStatus !== PackageStatus.Awarded && watchStatus !== 'Awarded' ? (
                                     <div className="p-4 text-center bg-gray-50 dark:bg-slate-700 rounded-xl">
                                         <AlertCircle className="w-12 h-12 text-gray-400 dark:text-slate-400 mx-auto mb-3" />
                                         <p className="text-gray-600 dark:text-slate-300">
@@ -907,8 +827,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                     Nhà thầu trúng thầu
                                                 </label>
                                                 <select
-                                                    value={formData.WinningContractorID}
-                                                    onChange={(e) => handleChange('WinningContractorID', e.target.value)}
+                                                    {...register('WinningContractorID')}
                                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                                 >
                                                     <option value="">-- Chọn nhà thầu --</option>
@@ -926,13 +845,12 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                 <input
                                                     type="number"
                                                     placeholder="0"
-                                                    value={formData.WinningPrice}
-                                                    onChange={(e) => handleChange('WinningPrice', e.target.value)}
+                                                    {...register('WinningPrice')}
                                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                                 />
-                                                {formData.WinningPrice && (
+                                                {watchWinningPrice && (
                                                     <p className="mt-1 text-xs text-green-600 font-medium">
-                                                        {formatCurrency(parseFloat(formData.WinningPrice) || 0)}
+                                                        {formatCurrency(parseFloat(watchWinningPrice) || 0)}
                                                     </p>
                                                 )}
                                             </div>
@@ -942,8 +860,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                 </label>
                                                 <input
                                                     type="date"
-                                                    value={formData.ApprovalDate_Result}
-                                                    onChange={(e) => handleChange('ApprovalDate_Result', e.target.value)}
+                                                    {...register('ApprovalDate_Result')}
                                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                                 />
                                             </div>

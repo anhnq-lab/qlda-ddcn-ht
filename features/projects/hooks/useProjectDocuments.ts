@@ -29,11 +29,17 @@ const mapDbRow = (row: any, projectID: string): Document & Record<string, any> =
     source: row.source,
     task_id: row.task_id,
     tt24_field: row.tt24_field,
+    doc_type: row.doc_type || '',
     document_number: row.document_number || '',
     issue_date: row.issue_date || '',
     issuing_authority: row.issuing_authority || '',
     updated_by: row.updated_by || '',
     notes: row.notes || '',
+    summary: row.summary || '',
+    signer: row.signer || '',
+    drafting_department: row.drafting_department || '',
+    document_symbol: row.document_symbol || '',
+    drafter: row.drafter || '',
 });
 
 /**

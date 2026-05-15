@@ -78,7 +78,7 @@ const WorkflowManagerPage: React.FC = () => {
                     throw fetchError;
                 }
             } else {
-                setWorkflows(data || []);
+                setWorkflows((data || []) as any);
             }
         } catch (err: any) {
             console.error('Error fetching workflows:', err);
@@ -99,7 +99,7 @@ const WorkflowManagerPage: React.FC = () => {
             if (nodesRes.error) throw nodesRes.error;
             if (edgesRes.error) throw edgesRes.error;
 
-            setWorkflowNodes(nodesRes.data || []);
+            setWorkflowNodes((nodesRes.data || []) as any);
             setWorkflowEdges(edgesRes.data || []);
             return { nodes: nodesRes.data, edges: edgesRes.data };
         } catch (err: any) {

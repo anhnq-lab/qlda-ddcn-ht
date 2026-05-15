@@ -257,7 +257,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                         {phase === 'done' && (
                             <button
                                 onClick={generateReport}
-                                disabled={phase === 'generating' as unknown as boolean}
+                                disabled={(phase as string) === 'generating'}
                                 className="btn btn-outline flex items-center gap-1.5 text-sm text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/30"
                             >
                                 <RefreshCw className="w-3.5 h-3.5" />

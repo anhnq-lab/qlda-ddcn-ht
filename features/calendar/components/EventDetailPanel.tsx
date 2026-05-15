@@ -45,7 +45,7 @@ const getRoomName = (room: string) => {
 };
 
 export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onClose, event, onEdit }) => {
-  const { user } = useAuth();
+  const { currentUser: user } = useAuth();
   const deleteMutation = useDeleteEvent();
   const { showToast } = useToast();
 
@@ -53,7 +53,7 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
 
   // RLS check for Edit/Delete UI buttons
   // Only Admin or the creator can edit/delete
-  const canEditOrDelete = user?.user_metadata?.role === 'Admin' || user?.id === event.created_by;
+  const canEditOrDelete = (user as any)?.user_metadata?.role === 'Admin' || (user as any)?.id === event.created_by;
 
   const handleDelete = async () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa sự kiện này?')) {
@@ -76,7 +76,7 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
       footer={
         canEditOrDelete ? (
           <div className="flex justify-end gap-3 w-full">
-            <Button variant="outline" className="text-red-600" onClick={handleDelete} isLoading={deleteMutation.isPending}>
+            <Button variant="outline" className="text-red-600" onClick={handleDelete} loading={deleteMutation.isPending}>
               <Trash2 className="w-4 h-4 mr-2" /> Xóa
             </Button>
             <Button onClick={() => { onClose(); onEdit(event); }}>
@@ -89,7 +89,7 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
       <div className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">{event.title}</h2>
-          <Badge color={getEventTypeColor(event.event_type)}>
+          <Badge {...{ color: getEventTypeColor(event.event_type) } as any}>
             {getEventTypeName(event.event_type)}
           </Badge>
         </div>
@@ -134,11 +134,11 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
               {event.attendees && event.attendees.length > 0 ? (
                 <ul className="mt-1 space-y-1">
                   {event.attendees.map((emp, idx) => (
-                    <li key={emp.EmployeeID || emp.id || idx} className="flex items-center gap-2">
+                    <li key={emp.EmployeeID || (emp as any).id || idx} className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700">
-                        {(emp.FullName || emp.full_name || 'NV').charAt(0)}
+                        {(emp.FullName || (emp as any).full_name || 'NV').charAt(0)}
                       </div>
-                      <span>{emp.FullName || emp.full_name || 'Nhân viên'}</span>
+                      <span>{emp.FullName || (emp as any).full_name || 'Nhân viên'}</span>
                     </li>
                   ))}
                 </ul>

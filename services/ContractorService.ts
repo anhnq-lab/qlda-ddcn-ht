@@ -17,7 +17,7 @@ export class ContractorService {
         }
 
         if (params?.filters?.contractorType) {
-            query = query.eq('contractor_type', params.filters.contractorType);
+            query = (query as any).eq('contractor_type', params.filters.contractorType);
         }
 
         const { data, error } = await query.order('created_at', { ascending: false });

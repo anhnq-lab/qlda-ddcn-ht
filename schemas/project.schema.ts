@@ -1,6 +1,6 @@
 /**
  * Project Zod Schemas — Validation cho entity Dự Án
- * 
+ *
  * Dùng để validate form input trước khi gửi Supabase.
  * Tập trung error messages Tiếng Việt.
  * Compatible with Zod v4+
@@ -12,7 +12,7 @@ export const ProjectGroupSchema = z.enum(['QN', 'A', 'B', 'C'], {
     error: 'Vui lòng chọn nhóm dự án',
 });
 
-export const InvestmentTypeSchema = z.coerce.number().int().min(1).max(4);
+export const InvestmentTypeSchema = z.number().int().min(1).max(4);
 
 export const ProjectStatusSchema = z.coerce.number().int().min(1).max(3);
 
@@ -80,3 +80,98 @@ export const ProjectUpdateSchema = ProjectCreateSchema.partial().extend({
 // ─── Types inferred from schemas ──────────────────────────
 export type ProjectCreateInput = z.infer<typeof ProjectCreateSchema>;
 export type ProjectUpdateInput = z.infer<typeof ProjectUpdateSchema>;
+
+// ─── Full CreateProjectModal Form Schema ─────────────────
+/**
+ * Schema đầy đủ cho CreateProjectModal — tất cả các tab.
+ *
+ * Design note: all fields are declared without `.default()` so that
+ * `z.infer<typeof ProjectModalFormSchema>` produces fully-required types
+ * compatible with `useForm<ProjectModalFormValues>`. Default values are
+ * provided via `defaultValues` in the RHF `useForm()` call.
+ *
+ * Required fields: ProjectID, ProjectName, GroupCode, InvestmentType, StartDate.
+ * All other fields accept empty strings / 0 and can be filled in later.
+ */
+export const ProjectModalFormSchema = z.object({
+    // ── Tab General: Thông tin cơ bản ──
+    ProjectID: z.string().min(1, 'Mã dự án là bắt buộc'),
+    ProjectName: z.string().min(3, 'Tên dự án phải có ít nhất 3 ký tự').max(500, 'Tên dự án không được quá 500 ký tự'),
+    GroupCode: ProjectGroupSchema,
+    InvestmentType: InvestmentTypeSchema,
+    StartDate: z.string().min(1, 'Vui lòng chọn ngày khởi công'),
+
+    // ── Tab Investment: Cơ cấu vốn & Chi phí ──
+    TotalInvestment: z.number().min(0),
+    CapitalSource: z.string(),
+    ProvinceCode: z.string(),
+    LocationCode: z.string(),
+    ConstructionType: z.string(),
+    ConstructionGrade: z.string(),
+    CompetentAuthority: z.string(),
+    InvestorName: z.string(),
+    Duration: z.string(),
+    ManagementBoard: z.number().int().min(1),
+    ApprovalDate: z.string(),
+    DecisionNumber: z.string(),
+
+    // Quyết định chủ trương đầu tư
+    PolicyDecisionLevel: z.string(),
+    PolicyDecisionNumber: z.string(),
+    PolicyDecisionDate: z.string(),
+    PolicyDecisionAuthority: z.string(),
+
+    // Phê duyệt dự án
+    DecisionAuthority: z.string(),
+    ExpectedEndDate: z.string(),
+
+    // Mục tiêu & Quy mô
+    Objective: z.string(),
+    InvestmentScale: z.string(),
+
+    // Quy mô công trình
+    TotalEstimate: z.number().min(0),
+    SiteArea: z.number().min(0),
+    ConstructionArea: z.number().min(0),
+    FloorArea: z.number().min(0),
+    BuildingHeight: z.number().min(0),
+    BuildingDensity: z.number().min(0),
+    LandUseCoefficient: z.number().min(0),
+    AboveGroundFloors: z.number().int().min(0),
+    BasementFloors: z.number().int().min(0),
+
+    // Cơ cấu nguồn vốn chi tiết
+    BudgetAllocations: z.object({
+        BudgetNSTW: z.number().min(0),
+        BudgetNSDiaphuong: z.number().min(0),
+        BudgetLoan: z.number().min(0),
+        BudgetODA: z.number().min(0),
+        BudgetOtherNSNN: z.number().min(0),
+    }),
+
+    // Hạng mục chi phí (JSONB)
+    CostBreakdown: z.record(z.string(), z.number()),
+
+    // ── Tab Contractors: Nhà thầu & Tiêu chuẩn ──
+    ApplicableStandards: z.string(),
+    FeasibilityContractor: z.string(),
+    SurveyContractor: z.string(),
+    ReviewContractor: z.string(),
+    BiddingForm: z.string(),
+
+    // ── JSONB groups ──
+    KHVInfo: z.record(z.string(), z.unknown()),
+    ImplementationTracking: z.record(z.string(), z.unknown()),
+    AdjustedApproval: z.record(z.string(), z.unknown()),
+    ContractorDetails: z.record(z.string(), z.unknown()),
+    ProjectManagement: z.record(z.string(), z.unknown()),
+    ProjectStatusInfo: z.record(z.string(), z.unknown()),
+
+    // ── Tab Status: Hiện trạng & Bàn giao ──
+    DecisionLevelBeforeHandover: z.string(),
+    OldInvestor: z.string(),
+    TransferDecision: z.string(),
+    CurrentStatusCode: z.number().int().min(1).max(10).nullable(),
+});
+
+export type ProjectModalFormValues = z.infer<typeof ProjectModalFormSchema>;

@@ -10,7 +10,7 @@
       "DOM.Iterable"
     ],
     "strict": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": false,
     "skipLibCheck": true,
     "types": [
@@ -34,6 +34,9 @@
     "node_modules",
     "dist",
     "scripts",
+    "scratch",
+    "temp_bim_tab.tsx",
+    "temp_bim_tab_utf8.tsx",
     "Doccument",
     "resources",
     "templates",

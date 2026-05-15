@@ -298,7 +298,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         if (editingSubTask) {
             subs = subs.map(s => s.SubTaskID === editingSubTask.SubTaskID ? { ...s, Title: title, AssigneeID: assigneeId, DueDate: dueDate } : s);
         } else {
-            subs.push({ SubTaskID: `SUB-${Date.now()}`, Title: title, AssigneeID: assigneeId, DueDate: dueDate, Status: 'Todo' as const });
+            subs.push({ SubTaskID: `SUB-${Date.now()}`, Title: title, AssigneeID: assigneeId, DueDate: dueDate, Status: 'todo' as any });
         }
         const updatedData = { ...formData, SubTasks: subs };
         setFormData(updatedData);
@@ -309,7 +309,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
     const toggleSubTaskDone = (idx: number) => {
         const subs = [...(formData.SubTasks || [])];
-        subs[idx].Status = subs[idx].Status === 'Done' ? 'Todo' : 'Done';
+        subs[idx].Status = (subs[idx].Status as any) === 'Done' ? 'todo' as any : 'done' as any;
         const updatedData = { ...formData, SubTasks: subs };
         setFormData(updatedData);
         if (isEditMode) updateTaskMutation.mutate(updatedData as Task);
@@ -727,12 +727,12 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl group/sub border border-transparent hover:border-gray-200 dark:hover:border-slate-600 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 transition-all">
                                             <div
                                                 onClick={() => toggleSubTaskDone(idx)}
-                                                className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${sub.Status === 'Done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-gray-300 bg-white dark:bg-slate-800 hover:border-primary-400'}`}
+                                                className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-gray-300 bg-white dark:bg-slate-800 hover:border-primary-400'}`}
                                             >
-                                                {sub.Status === 'Done' && <CheckCircle2 className="w-3 h-3" />}
+                                                {(sub.Status as any) === 'Done' || sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
                                             </div>
                                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                                <p className={`text-xs font-semibold ${sub.Status === 'Done' ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>{sub.Title}</p>
+                                                <p className={`text-xs font-semibold ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                     <span className="text-[10px] text-gray-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
                                                         <User className="w-3 h-3" />

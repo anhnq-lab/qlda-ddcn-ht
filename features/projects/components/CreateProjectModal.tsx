@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
@@ -7,13 +9,7 @@ import { ProjectMemberService } from '../../../services/ProjectMemberService';
 import { extractProjectFromImage, fileToBase64, ExtractedProjectData } from '../../../services/ai/aiImageExtractor';
 import { supabase } from '../../../lib/supabase';
 import { useToast } from '../../../components/ui/Toast';
-
-interface CreateProjectModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => Promise<void>;
-    editProject?: Project | null;
-}
+import { ProjectModalFormSchema, ProjectModalFormValues } from '../../../schemas/project.schema';
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
 import { ProjectFormInvestment } from './forms/ProjectFormInvestment';
@@ -23,6 +19,13 @@ import { ProjectFormStatus } from './forms/ProjectFormStatus';
 import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
+interface CreateProjectModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => Promise<void>;
+    editProject?: Project | null;
+}
+
 const PROJ_TABS = [
     { id: 'general',     label: 'Thông tin chung',       icon: Building2 },
     { id: 'investment',  label: 'Cơ cấu vốn & Chi phí',  icon: DollarSign },
@@ -30,7 +33,69 @@ const PROJ_TABS = [
     { id: 'contractors', label: 'Nhà thầu & Tiêu chuẩn', icon: HardHat },
     { id: 'status',      label: 'Hiện trạng',              icon: Activity },
     { id: 'members',     label: 'Thành viên',              icon: Users },
-];
+] as const;
+
+type TabId = typeof PROJ_TABS[number]['id'];
+
+const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
+    ProjectID: '',
+    ProjectName: '',
+    GroupCode: ProjectGroup.C as 'C',
+    InvestmentType: InvestmentType.Public,
+    StartDate: new Date().toISOString().split('T')[0],
+    TotalInvestment: 0,
+    CapitalSource: 'Ngân sách Địa phương',
+    ProvinceCode: '42',
+    LocationCode: '',
+    ConstructionType: '',
+    ConstructionGrade: '',
+    CompetentAuthority: 'UBND tỉnh Hà Tĩnh',
+    InvestorName: 'Ban Quản lý dự án đầu tư xây dựng công trình dân dụng và hạ tầng khu vực',
+    Duration: '',
+    ManagementBoard: 1,
+    ApprovalDate: '',
+    DecisionNumber: '',
+    ApplicableStandards: '',
+    FeasibilityContractor: '',
+    SurveyContractor: '',
+    ReviewContractor: '',
+    BiddingForm: '',
+    Objective: '',
+    InvestmentScale: '',
+    TotalEstimate: 0,
+    SiteArea: 0,
+    ConstructionArea: 0,
+    FloorArea: 0,
+    BuildingHeight: 0,
+    BuildingDensity: 0,
+    LandUseCoefficient: 0,
+    AboveGroundFloors: 0,
+    BasementFloors: 0,
+    PolicyDecisionLevel: '',
+    PolicyDecisionNumber: '',
+    PolicyDecisionDate: '',
+    PolicyDecisionAuthority: '',
+    BudgetAllocations: {
+        BudgetNSTW: 0,
+        BudgetNSDiaphuong: 0,
+        BudgetLoan: 0,
+        BudgetODA: 0,
+        BudgetOtherNSNN: 0,
+    },
+    DecisionAuthority: '',
+    ExpectedEndDate: '',
+    CostBreakdown: {},
+    KHVInfo: {},
+    ImplementationTracking: {},
+    AdjustedApproval: {},
+    ContractorDetails: {},
+    ProjectManagement: {},
+    ProjectStatusInfo: {},
+    DecisionLevelBeforeHandover: '',
+    OldInvestor: '',
+    TransferDecision: '',
+    CurrentStatusCode: null,
+};
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
     const isEditMode = !!editProject;
@@ -44,86 +109,37 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
     const [aiError, setAiError] = useState('');
     const aiFileInputRef = useRef<HTMLInputElement>(null);
-    const [activeTab, setActiveTab] = useState<'general' | 'investment' | 'khv' | 'contractors' | 'status' | 'members'>('general');
-    const [formData, setFormData] = useState({
-        // Section 1 - Thông tin cơ bản
-        ProjectID: '',
-        ProjectName: '',
-        GroupCode: ProjectGroup.C,
-        InvestmentType: InvestmentType.Public,
-        StartDate: new Date().toISOString().split('T')[0],
-        // Section 2 - Thông tin đầu tư
-        TotalInvestment: 0,
-        CapitalSource: 'Ngân sách Địa phương',
-        ProvinceCode: '42', // Hà Tĩnh default
-        LocationCode: '',
-        ConstructionType: '',
-        ConstructionGrade: '',
-        CompetentAuthority: 'UBND tỉnh Hà Tĩnh',
-        InvestorName: 'Ban Quản lý dự án đầu tư xây dựng công trình dân dụng và hạ tầng khu vực',
-        Duration: '',
-        ManagementBoard: 1,
-        ApprovalDate: '',
-        DecisionNumber: '',
-        // Section 3 - Nhà thầu & Tiêu chuẩn
-        ApplicableStandards: '',
-        FeasibilityContractor: '',
-        SurveyContractor: '',
-        ReviewContractor: '',
-        BiddingForm: '',
-        // Mục tiêu & Quy mô đầu tư
-        Objective: '',
-        InvestmentScale: '',
-        // Section 2.5 - Quy mô công trình
-        TotalEstimate: 0,
-        SiteArea: 0,
-        ConstructionArea: 0,
-        FloorArea: 0,
-        BuildingHeight: 0,
-        BuildingDensity: 0,
-        LandUseCoefficient: 0,
-        AboveGroundFloors: 0,
-        BasementFloors: 0,
-        // Quyết định chủ trương đầu tư
-        PolicyDecisionLevel: '',
-        PolicyDecisionNumber: '',
-        PolicyDecisionDate: '',
-        PolicyDecisionAuthority: '',
-        // Cơ cấu nguồn vốn chi tiết
-        BudgetAllocations: {
-            BudgetNSTW: 0,
-            BudgetNSDiaphuong: 0,
-            BudgetLoan: 0,
-            BudgetODA: 0,
-            BudgetOtherNSNN: 0,
-        },
-        // Phê duyệt dự án (bổ sung)
-        DecisionAuthority: '',
-        ExpectedEndDate: '',
-        // Hạng mục chi phí
-        CostBreakdown: {} as Record<string, number>,
-        // Dữ liệu JSONB nhóm
-        KHVInfo: {},
-        ImplementationTracking: {},
-        AdjustedApproval: {},
-        ContractorDetails: {},
-        ProjectManagement: {},
-        ProjectStatusInfo: {},
-        // Bàn giao & chuyển CĐT
-        DecisionLevelBeforeHandover: '',
-        OldInvestor: '',
-        TransferDecision: '',
-        // Trạng thái dự án mới (1-10)
-        CurrentStatusCode: null as number | null,
+    const [activeTab, setActiveTab] = useState<TabId>('general');
+
+    // ── React Hook Form ──
+    const {
+        watch,
+        setValue,
+        getValues,
+        reset,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ProjectModalFormValues>({
+        resolver: zodResolver(ProjectModalFormSchema),
+        defaultValues: DEFAULT_FORM_VALUES,
+        mode: 'onBlur',
     });
+
+    // Bridge: expose formData as a plain object for legacy sub-form components
+    const formData = watch();
+
+    // Bridge: updateField replaces setFormData(prev => {...}) pattern
+    const updateField = useCallback((field: string, value: any) => {
+        setValue(field as keyof ProjectModalFormValues, value, { shouldDirty: true });
+    }, [setValue]);
 
     // Populate form data in edit mode
     useEffect(() => {
         if (isOpen && editProject) {
-            setFormData({
+            reset({
                 ProjectID: editProject.ProjectID || '',
                 ProjectName: editProject.ProjectName || '',
-                GroupCode: editProject.GroupCode || ProjectGroup.C,
+                GroupCode: (editProject.GroupCode || ProjectGroup.C) as 'QN' | 'A' | 'B' | 'C',
                 InvestmentType: editProject.InvestmentType || InvestmentType.Public,
                 StartDate: editProject.StartDate ? new Date(editProject.StartDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                 TotalInvestment: editProject.TotalInvestment || 0,
@@ -158,40 +174,39 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 PolicyDecisionNumber: editProject.PolicyDecisionNumber || '',
                 PolicyDecisionDate: editProject.PolicyDecisionDate || '',
                 PolicyDecisionAuthority: editProject.PolicyDecisionAuthority || '',
-                BudgetAllocations: editProject.BudgetAllocations || {
+                BudgetAllocations: (editProject.BudgetAllocations || {
                     BudgetNSTW: 0,
                     BudgetNSDiaphuong: 0,
                     BudgetLoan: 0,
                     BudgetODA: 0,
                     BudgetOtherNSNN: 0,
-                },
+                }) as any,
                 DecisionAuthority: editProject.DecisionAuthority || '',
                 ExpectedEndDate: editProject.ExpectedEndDate ? new Date(editProject.ExpectedEndDate).toISOString().split('T')[0] : '',
-                CostBreakdown: editProject.CostBreakdown || {},
-                KHVInfo: editProject.KHVInfo || {},
-                ImplementationTracking: editProject.ImplementationTracking || {},
-                AdjustedApproval: editProject.AdjustedApproval || {},
-                ContractorDetails: editProject.ContractorDetails || {},
-                ProjectManagement: editProject.ProjectManagement || {},
-                ProjectStatusInfo: editProject.ProjectStatusInfo || {},
+                CostBreakdown: (editProject.CostBreakdown || {}) as any,
+                KHVInfo: (editProject.KHVInfo || {}) as Record<string, unknown>,
+                ImplementationTracking: (editProject.ImplementationTracking || {}) as Record<string, unknown>,
+                AdjustedApproval: (editProject.AdjustedApproval || {}) as Record<string, unknown>,
+                ContractorDetails: (editProject.ContractorDetails || {}) as Record<string, unknown>,
+                ProjectManagement: (editProject.ProjectManagement || {}) as Record<string, unknown>,
+                ProjectStatusInfo: (editProject.ProjectStatusInfo || {}) as Record<string, unknown>,
                 DecisionLevelBeforeHandover: editProject.DecisionLevelBeforeHandover || '',
                 OldInvestor: editProject.OldInvestor || '',
                 TransferDecision: editProject.TransferDecision || '',
                 CurrentStatusCode: editProject.CurrentStatusCode || null,
             });
+        } else if (isOpen && !editProject) {
+            reset(DEFAULT_FORM_VALUES);
         }
-    }, [isOpen, editProject]);
+    }, [isOpen, editProject, reset]);
 
     // Fetch employees when modal opens + load existing members in edit mode
     useEffect(() => {
         if (isOpen) {
             EmployeeService.getAll().then(setEmployees).catch(console.error);
-            // Load existing members when editing
             if (editProject?.ProjectID) {
                 ProjectMemberService.getSelectedMembers(editProject.ProjectID)
-                    .then(members => {
-                        setSelectedMembers(members);
-                    })
+                    .then(members => setSelectedMembers(members))
                     .catch(console.error);
             }
         } else {
@@ -229,7 +244,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         setAiError('');
         setAiFilledFields(new Set());
 
-        // Show preview
         const previewUrl = URL.createObjectURL(file);
         setAiPreviewUrl(previewUrl);
 
@@ -249,77 +263,72 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const applyExtractedData = (data: ExtractedProjectData) => {
         const filled = new Set<string>();
 
-        setFormData(prev => {
-            const next = { ...prev };
+        const setField = (key: keyof ProjectModalFormValues, value: any) => {
+            setValue(key, value, { shouldDirty: true });
+            filled.add(key);
+        };
 
-            if (data.ProjectName) { next.ProjectName = data.ProjectName; filled.add('ProjectName'); }
-            if (data.Duration) { next.Duration = data.Duration; filled.add('Duration'); }
-            if (data.CompetentAuthority) { next.CompetentAuthority = data.CompetentAuthority; filled.add('CompetentAuthority'); }
-            if (data.InvestorName) { next.InvestorName = data.InvestorName; filled.add('InvestorName'); }
-            if (data.CapitalSource) { next.CapitalSource = data.CapitalSource; filled.add('CapitalSource'); }
-            if (data.LocationCode) { next.LocationCode = data.LocationCode; filled.add('LocationCode'); }
-            if (data.ApplicableStandards) { next.ApplicableStandards = data.ApplicableStandards; filled.add('ApplicableStandards'); }
-            if (data.FeasibilityContractor) { next.FeasibilityContractor = data.FeasibilityContractor; filled.add('FeasibilityContractor'); }
-            if (data.SurveyContractor) { next.SurveyContractor = data.SurveyContractor; filled.add('SurveyContractor'); }
-            if (data.ReviewContractor) { next.ReviewContractor = data.ReviewContractor; filled.add('ReviewContractor'); }
+        if (data.ProjectName) setField('ProjectName', data.ProjectName);
+        if (data.Duration) setField('Duration', data.Duration);
+        if (data.CompetentAuthority) setField('CompetentAuthority', data.CompetentAuthority);
+        if (data.InvestorName) setField('InvestorName', data.InvestorName);
+        if (data.CapitalSource) setField('CapitalSource', data.CapitalSource);
+        if (data.LocationCode) setField('LocationCode', data.LocationCode);
+        if (data.ApplicableStandards) setField('ApplicableStandards', data.ApplicableStandards);
+        if (data.FeasibilityContractor) setField('FeasibilityContractor', data.FeasibilityContractor);
+        if (data.SurveyContractor) setField('SurveyContractor', data.SurveyContractor);
+        if (data.ReviewContractor) setField('ReviewContractor', data.ReviewContractor);
 
-            // TotalInvestment
-            if (data.TotalInvestment && data.TotalInvestment > 0) {
-                next.TotalInvestment = data.TotalInvestment;
-                filled.add('TotalInvestment');
-            }
+        if (data.TotalInvestment && data.TotalInvestment > 0) {
+            setField('TotalInvestment', data.TotalInvestment);
+        }
 
-            // StartDate (YYYY-MM-DD)
-            if (data.StartDate && /^\d{4}-\d{2}-\d{2}$/.test(data.StartDate)) {
-                next.StartDate = data.StartDate;
-                filled.add('StartDate');
-            }
+        if (data.StartDate && /^\d{4}-\d{2}-\d{2}$/.test(data.StartDate)) {
+            setField('StartDate', data.StartDate);
+        }
 
-            // GroupCode mapping
-            if (data.GroupCode) {
-                const gMap: Record<string, ProjectGroup> = {
-                    'A': ProjectGroup.A, 'B': ProjectGroup.B, 'C': ProjectGroup.C, 'QN': ProjectGroup.QN,
-                    'Nhóm A': ProjectGroup.A, 'Nhóm B': ProjectGroup.B, 'Nhóm C': ProjectGroup.C,
-                };
-                const mapped = gMap[data.GroupCode];
-                if (mapped) { next.GroupCode = mapped; filled.add('GroupCode'); }
-            }
+        if (data.GroupCode) {
+            const gMap: Record<string, 'QN' | 'A' | 'B' | 'C'> = {
+                'A': 'A', 'B': 'B', 'C': 'C', 'QN': 'QN',
+                'Nhóm A': 'A', 'Nhóm B': 'B', 'Nhóm C': 'C',
+            };
+            const mapped = gMap[data.GroupCode];
+            if (mapped) setField('GroupCode', mapped);
+        }
 
-            // ConstructionType mapping
-            if (data.ConstructionType) {
-                const validTypes = CONSTRUCTION_TYPES.map(t => t.label);
-                const match = validTypes.find(t => data.ConstructionType!.includes(t));
-                if (match) { next.ConstructionType = match; filled.add('ConstructionType'); }
-            }
+        if (data.ConstructionType) {
+            const validTypes = CONSTRUCTION_TYPES.map(t => t.label);
+            const match = validTypes.find(t => data.ConstructionType!.includes(t));
+            if (match) setField('ConstructionType', match);
+        }
 
-            // ConstructionGrade mapping
-            if (data.ConstructionGrade) {
-                const validGrades = CONSTRUCTION_GRADES.map(g => g.value);
-                const match = validGrades.find(g => data.ConstructionGrade!.includes(g));
-                if (match) { next.ConstructionGrade = match; filled.add('ConstructionGrade'); }
-            }
+        if (data.ConstructionGrade) {
+            const validGrades = CONSTRUCTION_GRADES.map(g => g.value);
+            const match = validGrades.find(g => data.ConstructionGrade!.includes(g));
+            if (match) setField('ConstructionGrade', match);
+        }
 
-            // Province mapping (match name → code)
-            if (data.ProvinceName) {
-                const pMatch = PROVINCES.find(p =>
-                    data.ProvinceName!.includes(p.name) || p.name.includes(data.ProvinceName!)
-                );
-                if (pMatch) { next.ProvinceCode = pMatch.code; filled.add('ProvinceCode'); }
-            }
-
-            return next;
-        });
+        if (data.ProvinceName) {
+            const pMatch = PROVINCES.find(p =>
+                data.ProvinceName!.includes(p.name) || p.name.includes(data.ProvinceName!)
+            );
+            if (pMatch) setField('ProvinceCode', pMatch.code);
+        }
 
         setAiFilledFields(filled);
-        // Auto-clear highlights after 6 seconds
         setTimeout(() => setAiFilledFields(new Set()), 6000);
     };
 
-    // Auto-generate Project Code theo TT 24/2025/TT-BXD (only in create mode)
+    // Auto-generate Project Code (only in create mode)
+    const watchedGroupCode = watch('GroupCode');
+    const watchedInvestmentType = watch('InvestmentType');
+    const watchedStartDate = watch('StartDate');
+    const watchedProvinceCode = watch('ProvinceCode');
+    const watchedConstructionType = watch('ConstructionType');
+
     useEffect(() => {
         if (isOpen && !isEditMode) {
-            const year = new Date(formData.StartDate).getFullYear();
-            // Map ConstructionType string to enum, default to Civil
+            const year = new Date(watchedStartDate).getFullYear();
             const ctMap: Record<string, ConstructionType> = {
                 'Dân dụng': ConstructionType.Civil,
                 'Công nghiệp': ConstructionType.Industrial,
@@ -328,19 +337,19 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 'Hạ tầng kỹ thuật': ConstructionType.Infrastructure,
                 'Quốc phòng, an ninh': ConstructionType.Defense,
             };
-            const ct = ctMap[formData.ConstructionType] || ConstructionType.Civil;
+            const ct = ctMap[watchedConstructionType] || ConstructionType.Civil;
             const code = generateProjectCode(
-                formData.ProvinceCode,
-                formData.GroupCode,
-                formData.InvestmentType,
+                watchedProvinceCode,
+                watchedGroupCode as ProjectGroup,
+                watchedInvestmentType as InvestmentType,
                 year,
-                undefined, // random sequence
+                undefined,
                 ct,
-                PermitType.Standard // default to standard permit
+                PermitType.Standard
             );
-            setFormData(prev => ({ ...prev, ProjectID: code }));
+            setValue('ProjectID', code, { shouldDirty: false });
         }
-    }, [isOpen, isEditMode, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode, formData.ConstructionType]);
+    }, [isOpen, isEditMode, watchedGroupCode, watchedInvestmentType, watchedStartDate, watchedProvinceCode, watchedConstructionType, setValue]);
 
     const toggleMember = (empId: string) => {
         setSelectedMembers(prev => {
@@ -356,40 +365,38 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
     const { addToast } = useToast();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        // Temporary disable advanced schema validation due to missing Zod definitions
-        if (!formData.ProjectID || !formData.ProjectName) {
-            addToast({
-                title: 'Lỗi xác thực',
-                message: 'Mã dự án và Tên dự án là bắt buộc.',
-                type: 'error'
-            });
-            return;
-        }
-
+    const onValid = async (data: ProjectModalFormValues) => {
         try {
             setIsLoading(true);
             await onSave({
-                ...formData,
+                ...data,
                 Progress: 0,
-                StartDate: new Date(formData.StartDate) as unknown as string & Date
+                StartDate: new Date(data.StartDate) as unknown as string & Date,
             } as Partial<Project> & { StartDate: Date }, selectedMembers);
             onClose();
         } catch (error) {
-            console.error('Failed to create project:', error);
+            console.error('Failed to save project:', error);
+            addToast({
+                title: 'Lỗi',
+                message: 'Không thể lưu dự án. Vui lòng thử lại.',
+                type: 'error',
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
-    const updateField = (field: string, value: string | number) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+    const onInvalid = () => {
+        addToast({
+            title: 'Lỗi xác thực',
+            message: 'Vui lòng kiểm tra lại các trường bắt buộc.',
+            type: 'error',
+        });
     };
 
     // ── AI highlight helper ──
-    const aiHighlight = (field: string) => aiFilledFields.has(field) ? ' ring-2 ring-emerald-400 dark:ring-emerald-500 border-emerald-400 dark:border-emerald-500 animate-pulse' : '';
+    const aiHighlight = (field: string) =>
+        aiFilledFields.has(field) ? ' ring-2 ring-emerald-400 dark:ring-emerald-500 border-emerald-400 dark:border-emerald-500 animate-pulse' : '';
 
     if (!isOpen) return null;
 
@@ -528,10 +535,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             <button
                                 key={tab.id}
                                 type="button"
-                                onClick={() => setActiveTab(tab.id as any)}
+                                onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
-                                    isActive 
-                                        ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                                    isActive
+                                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
                                 }`}
                             >
@@ -544,97 +551,95 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 </div>
 
                 {/* Body */}
-                <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-[50vh]">
+                <form onSubmit={handleSubmit(onValid, onInvalid)} className="flex flex-col flex-1 min-h-[50vh]">
                     <div className="p-4 overflow-y-auto flex-1">
 
-                    {/* ═══ Tab 1: Thông tin chung ═══ */}
-                    {activeTab === 'general' && (
-                        <ProjectFormGeneral
-                            formData={formData}
-                            updateField={updateField}
-                            aiHighlight={aiHighlight}
-                        />
-                    )}
+                        {/* ═══ Tab 1: Thông tin chung ═══ */}
+                        {activeTab === 'general' && (
+                            <ProjectFormGeneral
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                            />
+                        )}
 
-                    {/* ═══ Tab 2: Cơ cấu vốn & Chi phí ═══ */}
-                    {activeTab === 'investment' && (
-                        <ProjectFormInvestment
-                            formData={formData}
-                            updateField={updateField}
-                        />
-                    )}
+                        {/* ═══ Tab 2: Cơ cấu vốn & Chi phí ═══ */}
+                        {activeTab === 'investment' && (
+                            <ProjectFormInvestment
+                                formData={formData}
+                                updateField={updateField}
+                            />
+                        )}
 
-                    {/* ═══ Tab 3: KHV & Giải ngân ═══ */}
-                    {activeTab === 'khv' && (
-                        <ProjectFormKHV
-                            formData={formData}
-                            updateField={updateField}
-                        />
-                    )}
+                        {/* ═══ Tab 3: KHV & Giải ngân ═══ */}
+                        {activeTab === 'khv' && (
+                            <ProjectFormKHV
+                                formData={formData}
+                                updateField={updateField}
+                            />
+                        )}
 
-                    {/* ═══ Tab 4: Nhà thầu & Tiêu chuẩn ═══ */}
-                    {activeTab === 'contractors' && (
-                        <ProjectFormContractors
-                            formData={formData}
-                            updateField={updateField}
-                            aiHighlight={aiHighlight}
-                        />
-                    )}
+                        {/* ═══ Tab 4: Nhà thầu & Tiêu chuẩn ═══ */}
+                        {activeTab === 'contractors' && (
+                            <ProjectFormContractors
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                            />
+                        )}
 
-                    {/* ═══ Tab 5: Hiện trạng ═══ */}
-                    {activeTab === 'status' && (
-                        <ProjectFormStatus
-                            formData={formData}
-                            updateField={updateField}
-                            aiHighlight={aiHighlight}
-                        />
-                    )}
+                        {/* ═══ Tab 5: Hiện trạng ═══ */}
+                        {activeTab === 'status' && (
+                            <ProjectFormStatus
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                            />
+                        )}
 
-                    {/* ═══ Tab 6: Thành viên ═══ */}
-                    {activeTab === 'members' && (
-                        <ProjectFormMembers
-                            formData={formData}
-                            employees={employees}
-                            selectedMembers={selectedMembers}
-                            toggleMember={toggleMember}
-                            updateMemberRole={updateMemberRole}
-                        />
-                    )}
-
-
+                        {/* ═══ Tab 6: Thành viên ═══ */}
+                        {activeTab === 'members' && (
+                            <ProjectFormMembers
+                                formData={formData}
+                                employees={employees}
+                                selectedMembers={selectedMembers}
+                                toggleMember={toggleMember}
+                                updateMemberRole={updateMemberRole}
+                            />
+                        )}
 
                     </div>
 
-                {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
-                    <p className="text-[11px] text-gray-400 dark:text-slate-400">
-                        Các trường không bắt buộc có thể bổ sung sau
-                    </p>
-                    <div className="flex gap-3">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 rounded-lg text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
-                            disabled={isLoading}
-                        >
-                            Hủy bỏ
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="px-6 py-2 rounded-lg bg-primary-600 text-white font-bold shadow-sm shadow-primary-200 dark:shadow-primary-900/30 hover:bg-primary-500 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    Đang xử lý...
-                                </>
-                            ) : (
-                                isEditMode ? 'Lưu thay đổi' : 'Tạo dự án'
-                            )}
-                        </button>
+                    {/* Footer */}
+                    <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
+                        <p className="text-[11px] text-gray-400 dark:text-slate-400">
+                            Các trường không bắt buộc có thể bổ sung sau
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-lg text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                                disabled={isLoading}
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="px-6 py-2 rounded-lg bg-primary-600 text-white font-bold shadow-sm shadow-primary-200 dark:shadow-primary-900/30 hover:bg-primary-500 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    isEditMode ? 'Lưu thay đổi' : 'Tạo dự án'
+                                )}
+                            </button>
+                        </div>
                     </div>
-                </div>
                 </form>
             </div>
         </div>

@@ -11,7 +11,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { usePermissionCheck } from '../../../hooks/usePermissionCheck';
 import { resolveSystemRole, type SystemRole } from '../../../types/permission.types';
 import type { DepartmentCode } from '../../../types/plan.types';
-import { supabase } from '../../../lib/supabase';
+import { supabaseExt as supabase } from '../../../lib/supabase'; // dashboard_widget_config not yet in generated types
 
 export type DashboardTier = 'director' | 'manager' | 'staff';
 
@@ -106,7 +106,7 @@ export function useDashboardConfig(): DashboardConfig {
             if (!data || data.length === 0) {
                 return [];
             }
-            return data.map(d => d.widget_id);
+            return data.map((d: any) => d.widget_id);
         },
         enabled: !!systemRole,
         staleTime: 5 * 60 * 1000,

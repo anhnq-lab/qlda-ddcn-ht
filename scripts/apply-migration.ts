@@ -29,7 +29,10 @@ function loadEnv() {
 
 loadEnv();
 
-const dbPassword = process.env.SUPABASE_DB_PASSWORD || 'Ewrxd0UuYgjwXgVG';
+const dbPassword = process.env.SUPABASE_DB_PASSWORD;
+if (!dbPassword) {
+  throw new Error('Missing SUPABASE_DB_PASSWORD env var');
+}
 const projectId = 'jkaddjllseephsiaqvds';
 const host = 'aws-0-ap-southeast-1.pooler.supabase.com';
 

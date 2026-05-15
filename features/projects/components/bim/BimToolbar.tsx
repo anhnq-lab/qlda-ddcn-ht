@@ -11,7 +11,7 @@ import {
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
     Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical,
-    Activity, ShieldAlert, Zap
+    Activity, ShieldAlert, Zap, Home
 } from 'lucide-react';
 import { useBimContext } from './context/BimContext';
 
@@ -407,6 +407,9 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             </ToolBtn>
             <ToolBtn isDark={isDarkMode} onClick={onFitAll} title="Fit All" shortcut="F" disabled={disabled}>
                 <Maximize className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} onClick={() => onSetView('iso')} title="Home View (Default)" shortcut="H" disabled={disabled}>
+                <Home className="w-5 h-5" />
             </ToolBtn>
             <ToolBtn isDark={isDarkMode} active={activeTool === 'orbit-point'} onClick={() => tools.activateTool('orbit-point')} title="Orbit Point (Click to set pivot)" shortcut="O" disabled={disabled}>
                 <Crosshair className="w-5 h-5" />

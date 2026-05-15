@@ -77,8 +77,8 @@ async function gatherProjectData(projectId: string) {
 
     // Parallel fetch additional data
     const [capitalInfo, packages] = await Promise.all([
-        ProjectService.getCapitalInfo(projectId).catch(() => null),
-        ProjectService.getPackagesByProject(projectId).catch(() => []),
+        ProjectService.getCapitalInfo(projectId).catch((): null => null),
+        ProjectService.getPackagesByProject(projectId).catch((): any[] => []),
     ]);
 
     // Get contracts and payments for the project's packages
@@ -87,13 +87,13 @@ async function gatherProjectData(projectId: string) {
 
     if (packages.length > 0) {
         const contractResults = await Promise.all(
-            packages.map(pkg => ContractService.getByPackageId(pkg.PackageID).catch(() => []))
+            packages.map(pkg => ContractService.getByPackageId(pkg.PackageID).catch((): any[] => []))
         );
         contracts = contractResults.flat();
 
         if (contracts.length > 0) {
             const paymentResults = await Promise.all(
-                contracts.map(c => PaymentService.getByContractId(c.ContractID).catch(() => []))
+                contracts.map(c => PaymentService.getByContractId(c.ContractID).catch((): any[] => []))
             );
             payments = paymentResults.flat();
         }

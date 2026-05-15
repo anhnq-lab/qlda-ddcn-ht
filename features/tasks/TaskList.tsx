@@ -8,7 +8,7 @@ import { Task, TaskStatus, TaskPriority } from '../../types';
 import { workflowTaskToTask } from '../../lib/dbMappers';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
 import { getStatusInfo, getPriorityInfo } from './TaskCreateEditModal';
-import { ProjectTaskModal } from '../projects/components/ProjectTaskModal';
+import { ProjectTaskModal } from '../../components/common/ProjectTaskModal';
 import ProjectDetail from '../projects/ProjectDetail';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { StatCard, EmptyState } from '../../components/ui';

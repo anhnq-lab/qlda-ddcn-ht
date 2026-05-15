@@ -162,11 +162,11 @@ const UserImpersonator: React.FC = () => {
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-4">
                             <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${
-                                impersonatedUser.Role === 'contractor'
+                                (impersonatedUser.Role as string) === 'contractor'
                                     ? 'bg-gradient-to-br from-primary-500 to-primary-600'
                                     : 'bg-gradient-to-br from-primary-400 to-warning-500'
                             }`}>
-                                {impersonatedUser.Role === 'contractor'
+                                {(impersonatedUser.Role as string) === 'contractor'
                                     ? <Building2 className="w-7 h-7" />
                                     : (impersonatedUser.FullName?.charAt(0) || 'U')
                                 }
@@ -177,7 +177,7 @@ const UserImpersonator: React.FC = () => {
                                         <UserCheck size={12} />
                                         ĐANG GIẢ LÀM
                                     </span>
-                                    {impersonatedUser.Role === 'contractor' && (
+                                    {(impersonatedUser.Role as string) === 'contractor' && (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-600 text-white text-xs font-bold">
                                             <Building2 size={12} />
                                             NHÀ THẦU

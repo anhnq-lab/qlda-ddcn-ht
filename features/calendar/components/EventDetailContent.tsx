@@ -25,7 +25,7 @@ const EVENT_TYPE_CONFIG: Record<AgencyEventType, { label: string; color: string 
 };
 
 export const EventDetailContent: React.FC<EventDetailContentProps> = ({ eventId, onEdit, onClose }) => {
-  const { user } = useAuth();
+  const { supabaseUser: user } = useAuth();
   const { data: event, isLoading } = useEventById(eventId);
   const deleteMutation = useDeleteEvent();
   const { showToast } = useToast();
@@ -74,7 +74,7 @@ export const EventDetailContent: React.FC<EventDetailContentProps> = ({ eventId,
         <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-snug">
           {event.title}
         </h2>
-        <Badge color={config.color as any}>{config.label}</Badge>
+        <Badge variant={config.color as any}>{config.label}</Badge>
       </div>
 
       {/* Detail rows */}
@@ -170,7 +170,7 @@ export const EventDetailContent: React.FC<EventDetailContentProps> = ({ eventId,
             variant="outline"
             className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
             onClick={() => setConfirmOpen(true)}
-            isLoading={deleteMutation.isPending}
+            loading={deleteMutation.isPending}
           >
             <Trash2 className="w-4 h-4 mr-1.5" /> Xóa
           </Button>

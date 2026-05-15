@@ -292,9 +292,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             component: (
                 <BiddingPackageDetail
                     isOpen={true}
-                    onClose={() => closePanel()}
+                    onClose={() => { closePanel(); }}
                     package_data={pkg}
-                    projectId={projectID}
+                    {...{ projectId: projectID } as any}
                     initialTab={initialDetailTab}
                     asSlidePanel={true}
                     onEdit={(p) => {
@@ -430,8 +430,8 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     </button>
                 </div>
             </div>
-            <BiddingPackageModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} projectID={projectID} project={project} />
-            <BiddingImportModal isOpen={isImportModalOpen} onClose={() => { setIsImportModalOpen(false); queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] }); }} projectID={projectID} project={project} />
+            <BiddingPackageModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} projectId={projectID} />
+            <BiddingImportModal isOpen={isImportModalOpen} onClose={() => { setIsImportModalOpen(false); queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] }); }} projectId={projectID} />
         </div>
     );
 
@@ -554,19 +554,23 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 )}
 
                 {/* Plan Accordion Cards */}
-                {plans && plans.length > 0 && plans.map((plan) => {
-                    const planPackages = filteredPackages?.filter(p => p.PlanID === plan.PlanID) || [];
+                {planGroups.length > 0 && planGroups.map((group) => {
+                    const planPackages = group.packages;
                     const planTotal = planPackages.reduce((sum, p) => sum + (p.Price || 0), 0);
-                    const isExpanded = expandedGroups.has(plan.PlanID);
+                    const isExpanded = expandedGroups.has(group.key);
+                    const isUngrouped = group.key === '__ungrouped__';
+                    
+                    // Find original plan if it exists
+                    const plan = plans?.find(p => p.PlanID === group.key);
 
                     return (
-                        <div key={plan.PlanID} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div key={group.key} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             {/* Plan Header - Click to expand */}
                             <div
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => toggleGroup(plan.PlanID)}
-                                className="w-full flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent dark:bg-slate- border-b border-primary-200 dark:border-slate-700 hover:from-primary-100 hover:to-warning-100 dark:hover:bg-slate- transition-colors cursor-pointer select-none"
+                                onClick={() => toggleGroup(group.key)}
+                                className="w-full flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent border-b border-primary-200 dark:border-slate-700 hover:from-primary-100 hover:to-warning-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer select-none"
                             >
                                 <div className="flex items-center gap-3">
                                     {isExpanded ? (
@@ -577,26 +581,30 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     <Layers className="w-4 h-4 text-primary-600 dark:text-slate-400 flex-shrink-0" />
                                     <div className="text-left">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-sm font-bold text-primary-900 dark:text-slate-100">{plan.PlanName}</span>
-                                            {plan.PlanCode && (
+                                            <span className="text-sm font-bold text-primary-900 dark:text-slate-100">
+                                                {isUngrouped ? 'Gói thầu độc lập (Chưa thuộc KHLCNT)' : group.name}
+                                            </span>
+                                            {plan?.PlanCode && (
                                                 <span className="text-[10px] font-mono px-1.5 py-0.5 bg-primary-200/60 text-primary-800 dark:bg-slate-700 dark:text-slate-300 rounded border border-transparent dark:border-slate-600">{plan.PlanCode}</span>
                                             )}
-                                            <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded border border-transparent dark:border-blue-800/50">
-                                                {plan.PlanType === 'EGP' ? 'EGP mới' : 'Hệ thống cũ'}
-                                            </span>
+                                            {!isUngrouped && plan && (
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded border border-transparent dark:border-blue-800/50">
+                                                    {plan.PlanType === 'EGP' ? 'EGP mới' : 'Hệ thống cũ'}
+                                                </span>
+                                            )}
                                         </div>
-                                        {plan.DecisionNumber && (
+                                        {group.decisionNumber && (
                                             <span className="text-xs text-primary-700/80 dark:text-primary-400/80">
-                                                QĐ: {plan.DecisionNumber}{plan.DecisionDate && ` (${new Date(plan.DecisionDate).toLocaleDateString('vi-VN')})`}
+                                                QĐ: {group.decisionNumber}{group.decisionDate && ` (${new Date(group.decisionDate).toLocaleDateString('vi-VN')})`}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                                    {plan.MSCPlanCode && (
-                                        <a href={getMSCPlanLink(plan.MSCPlanCode)} target="_blank" rel="noopener noreferrer"
+                                    {group.mscPlanCode && (
+                                        <a href={getMSCPlanLink(group.mscPlanCode)} target="_blank" rel="noopener noreferrer"
                                             className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 rounded hover:bg-blue-200 transition-colors">
-                                            <Globe className="w-3 h-3" />{plan.MSCPlanCode}
+                                            <Globe className="w-3 h-3" />{group.mscPlanCode}
                                         </a>
                                     )}
                                     <span className="px-2 py-1 text-xs font-bold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 rounded-full">
@@ -605,16 +613,18 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     <span className="text-xs font-bold text-primary-800 dark:text-primary-200 tabular-nums">
                                         {formatCurrency(planTotal)}
                                     </span>
-                                    <button
-                                        onClick={() => {
-                                            setConfirmDeletePlan({ planId: plan.PlanID, planName: plan.PlanName, packageCount: planPackages.length });
-                                        }}
-                                        disabled={deletingPlanId === plan.PlanID}
-                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50"
-                                        title="Xóa KHLCNT"
-                                    >
-                                        {deletingPlanId === plan.PlanID ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                                    </button>
+                                    {!isUngrouped && plan && (
+                                        <button
+                                            onClick={() => {
+                                                setConfirmDeletePlan({ planId: plan.PlanID, planName: plan.PlanName, packageCount: planPackages.length });
+                                            }}
+                                            disabled={deletingPlanId === plan.PlanID}
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50"
+                                            title="Xóa KHLCNT"
+                                        >
+                                            {deletingPlanId === plan.PlanID ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 
@@ -622,17 +632,17 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                             {isExpanded && (
                                 <>
                                     {/* Per-plan action bar */}
-                                    <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate- border-b border-gray-200 dark:border-slate-700/80">
+                                    <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700/80">
                                         <span className="text-xs font-medium text-gray-500 dark:text-slate-400">Gói thầu thuộc kế hoạch này</span>
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={() => { setSelectedPlanId(plan.PlanID); setIsImportModalOpen(true); }}
+                                                onClick={() => { setSelectedPlanId(isUngrouped ? null : group.key); setIsImportModalOpen(true); }}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-600 transition-colors"
                                             >
                                                 <Upload size={13} /> Import
                                             </button>
                                             <button
-                                                onClick={() => { setSelectedPlanId(plan.PlanID); setIsCreateModalOpen(true); }}
+                                                onClick={() => { setSelectedPlanId(isUngrouped ? null : group.key); setIsCreateModalOpen(true); }}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                                             >
                                                 <Plus size={13} /> Thêm gói thầu
@@ -704,11 +714,11 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                 {visibleColumns.description && <td className="border border-slate-200 dark:border-slate-700 px-3 py-3 text-slate-600 dark:text-slate-300 align-top leading-snug">{pkg.Description || '-'}</td>}
                                                                 {visibleColumns.price && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-right font-bold tabular-nums text-slate-800 dark:text-slate-200 align-top">{formatCurrency(pkg.Price)}</td>}
                                                                 {visibleColumns.fundingSource && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.FundingSource || '-'}</td>}
-                                                                {visibleColumns.selectionMethod && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionMethod === 'OpenBidding' ? 'Đấu thầu rộng rãi' : pkg.SelectionMethod === 'Appointed' ? 'Chỉ định thầu' : pkg.SelectionMethod === 'LimitedBidding' ? 'Đấu thầu hạn chế' : pkg.SelectionMethod === 'CompetitiveNegotiation' ? 'Chào hàng cạnh tranh' : pkg.SelectionMethod === 'DirectShopping' ? 'Mua sắm trực tiếp' : pkg.SelectionMethod === 'SelfExecute' ? 'Tự thực hiện' : pkg.SelectionMethod || '-'}</td>}
+                                                                {visibleColumns.selectionMethod && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{(pkg.SelectionMethod as any) === 'OpenBidding' ? 'Đấu thầu rộng rãi' : (pkg.SelectionMethod as any) === 'Appointed' ? 'Chỉ định thầu' : (pkg.SelectionMethod as any) === 'LimitedBidding' ? 'Đấu thầu hạn chế' : (pkg.SelectionMethod as any) === 'CompetitiveNegotiation' ? 'Chào hàng cạnh tranh' : (pkg.SelectionMethod as any) === 'DirectShopping' ? 'Mua sắm trực tiếp' : (pkg.SelectionMethod as any) === 'SelfExecute' ? 'Tự thực hiện' : pkg.SelectionMethod || '-'}</td>}
                                                                 {visibleColumns.selectionProcedure && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionProcedure === 'Reduced' ? 'Rút gọn' : pkg.SelectionProcedure === 'Normal' ? 'Thông thường' : pkg.SelectionProcedure === 'OneStageOneEnvelope' ? '1 giai đoạn 1 túi hồ sơ' : pkg.SelectionProcedure === 'OneStageTwoEnvelope' ? '1 giai đoạn 2 túi hồ sơ' : pkg.SelectionProcedure === 'TwoStageOneEnvelope' ? '2 giai đoạn 1 túi hồ sơ' : pkg.SelectionProcedure === 'TwoStageTwoEnvelope' ? '2 giai đoạn 2 túi hồ sơ' : pkg.SelectionProcedure || pkg.BidType || '-'}</td>}
                                                                 {visibleColumns.selectionDuration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionDuration || '45 ngày'}</td>}
                                                                 {visibleColumns.selectionStartDate && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionStartDate || '-'}</td>}
-                                                                {visibleColumns.contractType && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.ContractType === 'LumpSum' ? 'Trọn gói' : (pkg.ContractType === 'UnitPrice' || pkg.ContractType === 'FixedUnitPrice') ? 'Đơn giá cố định' : pkg.ContractType === 'AdjustableUnitPrice' ? 'Đơn giá điều chỉnh' : pkg.ContractType === 'TimeBased' ? 'Theo thời gian' : pkg.ContractType === 'Percentage' ? 'Theo tỷ lệ %' : pkg.ContractType === 'Mixed' ? 'Hỗn hợp' : pkg.ContractType || '-'}</td>}
+                                                                {visibleColumns.contractType && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{(pkg.ContractType as any) === 'LumpSum' ? 'Trọn gói' : ((pkg.ContractType as any) === 'UnitPrice' || (pkg.ContractType as any) === 'FixedUnitPrice') ? 'Đơn giá cố định' : (pkg.ContractType as any) === 'AdjustableUnitPrice' ? 'Đơn giá điều chỉnh' : (pkg.ContractType as any) === 'TimeBased' ? 'Theo thời gian' : (pkg.ContractType as any) === 'Percentage' ? 'Theo tỷ lệ %' : (pkg.ContractType as any) === 'Mixed' ? 'Hỗn hợp' : pkg.ContractType || '-'}</td>}
                                                                 {visibleColumns.duration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">{pkg.Duration || '-'}</td>}
                                                                 {visibleColumns.hasOption && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.HasOption ? 'Có' : 'Không'}</td>}
                                                                 {visibleColumns.status && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
@@ -753,7 +763,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                             </table>
                                         </div>
                                     ) : (() => {
-                                        const allPlanPkgs = packages?.filter(p => p.PlanID === plan.PlanID) || [];
+                                        const allPlanPkgs = isUngrouped ? [] : packages?.filter(p => p.PlanID === group.key) || [];
                                         const isFiltered = allPlanPkgs.length > 0 && planPackages.length === 0;
                                         return (
                                             <div className="p-4 text-center">
@@ -761,7 +771,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                     <>
                                                         <Search className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
                                                         <p className="text-sm text-gray-400 dark:text-slate-400 mb-1">Không tìm thấy gói thầu phù hợp</p>
-                                                        <p className="text-xs text-gray-400 dark:text-slate-400 mb-3">Có {allPlanPkgs.length} gói trong KHLCNT nhưng không khớp bộ lọc</p>
+                                                        <p className="text-xs text-gray-400 dark:text-slate-400 mb-3">Có {allPlanPkgs.length} gói trong nhóm này nhưng không khớp bộ lọc</p>
                                                         <button onClick={() => { setSearchTerm(''); setFilterStatus('all'); }}
                                                             className="px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-colors">
                                                             Xóa bộ lọc
@@ -770,13 +780,13 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                 ) : (
                                                     <>
                                                         <FileText className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                                                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">Chưa có gói thầu trong KHLCNT này</p>
+                                                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">Chưa có gói thầu trong nhóm này</p>
                                                         <div className="flex justify-center gap-2">
-                                                            <button onClick={() => { setSelectedPlanId(plan.PlanID); setIsImportModalOpen(true); }}
+                                                            <button onClick={() => { setSelectedPlanId(isUngrouped ? null : group.key); setIsImportModalOpen(true); }}
                                                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 transition-colors">
                                                                 <Upload size={13} /> Import Excel
                                                             </button>
-                                                            <button onClick={() => { setSelectedPlanId(plan.PlanID); setIsCreateModalOpen(true); }}
+                                                            <button onClick={() => { setSelectedPlanId(isUngrouped ? null : group.key); setIsCreateModalOpen(true); }}
                                                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                                                                 <Plus size={13} /> Thêm gói thầu
                                                             </button>
@@ -796,7 +806,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
 
                 {/* No plans & no packages */}
-                {(!plans || plans.length === 0) && (!filteredPackages || filteredPackages.length === 0) && (
+                {planGroups.length === 0 && (
                     <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-12 text-center">
                         <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto" />
                         <p className="text-gray-500 dark:text-slate-400 mt-2">Chưa có KHLCNT và gói thầu nào</p>

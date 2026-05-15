@@ -110,7 +110,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
         title: event.title,
         description: event.description || '',
         event_type: event.event_type,
-        room: event.room || null,
+        room: (event.room || null) as any,
         location: event.location || '',
         start_time: new Date(event.start_time).toISOString().slice(0, 16),
         end_time: new Date(event.end_time).toISOString().slice(0, 16),
@@ -158,10 +158,10 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
       };
 
       if (event) {
-        await updateMutation.mutateAsync({ id: event.id, ...payload });
+        await updateMutation.mutateAsync({ id: event.id, ...payload } as any);
         showToast('Cập nhật lịch thành công', 'success');
       } else {
-        await createMutation.mutateAsync(payload);
+        await createMutation.mutateAsync(payload as any);
         const count = data.attendee_ids?.length ?? 0;
         showToast(
           count > 0
@@ -308,7 +308,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
           <Button variant="outline" type="button" onClick={onClose}>Hủy</Button>
           <Button
             type="submit"
-            isLoading={createMutation.isPending || updateMutation.isPending || isCheckingConflict}
+            loading={createMutation.isPending || updateMutation.isPending || isCheckingConflict}
             disabled={roomConflicts.length > 0 || isCheckingConflict}
           >
             {event ? 'Cập nhật' : 'Đăng ký'}

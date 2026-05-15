@@ -182,8 +182,8 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                     .order('created_at', { ascending: true })
             ]);
             if (wfRes.error) throw wfRes.error;
-            setWorkflow(wfRes.data);
-            setNodes(nodesRes.data || []);
+            setWorkflow(wfRes.data as any);
+            setNodes((nodesRes.data || []) as any);
         } catch (err: any) {
             addToast({ title: 'Lỗi tải dữ liệu', message: err.message, type: 'error' });
         } finally {

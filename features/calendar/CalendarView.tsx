@@ -97,7 +97,7 @@ export default function CalendarView() {
     <div className="flex flex-col h-full gap-4">
       <PageHeader 
         title="Lịch cơ quan" 
-        subtitle="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
+        description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
         actions={
           <div className="flex items-center gap-4">
             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">

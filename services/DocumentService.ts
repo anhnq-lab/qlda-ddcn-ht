@@ -1,5 +1,5 @@
 // Document Attachments Service - Supabase CRUD + Storage
-import { supabase } from '../lib/supabase';
+import { supabaseExt as supabase } from '../lib/supabase'; // document_attachments not yet in generated types
 
 // ============================================================
 // TYPES
@@ -65,7 +65,7 @@ export class DocumentService {
 
         if (error) throw new Error(`Failed to fetch documents: ${error.message}`);
 
-        return (data || []).map(row => {
+        return (data || []).map((row: any) => {
             const doc = dbToDocument(row);
             const { data: urlData } = supabase.storage
                 .from('documents')

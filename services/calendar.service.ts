@@ -144,7 +144,7 @@ export const calendarService = {
     let query = supabase
       .from(EVENT_TABLE)
       .select('id, title, start_time, end_time, room')
-      .eq('room', room)
+      .eq('room', room as any)
       .lt('start_time', endTime)
       .gt('end_time', startTime);
 

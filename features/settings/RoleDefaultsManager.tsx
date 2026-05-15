@@ -3,7 +3,7 @@ import {
     Shield, Check, X, Loader2, Users, Save, RefreshCw,
     AlertTriangle, ChevronRight
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseExt } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import {
@@ -61,7 +61,7 @@ const RoleDefaultsManager: React.FC = () => {
     useEffect(() => {
         const loadFromDB = async () => {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseExt
                     .from('role_permission_defaults')
                     .select('role, resource, actions');
 
@@ -73,7 +73,7 @@ const RoleDefaultsManager: React.FC = () => {
                 if (data && data.length > 0) {
                     setRolePerms(prev => {
                         const merged = { ...prev };
-                        data.forEach(row => {
+                        data.forEach((row: any) => {
                             const role = row.role as SystemRole;
                             const resource = row.resource as PermissionResource;
                             if (merged[role]) {
@@ -165,7 +165,7 @@ const RoleDefaultsManager: React.FC = () => {
                 }))
             );
 
-            const { error } = await supabase
+            const { error } = await supabaseExt
                 .from('role_permission_defaults')
                 .upsert(rows, { onConflict: 'role,resource' });
 

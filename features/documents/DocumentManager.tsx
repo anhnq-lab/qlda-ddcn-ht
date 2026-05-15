@@ -201,11 +201,11 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
 };
 
 const folders = [
-    { id: 'F1', name: '01. Hồ sơ Pháp lý dự án', type: 'folder', children: [] },
-    { id: 'F2', name: '02. Hồ sơ Thiết kế & Khảo sát', type: 'folder', children: [] },
-    { id: 'F3', name: '03. Hồ sơ Đấu thầu', type: 'folder', children: [] },
-    { id: 'F4', name: '04. Hồ sơ Quản lý chất lượng', type: 'folder', children: [] },
-    { id: 'F5', name: '05. Hồ sơ Thanh quyết toán', type: 'folder', children: [] },
+    { id: 'F1', name: '01. Hồ sơ Pháp lý dự án', type: 'folder', children: [] as any[] },
+    { id: 'F2', name: '02. Hồ sơ Thiết kế & Khảo sát', type: 'folder', children: [] as any[] },
+    { id: 'F3', name: '03. Hồ sơ Đấu thầu', type: 'folder', children: [] as any[] },
+    { id: 'F4', name: '04. Hồ sơ Quản lý chất lượng', type: 'folder', children: [] as any[] },
+    { id: 'F5', name: '05. Hồ sơ Thanh quyết toán', type: 'folder', children: [] as any[] },
 ];
 
 const FilterChip: React.FC<{ label: string, active: boolean, onClick: () => void, icon?: React.ReactNode }> = ({ label, active, onClick, icon }) => (
@@ -307,7 +307,7 @@ const DocumentManager: React.FC = () => {
                         Version: "v1.0",
                         isLocal: true,
                         fileObj: file,
-                        History: []
+                        History: [] as any[]
                     };
                     currentDocsInFolder.unshift(newDoc); // Add to top
                     newCount++;

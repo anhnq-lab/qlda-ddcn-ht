@@ -82,15 +82,8 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
                     Hồ sơ tự thực hiện
                 </h4>
                 <DocumentAttachments
-                    entityType="bidding_package"
-                    entityId={packageId}
-                    section="self_execution"
-                    quickUploadTypes={[
-                        { label: 'Phương án', docType: 'Phương án tự thực hiện' },
-                        { label: 'VB giao việc', docType: 'Văn bản giao việc' },
-                        { label: 'QĐ phê duyệt', docType: 'Quyết định phê duyệt' },
-                        { label: 'Thỏa thuận', docType: 'Thỏa thuận giao việc' },
-                    ]}
+                    relatedType={"bidding_package" as any}
+                    relatedId={packageId}
                 />
             </div>
 

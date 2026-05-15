@@ -1,22 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { BarChart3, RefreshCw, AlertTriangle, CheckCircle2, Target, Zap } from 'lucide-react';
-import { analyzeResourceAllocation, ResourceOptimizationResult } from '../../services/ai/resourceOptimizer';
+import { useAIResourceOptimize, ResourceOptimizationResult } from '../../hooks/ai/useAIResourceOptimize';
 
 export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ className = '' }) => {
-    const [result, setResult] = useState<ResourceOptimizationResult | null>(null);
-    const [loading, setLoading] = useState(false);
-
-    const loadAnalysis = useCallback(async () => {
-        setLoading(true);
-        try {
-            const data = await analyzeResourceAllocation();
-            setResult(data);
-        } catch (e) {
-            console.error('Resource analysis error:', e);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const { result, loading, analyze: loadAnalysis } = useAIResourceOptimize();
 
     return (
         <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>

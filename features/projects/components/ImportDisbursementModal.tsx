@@ -187,7 +187,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                                 <td className="px-4 py-2">{new Date(row.Date).toLocaleDateString('vi-VN')}</td>
                                                 <td className="px-4 py-2">{DISBURSEMENT_TYPE_LABELS[row.Type] || row.Type}</td>
                                                 <td className="px-4 py-2 text-right font-mono font-medium text-emerald-600">{formatCurrency(row.Amount)}</td>
-                                                <td className="px-4 py-2">{SOURCE_LABELS[row.Source] || row.Source}</td>
+                                                <td className="px-4 py-2">{SOURCE_LABELS[row.Source as string]?.label || row.Source}</td>
                                                 <td className="px-4 py-2 truncate max-w-[200px]" title={row.Description}>{row.Description}</td>
                                             </tr>
                                         ))}

@@ -6,7 +6,7 @@ import { useToast } from '../../components/ui/Toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash2, Plus, X, Search, Users, HardHat, Ruler, Eye, MapPin, Phone, User, Calendar, Loader2, Hash, AlertCircle, Filter, ArrowUpDown, ChevronLeft, ChevronRight, Building2, Download } from 'lucide-react';
 import { useSlidePanel } from '../../context/SlidePanelContext';
-import { ContractorDetailPanel } from '../projects/components/ContractorDetailPanel';
+import { ContractorDetailPanel } from '../../components/common/ContractorDetailPanel';
 import { exportContractorsToExcel } from '../../utils/contractorExcelIO';
 import { StatCard } from '../../components/ui';
 import { SkeletonStatCard } from '../../components/ui/Skeleton';

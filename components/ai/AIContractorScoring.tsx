@@ -1,23 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Award, RefreshCw, Star, AlertTriangle, ChevronRight, TrendingUp, Users } from 'lucide-react';
-import { rankAllContractors, ContractorRanking, ContractorScore } from '../../services/ai/contractorScoring';
+import { useAIContractorScore, ContractorRanking, ContractorScore } from '../../hooks/ai/useAIContractorScore';
 
 export const AIContractorScoring: React.FC<{ className?: string }> = ({ className = '' }) => {
-    const [ranking, setRanking] = useState<ContractorRanking | null>(null);
-    const [loading, setLoading] = useState(false);
+    const { ranking, loading, loadRanking } = useAIContractorScore();
     const [expanded, setExpanded] = useState<string | null>(null);
-
-    const loadRanking = useCallback(async () => {
-        setLoading(true);
-        try {
-            const result = await rankAllContractors();
-            setRanking(result);
-        } catch (e) {
-            console.error('Ranking error:', e);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
 
     const riskColors = {
         low: 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400',

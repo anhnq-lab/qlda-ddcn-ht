@@ -7,7 +7,7 @@ import { AnnualPlanItem, FREQUENCY_LABELS } from '../../types/plan.types';
 import { supabase as _supabase } from '../../lib/supabase';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
-import EmployeeSlideContent from '../employees/EmployeeSlideContent';
+import EmployeeSlideContent from '../../components/common/EmployeeSlideContent';
 const supabase = _supabase as any;
 
 const FREQUENCY_COLORS: Record<string, string> = {

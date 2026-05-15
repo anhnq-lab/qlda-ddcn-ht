@@ -144,7 +144,7 @@ export class ProjectService {
             const activeGroup = params?.filters?.group;
             const activeBoard = params?.filters?.board;
 
-            (data || []).forEach(row => {
+            (data || []).forEach((row: any) => {
                 const s = row.status;
                 const cs = row.current_status_code;
                 const g = row.group_code;
@@ -481,7 +481,7 @@ export class ProjectService {
         }
 
         // Get package to check status and get PlanID for recalculation
-        const { data: pkg } = await supabase
+        const { data: pkg } = await (supabase as any)
             .from('bidding_packages')
             .select('plan_id, status')
             .eq('package_id', packageId)
@@ -557,13 +557,13 @@ export class ProjectService {
     /** Delete a KHLCNT — with safety check for Awarded/contracted packages */
     static async deletePlan(planId: string): Promise<void> {
         // Safety: check if plan has packages with Awarded status or contracts
-        const { data: packages } = await supabase
+        const { data: packages } = await (supabase as any)
             .from('bidding_packages')
             .select('package_id, status')
             .eq('plan_id', planId);
 
         if (packages && packages.length > 0) {
-            const awardedPkgs = packages.filter(p => p.status === 'Awarded');
+            const awardedPkgs = packages.filter((p: any) => p.status === 'Awarded');
             if (awardedPkgs.length > 0) {
                 throw new Error(
                     `Không thể xóa KHLCNT: có ${awardedPkgs.length} gói thầu đã có kết quả LCNT. Hãy hủy kết quả trước.`
@@ -571,7 +571,7 @@ export class ProjectService {
             }
 
             // Check if any package has contracts
-            const pkgIds = packages.map(p => p.package_id);
+            const pkgIds = packages.map((p: any) => p.package_id);
             const { data: contracts } = await supabase
                 .from('contracts')
                 .select('contract_id')
@@ -586,7 +586,7 @@ export class ProjectService {
         }
 
         // 1. Delete all bidding packages associated with this plan
-        const { error: pkgError } = await supabase
+        const { error: pkgError } = await (supabase as any)
             .from('bidding_packages')
             .delete()
             .eq('plan_id', planId);

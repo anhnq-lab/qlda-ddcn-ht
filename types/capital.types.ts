@@ -25,6 +25,9 @@ export interface Disbursement {
     Description?: string;
     Status: 'Pending' | 'Approved' | 'Rejected';
     Type?: 'TamUng' | 'ThanhToanKLHT' | 'ThuHoiTamUng';
+    Source?: 'NSTW' | 'NSĐP' | 'ODA' | 'Khác';
+    InvoiceNumber?: string;
+    Notes?: string;
     ContractNumber?: string;
     CumulativeBefore?: number;
     AdvanceBalance?: number;

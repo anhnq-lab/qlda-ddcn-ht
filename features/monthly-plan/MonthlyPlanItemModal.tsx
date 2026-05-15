@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import { MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlanItem, MonthlyPlanItemInput,
@@ -13,6 +15,7 @@ import {
     useEmployeeOptions,
     useProjectOptions,
 } from '../../hooks/usePlanData';
+import { MonthlyPlanItemFormSchema, type MonthlyPlanItemFormInput } from '../../schemas/monthlyPlan.schema';
 
 interface Props {
     monthlyPlanId: string;
@@ -24,30 +27,13 @@ interface Props {
     onClose: () => void;
 }
 
-const DEFAULT_FORM: MonthlyPlanItemInput = {
-    monthly_plan_id: '',
-    task_name: '',
-    deliverable: '',
-    group_name: '',
-    group_sort_order: 0,
-    deadline_note: '',
-    status: 'planned',
-    completion_result: '',
-    incomplete_reason: '',
-    notes: '',
-    sort_order: 0,
-    staff_ids: [],
-    staff_names: [],
-};
-
 type SectionKey = 'lienket' | 'thongtin' | 'phancong' | 'ketqua';
 
 const MonthlyPlanItemModal: React.FC<Props> = ({
     monthlyPlanId, month, year, departmentCode, item, onSaved, onClose,
 }) => {
-    const [form, setForm] = useState<MonthlyPlanItemInput>({ ...DEFAULT_FORM, monthly_plan_id: monthlyPlanId });
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
+    const [serverError, setServerError] = useState('');
     const [projectSearch, setProjectSearch] = useState('');
     const [expanded, setExpanded] = useState<Set<SectionKey>>(new Set(['lienket', 'thongtin', 'phancong']));
 
@@ -60,9 +46,51 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
 
     const groupOptions = groups.map(g => ({ value: g, label: g }));
 
+    const buildDefaultValues = useCallback((): MonthlyPlanItemFormInput => ({
+        monthly_plan_id: monthlyPlanId,
+        task_name: '',
+        deliverable: '',
+        group_name: '',
+        group_sort_order: 0,
+        deadline_note: `Tháng ${month}`,
+        status: 'planned',
+        completion_result: '',
+        incomplete_reason: '',
+        notes: '',
+        sort_order: 0,
+        staff_ids: [],
+        staff_names: [],
+        staff_name: '',
+        dept_head_name: '',
+        ban_head_name: '',
+    }), [monthlyPlanId, month]);
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm<MonthlyPlanItemFormInput>({
+        resolver: zodResolver(MonthlyPlanItemFormSchema),
+        defaultValues: buildDefaultValues(),
+    });
+
+    const watchedStatus = watch('status');
+    const watchedStaffIds = watch('staff_ids') ?? [];
+    const watchedStaffNames = watch('staff_names') ?? [];
+    const watchedStaffName = watch('staff_name') ?? '';
+    const watchedAnnualItemId = watch('annual_plan_item_id');
+    const watchedProjectId = watch('project_id');
+    const watchedGroupName = watch('group_name') ?? '';
+    const watchedTaskName = watch('task_name') ?? '';
+    const watchedDeptHeadId = watch('dept_head_id') ?? '';
+    const watchedBanHeadId = watch('ban_head_id') ?? '';
+
     useEffect(() => {
         if (item) {
-            setForm({
+            reset({
                 monthly_plan_id: item.monthly_plan_id,
                 annual_plan_item_id: item.annual_plan_item_id,
                 project_id: item.project_id,
@@ -91,37 +119,20 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 setExpanded(prev => new Set([...prev, 'ketqua']));
             }
         } else {
-            setForm({ ...DEFAULT_FORM, monthly_plan_id: monthlyPlanId, deadline_note: `Tháng ${month}` });
+            reset(buildDefaultValues());
         }
-    }, [item, monthlyPlanId, month]);
-
-    const set = useCallback((field: keyof MonthlyPlanItemInput, value: any) =>
-        setForm(prev => ({ ...prev, [field]: value })), []);
-
-    // Toggle nhân viên trong danh sách staff_ids
-    const toggleStaff = useCallback((id: string, name: string) => {
-        setForm(prev => {
-            const ids = prev.staff_ids ?? [];
-            const names = prev.staff_names ?? [];
-            const idx = ids.indexOf(id);
-            if (idx >= 0) {
-                return { ...prev, staff_ids: ids.filter(i => i !== id), staff_names: names.filter((_, j) => j !== idx) };
-            } else {
-                return { ...prev, staff_ids: [...ids, id], staff_names: [...names, name] };
-            }
-        });
-    }, []);
+    }, [item, monthlyPlanId, month, reset, buildDefaultValues]);
 
     // Khi chọn từ KH khung → auto-fill
     const handleAnnualItemSelect = (value: string) => {
         const found = annualItems.find(i => i.id === value);
         if (found) {
-            set('annual_plan_item_id', value);
-            if (!form.task_name || form.task_name === '') set('task_name', found.task_name);
-            if (!form.deliverable && found.deliverable) set('deliverable', found.deliverable);
-            if (!form.group_name && found.group_name) set('group_name', found.group_name);
+            setValue('annual_plan_item_id', value);
+            if (!watchedTaskName) setValue('task_name', found.task_name);
+            if (!watch('deliverable') && found.deliverable) setValue('deliverable', found.deliverable);
+            if (!watchedGroupName && found.group_name) setValue('group_name', found.group_name);
         } else {
-            set('annual_plan_item_id', value);
+            setValue('annual_plan_item_id', value);
         }
     };
 
@@ -132,35 +143,34 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
             return n;
         });
 
-    const handleSubmit = async (e?: React.FormEvent) => {
-        e?.preventDefault();
-        if (!form.task_name.trim()) { setError('Vui lòng nhập nội dung nhiệm vụ'); return; }
+    const onSubmit = handleSubmit(async (data) => {
         setSaving(true);
-        setError('');
+        setServerError('');
         try {
+            const payload = data as unknown as MonthlyPlanItemInput;
             if (item) {
-                await MonthlyPlanItemService.update(item.id, form);
+                await MonthlyPlanItemService.update(item.id, payload);
             } else {
-                await MonthlyPlanItemService.create(form);
+                await MonthlyPlanItemService.create(payload);
             }
             onSaved();
         } catch (e: any) {
-            setError(e.message ?? 'Có lỗi xảy ra');
+            setServerError(e.message ?? 'Có lỗi xảy ra');
         } finally {
             setSaving(false);
         }
-    };
+    });
 
     // Ctrl+Enter submit
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmit();
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSubmit();
     };
 
-    const showResultFields = form.status !== 'planned';
+    const showResultFields = watchedStatus !== 'planned';
 
     // Find display values for comboboxes
-    const annualDisplayVal = annualItems.find(i => i.id === form.annual_plan_item_id)?.task_name;
-    const selectedProject = projectOptions.find(o => o.value === form.project_id);
+    const annualDisplayVal = annualItems.find(i => i.id === watchedAnnualItemId)?.task_name;
+    const selectedProject = projectOptions.find(o => o.value === watchedProjectId);
 
     return (
         <div
@@ -181,10 +191,10 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 </div>
 
                 <div className="flex-1 overflow-auto">
-                    <form onSubmit={handleSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                        {error && (
+                    <form onSubmit={onSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                        {(serverError || errors.task_name) && (
                             <div className="mx-6 mt-4 bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg border border-red-100">
-                                {error}
+                                {serverError || errors.task_name?.message}
                             </div>
                         )}
 
@@ -196,9 +206,9 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                (form.annual_plan_item_id || form.project_id)
+                                (watchedAnnualItemId || watchedProjectId)
                                     ? <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
-                                        {[form.annual_plan_item_id && 'KH khung', form.project_id && 'Dự án'].filter(Boolean).join(', ')}
+                                        {[watchedAnnualItemId && 'KH khung', watchedProjectId && 'Dự án'].filter(Boolean).join(', ')}
                                     </span>
                                     : null
                             }
@@ -207,20 +217,20 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                 <div>
                                     <label className="field-label">
                                         🗂 Từ KH khung năm
-                                        {form.annual_plan_item_id && (
+                                        {watchedAnnualItemId && (
                                             <span className="ml-2 text-blue-500 text-xs font-normal">✓ Đã liên kết</span>
                                         )}
                                     </label>
                                     <ComboboxSelect
                                         options={annualOptions}
-                                        value={form.annual_plan_item_id}
+                                        value={watchedAnnualItemId}
                                         displayValue={annualDisplayVal}
                                         onChange={(val) => handleAnnualItemSelect(val)}
                                         placeholder="Chọn nhiệm vụ từ KH khung (tự điền thông tin)..."
                                         loading={annualLoading}
                                         clearable
                                     />
-                                    {form.annual_plan_item_id && (
+                                    {watchedAnnualItemId && (
                                         <p className="text-xs text-blue-500 mt-1">
                                             ↑ Tên và kết quả đầu ra đã được tự động điền từ KH khung
                                         </p>
@@ -232,9 +242,9 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                     </label>
                                     <ComboboxSelect
                                         options={projectOptions}
-                                        value={form.project_id}
+                                        value={watchedProjectId}
                                         displayValue={selectedProject?.label}
-                                        onChange={(val) => set('project_id', val || undefined)}
+                                        onChange={(val) => setValue('project_id', val || undefined)}
                                         placeholder="Liên kết với dự án (nếu có)..."
                                         loading={projLoading}
                                         clearable
@@ -260,12 +270,13 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                             { value: 'management', label: 'Công việc điều hành', icon: '📋' },
                                             { value: 'internal', label: 'Công việc nội bộ', icon: '🏢' }
                                         ].map(type => {
-                                            const isSelected = ((form as any).task_type ?? 'project') === type.value;
+                                            const currentTaskType = (watch as any)('task_type') ?? 'project';
+                                            const isSelected = currentTaskType === type.value;
                                             return (
                                                 <button
                                                     key={type.value}
                                                     type="button"
-                                                    onClick={() => set('task_type' as any, type.value)}
+                                                    onClick={() => (setValue as any)('task_type', type.value)}
                                                     className={`px-3 py-2.5 text-sm rounded-xl font-medium transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 border ${
                                                         isSelected
                                                             ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:border-blue-500 dark:text-blue-400 ring-1 ring-blue-500'
@@ -283,8 +294,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                     <label className="field-label">Nhóm công việc</label>
                                     <ComboboxSelect
                                         options={groupOptions}
-                                        value={form.group_name ?? ''}
-                                        onChange={(val) => set('group_name', val)}
+                                        value={watchedGroupName}
+                                        onChange={(val) => setValue('group_name', val)}
                                         placeholder="Chọn hoặc nhập nhóm mới..."
                                         allowCustom
                                         clearable={false}
@@ -296,8 +307,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                         Nội dung nhiệm vụ <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
-                                        value={form.task_name}
-                                        onChange={e => set('task_name', e.target.value)}
+                                        {...register('task_name')}
                                         rows={3}
                                         placeholder="Mô tả nội dung nhiệm vụ cần thực hiện..."
                                         className="field-input resize-none"
@@ -307,8 +317,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                 <div>
                                     <label className="field-label">Kết quả đầu ra / Sản phẩm</label>
                                     <input
-                                        value={form.deliverable ?? ''}
-                                        onChange={e => set('deliverable', e.target.value)}
+                                        {...register('deliverable')}
                                         placeholder="VD: Báo cáo tổng hợp, Tờ trình phê duyệt..."
                                         className="field-input"
                                     />
@@ -319,8 +328,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                         <label className="field-label">Thời hạn</label>
                                         <input
                                             list="deadline-options"
-                                            value={form.deadline_note ?? ''}
-                                            onChange={e => set('deadline_note', e.target.value)}
+                                            {...register('deadline_note')}
                                             placeholder={`Tháng ${month}`}
                                             className="field-input"
                                         />
@@ -345,8 +353,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                         <label className="field-label">Ngày cụ thể</label>
                                         <input
                                             type="date"
-                                            value={form.due_date ?? ''}
-                                            onChange={e => set('due_date', e.target.value || undefined)}
+                                            {...register('due_date')}
                                             className="field-input"
                                         />
                                     </div>
@@ -355,10 +362,10 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                 <div>
                                     <label className="field-label">Trạng thái</label>
                                     <select
-                                        value={form.status}
+                                        {...register('status')}
                                         onChange={e => {
                                             const s = e.target.value as MonthlyTaskStatus;
-                                            set('status', s);
+                                            setValue('status', s);
                                             if (s !== 'planned') setExpanded(prev => new Set([...prev, 'ketqua']));
                                         }}
                                         className="field-input"
@@ -379,10 +386,10 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                (form.staff_names && form.staff_names.length > 0)
-                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_names.join(', ')}</span>
-                                    : form.staff_name
-                                        ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{form.staff_name}</span>
+                                (watchedStaffNames && watchedStaffNames.length > 0)
+                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{watchedStaffNames.join(', ')}</span>
+                                    : watchedStaffName
+                                        ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{watchedStaffName}</span>
                                         : null
                             }
                         >
@@ -401,59 +408,52 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                                     <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
                                                 ) : undefined
                                             }))}
-                                            value={form.staff_ids ?? []}
+                                            value={watchedStaffIds}
                                             onChange={(val) => {
                                                 const ids = val as string[];
                                                 const names = ids.map(id => employeeOptions.find(o => o.value === id)?.label ?? '');
-                                                
-                                                setForm(prev => {
-                                                    const newState = {
-                                                        ...prev,
-                                                        staff_ids: ids,
-                                                        staff_names: names,
-                                                        executor_ids: ids,
-                                                        executor_names: names,
-                                                        staff_id: ids.length > 0 ? ids[0] : undefined,
-                                                        staff_name: names.length > 0 ? names[0] : ''
-                                                    };
 
-                                                    if (ids.length > 0) {
-                                                        const firstEmp = employeeOptions.find(o => o.value === ids[0]);
-                                                        if (firstEmp) {
-                                                            if (firstEmp.department) {
-                                                                const deptHead = employeeOptions.find(o => 
-                                                                    o.department === firstEmp.department && 
-                                                                    o.position && 
-                                                                    /trưởng phòng|chánh văn phòng|giám đốc trung tâm/i.test(o.position)
-                                                                ) || employeeOptions.find(o => 
-                                                                    o.department === firstEmp.department && 
-                                                                    o.position && 
-                                                                    /phó phòng|phó văn phòng|phó giám đốc trung tâm/i.test(o.position)
-                                                                );
-                                                                
-                                                                if (deptHead) {
-                                                                    newState.dept_head_id = deptHead.value;
-                                                                    newState.dept_head_name = deptHead.label;
-                                                                }
-                                                            }
+                                                setValue('staff_ids', ids);
+                                                setValue('staff_names', names);
+                                                setValue('executor_ids', ids);
+                                                setValue('executor_names', names);
+                                                setValue('staff_id', ids.length > 0 ? ids[0] : undefined);
+                                                setValue('staff_name', names.length > 0 ? names[0] : '');
 
-                                                            const banHead = employeeOptions.find(o => 
-                                                                o.position && 
-                                                                /giám đốc ban|trưởng ban/i.test(o.position)
-                                                            ) || employeeOptions.find(o => 
-                                                                o.position && 
-                                                                /phó giám đốc ban|phó trưởng ban/i.test(o.position)
+                                                if (ids.length > 0) {
+                                                    const firstEmp = employeeOptions.find(o => o.value === ids[0]);
+                                                    if (firstEmp) {
+                                                        if (firstEmp.department) {
+                                                            const deptHead = employeeOptions.find(o =>
+                                                                o.department === firstEmp.department &&
+                                                                o.position &&
+                                                                /trưởng phòng|chánh văn phòng|giám đốc trung tâm/i.test(o.position)
+                                                            ) || employeeOptions.find(o =>
+                                                                o.department === firstEmp.department &&
+                                                                o.position &&
+                                                                /phó phòng|phó văn phòng|phó giám đốc trung tâm/i.test(o.position)
                                                             );
-                                                            
-                                                            if (banHead) {
-                                                                newState.ban_head_id = banHead.value;
-                                                                newState.ban_head_name = banHead.label;
+
+                                                            if (deptHead) {
+                                                                setValue('dept_head_id', deptHead.value);
+                                                                setValue('dept_head_name', deptHead.label);
                                                             }
                                                         }
+
+                                                        const banHead = employeeOptions.find(o =>
+                                                            o.position &&
+                                                            /giám đốc ban|trưởng ban/i.test(o.position)
+                                                        ) || employeeOptions.find(o =>
+                                                            o.position &&
+                                                            /phó giám đốc ban|phó trưởng ban/i.test(o.position)
+                                                        );
+
+                                                        if (banHead) {
+                                                            setValue('ban_head_id', banHead.value);
+                                                            setValue('ban_head_name', banHead.label);
+                                                        }
                                                     }
-                                                    
-                                                    return newState;
-                                                });
+                                                }
                                             }}
                                             multiple={true}
                                             searchable={true}
@@ -466,8 +466,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                     <div>
                                         <label className="field-label">Lãnh đạo Phòng</label>
                                         <Select
-                                            options={employeeOptions.filter(o => 
-                                                o.value === form.dept_head_id || (o.position && /trưởng phòng|chánh văn phòng|giám đốc trung tâm|phó phòng|phó văn phòng|phó giám đốc trung tâm|kế toán trưởng/i.test(o.position))
+                                            options={employeeOptions.filter(o =>
+                                                o.value === watchedDeptHeadId || (o.position && /trưởng phòng|chánh văn phòng|giám đốc trung tâm|phó phòng|phó văn phòng|phó giám đốc trung tâm|kế toán trưởng/i.test(o.position))
                                             ).map(opt => ({
                                                 value: opt.value,
                                                 label: opt.label,
@@ -475,11 +475,11 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                                     <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
                                                 ) : undefined
                                             }))}
-                                            value={form.dept_head_id || ''}
+                                            value={watchedDeptHeadId}
                                             onChange={(val) => {
                                                 const opt = employeeOptions.find(o => o.value === val);
-                                                set('dept_head_id', val || undefined);
-                                                set('dept_head_name', opt?.label ?? '');
+                                                setValue('dept_head_id', (val as string) || undefined);
+                                                setValue('dept_head_name', opt?.label ?? '');
                                             }}
                                             searchable={true}
                                             clearable={true}
@@ -489,8 +489,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                     <div>
                                         <label className="field-label">Lãnh đạo Ban</label>
                                         <Select
-                                            options={employeeOptions.filter(o => 
-                                                o.value === form.ban_head_id || (o.position && /giám đốc ban|trưởng ban|phó giám đốc ban|phó trưởng ban/i.test(o.position))
+                                            options={employeeOptions.filter(o =>
+                                                o.value === watchedBanHeadId || (o.position && /giám đốc ban|trưởng ban|phó giám đốc ban|phó trưởng ban/i.test(o.position))
                                             ).map(opt => ({
                                                 value: opt.value,
                                                 label: opt.label,
@@ -498,11 +498,11 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                                     <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
                                                 ) : undefined
                                             }))}
-                                            value={form.ban_head_id || ''}
+                                            value={watchedBanHeadId}
                                             onChange={(val) => {
                                                 const opt = employeeOptions.find(o => o.value === val);
-                                                set('ban_head_id', val || undefined);
-                                                set('ban_head_name', opt?.label ?? '');
+                                                setValue('ban_head_id', (val as string) || undefined);
+                                                setValue('ban_head_name', opt?.label ?? '');
                                             }}
                                             searchable={true}
                                             clearable={true}
@@ -526,19 +526,17 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                     <div>
                                         <label className="field-label">Kết quả thực hiện</label>
                                         <textarea
-                                            value={form.completion_result ?? ''}
-                                            onChange={e => set('completion_result', e.target.value)}
+                                            {...register('completion_result')}
                                             rows={2}
                                             placeholder="Mô tả kết quả đã thực hiện được..."
                                             className="field-input resize-none"
                                         />
                                     </div>
-                                    {(form.status === 'incomplete' || form.status === 'partial' || form.status === 'deferred') && (
+                                    {(watchedStatus === 'incomplete' || watchedStatus === 'partial' || watchedStatus === 'deferred') && (
                                         <div>
                                             <label className="field-label">Lý do chưa hoàn thành / Chuyển tháng</label>
                                             <input
-                                                value={form.incomplete_reason ?? ''}
-                                                onChange={e => set('incomplete_reason', e.target.value)}
+                                                {...register('incomplete_reason')}
                                                 placeholder="Nguyên nhân và dự kiến xử lý..."
                                                 className="field-input"
                                             />
@@ -552,8 +550,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                         <div className="px-6 py-4">
                             <label className="field-label">Ghi chú</label>
                             <input
-                                value={form.notes ?? ''}
-                                onChange={e => set('notes', e.target.value)}
+                                {...register('notes')}
                                 placeholder="Ghi chú thêm nếu cần..."
                                 className="field-input"
                             />
@@ -575,7 +572,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             Hủy
                         </button>
                         <button
-                            onClick={handleSubmit}
+                            onClick={onSubmit}
                             disabled={saving}
                             className="px-5 py-2 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg disabled:opacity-50 font-medium transition-colors"
                         >

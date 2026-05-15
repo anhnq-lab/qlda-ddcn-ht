@@ -875,7 +875,7 @@ const InfoRow = ({ label, value, highlight }: { label: string; value: React.Reac
 import { Payment as PaymentType2, PaymentStatus as PS } from '../../../types';
 
 const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; transitions: PS[] }) => {
-    const { user } = useAuth();
+    const { currentUser: user } = useAuth();
     const submitMutation = useSubmitPayment();
     const approveMutation = useApprovePayment();
     const transferMutation = useTransferPayment();

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Link2, Users, ClipboardList, CalendarClock, ChevronDown, ChevronUp } from 'lucide-react';
 import { AnnualPlanService } from '../../services/PlanService';
 import {
@@ -8,6 +10,7 @@ import {
 import ComboboxSelect from '../../components/ui/ComboboxSelect';
 import Select from '../../components/ui/Select';
 import { useGroupSuggestions, useProjectOptions, useEmployeeOptions } from '../../hooks/usePlanData';
+import { AnnualPlanItemFormSchema, type AnnualPlanItemFormInput } from '../../schemas/annualPlan.schema';
 
 interface Props {
     year: number;
@@ -32,32 +35,13 @@ const DEPT_SUGGESTIONS = [
     'Toàn Ban', 'Các phòng',
 ];
 
-const DEFAULT_FORM: AnnualPlanItemInput = {
-    plan_year: new Date().getFullYear(),
-    department_code: 'HCTH',
-    department_name: '',
-    group_name: '',
-    group_sort_order: 0,
-    task_name: '',
-    deliverable: '',
-    start_period: '',
-    end_period: '',
-    frequency: 'one_time',
-    responsible_ids: [],
-    responsible_text: '',
-    collaborating_text: '',
-    notes: '',
-    sort_order: 0,
-};
-
 type SectionKey = 'thongtin' | 'thoigian' | 'phancong' | 'lienket';
 
 const AnnualPlanItemModal: React.FC<Props> = ({
     year, departmentCode, departmentName, item, onSaved, onClose,
 }) => {
-    const [form, setForm] = useState<AnnualPlanItemInput>(DEFAULT_FORM);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
+    const [serverError, setServerError] = useState('');
     const [expanded, setExpanded] = useState<Set<SectionKey>>(new Set(['thongtin', 'thoigian', 'phancong']));
 
     const groups = useGroupSuggestions(year);
@@ -65,7 +49,44 @@ const AnnualPlanItemModal: React.FC<Props> = ({
     const { options: employeeOptions, loading: empLoading } = useEmployeeOptions();
 
     const groupOptions = groups.map(g => ({ value: g, label: g }));
-    const selectedProject = projectOptions.find(o => o.value === form.project_id);
+
+    const defaultValues: AnnualPlanItemFormInput = {
+        plan_year: year,
+        department_code: departmentCode,
+        department_name: departmentName,
+        group_name: '',
+        group_sort_order: 0,
+        task_name: '',
+        deliverable: '',
+        start_period: '',
+        end_period: '',
+        frequency: 'one_time',
+        project_id: undefined,
+        responsible_ids: [],
+        responsible_text: '',
+        collaborating_text: '',
+        collaborating_ids: [],
+        notes: '',
+        sort_order: 0,
+    };
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm<AnnualPlanItemFormInput>({
+        resolver: zodResolver(AnnualPlanItemFormSchema),
+        defaultValues,
+    });
+
+    const watchedResponsibleIds = watch('responsible_ids') ?? [];
+    const watchedFrequency = watch('frequency');
+    const watchedProjectId = watch('project_id');
+
+    const selectedProject = projectOptions.find(o => o.value === watchedProjectId);
 
     // Lọc nhân viên theo phòng đang active
     const deptEmployees = useMemo(() => {
@@ -83,12 +104,13 @@ const AnnualPlanItemModal: React.FC<Props> = ({
     const handleResponsibleChange = useCallback((val: string | number | (string | number)[]) => {
         const ids = (Array.isArray(val) ? val : val ? [val] : []).map(String);
         const names = ids.map(id => deptEmployees.find(o => String(o.value) === id)?.label ?? '').filter(Boolean);
-        setForm(prev => ({ ...prev, responsible_ids: ids, responsible_text: names.join(', ') }));
-    }, [deptEmployees]);
+        setValue('responsible_ids', ids);
+        setValue('responsible_text', names.join(', '));
+    }, [deptEmployees, setValue]);
 
     useEffect(() => {
         if (item) {
-            setForm({
+            reset({
                 plan_year: item.plan_year,
                 department_code: item.department_code,
                 department_name: item.department_name,
@@ -103,16 +125,15 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                 responsible_ids: item.responsible_ids ?? [],
                 responsible_text: item.responsible_text ?? '',
                 collaborating_text: item.collaborating_text ?? '',
+                collaborating_ids: item.collaborating_ids ?? [],
                 notes: item.notes ?? '',
                 sort_order: item.sort_order ?? 0,
             });
         } else {
-            setForm({ ...DEFAULT_FORM, plan_year: year, department_code: departmentCode, department_name: departmentName });
+            reset({ ...defaultValues, plan_year: year, department_code: departmentCode, department_name: departmentName });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [item, year, departmentCode, departmentName]);
-
-    const set = useCallback((field: keyof AnnualPlanItemInput, value: any) =>
-        setForm(prev => ({ ...prev, [field]: value })), []);
 
     const toggleSection = (key: SectionKey) =>
         setExpanded(prev => {
@@ -121,27 +142,26 @@ const AnnualPlanItemModal: React.FC<Props> = ({
             return n;
         });
 
-    const handleSubmit = async (e?: React.FormEvent) => {
-        e?.preventDefault();
-        if (!form.task_name.trim()) { setError('Vui lòng nhập nội dung nhiệm vụ'); return; }
+    const onSubmit = handleSubmit(async (data) => {
         setSaving(true);
-        setError('');
+        setServerError('');
         try {
+            const payload = data as unknown as AnnualPlanItemInput;
             if (item) {
-                await AnnualPlanService.update(item.id, form);
+                await AnnualPlanService.update(item.id, payload);
             } else {
-                await AnnualPlanService.create(form);
+                await AnnualPlanService.create(payload);
             }
             onSaved();
         } catch (e: any) {
-            setError(e.message ?? 'Có lỗi xảy ra');
+            setServerError(e.message ?? 'Có lỗi xảy ra');
         } finally {
             setSaving(false);
         }
-    };
+    });
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmit();
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSubmit();
     };
 
     return (
@@ -163,10 +183,10 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                 </div>
 
                 <div className="flex-1 overflow-auto">
-                    <form onSubmit={handleSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                        {error && (
+                    <form onSubmit={onSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                        {(serverError || errors.task_name) && (
                             <div className="mx-6 mt-4 bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg border border-red-100">
-                                {error}
+                                {serverError || errors.task_name?.message}
                             </div>
                         )}
 
@@ -183,8 +203,8 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                     <label className="field-label">Nhóm công việc</label>
                                     <ComboboxSelect
                                         options={groupOptions}
-                                        value={form.group_name ?? ''}
-                                        onChange={val => set('group_name', val)}
+                                        value={watch('group_name') ?? ''}
+                                        onChange={val => setValue('group_name', val)}
                                         placeholder="Chọn hoặc nhập nhóm mới..."
                                         allowCustom
                                         clearable={false}
@@ -196,8 +216,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                         Nội dung nhiệm vụ <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
-                                        value={form.task_name}
-                                        onChange={e => set('task_name', e.target.value)}
+                                        {...register('task_name')}
                                         rows={3}
                                         placeholder="Mô tả nội dung công việc cần thực hiện trong năm..."
                                         className="field-input resize-none"
@@ -207,8 +226,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                 <div>
                                     <label className="field-label">Sản phẩm / Kết quả đầu ra</label>
                                     <input
-                                        value={form.deliverable ?? ''}
-                                        onChange={e => set('deliverable', e.target.value)}
+                                        {...register('deliverable')}
                                         placeholder="VD: Báo cáo tháng, Văn bản tham mưu, Quyết định..."
                                         className="field-input"
                                     />
@@ -224,9 +242,9 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                form.frequency !== 'one_time'
+                                watchedFrequency !== 'one_time'
                                     ? <span className="text-xs bg-warning-50 text-warning-600 px-1.5 py-0.5 rounded-full">
-                                        {FREQUENCY_LABELS[form.frequency]}
+                                        {FREQUENCY_LABELS[watchedFrequency as PlanFrequency]}
                                     </span>
                                     : null
                             }
@@ -236,8 +254,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                     <label className="field-label">Bắt đầu</label>
                                     <input
                                         list="period-suggestions"
-                                        value={form.start_period ?? ''}
-                                        onChange={e => set('start_period', e.target.value)}
+                                        {...register('start_period')}
                                         placeholder="Quý I, Tháng 3..."
                                         className="field-input"
                                     />
@@ -246,8 +263,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                     <label className="field-label">Hoàn thành</label>
                                     <input
                                         list="period-suggestions"
-                                        value={form.end_period ?? ''}
-                                        onChange={e => set('end_period', e.target.value)}
+                                        {...register('end_period')}
                                         placeholder="Quý IV, Tháng 12..."
                                         className="field-input"
                                     />
@@ -255,8 +271,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                 <div>
                                     <label className="field-label">Tần suất</label>
                                     <select
-                                        value={form.frequency}
-                                        onChange={e => set('frequency', e.target.value as PlanFrequency)}
+                                        {...register('frequency')}
                                         className="field-input"
                                     >
                                         {Object.entries(FREQUENCY_LABELS).map(([v, l]) => (
@@ -278,9 +293,9 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                (form.responsible_ids ?? []).length > 0
+                                watchedResponsibleIds.length > 0
                                     ? <span className="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
-                                        {(form.responsible_ids ?? []).length} người
+                                        {watchedResponsibleIds.length} người
                                     </span>
                                     : null
                             }
@@ -293,7 +308,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                     ) : (
                                         <Select
                                             options={deptEmployees}
-                                            value={form.responsible_ids ?? []}
+                                            value={watchedResponsibleIds}
                                             onChange={handleResponsibleChange}
                                             multiple
                                             searchable
@@ -301,7 +316,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                             placeholder="Chọn nhân viên thực hiện..."
                                         />
                                     )}
-                                    {(form.responsible_ids ?? []).length === 0 && !empLoading && (
+                                    {watchedResponsibleIds.length === 0 && !empLoading && (
                                         <p className="text-xs text-slate-400 mt-1">
                                             Hiển thị nhân viên {DEPARTMENT_NAMES[departmentCode]}
                                         </p>
@@ -311,8 +326,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                     <label className="field-label">Phòng / Cá nhân phối hợp</label>
                                     <input
                                         list="dept-suggestions"
-                                        value={form.collaborating_text ?? ''}
-                                        onChange={e => set('collaborating_text', e.target.value)}
+                                        {...register('collaborating_text')}
                                         placeholder="VD: KHDT, KTTD"
                                         className="field-input"
                                     />
@@ -331,7 +345,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                form.project_id
+                                watchedProjectId
                                     ? <span className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">
                                         {selectedProject?.label?.substring(0, 20) ?? 'Đã liên kết'}
                                     </span>
@@ -342,9 +356,9 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                                 <label className="field-label">Dự án liên quan (không bắt buộc)</label>
                                 <ComboboxSelect
                                     options={projectOptions}
-                                    value={form.project_id}
+                                    value={watchedProjectId}
                                     displayValue={selectedProject?.label}
-                                    onChange={val => set('project_id', val || undefined)}
+                                    onChange={val => setValue('project_id', val || undefined)}
                                     placeholder="Tìm và chọn dự án liên kết..."
                                     loading={projLoading}
                                     clearable
@@ -359,8 +373,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                         <div className="px-6 py-4">
                             <label className="field-label">Ghi chú</label>
                             <input
-                                value={form.notes ?? ''}
-                                onChange={e => set('notes', e.target.value)}
+                                {...register('notes')}
                                 placeholder="Ghi chú thêm nếu cần..."
                                 className="field-input"
                             />
@@ -382,7 +395,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                             Hủy
                         </button>
                         <button
-                            onClick={handleSubmit}
+                            onClick={onSubmit}
                             disabled={saving}
                             className="px-5 py-2 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg disabled:opacity-50 font-medium transition-colors"
                         >

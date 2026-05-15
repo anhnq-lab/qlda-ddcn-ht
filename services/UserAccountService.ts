@@ -4,7 +4,7 @@
  * Login hỗ trợ: username, email, hoặc phone
  * Password hash: SHA-256 (client-side)
  */
-import { supabase, supabaseAdmin } from '../lib/supabase';
+import { supabase, adminUserOp } from '../lib/supabase';
 import { toServiceError, ServiceError } from './ServiceError';
 
 // ============================================================
@@ -107,18 +107,13 @@ export class UserAccountService {
             // Get employee full name
             const { data: empData } = await supabase.from('employees').select('full_name').eq('employee_id', input.employee_id).single();
             
-            const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
+            const authData = await adminUserOp<{ user: { id: string } | null }>('createUser', {
                 email: input.email,
                 password: input.password,
                 email_confirm: true,
                 user_metadata: { employee_id: input.employee_id, full_name: empData?.full_name || input.username },
             });
             authUserId = authData?.user?.id || null;
-
-            if (authErr) {
-                console.warn('[UserAccountService] Admin Auth user creation failed, throwing error', authErr);
-                throw authErr; // Don't fallback to signUp as it will log the current admin out or leave unconfirmed accounts
-            }
         } catch (e: any) {
             console.error('[UserAccountService] Auth user creation failed', e);
             throw new Error(`Không thể tạo tài khoản xác thực: ${e.message}`);
@@ -160,7 +155,7 @@ export class UserAccountService {
         try {
             const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('account_id', id).single();
             if (accountData?.auth_user_id) {
-                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { password: newPassword });
+                await adminUserOp('updateUser', { userId: accountData.auth_user_id, attributes: { password: newPassword } });
             }
         } catch (e) {
             console.warn('[UserAccountService] Failed to reset Supabase Auth password', e);
@@ -194,8 +189,7 @@ export class UserAccountService {
         try {
             const { data: account } = await supabase.from('user_accounts').select('auth_user_id').eq('account_id', id).single();
             if (account?.auth_user_id) {
-                const { error: authErr } = await supabaseAdmin.auth.admin.deleteUser(account.auth_user_id);
-                if (authErr) console.warn('[UserAccountService] Could not delete Auth user:', authErr);
+                await adminUserOp('deleteUser', { userId: account.auth_user_id });
             }
         } catch (e) {
             console.warn('[UserAccountService] Failed to fetch or delete Supabase Auth user', e);
@@ -310,7 +304,7 @@ export class UserAccountService {
         try {
             const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('employee_id', employeeId).single();
             if (accountData?.auth_user_id) {
-                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { password: newPassword });
+                await adminUserOp('updateUser', { userId: accountData.auth_user_id, attributes: { password: newPassword } });
             }
         } catch (e) {
             console.warn('[UserAccountService] Failed to update Supabase Auth password', e);
@@ -331,7 +325,7 @@ export class UserAccountService {
         try {
             const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('employee_id', employeeId).single();
             if (accountData?.auth_user_id) {
-                await supabaseAdmin.auth.admin.updateUserById(accountData.auth_user_id, { email: newEmail, email_confirm: true });
+                await adminUserOp('updateUser', { userId: accountData.auth_user_id, attributes: { email: newEmail, email_confirm: true } });
             }
         } catch (e) {
             console.warn('[UserAccountService] Failed to update Supabase Auth email', e);

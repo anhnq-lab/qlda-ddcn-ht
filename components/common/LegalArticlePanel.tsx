@@ -172,8 +172,8 @@ const LegalArticlePanel: React.FC<LegalArticlePanelProps> = ({ docId, articleId 
         );
     }
 
-    const typeColor = DOC_TYPE_COLORS[doc.type] || DOC_TYPE_COLORS['other' as any];
-    const statusColor = DOC_STATUS_COLORS[doc.status] || DOC_STATUS_COLORS['draft' as any];
+    const typeColor = (DOC_TYPE_COLORS as any)[doc.type] || (DOC_TYPE_COLORS as any)['other'];
+    const statusColor = (DOC_STATUS_COLORS as any)[doc.status] || (DOC_STATUS_COLORS as any)['draft'];
 
     return (
         <div className="flex flex-col h-full overflow-hidden">

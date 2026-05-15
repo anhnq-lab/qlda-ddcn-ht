@@ -5,7 +5,7 @@ import {
     FolderOpen, X, Plus, Trash2, Loader2, RotateCcw,
     ChevronDown, ChevronRight, Users
 } from 'lucide-react';
-import { supabase, supabaseAdmin } from '../../lib/supabase';
+import { supabase, supabaseExt, adminUserOp } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 
 // ============================================================
@@ -80,7 +80,7 @@ const ContractorAccountManager: React.FC = () => {
         setError('');
         try {
             const [accRes, ctrRes, projRes] = await Promise.all([
-                supabase.from('contractor_accounts').select('*').order('created_at', { ascending: false }),
+                supabaseExt.from('contractor_accounts').select('*').order('created_at', { ascending: false }),
                 supabase.from('contractors').select('contractor_id, full_name, representative').order('full_name'),
                 supabase.from('projects').select('project_id, project_name').order('project_name'),
             ]);
@@ -150,13 +150,13 @@ const ContractorAccountManager: React.FC = () => {
     // ── Toggle active ──
     const handleToggleActive = async (account: ContractorAccount) => {
         try {
-            await supabase.from('contractor_accounts')
+            await supabaseExt.from('contractor_accounts')
                 .update({ is_active: !account.is_active })
                 .eq('account_id', account.account_id);
             if (currentUser) {
                 await supabase.from('audit_logs').insert({
                     action: !account.is_active ? 'ENABLE_CONTRACTOR_ACCOUNT' : 'DISABLE_CONTRACTOR_ACCOUNT',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'ContractorAccount',
                     target_id: account.account_id,
                     details: `Toggled active status for contractor account ${account.username} to ${!account.is_active}`
@@ -170,12 +170,12 @@ const ContractorAccountManager: React.FC = () => {
     const handleDeleteAccount = async (account: ContractorAccount) => {
         if (!window.confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản của ${account.display_name}? Hành động này không thể hoàn tác.`)) return;
         try {
-            const { error } = await supabase.from('contractor_accounts').delete().eq('account_id', account.account_id);
+            const { error } = await supabaseExt.from('contractor_accounts').delete().eq('account_id', account.account_id);
             if (error) throw error;
             if (currentUser) {
                 await supabase.from('audit_logs').insert({
                     action: 'DELETE_CONTRACTOR_ACCOUNT',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'ContractorAccount',
                     target_id: account.account_id,
                     details: `Deleted contractor account ${account.username}`
@@ -192,16 +192,15 @@ const ContractorAccountManager: React.FC = () => {
         if (!resetTarget || !newPassword) return;
         try {
             if (resetTarget.auth_user_id) {
-                const { error: authErr } = await supabaseAdmin.auth.admin.updateUserById(
-                    resetTarget.auth_user_id,
-                    { password: newPassword }
-                );
-                if (authErr) throw authErr;
+                await adminUserOp('updateUser', {
+                    userId: resetTarget.auth_user_id,
+                    attributes: { password: newPassword },
+                });
             }
             if (currentUser) {
                 await supabase.from('audit_logs').insert({
                     action: 'RESET_CONTRACTOR_PASSWORD',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'ContractorAccount',
                     target_id: resetTarget.account_id,
                     details: `Reset password for contractor user ${resetTarget.username}`
@@ -235,7 +234,7 @@ const ContractorAccountManager: React.FC = () => {
             ? current.filter(id => id !== projectId)
             : [...current, projectId];
         try {
-            await supabase.from('contractor_accounts')
+            await supabaseExt.from('contractor_accounts')
                 .update({ allowed_project_ids: updated })
                 .eq('account_id', account.account_id);
             await loadData();
@@ -599,18 +598,13 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
             let authUserId: string | null = null;
 
             try {
-                const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
+                const authData = await adminUserOp<{ user: { id: string } | null }>('createUser', {
                     email: authEmail,
                     password,
                     email_confirm: true,
                     user_metadata: { full_name: displayName, contractor_id: selectedContractor },
                 });
                 authUserId = authData?.user?.id || null;
-
-                if (authErr) {
-                    console.warn('[ContractorAcct] Admin Auth user creation failed, throwing error', authErr);
-                    throw authErr;
-                }
             } catch (e: any) {
                 // If auth fails, stop the process instead of inserting an unlinked account
                 console.error('[ContractorAcct] Auth user creation failed', e);
@@ -621,7 +615,7 @@ const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
             // Create contractor_accounts record
             // Always store the email used for Auth so resolveEmail() can find it
-            const { error: insertErr } = await supabase.from('contractor_accounts').insert({
+            const { error: insertErr } = await supabaseExt.from('contractor_accounts').insert({
                 contractor_id: selectedContractor,
                 username,
                 display_name: displayName,

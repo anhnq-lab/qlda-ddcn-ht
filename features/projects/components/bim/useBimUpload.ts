@@ -10,6 +10,7 @@ import {
     downloadFile, deleteModel, updateModelStatus,
     type BimModel
 } from '../../../../lib/bimStorage';
+import { getSafeCamera } from './useBimEngine';
 
 
 // ── Module-level IFC download cache ─────────────────────
@@ -123,9 +124,18 @@ export function useBimUpload(
                         console.log(`[BIM] Downloaded & cached: ${m.file_name}`);
                     }
                     const uint8Array = new Uint8Array(ifcBuffer);
+                    console.log(`[BimUpload] Starting IFC load for ${m.file_name}...`);
 
                     if (ifcLoader && worldRef.current) {
                         const model = await ifcLoader.load(uint8Array, true, m.file_name);
+                        console.log(`[BimUpload] Successfully loaded existing model: ${m.file_name}`);
+                        
+                        // Force add to scene to prevent silent failures
+                        const obj = (model as any).object || model;
+                        if (obj && !worldRef.current.scene.three.children.includes(obj)) {
+                            worldRef.current.scene.three.add(obj);
+                        }
+
                         const groupUuid = (model as any).uuid || (model as any).id;
                         if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
                         ifcDataMapRef.current.set(m.file_name, uint8Array);
@@ -137,9 +147,10 @@ export function useBimUpload(
 
                         return { model: m, visible: true, fragModel: model } as DisciplineModel;
                     }
+                    console.warn(`[BimUpload] ifcLoader or worldRef is null during load for ${m.file_name}`);
                     return { model: m, visible: false } as DisciplineModel;
                 } catch (err) {
-                    console.warn(`Failed to load ${m.file_name}:`, err);
+                    console.warn(`[BimUpload] Failed to load ${m.file_name}:`, err);
                     completed++;
                     setLoadingProgress((completed / readyModels.length) * 100);
                     return { model: m, visible: false } as DisciplineModel;
@@ -199,16 +210,21 @@ export function useBimUpload(
                 setLoadingProgress(Math.round(pct * 0.6));
                 setStatusMessage(`Đang upload ${file.name}... ${pct}%`);
             });
+            if (record.ifc_path) clearIfcDownloadCache(record.ifc_path);
+            
             setLoadingProgress(60);
 
             setStatus('converting');
             setStatusMessage(`Đang convert ${file.name}...`);
+            console.log(`[BimUpload] Starting IFC conversion for ${file.name}...`);
 
             const ifcLoader = componentsRef.current.get(OBC.IfcLoader);
             const buffer = await file.arrayBuffer();
             const uint8Array = new Uint8Array(buffer);
+            console.log(`[BimUpload] Buffer ready: ${uint8Array.byteLength} bytes.`);
 
             const model = await ifcLoader.load(uint8Array, true, file.name);
+            console.log(`[BimUpload] IFC conversion completed successfully. Model UUID: ${(model as any).uuid || 'N/A'}`);
             setLoadingProgress(85);
 
             // Store IFC data using FragmentsGroup UUID (matches Highlighter events)
@@ -229,12 +245,11 @@ export function useBimUpload(
                 });
                 elementCount = ids.size;
             }
+            console.log(`[BimUpload] Calculated element count: ${elementCount}`);
 
             // Mark model as ready
             await updateModelStatus(record.id, 'ready', { element_count: elementCount });
             setLoadingProgress(90);
-
-
 
             setDisciplineModels(prev => [...prev, {
                 model: { ...record, status: 'ready', element_count: elementCount },
@@ -247,10 +262,17 @@ export function useBimUpload(
             onModelLoaded?.(uint8Array);
 
             // Fit camera to model
-            const camera = worldRef.current.camera as OBC.SimpleCamera;
+            console.log(`[BimUpload] Fitting camera to model bounds...`);
             let targetObj = (model as any).object || model; // In TOC v2, model itself is a THREE.Group
+
+            // Force add to scene to prevent silent failures
+            if (targetObj && !worldRef.current.scene.three.children.includes(targetObj)) {
+                worldRef.current.scene.three.add(targetObj);
+            }
+
             try {
-                if (targetObj instanceof THREE.Object3D) {
+                const camera = getSafeCamera(worldRef.current);
+                if (camera && targetObj instanceof THREE.Object3D) {
                     const box = new THREE.Box3().setFromObject(targetObj);
                     if (!box.isEmpty()) {
                         const sphere = new THREE.Sphere();
@@ -270,6 +292,12 @@ export function useBimUpload(
             console.error('Upload/convert error:', err);
             setStatus('error');
             setStatusMessage(`Lỗi: ${err.message}`);
+            try {
+                const ifcLoader = componentsRef.current?.get(OBC.IfcLoader);
+                if (ifcLoader) ifcLoader.cleanUp();
+            } catch (cleanupErr) {
+                console.error('[BimUpload] Error cleaning up IfcLoader:', cleanupErr);
+            }
         }
     }, [projectID, componentsRef, worldRef, ifcLoaderRef, onModelLoaded]);
 

@@ -414,7 +414,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
     const [searchQuery, setSearchQuery] = useState('');
     const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
 
-    const filteredInspections = inspections.filter(i => {
+    const filteredInspections = inspections.filter((i: any) => {
         if (filterType !== 'all' && i.InspectionType !== filterType) return false;
         if (searchQuery && !i.InspectionName.toLowerCase().includes(searchQuery.toLowerCase()) && !i.InspectionAgency?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
@@ -422,10 +422,10 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
 
     const stats = {
         total: inspections.length,
-        pending: inspections.filter(i => i.FollowUpStatus === 'pending').length,
-        inProgress: inspections.filter(i => i.FollowUpStatus === 'in_progress').length,
-        completed: inspections.filter(i => i.FollowUpStatus === 'completed').length,
-        totalPenalties: inspections.reduce((sum, i) => sum + i.Penalties, 0),
+        pending: inspections.filter((i: any) => i.FollowUpStatus === 'pending').length,
+        inProgress: inspections.filter((i: any) => i.FollowUpStatus === 'in_progress').length,
+        completed: inspections.filter((i: any) => i.FollowUpStatus === 'completed').length,
+        totalPenalties: inspections.reduce((sum: number, i: any) => sum + i.Penalties, 0),
     };
 
     const handleSave = async (data: Partial<Inspection>) => {
@@ -513,7 +513,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {filteredInspections.map(item => {
+                    {filteredInspections.map((item: any) => {
                         const isExpanded = expandedId === item.InspectionID;
                         return (
                             <div key={item.InspectionID} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
@@ -603,7 +603,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                                             <div>
                                                 <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">File đính kèm ({item.Attachments.length})</p>
                                                 <div className="space-y-1.5">
-                                                    {item.Attachments.map((att, i) => (
+                                                    {item.Attachments.map((att: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-700 rounded-lg">
                                                             <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                                                             <span className="text-xs text-gray-700 dark:text-slate-300 truncate flex-1">{att.name}</span>

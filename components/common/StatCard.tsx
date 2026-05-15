@@ -3,34 +3,88 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 
 export type StatCardColor = 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'slate' | 'gray' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan' | 'indigo' | 'orange' | 'purple';
 
+/**
+ * Props for the StatCard component.
+ *
+ * StatCard renders a KPI tile with a label, numeric value, icon, optional trend
+ * indicator, progress bar, and footer slot. It is the canonical "statistic card"
+ * pattern used across all dashboard and report pages in CIC ERP QLDA.
+ */
 interface StatCardProps {
-    /** Tiêu đề chính của thẻ */
+    /**
+     * Primary title displayed in the upper-left of the card.
+     * Rendered in small-caps uppercase. Accepts ReactNode for rich content.
+     */
     label: string | React.ReactNode;
-    /** Giá trị thống kê */
+    /**
+     * The main statistic value displayed prominently in the card body.
+     * Accepts `string`, `number`, or a custom `ReactNode` (e.g. a formatted
+     * currency string). Replaced by a skeleton shimmer while `loading` is true.
+     */
     value: string | number | React.ReactNode;
-    /** Biểu tượng bên cạnh Value */
+    /**
+     * Icon rendered inside a coloured pill on the right of the value row.
+     * Should be a Lucide icon element sized at ~20px (e.g. `<FolderOpen size={20} />`).
+     * The pill background colour is determined by the `color` prop.
+     */
     icon: React.ReactNode;
-    /** Màu Accent của thẻ */
+    /**
+     * Accent colour theme for the icon container and the top border stripe.
+     * Maps to a predefined set of semantic and Tailwind colour aliases.
+     * Defaults to `"blue"`.
+     */
     color?: StatCardColor;
-    /** Mô tả nhỏ hiển thị dưới cùng của block Value (cách báo cáo cũ) */
+    /**
+     * Short descriptive text displayed below the value block (legacy pattern).
+     * Use `progressLabel` + `progressPercentage` for the dashboard pattern instead.
+     */
     sublabel?: string;
-    /** Xu hướng LÊN hoặc XUỐNG */
+    /**
+     * Trend direction indicator shown in the upper-right corner.
+     * `"up"` renders a green `TrendingUp` icon; `"down"` renders a red `TrendingDown` icon.
+     * Use together with `trendPercentage` for a percentage badge.
+     */
     trend?: 'up' | 'down';
-    /** Tiêu đề của xu hướng. VD: "Tiến độ" */
+    /**
+     * Secondary label shown next to the trend icon (e.g. `"so với tháng trước"`).
+     */
     trendLabel?: string;
-    /** % xu hướng (âm hoặc dương) */
+    /**
+     * Numeric percentage shown in the trend badge.
+     * Positive values are rendered green; negative values red — regardless of `trend`.
+     */
     trendPercentage?: number;
-    /** Giá trị mục tiêu (Target) sẽ hiển thị '/ targetValue' kế Value */
+    /**
+     * Optional target/benchmark value displayed as `"/ {targetValue}"` to the right
+     * of the main `value` (e.g. value `42` with targetValue `100` → `"42 / 100"`).
+     */
     targetValue?: string | number;
-    /** Nhãn của thanh tiến trình nhỏ */
+    /**
+     * Label for the inline progress bar shown at the bottom of the card
+     * (dashboard pattern). Requires `progressPercentage` to be set.
+     */
     progressLabel?: string;
-    /** Phần trăm thanh tiến trình */
+    /**
+     * Percentage (0–100) for the inline progress bar.
+     * Values outside the range are clamped automatically.
+     */
     progressPercentage?: number;
-    /** Trạng thái Load skeleton */
+    /**
+     * When `true`, the `value` area is replaced with a skeleton shimmer animation
+     * to indicate that data is still loading.
+     */
     loading?: boolean;
-    /** Slot tuỳ chỉnh dưới cùng (Ví dụ chèn thêm badge) */
+    /**
+     * Arbitrary ReactNode rendered at the very bottom of the card (e.g. a badge,
+     * a mini chart, or a "View details" link).
+     */
     footer?: React.ReactNode;
+    /** Extra Tailwind classes applied to the card's root element. */
     className?: string;
+    /**
+     * Click handler. When provided the card becomes a focusable button-like element
+     * with hover/focus styles and keyboard activation (Enter / Space).
+     */
     onClick?: () => void;
 }
 
@@ -95,7 +149,31 @@ const BORDER_TOP_MAP: Record<StatCardColor, string> = {
 };
 
 /**
- * Reusable Stat Card — Standard pattern for CIC ERP QLDA
+ * StatCard — Reusable KPI tile for CIC ERP QLDA dashboards.
+ *
+ * Renders a compact statistics card with four layout rows:
+ * 1. **Label row** — primary title (upper-left) + optional trend badge (upper-right).
+ * 2. **Value row** — large stat value (lower-left) + coloured icon pill (lower-right).
+ *    Optional `targetValue` is appended as `"/ targetValue"`.
+ * 3. **Detail row** — either an inline progress bar (`progressLabel` + `progressPercentage`)
+ *    or a short `sublabel` text. Mutually exclusive.
+ * 4. **Footer slot** — optional `footer` ReactNode pushed to the bottom.
+ *
+ * The top border stripe colour and icon container background are controlled by
+ * the `color` prop via `BORDER_TOP_MAP` and `COLOR_MAP` respectively.
+ *
+ * @example
+ * ```tsx
+ * <StatCard
+ *   label="Tổng dự án"
+ *   value={42}
+ *   icon={<FolderOpen size={20} />}
+ *   color="primary"
+ *   trend="up"
+ *   trendPercentage={12}
+ *   trendLabel="so với tháng trước"
+ * />
+ * ```
  */
 export const StatCard: React.FC<StatCardProps> = ({
     label,

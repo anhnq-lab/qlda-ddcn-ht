@@ -210,7 +210,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                         const fIcon = getFileIcon((doc as any).doc_name);
                                         return (
                                             <tr
-                                                key={doc.doc_id || Math.random()}
+                                                key={(doc as any).doc_id || Math.random()}
                                                 className="hover:bg-blue-50/50 dark:hover:bg-slate-700 cursor-pointer transition-colors group"
                                                 onClick={() => onPreview(doc)}
                                             >
@@ -221,7 +221,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                                 </td>
                                                 <td className="px-5 py-3">
                                                     <p className="font-medium text-gray-800 dark:text-slate-100 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{(doc as any).doc_name}</p>
-                                                    <p className="text-[10px] text-gray-400 uppercase font-mono mt-0.5">{doc.doc_id}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase font-mono mt-0.5">{(doc as any).doc_id}</p>
                                                 </td>
                                                 <td className="px-5 py-3">
                                                     <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 rounded text-[10px] font-bold font-mono">

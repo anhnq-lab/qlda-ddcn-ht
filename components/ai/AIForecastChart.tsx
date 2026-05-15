@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, RefreshCw, Sparkles, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { forecastProject } from '../../services/ai/forecasting';
-import { calculateSimpleForecast } from '../../services/ai/forecasting';
-import { ForecastResult } from '../../services/aiService';
+import { useAIForecast, ForecastResult } from '../../hooks/ai/useAIForecast';
 
 interface AIForecastChartProps {
     projectId: string;
@@ -16,26 +14,16 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
     currentDisbursementRate = 0,
     className = '',
 }) => {
-    const [forecast, setForecast] = useState<ForecastResult | null>(null);
-    const [loading, setLoading] = useState(false);
     const [useAI, setUseAI] = useState(false);
 
     // Simple forecast (instant, no AI)
     const currentMonth = new Date().getMonth() + 1;
-    const simpleForecast = calculateSimpleForecast(currentDisbursementRate, currentMonth);
+    const { forecast, simpleForecast, loading, loadAIForecast: _loadAIForecast } = useAIForecast(projectId, currentDisbursementRate, currentMonth);
 
-    const loadAIForecast = useCallback(async () => {
-        setLoading(true);
-        try {
-            const result = await forecastProject(projectId);
-            setForecast(result);
-            setUseAI(true);
-        } catch (e) {
-            console.error('Forecast error:', e);
-        } finally {
-            setLoading(false);
-        }
-    }, [projectId]);
+    const loadAIForecast = async () => {
+        await _loadAIForecast();
+        setUseAI(true);
+    };
 
     // Chart data from AI or simple forecast
     const chartData = forecast?.disbursementForecast?.monthlyProjection || [

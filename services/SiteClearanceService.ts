@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseExt } from '@/lib/supabase';
 import { SiteClearance, SiteClearanceMilestone, UpdateSiteClearanceDTO, UpdateClearanceMilestoneDTO } from '@/types';
 import { ServiceError } from './ServiceError';
 
@@ -28,7 +28,7 @@ export class SiteClearanceService {
      */
     static async getClearanceByProjectId(projectId: string): Promise<SiteClearance | null> {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('site_clearances')
                 .select('*')
                 .eq('project_id', projectId)
@@ -55,7 +55,7 @@ export class SiteClearanceService {
             if (existing) return existing;
 
             // 2. Create base clearance record
-            const { data: clearance, error: clearanceError } = await supabase
+            const { data: clearance, error: clearanceError } = await supabaseExt
                 .from('site_clearances')
                 .insert({ project_id: projectId })
                 .select()
@@ -71,7 +71,7 @@ export class SiteClearanceService {
                 status: 'pending'
             }));
 
-            const { error: milestonesError } = await supabase
+            const { error: milestonesError } = await supabaseExt
                 .from('site_clearance_milestones')
                 .insert(milestonesData);
 
@@ -89,7 +89,7 @@ export class SiteClearanceService {
      */
     static async updateClearance(projectId: string, updates: UpdateSiteClearanceDTO): Promise<SiteClearance> {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('site_clearances')
                 .update(updates)
                 .eq('project_id', projectId)
@@ -109,7 +109,7 @@ export class SiteClearanceService {
      */
     static async getMilestones(projectId: string): Promise<SiteClearanceMilestone[]> {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('site_clearance_milestones')
                 .select('*')
                 .eq('project_id', projectId)
@@ -128,7 +128,7 @@ export class SiteClearanceService {
      */
     static async updateMilestone(milestoneId: string, updates: UpdateClearanceMilestoneDTO): Promise<SiteClearanceMilestone> {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('site_clearance_milestones')
                 .update(updates)
                 .eq('id', milestoneId)

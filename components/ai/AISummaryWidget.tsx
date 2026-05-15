@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Sparkles, RefreshCw } from 'lucide-react';
-import { getDashboardSummary, getProjectSummary } from '../../services/ai/smartSummary';
-import { isAIAvailable } from '../../services/aiService';
+import { useAISummary } from '../../hooks/ai/useAISummary';
 
 interface AISummaryWidgetProps {
     /** If provided, show project-specific summary. Otherwise show dashboard summary. */
@@ -10,24 +9,7 @@ interface AISummaryWidgetProps {
 }
 
 export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, className = '' }) => {
-    const [summary, setSummary] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-
-    const loadSummary = useCallback(async (force = false) => {
-        if (!isAIAvailable()) return;
-        setLoading(true);
-        try {
-            const text = projectId
-                ? await getProjectSummary(projectId, force)
-                : await getDashboardSummary(force);
-            setSummary(text);
-        } catch (e) {
-            console.error('Summary error:', e);
-            setSummary('⚠️ Không thể tạo tóm tắt');
-        } finally {
-            setLoading(false);
-        }
-    }, [projectId]);
+    const { summary, loading, loadSummary, isAIAvailable } = useAISummary(projectId);
 
     useEffect(() => {
         loadSummary();

@@ -281,7 +281,7 @@ export const MonthlyPlanItemService = {
 
         // 3. Lọc và map items cần sinh
         const toInsert: MonthlyPlanItemInput[] = (annualItems ?? [])
-            .filter(item => {
+            .filter((item: any) => {
                 // Bỏ qua nếu đã được seed rồi
                 if (existingIds.has(item.id)) return false;
 
@@ -301,7 +301,7 @@ export const MonthlyPlanItemService = {
                 // as_needed: không tự sinh, người dùng thêm thủ công
                 return false;
             })
-            .map((item, idx) => ({
+            .map((item: any, idx: number) => ({
                 monthly_plan_id: monthlyPlanId,
                 annual_plan_item_id: item.id,
                 project_id: item.project_id ?? null,
@@ -506,7 +506,7 @@ export const MonthlyPlanItemService = {
                 .eq('monthly_plan_id', plan.id);
 
             const counts = { completed: 0, incomplete: 0, partial: 0, deferred: 0, planned: 0 };
-            (items ?? []).forEach(i => {
+            (items ?? []).forEach((i: any) => {
                 if (i.status in counts) counts[i.status as keyof typeof counts]++;
             });
 

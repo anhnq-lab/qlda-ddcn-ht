@@ -4,7 +4,7 @@ import path from 'path';
 
 // Load env vars
 const supabaseUrl = 'https://jkaddjllseephsiaqvds.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprYWRkamxsc2VlcGhzaWFxdmRzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODI5ODY3MCwiZXhwIjoyMDkzODc0NjcwfQ.VJzDdr4Fy76SROCXMgjM6MXET9D6Z3Xv34X6fIhrUQU';
+const supabaseServiceKey = 'ROTATED_SECRET_REMOVED_USE_ENV';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 

@@ -12,7 +12,7 @@ import AnnualPlanItemModal from './AnnualPlanItemModal';
 import AnnualPlanItemDetail from './AnnualPlanItemDetail';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
-import DataTable, { ColumnDef } from '../../components/ui/DataTable';
+import DataTable, { Column as ColumnDef } from '../../components/ui/DataTable';
 
 const CURRENT_YEAR = new Date().getFullYear();
 

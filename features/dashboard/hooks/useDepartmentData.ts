@@ -99,7 +99,7 @@ export function useDepartmentData(config: DashboardConfig) {
         queryKey: ['dashboard_stats', currentUser?.EmployeeID, config.departmentName, config.systemRole],
         queryFn: async () => {
             if (!currentUser) return null;
-            const { data } = await supabase.rpc('get_user_dashboard_stats', {
+            const { data } = await (supabase as any).rpc('get_user_dashboard_stats', {
                 p_employee_id: currentUser.EmployeeID,
                 p_department: config.departmentName,
                 p_role: config.systemRole
@@ -116,10 +116,11 @@ export function useDepartmentData(config: DashboardConfig) {
             return { inProgress: 0, todo: 0, done: 0, overdue: 0, total: 0 };
         }
         
-        const inProgress = dashboardStats.in_progress_tasks || 0;
-        const done = dashboardStats.done_tasks || 0;
-        const total = dashboardStats.total_tasks || 0;
-        const overdue = dashboardStats.overdue_tasks || 0;
+        const stats = dashboardStats as any;
+        const inProgress = stats.in_progress_tasks || 0;
+        const done = stats.done_tasks || 0;
+        const total = stats.total_tasks || 0;
+        const overdue = stats.overdue_tasks || 0;
         // Approximation for todo (total - in_progress - done)
         const todo = Math.max(0, total - inProgress - done);
 

@@ -445,7 +445,7 @@ const ProjectBimTabContent: React.FC = () => {
 
     // ── RENDER ──────────────────────────────
     const showLeftPanel = hasModels && !isMobile && (tools.leftPanel === 'tree' || tools.rightPanel === 'properties');
-    const showBottomPanel = engine.viewerReady && hasModels;
+    const showBottomPanel = false; // Tạm ẩn tính năng quản lý vận hành
 
     return (
         <div
@@ -641,7 +641,7 @@ const ProjectBimTabContent: React.FC = () => {
                         ${isDark ? 'border border-slate-700/60 bg-slate-' : 'border border-gray-200 bg-white/95'}
                         backdrop-blur-xl flex flex-col`}
                     >
-                        <BIMAgentChat onClose={() => setShowAgent(false)} isDark={isDark} embedded />
+                        <BIMAgentChat onClose={() => setShowAgent(false)} isDark={isDark} embedded selectedElement={selection.selectedElement} />
                     </div>
                 )}
 

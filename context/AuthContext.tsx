@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { Employee } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseExt } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
 import { permissionCache } from '../utils/permissionCache';
 
@@ -89,7 +89,7 @@ async function fetchUserProfile(authUserId: string): Promise<{
             // Fetch allowed_project_ids for this contractor account
             let allowedProjectIds: string[] = [];
             try {
-                const { data: contractorData, error: contractorErr } = await supabase
+                const { data: contractorData, error: contractorErr } = await supabaseExt
                     .from('contractor_accounts')
                     .select('allowed_project_ids')
                     .eq('auth_user_id', authUserId)
@@ -321,9 +321,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             .eq('auth_user_id', data.user.id)
             .then(() => { });
 
-        supabase
+        supabaseExt
             .from('contractor_accounts')
-            .update({ last_login: new Date().toISOString() } as any)
+            .update({ last_login: new Date().toISOString() })
             .eq('auth_user_id', data.user.id)
             .then(() => { });
 

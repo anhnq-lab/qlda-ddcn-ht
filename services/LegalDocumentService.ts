@@ -166,9 +166,9 @@ export const LegalDocumentService = {
 
         if (artErr) throw new Error(`Failed to fetch articles: ${artErr.message}`);
 
-        const chaptersWithArticles = (chapters ?? []).map((ch) => ({
+        const chaptersWithArticles = (chapters ?? []).map((ch: any) => ({
             ...ch,
-            articles: (articles ?? []).filter((a) => a.chapter_id === ch.id),
+            articles: (articles ?? []).filter((a: any) => a.chapter_id === ch.id),
         }));
 
         return {
@@ -230,12 +230,12 @@ export const LegalDocumentService = {
         const docs = data ?? [];
         const total = docs.length;
 
-        const byType = docs.reduce((acc, d) => {
+        const byType = docs.reduce((acc: Record<DocType, number>, d: any) => {
             acc[d.type as DocType] = (acc[d.type as DocType] ?? 0) + 1;
             return acc;
         }, {} as Record<DocType, number>);
 
-        const byStatus = docs.reduce((acc, d) => {
+        const byStatus = docs.reduce((acc: Record<DocStatus, number>, d: any) => {
             acc[d.status as DocStatus] = (acc[d.status as DocStatus] ?? 0) + 1;
             return acc;
         }, {} as Record<DocStatus, number>);

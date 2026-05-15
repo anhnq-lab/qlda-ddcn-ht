@@ -7,15 +7,34 @@ import { ChevronDown, ChevronUp, ChevronsUpDown, ChevronLeft, ChevronRight } fro
 // Dựa trên visual design của EmployeeList
 // ========================================
 
+/**
+ * Column definition for a single column in DataTable.
+ *
+ * @template T - The row data type.
+ */
 export interface Column<T> {
+    /** Accessor key — dot-notation supported (e.g. `"user.name"`). */
     key: keyof T | string;
+    /** Column header label — accepts ReactNode for rich labels. */
     header: React.ReactNode;
+    /** Fixed width CSS value (e.g. `"120px"`, `"10%"`). */
     width?: string;
+    /** Minimum column width CSS value. */
     minWidth?: string;
+    /** Horizontal cell alignment. Defaults to `"left"`. */
     align?: 'left' | 'center' | 'right';
+    /** Whether this column participates in client-side sorting. */
     sortable?: boolean;
+    /** Extra Tailwind classes applied to each `<td>`. */
     className?: string;
+    /** Extra Tailwind classes applied to the `<th>`. */
     headerClassName?: string;
+    /**
+     * Custom cell renderer.
+     * @param value - The raw cell value (resolved via `key`).
+     * @param row   - The full row data object.
+     * @param index - Zero-based row index in the current view.
+     */
     render?: (value: any, row: T, index: number) => React.ReactNode;
 }
 
@@ -26,24 +45,60 @@ export interface SortConfig {
     direction: SortDirection;
 }
 
+/**
+ * Props for the DataTable component.
+ *
+ * @template T - The shape of each row object. Must extend `Record<string, any>`.
+ *
+ * @example
+ * ```tsx
+ * <DataTable<Employee>
+ *   data={employees}
+ *   columns={columns}
+ *   keyExtractor={e => e.EmployeeID}
+ *   sortable
+ *   pagination={{ currentPage, totalPages, totalItems, pageSize, onPageChange }}
+ * />
+ * ```
+ */
 interface DataTableProps<T> {
+    /** Array of row data objects to render. */
     data: T[];
+    /**
+     * Array of column definitions.
+     * Each entry describes one column: its accessor key, header label,
+     * optional cell renderer, width, alignment, and sort settings.
+     */
     columns: Column<T>[];
+    /** Function that returns a stable unique string key for each row. */
     keyExtractor: (row: T) => string;
 
     // Loading & Empty States
+    /** Show skeleton loading rows instead of actual data. */
     isLoading?: boolean;
+    /** Number of skeleton rows to display while loading. Defaults to 5. */
     loadingRows?: number;
+    /** Text shown in the empty-state cell when `data` is empty. */
     emptyMessage?: string;
+    /** Icon shown above the empty-state message. */
     emptyIcon?: React.ReactNode;
+    /** Fully custom empty-state renderer — overrides `emptyMessage`/`emptyIcon`. */
     emptyState?: React.ReactNode;
 
     // Sorting
+    /** Enable built-in client-side column sorting. */
     sortable?: boolean;
+    /** Initial sort state applied on first render. */
     defaultSort?: SortConfig;
+    /**
+     * Called when the user clicks a sortable column header.
+     * When provided, sorting is treated as server-side and the data array
+     * is NOT sorted locally.
+     */
     onSort?: (config: SortConfig) => void;
 
     // Pagination
+    /** Server-driven pagination configuration. When omitted, no pagination UI is shown. */
     pagination?: {
         currentPage: number;
         totalPages: number;
@@ -52,34 +107,77 @@ interface DataTableProps<T> {
         onPageChange: (page: number) => void;
         onPageSizeChange?: (size: number) => void;
         pageSizeOptions?: number[];
-        label?: string; // e.g. "nhân sự", "dự án"...
+        /** Entity label shown in the footer counter, e.g. `"nhân sự"`, `"dự án"`. */
+        label?: string;
     };
 
     // Selection
+    /**
+     * Enable row-level checkbox selection.
+     * Use together with `selectedKeys` and `onSelectionChange`.
+     */
     selectable?: boolean;
+    /** Array of currently-selected row keys (controlled). */
     selectedKeys?: string[];
+    /**
+     * Called when selection changes.
+     * @param keys - Updated array of selected row keys.
+     */
     onSelectionChange?: (keys: string[]) => void;
 
     // Row Actions
+    /** Called when a row is clicked. Makes rows visually clickable. */
     onRowClick?: (row: T, index: number) => void;
+    /** Return extra Tailwind classes to apply on a per-row basis. */
     rowClassName?: (row: T, index: number) => string;
 
     // Styling
+    /** Use compact row padding. Falls back to the ThemeContext density setting. */
     compact?: boolean;
+    /** Freeze the header row while the table body scrolls vertically. */
     stickyHeader?: boolean;
-    maxHeight?: string; // e.g. 'calc(100vh-360px)'
+    /** CSS `max-height` for the scrollable table wrapper (e.g. `'calc(100vh - 360px)'`). */
+    maxHeight?: string;
+    /** Extra Tailwind classes on the inner table card element. */
     className?: string;
+    /** Extra Tailwind classes on the outermost wrapper `<div>`. */
     wrapperClassName?: string;
+    /** Slot rendered on the left side of the footer row. */
     footerExtra?: React.ReactNode;
-    showFooter?: boolean; // default true if pagination or showFooter prop
-    footerLabel?: string; // "Hiển thị X / Y {footerLabel}"
+    /** Override footer visibility. By default the footer is shown when `pagination` or `footerExtra` is present. */
+    showFooter?: boolean;
+    /** Entity label shown in the non-paginated footer counter, e.g. `"bản ghi"`. */
+    footerLabel?: string;
 
     // Grouping
+    /**
+     * Group rows by a derived string key.
+     * Rows returning the same string are rendered under a collapsible group header.
+     */
     groupBy?: (row: T) => string;
+    /**
+     * Custom renderer for group header rows.
+     * When omitted, a default expand/collapse row is rendered.
+     */
     renderGroupHeader?: (groupName: string, items: T[], isExpanded: boolean, toggle: () => void) => React.ReactNode;
+    /** Whether groups start expanded. Defaults to `true`. */
     defaultExpandedGroups?: boolean;
 }
 
+/**
+ * DataTable — Chuẩn bảng CIC ERP v2.2
+ *
+ * A feature-rich data table supporting:
+ * - Client-side or server-side sorting
+ * - Server-driven pagination with page-size control
+ * - Row checkbox selection (controlled)
+ * - Row grouping with collapsible group headers
+ * - Skeleton loading states
+ * - Compact/normal density via ThemeContext
+ * - Sticky headers and scrollable body
+ *
+ * @template T - The row data type. Must extend `Record<string, any>`.
+ */
 function DataTable<T extends Record<string, any>>({
     data,
     columns,

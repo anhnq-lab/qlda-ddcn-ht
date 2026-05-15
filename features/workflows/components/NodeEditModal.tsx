@@ -77,7 +77,7 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
                         </div>
                         <div>
                             <h3 className="text-base font-bold text-slate-800 dark:text-white leading-tight">Chỉnh sửa bước nghiệp vụ</h3>
-                            <p className="text-xs text-slate-500 font-mono mt-0.5">{node.code}</p>
+                            <p className="text-xs text-slate-500 font-mono mt-0.5">{(node as any).code}</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">

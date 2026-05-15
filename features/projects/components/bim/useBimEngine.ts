@@ -44,6 +44,14 @@ function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
     return texture;
 }
 
+export const getSafeCamera = (world: OBC.World | null | undefined): OBC.SimpleCamera | undefined => {
+    if (!world) return undefined;
+    try {
+        return world.camera as OBC.SimpleCamera;
+    } catch (e) {
+        return undefined;
+    }
+};
 
 export interface BimEngineAPI {
     componentsRef: React.MutableRefObject<OBC.Components | null>;
@@ -165,6 +173,15 @@ export function useBimEngine(
                 fillLight.position.set(-50, 50, -50);
                 scene.add(fillLight);
 
+                // ── Helpers (Axes & Grid) for visual orientation ──
+                const axesHelper = new THREE.AxesHelper(10);
+                // X (Red), Y (Green), Z (Blue)
+                scene.add(axesHelper);
+
+                const gridHelper = new THREE.GridHelper(50, 50, 0x888888, isDarkMode ? 0x444444 : 0xcccccc);
+                gridHelper.position.y = -0.01; // slightly below 0 to avoid z-fighting
+                scene.add(gridHelper);
+
                 // Renderer setup — optimized for performance
                 world.renderer = new OBCF.PostproductionRenderer(components, container);
                 const renderer = (world.renderer as any).three;
@@ -237,9 +254,20 @@ export function useBimEngine(
 
                 // Auto-add loaded models to scene
                 fragments.list.onItemSet.add(({ value: model }: any) => {
-                    model.useCamera(world.camera.three);
-                    world.scene.three.add(model.object);
-                    fragments.core.update(true);
+                    try {
+                        if (typeof model.useCamera === 'function') {
+                            model.useCamera(world.camera.three);
+                        }
+                        const targetObj = model.object || model;
+                        if (targetObj) {
+                            world.scene.three.add(targetObj);
+                        }
+                        if (fragments.core && typeof fragments.core.update === 'function') {
+                            fragments.core.update(true);
+                        }
+                    } catch (e) {
+                        console.error('[BimEngine] Error adding model to scene:', e);
+                    }
                 });
 
                 // Remove z-fighting on materials
@@ -256,6 +284,15 @@ export function useBimEngine(
                 await ifcLoader.setup({
                     autoSetWasm: false,
                     wasm: { path: '/wasm/', absolute: true },
+                    webIfc: {
+                        COORDINATE_TO_ORIGIN: true,
+                        // @ts-ignore
+                        OPTIMIZE_PROFILES: true,
+                        // @ts-ignore
+                        USE_FAST_BOOLS: true,
+                        // Cung cấp thêm bộ nhớ RAM cho WASM (2GB = 2147483648 bytes)
+                        MEMORY_LIMIT: 2147483648
+                    }
                 });
                 ifcLoaderRef.current = ifcLoader;
 
@@ -309,7 +346,7 @@ export function useBimEngine(
 
                         const rendererObj = worldRef.current?.renderer as any;
                         const threeRenderer = rendererObj?.three;
-                        const threeCamera = worldRef.current?.camera?.three;
+                        const threeCamera = getSafeCamera(worldRef.current)?.three;
 
                         // 1. Resize Three.js renderer
                         if (threeRenderer) {
@@ -355,6 +392,36 @@ export function useBimEngine(
             disposed = true;
             if (resizeObserverRef) resizeObserverRef.disconnect();
             ifcLoaderRef.current = null;
+            
+            // Explicit memory management: traverse scene and dispose geometry/materials
+            try {
+                if (worldRef.current && worldRef.current.scene && worldRef.current.scene.three) {
+                    const scene = worldRef.current.scene.three;
+                    scene.traverse((object: any) => {
+                        if (!object.isMesh) return;
+                        
+                        // Only dispose meshes that belong to fragments (IFC models)
+                        if (object.fragment || object.isInstancedMesh) {
+                            if (object.geometry) {
+                                object.geometry.dispose();
+                            }
+                            
+                            if (object.material) {
+                                if (Array.isArray(object.material)) {
+                                    object.material.forEach((mat: any) => {
+                                        if (mat) mat.dispose();
+                                    });
+                                } else {
+                                    object.material.dispose();
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Error during explicit scene disposal", e);
+            }
+
             if (componentsRef.current) {
                 componentsRef.current.dispose();
                 componentsRef.current = null;
@@ -406,12 +473,30 @@ export function useBimEngine(
 
     // ── Camera views ────────────────────────────────
     const setView = useCallback((view: string) => {
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         const scene = worldRef.current?.scene;
         if (!camera || !scene) return;
 
         // Calculate model center for better view positioning
-        const box = new THREE.Box3().setFromObject(scene.three);
+        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+        const box = new THREE.Box3();
+        let hasModels = false;
+        if (fragments && fragments.list.size > 0) {
+            for (const [_, model] of fragments.list) {
+                const targetObj = (model as any).object || model;
+                if (targetObj instanceof THREE.Object3D) {
+                    const groupBox = new THREE.Box3().setFromObject(targetObj);
+                    if (!groupBox.isEmpty()) {
+                        box.union(groupBox);
+                        hasModels = true;
+                    }
+                }
+            }
+        }
+        if (!hasModels) {
+            box.setFromObject(scene.three);
+        }
+        
         const center = new THREE.Vector3();
         const size = new THREE.Vector3();
         if (!box.isEmpty()) {
@@ -432,10 +517,29 @@ export function useBimEngine(
     }, []);
 
     const fitAll = useCallback(() => {
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         const scene = worldRef.current?.scene;
         if (!camera || !scene) return;
-        const box = new THREE.Box3().setFromObject(scene.three);
+
+        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+        const box = new THREE.Box3();
+        let hasModels = false;
+        if (fragments && fragments.list.size > 0) {
+            for (const [_, model] of fragments.list) {
+                const targetObj = (model as any).object || model;
+                if (targetObj instanceof THREE.Object3D) {
+                    const groupBox = new THREE.Box3().setFromObject(targetObj);
+                    if (!groupBox.isEmpty()) {
+                        box.union(groupBox);
+                        hasModels = true;
+                    }
+                }
+            }
+        }
+        if (!hasModels) {
+            box.setFromObject(scene.three);
+        }
+
         if (box.isEmpty()) return;
         const sphere = new THREE.Sphere();
         box.getBoundingSphere(sphere);
@@ -443,7 +547,7 @@ export function useBimEngine(
     }, []);
 
     const zoomToObject = useCallback((object: THREE.Object3D) => {
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         if (!camera) return;
         const box = new THREE.Box3().setFromObject(object);
         if (box.isEmpty()) return;
@@ -472,7 +576,7 @@ export function useBimEngine(
 
     // ── ViewCube drag → orbit camera ─────────────
     const orbit = useCallback((deltaAzimuthDeg: number, deltaPolarDeg: number) => {
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         if (!camera) return;
         const deg2rad = Math.PI / 180;
         camera.controls.rotate(deltaAzimuthDeg * deg2rad, deltaPolarDeg * deg2rad, true);
@@ -483,7 +587,7 @@ export function useBimEngine(
     const orbitIndicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const setOrbitPoint = useCallback((point: THREE.Vector3) => {
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         const scene = worldRef.current?.scene;
         if (!camera || !scene) return;
 
@@ -543,7 +647,7 @@ export function useBimEngine(
 
     const raycastFromMouse = useCallback((event: MouseEvent): THREE.Vector3 | null => {
         const container = containerRef.current;
-        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const camera = getSafeCamera(worldRef.current);
         const scene = worldRef.current?.scene;
         if (!container || !camera || !scene) return null;
 
@@ -574,7 +678,7 @@ export function useBimEngine(
     const zoomToExpressId = useCallback(async (expressId: number) => {
         try {
             const fragments = componentsRef.current?.get(OBC.FragmentsManager);
-            if (!fragments || !worldRef.current?.camera) {
+            if (!fragments || !getSafeCamera(worldRef.current)) {
                 console.warn('[BimEngine] zoomToExpressId: no fragments or camera');
                 return;
             }

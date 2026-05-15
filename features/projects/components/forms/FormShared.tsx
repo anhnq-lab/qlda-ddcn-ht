@@ -92,7 +92,7 @@ interface FormattedInputProps {
 export const FormattedInput: React.FC<FormattedInputProps> = ({ value, onChange, placeholder, className, isDecimal = false, icon: Icon }) => {
     const [localVal, setLocalVal] = useState(() => {
         if (value == null || value === '' || value === 0) return '';
-        return new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(value);
+        return new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(Number(value));
     });
     
     useEffect(() => {
@@ -103,8 +103,8 @@ export const FormattedInput: React.FC<FormattedInputProps> = ({ value, onChange,
                 ? parseFloat(localVal.replace(/\./g, '').replace(/,/g, '.'))
                 : parseInt(localVal.replace(/\D/g, ''), 10);
                 
-            if (value !== currentParsed && !isNaN(value)) {
-                setLocalVal(new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(value));
+            if (value !== currentParsed && !isNaN(Number(value))) {
+                setLocalVal(new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(Number(value)));
             }
         }
     }, [value, isDecimal]);
@@ -150,7 +150,7 @@ export const FormattedInput: React.FC<FormattedInputProps> = ({ value, onChange,
 
     const handleBlur = () => {
         if (value != null && value !== '' && value !== 0) {
-            setLocalVal(new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(value));
+            setLocalVal(new Intl.NumberFormat('vi-VN', isDecimal ? { maximumFractionDigits: 2 } : {}).format(Number(value)));
         }
     };
 

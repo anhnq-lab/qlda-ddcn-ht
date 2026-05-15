@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AlertTriangle, Shield, TrendingDown, Clock, FileWarning,
     CheckCircle2, RefreshCw, ChevronRight, Sparkles, AlertCircle,
     DollarSign, Users
 } from 'lucide-react';
-import { analyzeAllProjectsRisks, FullRiskReport, EnrichedRiskItem } from '../../services/ai/riskAnalyzer';
+import { useAIRisk, FullRiskReport, EnrichedRiskItem } from '../../hooks/ai/useAIRisk';
 
 const levelConfig = {
     critical: {
@@ -39,23 +39,8 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 export const AIRiskDashboard: React.FC = () => {
-    const [report, setReport] = useState<FullRiskReport | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const { report, loading, error, loadRisks } = useAIRisk();
     const [expandedRisk, setExpandedRisk] = useState<string | null>(null);
-
-    const loadRisks = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await analyzeAllProjectsRisks();
-            setReport(result);
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Lỗi phân tích rủi ro');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
 
     useEffect(() => {
         loadRisks();

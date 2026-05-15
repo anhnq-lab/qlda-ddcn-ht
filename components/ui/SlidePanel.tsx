@@ -14,8 +14,11 @@ const SWIPE_THRESHOLD = 100;   // px to trigger swipe-to-close
 
 // ─── Resize Handle ───────────────────────────────────────────────────────────
 
+/** Props for the drag-to-resize handle on the left edge of the top-most panel. */
 interface ResizeHandleProps {
+    /** Called with the initial mouse X coordinate when the user starts dragging. */
     onResizeStart: (startX: number) => void;
+    /** Called on double-click to reset the panel width back to the default. */
     onResetWidth: () => void;
 }
 
@@ -163,7 +166,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
                 animate={{ opacity: isExiting ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
                 className={`absolute inset-0 transition-colors duration-200 ${isTopPanel
-                    ? 'bg-slate- dark:bg-slate- cursor-pointer'
+                    ? 'bg-slate-900/20 dark:bg-slate-900/80 cursor-pointer'
                     : 'bg-transparent pointer-events-none'
                     }`}
                 onClick={isTopPanel ? onClose : undefined}
@@ -333,10 +336,54 @@ const PanelTabsOverlay: React.FC<PanelTabsOverlayProps> = ({ panels, sidebarWidt
 
 // ─── Panel Container ─────────────────────────────────────────────────────────
 
+/**
+ * Props for the SlidePanelContainer.
+ */
 interface SlidePanelContainerProps {
+    /**
+     * Whether the application sidebar is currently in collapsed (icon-only) mode.
+     * Used to compute the correct left offset for the panel viewport so panels
+     * align flush with the sidebar edge.
+     * - `true`  → sidebar is 80px wide (w-20)
+     * - `false` → sidebar is 256px wide (w-64)
+     */
     isSidebarCollapsed: boolean;
 }
 
+/**
+ * SlidePanelContainer — stackable slide-over panel system.
+ *
+ * Renders all currently-open panels managed by `SlidePanelContext`.
+ * Panels slide in from the right with spring animations (Framer Motion).
+ *
+ * ### Features
+ * - **Stacking** — multiple panels stack depth-wise with a configurable offset.
+ * - **Resize** — drag the left edge of the top-most panel to resize it; double-click to reset.
+ * - **Lock mechanism** — panels can be locked via `lockPanel(id)` to prevent accidental
+ *   closure (e.g. when a dirty form is inside). Attempting to close a locked panel
+ *   triggers the registered `onCloseBlocked` callback instead of closing.
+ *   Call `unlockPanel(id)` or `forceClosePanel(id)` to bypass the lock.
+ * - **Keyboard** — `Escape` closes the top-most panel (respects lock).
+ * - **Swipe** — on touch devices, swiping right ≥ 100px closes the top panel.
+ * - **Tab ears** — collapsed panels show labelled ear-tabs on the left edge for quick re-focus.
+ * - **Focus management** — locks `<body>` scroll and traps focus inside the panel viewport.
+ *
+ * ### Usage
+ * Place once at the app layout level. Open/close panels via the `useSlidePanel()` hook:
+ * ```tsx
+ * const { openPanel, closePanel, lockPanel, unlockPanel } = useSlidePanel();
+ *
+ * // Open a panel
+ * openPanel({ id: 'project-detail', title: 'Chi tiết dự án', component: <ProjectDetail /> });
+ *
+ * // Lock while editing
+ * lockPanel('project-detail');
+ *
+ * // Unlock and close
+ * unlockPanel('project-detail');
+ * closePanel('project-detail');
+ * ```
+ */
 export const SlidePanelContainer: React.FC<SlidePanelContainerProps> = ({ isSidebarCollapsed }) => {
     const {
         panels, closePanel, closeAllPanels, focusPanel, hasOpenPanels,

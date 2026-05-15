@@ -12,3 +12,5 @@ export * from './types/document.types';
 export * from './types/api';
 export * from './types/dashboard';
 export * from './types/inspection.types';
+export * from './types/clearance.types';
+export * from './types/plan.types';

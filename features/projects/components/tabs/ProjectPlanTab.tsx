@@ -453,7 +453,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     };
 
     const handleUpdateStepMeta = (stepCode: string, updates: { assigneeRole?: string }) => {
-        const masterTask = tasks.find(t => t.TimelineStep === stepCode && !t.ParentID);
+        const masterTask = tasks.find(t => t.TimelineStep === stepCode && !(t as any).ParentID);
         if (masterTask) {
              handleSaveTask({
                  ...masterTask,

@@ -21,7 +21,7 @@ import React, {
     ReactNode,
     useMemo,
 } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseExt } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { useImpersonation } from './ImpersonationContext';
 import {
@@ -72,7 +72,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     // The "effective" user: impersonated user takes priority
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const effectiveUserType = isImpersonating
-        ? (impersonatedUser?.Role === 'contractor' ? 'contractor' : 'employee')
+        ? ((impersonatedUser?.Role as string) === 'contractor' ? 'contractor' : 'employee')
         : userType;
 
     const [state, setState] = useState<PermissionCacheState>({
@@ -130,7 +130,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             return;
         }
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseExt
                 .from('role_permission_defaults')
                 .select('resource, actions')
                 .eq('role', role);

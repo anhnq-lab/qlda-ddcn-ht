@@ -401,16 +401,17 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
     const { data: documents = [], isLoading } = useQuery({
         queryKey: ['contractor-documents', contractorId],
         queryFn: async () => {
-            const { data } = await supabase
+            const { data: rawData } = await (supabase as any)
                 .from('documents')
                 .select('doc_id, doc_name, category, issue_date, project_id, doc_type, size')
                 .eq('contractor_id', contractorId)
                 .order('issue_date', { ascending: false });
+            const data = rawData as any[];
 
             if (!data || data.length === 0) return [];
 
             // Fetch projects
-            const pIds = [...new Set(data.filter(d => !!d.project_id).map(d => d.project_id))];
+            const pIds = [...new Set(data.filter((d: any) => !!d.project_id).map((d: any) => d.project_id))];
             let pMap = new Map();
             if (pIds.length > 0) {
                 const { data: projs } = await supabase.from('projects').select('project_id, project_name').in('project_id', pIds);

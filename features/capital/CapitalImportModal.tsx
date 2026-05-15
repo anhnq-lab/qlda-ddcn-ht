@@ -331,7 +331,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                                                 <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-">
                                                     <td className="px-4 py-2">
                                                         {row.status === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-                                                        {row.status === 'error' && <AlertCircle className="w-5 h-5 text-red-500" title={row.errorMsg} />}
+                                                        {row.status === 'error' && <AlertCircle className="w-5 h-5 text-red-500" {...({title: row.errorMsg} as any)} />}
                                                         {row.status === 'pending' && (
                                                             row.isNewProject 
                                                                 ? <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-100 text-warning-800">Dự án mới</span>

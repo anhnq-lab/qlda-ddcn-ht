@@ -26,6 +26,70 @@ function requireSupabase() {
     return supabase;
 }
 
+// ── IndexedDB Caching for BIM Models ─────────────────────
+const DB_NAME = 'BimStorageCache';
+const STORE_NAME = 'ifc-files';
+
+function getDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (event) => {
+            const db = (event.target as IDBOpenDBRequest).result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getCachedFile(path: string): Promise<ArrayBuffer | null> {
+    try {
+        const db = await getDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.get(path);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error);
+        });
+    } catch (e) {
+        console.warn('[IDB] get failed', e);
+        return null;
+    }
+}
+
+async function setCachedFile(path: string, data: ArrayBuffer): Promise<void> {
+    try {
+        const db = await getDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.put(data, path);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    } catch (e) {
+        console.warn('[IDB] set failed', e);
+    }
+}
+
+async function clearCachedFile(path: string): Promise<void> {
+    try {
+        const db = await getDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.delete(path);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    } catch (e) {
+        // ignore
+    }
+}
+
 /**
  * Detect discipline from filename
  */
@@ -146,6 +210,10 @@ export async function uploadIFCFile(
             if (uploadError) throw uploadError;
             onProgress?.(100);
         }
+
+        // Invalidate local cache for this path so the new file is downloaded next time
+        await clearCachedFile(storagePath);
+
     } catch (err: any) {
         await sb.from('bim_models').update({ status: 'error', error_message: err.message }).eq('id', record.id);
         throw new Error(`Upload error: ${err.message}`);
@@ -239,13 +307,27 @@ export function getStorageUrl(path: string): string {
 }
 
 /**
- * Download a file from storage as ArrayBuffer
+ * Download a file from storage as ArrayBuffer, with IndexedDB caching
  */
 export async function downloadFile(path: string): Promise<ArrayBuffer> {
+    // 1. Check local IndexedDB cache
+    const cached = await getCachedFile(path);
+    if (cached) {
+        console.log(`📦 [BimStorage] Loaded from IndexedDB cache: ${path}`);
+        return cached;
+    }
+
+    // 2. Fallback to Supabase download
+    console.log(`🌐 [BimStorage] Downloading from Supabase: ${path}`);
     const sb = requireSupabase();
     const { data, error } = await sb.storage.from(BUCKET).download(path);
     if (error) throw new Error(`Download error: ${error.message}`);
-    return await data.arrayBuffer();
+    
+    const buffer = await data.arrayBuffer();
+
+    // 3. Cache it locally
+    await setCachedFile(path, buffer);
+    return buffer;
 }
 
 /**
@@ -254,7 +336,10 @@ export async function downloadFile(path: string): Promise<ArrayBuffer> {
 export async function deleteModel(model: BimModel): Promise<void> {
     const sb = requireSupabase();
     const filesToDelete: string[] = [];
-    if (model.ifc_path) filesToDelete.push(model.ifc_path);
+    if (model.ifc_path) {
+        filesToDelete.push(model.ifc_path);
+        await clearCachedFile(model.ifc_path);
+    }
     if (model.frag_path) filesToDelete.push(model.frag_path);
     if (model.properties_path) filesToDelete.push(model.properties_path);
 

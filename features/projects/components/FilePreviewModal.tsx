@@ -10,8 +10,11 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
     const f = file as any;
     const fileName = (f.DocName || f.title || f.number || f.name || '').toLowerCase();
     const isPDF = fileName.endsWith('.pdf');
-    const isImage = fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
-    const isExcel = fileName.includes('vốn') || fileName.includes('dự toán') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+    const isImage = fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.webp');
+    const isWord = fileName.endsWith('.docx') || fileName.endsWith('.doc');
+    const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+    const isPowerPoint = fileName.endsWith('.pptx') || fileName.endsWith('.ppt');
+    const isOffice = isWord || isExcel || isPowerPoint;
 
     // Create blob URL for local files
     const blobUrl = useMemo(() => {
@@ -82,26 +85,37 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                             );
                         }
 
-                        if (isExcel) {
-                            return (
-                                <div className="bg-white dark:bg-slate-800 w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
-                                    <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Viewer</div>
-                                    <div className="overflow-x-auto p-4">
-                                        <p className="text-gray-500 text-sm mb-4">
-                                            Để xem nội dung file Excel, vui lòng tải xuống.
-                                        </p>
-                                        {viewUrl && (
-                                            <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold">
-                                                <Download className="w-4 h-4" /> Tải xuống
-                                            </a>
-                                        )}
+                        if (isOffice) {
+                            // Office Viewer requires a public URL
+                            if (f.isLocal || blobUrl) {
+                                return (
+                                    <div className="bg-white dark:bg-slate-800 w-full max-w-5xl shadow-sm rounded-sm overflow-hidden flex flex-col h-fit">
+                                        <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Office Viewer</div>
+                                        <div className="overflow-x-auto p-4">
+                                            <p className="text-gray-500 text-sm mb-4">
+                                                Tài liệu Office vừa tải lên chưa được lưu trên hệ thống lưu trữ (chưa có đường dẫn công khai) nên không thể xem trực tiếp qua Office Web Viewer. Vui lòng bấm lưu để hệ thống tải file lên đám mây, sau đó bạn có thể xem trực tiếp.
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            );
+                                );
+                            }
+
+                            if (viewUrl) {
+                                const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(viewUrl)}`;
+                                return (
+                                    <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
+                                        <iframe
+                                            src={officeUrl}
+                                            className="w-full h-full border-0"
+                                            title="Office Viewer"
+                                        />
+                                    </div>
+                                );
+                            }
                         }
 
                         // Fallback — try to embed if we have a URL
-                        if (viewUrl) {
+                        if (viewUrl && !f.isLocal) {
                             return (
                                 <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col relative">
                                     <iframe
@@ -125,8 +139,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                                 </div>
                                 <div className="space-y-6 text-justify">
                                     <p className="p-4 bg-blue-50 text-blue-800 rounded-xl text-sm border border-blue-100 font-sans italic">
-                                        Hệ thống hiện tại hỗ trợ hiển thị nội dung thực cho file PDF và Hình ảnh (JPG, PNG).
-                                        Đối với định dạng Office (.docx, .xlsx), vui lòng tải xuống để xem hoặc sử dụng trình xem chuyên dụng.
+                                        Hệ thống hiện tại hỗ trợ hiển thị nội dung thực cho file PDF và Hình ảnh.
+                                        Đối với file thiết kế (CAD, BIM), vui lòng sử dụng phần mềm chuyên dụng trên máy tính.
                                     </p>
                                     <p>Căn cứ tình hình triển khai thực tế của dự án, Ban Quản lý báo cáo nội dung sau:</p>
                                     <div className="h-4 bg-gray-50 rounded w-full animate-pulse"></div>

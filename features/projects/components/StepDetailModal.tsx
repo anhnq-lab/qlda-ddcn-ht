@@ -109,7 +109,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         <div className="flex items-center gap-2">
                             {linkedTasks.length > 0 ? (
                                 <button
-                                    onClick={() => onEditTask(linkedTasks.find(t => !t.ParentID) || linkedTasks[0])}
+                                    onClick={() => onEditTask(linkedTasks.find(t => !(t as any).ParentID) || linkedTasks[0])}
                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-700 hover:bg-warning-50 dark:hover:bg-warning-900/30 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:text-warning-700 dark:hover:text-warning-400 border border-gray-200 dark:border-slate-600 hover:border-warning-200 dark:hover:border-warning-700 rounded-lg shadow-sm transition-colors"
                                 >
                                     <Edit3 className="w-3.5 h-3.5" />

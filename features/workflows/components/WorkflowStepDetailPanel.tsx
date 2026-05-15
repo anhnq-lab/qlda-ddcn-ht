@@ -24,7 +24,7 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
   projectId,
   staticNode
 }) => {
-  const { user } = useAuth();
+  const { supabaseUser: user } = useAuth();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'actions' | 'cde' | 'history'>('overview');
@@ -40,8 +40,8 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
     queryFn: async () => {
       if (!instanceId) return null;
       const { instance, nodes, tasks } = await (WorkflowService as any).getInstanceDetails(instanceId);
-      const node = nodes.find(n => n.id === nodeId);
-      const task = tasks.find(t => t.node_id === nodeId);
+      const node = nodes.find((n: any) => n.id === nodeId);
+      const task = tasks.find((t: any) => t.node_id === nodeId);
       return { instance, node, task };
     },
     enabled: !!instanceId && !!nodeId

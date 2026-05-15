@@ -146,7 +146,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                                 <span className="text-gray-500 dark:text-slate-400">KL Hoàn thành</span>
                                 <span className="font-bold text-warning-600 dark:text-warning-500">{volumePercent.toFixed(1)}%</span>
                             </div>
-                            <ProgressBar value={volumePercent} color="warning" size="sm" />
+                            <ProgressBar value={volumePercent} color={"warning" as any} size="sm" />
                             <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(volume)}</p>
                         </div>
                     </div>
@@ -250,7 +250,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                                 <span className="text-[10px] text-warning-500/70 ml-1 font-medium">({volumePercent.toFixed(1)}%)</span>
                             </div>
                         </div>
-                        <ProgressBar value={volumePercent} color="warning" size="sm" />
+                        <ProgressBar value={volumePercent} color={"warning" as any} size="sm" />
                     </div>
                 </div>
             </div>

@@ -86,9 +86,9 @@ const UserAccountManager: React.FC = () => {
         try {
             await UserAccountService.toggleActive(account.account_id, !account.is_active);
             if (currentUser) {
-                await supabase.from('audit_logs').insert({
+                await (supabase as any).from('audit_logs').insert({
                     action: !account.is_active ? 'ENABLE_ACCOUNT' : 'DISABLE_ACCOUNT',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'UserAccount',
                     target_id: account.account_id,
                     details: `Toggled active status for user ${account.username} to ${!account.is_active}`
@@ -106,9 +106,9 @@ const UserAccountManager: React.FC = () => {
         try {
             await UserAccountService.delete(account.account_id);
             if (currentUser) {
-                await supabase.from('audit_logs').insert({
+                await (supabase as any).from('audit_logs').insert({
                     action: 'DELETE_ACCOUNT',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'UserAccount',
                     target_id: account.account_id,
                     details: `Deleted user account ${account.username}`
@@ -126,9 +126,9 @@ const UserAccountManager: React.FC = () => {
         try {
             await UserAccountService.resetPassword(resetTarget.account_id, newPassword);
             if (currentUser) {
-                await supabase.from('audit_logs').insert({
+                await (supabase as any).from('audit_logs').insert({
                     action: 'RESET_PASSWORD',
-                    changed_by: currentUser.employee_id,
+                    changed_by: currentUser.EmployeeID,
                     target_entity: 'UserAccount',
                     target_id: resetTarget.account_id,
                     details: `Reset password for user ${resetTarget.username}`

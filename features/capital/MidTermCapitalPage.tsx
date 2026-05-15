@@ -18,7 +18,7 @@ import { StatCard } from '../../components/ui';
 import { CapitalImportModal } from './CapitalImportModal';
 import { APPROVAL_BADGES, SOURCE_LABELS, normalizeSource, MONTHS } from '../../utils/capitalConstants';
 import { useSlidePanelSafe } from '../../context/SlidePanelContext';
-import { ProjectCapitalTab } from '../projects/components/tabs/ProjectCapitalTab';
+import { ProjectCapitalTab } from '../../components/common/ProjectCapitalTab';
 
 // ═══════════════════════════════════════════════════
 //  KẾ HOẠCH VỐN & GIẢI NGÂN — Module tổng hợp

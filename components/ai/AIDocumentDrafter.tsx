@@ -2,8 +2,7 @@ import React, { useState, useCallback } from 'react';
 import {
     FileText, Sparkles, Copy, Download, X, ChevronDown, RefreshCw, Check, AlertCircle
 } from 'lucide-react';
-import { generateDocument, DOCUMENT_TYPES, DocumentType } from '../../services/ai/documentDrafter';
-import { generateNd30Docx } from '../../services/ai/docxGenerator';
+import { useAIDocumentDraft, DOCUMENT_TYPES, DocumentType } from '../../hooks/ai/useAIDocumentDraft';
 
 interface AIDocumentDrafterProps {
     projectId: string;
@@ -19,27 +18,12 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
     onClose,
 }) => {
     const [selectedType, setSelectedType] = useState<DocumentType | ''>('');
-    const [loading, setLoading] = useState(false);
-    const [downloading, setDownloading] = useState(false);
-    const [draftContent, setDraftContent] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const { loading, downloading, draftContent, error, generate, downloadDocx, reset } = useAIDocumentDraft(projectId);
 
-    const handleGenerate = useCallback(async () => {
-        if (!selectedType) return;
-        setLoading(true);
-        setError(null);
-        setDraftContent(null);
-
-        try {
-            const content = await generateDocument(projectId, selectedType);
-            setDraftContent(content);
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Lỗi không xác định');
-        } finally {
-            setLoading(false);
-        }
-    }, [projectId, selectedType]);
+    const handleGenerate = useCallback(() => {
+        generate(selectedType);
+    }, [generate, selectedType]);
 
     const handleCopy = useCallback(() => {
         if (!draftContent) return;
@@ -51,19 +35,19 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
 
     const handleDownloadDocx = useCallback(async () => {
         if (!draftContent) return;
-        setDownloading(true);
         try {
             const typeInfo = DOCUMENT_TYPES.find(t => t.type === selectedType);
             const title = typeInfo?.label || 'VĂN BẢN';
-            const docSymbol = selectedType === 'monitoring_report' ? 'BC-BQLDA'
-                : selectedType === 'settlement_report' ? 'BC-QT'
-                    : selectedType === 'extension_request' ? 'CV-BQLDA'
-                        : selectedType === 'acceptance_record' ? 'BB-NT'
-                            : selectedType === 'adjustment_proposal' ? 'TTr-BQLDA'
-                                : selectedType === 'progress_report' ? 'BC-TĐ'
+            const selectedTypeStr = selectedType as string;
+            const docSymbol = selectedTypeStr === 'monitoring_report' ? 'BC-BQLDA'
+                : selectedTypeStr === 'settlement_report' ? 'BC-QT'
+                    : selectedTypeStr === 'extension_request' ? 'CV-BQLDA'
+                        : selectedTypeStr === 'acceptance_record' ? 'BB-NT'
+                            : selectedTypeStr === 'adjustment_proposal' ? 'TTr-BQLDA'
+                                : selectedTypeStr === 'progress_report' ? 'BC-TĐ'
                                     : 'CV-BQLDA';
 
-            const blob = await generateNd30Docx({
+            const blob = await downloadDocx({
                 organizationParent: 'HỌC VIỆN CTQG HỒ CHÍ MINH',
                 organizationName: 'BAN QUẢN LÝ DỰ ÁN ĐTXD CN',
                 documentNumber: `……/${docSymbol}`,
@@ -75,19 +59,18 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                 signerName: '(Ký, ghi rõ họ tên)',
             });
 
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${typeInfo?.label || 'van-ban'}_${projectId}_${new Date().toISOString().slice(0, 10)}.docx`;
-            a.click();
-            URL.revokeObjectURL(url);
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${typeInfo?.label || 'van-ban'}_${projectId}_${new Date().toISOString().slice(0, 10)}.docx`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
         } catch (e) {
             console.error('DOCX generation failed:', e);
-            setError('Không thể tạo file DOCX. Vui lòng thử "Sao chép" nội dung.');
-        } finally {
-            setDownloading(false);
         }
-    }, [draftContent, selectedType, projectId]);
+    }, [draftContent, selectedType, projectId, downloadDocx]);
 
     if (!isOpen) return null;
 
@@ -128,7 +111,7 @@ export const AIDocumentDrafter: React.FC<AIDocumentDrafterProps> = ({
                             {DOCUMENT_TYPES.map(dt => (
                                 <button
                                     key={dt.type}
-                                    onClick={() => { setSelectedType(dt.type); setDraftContent(null); setError(null); }}
+                                    onClick={() => { setSelectedType(dt.type); reset(); }}
                                     className={`flex items-start gap-2.5 p-3 rounded-lg border text-left transition-all
                                         ${selectedType === dt.type
                                             ? 'border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-400/50'

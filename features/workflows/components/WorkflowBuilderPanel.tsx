@@ -73,13 +73,13 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                     supabase.from('workflow_nodes').select('*').eq('workflow_id', workflowId).or('is_deleted.eq.false,is_deleted.is.null').order('sort_order', { ascending: true }).order('created_at', { ascending: true })
                 ]);
                 if (wfRes.error) throw wfRes.error;
-                setWorkflow(wfRes.data);
+                setWorkflow(wfRes.data as any);
                 setName(wfRes.data.name || '');
                 setCode(wfRes.data.code || '');
                 setDescription(wfRes.data.description || '');
-                setCategory(wfRes.data.category || 'project');
+                setCategory((wfRes.data.category || 'project') as any);
                 setIsActive(wfRes.data.is_active ?? true);
-                setNodes(nodesRes.data || []);
+                setNodes((nodesRes.data || []) as any);
             } catch (err: any) {
                 addToast({ title: 'Lỗi tải dữ liệu', message: err.message, type: 'error' });
             } finally {
@@ -102,14 +102,14 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
         setIsSaving(true);
         try {
             const { data, error } = await supabase.from('workflows')
-                .insert({ 
-                    name: name.trim(), 
-                    code: code.trim().toUpperCase(), 
-                    description: description || null, 
-                    category, 
-                    is_active: isActive, 
-                    version: 1 
-                })
+                .insert({
+                    name: name.trim(),
+                    code: code.trim().toUpperCase(),
+                    description: description || null,
+                    category: category as any,
+                    is_active: isActive,
+                    version: 1
+                } as any)
                 .select()
                 .single();
             if (error) throw error;
@@ -129,7 +129,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
         setIsSaving(true);
         try {
             const { error } = await supabase.from('workflows')
-                .update({ name, code, description: description || null, category, is_active: isActive, updated_at: new Date().toISOString() })
+                .update({ name, code, description: description || null, category: category as any, is_active: isActive, updated_at: new Date().toISOString() })
                 .eq('id', workflowId);
             if (error) throw error;
             addToast({ title: 'Cập nhật thành công', message: 'Đã lưu cấu hình quy trình.', type: 'success' });
@@ -261,8 +261,8 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                 .single();
             if (error) throw error;
             
-            const newNodes = [...nodes, data];
-            setNodes(newNodes);
+            const newNodes = [...nodes, data] as any[];
+            setNodes(newNodes as any);
             await rebuildLinearEdges(newNodes);
             addToast({ title: 'Thêm bước', message: 'Đã thêm bước mới vào cuối', type: 'success' });
         } catch (err: any) {

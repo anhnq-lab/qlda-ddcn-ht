@@ -330,7 +330,7 @@ export class EmployeeService {
     static async updateSystemRole(employeeId: string, systemRole: string | null): Promise<void> {
         const { error } = await supabase
             .from('employees')
-            .update({ system_role: systemRole })
+            .update({ system_role: systemRole } as any)
             .eq('employee_id', employeeId);
 
         if (error) {

@@ -7,7 +7,7 @@ import { useEmployees } from '../../hooks/useEmployees';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
 import { getTaskTemplates, getFileTypeColor, TaskTemplate } from '../../utils/taskTemplates';
 import { getTemplateConfig } from '../../utils/templateRegistry';
-import { TemplateExportModal } from '../projects/components/TemplateExportModal';
+import { TemplateExportModal } from '../../components/common/TemplateExportModal';
 import { supabase as _supabase } from '../../lib/supabase';
 const supabase = _supabase as any;
 import { TaskInfoPanel } from './components/TaskInfoPanel';

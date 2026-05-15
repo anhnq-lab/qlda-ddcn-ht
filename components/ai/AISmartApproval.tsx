@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { ShieldCheck, RefreshCw, CheckCircle2, XCircle, AlertCircle, ChevronRight } from 'lucide-react';
-import { checkPaymentApproval, checkContractApproval, ApprovalCheckResult } from '../../services/ai/smartApproval';
+import { useAISmartApproval, ApprovalCheckResult } from '../../hooks/ai/useAISmartApproval';
 
 interface AISmartApprovalProps {
     mode: 'payment' | 'contract';
@@ -14,28 +14,18 @@ interface AISmartApprovalProps {
 export const AISmartApproval: React.FC<AISmartApprovalProps> = ({
     mode, contractId, projectId, amount = 0, className = '', onResult
 }) => {
-    const [result, setResult] = useState<ApprovalCheckResult | null>(null);
-    const [loading, setLoading] = useState(false);
+    const { result, loading, runCheck: _runCheck } = useAISmartApproval();
 
     const runCheck = useCallback(async () => {
-        setLoading(true);
-        try {
-            let data: ApprovalCheckResult;
-            if (mode === 'payment' && contractId) {
-                data = await checkPaymentApproval(contractId, amount);
-            } else if (mode === 'contract' && projectId) {
-                data = await checkContractApproval(projectId, amount);
-            } else {
-                return;
-            }
-            setResult(data);
-            onResult?.(data);
-        } catch (e) {
-            console.error('Approval check error:', e);
-        } finally {
-            setLoading(false);
+        if (mode === 'payment' && contractId) {
+            await _runCheck('payment', contractId, amount);
+        } else if (mode === 'contract' && projectId) {
+            await _runCheck('contract', projectId, amount, projectId);
+        } else {
+            return;
         }
-    }, [mode, contractId, projectId, amount, onResult]);
+        if (onResult && result) onResult(result);
+    }, [mode, contractId, projectId, amount, onResult, _runCheck, result]);
 
     const statusIcons = {
         passed: <CheckCircle2 size={12} className="text-emerald-600" />,

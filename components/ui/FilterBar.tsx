@@ -7,21 +7,39 @@ import { ViewToggle, ViewMode } from './ViewToggle';
 // Dùng cho tất cả list pages
 // ========================================
 
+/**
+ * A single option in a filter dropdown.
+ */
 export interface FilterOption {
+    /** The raw value passed to the filter's `onChange` callback. */
     value: string;
+    /** Human-readable display label. */
     label: string;
+    /** Optional record count displayed next to the label, e.g. `(12)`. */
     count?: number;
+    /** Optional icon rendered before the label. */
     icon?: React.ReactNode;
+    /** Optional accent color (CSS color string or Tailwind class). */
     color?: string;
 }
 
+/**
+ * Configuration for a single filter dropdown rendered by FilterBar.
+ */
 export interface FilterBarFilter {
+    /** Unique identifier used as React key and the element's `id`. */
     id: string;
+    /** Human-readable filter name shown in the "All {label}" default option. */
     label: string;
+    /** Currently-selected value (controlled). */
     value: string;
+    /** Array of selectable options. */
     options: FilterOption[];
+    /** Called when the user picks an option. */
     onChange: (value: string) => void;
+    /** Placeholder text (unused in the current `<select>` implementation). */
     placeholder?: string;
+    /** Override the default "Tất cả {label}" option text. */
     allLabel?: string;
 }
 
@@ -60,6 +78,30 @@ export interface FilterBarProps {
     className?: string;
 }
 
+/**
+ * FilterBar — Design System v2.1
+ *
+ * Composable toolbar used on all list pages. Renders a combination of:
+ * - Full-text search input with clear button
+ * - Filter dropdown selects (each driven by a `FilterBarFilter` config)
+ * - Optional sort dropdown
+ * - Active-filter count badge with clear-all action
+ * - Result/total count display
+ * - View-mode toggle (list / grid / kanban)
+ * - Arbitrary action buttons slot (right-aligned)
+ *
+ * @example
+ * ```tsx
+ * <FilterBar
+ *   searchValue={search}
+ *   onSearchChange={setSearch}
+ *   filters={[{ id: 'status', label: 'Trạng thái', value: statusFilter, options: STATUS_OPTIONS, onChange: setStatusFilter }]}
+ *   resultCount={filtered.length}
+ *   totalCount={all.length}
+ *   actions={<Button onClick={openCreate}>Thêm mới</Button>}
+ * />
+ * ```
+ */
 export const FilterBar: React.FC<FilterBarProps> = ({
     searchValue = '',
     onSearchChange,

@@ -97,7 +97,7 @@ const CDEPage: React.FC = () => {
         if (dept.includes('PTDV') || dept.includes('Phát triển')) return 'PTDV';
         if (dept.includes('KT') || dept.includes('Kỹ thuật')) return 'KT_TD';
         if (dept.includes('KH') || dept.includes('TC') || dept.includes('Tài chính')) return 'KH_TC';
-        if (currentUser?.Role === 'director' || dept.includes('Giám đốc')) return 'DIRECTOR';
+        if ((currentUser?.Role as string) === 'director' || dept.includes('Giám đốc')) return 'DIRECTOR';
         return undefined;
     })();
 

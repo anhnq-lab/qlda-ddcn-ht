@@ -545,15 +545,8 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
 
                     {/* Documents */}
                     <DocumentAttachments
-                        entityType="bidding_package"
-                        entityId={packageId}
-                        section="appointment"
-                        quickUploadTypes={[
-                            { label: 'HSYC', docType: 'Hồ sơ yêu cầu' },
-                            { label: 'HSĐX', docType: 'Hồ sơ đề xuất' },
-                            { label: 'QĐ chỉ định', docType: 'Quyết định chỉ định thầu' },
-                            { label: 'Báo cáo đánh giá', docType: 'Báo cáo đánh giá HSĐX' },
-                        ]}
+                        relatedType={"bidding_package" as any}
+                        relatedId={packageId}
                     />
                 </div>
             )}

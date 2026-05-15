@@ -55,11 +55,11 @@ const TAB_DEFINITIONS = [
     { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
     { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
     { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
-    { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
     { id: 'inspection', label: 'THANH TRA', icon: Shield },
     { id: 'settlement', label: 'QUYẾT TOÁN', icon: Receipt },
     { id: 'workflow', label: 'QUY TRÌNH', icon: GitBranch },
     { id: 'clearance', label: 'GPMB', icon: LandPlot },
+    { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
     { id: 'tt24', label: 'ĐỒNG BỘ CSDL', icon: Database },
 ] as const;
 
@@ -465,7 +465,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             }}
                             canEditLifecycle={true}
                             onEditProject={() => setShowEditModal(true)}
-                            onTabChange={(tab) => setActiveTab(tab)}
+                            onTabChange={(tab) => setActiveTab(tab as any)}
                         />
                     </div>
                 </div>
