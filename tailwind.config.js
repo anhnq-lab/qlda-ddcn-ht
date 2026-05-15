@@ -10,6 +10,14 @@ export default {
         "./services/**/*.{js,ts,jsx,tsx}",
         "./context/**/*.{js,ts,jsx,tsx}",
         "./pages/**/*.{js,ts,jsx,tsx}",
+        "./types/**/*.{js,ts,jsx,tsx}",
+        "./utils/**/*.{js,ts,jsx,tsx}",
+    ],
+    safelist: [
+        {
+            pattern: /^(bg|text|border|shadow)-(red|amber|purple|blue|cyan|emerald|slate|gray)-(50|100|200|300|400|500|600|700|800|900)$/,
+            variants: ['hover', 'dark', 'dark:hover']
+        }
     ],
     darkMode: 'class',
     theme: {

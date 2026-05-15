@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { UserAccountService, UserAccount } from '../../services/UserAccountService';
 import { supabase } from '../../lib/supabase';
+import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS, ALL_ROLES } from '../../types/permission.types';
 
 // ============================================================
 // ADMIN USER ACCOUNT MANAGER
@@ -53,7 +54,7 @@ const UserAccountManager: React.FC = () => {
         loadAccounts();
     }, [loadAccounts]);
 
-    // Filter
+    // Filter and Sort
     const filtered = accounts.filter(a => {
         if (!search) return true;
         const s = search.toLowerCase();
@@ -64,6 +65,20 @@ const UserAccountManager: React.FC = () => {
             a.phone?.toLowerCase().includes(s) ||
             a.department?.toLowerCase().includes(s)
         );
+    }).sort((a, b) => {
+        const sysRoleA = resolveSystemRole(a.role || 'Staff', a.position || '');
+        const sysRoleB = resolveSystemRole(b.role || 'Staff', b.position || '');
+        
+        const priorityA = ALL_ROLES.indexOf(sysRoleA);
+        const priorityB = ALL_ROLES.indexOf(sysRoleB);
+        
+        const pA = priorityA === -1 ? 99 : priorityA;
+        const pB = priorityB === -1 ? 99 : priorityB;
+
+        if (pA === pB) {
+            return (a.full_name || '').localeCompare(b.full_name || '', 'vi');
+        }
+        return pA - pB;
     });
 
     // Toggle active
@@ -292,12 +307,14 @@ const UserAccountManager: React.FC = () => {
                                         <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{account.email || '—'}</td>
                                         <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{account.phone || '—'}</td>
                                         <td className="px-4 py-3">
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${account.role === 'Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
-                                                account.role === 'Manager' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                                    'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
-                                                }`}>
-                                                {account.role || 'Staff'}
-                                            </span>
+                                            {(() => {
+                                                const sysRole = resolveSystemRole(account.role || 'Staff', account.position || '');
+                                                return (
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_COLORS[sysRole] || 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'}`}>
+                                                        {ROLE_LABELS[sysRole] || account.role || 'Staff'}
+                                                    </span>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                                             <button

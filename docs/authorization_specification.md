@@ -34,8 +34,9 @@ graph TB
     subgraph "Phân quyền (Authorization)"
         C --> E[resolveSystemRole]
         E --> F[SystemRole]
-        F --> G[DEFAULT_ROLE_PERMISSIONS]
-        G --> H[user_permissions DB]
+        F --> H[user_permissions DB]
+        H --> R[role_permission_defaults DB]
+        R --> G[DEFAULT_ROLE_PERMISSIONS]
         D --> I["contractor role"]
     end
 
@@ -378,7 +379,7 @@ Nhân viên thuộc **Ban Điều hành dự án 1–5** chỉ thấy dự án m
 **Logic lọc:** Hook `useScopedProjects()` tự động lọc dữ liệu theo scope:
 1. Kiểm tra vai trò/phòng ban → xác định global hay project-scoped
 2. Nếu global → trả về tất cả dự án
-3. Nếu project-scoped → lọc theo `management_unit` khớp với phòng ban người dùng
+3. Nếu project-scoped → lọc theo `management_unit` khớp chính xác (exact match) với phòng ban người dùng
 4. Nếu contractor → lọc theo `allowed_project_ids`
 
 **Các module áp dụng scope:** Dự án, Công việc, Hợp đồng, Thanh toán, Hồ sơ tài liệu, CDE
@@ -461,7 +462,7 @@ sequenceDiagram
     Admin->>CDE: Thêm đơn vị vào dự án
     CDE->>DB: INSERT cde_permissions (contractor_id, role=contributor)
     Admin->>CDE: Tạo tài khoản nhân sự nhà thầu
-    CDE->>Auth: createUser (email, password)
+    CDE->>Auth: supabaseAdmin.auth.admin.createUser
     Auth-->>CDE: auth_user_id
     CDE->>DB: INSERT contractor_accounts (contractor_id, username, auth_user_id, allowed_project_ids)
     CDE->>DB: INSERT cde_permissions (user_id=contractor_id/username, role)
@@ -498,8 +499,7 @@ contractor_accounts (Tài khoản đăng nhập)
 ├── auth_user_id (FK → auth.users)
 ├── is_active
 ├── allowed_project_ids (UUID[])
-├── last_login
-└── current_password
+└── last_login
 
 cde_permissions (Quyền CDE theo dự án)
 ├── id (PK)
@@ -560,10 +560,12 @@ systemRole      // → 'specialist', 'contractor', v.v.
 1. User mở trang
 2. Sidebar lọc menu → can(resource, 'view')
 3. Component kiểm tra → <PermissionGate resource="X" action="Y">
-4. Hook kiểm tra thứ tự:
+4. Hook kiểm tra thứ tự (tại `PermissionContext`):
    a. Super admin? → ALLOW
    b. Permissions chưa load? → DENY
-   c. Có quyền trong user_permissions? → ALLOW/DENY
+   c. Có quyền trong `user_permissions` (per-user override)? → ALLOW/DENY
+   d. Có quyền trong `role_permission_defaults` (role template)? → ALLOW/DENY
+   e. Có quyền trong `DEFAULT_ROLE_PERMISSIONS` (hardcoded)? → ALLOW/DENY
 5. Data scope:
    a. isGlobalScope? → trả toàn bộ dự án
    b. Ban ĐHDA? → lọc theo management_unit
@@ -614,4 +616,14 @@ systemRole      // → 'specialist', 'contractor', v.v.
 | `contractors` | Danh sách đơn vị nhà thầu |
 | `contractor_accounts` | Tài khoản đăng nhập nhà thầu |
 | `user_permissions` | Ma trận quyền từng người (resource × actions) |
+| `role_permission_defaults` | Ma trận quyền mặc định theo vai trò (role template) |
 | `cde_permissions` | Quyền CDE theo dự án × người dùng |
+
+## 11. Nhật ký Hệ thống (Audit Logs)
+
+Hệ thống tích hợp ghi log (Audit Log) cho các thao tác quan trọng liên quan đến phân quyền và tài khoản:
+- **Tài khoản:** Tạo mới, xóa, reset mật khẩu, bật/tắt tài khoản nhân viên và nhà thầu.
+- **Phân quyền:** Thay đổi quyền của user (`user_permissions`), cập nhật role template (`role_permission_defaults`).
+- **Impersonation:** Ghi nhận khi admin bắt đầu và kết thúc phiên giả lập người dùng khác.
+
+Tất cả logs được ghi vào bảng `audit_logs` với các thông tin: `action`, `entity_type`, `entity_id`, `entity_name`, `changed_by` (lấy từ `currentUser`), và `details`.

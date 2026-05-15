@@ -25,6 +25,7 @@ export interface UserAccount {
     email?: string;
     phone?: string;
     department?: string;
+    position?: string;
     role?: string;
     avatar_url?: string;
 }
@@ -66,6 +67,7 @@ export class UserAccountService {
                     email,
                     phone,
                     department,
+                    position,
                     role,
                     avatar_url
                 )
@@ -87,6 +89,7 @@ export class UserAccountService {
             email: row.employees?.email,
             phone: row.employees?.phone,
             department: row.employees?.department,
+            position: row.employees?.position,
             role: row.employees?.role,
             avatar_url: row.employees?.avatar_url,
         }));

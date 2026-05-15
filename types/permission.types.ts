@@ -42,7 +42,6 @@ export type SystemRole =
     | 'dept_head'
     | 'deputy_head'
     | 'specialist'
-    | 'staff'
     | 'contractor';
 
 export interface UserPermission {
@@ -93,31 +92,29 @@ export const ACTION_LABELS: Record<PermissionAction, string> = {
 
 export const ROLE_LABELS: Record<SystemRole, string> = {
     super_admin: 'Quản trị HT',
-    director: 'Giám đốc',
-    deputy_director: 'Phó GĐ',
+    director: 'Lãnh đạo Ban',
+    deputy_director: 'Lãnh đạo Ban',
     chief_accountant: 'KT Trưởng',
-    dept_head: 'TP / Trưởng ban',
-    deputy_head: 'Phó phòng',
+    dept_head: 'Lãnh đạo phòng',
+    deputy_head: 'Lãnh đạo phòng',
     specialist: 'Chuyên viên',
-    staff: 'Nhân viên',
     contractor: 'Nhà thầu',
 };
 
 export const ROLE_COLORS: Record<SystemRole, string> = {
     super_admin: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    director: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    deputy_director: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-    chief_accountant: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+    director: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    deputy_director: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    chief_accountant: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
     dept_head: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     deputy_head: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400',
     specialist: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    staff: 'bg-slate-100 text-slate-700 dark:bg-slate-700/50 dark:text-slate-300',
     contractor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
 };
 
 export const ALL_ROLES: SystemRole[] = [
     'super_admin', 'director', 'deputy_director', 'chief_accountant',
-    'dept_head', 'deputy_head', 'specialist', 'staff', 'contractor'
+    'dept_head', 'deputy_head', 'specialist', 'contractor'
 ];
 
 export const CORE_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete'];
@@ -175,24 +172,30 @@ export const LEGACY_ROLE_MAP: Record<string, SystemRole> = {
  * Map legacy employee role + position to new SystemRole.
  * More specific than LEGACY_ROLE_MAP — uses position title.
  */
-export function resolveSystemRole(legacyRole: string, position: string): SystemRole {
+export function resolveSystemRole(legacyRole: string, position: string, department: string = ''): SystemRole {
     // Explicit legacy role mapping first
-    if (legacyRole === 'Admin') return 'super_admin';
-    if (legacyRole === 'Director') return 'director';
-    if (legacyRole === 'DeputyDirector') return 'deputy_director';
+    if (legacyRole === 'Admin' || position.toLowerCase().includes('quản trị')) return 'super_admin';
+    if (legacyRole === 'Director' || position.toLowerCase().includes('giám đốc') && !position.toLowerCase().includes('phó') && !position.toLowerCase().includes('trung tâm')) return 'director';
+    if (legacyRole === 'DeputyDirector' || position.toLowerCase().includes('phó giám đốc') || position.toLowerCase().includes('phó gđ')) return 'deputy_director';
 
     // Position-based mapping 
     const posLower = position.toLowerCase();
+    const deptLower = department.toLowerCase();
 
     if (posLower.includes('kế toán trưởng')) return 'chief_accountant';
     if (posLower.includes('giám đốc trung tâm')) return 'dept_head';
     if (posLower.includes('chánh văn phòng')) return 'dept_head';
     if (posLower.includes('trưởng phòng') || posLower.includes('trưởng ban')) return 'dept_head';
-    if (posLower.includes('phó phòng') || posLower.includes('phó văn phòng')) return 'deputy_head';
-    if (posLower.includes('nhân viên')) return 'staff';
+    if (posLower.includes('phó phòng') || posLower.includes('phó văn phòng') || posLower.includes('phó ban')) return 'deputy_head';
+    if (posLower.includes('chuyên viên') || posLower.includes('kỹ sư')) return 'specialist';
+    if (posLower.includes('nhân viên')) return 'specialist';
+    if (posLower.includes('nhà thầu') || legacyRole.toLowerCase() === 'contractor') return 'contractor';
 
     // Default for CV, KS, KTV, TVGS etc.
-    if (legacyRole === 'Manager') return 'dept_head';
+    if (legacyRole === 'Manager') {
+        if (deptLower.includes('ban giám đốc')) return 'deputy_director'; // Map to Lãnh đạo Ban
+        return 'dept_head';
+    }
     if (legacyRole === 'Staff') return 'specialist';
 
     return 'specialist';
@@ -364,29 +367,6 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         calendar: ['view'],
         site_clearance: ['view', 'create', 'update'],
     },
-
-    // ── Nhân viên (hành chính) ──
-    staff: {
-        dashboard: ['view'],
-        projects: ['view'],
-        tasks: ['view'],
-        employees: ['view'],
-        contractors: ['view'],
-        bidding: ['view'],
-        contracts: ['view'],
-        payments: ['view'],
-        capital: ['view'],
-        documents: ['view', 'create'],
-        cde: ['view'],
-        bim: ['view'],
-        legal_docs: ['view'],
-        reports: ['view'],
-        regulations: ['view'],
-        workflows: ['view'],
-        calendar: ['view'],
-        site_clearance: ['view'],
-    },
-
     // ── Nhà thầu ──
     contractor: {
         projects: ['view'],       // project-scoped
@@ -395,3 +375,4 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         cde: ['view', 'create'],  // project-scoped: xem + upload tài liệu
     },
 };
+

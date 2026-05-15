@@ -259,6 +259,15 @@ const RoleDefaultsManager: React.FC = () => {
                     const isActive = selectedRole === role;
                     // Lấy string style (bg-red-100 text-red-700...)
                     const colorClasses = ROLE_COLORS[role] || 'bg-slate-100 text-slate-700';
+                    
+                    const ROLE_SUB_LABELS: Record<string, string> = {
+                        director: '(GĐ)',
+                        deputy_director: '(PGĐ)',
+                        dept_head: '(Trưởng)',
+                        deputy_head: '(Phó)',
+                    };
+                    const subLabel = ROLE_SUB_LABELS[role] ? ` ${ROLE_SUB_LABELS[role]}` : '';
+
                     return (
                         <button
                             key={role}
@@ -270,7 +279,7 @@ const RoleDefaultsManager: React.FC = () => {
                         >
                             <Shield size={16} className={isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400'} />
                             <div className="min-w-0 flex-1">
-                                <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200 truncate">{ROLE_LABELS[role]}</p>
+                                <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200 truncate">{ROLE_LABELS[role]}{subLabel}</p>
                                 <p className="text-[11px] text-slate-500 dark:text-slate-400">{permCount[role]} quyền</p>
                             </div>
                             {isActive && <ChevronRight size={14} className="text-primary-500 opacity-60" />}
@@ -287,7 +296,11 @@ const RoleDefaultsManager: React.FC = () => {
                             Ma trận quyền mặc định:
                         </h4>
                         <span className={`px-2.5 py-1 rounded text-xs font-bold ${ROLE_COLORS[selectedRole]}`}>
-                            {ROLE_LABELS[selectedRole]}
+                            {ROLE_LABELS[selectedRole]} 
+                            {selectedRole === 'director' ? ' (GĐ)' : 
+                             selectedRole === 'deputy_director' ? ' (PGĐ)' : 
+                             selectedRole === 'dept_head' ? ' (Trưởng)' : 
+                             selectedRole === 'deputy_head' ? ' (Phó)' : ''}
                         </span>
                     </div>
                     <div className="flex items-center gap-2">

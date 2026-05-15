@@ -147,6 +147,15 @@ export const UserProfilePanel: React.FC = () => {
 
                         {/* Read-only fields */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="sm:col-span-2">
+                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Tên đăng nhập</label>
+                                <input
+                                    type="text"
+                                    value={currentUser?.Username || currentUser?.Email || ''}
+                                    disabled
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed font-mono text-sm"
+                                />
+                            </div>
                             <div>
                                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Họ và tên</label>
                                 <input

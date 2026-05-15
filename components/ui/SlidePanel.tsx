@@ -138,20 +138,19 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
     }, [swipeOffset, onClose]);
 
     // Compute width style
+    const widthValue = panel.width
+        ? (typeof panel.width === 'number' ? `${panel.width}px` : panel.width)
+        : (panelWidth > 0 ? `${panelWidth}px` : `calc(100% - ${stackOffset}px)`);
+
     const widthStyle: React.CSSProperties = isMaximized
         ? {
             width: '100%',
             maxWidth: '100%',
         }
-        : panelWidth > 0 && isTopPanel
-            ? {
-                width: `${panelWidth}px`,
-                maxWidth: `calc(100% - ${stackOffset}px)`,
-            }
-            : {
-                width: `calc(100% - ${stackOffset}px)`,
-                maxWidth: `calc(100% - ${stackOffset}px)`,
-            };
+        : {
+            width: isTopPanel ? widthValue : `calc(100% - ${stackOffset}px)`,
+            maxWidth: `calc(100% - ${stackOffset}px)`,
+        };
 
     return (
         <div
