@@ -6,10 +6,12 @@
  * 2. Department (QLDA/KHDT/KTTD/HCTH/TCKT/PTDV)
  */
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../context/AuthContext';
 import { usePermissionCheck } from '../../../hooks/usePermissionCheck';
 import { resolveSystemRole, type SystemRole } from '../../../types/permission.types';
 import type { DepartmentCode } from '../../../types/plan.types';
+import { supabase } from '../../../lib/supabase';
 
 export type DashboardTier = 'director' | 'manager' | 'staff';
 
@@ -30,6 +32,8 @@ export interface DashboardConfig {
     departmentCode: DepartmentCode | null;
     departmentName: string;
     isGlobalScope: boolean;
+    allowedWidgets: string[];
+    isLoadingConfig: boolean;
 }
 
 /** Map department string from DB → department group */
@@ -89,6 +93,25 @@ export function useDashboardConfig(): DashboardConfig {
     const { currentUser } = useAuth();
     const { isGlobalScope, systemRole } = usePermissionCheck();
 
+    const { data: allowedWidgets = [], isLoading: isLoadingConfig } = useQuery({
+        queryKey: ['dashboard_widgets', systemRole],
+        queryFn: async () => {
+            const { data } = await supabase
+                .from('dashboard_widget_config')
+                .select('widget_id')
+                .eq('role', systemRole)
+                .eq('is_active', true);
+            
+            // Nếu không có dữ liệu (có thể do lỗi rls hoặc table chưa push), trả về mảng fallback theo group để ko crash UI
+            if (!data || data.length === 0) {
+                return [];
+            }
+            return data.map(d => d.widget_id);
+        },
+        enabled: !!systemRole,
+        staleTime: 5 * 60 * 1000,
+    });
+
     return useMemo(() => {
         if (!currentUser) {
             return {
@@ -98,6 +121,8 @@ export function useDashboardConfig(): DashboardConfig {
                 departmentCode: null,
                 departmentName: '',
                 isGlobalScope: false,
+                allowedWidgets: [],
+                isLoadingConfig: false,
             };
         }
 
@@ -106,6 +131,17 @@ export function useDashboardConfig(): DashboardConfig {
         const departmentCode = resolveDepartmentCode(department);
         const tier = resolveTier(systemRole);
 
+        // Fallback for UI if DB migration is not applied yet:
+        // Cung cấp widget tạm theo departmentGroup nếu mảng rỗng để không gián đoạn UI
+        let finalWidgets = allowedWidgets;
+        if (finalWidgets.length === 0 && !isLoadingConfig) {
+            if (departmentGroup === 'qlda') finalWidgets = ['project_progress'];
+            else if (departmentGroup === 'khdt') finalWidgets = ['bidding_pipeline', 'contract_summary'];
+            else if (departmentGroup === 'kttd') finalWidgets = ['review_queue'];
+            else if (departmentGroup === 'hcth') finalWidgets = ['hr_summary'];
+            else if (departmentGroup === 'tckt') finalWidgets = ['payment_pipeline'];
+        }
+
         return {
             tier,
             systemRole,
@@ -113,6 +149,8 @@ export function useDashboardConfig(): DashboardConfig {
             departmentCode,
             departmentName: department,
             isGlobalScope,
+            allowedWidgets: finalWidgets,
+            isLoadingConfig,
         };
-    }, [currentUser, systemRole, isGlobalScope]);
+    }, [currentUser, systemRole, isGlobalScope, allowedWidgets, isLoadingConfig]);
 }

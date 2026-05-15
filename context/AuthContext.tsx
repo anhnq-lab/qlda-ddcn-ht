@@ -76,6 +76,7 @@ async function fetchUserProfile(authUserId: string): Promise<{
                     Status: data.status as any || 'Active',
                     Username: data.username || '',
                     Password: '',
+                    SystemRole: data.system_role || undefined,
                 },
                 userType: 'employee',
                 contractorId: null,

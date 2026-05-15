@@ -332,9 +332,9 @@ const MonthlyPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-transparent">
             {/* ── Header ── */}
-            <div className="bg-white border-b border-slate-200 px-6 py-4">
+            <div className="bg-transparent border-b border-slate-100 dark:border-slate-800 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">

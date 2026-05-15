@@ -35,6 +35,7 @@ export interface Employee {
     AllowedProjectIDs?: string[];
     JobContent?: string;
     CompletionCriteria?: string;
+    SystemRole?: string; // Tùy chọn, ghi đè vai trò mặc định
 }
 
 // 9.1 Audit Logs (Lưu vết hệ thống)

@@ -59,7 +59,8 @@
       "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(grep -E \"\\\\.\\(ts|tsx|js|json|css|md\\)$\")",
-      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Recurse -Directory -ErrorAction SilentlyContinue)"
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Recurse -Directory -ErrorAction SilentlyContinue)",
+      "mcp__06943db5-fde1-4f16-900c-8e37176eebb6__list_migrations"
     ]
   }
 }

@@ -42,6 +42,7 @@ const routeLabels: Record<string, string> = {
     'settings': 'Cài đặt',
     'new': 'Tạo mới',
     'edit': 'Chỉnh sửa',
+    'work-plan': 'Kế hoạch công việc',
 };
 
 export const Breadcrumb: React.FC<BreadcrumbProps> = ({

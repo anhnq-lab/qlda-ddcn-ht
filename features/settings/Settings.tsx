@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ShieldCheck, Users, Shield, Building2, Network, Wrench } from 'lucide-react';
+import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 // Components (Lazy loaded)
@@ -10,12 +10,13 @@ const RoleDefaultsManager = React.lazy(() => import('./RoleDefaultsManager'));
 const ContractorAccountManager = React.lazy(() => import('../admin/ContractorAccountManager'));
 const AuditLogViewer = React.lazy(() => import('../admin/AuditLogViewer'));
 const UserImpersonator = React.lazy(() => import('./UserImpersonator'));
+const DashboardWidgetManager = React.lazy(() => import('../admin/DashboardWidgetManager'));
 
 // ============================================================
 // SETTINGS — Unified Admin Control Panel
 // ============================================================
 
-type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'permissions' | 'audit-log' | 'tools';
+type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'permissions' | 'dashboard-widgets' | 'audit-log' | 'tools';
 
 interface TabDef {
     key: TabKey;
@@ -28,6 +29,7 @@ const TABS: TabDef[] = [
     { key: 'contractors', label: 'Nhà thầu', icon: Building2 },
     { key: 'role-defaults', label: 'Ma trận quyền', icon: ShieldCheck },
     { key: 'permissions', label: 'Quyền cá nhân', icon: Shield },
+    { key: 'dashboard-widgets', label: 'Cấu hình Dashboard', icon: LayoutDashboard },
     { key: 'audit-log', label: 'Nhật ký hệ thống', icon: Network },
     { key: 'tools', label: 'Công cụ', icon: Wrench },
 ];
@@ -98,8 +100,8 @@ const Settings: React.FC = () => {
                                     flex items-center gap-2 px-4 py-2 text-sm font-semibold whitespace-nowrap
                                     rounded-lg transition-all duration-200
                                     ${isActive
-                                        ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-slate-700 shadow-sm ring-1 ring-black/5 dark:ring-white/10'
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                                        ? 'text-primary-700 dark:text-white bg-white dark:bg-primary-600 shadow-sm ring-1 ring-black/5 dark:ring-primary-500/50'
+                                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
                                     }
                                 `}
                             >
@@ -138,6 +140,11 @@ const Settings: React.FC = () => {
                     {activeTab === 'permissions' && (
                         <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
                             <PermissionManager />
+                        </div>
+                    )}
+                    {activeTab === 'dashboard-widgets' && (
+                        <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
+                            <DashboardWidgetManager />
                         </div>
                     )}
                     {activeTab === 'audit-log' && (

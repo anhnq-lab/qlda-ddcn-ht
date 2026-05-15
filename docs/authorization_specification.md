@@ -1,629 +1,223 @@
-# Tài liệu Phân quyền Hệ thống QLDA ĐTXD ĐDCN — TP. Hồ Chí Minh
-
-**Phiên bản:** 2.0  
-**Ngày cập nhật:** 2026-03-13  
-**Tác giả:** Ban QLDA ĐTXD ĐDCN TP.HCM  
-**Trạng thái:** Đang áp dụng
-
----
-
-## 1. Tổng quan
-
-Hệ thống phân quyền được thiết kế theo nguyên tắc **Deny-by-default** (từ chối mặc định), đảm bảo mỗi người dùng chỉ truy cập được những chức năng và dữ liệu được cấp phép rõ ràng.
-
-### 1.1 Nguyên tắc cốt lõi
-
-| # | Nguyên tắc | Mô tả |
-|---|-----------|-------|
-| 1 | **Deny-by-default** | Mọi quyền đều bị từ chối cho đến khi được cấp một cách cụ thể |
-| 2 | **Role-based** | Quyền được gán mặc định theo vai trò (system role) |
-| 3 | **Customizable** | Admin có thể bật/tắt từng quyền cho từng cá nhân |
-| 4 | **Scope-aware** | Dữ liệu được lọc theo phạm vi: toàn Ban, theo Ban ĐHDA, hoặc theo dự án nhà thầu |
-| 5 | **Dual auth** | Hỗ trợ hai loại tài khoản: Nhân viên Ban & Nhà thầu |
-
-### 1.2 Kiến trúc phân quyền
-
-```mermaid
-graph TB
-    subgraph "Xác thực (Authentication)"
-        A[Supabase Auth] --> B{Loại tài khoản?}
-        B -->|employee| C[user_accounts → employees]
-        B -->|contractor| D[contractor_accounts → contractors]
-    end
-
-    subgraph "Phân quyền (Authorization)"
-        C --> E[resolveSystemRole]
-        E --> F[SystemRole]
-        F --> H[user_permissions DB]
-        H --> R[role_permission_defaults DB]
-        R --> G[DEFAULT_ROLE_PERMISSIONS]
-        D --> I["contractor role"]
-    end
-
-    subgraph "Phạm vi dữ liệu (Data Scope)"
-        F --> J{Scope?}
-        J -->|BGĐ, VP, Phòng ban| K[Global - xem tất cả dự án]
-        J -->|Ban ĐHDA 1-5| L[Project-scoped - xem dự án của Ban]
-        I --> M[Contractor-scoped - xem dự án được gán]
-    end
-
-    subgraph "Kiểm tra UI"
-        H --> N["usePermissionCheck()"]
-        N --> O["PermissionGate component"]
-        N --> P["Sidebar filtering"]
-    end
-```
-
----
-
-## 2. Vai trò hệ thống (System Roles)
-
-Hệ thống có **9 vai trò**, chia thành 3 nhóm chính:
-
-### 2.1 Nhóm Lãnh đạo (Global Scope)
-
-| Vai trò | Code | Mô tả | Phạm vi dữ liệu |
-|---------|------|-------|-----------------|
-| Quản trị HT | `super_admin` | Toàn quyền hệ thống, bỏ qua mọi kiểm tra | Toàn bộ |
-| Giám đốc | `director` | Phê duyệt, ký số, xem tất cả | Toàn bộ |
-| Phó Giám đốc | `deputy_director` | Phê duyệt thay GĐ, xem tất cả | Toàn bộ |
-| Kế toán Trưởng | `chief_accountant` | Quản lý thanh toán, xem tất cả | Toàn bộ |
-
-### 2.2 Nhóm Chuyên môn (Global hoặc Project Scope)
-
-| Vai trò | Code | Mô tả | Phạm vi dữ liệu |
-|---------|------|-------|-----------------|
-| Trưởng phòng / Trưởng ban | `dept_head` | Quản lý phòng/ban, duyệt trong phạm vi | Theo phòng ban |
-| Phó phòng | `deputy_head` | Hỗ trợ trưởng phòng | Theo phòng ban |
-| Chuyên viên / Kỹ sư | `specialist` | Tác nghiệp chính | Theo phòng ban |
-| Nhân viên (hành chính) | `staff` | Nhập liệu, xem cơ bản | Theo phòng ban |
-
-### 2.3 Nhóm Nhà thầu (Project Scope)
-
-| Vai trò | Code | Mô tả | Phạm vi dữ liệu |
-|---------|------|-------|-----------------|
-| Nhà thầu | `contractor` | Nộp hồ sơ CDE, xem dự án được gán | Chỉ dự án được gán |
-
-### 2.4 Quy tắc xác định vai trò
-
-Vai trò được xác định tự động từ dữ liệu nhân sự theo thứ tự ưu tiên:
-
-```
-1. Role = 'Admin'            → super_admin
-2. Role = 'Director'         → director
-3. Role = 'DeputyDirector'   → deputy_director
-4. Position chứa 'kế toán trưởng'     → chief_accountant
-5. Position chứa 'giám đốc trung tâm' → dept_head
-6. Position chứa 'chánh văn phòng'     → dept_head
-7. Position chứa 'trưởng phòng/ban'    → dept_head
-8. Position chứa 'phó phòng/VP'        → deputy_head
-9. Position chứa 'nhân viên'           → staff
-10. Role = 'Manager' (fallback)         → dept_head
-11. Role = 'Staff' (fallback)           → specialist
-12. Mặc định                            → specialist
-```
-
----
-
-## 3. Tài nguyên và Hành động
-
-### 3.1 Danh sách tài nguyên (Resources) — 15 module
-
-| # | Resource | Tên hiển thị | Menu Sidebar |
-|---|----------|-------------|-------------|
-| 1 | `dashboard` | Tổng quan | ✅ |
-| 2 | `projects` | Dự án đầu tư | ✅ |
-| 3 | `tasks` | Công việc | ✅ |
-| 4 | `employees` | Nhân sự | ✅ |
-| 5 | `contractors` | Nhà thầu | ✅ |
-| 6 | `contracts` | Hợp đồng | ✅ |
-| 7 | `payments` | Thanh toán | ✅ |
-| 8 | `documents` | Hồ sơ tài liệu | ✅ |
-| 9 | `cde` | Môi trường dữ liệu chung | ✅ |
-| 10 | `legal_docs` | Văn bản pháp luật | ✅ |
-| 11 | `reports` | Báo cáo | ✅ |
-| 12 | `regulations` | Quy chế làm việc | ✅ |
-| 13 | `admin_accounts` | Quản trị — Tài khoản | ✅ (Quản trị HT) |
-| 14 | `admin_roles` | Quản trị — Phân quyền | Trong trang QT |
-| 15 | `admin_audit` | Quản trị — Nhật ký HT | Trong trang QT |
-
-### 3.2 Danh sách hành động (Actions) — 6 loại
-
-| Action | Tên | Mô tả |
-|--------|-----|-------|
-| `view` | Xem | Xem danh sách và chi tiết |
-| `create` | Thêm | Tạo mới bản ghi |
-| `update` | Sửa | Chỉnh sửa bản ghi |
-| `delete` | Xóa | Xóa bản ghi |
-| `approve` | Duyệt | Phê duyệt / ký duyệt |
-| `export` | Xuất | Xuất file Excel / PDF |
-
----
-
-## 4. Ma trận phân quyền mặc định — NHÂN VIÊN BAN
+# 🛡️ Tài liệu Phân quyền Hệ thống QLDA ĐTXD ĐDCN
 
 > [!IMPORTANT]
-> Bảng dưới đây là quyền **mặc định** khi khởi tạo. Admin có thể tùy chỉnh quyền cho từng cá nhân qua menu **Quản trị HT → Phân quyền**.
-
-### 4.1 Quản trị hệ thống (`super_admin`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | ✅ |
-| Dự án | ✅ | ✅ | ✅ | ✅ | — | — |
-| Công việc | ✅ | ✅ | ✅ | ✅ | — | — |
-| Nhân sự | ✅ | ✅ | ✅ | ✅ | — | — |
-| Nhà thầu | ✅ | ✅ | ✅ | — | — | — |
-| Hợp đồng | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| Thanh toán | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| Hồ sơ tài liệu | ✅ | ✅ | ✅ | ✅ | — | — |
-| CDE | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-| Tài khoản | ✅ | ✅ | ✅ | ✅ | — | — |
-| Phân quyền | ✅ | ✅ | ✅ | ✅ | — | — |
-| Nhật ký HT | ✅ | — | — | — | — | — |
-
-> **Ghi chú:** Super Admin bỏ qua mọi kiểm tra quyền (bypass). Bảng trên chỉ để tham khảo.
-
-### 4.2 Giám đốc (`director`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | ✅ |
-| Dự án | ✅ | — | — | — | — | — |
-| Công việc | ✅ | ✅ | ✅ | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | — | — | — | — | — |
-| Hợp đồng | ✅ | — | — | — | ✅ | — |
-| Thanh toán | ✅ | — | — | — | ✅ | — |
-| Hồ sơ tài liệu | ✅ | — | — | — | — | — |
-| CDE | ✅ | — | — | — | ✅ | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-| Tài khoản | ✅ | — | — | — | — | — |
-| Nhật ký HT | ✅ | — | — | — | — | — |
-
-### 4.3 Phó Giám đốc (`deputy_director`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | ✅ |
-| Dự án | ✅ | — | — | — | — | — |
-| Công việc | ✅ | ✅ | ✅ | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | — | — | — | — | — |
-| Hợp đồng | ✅ | — | — | — | ✅ | — |
-| Thanh toán | ✅ | — | — | — | ✅ | — |
-| Hồ sơ tài liệu | ✅ | — | — | — | — | — |
-| CDE | ✅ | — | — | — | ✅ | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-
-### 4.4 Kế toán Trưởng (`chief_accountant`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | ✅ |
-| Dự án | ✅ | — | — | — | — | — |
-| Công việc | ✅ | — | — | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | — | — | — | — | — |
-| Hợp đồng | ✅ | — | — | — | — | — |
-| **Thanh toán** | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| Hồ sơ tài liệu | ✅ | — | — | — | — | — |
-| CDE | ✅ | — | — | — | — | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-
-> **Ghi chú:** Kế toán Trưởng có **toàn quyền** trên module **Thanh toán**.
-
-### 4.5 Trưởng phòng / Trưởng ban ĐHDA (`dept_head`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | — |
-| Dự án | ✅ | ✅ | ✅ | — | — | — |
-| Công việc | ✅ | ✅ | ✅ | ✅ | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | ✅ | ✅ | — | — | — |
-| Hợp đồng | ✅ | ✅ | ✅ | — | — | — |
-| Thanh toán | ✅ | ✅ | ✅ | — | — | — |
-| Hồ sơ tài liệu | ✅ | ✅ | ✅ | ✅ | — | — |
-| CDE | ✅ | ✅ | ✅ | — | ✅ | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-
-### 4.6 Phó phòng (`deputy_head`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | — |
-| Dự án | ✅ | — | ✅ | — | — | — |
-| Công việc | ✅ | ✅ | ✅ | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | ✅ | ✅ | — | — | — |
-| Hợp đồng | ✅ | ✅ | ✅ | — | — | — |
-| Thanh toán | ✅ | ✅ | ✅ | — | — | — |
-| Hồ sơ tài liệu | ✅ | ✅ | ✅ | — | — | — |
-| CDE | ✅ | ✅ | ✅ | — | — | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | ✅ |
-| Quy chế | ✅ | — | — | — | — | — |
-
-### 4.7 Chuyên viên / Kỹ sư (`specialist`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | — |
-| Dự án | ✅ | — | ✅ | — | — | — |
-| Công việc | ✅ | ✅ | ✅ | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | ✅ | ✅ | — | — | — |
-| Hợp đồng | ✅ | ✅ | ✅ | — | — | — |
-| Thanh toán | ✅ | ✅ | — | — | — | — |
-| Hồ sơ tài liệu | ✅ | ✅ | ✅ | — | — | — |
-| CDE | ✅ | ✅ | ✅ | — | — | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | — |
-| Quy chế | ✅ | — | — | — | — | — |
-
-### 4.8 Nhân viên hành chính (`staff`)
-
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Tổng quan | ✅ | — | — | — | — | — |
-| Dự án | ✅ | — | — | — | — | — |
-| Công việc | ✅ | — | — | — | — | — |
-| Nhân sự | ✅ | — | — | — | — | — |
-| Nhà thầu | ✅ | — | — | — | — | — |
-| Hợp đồng | ✅ | — | — | — | — | — |
-| Thanh toán | ✅ | — | — | — | — | — |
-| Hồ sơ tài liệu | ✅ | ✅ | — | — | — | — |
-| CDE | ✅ | — | — | — | — | — |
-| VB Pháp luật | ✅ | — | — | — | — | — |
-| Báo cáo | ✅ | — | — | — | — | — |
-| Quy chế | ✅ | — | — | — | — | — |
-
-> **Ghi chú:** Nhân viên hành chính chỉ có quyền xem toàn bộ + tải lên hồ sơ tài liệu.
+> **Phiên bản:** 2.2 | **Cập nhật:** 2026-05-15  
+> Hệ thống phân quyền được thiết kế theo nguyên tắc **Deny-by-default** (từ chối mặc định), đảm bảo mỗi người dùng chỉ truy cập được chức năng và dữ liệu được cấp phép rõ ràng.
 
 ---
 
-## 5. Ma trận phân quyền — NHÀ THẦU
+## 1. 🏗️ Nguyên tắc & Kiến trúc
 
-### 5.1 Quyền hệ thống (System-level)
+### 1.1 Nguyên tắc cốt lõi
+| Nguyên tắc | Mô tả |
+| :--- | :--- |
+| 🔒 **Deny-by-default** | Mọi quyền đều bị từ chối cho đến khi được cấp một cách cụ thể. |
+| 🎭 **Role-based (RBAC)** | Quyền được cấp theo **System Role** (Vai trò hệ thống) thay vì gán lẻ tẻ. |
+| ⚙️ **Customizable** | Quản trị viên (Admin) có thể can thiệp, bật/tắt từng quyền cho từng cá nhân thông qua giao diện. |
+| 🌍 **Scope-aware** | Phạm vi dữ liệu động: Toàn ban (Global), Theo phòng/Ban ĐHDA (Project-scoped), hoặc Theo nhà thầu (Contractor-scoped). |
+| 👥 **Dual Auth** | Phân tách rạch ròi 2 tệp người dùng: Nhân sự Ban QLDA & Nhân sự Nhà thầu. |
 
-Nhà thầu có quyền **rất hạn chế** trên hệ thống chính:
+### 1.2 Kiến trúc Luồng Phân quyền
 
-| Resource | Xem | Thêm | Sửa | Xóa | Duyệt | Xuất |
-|----------|:---:|:----:|:---:|:---:|:-----:|:----:|
-| Dự án | ✅ | — | — | — | — | — |
-| CDE | ✅ | ✅ | — | — | — | — |
-| **Tất cả module khác** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+```mermaid
+graph TD
+    subgraph "1. Xác thực (Authentication)"
+        A[Supabase Auth] --> B{Loại tài khoản?}
+        B -->|Nhân viên Ban| C[Bảng: employees]
+        B -->|Nhà thầu| D[Bảng: contractors]
+    end
+
+    subgraph "2. Phân giải Vai trò (Role Resolution)"
+        C --> E{Có System Role<br/>(Gán thủ công)?}
+        E -->|Có| F[Sử dụng DB System Role]
+        E -->|Không| G[Tính toán tự động từ Chức danh]
+        G --> F
+        D --> H[Role mặc định: 'contractor']
+    end
+
+    subgraph "3. Kiểm tra Quyền (Authorization)"
+        F --> I[Load Defaults: role_permission_defaults]
+        I --> J[Ghi đè cá nhân: user_permissions]
+        H --> K[Quyền CDE: cde_permissions]
+    end
+
+    subgraph "4. Phạm vi Dữ liệu (Data Scope)"
+        J --> L{Phạm vi?}
+        L -->|Global| M[Toàn bộ dự án]
+        L -->|Project| N[Chỉ dự án của Ban/Phòng]
+        K --> O[Chỉ dự án được gán]
+    end
+```
+
+---
+
+## 2. 🎭 Vai trò hệ thống (System Roles)
+
+Hệ thống quy định **9 vai trò chính**, chia làm 3 nhóm:
+
+### 💼 Nhóm Lãnh đạo (Global Scope - Xem toàn bộ)
+| Vai trò | Code | Thẩm quyền |
+| :--- | :--- | :--- |
+| **Quản trị HT** | `super_admin` | Toàn quyền hệ thống, bỏ qua mọi kiểm tra (Bypass). |
+| **Giám đốc** | `director` | Phê duyệt, ký số cuối cùng, xem toàn bộ hệ thống. |
+| **Phó Giám đốc** | `deputy_director` | Phê duyệt thay GĐ (theo ủy quyền), xem toàn bộ hệ thống. |
+| **Kế toán Trưởng** | `chief_accountant` | Quản lý, phê duyệt module Thanh toán & Hợp đồng. |
+
+### 🏢 Nhóm Chuyên môn (Theo Phòng Ban/Ban ĐHDA)
+| Vai trò | Code | Thẩm quyền |
+| :--- | :--- | :--- |
+| **Trưởng phòng / Trưởng ban** | `dept_head` | Quản lý phòng/ban, duyệt trong phạm vi dự án quản lý. |
+| **Phó phòng** | `deputy_head` | Hỗ trợ trưởng phòng, điều hành tác nghiệp. |
+| **Chuyên viên / Kỹ sư** | `specialist` | Tác nghiệp chính (Thêm/Sửa tài liệu, lập phiếu). |
+| **Nhân viên (Hành chính)** | `staff` | Nhập liệu, xem cơ bản, tải tài liệu. Phân biệt với `specialist` — không có quyền Sửa/Xóa. |
+
+### 👷 Nhóm Nhà thầu
+| Vai trò | Code | Thẩm quyền |
+| :--- | :--- | :--- |
+| **Nhà thầu** | `contractor` | Chỉ truy cập CDE (Nộp hồ sơ), Hợp đồng, Thanh toán của dự án được gán. |
+
+---
+
+## 3. ⚙️ Quy tắc phân giải vai trò (Cập nhật MỚI)
+
+> [!TIP]
+> **Ưu tiên gán thủ công:** Để tăng tính linh hoạt và quản trị chặt chẽ, hệ thống ưu tiên thiết lập thủ công từ Admin so với việc tự động phân tích chức danh (fallback).
+
+```mermaid
+flowchart LR
+    A[Truy xuất User Profile] --> B{Có cột 'system_role'<br/>trong DB?}
+    B -- "Có (Manual Override)" --> C[Sử dụng Role này]
+    B -- "Trống (Fallback)" --> D{Phân tích 'Position'<br/>và 'Role' từ DB}
+    D --> E[Role = Admin] --> |super_admin| C
+    D --> F[Position chứa 'Giám đốc'] --> |director / dept_head| C
+    D --> G[Position chứa 'Kế toán trưởng'] --> |chief_accountant| C
+    D --> I[Position chứa 'Nhân viên'] --> |staff| C
+    D --> H[Khác / Chuyên viên / Kỹ sư] --> |specialist| C
+```
+
+---
+
+## 4. 📊 Ma trận Quyền hạn (Permissions Matrix)
+
+### 4.1. Nhóm Lãnh đạo & Quản trị
+> [!NOTE]
+> `super_admin` có toàn quyền ở mọi nơi. Các vai trò dưới đây thể hiện quyền tác nghiệp chính.
+
+| Module | Giám đốc (`director`) | Kế toán trưởng (`chief_accountant`) |
+| :--- | :---: | :---: |
+| **Dự án, Công việc** | Chỉ Xem | Chỉ Xem |
+| **Nhân sự, Nhà thầu** | Chỉ Xem | Chỉ Xem |
+| **Hợp đồng** | Duyệt | Duyệt |
+| **Thanh toán** | Duyệt | **Thêm/Sửa/Xóa/Duyệt** |
+| **CDE (Hồ sơ CĐ)** | Duyệt | Chỉ Xem |
+| **Báo cáo, Xuất file** | Xem, Xuất | Xem, Xuất |
+
+### 4.2. Nhóm Chuyên môn
+> [!NOTE]
+> Quyền dưới đây áp dụng **trong phạm vi phòng ban/dự án** mà nhân sự thuộc về. Admin có thể thay đổi thêm ở tab "Quản trị HT → Phân quyền".
+
+| Module | Trưởng phòng (`dept_head`) | Chuyên viên (`specialist`) | Hành chính (`staff`) |
+| :--- | :---: | :---: | :---: |
+| **Dự án** | Thêm/Sửa | Thêm/Sửa | Chỉ Xem |
+| **Công việc** | Thêm/Sửa/Xóa | Thêm/Sửa | Chỉ Xem |
+| **Nhà thầu** | Thêm/Sửa | Thêm/Sửa | Chỉ Xem |
+| **Hợp đồng, Thanh toán**| Thêm/Sửa | Thêm/Sửa (HĐ) | Chỉ Xem |
+| **CDE (Hồ sơ CĐ)** | Thêm/Sửa/Duyệt | Thêm/Sửa | Chỉ Xem |
+| **Hồ sơ tài liệu** | Thêm/Sửa/Xóa | Thêm/Sửa | **Chỉ Thêm** (nhập liệu) |
+
+> [!NOTE]
+> `staff` và `specialist` đều là nhân sự phòng ban, nhưng `staff` (code: `'staff'`) bị **hạn chế quyền Sửa/Xóa** để đảm bảo an toàn dữ liệu. Hệ thống phân biệt qua `position`: "Nhân viên..." → `staff`, "Chuyên viên/Kỹ sư..." → `specialist`.
+
+---
+
+## 5. 👷 Phân quyền riêng cho Nhà thầu
 
 > [!CAUTION]
-> Nhà thầu **KHÔNG** được truy cập: Tổng quan, Công việc, Nhân sự, Hợp đồng, Thanh toán, Báo cáo, Quy chế, VB Pháp luật, và toàn bộ Quản trị hệ thống.
+> **Giới hạn truy cập khắt khe:** Nhà thầu **TUYỆT ĐỐI KHÔNG** được truy cập Tổng quan, Nhân sự, Quy chế, Báo cáo và Quản trị hệ thống. 
 
-### 5.2 Menu Sidebar cho nhà thầu
+Nhà thầu chỉ được truy cập **4 module cố định** của các dự án được gán:
+1. Môi trường dữ liệu chung (CDE)
+2. Hợp đồng
+3. Thanh toán
+4. Hồ sơ tài liệu
 
-Nhà thầu chỉ thấy **4 mục** trên sidebar (hardcoded):
+### 5.1 Các mức cấp quyền CDE (Dựa theo ISO 19650)
 
-| # | Mục menu | Icon | Ghi chú |
-|---|---------|------|---------|
-| 1 | Môi trường dữ liệu chung (CDE) | FolderTree | Module chính |
-| 2 | Hợp đồng | FileText | Xem hợp đồng liên quan |
-| 3 | Thanh toán | CreditCard | Xem thanh toán liên quan |
-| 4 | Hồ sơ tài liệu | FileBox | Xem tài liệu liên quan |
-
-> **Ghi chú:** Sidebar nhà thầu không gắn `resource` permission — nó là danh sách cố định. Tuy nhiên, quyền thực tế vẫn được kiểm tra ở cấp component.
-
-### 5.3 Quyền CDE chi tiết cho nhà thầu
-
-Trên module CDE, nhà thầu được phân quyền theo **5 mức vai trò CDE**:
-
-| CDE Role | Code | Upload | Phê duyệt | Xóa | Quản trị | Container Access |
-|----------|------|:------:|:---------:|:---:|:--------:|-----------------|
-| Xem | `viewer` | ❌ | ❌ | ❌ | ❌ | WIP, SHARED, PUBLISHED |
-| Nộp hồ sơ | `contributor` | ✅ | ❌ | ❌ | ❌ | WIP |
-| Kiểm tra | `reviewer` | ✅ | ❌ | ❌ | ❌ | WIP, SHARED |
-| Phê duyệt | `approver` | ✅ | ✅ | ❌ | ❌ | WIP, SHARED, PUBLISHED |
-| Quản trị | `admin` | ✅ | ✅ | ✅ | ✅ | WIP, SHARED, PUBLISHED, ARCHIVED |
-
-> **Mặc định:** Khi thêm nhà thầu vào dự án, họ sẽ nhận vai trò CDE `contributor` (nộp hồ sơ) với quyền upload vào container WIP.
-
-### 5.4 Phạm vi dự án của nhà thầu
-
-Nhà thầu chỉ nhìn thấy và tương tác được với **dự án cụ thể** mà họ được gán:
-
-- Danh sách dự án được lưu trong `contractor_accounts.allowed_project_ids` (mảng UUID)
-- Mỗi nhà thầu có thể được gán vào nhiều dự án
-- Admin dự án quản lý danh sách này qua **CDE → Phân quyền tham gia dự án**
+| Vai trò CDE | Code | Quyền Upload | Quyền Duyệt | Khu vực Container được truy cập |
+| :--- | :--- | :---: | :---: | :--- |
+| **Chỉ xem** | `viewer` | ❌ | ❌ | `WIP`, `SHARED`, `PUBLISHED` |
+| **Nộp hồ sơ** | `contributor` | ✅ | ❌ | `WIP` *(Mặc định khi gán dự án)* |
+| **Kiểm tra** | `reviewer` | ✅ | ❌ | `WIP`, `SHARED` |
+| **Phê duyệt** | `approver` | ✅ | ✅ | `WIP`, `SHARED`, `PUBLISHED` |
+| **Quản trị CDE** | `admin` | ✅ | ✅ | Toàn bộ (bao gồm `ARCHIVED`) |
 
 ---
 
-## 6. Phạm vi dữ liệu (Data Scope)
+## 6. 🌐 Phạm vi Dữ liệu (Data Scopes)
 
-### 6.1 Scope toàn cục (Global View)
+### 6.1 Lọc dữ liệu tự động
+Dữ liệu hiển thị được tính toán tự động dựa trên `Scope` của người dùng:
+- **Global Scope:** (Ban GĐ, Kế toán, VP...) -> Nhìn thấy toàn cục `SELECT * FROM projects`.
+- **Project Scope:** (Ban ĐHDA 1-5) -> Chỉ thấy các dự án có `management_unit` khớp với phòng ban của mình.
+- **Contractor Scope:** Chỉ thấy dự án nằm trong mảng danh sách `allowed_project_ids` của tài khoản nhà thầu.
 
-Các vai trò/phòng ban sau **xem được tất cả dự án**:
+### 6.2 Cấu trúc Container CDE (ISO 19650)
+Quy trình duyệt hồ sơ CDE (Submit -> Check -> Appraise -> Approve -> Sign) sẽ di chuyển hồ sơ qua các luồng Container sau:
 
-**Theo vai trò:**
-- `super_admin`, `director`, `deputy_director`, `chief_accountant`
-
-**Theo phòng ban:**
-- Ban Giám đốc
-- Văn phòng
-- Phòng Kế hoạch – Đầu tư
-- Phòng Tài chính – Kế toán
-- Phòng Chính sách – Pháp chế
-- Phòng Kỹ thuật – Chất lượng
-- Trung tâm Dịch vụ tư vấn
-
-### 6.2 Scope theo Ban ĐHDA (Project Scope)
-
-Nhân viên thuộc **Ban Điều hành dự án 1–5** chỉ thấy dự án mà Ban mình quản lý:
-
-| Phòng ban | Dự án hiển thị |
-|-----------|---------------|
-| Ban Điều hành dự án 1 | Dự án có `management_unit` = Ban ĐHDA 1 |
-| Ban Điều hành dự án 2 | Dự án có `management_unit` = Ban ĐHDA 2 |
-| Ban Điều hành dự án 3 | Dự án có `management_unit` = Ban ĐHDA 3 |
-| Ban Điều hành dự án 4 | Dự án có `management_unit` = Ban ĐHDA 4 |
-| Ban Điều hành dự án 5 | Dự án có `management_unit` = Ban ĐHDA 5 |
-
-**Logic lọc:** Hook `useScopedProjects()` tự động lọc dữ liệu theo scope:
-1. Kiểm tra vai trò/phòng ban → xác định global hay project-scoped
-2. Nếu global → trả về tất cả dự án
-3. Nếu project-scoped → lọc theo `management_unit` khớp chính xác (exact match) với phòng ban người dùng
-4. Nếu contractor → lọc theo `allowed_project_ids`
-
-**Các module áp dụng scope:** Dự án, Công việc, Hợp đồng, Thanh toán, Hồ sơ tài liệu, CDE
-
-### 6.3 Scope nhà thầu (Contractor Scope)  
-
-Nhà thầu chỉ thấy dữ liệu thuộc dự án trong `allowed_project_ids`:
-
-```
-contractor_accounts.allowed_project_ids = ['project-uuid-1', 'project-uuid-2']
-```
+| Nhãn | Mã | Trạng thái hồ sơ |
+| :--- | :--- | :--- |
+| 🟡 **WIP** | Đang xử lý | Hồ sơ đang soạn/bổ sung từ nhà thầu, chưa trình duyệt chính thức. |
+| 🔵 **SHARED** | Đang xét duyệt | Hồ sơ đã trình, đang qua các bước Tư vấn / Chuyên viên Ban QLDA kiểm tra. |
+| 🟢 **PUBLISHED**| Đã phê duyệt | Hồ sơ đã được Trưởng phòng/Giám đốc ký số (Approve/Sign) chính thức. |
+| 🟣 **ARCHIVED** | Lưu trữ | Hồ sơ được đóng gói, lưu trữ dài hạn sau khi hoàn thành. |
 
 ---
 
-## 7. Quy trình duyệt CDE (CDE Workflow)
+## 7. 🛠️ Dành cho Developer (Kỹ thuật)
 
-### 7.1 Các bước quy trình
-
-Quy trình duyệt hồ sơ CDE theo ISO 19650 + NĐ 175/2024/NĐ-CP gồm **5 bước**:
-
-```mermaid
-graph LR
-    A["1. Nhà thầu trình<br/>(SUBMIT)"] -->|S0 → S1| B["2. Tư vấn kiểm tra<br/>(CHECK)"]
-    B -->|S1 → S2| C["3. CV thẩm định<br/>(APPRAISE)"]
-    C -->|S2 → S3| D["4. TP duyệt<br/>(APPROVE)"]
-    D -->|S3 → A1| E["5. Lãnh đạo ký<br/>(SIGN)"]
-
-    style A fill:#f59e0b,color:#000
-    style B fill:#3b82f6,color:#fff
-    style C fill:#6366f1,color:#fff
-    style D fill:#8b5cf6,color:#fff
-    style E fill:#10b981,color:#fff
-```
-
-### 7.2 Chi tiết từng bước
-
-| # | Bước | Code | Người thực hiện | CDE Role | Status chuyển | Container |
-|---|------|------|----------------|----------|--------------|-----------|
-| 1 | Nhà thầu trình | `SUBMIT` | Nhà thầu | `contractor` | → S1 | WIP → WIP |
-| 2 | Tư vấn kiểm tra | `CHECK` | Tư vấn giám sát | `consultant` | → S2 | WIP → SHARED |
-| 3 | Chuyên viên thẩm định | `APPRAISE` | Chuyên viên Ban QLDA | `staff` | → S3 | SHARED → SHARED |
-| 4 | Trưởng phòng duyệt | `APPROVE` | Trưởng phòng | `manager` | → A1 | SHARED → SHARED |
-| 5 | Lãnh đạo ký số | `SIGN` | Lãnh đạo | `director` | → A1 | SHARED → PUBLISHED |
-
-### 7.3 Mã trạng thái CDE (Status Codes)
-
-| Code | Nhãn | Container | Màu |
-|------|------|-----------|-----|
-| S0 | WIP - Đang xử lý | WIP | 🟡 Amber |
-| S1 | Tư vấn đang kiểm tra | SHARED | 🔵 Blue |
-| S2 | Đang thẩm định | SHARED | 🟣 Indigo |
-| S3 | Đang phê duyệt | SHARED | 🟣 Violet |
-| A1 | Đã ký duyệt | PUBLISHED | 🟢 Emerald |
-| A2 | Đã bàn giao | PUBLISHED | 🟢 Green |
-| A3 | Quản lý tài sản | PUBLISHED | 🟢 Green dark |
-| B1 | Lưu trữ | ARCHIVED | 🟣 Purple |
-
-### 7.4 CDE Containers (ISO 19650)
-
-| Container | Nhãn | Ý nghĩa |
-|-----------|------|---------|
-| **WIP** | Đang xử lý | Hồ sơ đang soạn/bổ sung, chưa trình duyệt |
-| **SHARED** | Đang xét duyệt | Hồ sơ đã trình, đang qua các bước kiểm tra/duyệt |
-| **PUBLISHED** | Đã phê duyệt | Hồ sơ đã được ký duyệt chính thức |
-| **ARCHIVED** | Lưu trữ | Hồ sơ lưu trữ dài hạn |
-
----
-
-## 8. Quản trị tài khoản nhà thầu
-
-### 8.1 Quy trình tạo tài khoản
-
-```mermaid
-sequenceDiagram
-    actor Admin as Admin Ban QLDA
-    participant CDE as CDE - Phân quyền
-    participant DB as Supabase
-    participant Auth as Supabase Auth
-
-    Admin->>CDE: Thêm đơn vị vào dự án
-    CDE->>DB: INSERT cde_permissions (contractor_id, role=contributor)
-    Admin->>CDE: Tạo tài khoản nhân sự nhà thầu
-    CDE->>Auth: supabaseAdmin.auth.admin.createUser
-    Auth-->>CDE: auth_user_id
-    CDE->>DB: INSERT contractor_accounts (contractor_id, username, auth_user_id, allowed_project_ids)
-    CDE->>DB: INSERT cde_permissions (user_id=contractor_id/username, role)
-    CDE-->>Admin: ✅ Tài khoản tạo thành công
-```
-
-### 8.2 Thông tin tài khoản nhà thầu
-
-| Trường | Bắt buộc | Mô tả |
-|--------|:--------:|-------|
-| `display_name` | ✅ | Họ tên nhân sự |
-| `username` | ✅ | Tên đăng nhập |
-| `password` | ✅ | Mật khẩu (≥6 ký tự) |
-| `email` | ❌ | Email (nếu không có → `username@cde.local`) |
-| `phone` | ❌ | Số điện thoại |
-| `role` | ✅ | Vai trò CDE (viewer/contributor/reviewer/approver/admin) |
-
-### 8.3 Cấu trúc dữ liệu
-
-```
-contractors (Đơn vị nhà thầu)
-├── contractor_id (PK)
-├── full_name
-├── representative
-└── contact_info
-
-contractor_accounts (Tài khoản đăng nhập)
-├── id (PK)
-├── contractor_id (FK → contractors)
-├── username
-├── display_name
-├── email
-├── phone
-├── auth_user_id (FK → auth.users)
-├── is_active
-├── allowed_project_ids (UUID[])
-└── last_login
-
-cde_permissions (Quyền CDE theo dự án)
-├── id (PK)
-├── project_id (FK → projects)
-├── user_id (contractor_id hoặc contractor_id/username)
-├── user_name
-├── user_role (viewer | contributor | reviewer | approver | admin)
-├── container_access (CDEContainerType[])
-├── can_upload
-├── can_approve
-├── can_delete
-├── can_manage
-├── folder_restrictions (string[])
-└── granted_by
-```
-
----
-
-## 9. Cơ chế kiểm tra quyền trong code
-
-### 9.1 Hook `usePermissionCheck()`
-
-Hook chính để kiểm tra quyền, hỗ trợ **impersonation** (giả lập vai trò):
-
-```typescript
-const { can, canOnProject, isGlobalScope, systemRole } = usePermissionCheck();
-
-// Kiểm tra quyền cơ bản
-can('contracts', 'create')     // → true/false
-
-// Kiểm tra quyền theo dự án
-canOnProject('view', 'Ban ĐHDA 1')  // → true nếu user thuộc Ban ĐHDA 1
-
-// Kiểm tra phạm vi
-isGlobalScope   // → true nếu user thấy tất cả dự án
-systemRole      // → 'specialist', 'contractor', v.v.
-```
-
-### 9.2 Component `<PermissionGate>`
-
-Ẩn/hiện UI dựa trên quyền:
+### 7.1 Kiểm tra quyền trong Code (React)
+Sử dụng Hook `usePermissionCheck()` để đảm bảo giao diện thích ứng chính xác với mọi Scope và Role (kể cả Impersonation):
 
 ```tsx
-// Ẩn nút nếu không có quyền tạo hợp đồng
-<PermissionGate resource="contracts" action="create">
-  <button>Tạo hợp đồng mới</button>
-</PermissionGate>
+const { can, canOnProject, isGlobalScope, systemRole } = usePermissionCheck();
 
-// Hiện nếu có BẤT KỲ quyền nào trong danh sách
+// 1. Kiểm tra quyền thực hiện hành động trên Module
+if (can('contracts', 'create')) { 
+   // Do something 
+}
+
+// 2. Ẩn/hiện UI component an toàn bằng PermissionGate
 <PermissionGate resource="cde" anyAction={['create', 'approve']}>
-  <button>Thao tác CDE</button>
+  <Button>Thao tác CDE</Button>
 </PermissionGate>
 ```
 
-### 9.3 Luồng kiểm tra quyền
+### 7.2 Luồng kiểm tra quyền nội bộ (Engine Priority):
+1. User là `super_admin`? → **ALLOW ALL**.
+2. Có quyền ghi đè cá nhân trong `user_permissions`? → Trả về **ALLOW/DENY**.
+3. Có quyền theo Template Role trong `role_permission_defaults`? → Trả về **ALLOW/DENY**.
+4. Quét mảng quyền cứng định sẵn `DEFAULT_ROLE_PERMISSIONS`? → Trả về **ALLOW/DENY**.
 
-```
-1. User mở trang
-2. Sidebar lọc menu → can(resource, 'view')
-3. Component kiểm tra → <PermissionGate resource="X" action="Y">
-4. Hook kiểm tra thứ tự (tại `PermissionContext`):
-   a. Super admin? → ALLOW
-   b. Permissions chưa load? → DENY
-   c. Có quyền trong `user_permissions` (per-user override)? → ALLOW/DENY
-   d. Có quyền trong `role_permission_defaults` (role template)? → ALLOW/DENY
-   e. Có quyền trong `DEFAULT_ROLE_PERMISSIONS` (hardcoded)? → ALLOW/DENY
-5. Data scope:
-   a. isGlobalScope? → trả toàn bộ dự án
-   b. Ban ĐHDA? → lọc theo management_unit
-   c. Contractor? → lọc theo allowed_project_ids
-```
+### 7.3 Cấu trúc Bảng DB quan trọng:
 
----
-
-## 10. Bảng tổng hợp so sánh Ban vs Nhà thầu
-
-| Tiêu chí | Nhân viên Ban | Nhà thầu |
-|----------|:-------------:|:--------:|
-| Xác thực qua | `user_accounts` → `employees` | `contractor_accounts` → `contractors` |
-| Số vai trò | 8 vai trò (super_admin → staff) | 1 vai trò (`contractor`) |
-| Menu sidebar | 12–14 mục (theo quyền) | 4 mục cố định |
-| Module truy cập | Tất cả (theo quyền) | Chỉ CDE, HĐ, TT, HSTL |
-| Phạm vi dữ liệu | Global hoặc theo Ban ĐHDA | Chỉ dự án được gán |
-| Quyền CDE | Theo system role | Theo CDE role (5 mức) |
-| Quyền duyệt | Có (director, dept_head) | Không (trừ CDE role=approver) |
-| Quyền quản trị | Có (super_admin) | Không |
-| Impersonation | Có (admin có thể giả lập) | Có (admin giả lập nhà thầu) |
-| Quản lý tài khoản | Admin → Quản trị HT | Admin → CDE → Phân quyền |
+| Bảng | Mô tả |
+| :--- | :--- |
+| `employees` | Nhân sự, có cột `system_role` (TEXT, nullable) để Admin gán role thủ công. |
+| `user_accounts` | Tài khoản đăng nhập nhân viên, liên kết `auth_user_id ↔ employee_id`. |
+| `contractor_accounts` | Tài khoản đăng nhập nhà thầu, có `allowed_project_ids[]`. |
+| `user_permissions` | Quyền ghi đè cá nhân — override mọi role default. |
+| `role_permission_defaults` | Template quyền theo role — được seed đầy đủ cho 9 roles. |
+| `cde_permissions` | Quyền CDE của nhà thầu theo dự án (5 mức: viewer/contributor/reviewer/approver/admin). |
+| `audit_logs` | Nhật ký append-only toàn bộ thao tác phân quyền. |
 
 ---
 
-## Phụ lục A: Danh sách file code liên quan
+## 8. 📝 Nhật ký Hệ thống (Audit Logs)
 
-| File | Mô tả |
-|------|-------|
-| `types/permission.types.ts` | Định nghĩa types, roles, resources, defaults |
-| `hooks/usePermissionCheck.ts` | Hook kiểm tra quyền (impersonation-aware) |
-| `hooks/useScopedProjects.ts` | Hook lọc dữ liệu theo scope |
-| `services/PermissionService.ts` | CRUD operations trên user_permissions |
-| `components/PermissionGate.tsx` | UI component gate |
-| `context/AuthContext.tsx` | Authentication context (dual auth) |
-| `layouts/Sidebar.tsx` | Menu sidebar (filtered by permission) |
-| `features/settings/PermissionManager.tsx` | Admin UI quản lý quyền |
-| `features/cde/components/CDEPermissionManager.tsx` | CDE permission UI |
-| `features/cde/constants.ts` | CDE workflow, containers, status codes |
-| `features/cde/types.ts` | CDE types (CDEPermRole, CDEPermission) |
+Hệ thống ghi nhận (Audit) **MỌI** thao tác liên quan đến rủi ro phân quyền để truy xuất trách nhiệm:
+- Gán/Gỡ quyền cá nhân hoặc đổi System Role thủ công (`system_role`).
+- Cấp/Hủy quyền CDE cho nhà thầu trong dự án.
+- Impersonation (Ghi nhận khi Admin giả lập làm người dùng khác để debug).
+- Thay đổi trạng thái khóa/mở tài khoản nhân sự/nhà thầu.
 
-## Phụ lục B: Bảng DB liên quan
-
-| Table | Mô tả |
-|-------|-------|
-| `employees` | Danh sách nhân viên Ban |
-| `user_accounts` | Tài khoản đăng nhập nhân viên |
-| `contractors` | Danh sách đơn vị nhà thầu |
-| `contractor_accounts` | Tài khoản đăng nhập nhà thầu |
-| `user_permissions` | Ma trận quyền từng người (resource × actions) |
-| `role_permission_defaults` | Ma trận quyền mặc định theo vai trò (role template) |
-| `cde_permissions` | Quyền CDE theo dự án × người dùng |
-
-## 11. Nhật ký Hệ thống (Audit Logs)
-
-Hệ thống tích hợp ghi log (Audit Log) cho các thao tác quan trọng liên quan đến phân quyền và tài khoản:
-- **Tài khoản:** Tạo mới, xóa, reset mật khẩu, bật/tắt tài khoản nhân viên và nhà thầu.
-- **Phân quyền:** Thay đổi quyền của user (`user_permissions`), cập nhật role template (`role_permission_defaults`).
-- **Impersonation:** Ghi nhận khi admin bắt đầu và kết thúc phiên giả lập người dùng khác.
-
-Tất cả logs được ghi vào bảng `audit_logs` với các thông tin: `action`, `entity_type`, `entity_id`, `entity_name`, `changed_by` (lấy từ `currentUser`), và `details`.
+Mọi Logs được lưu trữ tại bảng `audit_logs` (với dữ liệu ID, Action, Changed By) và xem trực tiếp tại: **Quản trị HT → Nhật ký HT**.

@@ -59,11 +59,28 @@ export function useDepartmentData(config: DashboardConfig) {
         if (config.tier === 'staff') return myProjects;
         if (config.isGlobalScope) return projects;
 
+        // Determine ManagementBoard ID based on department code
+        const code = config.departmentCode?.toUpperCase() || '';
+        let boardId: number | null = null;
+        if (code === 'QLDA1') boardId = 1;
+        else if (code === 'QLDA2') boardId = 2;
+        else if (code === 'QLDA3') boardId = 3;
+        else if (code === 'PTDV') boardId = 4;
+
+        if (boardId !== null) {
+            // For QLDA/PTDV managers: Show projects managed by this board, 
+            // PLUS projects explicitly assigned to any department member (fallback)
+            return projects.filter(p => 
+                p.ManagementBoard === boardId || 
+                p.Members?.some((m: string) => deptMemberIds.includes(m))
+            );
+        }
+
         // Projects where any dept member is assigned
         return projects.filter(p =>
             p.Members?.some((m: string) => deptMemberIds.includes(m))
         );
-    }, [projects, deptMemberIds, config.tier, config.isGlobalScope, myProjects]);
+    }, [projects, deptMemberIds, config.tier, config.isGlobalScope, myProjects, config.departmentCode]);
 
     // ── My Tasks ──
     const myTasks = useMemo(() => {
@@ -77,29 +94,40 @@ export function useDepartmentData(config: DashboardConfig) {
         return tasks.filter(t => deptMemberIds.includes(t.AssigneeID));
     }, [tasks, deptMemberIds, config.tier, myTasks]);
 
-    // ── Task Stats (personal) ──
-    const myTaskStats = useMemo(() => {
-        const inProgress = myTasks.filter(t => t.Status === TaskStatus.InProgress).length;
-        const todo = myTasks.filter(t => t.Status === TaskStatus.Todo).length;
-        const done = myTasks.filter(t => t.Status === TaskStatus.Done).length;
-        const overdue = myTasks.filter(t => {
-            const due = new Date(t.DueDate);
-            return t.Status !== TaskStatus.Done && due < new Date();
-        }).length;
-        return { inProgress, todo, done, overdue, total: myTasks.length };
-    }, [myTasks]);
+    // ── Dashboard Stats (via RPC) ──
+    const { data: dashboardStats } = useQuery({
+        queryKey: ['dashboard_stats', currentUser?.EmployeeID, config.departmentName, config.systemRole],
+        queryFn: async () => {
+            if (!currentUser) return null;
+            const { data } = await supabase.rpc('get_user_dashboard_stats', {
+                p_employee_id: currentUser.EmployeeID,
+                p_department: config.departmentName,
+                p_role: config.systemRole
+            });
+            return data;
+        },
+        enabled: !!currentUser,
+        staleTime: STALE_5M,
+    });
 
-    // ── Task Stats (department — for managers) ──
-    const deptTaskStats = useMemo(() => {
-        const inProgress = deptTasks.filter(t => t.Status === TaskStatus.InProgress).length;
-        const todo = deptTasks.filter(t => t.Status === TaskStatus.Todo).length;
-        const done = deptTasks.filter(t => t.Status === TaskStatus.Done).length;
-        const overdue = deptTasks.filter(t => {
-            const due = new Date(t.DueDate);
-            return t.Status !== TaskStatus.Done && due < new Date();
-        }).length;
-        return { inProgress, todo, done, overdue, total: deptTasks.length };
-    }, [deptTasks]);
+    // ── Task Stats (Unified via RPC) ──
+    const unifiedTaskStats = useMemo(() => {
+        if (!dashboardStats) {
+            return { inProgress: 0, todo: 0, done: 0, overdue: 0, total: 0 };
+        }
+        
+        const inProgress = dashboardStats.in_progress_tasks || 0;
+        const done = dashboardStats.done_tasks || 0;
+        const total = dashboardStats.total_tasks || 0;
+        const overdue = dashboardStats.overdue_tasks || 0;
+        // Approximation for todo (total - in_progress - done)
+        const todo = Math.max(0, total - inProgress - done);
+
+        return { inProgress, todo, done, overdue, total };
+    }, [dashboardStats]);
+
+    const myTaskStats = unifiedTaskStats;
+    const deptTaskStats = unifiedTaskStats;
 
     // ── Monthly Plan Progress ──
     const currentMonth = new Date().getMonth() + 1;

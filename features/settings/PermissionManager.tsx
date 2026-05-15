@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Shield, Search, Save, RotateCcw, Users, ChevronDown, ChevronRight, Check, X, AlertCircle, TrendingUp, Copy } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
+import EmployeeService from '../../services/EmployeeService';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import {
     PermissionAction,
@@ -70,7 +71,7 @@ const PermissionManager: React.FC = () => {
                         department: e.department || '',
                         position: e.position || '',
                         role: e.role,
-                        systemRole: resolveSystemRole(e.role, e.position || ''),
+                        systemRole: e.system_role ? (e.system_role as SystemRole) : resolveSystemRole(e.role, e.position || ''),
                     })));
                 }
 
@@ -432,9 +433,38 @@ const PermissionManager: React.FC = () => {
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <h2 className="font-bold text-slate-900 dark:text-white">{selectedEmployee.fullName}</h2>
-                                        <span className={`px-2 py-0.5 text-xs font-medium rounded ${ROLE_COLORS[selectedEmployee.systemRole]}`}>
-                                            {ROLE_LABELS[selectedEmployee.systemRole]}
-                                        </span>
+                                        <select
+                                            value={selectedEmployee.systemRole}
+                                            onChange={async (e) => {
+                                                const newRole = e.target.value as SystemRole;
+                                                try {
+                                                    await EmployeeService.updateSystemRole(selectedEmployee.employeeId, newRole);
+                                                    
+                                                    // Update local state
+                                                    setSelectedEmployee(prev => prev ? { ...prev, systemRole: newRole } : null);
+                                                    setEmployees(prev => prev.map(emp => 
+                                                        emp.employeeId === selectedEmployee.employeeId 
+                                                            ? { ...emp, systemRole: newRole }
+                                                            : emp
+                                                    ));
+                                                    
+                                                    addToast({ title: 'Thành công', message: 'Đã cập nhật vai trò hệ thống', type: 'success' });
+                                                    
+                                                    // Trigger a reload of permissions based on the new role defaults if needed
+                                                    // Actually it automatically recalculates diffs because selectedEmployee.systemRole changed
+                                                } catch (err) {
+                                                    console.error('Update system role failed:', err);
+                                                    addToast({ title: 'Lỗi', message: 'Không thể cập nhật vai trò hệ thống', type: 'error' });
+                                                }
+                                            }}
+                                            className={`px-2 py-0.5 text-xs font-medium rounded border-none cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none ${ROLE_COLORS[selectedEmployee.systemRole]}`}
+                                        >
+                                            {Object.entries(ROLE_LABELS).map(([roleVal, label]) => (
+                                                <option key={roleVal} value={roleVal} className="text-slate-900 bg-white dark:bg-slate-800 dark:text-white">
+                                                    {label}
+                                                </option>
+                                            ))}
+                                        </select>
                                         {hasDiff && (
                                             <span className="px-2 py-0.5 text-xs font-medium rounded bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300">
                                                 ⚠️ Có {Object.keys(permissionDiff!).length} thay đổi

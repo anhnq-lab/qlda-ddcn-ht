@@ -323,6 +323,20 @@ export class EmployeeService {
             byRole,
         };
     }
+
+    /**
+     * Update the manual system role for an employee
+     */
+    static async updateSystemRole(employeeId: string, systemRole: string | null): Promise<void> {
+        const { error } = await supabase
+            .from('employees')
+            .update({ system_role: systemRole })
+            .eq('employee_id', employeeId);
+
+        if (error) {
+            throw toServiceError(error, 'EmployeeService.updateSystemRole');
+        }
+    }
 }
 
 export default EmployeeService;

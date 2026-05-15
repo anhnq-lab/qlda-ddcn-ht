@@ -19,6 +19,7 @@ export const dbToEmployee = (row: any): Employee => ({
     Gender: row.gender as Gender || undefined,
     JobContent: row.job_content || undefined,
     CompletionCriteria: row.completion_criteria || undefined,
+    SystemRole: row.system_role || undefined,
 });
 
 export const employeeToDb = (emp: Partial<Employee>) => ({
@@ -35,5 +36,6 @@ export const employeeToDb = (emp: Partial<Employee>) => ({
     ...(emp.Gender !== undefined && { gender: emp.Gender }),
     ...(emp.JobContent !== undefined && { job_content: emp.JobContent }),
     ...(emp.CompletionCriteria !== undefined && { completion_criteria: emp.CompletionCriteria }),
+    ...(emp.SystemRole !== undefined && { system_role: emp.SystemRole }),
 });
 

@@ -31,35 +31,31 @@ const WorkPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
-            {/* ── Tab bar ── */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4">
-                <nav className="flex gap-0.5" aria-label="Work-plan tabs">
-                    {TABS.map(({ key, label, icon: Icon }) => (
-                        <button
-                            key={key}
-                            id={`work-plan-tab-${key}`}
-                            onClick={() => switchTab(key)}
-                            className={`
-                                flex items-center gap-2 px-4 py-3 text-[13px] font-semibold
-                                border-b-2 transition-colors whitespace-nowrap
-                                ${active === key
-                                    ? 'border-primary-600 text-primary-700 dark:border-primary-500 dark:text-primary-400'
-                                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:border-slate-300 dark:hover:text-slate-200 dark:hover:border-slate-700'}
-                            `}
-                        >
-                            <Icon className="w-4 h-4" />
-                            {label}
-                        </button>
-                    ))}
-                </nav>
+        <div className="space-y-6 animate-in fade-in duration-500 h-full flex flex-col">
+            {/* ══════════ TAB NAVIGATION ══════════ */}
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit shrink-0">
+                {TABS.map(({ key, label, icon: Icon }) => (
+                    <button
+                        key={key}
+                        id={`work-plan-tab-${key}`}
+                        onClick={() => switchTab(key)}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
+                            active === key
+                                ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
+                                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                        }`}
+                    >
+                        <Icon className="w-4 h-4" />
+                        {label}
+                    </button>
+                ))}
             </div>
 
             {/* ── Tab content ── */}
-            <div className="flex-1 min-h-0 overflow-auto">
+            <div className="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
                 <Suspense fallback={<PageLoadingFallback />}>
                     {active === 'tasks'   && (
-                        <div className="p-4">
+                        <div className="p-4 flex-1 overflow-auto custom-scrollbar">
                             <TaskList />
                         </div>
                     )}

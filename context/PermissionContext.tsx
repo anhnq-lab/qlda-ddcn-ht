@@ -93,17 +93,32 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     const systemRole = useMemo((): SystemRole => {
         if (!effectiveUser) return 'staff';
         if (effectiveUserType === 'contractor') return 'contractor';
+        if ('SystemRole' in effectiveUser && effectiveUser.SystemRole) {
+            return effectiveUser.SystemRole as SystemRole;
+        }
         return resolveSystemRole(effectiveUser.Role, effectiveUser.Position);
     }, [effectiveUser, effectiveUserType]);
 
     // Compute global scope flag
     const isGlobalScope = useMemo(() => {
         if (!effectiveUser) return false;
+
+        const userDept = effectiveUser.Department || '';
+
+        // If they are explicitly in a project-scoped department, they ONLY see their projects, regardless of role
+        const isProjectScoped = PROJECT_SCOPED_DEPARTMENTS.some(dept => 
+            userDept.includes(dept) || dept.includes(userDept)
+        ) || userDept.toLowerCase().includes('quản lý dự án');
+        
+        if (isProjectScoped && systemRole !== 'super_admin') {
+            return false;
+        }
+
         if (['super_admin', 'director', 'deputy_director', 'chief_accountant'].includes(systemRole)) {
             return true;
         }
         return GLOBAL_VIEW_DEPARTMENTS.some(dept =>
-            effectiveUser.Department?.includes(dept) || dept.includes(effectiveUser.Department || '')
+            userDept.includes(dept) || dept.includes(userDept)
         );
     }, [effectiveUser, systemRole]);
 

@@ -231,9 +231,9 @@ const AnnualPlanPage: React.FC = () => {
     ], [empMap]);
 
     return (
-        <div className="flex flex-col h-full min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-transparent">
             {/* ── Header ── */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+            <div className="bg-transparent border-b border-slate-100 dark:border-slate-800 px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center">
@@ -284,7 +284,7 @@ const AnnualPlanPage: React.FC = () => {
             </div>
 
             {/* ── Thanh công cụ ── */}
-            <div className="px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+            <div className="px-6 py-3 bg-transparent border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <input

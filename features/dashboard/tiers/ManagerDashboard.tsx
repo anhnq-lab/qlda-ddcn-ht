@@ -13,12 +13,12 @@ import { MonthlyPlanProgress } from '../widgets/shared/MonthlyPlanProgress';
 import { UpcomingDeadlines } from '../widgets/shared/UpcomingDeadlines';
 
 // Lazy load department-specific widgets
-const BiddingPipeline = lazy(() => import('../widgets/khdt/BiddingPipeline'));
-const ContractSummary = lazy(() => import('../widgets/khdt/ContractSummary'));
-const ReviewQueue = lazy(() => import('../widgets/kttd/ReviewQueue'));
-const HRSummary = lazy(() => import('../widgets/hcth/HRSummary'));
-const PaymentPipeline = lazy(() => import('../widgets/tckt/PaymentPipeline'));
-const ProjectProgress = lazy(() => import('../widgets/qlda/ProjectProgress'));
+const BiddingPipeline = lazy(() => import('../widgets/bidding_contract/BiddingPipeline'));
+const ContractSummary = lazy(() => import('../widgets/bidding_contract/ContractSummary'));
+const ReviewQueue = lazy(() => import('../widgets/quality_control/ReviewQueue'));
+const HRSummary = lazy(() => import('../widgets/hr/HRSummary'));
+const PaymentPipeline = lazy(() => import('../widgets/finance/PaymentPipeline'));
+const ProjectProgress = lazy(() => import('../widgets/projects/ProjectProgress'));
 
 interface Props {
     config: DashboardConfig;
@@ -66,24 +66,28 @@ export const ManagerDashboard: React.FC<Props> = ({ config, data }) => {
                 />
             </div>
 
-            {/* ── DEPARTMENT-SPECIFIC WIDGETS ── */}
+            {/* ── DYNAMIC WIDGETS ── */}
             <Suspense fallback={<WidgetSkeleton />}>
-                {config.departmentGroup === 'qlda' && (
+                {config.allowedWidgets.includes('project_progress') && (
                     <ProjectProgress data={data} />
                 )}
-                {config.departmentGroup === 'khdt' && (
+                
+                {(config.allowedWidgets.includes('bidding_pipeline') || config.allowedWidgets.includes('contract_summary')) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <BiddingPipeline />
-                        <ContractSummary />
+                        {config.allowedWidgets.includes('bidding_pipeline') && <BiddingPipeline />}
+                        {config.allowedWidgets.includes('contract_summary') && <ContractSummary />}
                     </div>
                 )}
-                {config.departmentGroup === 'kttd' && (
+                
+                {config.allowedWidgets.includes('review_queue') && (
                     <ReviewQueue />
                 )}
-                {config.departmentGroup === 'hcth' && (
+                
+                {config.allowedWidgets.includes('hr_summary') && (
                     <HRSummary />
                 )}
-                {config.departmentGroup === 'tckt' && (
+                
+                {config.allowedWidgets.includes('payment_pipeline') && (
                     <PaymentPipeline />
                 )}
             </Suspense>
