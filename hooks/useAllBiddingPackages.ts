@@ -14,8 +14,6 @@ export const useAllBiddingPackages = () => {
 
     return {
         biddingPackages: query.data || [],
-        isLoading: query.isLoading,
-        error: query.error,
         ...query,
     };
 };

@@ -117,7 +117,7 @@ export function getFormTotal(form: EvaluationForm, who: 'self'|'manager'='self')
     return form.manager_score_1!==null
         ? [form.manager_score_1,form.manager_score_2,form.manager_score_3,
            form.manager_score_4,form.manager_score_5,form.manager_score_6,form.manager_score_7]
-            .reduce((a,b)=>a+(b??0),0)
+            .reduce((a: number, b)=>a+(b??0), 0)
         : -1;
 }
 

@@ -135,7 +135,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             InvestorName: r.investorName,
             MainContractorName: r.mainContractorName,
             Progress: r.progress,
-            ExpectedEndDate: r.expectedEndDate
+            ExpectedEndDate: r.expectedEndDate ?? undefined
         }));
         
         if (activeStatusFilter !== null) {

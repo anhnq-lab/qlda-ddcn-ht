@@ -72,7 +72,7 @@ export class ContractorService {
 
         const { data, error } = await supabase
             .from('contractors')
-            .insert(insertData)
+            .insert(insertData as any)
             .select()
             .single();
 

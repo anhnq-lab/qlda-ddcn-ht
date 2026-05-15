@@ -467,10 +467,7 @@ export const FacilityManagementPanel: React.FC = () => {
                             </p>
                             <p className={`text-xs mb-3 ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>
                                 {assets.length === 0
-                                    ? (onExtractFromBIM
-                                        ? 'Bấm "Quét từ BIM" để tự động trích xuất thiết bị từ mô hình IFC'
-                                        : 'Tải mô hình IFC trước, sau đó quét thiết bị từ BIM'
-                                    )
+                                    ? 'Bấm "Quét từ BIM" để tự động trích xuất thiết bị từ mô hình IFC'
                                     : 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm'
                                 }
                             </p>

@@ -105,7 +105,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 // Clear winning_contractor_id
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: null as any,
-                    WinningPrice: null,
+                    WinningPrice: undefined,
                 });
             }
         },

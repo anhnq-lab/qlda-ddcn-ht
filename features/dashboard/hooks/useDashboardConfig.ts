@@ -62,7 +62,7 @@ function resolveDepartmentCode(department: string): DepartmentCode | null {
         khdt: 'KHDT',
         kttd: 'KTTD',
         hcth: 'HCTH',
-        tckt: null,  // TODO: add TCKT to DEPARTMENT_CODES
+        tckt: 'TCKT',
         ptdv: 'PTDV',
         unknown: null,
     };

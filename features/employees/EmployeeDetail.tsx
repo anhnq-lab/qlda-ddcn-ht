@@ -280,7 +280,7 @@ const EmployeeDetail: React.FC = () => {
                                                 <Cell key={i} fill={entry.color} />
                                             ))}
                                         </Pie>
-                                        <Tooltip formatter={(v: number) => [`${v} việc`, '']} />
+                                        <Tooltip formatter={(v: unknown) => [`${Number(v)} việc`, '']} />
                                     </PieChart>
                                 </ResponsiveContainer>
                                 <div className="absolute inset-0 flex items-center justify-center">

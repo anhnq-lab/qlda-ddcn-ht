@@ -14,8 +14,6 @@ export const useContractors = () => {
 
     return {
         contractors: query.data || [],
-        isLoading: query.isLoading,
-        error: query.error,
         ...query,
     };
 };

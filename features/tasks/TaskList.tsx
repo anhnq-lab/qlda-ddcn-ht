@@ -190,13 +190,13 @@ const TaskList: React.FC = () => {
     }, [filteredTasks]);
 
     // ── Helpers ──
-    const getProjectName = (id: string, groupTasks?: Task[]) => {
+    const getProjectName = (id: string, groupTasks?: Task[]): string => {
         // First try to find from tasks metadata directly (safest since tasks are loaded)
         if (groupTasks && groupTasks.length > 0) {
             const taskWithProjName = groupTasks.find(t => t.ProjectName && t.ProjectName.trim() !== '');
-            if (taskWithProjName) return taskWithProjName.ProjectName;
+            if (taskWithProjName) return taskWithProjName.ProjectName || id;
         }
-        
+
         // Fallback to loaded scoped projects
         return projects.find(p => p.ProjectID === id)?.ProjectName || id;
     };

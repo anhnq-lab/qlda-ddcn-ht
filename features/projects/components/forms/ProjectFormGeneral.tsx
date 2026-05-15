@@ -100,7 +100,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             placeholder="0"
                             className={inputWithIconClass + aiHighlight('TotalInvestment')}
                             value={formData.TotalInvestment}
-                            onChange={(v: number) => updateField('TotalInvestment', v)}
+                            onChange={(v: string | number) => updateField('TotalInvestment', Number(v))}
                             icon={DollarSign}
                             isDecimal={false}
                         />
@@ -366,44 +366,44 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                         <label className={labelClass}>Tổng dự toán (VNĐ)</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.TotalEstimate || 0}
-                            onChange={(v: number) => updateField('TotalEstimate', v)}
+                            onChange={(v: string | number) => updateField('TotalEstimate', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Diện tích khu đất (m²)</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.SiteArea || 0}
-                            onChange={(v: number) => updateField('SiteArea', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('SiteArea', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>DT xây dựng (m²)</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.ConstructionArea || 0}
-                            onChange={(v: number) => updateField('ConstructionArea', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('ConstructionArea', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>DT sàn sử dụng (m²)</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.FloorArea || 0}
-                            onChange={(v: number) => updateField('FloorArea', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('FloorArea', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>Chiều cao (m)</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.BuildingHeight || 0}
-                            onChange={(v: number) => updateField('BuildingHeight', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('BuildingHeight', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>Mật độ xây dựng (%)</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.BuildingDensity || 0}
-                            onChange={(v: number) => updateField('BuildingDensity', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('BuildingDensity', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>Hệ số sử dụng đất</label>
                         <FormattedInput placeholder="0" className={inputClass}
                             value={formData.LandUseCoefficient || 0}
-                            onChange={(v: number) => updateField('LandUseCoefficient', v)} isDecimal={true} />
+                            onChange={(v: string | number) => updateField('LandUseCoefficient', Number(v))} isDecimal={true} />
                     </div>
                     <div>
                         <label className={labelClass}>Số tầng nổi</label>

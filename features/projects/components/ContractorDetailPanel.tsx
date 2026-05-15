@@ -249,11 +249,11 @@ const ContractsTab: React.FC<{ contractorId: string, projectId?: string }> = ({ 
             if (!data || data.length === 0) return [];
 
             // Fetch projects
-            const pIds = [...new Set(data.map(c => c.project_id))];
+            const pIds = [...new Set(data.map(c => c.project_id).filter((id): id is string => id !== null))];
             const { data: projs } = await supabase.from('projects').select('project_id, project_name').in('project_id', pIds);
             const pMap = new Map((projs || []).map(p => [p.project_id, p.project_name]));
 
-            return data.map(c => ({ ...c, project_name: pMap.get(c.project_id) || c.project_id }));
+            return data.map(c => ({ ...c, project_name: pMap.get(c.project_id ?? '') || c.project_id }));
         },
         enabled: !!contractorId,
     });

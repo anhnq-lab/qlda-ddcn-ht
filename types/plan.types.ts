@@ -21,7 +21,7 @@ export type PlanStatus = 'draft' | 'published' | 'closed';
 
 // ─── Mã phòng ban ─────────────────────────────────────────────
 
-export const DEPARTMENT_CODES = ['HCTH', 'KHDT', 'KTTD', 'QLDA1', 'QLDA2', 'QLDA3', 'PTDV'] as const;
+export const DEPARTMENT_CODES = ['HCTH', 'KHDT', 'KTTD', 'QLDA1', 'QLDA2', 'QLDA3', 'PTDV', 'TCKT'] as const;
 export type DepartmentCode = typeof DEPARTMENT_CODES[number];
 
 export const DEPARTMENT_NAMES: Record<DepartmentCode, string> = {
@@ -32,6 +32,7 @@ export const DEPARTMENT_NAMES: Record<DepartmentCode, string> = {
     QLDA2: 'Phòng Quản lý dự án 2',
     QLDA3: 'Phòng Quản lý dự án 3',
     PTDV:  'Phòng Phát triển dịch vụ',
+    TCKT:  'Phòng Tài chính - Kế toán',
 };
 
 export const FREQUENCY_LABELS: Record<PlanFrequency, string> = {

@@ -239,7 +239,7 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
                 .eq('is_deleted', false);
                 
             if (data && !error) {
-                const workNodes = data.filter(n => ['approval', 'input', 'automated', 'start'].includes(n.type));
+                const workNodes = data.filter(n => ['approval', 'input', 'automated', 'start'].includes(n.type ?? ''));
                 let totalSla = 0;
                 workNodes.forEach(n => {
                     if (n.sla_formula) {

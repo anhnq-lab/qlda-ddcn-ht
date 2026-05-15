@@ -34,35 +34,35 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                         <label className={labelClass}>Ngân sách Trung ương</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.BudgetAllocations?.BudgetNSTW || 0}
-                            onChange={(v: number) => updateBudgetAllocation('BudgetNSTW', v)}
+                            onChange={(v: string | number) => updateBudgetAllocation('BudgetNSTW', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Ngân sách địa phương</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.BudgetAllocations?.BudgetNSDiaphuong || 0}
-                            onChange={(v: number) => updateBudgetAllocation('BudgetNSDiaphuong', v)}
+                            onChange={(v: string | number) => updateBudgetAllocation('BudgetNSDiaphuong', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Vốn vay</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.BudgetAllocations?.BudgetLoan || 0}
-                            onChange={(v: number) => updateBudgetAllocation('BudgetLoan', v)}
+                            onChange={(v: string | number) => updateBudgetAllocation('BudgetLoan', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Vốn ODA / nước ngoài</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.BudgetAllocations?.BudgetODA || 0}
-                            onChange={(v: number) => updateBudgetAllocation('BudgetODA', v)}
+                            onChange={(v: string | number) => updateBudgetAllocation('BudgetODA', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Vốn khác ngoài NSNN</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={formData.BudgetAllocations?.BudgetOtherNSNN || 0}
-                            onChange={(v: number) => updateBudgetAllocation('BudgetOtherNSNN', v)}
+                            onChange={(v: string | number) => updateBudgetAllocation('BudgetOtherNSNN', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                                             placeholder="0" 
                                             className={inputWithIconClass}
                                             value={formData.CostBreakdown?.[item.key] || 0}
-                                            onChange={(v: number) => updateCostBreakdown(item.key, v)}
+                                            onChange={(v: string | number) => updateCostBreakdown(item.key, Number(v))}
                                             icon={DollarSign} 
                                             isDecimal={false} 
                                         />

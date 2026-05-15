@@ -64,7 +64,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     const fontSizeMap = { sm: 13, base: 14, lg: 16 } as const;
     const fontSize = fontSizeMap[prefs?.fontSize || 'base'];
 
-    const contentRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
 
     // Track viewed document
     useEffect(() => {
@@ -337,7 +337,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
                             onSaveEdit={saveEdit}
                         >
                             {/* Quick TOC (Right Mini Panel) */}
-                            {showTOC && selectedDoc.chapters.length > 0 && !showPdfViewer && (
+                            {showTOC && (selectedDoc.chapters?.length ?? 0) > 0 && !showPdfViewer && (
                                 <LegalTOC
                                     selectedDoc={selectedDoc}
                                     scrollToArticle={scrollToArticle}

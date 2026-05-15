@@ -34,17 +34,18 @@ interface MilestoneTimelineProps {
 
 export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
     currentStage,
-    milestoneData = {} as MilestoneTimelineProps['milestoneData']
+    milestoneData = {}
 }) => {
     // Determine which milestone is "current" (first one without a completion date)
     const milestoneOrder = ['policy_approval', 'project_approval', 'construction_design', 'groundbreaking', 'completion', 'handover'];
+    const md = milestoneData ?? {};
     const dateByMilestone: Record<string, string | undefined> = {
-        policy_approval: milestoneData.policyApprovalDate,
-        project_approval: milestoneData.projectApprovalDate,
-        construction_design: milestoneData.constructionDesignDate,
-        groundbreaking: milestoneData.groundbreakingDate,
-        completion: milestoneData.completionDate,
-        handover: milestoneData.handoverDate,
+        policy_approval: md.policyApprovalDate,
+        project_approval: md.projectApprovalDate,
+        construction_design: md.constructionDesignDate,
+        groundbreaking: md.groundbreakingDate,
+        completion: md.completionDate,
+        handover: md.handoverDate,
     };
 
     const getStatus = (milestoneId: string, date?: string): 'pending' | 'current' | 'completed' => {
@@ -62,8 +63,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Quyết định chủ trương đầu tư',
             phaseCode: 'PREP_POLICY',
             icon: FileCheck,
-            date: milestoneData.policyApprovalDate,
-            status: getStatus('policy_approval', milestoneData.policyApprovalDate)
+            date: md.policyApprovalDate,
+            status: getStatus('policy_approval', md.policyApprovalDate)
         },
         {
             id: 'project_approval',
@@ -71,8 +72,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Quyết định đầu tư xây dựng',
             phaseCode: 'PREP_DECISION',
             icon: FileSignature,
-            date: milestoneData.projectApprovalDate,
-            status: getStatus('project_approval', milestoneData.projectApprovalDate)
+            date: md.projectApprovalDate,
+            status: getStatus('project_approval', md.projectApprovalDate)
         },
         {
             id: 'construction_design',
@@ -80,8 +81,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Lập, thẩm định, phê duyệt thiết kế',
             phaseCode: 'IMPL_DESIGN',
             icon: PenTool,
-            date: milestoneData.constructionDesignDate,
-            status: getStatus('construction_design', milestoneData.constructionDesignDate)
+            date: md.constructionDesignDate,
+            status: getStatus('construction_design', md.constructionDesignDate)
         },
         {
             id: 'groundbreaking',
@@ -89,8 +90,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Bắt đầu thi công xây dựng',
             phaseCode: 'IMPL_CONSTRUCTION',
             icon: HardHat,
-            date: milestoneData.groundbreakingDate,
-            status: getStatus('groundbreaking', milestoneData.groundbreakingDate)
+            date: md.groundbreakingDate,
+            status: getStatus('groundbreaking', md.groundbreakingDate)
         },
         {
             id: 'completion',
@@ -98,8 +99,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Nghiệm thu hoàn thành',
             phaseCode: 'IMPL_ACCEPTANCE',
             icon: Building,
-            date: milestoneData.completionDate,
-            status: getStatus('completion', milestoneData.completionDate)
+            date: md.completionDate,
+            status: getStatus('completion', md.completionDate)
         },
         {
             id: 'handover',
@@ -107,8 +108,8 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             description: 'Quyết toán và bàn giao',
             phaseCode: 'CLOSE_HANDOVER',
             icon: CheckCircle2,
-            date: milestoneData.handoverDate,
-            status: getStatus('handover', milestoneData.handoverDate)
+            date: md.handoverDate,
+            status: getStatus('handover', md.handoverDate)
         }
     ];
 

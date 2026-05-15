@@ -31,7 +31,7 @@ export class AuthService {
         const { data: emp } = await supabase
             .from('employees')
             .select('*')
-            .eq('employee_id', account.employee_id)
+            .eq('employee_id', account.employee_id ?? '')
             .single();
 
         if (!emp) return null;

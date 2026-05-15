@@ -180,7 +180,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     const deleteAllMutation = useMutation({
         mutationFn: async () => {
             // Use service for each package to respect safety checks
-            const pkgIds = packages.map(p => p.PackageID);
+            const pkgIds = (packages ?? []).map(p => p.PackageID);
             await Promise.all(pkgIds.map(id => 
                 supabase.from('bidding_packages').delete().eq('package_id', id)
             ));

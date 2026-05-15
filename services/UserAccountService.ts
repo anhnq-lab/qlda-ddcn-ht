@@ -358,7 +358,13 @@ export class UserAccountService {
         const { data, error } = await query.order('full_name');
 
         if (error) throw toServiceError(error, 'UserAccountService.getEmployeesWithoutAccount');
-        return data || [];
+        return (data || []).map(r => ({
+            employee_id: r.employee_id,
+            full_name: r.full_name,
+            email: r.email ?? '',
+            phone: r.phone ?? '',
+            department: r.department ?? '',
+        }));
     }
 
     /**

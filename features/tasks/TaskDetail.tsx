@@ -133,7 +133,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const progress = task.ProgressPercent || (task.Status === TaskStatus.Done ? 100 : 0);
     const stepLabel = getTimelineStepLabel(task.TimelineStep);
     const phaseColor = getPhaseColor(task.TimelineStep);
-    const isOverdue = task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date();
+    const isOverdue = Boolean(task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date());
 
     const handleStatusChange = (s: TaskStatus) => {
         setProgressModalTarget(s);

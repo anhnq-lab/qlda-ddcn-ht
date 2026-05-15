@@ -108,7 +108,7 @@ export class PaymentService {
 
         const { data, error } = await supabase
             .from('payments')
-            .insert(insertData)
+            .insert(insertData as any)
             .select()
             .single();
 

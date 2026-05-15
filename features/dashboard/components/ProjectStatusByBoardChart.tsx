@@ -85,7 +85,7 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
                             maxBarSize={20}
                             onClick={(data) => {
                                 if (onSegmentClick && data) {
-                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label, ProjectStatus.Preparation);
+                                    onSegmentClick(data.name ?? '', PROJECT_PHASE_COLORS[ProjectStatus.Preparation].label, ProjectStatus.Preparation);
                                 }
                             }}
                             cursor={onSegmentClick ? "pointer" : "default"}
@@ -99,7 +99,7 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
                             maxBarSize={20}
                             onClick={(data) => {
                                 if (onSegmentClick && data) {
-                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Execution].label, ProjectStatus.Execution);
+                                    onSegmentClick(data.name ?? '', PROJECT_PHASE_COLORS[ProjectStatus.Execution].label, ProjectStatus.Execution);
                                 }
                             }}
                             cursor={onSegmentClick ? "pointer" : "default"}
@@ -113,7 +113,7 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
                             maxBarSize={20}
                             onClick={(data) => {
                                 if (onSegmentClick && data) {
-                                    onSegmentClick(data.name, PROJECT_PHASE_COLORS[ProjectStatus.Completion].label, ProjectStatus.Completion);
+                                    onSegmentClick(data.name ?? '', PROJECT_PHASE_COLORS[ProjectStatus.Completion].label, ProjectStatus.Completion);
                                 }
                             }}
                             cursor={onSegmentClick ? "pointer" : "default"}

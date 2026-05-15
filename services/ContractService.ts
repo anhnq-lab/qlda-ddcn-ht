@@ -48,10 +48,16 @@ export class ContractService {
     }
 
     /**
-     * Get contracts by package ID
+     * Get contracts by package ID (direct query — avoids full table scan via getAll)
      */
     static async getByPackageId(packageId: string): Promise<Contract[]> {
-        return this.getAll({ filters: { packageId } });
+        const { data, error } = await supabase
+            .from('contracts')
+            .select('*')
+            .eq('package_id', packageId)
+            .order('created_at', { ascending: false });
+        if (error) throw new Error(`Failed to fetch contracts by package: ${error.message}`);
+        return (data || []).map(dbToContract);
     }
 
     /**
@@ -70,7 +76,7 @@ export class ContractService {
 
         const { data, error } = await supabase
             .from('contracts')
-            .insert(insertData)
+            .insert(insertData as any)
             .select()
             .single();
 

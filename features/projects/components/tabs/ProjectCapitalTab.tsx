@@ -777,7 +777,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     outerRadius={75}
                                     paddingAngle={3}
                                     dataKey="value"
-                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                                     labelLine={false}
                                     fontSize={10}
                                 >
@@ -785,7 +785,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                                <Tooltip formatter={(value: unknown) => formatCurrency(Number(value))} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
@@ -870,14 +870,15 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <Tooltip
                                     cursor={{ fill: 'rgba(139, 92, 246, 0.05)' }}
                                     contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }}
-                                    formatter={(value: number, name: string) => {
+                                    formatter={(value: unknown, name: unknown) => {
                                         const labels: Record<string, string> = {
                                             planned: 'Kế hoạch',
                                             actual: 'Thực tế',
                                         };
-                                        return [formatCurrency(value), labels[name] || name];
+                                        const nameStr = String(name);
+                                        return [formatCurrency(Number(value)), labels[nameStr] || nameStr];
                                     }}
-                                    labelFormatter={(label: string) => `Tháng ${label}`}
+                                    labelFormatter={(label: unknown) => `Tháng ${label}`}
                                 />
                                 <Legend
                                     formatter={(value: string) => {

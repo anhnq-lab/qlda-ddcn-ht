@@ -814,6 +814,7 @@ export function useBimEngine(
 
             // Strategy 3: Scan entire scene (final fallback)
             if (!found) {
+                if (!worldRef.current) return;
                 const scene = worldRef.current.scene.three;
                 scene.traverse((obj: any) => {
                     if (found) return;
@@ -878,6 +879,7 @@ export function useBimEngine(
                 const sphere = new THREE.Sphere();
                 box3.getBoundingSphere(sphere);
                 sphere.radius = Math.max(sphere.radius * 1.2, 0.5);
+                if (!worldRef.current) return;
                 const camera = worldRef.current.camera as OBC.SimpleCamera;
                 camera.controls.fitToSphere(sphere, true);
                 console.log(`[BimEngine] Zoom to expressId ${expressId} success, radius: ${sphere.radius.toFixed(2)}`);

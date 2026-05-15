@@ -179,7 +179,7 @@ async function executeFunctionCall(
                     ContractName: c.ContractName,
                     Value: c.Value,
                     EndDate: c.EndDate,
-                    daysLeft: Math.ceil((new Date(c.EndDate).getTime() - Date.now()) / 86400000),
+                    daysLeft: Math.ceil((new Date(c.EndDate ?? '').getTime() - Date.now()) / 86400000),
                 }));
             }
 

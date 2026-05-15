@@ -128,7 +128,7 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         worldRef: engine.worldRef,
         setView: engine.setView,
         fitAll: engine.fitAll,
-        activateTool: tools.activateTool,
+        activateTool: tools.activateTool as (tool: string) => void,
         clearMeasurements: measure.measurementCount > 0 ? measure.clearAllMeasurements : undefined,
         clearSections: section.clipPlaneCount > 0 ? section.clearAllClipPlanes : undefined,
         clearSelection: selection.clearSelection,

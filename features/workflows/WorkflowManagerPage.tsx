@@ -100,7 +100,7 @@ const WorkflowManagerPage: React.FC = () => {
             if (edgesRes.error) throw edgesRes.error;
 
             setWorkflowNodes((nodesRes.data || []) as any);
-            setWorkflowEdges(edgesRes.data || []);
+            setWorkflowEdges((edgesRes.data || []) as WorkflowEdge[]);
             return { nodes: nodesRes.data, edges: edgesRes.data };
         } catch (err: any) {
             console.error('Error fetching details:', err);

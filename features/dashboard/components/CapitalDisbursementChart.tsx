@@ -62,7 +62,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                             radius={[4, 4, 0, 0]} 
                             maxBarSize={40} 
                             onClick={(data) => {
-                                if (onSegmentClick && data) onSegmentClick(data.name);
+                                if (onSegmentClick && data) onSegmentClick(data.name ?? '');
                             }}
                             cursor={onSegmentClick ? "pointer" : "default"}
                             className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}
@@ -73,7 +73,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
                             radius={[4, 4, 0, 0]} 
                             maxBarSize={40} 
                             onClick={(data) => {
-                                if (onSegmentClick && data) onSegmentClick(data.name);
+                                if (onSegmentClick && data) onSegmentClick(data.name ?? '');
                             }}
                             cursor={onSegmentClick ? "pointer" : "default"}
                             className={onSegmentClick ? "hover:opacity-80 transition-opacity" : ""}

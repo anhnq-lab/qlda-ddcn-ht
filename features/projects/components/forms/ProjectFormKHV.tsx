@@ -68,28 +68,28 @@ export const ProjectFormKHV: React.FC<ProjectFormKHVProps> = ({ formData, update
                         <label className={labelClass}>Tổng KHV</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={khv.total || 0}
-                            onChange={(v: number) => setKHV('total', v)}
+                            onChange={(v: string | number) => setKHV('total', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>KH 2025 kéo dài</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={khv.year2025Extended || 0}
-                            onChange={(v: number) => setKHV('year2025Extended', v)}
+                            onChange={(v: string | number) => setKHV('year2025Extended', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>KH 2026</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={khv.year2026 || 0}
-                            onChange={(v: number) => setKHV('year2026', v)}
+                            onChange={(v: string | number) => setKHV('year2026', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>KH vốn còn lại</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.remainingCapital || 0}
-                            onChange={(v: number) => setTracking('remainingCapital', v)}
+                            onChange={(v: string | number) => setTracking('remainingCapital', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                 </div>
@@ -106,21 +106,21 @@ export const ProjectFormKHV: React.FC<ProjectFormKHVProps> = ({ formData, update
                         <label className={labelClass}>Tổng cộng</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.totalVolume || 0}
-                            onChange={(v: number) => setTracking('totalVolume', v)}
+                            onChange={(v: string | number) => setTracking('totalVolume', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Lũy kế đầu năm</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.ytdVolume || 0}
-                            onChange={(v: number) => setTracking('ytdVolume', v)}
+                            onChange={(v: string | number) => setTracking('ytdVolume', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Thực hiện trong kỳ</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.periodVolume || 0}
-                            onChange={(v: number) => setTracking('periodVolume', v)}
+                            onChange={(v: string | number) => setTracking('periodVolume', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
@@ -137,7 +137,7 @@ export const ProjectFormKHV: React.FC<ProjectFormKHVProps> = ({ formData, update
                         <label className={labelClass}>KL hoàn thành chưa giải ngân</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.completedNotDisbursed || 0}
-                            onChange={(v: number) => setTracking('completedNotDisbursed', v)}
+                            onChange={(v: string | number) => setTracking('completedNotDisbursed', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                 </div>
@@ -154,21 +154,21 @@ export const ProjectFormKHV: React.FC<ProjectFormKHVProps> = ({ formData, update
                         <label className={labelClass}>Tổng cộng</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.totalDisbursed || 0}
-                            onChange={(v: number) => setTracking('totalDisbursed', v)}
+                            onChange={(v: string | number) => setTracking('totalDisbursed', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Lũy kế đầu năm</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.ytdDisbursed || 0}
-                            onChange={(v: number) => setTracking('ytdDisbursed', v)}
+                            onChange={(v: string | number) => setTracking('ytdDisbursed', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>
                         <label className={labelClass}>Giải ngân trong kỳ</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={tracking.periodDisbursed || 0}
-                            onChange={(v: number) => setTracking('periodDisbursed', v)}
+                            onChange={(v: string | number) => setTracking('periodDisbursed', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                     <div>

@@ -158,7 +158,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                 // If unset from winner, clear it
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: null as any,
-                    WinningPrice: null,
+                    WinningPrice: undefined,
                 });
             }
         },

@@ -51,7 +51,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         const orgIds = [...new Set([...perms.map((p: any) => p.user_id.split('/')[0]), ...accs.map((a: any) => a.contractor_id)])].filter(Boolean);
         if (orgIds.length > 0) {
             const { data } = await supabase.from('contractors').select('*').in('contractor_id', orgIds);
-            setContractors(data || []);
+            setContractors((data || []) as Contractor[]);
         } else {
             setContractors([]);
         }
@@ -65,7 +65,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         if (!showAddOrg) return;
         (async () => {
             const { data } = await supabase.from('contractors').select('contractor_id, full_name, representative, contact_info').order('full_name').limit(200);
-            setAllContractors(data || []);
+            setAllContractors((data || []) as Contractor[]);
         })();
     }, [showAddOrg]);
 

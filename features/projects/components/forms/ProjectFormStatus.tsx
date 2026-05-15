@@ -50,7 +50,7 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
                         <label className={labelClass}>Tổng dự toán (sau ĐC, VNĐ)</label>
                         <FormattedInput placeholder="0" className={inputWithIconClass}
                             value={adj.totalEstimate || 0}
-                            onChange={(v: number) => setAdj('totalEstimate', v)}
+                            onChange={(v: string | number) => setAdj('totalEstimate', Number(v))}
                             icon={DollarSign} isDecimal={false} />
                     </div>
                 </div>

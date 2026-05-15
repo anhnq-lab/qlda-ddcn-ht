@@ -3,12 +3,14 @@ import {
     Folder, FileText, ChevronRight, ChevronDown, File as FileIcon,
     Download, Eye, ShieldCheck, PenTool, HardDrive, Box, X, Check, Loader2, Clock, Printer, Upload, Image as ImageIcon, History, Search
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 import { useScopedProjects } from '../../hooks/useScopedProjects';
 import { useAuth } from '../../context/AuthContext';
 import { useContracts } from '../../hooks/useContracts';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { DocCategory } from '../../types';
+import { supabaseExt as supabase } from '../../lib/supabase';
 
 // --- COMPONENT: REUSABLE FILE PREVIEW (ACTUAL + MOCK) ---
 const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, onClose }) => {
@@ -251,6 +253,33 @@ const DocumentManager: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState<'all' | 'pdf' | 'office' | 'bim' | 'image'>('all');
 
+    // ─── Fetch documents from Supabase ─────────────────────────
+    const { data: remoteDocs = [] } = useQuery({
+        queryKey: ['project-documents', selectedProject],
+        queryFn: async () => {
+            if (!selectedProject) return [];
+            const { data, error } = await (supabase as any)
+                .from('documents')
+                .select('doc_id, doc_name, category, upload_date, size, version, is_digitized, storage_path')
+                .eq('project_id', selectedProject)
+                .order('upload_date', { ascending: false });
+            if (error) throw error;
+            return (data || []).map((row: any) => ({
+                DocID: row.doc_id,
+                DocName: row.doc_name,
+                Category: Number(row.category),
+                UploadDate: row.upload_date || '',
+                Size: row.size || '',
+                Version: row.version || 'v1.0',
+                IsDigitized: row.is_digitized ?? false,
+                StoragePath: row.storage_path || '',
+                ProjectID: selectedProject,
+            }));
+        },
+        enabled: !!selectedProject,
+        staleTime: 2 * 60 * 1000,
+    });
+
     const [uploadedDocs, setUploadedDocs] = useState<Record<string, any[]>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -330,36 +359,37 @@ const DocumentManager: React.FC = () => {
         }
     };
 
-    // Filter docs by Selected Project AND Folder
+    // Folder → DocCategory mapping
+    const FOLDER_CATEGORY: Record<string, DocCategory | null> = {
+        F1: DocCategory.Legal,
+        F2: DocCategory.BIM,
+        F3: null, // Hồ sơ Đấu thầu — no specific category, show all uncategorised
+        F4: DocCategory.Quality,
+        F5: DocCategory.AsBuilt,
+    };
 
-    // Filter docs by Selected Project, Folder, Search, and Type
-    // TODO: Replace with Supabase-backed document fetching
+    // Filter docs by Selected Folder, Search, and Type
     const currentDocs = useMemo(() => {
-        return ([] as any[]).filter(doc => {
-            const matchesProject = doc.ProjectID === selectedProject || doc.ReferenceID === selectedProject;
-
-            // Context Filter (Folder)
-            const matchesFolder =
-                (selectedFolder === 'F1' && doc.Category === DocCategory.Legal) ||
-                (selectedFolder === 'F2' && doc.Category === DocCategory.BIM) ||
-                (selectedFolder === 'F4' && doc.Category === DocCategory.Quality) ||
-                (selectedFolder === 'F1');
+        return remoteDocs.filter((doc: any) => {
+            // Folder filter
+            const targetCategory = selectedFolder ? FOLDER_CATEGORY[selectedFolder] : null;
+            const matchesFolder = targetCategory === null || doc.Category === targetCategory;
 
             // Search Filter
             const searchLower = searchQuery.toLowerCase();
-            const matchesSearch = !searchQuery || doc.DocName.toLowerCase().includes(searchLower);
+            const matchesSearch = !searchQuery || (doc.DocName || '').toLowerCase().includes(searchLower);
 
             // Type Filter
             let matchesType = true;
-            const ext = doc.DocName.split('.').pop()?.toLowerCase();
+            const ext = (doc.DocName || '').split('.').pop()?.toLowerCase() || '';
             if (filterType === 'pdf') matchesType = ext === 'pdf';
-            if (filterType === 'office') matchesType = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext || '');
-            if (filterType === 'image') matchesType = ['jpg', 'jpeg', 'png'].includes(ext || '');
-            if (filterType === 'bim') matchesType = ['ifc', 'rvt', 'dwg'].includes(ext || '');
+            if (filterType === 'office') matchesType = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext);
+            if (filterType === 'image') matchesType = ['jpg', 'jpeg', 'png'].includes(ext);
+            if (filterType === 'bim') matchesType = ['ifc', 'rvt', 'dwg'].includes(ext);
 
-            return matchesProject && matchesFolder && matchesSearch && matchesType;
+            return matchesFolder && matchesSearch && matchesType;
         });
-    }, [selectedProject, selectedFolder, searchQuery, filterType]);
+    }, [remoteDocs, selectedFolder, searchQuery, filterType]);
 
     const bimFile = {
         DocID: 9999,

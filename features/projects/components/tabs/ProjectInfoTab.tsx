@@ -340,7 +340,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 .order('end_date', { ascending: true });
 
             for (const ct of activeContracts || []) {
-                const endDate = new Date(ct.end_date);
+                const endDate = new Date(ct.end_date ?? '');
                 const daysUntil = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
                 let status: KeyDate['status'] = 'upcoming';

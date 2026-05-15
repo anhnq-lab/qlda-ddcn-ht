@@ -117,7 +117,7 @@ export class EmployeeService {
             // Fallback: If edge function fails or is not available, insert directly to DB
             const { data: empData, error: empError } = await supabase
                 .from('employees')
-                .insert(dbData)
+                .insert(dbData as any)
                 .select()
                 .single();
 

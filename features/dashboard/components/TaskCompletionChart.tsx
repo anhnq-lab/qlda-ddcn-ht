@@ -55,7 +55,7 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
                             stroke="none"
                             onClick={(data) => {
                                 if (onSegmentClick && data) {
-                                    onSegmentClick(data.name);
+                                    onSegmentClick(data.name ?? '');
                                 }
                             }}
                             className={onSegmentClick ? "cursor-pointer" : ""}

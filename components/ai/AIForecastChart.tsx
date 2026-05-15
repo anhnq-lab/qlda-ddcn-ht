@@ -115,7 +115,7 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
                             <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} />
                             <Tooltip
                                 contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                                formatter={(value: number) => [`${value.toFixed(1)}%`]}
+                                formatter={(value: unknown) => { const v = Number(value); return [`${v.toFixed(1)}%`]; }}
                             />
                             <Area type="monotone" dataKey="plan" stroke="#94a3b8" strokeDasharray="3 3" fill="none" name="Kế hoạch" />
                             <Area type="monotone" dataKey="projected" stroke="#7c3aed" fill="url(#projGrad)" name="Dự báo" />

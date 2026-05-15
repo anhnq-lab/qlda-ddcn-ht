@@ -23,7 +23,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputWithIconClass}
                         value={formData.TotalEstimate}
-                        onChange={(v: number) => updateField('TotalEstimate', v)}
+                        onChange={(v: string | number) => updateField('TotalEstimate', Number(v))}
                         icon={DollarSign}
                         isDecimal={false}
                     />
@@ -36,7 +36,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.SiteArea}
-                        onChange={(v: number) => updateField('SiteArea', v)}
+                        onChange={(v: string | number) => updateField('SiteArea', Number(v))}
                         isDecimal={true}
                     />
                 </div>
@@ -48,7 +48,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.ConstructionArea}
-                        onChange={(v: number) => updateField('ConstructionArea', v)}
+                        onChange={(v: string | number) => updateField('ConstructionArea', Number(v))}
                         isDecimal={true}
                     />
                 </div>
@@ -60,7 +60,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.FloorArea}
-                        onChange={(v: number) => updateField('FloorArea', v)}
+                        onChange={(v: string | number) => updateField('FloorArea', Number(v))}
                         isDecimal={true}
                     />
                 </div>
@@ -72,7 +72,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.BuildingHeight}
-                        onChange={(v: number) => updateField('BuildingHeight', v)}
+                        onChange={(v: string | number) => updateField('BuildingHeight', Number(v))}
                         isDecimal={true}
                     />
                 </div>
@@ -84,7 +84,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.BuildingDensity}
-                        onChange={(v: number) => updateField('BuildingDensity', v)}
+                        onChange={(v: string | number) => updateField('BuildingDensity', Number(v))}
                         isDecimal={true}
                     />
                 </div>
@@ -96,7 +96,7 @@ export const ProjectFormScale: React.FC<ProjectFormScaleProps> = ({
                         placeholder="0"
                         className={inputClass}
                         value={formData.LandUseCoefficient}
-                        onChange={(v: number) => updateField('LandUseCoefficient', v)}
+                        onChange={(v: string | number) => updateField('LandUseCoefficient', Number(v))}
                         isDecimal={true}
                     />
                 </div>

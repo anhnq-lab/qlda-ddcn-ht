@@ -185,7 +185,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [bulkCreatingAll, setBulkCreatingAll] = useState(false);
     const [attachmentCounts, setAttachmentCounts] = useState<Record<string, number>>({});
     const [uploadingTaskId, setUploadingTaskId] = useState<string | null>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
     const [pendingUploadTaskId, setPendingUploadTaskId] = useState<string | null>(null);
 
     // ── Date Range Modal State ──
@@ -789,7 +789,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                             phases={DECREE_175_PHASES}
                             tasks={tasks}
                             filteredTasks={filteredTasks}
-                            projectID={projectID}
+                            projectID={projectID ?? ''}
                             groupCode={groupCode}
                             getGroupLabel={getGroupLabel}
                             expandedPhases={expandedPhases}
@@ -811,7 +811,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                 setPlanModalOpen(true);
                             }}
                             onAddTask={(stepName, stepCode) => {
-                                setSelectedStep({ name: stepName, code: stepCode });
+                                setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
                                 setEditingTask({} as Task);
                                 setIsTaskModalOpen(true);
                             }}

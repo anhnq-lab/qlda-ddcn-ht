@@ -55,7 +55,7 @@ const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ statusSummary, 
                             stroke="none"
                             onClick={(data) => {
                                 if (onSegmentClick && data && data.payload) {
-                                    onSegmentClick(data.name, data.payload.statusKey);
+                                    onSegmentClick(data.name ?? '', data.payload.statusKey);
                                 }
                             }}
                             className={onSegmentClick ? "cursor-pointer" : ""}
