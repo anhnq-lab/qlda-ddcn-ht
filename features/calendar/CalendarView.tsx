@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
@@ -11,11 +13,12 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Plus, FilterX } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 
-import { useEvents } from '@/hooks/useCalendar';
+import { useEvents, useUpdateEvent } from '@/hooks/useCalendar';
 import { AgencyEventWithAttendees, AgencyEventType, AgencyEventRoom } from '@/types/calendar.types';
 import { EventFormModal } from './components/EventFormModal';
 import { EventDetailPanel } from './components/EventDetailPanel';
 import { LobbyDisplay } from './components/LobbyDisplay';
+import { CustomToolbar } from './components/CustomToolbar';
 import { Monitor, Calendar as CalendarIcon } from 'lucide-react';
 
 const locales = {
@@ -29,6 +32,8 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+const DnDCalendar = withDragAndDrop(Calendar as any);
 
 export default function CalendarView() {
   const [view, setView] = useState<View>('month');
@@ -44,6 +49,8 @@ export default function CalendarView() {
     type: filterType || undefined,
     roomId: filterRoom || undefined,
   });
+
+  const { mutate: updateEvent } = useUpdateEvent();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -71,6 +78,26 @@ export default function CalendarView() {
     setIsFormOpen(true);
   };
 
+  const handleEventDrop = ({ event, start, end }: any) => {
+    if (window.confirm('Bạn có chắc chắn muốn thay đổi thời gian sự kiện này?')) {
+      updateEvent({
+        id: event.id,
+        start_time: start.toISOString(),
+        end_time: end.toISOString()
+      });
+    }
+  };
+
+  const handleEventResize = ({ event, start, end }: any) => {
+    if (window.confirm('Bạn có chắc chắn muốn thay đổi thời gian sự kiện này?')) {
+      updateEvent({
+        id: event.id,
+        start_time: start.toISOString(),
+        end_time: end.toISOString()
+      });
+    }
+  };
+
   const mappedEvents = events.map(e => ({
     id: e.id,
     title: e.title,
@@ -96,21 +123,22 @@ export default function CalendarView() {
   return (
     <div className="flex flex-col h-full gap-4">
       <PageHeader 
+        className="!border-b-0 !bg-transparent"
         title="Lịch cơ quan" 
         description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
         actions={
           <div className="flex items-center gap-4">
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-lg ring-1 ring-black/5 dark:ring-white/5">
               <button
                 onClick={() => setDisplayMode('manage')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${displayMode === 'manage' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${displayMode === 'manage' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`}
               >
                 <CalendarIcon className="w-4 h-4" />
                 Quản lý
               </button>
               <button
                 onClick={() => setDisplayMode('lobby')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${displayMode === 'lobby' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${displayMode === 'lobby' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`}
               >
                 <Monitor className="w-4 h-4" />
                 Tivi Sảnh
@@ -130,59 +158,21 @@ export default function CalendarView() {
         }
       />
 
-      {/* Filter Toolbar (Only show in Manage mode) */}
-      {displayMode === 'manage' && (
-        <Card className="p-3 flex flex-wrap items-center gap-3">
-        <div className="w-48">
-          <Select
-            size="sm"
-            placeholder="Loại sự kiện..."
-            options={[
-              { value: 'meeting',        label: 'Họp nội bộ' },
-              { value: 'business_trip',  label: 'Đi công tác' },
-              { value: 'internal_event', label: 'Sự kiện nội bộ' },
-              { value: 'other',          label: 'Khác' },
-            ]}
-            value={filterType}
-            onChange={(val) => setFilterType(val as AgencyEventType)}
-            clearable
-          />
-        </div>
-        <div className="w-48">
-          <Select
-            size="sm"
-            placeholder="Phòng họp..."
-            options={[
-              { value: 'Phòng họp 1', label: 'Phòng họp 1' },
-              { value: 'Phòng họp 2', label: 'Phòng họp 2' },
-              { value: 'Phòng họp 3', label: 'Phòng họp 3' },
-            ]}
-            value={filterRoom}
-            onChange={(val) => setFilterRoom(val as AgencyEventRoom)}
-            clearable
-          />
-        </div>
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-gray-500">
-            <FilterX className="w-4 h-4 mr-1.5" /> Bỏ lọc
-          </Button>
-        )}
-      </Card>
-      )}
+      {/* Filter Toolbar is now inside CustomToolbar */}
 
       {displayMode === 'lobby' ? (
         <div className="flex-1 w-full min-h-[800px]">
           <LobbyDisplay events={events} />
         </div>
       ) : (
-        <Card className="flex-1 p-4 min-h-[800px] flex flex-col">
+        <div className="flex-1 w-full flex flex-col">
         {isLoading ? (
-          <div className="flex justify-center items-center h-full min-h-[800px]">
+          <div className="flex justify-center items-center flex-1 min-h-[600px]">
             <LoadingSpinner size="lg" />
           </div>
         ) : (
-          <div className="flex-1 w-full h-full min-h-[800px]">
-            <Calendar
+          <div className="flex-1 w-full min-h-[600px] dnd-calendar-wrapper px-4 pb-4">
+            <DnDCalendar
               localizer={localizer}
               events={mappedEvents}
               startAccessor="start"
@@ -193,10 +183,25 @@ export default function CalendarView() {
               date={date}
               onNavigate={setDate}
               selectable
+              resizable
+              onEventDrop={handleEventDrop}
+              onEventResize={handleEventResize}
               dayLayoutAlgorithm="no-overlap"
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}
               eventPropGetter={eventStyleGetter}
+              components={{
+                toolbar: (toolbarProps) => (
+                  <CustomToolbar
+                    {...toolbarProps}
+                    filterType={filterType}
+                    setFilterType={setFilterType}
+                    filterRoom={filterRoom}
+                    setFilterRoom={setFilterRoom}
+                    clearFilters={clearFilters}
+                  />
+                )
+              }}
               culture="vi"
               messages={{
                 next: "Tiếp",
@@ -214,7 +219,7 @@ export default function CalendarView() {
             />
           </div>
         )}
-      </Card>
+        </div>
       )}
 
       {/* Modals & Panels */}

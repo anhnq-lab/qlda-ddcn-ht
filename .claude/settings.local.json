@@ -114,7 +114,12 @@
       "Bash(sed -n '2375,2426p' node_modules/@thatopen/components/dist/index.d.ts)",
       "Bash(sed -n '1490,1520p' node_modules/@thatopen/fragments/dist/index.d.ts)",
       "Bash(sed -n '3950,3975p' node_modules/@thatopen/fragments/dist/index.d.ts)",
-      "Bash(awk 'NR>=1265 && NR<=1510' node_modules/@thatopen/fragments/dist/index.d.ts)"
+      "Bash(awk 'NR>=1265 && NR<=1510' node_modules/@thatopen/fragments/dist/index.d.ts)",
+      "Bash(awk -F'\\(' '{print $1}')",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(cat vitest.config.ts)",
+      "Bash(cat vitest.config.js)",
+      "Bash(npx vitest *)"
     ]
   }
 }

@@ -102,7 +102,7 @@ export const ProjectModalFormSchema = z.object({
     StartDate: z.string().min(1, 'Vui lòng chọn ngày khởi công'),
 
     // ── Tab Investment: Cơ cấu vốn & Chi phí ──
-    TotalInvestment: z.number().min(0),
+    TotalInvestment: z.coerce.number().min(0),
     CapitalSource: z.string(),
     ProvinceCode: z.string(),
     LocationCode: z.string(),
@@ -111,7 +111,7 @@ export const ProjectModalFormSchema = z.object({
     CompetentAuthority: z.string(),
     InvestorName: z.string(),
     Duration: z.string(),
-    ManagementBoard: z.number().int().min(1),
+    ManagementBoard: z.coerce.number().int().min(1),
     ApprovalDate: z.string(),
     DecisionNumber: z.string(),
 
@@ -130,48 +130,48 @@ export const ProjectModalFormSchema = z.object({
     InvestmentScale: z.string(),
 
     // Quy mô công trình
-    TotalEstimate: z.number().min(0),
-    SiteArea: z.number().min(0),
-    ConstructionArea: z.number().min(0),
-    FloorArea: z.number().min(0),
-    BuildingHeight: z.number().min(0),
-    BuildingDensity: z.number().min(0),
-    LandUseCoefficient: z.number().min(0),
-    AboveGroundFloors: z.number().int().min(0),
-    BasementFloors: z.number().int().min(0),
+    TotalEstimate: z.coerce.number().min(0),
+    SiteArea: z.coerce.number().min(0),
+    ConstructionArea: z.coerce.number().min(0),
+    FloorArea: z.coerce.number().min(0),
+    BuildingHeight: z.coerce.number().min(0),
+    BuildingDensity: z.coerce.number().min(0),
+    LandUseCoefficient: z.coerce.number().min(0),
+    AboveGroundFloors: z.coerce.number().int().min(0).optional(),
+    BasementFloors: z.coerce.number().int().min(0).optional(),
 
     // Cơ cấu nguồn vốn chi tiết
     BudgetAllocations: z.object({
-        BudgetNSTW: z.number().min(0),
-        BudgetNSDiaphuong: z.number().min(0),
-        BudgetLoan: z.number().min(0),
-        BudgetODA: z.number().min(0),
-        BudgetOtherNSNN: z.number().min(0),
+        BudgetNSTW: z.coerce.number().min(0),
+        BudgetNSDiaphuong: z.coerce.number().min(0),
+        BudgetLoan: z.coerce.number().min(0),
+        BudgetODA: z.coerce.number().min(0),
+        BudgetOtherNSNN: z.coerce.number().min(0),
     }),
 
     // Hạng mục chi phí (JSONB)
-    CostBreakdown: z.record(z.string(), z.number()),
+    CostBreakdown: z.record(z.string(), z.coerce.number()),
 
     // ── Tab Contractors: Nhà thầu & Tiêu chuẩn ──
-    ApplicableStandards: z.string(),
-    FeasibilityContractor: z.string(),
-    SurveyContractor: z.string(),
-    ReviewContractor: z.string(),
-    BiddingForm: z.string(),
+    ApplicableStandards: z.string().optional(),
+    FeasibilityContractor: z.string().optional(),
+    SurveyContractor: z.string().optional(),
+    ReviewContractor: z.string().optional(),
+    BiddingForm: z.string().optional(),
 
     // ── JSONB groups ──
-    KHVInfo: z.record(z.string(), z.unknown()),
-    ImplementationTracking: z.record(z.string(), z.unknown()),
-    AdjustedApproval: z.record(z.string(), z.unknown()),
-    ContractorDetails: z.record(z.string(), z.unknown()),
-    ProjectManagement: z.record(z.string(), z.unknown()),
-    ProjectStatusInfo: z.record(z.string(), z.unknown()),
+    KHVInfo: z.record(z.string(), z.unknown()).optional(),
+    ImplementationTracking: z.record(z.string(), z.unknown()).optional(),
+    AdjustedApproval: z.record(z.string(), z.unknown()).optional(),
+    ContractorDetails: z.record(z.string(), z.unknown()).optional(),
+    ProjectManagement: z.record(z.string(), z.unknown()).optional(),
+    ProjectStatusInfo: z.record(z.string(), z.unknown()).optional(),
 
     // ── Tab Status: Hiện trạng & Bàn giao ──
-    DecisionLevelBeforeHandover: z.string(),
-    OldInvestor: z.string(),
-    TransferDecision: z.string(),
-    CurrentStatusCode: z.number().int().min(1).max(10).nullable(),
+    DecisionLevelBeforeHandover: z.string().optional(),
+    OldInvestor: z.string().optional(),
+    TransferDecision: z.string().optional(),
+    CurrentStatusCode: z.number().int().min(1).max(10).nullable().optional(),
 });
 
 export type ProjectModalFormValues = z.infer<typeof ProjectModalFormSchema>;

@@ -204,15 +204,27 @@ export function getGroupLabel(group: ProjectGroup): string {
 // UI STYLING HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-/** Gradient styles cho badges theo nhóm dự án — Gold Theme */
+/** Gradient styles cho badges theo nhóm dự án */
 export function getGroupGradient(group: ProjectGroup): string {
     const gradients: Record<ProjectGroup, string> = {
-        [ProjectGroup.QN]: 'bg-gradient-to-r from-gray-600 to-gray-800 text-white',
-        [ProjectGroup.A]: 'bg-gradient-to-r from-amber-500 to-amber-700 text-white',
-        [ProjectGroup.B]: 'bg-gradient-to-r from-yellow-600 to-amber-700 text-white',
-        [ProjectGroup.C]: 'bg-gradient-to-r from-yellow-500 to-yellow-700 text-white'
+        [ProjectGroup.QN]: 'bg-gradient-to-r from-violet-500 to-violet-700 text-white',
+        [ProjectGroup.A]: 'bg-gradient-to-r from-rose-500 to-rose-700 text-white',
+        [ProjectGroup.B]: 'bg-gradient-to-r from-blue-500 to-blue-700 text-white',
+        [ProjectGroup.C]: 'bg-gradient-to-r from-emerald-500 to-emerald-700 text-white'
     };
     return gradients[group];
+}
+
+/** Hex colors cho indicator chấm tròn theo nhóm dự án */
+export function getGroupColor(group: ProjectGroup | string): string {
+    if (group === 'all') return '#9CA3AF'; // gray-400
+    const colors: Record<string, string> = {
+        [ProjectGroup.QN]: '#8B5CF6', // violet-500
+        [ProjectGroup.A]: '#F43F5E',  // rose-500
+        [ProjectGroup.B]: '#3B82F6',  // blue-500
+        [ProjectGroup.C]: '#10B981',  // emerald-500
+    };
+    return colors[group as string] || '#9CA3AF';
 }
 
 /** Stage index cho stepper component */

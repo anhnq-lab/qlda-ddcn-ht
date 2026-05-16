@@ -566,10 +566,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                     <ErrorBoundary>
                     <React.Suspense fallback={<TableSkeleton columns={4} rows={8} />}>
                     <div className="space-y-3">
-                        <AIForecastChart
-                            projectId={project.ProjectID}
-                            currentDisbursementRate={project.PaymentProgress || project.FinancialProgress || 0}
-                        />
                         <ProjectCapitalTab projectID={project.ProjectID} />
                     </div>
                     </React.Suspense>

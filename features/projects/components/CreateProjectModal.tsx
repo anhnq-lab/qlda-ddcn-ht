@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity } from 'lucide-react';
+import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
@@ -12,10 +12,8 @@ import { useToast } from '../../../components/ui/Toast';
 import { ProjectModalFormSchema, ProjectModalFormValues } from '../../../schemas/project.schema';
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
+import { ProjectFormLegal } from './forms/ProjectFormLegal';
 import { ProjectFormInvestment } from './forms/ProjectFormInvestment';
-import { ProjectFormKHV } from './forms/ProjectFormKHV';
-import { ProjectFormContractors } from './forms/ProjectFormContractors';
-import { ProjectFormStatus } from './forms/ProjectFormStatus';
 import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
@@ -28,14 +26,28 @@ interface CreateProjectModalProps {
 
 const PROJ_TABS = [
     { id: 'general',     label: 'Thông tin chung',       icon: Building2 },
+    { id: 'legal',       label: 'Pháp lý & Quy mô',      icon: Scale },
     { id: 'investment',  label: 'Cơ cấu vốn & Chi phí',  icon: DollarSign },
-    { id: 'khv',         label: 'KHV & Giải ngân',        icon: BarChart2 },
-    { id: 'contractors', label: 'Nhà thầu & Tiêu chuẩn', icon: HardHat },
-    { id: 'status',      label: 'Hiện trạng',              icon: Activity },
     { id: 'members',     label: 'Thành viên',              icon: Users },
 ] as const;
 
 type TabId = typeof PROJ_TABS[number]['id'];
+
+const FIELD_TO_TAB: Record<string, TabId> = {
+    ProjectID: 'general', ProjectName: 'general', GroupCode: 'general',
+    InvestmentType: 'general', ManagementBoard: 'general', StartDate: 'general',
+    ProvinceCode: 'general', LocationCode: 'general', ConstructionType: 'general',
+    CompetentAuthority: 'general', InvestorName: 'general', Duration: 'general',
+    ExpectedEndDate: 'general', Objective: 'general', InvestmentScale: 'general',
+    PolicyDecisionLevel: 'legal', PolicyDecisionNumber: 'legal', PolicyDecisionDate: 'legal',
+    PolicyDecisionAuthority: 'legal', DecisionNumber: 'legal', DecisionAuthority: 'legal',
+    ApprovalDate: 'legal', ConstructionGrade: 'legal', SiteArea: 'legal',
+    ConstructionArea: 'legal', FloorArea: 'legal', BuildingHeight: 'legal',
+    BuildingDensity: 'legal', LandUseCoefficient: 'legal', TotalEstimate: 'legal',
+    DecisionLevelBeforeHandover: 'legal', OldInvestor: 'legal', TransferDecision: 'legal',
+    TotalInvestment: 'investment', CapitalSource: 'investment', BudgetAllocations: 'investment',
+    CostBreakdown: 'investment',
+};
 
 const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
     ProjectID: '',
@@ -120,7 +132,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         handleSubmit,
         formState: { errors },
     } = useForm<ProjectModalFormValues>({
-        resolver: zodResolver(ProjectModalFormSchema),
+        resolver: zodResolver(ProjectModalFormSchema) as any,
         defaultValues: DEFAULT_FORM_VALUES,
         mode: 'onBlur',
     });
@@ -132,6 +144,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const updateField = useCallback((field: string, value: any) => {
         setValue(field as keyof ProjectModalFormValues, value, { shouldDirty: true });
     }, [setValue]);
+
+    const DEFAULT_BUDGET = { BudgetNSTW: 0, BudgetNSDiaphuong: 0, BudgetLoan: 0, BudgetODA: 0, BudgetOtherNSNN: 0 };
 
     // Populate form data in edit mode
     useEffect(() => {
@@ -174,13 +188,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 PolicyDecisionNumber: editProject.PolicyDecisionNumber || '',
                 PolicyDecisionDate: editProject.PolicyDecisionDate || '',
                 PolicyDecisionAuthority: editProject.PolicyDecisionAuthority || '',
-                BudgetAllocations: (editProject.BudgetAllocations || {
-                    BudgetNSTW: 0,
-                    BudgetNSDiaphuong: 0,
-                    BudgetLoan: 0,
-                    BudgetODA: 0,
-                    BudgetOtherNSNN: 0,
-                }) as any,
+                BudgetAllocations: { ...DEFAULT_BUDGET, ...(editProject.BudgetAllocations || {}) } as any,
                 DecisionAuthority: editProject.DecisionAuthority || '',
                 ExpectedEndDate: editProject.ExpectedEndDate ? new Date(editProject.ExpectedEndDate).toISOString().split('T')[0] : '',
                 CostBreakdown: (editProject.CostBreakdown || {}) as any,
@@ -365,7 +373,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
     const { addToast } = useToast();
 
-    const onValid = async (data: ProjectModalFormValues) => {
+    const onValid: import('react-hook-form').SubmitHandler<ProjectModalFormValues> = async (data) => {
         try {
             setIsLoading(true);
             await onSave({
@@ -386,10 +394,35 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         }
     };
 
-    const onInvalid = () => {
+    const onInvalid = (errors: any) => {
+        // Navigate to the first tab containing an error
+        const firstErrorKey = Object.keys(errors)[0];
+        if (firstErrorKey) {
+            const targetTab = FIELD_TO_TAB[firstErrorKey];
+            if (targetTab) setActiveTab(targetTab);
+        }
+
+        // Extract a human-readable error message (handles nested objects)
+        let errorMessage = 'Vui lòng kiểm tra lại các trường bắt buộc.';
+        for (const key of Object.keys(errors)) {
+            const err = errors[key];
+            if (err?.message) {
+                errorMessage = err.message as string;
+                break;
+            }
+            // nested (e.g. BudgetAllocations.BudgetNSTW)
+            if (err && typeof err === 'object') {
+                const nestedKey = Object.keys(err)[0];
+                if (nestedKey && err[nestedKey]?.message) {
+                    errorMessage = `${key}.${nestedKey}: ${err[nestedKey].message}`;
+                    break;
+                }
+            }
+        }
+
         addToast({
             title: 'Lỗi xác thực',
-            message: 'Vui lòng kiểm tra lại các trường bắt buộc.',
+            message: errorMessage,
             type: 'error',
         });
     };
@@ -404,7 +437,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            <div className="bg-white dark:bg-slate-800 shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="bg-white dark:bg-slate-900 shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
@@ -527,16 +560,17 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 )}
 
                 {/* Tabs Navigation */}
-                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 gap-y-2 gap-x-1">
+                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 gap-y-2 gap-x-1">
                     {PROJ_TABS.map(tab => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
+                        const hasError = tab.id !== 'members' && Object.keys(errors).some(f => FIELD_TO_TAB[f] === tab.id);
                         return (
                             <button
                                 key={tab.id}
                                 type="button"
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                className={`relative flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                                     isActive
                                         ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
@@ -545,13 +579,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <Icon className="w-4 h-4" />
                                 <span className="hidden sm:inline">{tab.label}</span>
                                 <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                                {hasError && (
+                                    <span className="w-2 h-2 rounded-full bg-red-500 absolute top-1.5 right-0.5" />
+                                )}
                             </button>
                         );
                     })}
                 </div>
 
                 {/* Body */}
-                <form onSubmit={handleSubmit(onValid, onInvalid)} className="flex flex-col flex-1 min-h-[50vh]">
+                <form onSubmit={handleSubmit(onValid as any, onInvalid)} className="flex flex-col flex-1 min-h-[50vh]">
                     <div className="p-4 overflow-y-auto flex-1">
 
                         {/* ═══ Tab 1: Thông tin chung ═══ */}
@@ -560,44 +597,30 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 formData={formData}
                                 updateField={updateField}
                                 aiHighlight={aiHighlight}
+                                errors={errors}
                             />
                         )}
 
-                        {/* ═══ Tab 2: Cơ cấu vốn & Chi phí ═══ */}
+                        {/* ═══ Tab 2: Pháp lý & Quy mô ═══ */}
+                        {activeTab === 'legal' && (
+                            <ProjectFormLegal
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                                errors={errors}
+                            />
+                        )}
+
+                        {/* ═══ Tab 3: Cơ cấu vốn & Chi phí ═══ */}
                         {activeTab === 'investment' && (
                             <ProjectFormInvestment
                                 formData={formData}
                                 updateField={updateField}
+                                errors={errors}
                             />
                         )}
 
-                        {/* ═══ Tab 3: KHV & Giải ngân ═══ */}
-                        {activeTab === 'khv' && (
-                            <ProjectFormKHV
-                                formData={formData}
-                                updateField={updateField}
-                            />
-                        )}
-
-                        {/* ═══ Tab 4: Nhà thầu & Tiêu chuẩn ═══ */}
-                        {activeTab === 'contractors' && (
-                            <ProjectFormContractors
-                                formData={formData}
-                                updateField={updateField}
-                                aiHighlight={aiHighlight}
-                            />
-                        )}
-
-                        {/* ═══ Tab 5: Hiện trạng ═══ */}
-                        {activeTab === 'status' && (
-                            <ProjectFormStatus
-                                formData={formData}
-                                updateField={updateField}
-                                aiHighlight={aiHighlight}
-                            />
-                        )}
-
-                        {/* ═══ Tab 6: Thành viên ═══ */}
+                        {/* ═══ Tab 5: Thành viên ═══ */}
                         {activeTab === 'members' && (
                             <ProjectFormMembers
                                 formData={formData}
@@ -611,7 +634,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     </div>
 
                     {/* Footer */}
-                    <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-bg-app dark:bg-slate-900 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
+                    <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
                         <p className="text-[11px] text-gray-400 dark:text-slate-400">
                             Các trường không bắt buộc có thể bổ sung sau
                         </p>
@@ -645,3 +668,4 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         </div>
     );
 };
+

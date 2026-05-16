@@ -235,33 +235,6 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     const { data: capitalSummary } = useProjectCapitalSummary(project.ProjectID);
     const disbursedAmount = capitalSummary?.summary.totalDisbursed || 0;
 
-    // ═══ Fetch BIM & Asset Data ═══
-    const { data: bimAssetStats } = useQuery({
-        queryKey: ['project-bim-asset-stats', project.ProjectID],
-        queryFn: async () => {
-            // Get BIM models count and sum of elements
-            const { data: models } = await supabase
-                .from('bim_models')
-                .select('id, element_count')
-                .eq('project_id', project.ProjectID);
-            
-            const totalModels = models?.length || 0;
-            const totalElements = models?.reduce((acc, m) => acc + (m.element_count || 0), 0) || 0;
-
-            // Get Facility Assets count
-            const { count: assetsCount } = await supabase
-                .from('facility_assets')
-                .select('*', { count: 'exact', head: true })
-                .eq('project_id', project.ProjectID);
-
-            return {
-                totalModels,
-                totalElements,
-                totalAssets: assetsCount || 0
-            };
-        },
-        enabled: !!project.ProjectID,
-    });
 
     // ═══ FETCH KEY DATES FROM MULTIPLE SOURCES ═══
     const { data: keyDates = [] } = useQuery<KeyDate[]>({
@@ -487,7 +460,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         </div>
                         <div className="p-2.5">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                                <EnhancedInfoItem icon={Hash} label="Số dự án" value={project.ProjectNumber || project.ProjectID} copyable />
+                                <EnhancedInfoItem icon={Hash} label="Mã dự án" value={project.ProjectNumber || project.ProjectID} copyable />
                                 <EnhancedInfoItem icon={Briefcase} label="Nhóm dự án" value={`Nhóm ${project.GroupCode}`} highlight />
                                 <EnhancedInfoItem icon={MapPin} label="Địa điểm" value={project.LocationCode} />
                                 <EnhancedInfoItem icon={Clock} label="Thời gian thực hiện" value={project.Duration || '—'} />
@@ -569,46 +542,6 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         </div>
                     ) : null}
 
-                    {/* ═══ DỮ LIỆU THIẾT KẾ (BIM) & TÀI SẢN ═══ */}
-                    <div className="section-card">
-                        <div className="section-card-header">
-                            <div className="flex items-center gap-2">
-                                <div className="section-icon"><Box className="w-3.5 h-3.5" /></div>
-                                <span>Dữ liệu thiết kế (BIM) & Tài sản</span>
-                            </div>
-                        </div>
-                        <div className="p-2.5 space-y-2">
-                            <div className="grid grid-cols-3 gap-2">
-                                <div className="rounded-lg border border-primary-200 dark:border-primary-800/50 bg-primary-50/50 dark:bg-primary-900/15 py-1.5 px-2 text-center">
-                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Mô hình BIM (IFC)</p>
-                                    <div className="flex items-center justify-center gap-1">
-                                        <Layers className="w-3.5 h-3.5 text-primary-500" />
-                                        <p className="text-sm font-black tabular-nums text-primary-600 dark:text-primary-400">
-                                            {bimAssetStats?.totalModels || 0}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="rounded-lg border border-teal-200 dark:border-teal-800/50 bg-teal-50/50 dark:bg-teal-900/15 py-1.5 px-2 text-center">
-                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Cấu kiện (Elements)</p>
-                                    <div className="flex items-center justify-center gap-1">
-                                        <Box className="w-3.5 h-3.5 text-teal-500" />
-                                        <p className="text-sm font-black tabular-nums text-teal-600 dark:text-teal-400">
-                                            {bimAssetStats?.totalElements ? bimAssetStats.totalElements.toLocaleString('vi-VN') : 0}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="rounded-lg border border-warning-200 dark:border-warning-800/50 bg-warning-50/50 dark:bg-warning-900/15 py-1.5 px-2 text-center">
-                                    <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Tài sản (Assets)</p>
-                                    <div className="flex items-center justify-center gap-1">
-                                        <Database className="w-3.5 h-3.5 text-warning-500" />
-                                        <p className="text-sm font-black tabular-nums text-warning-600 dark:text-warning-400">
-                                            {bimAssetStats?.totalAssets || 0}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* ═══ Tiến độ giải ngân ═══ */}
                     <BudgetVarianceCard

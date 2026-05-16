@@ -27,7 +27,6 @@ const KPI_TIER_STYLES: Record<string, "blue" | "emerald" | "amber" | "violet" | 
     'bg-cyan-100': 'blue',
 };
 
-// Internal KPI Card helper wrapping StatCard
 const KPICard: React.FC<{
     label: string;
     value: string;
@@ -42,13 +41,13 @@ const KPICard: React.FC<{
     return (
         <StatCard
             label={label}
-            value={value}
+            value={<span className="text-base lg:text-lg font-bold">{value}</span>}
             icon={icon}
             color={color}
             progressPercentage={progress}
             footer={
                 sub && !progress ? (
-                    <div className="text-xs text-slate-500 mt-1 font-medium truncate">{sub}</div>
+                    <div className="text-[10px] lg:text-[11px] text-slate-500 mt-0.5 font-medium truncate" title={sub}>{sub}</div>
                 ) : undefined
             }
         />

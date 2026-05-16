@@ -68,7 +68,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             ${sticky ? 'sticky top-0 z-20' : ''}
             ${className}
         `}>
-            <div className="px-6 pt-5 pb-0">
+            <div className={`px-6 pt-5 ${tabs || stats ? 'pb-0' : 'pb-5'}`}>
                 {/* Breadcrumbs */}
                 {breadcrumbs && breadcrumbs.length > 0 && (
                     <nav className="flex items-center gap-1.5 text-xs text-txt-muted dark:text-slate-400 mb-3">
@@ -91,7 +91,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 )}
 
                 {/* Title row */}
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
                         {icon && (
                             <div className={`p-2.5 rounded-xl shrink-0 ${iconColor}`}>

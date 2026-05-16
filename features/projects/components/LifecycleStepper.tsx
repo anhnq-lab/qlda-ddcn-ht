@@ -172,159 +172,166 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
 
     return (
         <>
-            <div className="bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
-                {/* Header */}
-            <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <Circle className="w-3 h-3" />
-                        Vòng đời dự án (NĐ 175/2024)
-                    </h3>
-                    <div className="flex items-center gap-2">
-                        {stageHistory.length > 0 && (
-                            <button
-                                onClick={() => setShowHistoryPanel(!showHistoryPanel)}
-                                className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold text-gray-600 dark:text-slate-400 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                            >
-                                <History className="w-3.5 h-3.5" />
-                                Lịch sử
-                            </button>
-                        )}
-                        {editable && prevStage && (
-                            <button
-                                onClick={handleRevertStage}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-white text-[11px] font-bold rounded-lg transition-colors shadow-sm"
-                                style={{ background: '#357abd' }}
-                            >
-                                <ArrowLeft className="w-3.5 h-3.5" />
-                                Lùi giai đoạn
-                            </button>
-                        )}
-                        {editable && nextStage && (
-                            <button
-                                onClick={handleAdvanceStage}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-white text-[11px] font-bold rounded-lg transition-colors shadow-sm"
-                                
-                            >
-                                <ArrowRight className="w-3.5 h-3.5" />
-                                Chuyển giai đoạn
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Progress Steps */}
-                <div className="flex items-start justify-between relative">
-                    {/* Progress line */}
-                    <div className="absolute top-[18px] left-0 right-0 h-0.5 bg-gray-200 dark:bg-slate-600 rounded-full" style={{ margin: '0 30px' }}>
-                        <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{ background: 'linear-gradient(90deg, #3B82F6, #F97316, #10B981)', width: `${Math.max(0, (currentIndex / (STAGES.length - 1)) * 100)}%` }}
-                        />
+        <div className="space-y-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-2 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+                {/* Left/Top: Title & Stepper */}
+                <div className="flex flex-col md:flex-row md:items-center flex-1 gap-4">
+                    <div className="flex items-center gap-1.5 shrink-0 pl-1">
+                        <Circle className="w-3.5 h-3.5 text-slate-400" />
+                        <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            Vòng đời dự án
+                        </h3>
                     </div>
 
-                    {STAGES.map((stage, index) => {
-                        const status = getStepStatus(index);
-                        const stageInfo = getStageInfo(stage.key);
-                        const Icon = stage.icon;
-
-                        return (
+                    {/* Stepper */}
+                    <div className="flex-1 flex items-center justify-between relative max-w-3xl px-2">
+                        {/* Progress line */}
+                        <div className="absolute top-1/2 -translate-y-1/2 left-8 right-8 h-[2px] bg-slate-100 dark:bg-slate-700 rounded-full z-0">
                             <div
-                                key={stage.key}
-                                className="flex flex-col items-center relative z-10 flex-1 group"
-                            >
-                                {/* Circle/Icon — mỗi giai đoạn giữ màu riêng */}
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{ background: 'linear-gradient(90deg, #3B82F6, #F97316, #10B981)', width: `${Math.max(0, (currentIndex / (STAGES.length - 1)) * 100)}%` }}
+                            />
+                        </div>
+
+                        {STAGES.map((stage, index) => {
+                            const status = getStepStatus(index);
+                            const stageInfo = getStageInfo(stage.key);
+                            const Icon = stage.icon;
+
+                            return (
                                 <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer text-white
-                                        ${status === 'current' ? 'ring-3 scale-110' : ''}
-                                        ${status === 'upcoming' ? 'opacity-40' : ''}
-                                    `}
-                                    style={{ background: `linear-gradient(135deg, ${stage.hex}, ${stage.hexDark})`, ...(status === 'current' ? { boxShadow: `0 0 0 3px ${stage.hex}30` } : {}) }}
-                                    title={stage.description}
+                                    key={stage.key}
+                                    className="flex items-center gap-2 bg-white dark:bg-slate-800 relative z-10 px-2 rounded-full group cursor-pointer"
                                 >
-                                    {status === 'completed' ? (
-                                        <CheckCircle2 className="w-4 h-4" />
-                                    ) : (
-                                        <Icon className="w-4 h-4" />
-                                    )}
-                                </div>
+                                    <div
+                                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm text-white shrink-0
+                                            ${status === 'current' ? 'ring-2 scale-110' : ''}
+                                            ${status === 'upcoming' ? 'opacity-40' : ''}
+                                        `}
+                                        style={{ background: `linear-gradient(135deg, ${stage.hex}, ${stage.hexDark})`, ...(status === 'current' ? { boxShadow: `0 0 0 2px ${stage.hex}40` } : {}) }}
+                                    >
+                                        {status === 'completed' ? (
+                                            <CheckCircle2 className="w-4 h-4" />
+                                        ) : (
+                                            <Icon className="w-3.5 h-3.5" />
+                                        )}
+                                    </div>
 
-                                {/* Label */}
-                                <div className="mt-1.5 text-center">
-                                    <span className={`text-[10px] font-bold ${status === 'upcoming' ? 'opacity-40' : ''}`} style={{ color: stage.hex }}>
-                                        {stage.label}
-                                    </span>
-                                </div>
-
-                                {/* Stage info (dates, decision) */}
-                                {stageInfo && (
-                                    <div className="mt-2 text-center">
-                                        <span className="text-[10px] text-gray-400 dark:text-slate-400 block">
-                                            {stageInfo.startDate}
-                                            {stageInfo.endDate && ` → ${stageInfo.endDate}`}
+                                    <div className="flex flex-col">
+                                        <span className={`text-[10px] font-bold ${status === 'upcoming' ? 'opacity-40' : ''}`} style={{ color: stage.hex }}>
+                                            {stage.label}
                                         </span>
-                                        {stageInfo.decisionNumber && (
-                                            <span className="text-[10px] text-blue-600 font-medium block mt-0.5">
-                                                {stageInfo.decisionNumber}
+                                        {stageInfo && (
+                                            <span className="text-[8.5px] font-medium text-slate-400 dark:text-slate-500 leading-none mt-0.5">
+                                                {stageInfo.startDate}
                                             </span>
                                         )}
                                     </div>
-                                )}
 
-                                {/* Required docs tooltip on hover */}
-                                <div className="absolute top-full mt-6 hidden group-hover:block z-20">
-                                    <div className="bg-gray-900 text-white text-[10px] rounded-lg px-3 py-2 shadow-sm min-w-[140px]">
-                                        <p className="font-bold mb-1.5 text-gray-300 uppercase">Văn bản cần có:</p>
-                                        <ul className="space-y-1">
-                                            {stage.requiredDocs.map((doc, i) => (
-                                                <li key={i} className="flex items-center gap-1.5">
-                                                    <FileText className="w-3 h-3 text-gray-400" />
-                                                    {doc}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    {/* Tooltip on hover */}
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 hidden group-hover:block z-50">
+                                        <div className="bg-gray-900 text-white text-[10px] rounded-lg px-3 py-2.5 shadow-xl min-w-[180px] border border-gray-700">
+                                            <p className="font-bold mb-1" style={{ color: stage.hex }}>{stage.label}</p>
+                                            <p className="text-gray-300 mb-2 leading-relaxed">{stage.description}</p>
+                                            
+                                            {stageInfo && (
+                                                <div className="mb-2 pt-2 border-t border-gray-700">
+                                                    <p className="text-gray-400 mb-1">Thời gian: <span className="text-gray-200">{stageInfo.startDate} {stageInfo.endDate ? `→ ${stageInfo.endDate}` : ''}</span></p>
+                                                    {stageInfo.decisionNumber && <p className="text-gray-400">Quyết định: <span className="text-blue-300 font-medium">{stageInfo.decisionNumber}</span></p>}
+                                                </div>
+                                            )}
+
+                                            <div className="pt-2 border-t border-gray-700">
+                                                <p className="font-bold mb-1.5 text-gray-400 uppercase text-[9px]">Văn bản cần có:</p>
+                                                <ul className="space-y-1">
+                                                    {stage.requiredDocs.map((doc, i) => (
+                                                        <li key={i} className="flex items-start gap-1.5 text-gray-300">
+                                                            <FileText className="w-3 h-3 text-gray-500 shrink-0 mt-0.5" />
+                                                            <span>{doc}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
 
-                {/* History Panel */}
-                {showHistoryPanel && stageHistory.length > 0 && (
-                    <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-600">
-                        <h4 className="text-[11px] font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <History className="w-3.5 h-3.5" />
-                            Lịch sử chuyển giai đoạn
-                        </h4>
-                        <div className="space-y-2">
-                            {stageHistory.map((entry, idx) => {
-                                const stageConfig = STAGES.find(s => s.key === entry.stage);
-                                const Icon = stageConfig?.icon || Circle;
-                                return (
-                                    <div key={idx} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-600 hover:shadow-lg transition-shadow">
-                                        <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                            <Icon className="w-4 h-4" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-bold text-gray-800 dark:text-slate-200">{stageConfig?.label}</p>
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400">
-                                                {entry.startDate}
-                                                {entry.endDate && ` → ${entry.endDate}`}
-                                                {entry.decisionNumber && ` • ${entry.decisionNumber}`}
+                {/* Right/Bottom: Actions */}
+                <div className="flex items-center justify-end gap-2 shrink-0 md:pl-4 md:border-l border-slate-100 dark:border-slate-700 md:ml-2">
+                    {stageHistory.length > 0 && (
+                        <button
+                            onClick={() => setShowHistoryPanel(!showHistoryPanel)}
+                            className={`p-1.5 rounded-md transition-colors ${showHistoryPanel ? 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300'}`}
+                            title="Lịch sử chuyển giai đoạn"
+                        >
+                            <History className="w-4 h-4" />
+                        </button>
+                    )}
+                    {editable && prevStage && (
+                        <button
+                            onClick={handleRevertStage}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 transition-colors"
+                        >
+                            <ArrowLeft className="w-3 h-3" />
+                            Lùi
+                        </button>
+                    )}
+                    {editable && nextStage && (
+                        <button
+                            onClick={handleAdvanceStage}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-white text-[10px] font-bold rounded-md transition-colors shadow-sm bg-primary-600 hover:bg-primary-500"
+                        >
+                            Chuyển tiếp
+                            <ArrowRight className="w-3 h-3" />
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* History Panel */}
+            {showHistoryPanel && stageHistory.length > 0 && (
+                <div className="animate-in slide-in-from-top-2 duration-200 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 shadow-sm">
+                    <h4 className="text-[10px] font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <History className="w-3 h-3" />
+                        Lịch sử chuyển giai đoạn
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {stageHistory.map((entry, idx) => {
+                            const stageConfig = STAGES.find(s => s.key === entry.stage);
+                            const Icon = stageConfig?.icon || Circle;
+                            return (
+                                <div key={idx} className="flex items-start gap-2.5 p-2 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
+                                    <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${stageConfig?.hex}15`, color: stageConfig?.hex }}>
+                                        <Icon className="w-3.5 h-3.5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[11px] font-bold text-gray-800 dark:text-slate-200 truncate">{stageConfig?.label}</p>
+                                        <p className="text-[9px] text-gray-500 dark:text-slate-400 mt-0.5">
+                                            {entry.startDate}
+                                            {entry.endDate && ` → ${entry.endDate}`}
+                                        </p>
+                                        {entry.decisionNumber && (
+                                            <p className="text-[9px] text-blue-600 dark:text-blue-400 font-medium mt-0.5 truncate">
+                                                {entry.decisionNumber}
                                             </p>
-                                        </div>
+                                        )}
                                         {entry.notes && (
-                                            <span className="text-[10px] text-gray-400 italic max-w-[150px] truncate" title={entry.notes}>
+                                            <p className="text-[9px] text-gray-400 italic mt-0.5 truncate" title={entry.notes}>
                                                 "{entry.notes}"
-                                            </span>
+                                            </p>
                                         )}
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+        </div>
 
             {/* Stage Transition Modal */}
             {showTransitionModal && (

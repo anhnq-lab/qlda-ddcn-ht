@@ -8,7 +8,7 @@ import { ProjectGroup, MANAGEMENT_BOARDS, ProjectStatus, PROJECT_CURRENT_STATUS_
 import { ProjectCard, STATUS_CONFIG } from './ProjectCard';
 import { ProgressBar, DataTable, Column } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
-import { getGroupGradient } from '../../utils/projectCompliance';
+import { getGroupGradient, getGroupColor } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
 import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -289,19 +289,28 @@ const ProjectList: React.FC = () => {
                                             {GROUP_OPTIONS.map(g => {
                                                 const count = g === 'all' ? totalUnfiltered : (groupCounts[g] || 0);
                                                 return (
-                                                    <button
+                                                    <label
                                                         key={g}
-                                                        onClick={() => setSelectedGroup(g)}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedGroup === g ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedGroup === g
+                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
                                                             }`}
                                                     >
-                                                        <span>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
+                                                        <input
+                                                            type="radio"
+                                                            name="group"
+                                                            checked={selectedGroup === g}
+                                                            onChange={() => setSelectedGroup(g)}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: getGroupColor(g) }}></span>
+                                                        <span className={`text-sm flex-1 ${selectedGroup === g ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
                                                         {count > 0 && (
                                                             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                                                                 {count}
                                                             </span>
                                                         )}
-                                                    </button>
+                                                    </label>
                                                 );
                                             })}
                                         </div>
@@ -311,13 +320,13 @@ const ProjectList: React.FC = () => {
 
                                     {/* Management Board Filter */}
                                     <div>
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Ban QLDA</label>
+                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Phòng QLDA</label>
                                         <div className="space-y-1">
                                             <button
                                                 onClick={() => setSelectedBoard('all')}
                                                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === 'all' ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                                             >
-                                                <span>Tất cả ban</span>
+                                                <span>Tất cả phòng</span>
                                                 {totalUnfiltered > 0 && (
                                                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                                                         {totalUnfiltered}
@@ -490,7 +499,7 @@ const ProjectList: React.FC = () => {
                                                 <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
                                                 <th className="px-4 py-3 min-w-[280px] border-b border-slate-200 dark:border-slate-700">Tên dự án</th>
                                                 <th className="px-4 py-3 text-center w-20 border-b border-slate-200 dark:border-slate-700">Nhóm</th>
-                                                <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Ban QLDA</th>
+                                                <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Phòng QLDA</th>
                                                 <th className="px-4 py-3 text-center w-36 border-b border-slate-200 dark:border-slate-700">Giai đoạn</th>
                                                 <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Tiến độ</th>
                                                 <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Giải ngân</th>
@@ -542,7 +551,7 @@ const ProjectList: React.FC = () => {
                                                         <td className="px-4 py-4 text-center">
                                                             {board ? (
                                                                 <span className="inline-flex items-center justify-center text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: board.hex }}>
-                                                                    Ban {board.value}
+                                                                    Phòng {board.value}
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-slate-300 dark:text-slate-600">—</span>

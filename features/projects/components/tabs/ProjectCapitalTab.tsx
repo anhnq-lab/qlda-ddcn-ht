@@ -378,6 +378,31 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     return (
         <div className="space-y-6">
             {/* ════════════════════════════════════════════
+                SECTION E — Cảnh báo rủi ro (Moved to top)
+               ════════════════════════════════════════════ */}
+            {alerts.length > 0 && (
+                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-warning-50/50 dark:bg-warning-900/20">
+                        <h3 className="text-sm font-bold text-warning-800 dark:text-warning-400 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4" />
+                            Cảnh báo giải ngân
+                        </h3>
+                    </div>
+                    <div className="p-4 space-y-2">
+                        {alerts.map((a, i) => (
+                            <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${a.level === 'high'
+                                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300'
+                                : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-300'
+                                }`}>
+                                <div className="mt-0.5">{a.icon}</div>
+                                <p className="text-sm font-medium">{a.message}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ════════════════════════════════════════════
                 SECTION A — KPI Dashboard (6 cards)
                ════════════════════════════════════════════ */}
             <ProjectCapitalKPIDashboard summary={summary} allocationsCount={allocations.length} />
@@ -1037,6 +1062,13 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         >
                             <Plus className="w-3.5 h-3.5" /> Thêm bút toán
                         </button>
+
+                        {/* Mẫu xuất văn bản (Moved from Section F) */}
+                        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5 ml-1 border border-gray-200 dark:border-slate-600">
+                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Đề nghị thanh toán vốn (Mẫu 25)"><FileDown className="w-3.5 h-3.5 text-primary-600" /> M.25</button>
+                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Đề nghị rút vốn (Mẫu 26)"><FileDown className="w-3.5 h-3.5 text-blue-600" /> M.26</button>
+                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Thu hồi vốn tạm ứng (Mẫu 27)"><FileDown className="w-3.5 h-3.5 text-green-600" /> M.27</button>
+                        </div>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -1135,64 +1167,6 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             )}
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            {/* ════════════════════════════════════════════
-                SECTION E — Cảnh báo rủi ro
-               ════════════════════════════════════════════ */}
-            {alerts.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-warning-50/50 dark:bg-warning-900/20">
-                        <h3 className="text-sm font-bold text-warning-800 dark:text-warning-400 flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4" />
-                            Cảnh báo giải ngân
-                        </h3>
-                    </div>
-                    <div className="p-4 space-y-2">
-                        {alerts.map((a, i) => (
-                            <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${a.level === 'high'
-                                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300'
-                                : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-300'
-                                }`}>
-                                <div className="mt-0.5">{a.icon}</div>
-                                <p className="text-sm font-medium">{a.message}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* ════════════════════════════════════════════
-                SECTION F — Xuất văn bản (Toolbar)
-               ════════════════════════════════════════════ */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-3 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                    Xuất văn bản thanh toán (NĐ 99/2021/NĐ-CP)
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
-                        <FileDown className="w-4 h-4 text-primary-600" />
-                        <div className="text-left">
-                            <div className="font-semibold">Mẫu 25</div>
-                            <div className="text-[10px] text-gray-400 dark:text-slate-400 -mt-0.5">Đề nghị thanh toán vốn</div>
-                        </div>
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
-                        <FileDown className="w-4 h-4 text-blue-600" />
-                        <div className="text-left">
-                            <div className="font-semibold">Mẫu 26</div>
-                            <div className="text-[10px] text-gray-400 dark:text-slate-400 -mt-0.5">Đề nghị rút vốn</div>
-                        </div>
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
-                        <FileDown className="w-4 h-4 text-green-600" />
-                        <div className="text-left">
-                            <div className="font-semibold">Mẫu 27</div>
-                            <div className="text-[10px] text-gray-400 dark:text-slate-400 -mt-0.5">Thu hồi vốn tạm ứng</div>
-                        </div>
-                    </button>
                 </div>
             </div>
 

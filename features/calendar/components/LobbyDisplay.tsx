@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { Calendar as CalendarIcon, MapPin, Clock, Users, Monitor } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AgencyEventWithAttendees } from '@/types/calendar.types';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -12,17 +13,30 @@ interface LobbyDisplayProps {
 
 export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(0);
+  const EVENTS_PER_PAGE = 4;
+
+  const displayEvents = events
+    .filter(e => e.event_type === 'meeting' || e.event_type === 'business_trip')
+    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+  const totalPages = Math.ceil(displayEvents.length / EVENTS_PER_PAGE) || 1;
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const displayEvents = events
-    .filter(e => e.event_type === 'meeting' || e.event_type === 'business_trip')
-    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentPage((prev) => (prev + 1) % totalPages);
+    }, 12000); // 12 seconds per page
+    return () => clearInterval(timer);
+  }, [totalPages]);
 
-  const groupedEvents = displayEvents.reduce((acc, event) => {
+  const currentEvents = displayEvents.slice(currentPage * EVENTS_PER_PAGE, (currentPage + 1) * EVENTS_PER_PAGE);
+
+  const groupedEvents = currentEvents.reduce((acc, event) => {
     const dateStr = format(new Date(event.start_time), 'yyyy-MM-dd');
     if (!acc[dateStr]) acc[dateStr] = [];
     acc[dateStr].push(event);
@@ -81,97 +95,126 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
             <p className="text-xl font-medium">Không có lịch họp hoặc đi công tác nào sắp tới</p>
           </div>
         ) : (
-          <div className="space-y-5">
-            {Object.entries(groupedEvents).map(([dateStr, dayEvents]) => {
-              const isToday = dateStr === format(currentTime, 'yyyy-MM-dd');
-              const dayDate = new Date(dateStr);
-              
-              return (
-                <div key={dateStr} className="animate-fade-in-up">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h2 className={`text-lg font-bold ${isToday ? 'text-warning-600 dark:text-warning-400' : 'text-primary-600 dark:text-primary-400'} uppercase tracking-wider`}>
-                      {isToday ? 'Hôm nay' : format(dayDate, 'EEEE, dd/MM/yyyy', { locale: vi })}
-                    </h2>
-                    <div className="flex-1 h-px bg-border"></div>
-                  </div>
+          <div className="flex flex-col h-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="space-y-5 flex-1"
+              >
+                {Object.entries(groupedEvents).map(([dateStr, dayEvents]) => {
+                  const isToday = dateStr === format(currentTime, 'yyyy-MM-dd');
+                  const dayDate = new Date(dateStr);
                   
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    {dayEvents.map(event => {
-                      const startDate = new Date(event.start_time);
-                      const endDate = new Date(event.end_time);
-                      const typeColor = getEventTypeColor(event.event_type);
+                  return (
+                    <div key={dateStr}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <h2 className={`text-lg font-bold ${isToday ? 'text-warning-600 dark:text-warning-400' : 'text-primary-600 dark:text-primary-400'} uppercase tracking-wider`}>
+                          {isToday ? 'Hôm nay' : format(dayDate, 'EEEE, dd/MM/yyyy', { locale: vi })}
+                        </h2>
+                        <div className="flex-1 h-px bg-border"></div>
+                      </div>
                       
-                      return (
-                        <div key={event.id} style={{ borderLeftColor: typeColor === 'blue' ? 'var(--color-primary-500, #3b82f6)' : '#f97316' }}>
-                        <Card className="border-l-4 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                          <div className="p-4 flex flex-col h-full">
-                            <div className="flex justify-between items-start mb-3">
-                              <Badge variant={typeColor as any} className="text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wider">
-                                {getEventTypeName(event.event_type)}
-                              </Badge>
-                              <div className="flex items-center text-text-primary font-mono text-base bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-border shadow-sm">
-                                <Clock className="w-4 h-4 mr-1.5 text-primary-500" />
-                                <span className="font-bold">{format(startDate, 'HH:mm')}</span>
-                                <span className="mx-1.5 text-text-muted">-</span>
-                                <span>{format(endDate, 'HH:mm')}</span>
-                              </div>
-                            </div>
-                            
-                            <h3 className="text-lg font-bold text-text-primary mb-3 leading-snug flex-1">
-                              {event.title}
-                            </h3>
-                            
-                            <div className="grid grid-cols-2 gap-3 mt-auto">
-                              {(event.room || event.location) && (
-                                <div className="flex items-start">
-                                  <div className="p-1.5 bg-slate-50 dark:bg-slate- rounded-md mr-2 border border-slate-100 dark:border-slate-700">
-                                    <MapPin className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-0.5">Địa điểm</p>
-                                    <p className="text-sm text-text-primary font-medium line-clamp-2">
-                                      {event.room ? event.room : event.location}
-                                    </p>
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        {dayEvents.map(event => {
+                          const startDate = new Date(event.start_time);
+                          const endDate = new Date(event.end_time);
+                          const typeColor = getEventTypeColor(event.event_type);
+                          
+                          return (
+                            <motion.div 
+                              key={event.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3 }}
+                              style={{ borderLeftColor: typeColor === 'blue' ? 'var(--color-primary-500, #3b82f6)' : '#f97316' }}
+                            >
+                            <Card className="border-l-4 shadow-sm hover:shadow-md transition-shadow overflow-hidden h-full">
+                              <div className="p-4 flex flex-col h-full">
+                                <div className="flex justify-between items-start mb-3">
+                                  <Badge variant={typeColor as any} className="text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wider">
+                                    {getEventTypeName(event.event_type)}
+                                  </Badge>
+                                  <div className="flex items-center text-text-primary font-mono text-base bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-border shadow-sm">
+                                    <Clock className="w-4 h-4 mr-1.5 text-primary-500" />
+                                    <span className="font-bold">{format(startDate, 'HH:mm')}</span>
+                                    <span className="mx-1.5 text-text-muted">-</span>
+                                    <span>{format(endDate, 'HH:mm')}</span>
                                   </div>
                                 </div>
-                              )}
-                              
-                              <div className="flex items-start">
-                                <div className="p-1.5 bg-slate-50 dark:bg-slate- rounded-md mr-2 border border-slate-100 dark:border-slate-700">
-                                  <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-                                </div>
-                                <div>
-                                  <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-0.5">Tham dự</p>
-                                  <p className="text-sm text-text-primary font-medium">
-                                    {event.attendees && event.attendees.length > 0 
-                                      ? `${event.attendees.length} người` 
-                                      : 'Toàn cơ quan'}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {event.attendees && event.attendees.length > 0 && (
-                              <div className="mt-3 pt-3 border-t border-border">
-                                <div className="flex flex-wrap gap-1.5">
-                                  {event.attendees.map((emp: any, idx: number) => (
-                                    <div key={emp.EmployeeID || idx} className="bg-slate-50 dark:bg-slate- px-2 py-0.5 rounded text-[11px] font-medium text-text-secondary flex items-center border border-border">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-1.5"></span>
-                                      {emp.FullName || emp.full_name || 'Nhân viên'}
+                                
+                                <h3 className="text-lg font-bold text-text-primary mb-3 leading-snug flex-1">
+                                  {event.title}
+                                </h3>
+                                
+                                <div className="grid grid-cols-2 gap-3 mt-auto">
+                                  {(event.room || event.location) && (
+                                    <div className="flex items-start">
+                                      <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-md mr-2 border border-slate-100 dark:border-slate-700">
+                                        <MapPin className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                                      </div>
+                                      <div>
+                                        <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-0.5">Địa điểm</p>
+                                        <p className="text-sm text-text-primary font-medium line-clamp-2">
+                                          {event.room ? event.room : event.location}
+                                        </p>
+                                      </div>
                                     </div>
-                                  ))}
+                                  )}
+                                  
+                                  <div className="flex items-start">
+                                    <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-md mr-2 border border-slate-100 dark:border-slate-700">
+                                      <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+                                    </div>
+                                    <div>
+                                      <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-0.5">Tham dự</p>
+                                      <p className="text-sm text-text-primary font-medium">
+                                        {event.attendees && event.attendees.length > 0 
+                                          ? `${event.attendees.length} người` 
+                                          : 'Toàn cơ quan'}
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
+                                
+                                {event.attendees && event.attendees.length > 0 && (
+                                  <div className="mt-3 pt-3 border-t border-border">
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {event.attendees.map((emp: any, idx: number) => (
+                                        <div key={emp.EmployeeID || idx} className="bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded text-[11px] font-medium text-text-secondary flex items-center border border-border">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-1.5"></span>
+                                          {emp.FullName || emp.full_name || 'Nhân viên'}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </Card>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+                            </Card>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Pagination Indicators */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-6 pt-4 border-t border-border">
+                {Array.from({ length: totalPages }).map((_, idx) => (
+                  <div 
+                    key={idx}
+                    className={`h-2 rounded-full transition-all duration-300 ${idx === currentPage ? 'w-8 bg-primary-500' : 'w-2 bg-slate-300 dark:bg-slate-700'}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
