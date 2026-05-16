@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "sync:bim-assets": "node scripts/sync-bim-assets.mjs",
+    "postinstall": "node scripts/sync-bim-assets.mjs",
+    "predev": "node scripts/sync-bim-assets.mjs",
+    "prebuild": "node scripts/sync-bim-assets.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

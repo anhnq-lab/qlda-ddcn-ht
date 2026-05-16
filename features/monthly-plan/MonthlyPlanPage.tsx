@@ -332,25 +332,28 @@ const MonthlyPlanPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-transparent">
-            {/* ── Header ── */}
-            <div className="bg-transparent border-b border-slate-100 dark:border-slate-800 px-6 py-4">
-                <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col h-full gap-4 bg-transparent p-4">
+            {/* ══════════ KHỐI 1: HEADER & TOOLBAR ══════════ */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm shrink-0">
+                {/* Dòng 1: Tiêu đề & Hành động */}
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                    {/* Header Left */}
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
-                            <CalendarDays className="w-5 h-5 text-primary-600" />
+                        <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                            <CalendarDays className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-semibold text-slate-800">
+                            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">
                                 {viewMode === 'plan' ? 'Kế hoạch tháng' : 'Báo cáo tháng'}
                             </h1>
-                            <p className="text-xs text-slate-500">
-                                {MONTH_NAMES[month]}/{year} · {DEPARTMENT_NAMES[activeDept]}
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                Tháng {month}/{year} · {DEPARTMENT_NAMES[activeDept]}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* Toolbar Right */}
+                    <div className="flex flex-wrap items-center gap-3">
                         {/* Toast kết quả seed */}
                         {seedResult?.show && (
                             <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium animate-in fade-in duration-300 ${
@@ -359,10 +362,30 @@ const MonthlyPlanPage: React.FC = () => {
                                     : 'bg-warning-50 text-warning-700 border border-warning-200'
                             }`}>
                                 {seedResult.count > 0
-                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ từ ${seedResult.source}`
-                                    : `⚠ Không có nhiệm vụ mới (${seedResult.source} trống hoặc đã sinh hết)`}
+                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ`
+                                    : `⚠ Không có nhiệm vụ mới`}
                             </span>
                         )}
+
+                        {/* Toggle Plan/Report (Segmented control) */}
+                        <div className="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-1">
+                            {(['plan', 'report'] as ViewMode[]).map(mode => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setViewMode(mode)}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                                        viewMode === mode 
+                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                    }`}
+                                >
+                                    {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+
                         {/* Export Excel */}
                         <button
                             onClick={async () => {
@@ -372,118 +395,127 @@ const MonthlyPlanPage: React.FC = () => {
                                 finally { setExporting(false); }
                             }}
                             disabled={exporting}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 text-slate-600 disabled:opacity-50 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 hover:text-emerald-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
                         >
                             <Download className="w-4 h-4" />
-                            {exporting ? 'Đang xuất...' : 'Xuất Excel'}
+                            <span className="hidden sm:inline">{exporting ? 'Đang xuất...' : 'Xuất Excel'}</span>
                         </button>
-
-                        {/* Toggle Plan/Report */}
-                        <div className="flex bg-slate-100 rounded-lg p-0.5">
-                            {(['plan', 'report'] as ViewMode[]).map(mode => (
-                                <button
-                                    key={mode}
-                                    onClick={() => setViewMode(mode)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                                        viewMode === mode ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
-                                    }`}
-                                >
-                                    {mode === 'plan' ? 'KH tháng' : 'BC tháng'}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Tháng */}
-                        <select
-                            value={month}
-                            onChange={e => setMonth(Number(e.target.value))}
-                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        >
-                            {MONTH_NAMES.slice(1).map((name, i) => (
-                                <option key={i + 1} value={i + 1}>{name}</option>
-                            ))}
-                        </select>
-
-                        {/* Năm */}
-                        <select
-                            value={year}
-                            onChange={e => setYear(Number(e.target.value))}
-                            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        >
-                            {[year - 1, year, year + 1].map(y => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
 
                         {viewMode === 'plan' && (
                             <>
                                 {/* Sinh từ Dự án */}
                                 <button
-                                    id="monthly-plan-seed-project-btn"
                                     onClick={handleSeedFromProject}
                                     disabled={seedProjectLoading || loading}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-violet-200 rounded-lg hover:bg-violet-50 hover:text-violet-700 hover:border-violet-300 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-violet-200 dark:border-violet-800 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/30 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
                                     title="Sinh nhiệm vụ từ công việc dự án đang chạy"
                                 >
                                     <FolderSync className={`w-4 h-4 ${seedProjectLoading ? 'animate-spin' : ''}`} />
-                                    {seedProjectLoading ? 'Đang sinh...' : 'Sinh từ dự án'}
+                                    <span className="hidden sm:inline">{seedProjectLoading ? 'Đang sinh...' : 'Sinh từ dự án'}</span>
                                 </button>
                                 {/* Sinh từ KH khung */}
                                 <button
-                                    id="monthly-plan-seed-annual-btn"
                                     onClick={handleSeedFromAnnual}
                                     disabled={seedLoading || loading}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
                                     title="Sinh từ KH khung"
                                 >
                                     <RefreshCw className={`w-4 h-4 ${seedLoading ? 'animate-spin' : ''}`} />
-                                    {seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}
+                                    <span className="hidden sm:inline">{seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}</span>
                                 </button>
+                                {/* Thêm nhiệm vụ */}
                                 <button
-                                    id="monthly-plan-add-btn"
                                     onClick={() => openFormPanel(null)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700"
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 shadow-sm transition-colors"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    Thêm nhiệm vụ
+                                    <span>Thêm nhiệm vụ</span>
                                 </button>
                             </>
                         )}
                     </div>
                 </div>
 
-                {/* Tab phòng */}
-                <div className="flex gap-1 overflow-x-auto">
-                    {DEPARTMENT_CODES.map(code => (
-                        <button
-                            key={code}
-                            onClick={() => setActiveDept(code)}
-                            className={`flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                                activeDept === code ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                            }`}
+                {/* Dòng 2: Bộ lọc (Tháng, Năm, Phòng ban) */}
+                <div className="px-6 py-3 bg-slate-50/50 dark:bg-slate-800/50 flex flex-wrap lg:flex-nowrap items-center gap-4">
+                    {/* Time Filters */}
+                    <div className="flex items-center gap-2 pr-4 border-r border-slate-200 dark:border-slate-700 shrink-0">
+                        <select
+                            value={month}
+                            onChange={e => setMonth(Number(e.target.value))}
+                            className="text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:border-slate-300 transition-colors"
                         >
-                            {code}
-                        </button>
-                    ))}
+                            {MONTH_NAMES.slice(1).map((name, i) => (
+                                <option key={i + 1} value={i + 1}>{name}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={year}
+                            onChange={e => setYear(Number(e.target.value))}
+                            className="text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:border-slate-300 transition-colors"
+                        >
+                            {[year - 1, year, year + 1].map(y => (
+                                <option key={y} value={y}>{y}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Tab phòng ban (Pills) */}
+                    <div className="flex gap-1.5 overflow-x-auto custom-scrollbar flex-1 pb-1 lg:pb-0">
+                        {DEPARTMENT_CODES.map(code => (
+                            <button
+                                key={code}
+                                onClick={() => setActiveDept(code)}
+                                className={`flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${
+                                    activeDept === code 
+                                        ? 'bg-slate-800 border-slate-800 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-800 shadow-sm' 
+                                        : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                                }`}
+                            >
+                                {code}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* ── Thống kê nhanh ── */}
+            {/* ══════════ KHỐI 2: STATS / THỐNG KÊ (Khối nổi độc lập) ══════════ */}
             {viewMode === 'plan' && items.length > 0 && (
-                <div className="px-6 py-3 bg-white border-b border-slate-100 flex items-center gap-4">
-                    <span className="text-xs text-slate-500">Tổng: <b className="text-slate-800">{stats.total}</b></span>
-                    <span className="text-xs text-emerald-600">✓ Hoàn thành: <b>{stats.completed}</b></span>
-                    <span className="text-xs text-red-500">✗ Chưa HT: <b>{stats.incomplete}</b></span>
-                    <span className="text-xs text-slate-400">○ Chưa báo cáo: <b>{stats.planned}</b></span>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm shrink-0 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{stats.total}</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Tổng NV</span>
+                        </div>
+                        <div className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
+                        <div className="flex flex-wrap gap-4">
+                            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-500">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                Hoàn thành: <span className="font-bold">{stats.completed}</span>
+                            </span>
+                            <span className="flex items-center gap-1.5 text-sm font-medium text-red-500 dark:text-red-400">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                Chưa HT: <span className="font-bold">{stats.incomplete}</span>
+                            </span>
+                            <span className="flex items-center gap-1.5 text-sm font-medium text-slate-400 dark:text-slate-500">
+                                <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                                Chưa báo cáo: <span className="font-bold">{stats.planned}</span>
+                            </span>
+                        </div>
+                    </div>
+                    
                     {stats.total > 0 && (
-                        <div className="ml-auto flex items-center gap-2">
-                            <div className="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800 w-full md:w-auto">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tiến độ</span>
+                            <div className="flex-1 md:w-48 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
                                 <div
-                                    className="h-full bg-emerald-500 rounded-full transition-all"
+                                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                                     style={{ width: `${Math.round((stats.completed / stats.total) * 100)}%` }}
                                 />
                             </div>
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 w-8 text-right">
                                 {Math.round((stats.completed / stats.total) * 100)}%
                             </span>
                         </div>
@@ -491,114 +523,118 @@ const MonthlyPlanPage: React.FC = () => {
                 </div>
             )}
 
-            {/* ── BC tháng: Summary table ── */}
-            {viewMode === 'report' && (
-                <div className="px-6 py-4 bg-white border-b border-slate-100">
-                    <h3 className="text-sm font-semibold text-slate-700 mb-3">
-                        Tổng hợp kết quả {MONTH_NAMES[month]}/{year} — Toàn Ban
-                    </h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                                <tr className="text-slate-500 dark:text-slate-400">
-                                    <th className="px-3 py-2 text-left border-b border-slate-200 dark:border-slate-700">Phòng/Ban</th>
-                                    <th className="px-3 py-2 text-center border-b border-slate-200 dark:border-slate-700">Tổng</th>
-                                    <th className="px-3 py-2 text-center text-emerald-600 border-b border-slate-200 dark:border-slate-700">Hoàn thành</th>
-                                    <th className="px-3 py-2 text-center text-warning-500 border-b border-slate-200 dark:border-slate-700">Một phần</th>
-                                    <th className="px-3 py-2 text-center text-red-500 border-b border-slate-200 dark:border-slate-700">Chưa HT</th>
-                                    <th className="px-3 py-2 text-center text-blue-500 border-b border-slate-200 dark:border-slate-700">Chuyển tháng</th>
-                                    <th className="px-3 py-2 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ HT</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {summaries.map(s => (
-                                    <tr key={s.department_code} className="hover:bg-slate-50">
-                                        <td className="px-3 py-2 font-medium text-slate-700">{s.department_name}</td>
-                                        <td className="px-3 py-2 text-center text-slate-600">{s.total_tasks}</td>
-                                        <td className="px-3 py-2 text-center text-emerald-600 font-medium">{s.completed}</td>
-                                        <td className="px-3 py-2 text-center text-warning-500">{s.partial}</td>
-                                        <td className="px-3 py-2 text-center text-red-500">{s.incomplete}</td>
-                                        <td className="px-3 py-2 text-center text-blue-500">{s.deferred}</td>
-                                        <td className="px-3 py-2 text-center">
-                                            <span className={`font-semibold ${
-                                                s.completion_rate >= 80 ? 'text-emerald-600'
-                                                : s.completion_rate >= 50 ? 'text-warning-500'
-                                                : 'text-red-500'
-                                            }`}>
-                                                {s.completion_rate}%
-                                            </span>
-                                        </td>
+            {/* ══════════ KHỐI 3: CONTENT / BẢNG ══════════ */}
+            <div className="flex-1 min-h-0 flex flex-col gap-4">
+                {viewMode === 'report' ? (
+                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+                            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">
+                                Tổng hợp kết quả {MONTH_NAMES[month]}/{year} — Toàn Ban
+                            </h3>
+                        </div>
+                        <div className="flex-1 overflow-auto custom-scrollbar">
+                            <table className="w-full text-sm">
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/80 backdrop-blur text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <tr className="text-slate-500 dark:text-slate-400">
+                                        <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">Phòng/Ban</th>
+                                        <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tổng</th>
+                                        <th className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-500 border-b border-slate-200 dark:border-slate-700">Hoàn thành</th>
+                                        <th className="px-4 py-3 text-center text-warning-500 dark:text-warning-400 border-b border-slate-200 dark:border-slate-700">Một phần</th>
+                                        <th className="px-4 py-3 text-center text-red-500 dark:text-red-400 border-b border-slate-200 dark:border-slate-700">Chưa HT</th>
+                                        <th className="px-4 py-3 text-center text-blue-500 dark:text-blue-400 border-b border-slate-200 dark:border-slate-700">Chuyển tháng</th>
+                                        <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ HT</th>
                                     </tr>
-                                ))}
-                                {summaries.length === 0 && (
-                                    <tr><td colSpan={7} className="px-3 py-6 text-center text-slate-400 text-sm">
-                                        Chưa có dữ liệu báo cáo
-                                    </td></tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Danh sách nhiệm vụ ── */}
-            <div className="flex-1 px-6 py-4 flex flex-col min-h-0">
-                {loading ? (
-                    <div className="flex items-center justify-center h-40 text-slate-400 text-sm">Đang tải...</div>
-                ) : items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400">
-                        <CalendarDays className="w-10 h-10 opacity-30" />
-                        <p className="text-sm">Chưa có nhiệm vụ nào trong tháng này</p>
-                        <div className="flex flex-wrap gap-2 text-sm justify-center">
-                            <button onClick={handleSeedFromProject} className="text-violet-600 hover:underline flex items-center gap-1">
-                                <FolderSync className="w-3.5 h-3.5" /> Sinh từ dự án
-                            </button>
-                            <span className="text-slate-300">|</span>
-                            <button onClick={handleSeedFromAnnual} className="text-primary-600 hover:underline">
-                                Sinh từ KH khung
-                            </button>
-                            <span className="text-slate-300">|</span>
-                            <button onClick={() => openFormPanel(null)} className="text-primary-600 hover:underline">
-                                Thêm thủ công
-                            </button>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    {summaries.map(s => (
+                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                                            <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-200">{s.department_name}</td>
+                                            <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{s.total_tasks}</td>
+                                            <td className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50/30 dark:bg-emerald-900/10">{s.completed}</td>
+                                            <td className="px-4 py-3 text-center text-warning-500 dark:text-warning-400">{s.partial}</td>
+                                            <td className="px-4 py-3 text-center text-red-500 dark:text-red-400 bg-red-50/30 dark:bg-red-900/10">{s.incomplete}</td>
+                                            <td className="px-4 py-3 text-center text-blue-500 dark:text-blue-400">{s.deferred}</td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
+                                                    s.completion_rate >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                                                    : s.completion_rate >= 50 ? 'bg-warning-100 text-warning-700 dark:bg-warning-500/20 dark:text-warning-300'
+                                                    : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
+                                                }`}>
+                                                    {s.completion_rate}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {summaries.length === 0 && (
+                                        <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-sm italic">
+                                            Chưa có dữ liệu báo cáo
+                                        </td></tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 ) : (
-                    <DataTable
-                        data={sortedItems}
-                        columns={columns}
-                        keyExtractor={item => item.id}
-                        stickyHeader
-                        maxHeight="calc(100vh - 280px)"
-                        onRowClick={openDetailPanel}
-                        groupBy={(item) => item.group_name || 'Công việc khác'}
-                        defaultExpandedGroups={true}
-                        renderGroupHeader={(groupName, groupItems, isExpanded, toggle) => {
-                            if (groupName === 'Công việc khác') return null;
-                            return (
-                                <tr className="bg-slate-50/80 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800">
-                                    <td colSpan={6} className="px-2 py-2">
-                                        <button
-                                            onClick={toggle}
-                                            className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                                                <FolderOpen className="w-4 h-4 text-primary-500" />
-                                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{groupName}</span>
-                                                <span className="text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-medium">
-                                                    {groupItems.length}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 pr-2">
-                                                <span className="text-emerald-600 dark:text-emerald-500 font-medium">{groupItems.filter(i => i.status === 'completed').length} HT</span>
-                                            </div>
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        }}
-                    />
+                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        {loading ? (
+                            <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">Đang tải...</div>
+                        ) : items.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-slate-500">
+                                <CalendarDays className="w-12 h-12 opacity-30" />
+                                <p className="text-sm">Chưa có nhiệm vụ nào trong tháng này</p>
+                                <div className="flex flex-wrap gap-3 text-sm justify-center mt-2">
+                                    <button onClick={handleSeedFromProject} className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors">
+                                        <FolderSync className="w-4 h-4" /> Sinh từ dự án
+                                    </button>
+                                    <button onClick={handleSeedFromAnnual} className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                                        Sinh từ KH khung
+                                    </button>
+                                    <button onClick={() => openFormPanel(null)} className="flex items-center gap-1.5 px-4 py-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors">
+                                        Thêm thủ công
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <DataTable
+                                data={sortedItems}
+                                columns={columns}
+                                keyExtractor={item => item.id}
+                                stickyHeader
+                                maxHeight="100%"
+                                onRowClick={openDetailPanel}
+                                groupBy={(item) => item.group_name || 'Công việc khác'}
+                                defaultExpandedGroups={true}
+                                renderGroupHeader={(groupName, groupItems, isExpanded, toggle) => {
+                                    if (groupName === 'Công việc khác') return null;
+                                    return (
+                                        <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/50">
+                                            <td colSpan={6} className="px-2 py-2">
+                                                <button
+                                                    onClick={toggle}
+                                                    className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                                        <FolderOpen className="w-4 h-4 text-primary-500" />
+                                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{groupName}</span>
+                                                        <span className="text-[10px] font-bold bg-slate-200/50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                                                            {groupItems.length}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 pr-2">
+                                                        <div className="flex items-center gap-1 text-[11px] font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                            {groupItems.filter(i => i.status === 'completed').length} HT
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                }}
+                            />
+                        )}
+                    </div>
                 )}
             </div>
         </div>

@@ -229,24 +229,23 @@ export function useBimEngine(
                     }
                 } catch { /* camera controls mapping not critical */ }
 
-                // Initialize FragmentsManager — load worker
+                // Initialize FragmentsManager — load LOCAL worker only.
+                // The worker must match the installed @thatopen/fragments version
+                // exactly; a mismatched worker parses IFC but never renders geometry.
+                // scripts/sync-bim-assets.mjs keeps /workers/fragment-worker.mjs in
+                // sync (postinstall/predev/prebuild) so a remote fallback — which
+                // could pull a different version — is intentionally NOT used.
                 const fragments = components.get(OBC.FragmentsManager);
-                let workerUrl: string;
-                try {
-                    const localWorkerResp = await fetch('/workers/fragment-worker.mjs');
-                    if (localWorkerResp.ok) {
-                        const workerBlob = await localWorkerResp.blob();
-                        const workerFile = new File([workerBlob], 'worker.mjs', { type: 'text/javascript' });
-                        workerUrl = URL.createObjectURL(workerFile);
-                    } else {
-                        throw new Error('Local worker not found');
-                    }
-                } catch {
-                    const fetchedWorker = await fetch('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
-                    const workerBlob = await fetchedWorker.blob();
-                    const workerFile = new File([workerBlob], 'worker.mjs', { type: 'text/javascript' });
-                    workerUrl = URL.createObjectURL(workerFile);
+                const localWorkerResp = await fetch('/workers/fragment-worker.mjs');
+                if (!localWorkerResp.ok) {
+                    throw new Error(
+                        'Không tải được fragment worker (/workers/fragment-worker.mjs). ' +
+                        'Chạy "npm run sync:bim-assets" rồi tải lại trang.'
+                    );
                 }
+                const workerBlob = await localWorkerResp.blob();
+                const workerFile = new File([workerBlob], 'worker.mjs', { type: 'text/javascript' });
+                const workerUrl = URL.createObjectURL(workerFile);
                 fragments.init(workerUrl);
 
                 // Camera update for fragments
@@ -472,31 +471,48 @@ export function useBimEngine(
     }, [isDarkMode]);
 
     // ── Camera views ────────────────────────────────
+    // Combined bounding box of all loaded models. Fragments v3 streams
+    // geometry in tiles, so THREE.Box3().setFromObject(model.object) is
+    // EMPTY right after load — the correct source is the native
+    // FragmentsModel.box getter (already coordinated near origin).
+    const getModelsBox = useCallback((): { box: THREE.Box3; hasModels: boolean } => {
+        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+        const box = new THREE.Box3();
+        let hasModels = false;
+        if (fragments && fragments.list.size > 0) {
+            for (const [, model] of fragments.list) {
+                let modelBox: THREE.Box3 | null = null;
+                // v3 native box (correct for streamed fragments)
+                const nativeBox = (model as any).box;
+                if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                    modelBox = nativeBox;
+                } else {
+                    const targetObj = (model as any).object || model;
+                    if (targetObj instanceof THREE.Object3D) {
+                        const b = new THREE.Box3().setFromObject(targetObj);
+                        if (!b.isEmpty()) modelBox = b;
+                    }
+                }
+                if (modelBox) {
+                    box.union(modelBox);
+                    hasModels = true;
+                }
+            }
+        }
+        if (!hasModels) {
+            const scene = worldRef.current?.scene;
+            if (scene) box.setFromObject(scene.three);
+        }
+        return { box, hasModels };
+    }, []);
+
     const setView = useCallback((view: string) => {
         const camera = getSafeCamera(worldRef.current);
         const scene = worldRef.current?.scene;
         if (!camera || !scene) return;
 
-        // Calculate model center for better view positioning
-        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
-        const box = new THREE.Box3();
-        let hasModels = false;
-        if (fragments && fragments.list.size > 0) {
-            for (const [_, model] of fragments.list) {
-                const targetObj = (model as any).object || model;
-                if (targetObj instanceof THREE.Object3D) {
-                    const groupBox = new THREE.Box3().setFromObject(targetObj);
-                    if (!groupBox.isEmpty()) {
-                        box.union(groupBox);
-                        hasModels = true;
-                    }
-                }
-            }
-        }
-        if (!hasModels) {
-            box.setFromObject(scene.three);
-        }
-        
+        const { box } = getModelsBox();
+
         const center = new THREE.Vector3();
         const size = new THREE.Vector3();
         if (!box.isEmpty()) {
@@ -514,37 +530,19 @@ export function useBimEngine(
             case 'right': camera.controls.setLookAt(center.x + d * 1.5, center.y, center.z, center.x, center.y, center.z, true); break;
             case 'left': camera.controls.setLookAt(center.x - d * 1.5, center.y, center.z, center.x, center.y, center.z, true); break;
         }
-    }, []);
+    }, [getModelsBox]);
 
     const fitAll = useCallback(() => {
         const camera = getSafeCamera(worldRef.current);
-        const scene = worldRef.current?.scene;
-        if (!camera || !scene) return;
+        if (!camera) return;
 
-        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
-        const box = new THREE.Box3();
-        let hasModels = false;
-        if (fragments && fragments.list.size > 0) {
-            for (const [_, model] of fragments.list) {
-                const targetObj = (model as any).object || model;
-                if (targetObj instanceof THREE.Object3D) {
-                    const groupBox = new THREE.Box3().setFromObject(targetObj);
-                    if (!groupBox.isEmpty()) {
-                        box.union(groupBox);
-                        hasModels = true;
-                    }
-                }
-            }
-        }
-        if (!hasModels) {
-            box.setFromObject(scene.three);
-        }
-
+        const { box } = getModelsBox();
         if (box.isEmpty()) return;
         const sphere = new THREE.Sphere();
         box.getBoundingSphere(sphere);
+        if (!isFinite(sphere.radius) || sphere.radius <= 0) return;
         camera.controls.fitToSphere(sphere, true);
-    }, []);
+    }, [getModelsBox]);
 
     const zoomToObject = useCallback((object: THREE.Object3D) => {
         const camera = getSafeCamera(worldRef.current);

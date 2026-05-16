@@ -109,8 +109,11 @@ export function useBimUpload(
             const ifcLoader = ifcLoaderRef.current;
             let completed = 0;
 
-            // Load models in parallel for speed
-            const loadPromises = readyModels.map(async (m) => {
+            // Load models SEQUENTIALLY — parallel IFC parsing of several large
+            // models saturates WASM memory and can OOM the worker, which then
+            // silently drops geometry. One at a time is slower per-tick but
+            // robust and keeps progress accurate.
+            for (const m of readyModels) {
                 try {
                     // Check module-level cache first
                     const cacheKey = m.ifc_path!;
@@ -127,9 +130,18 @@ export function useBimUpload(
                     console.log(`[BimUpload] Starting IFC load for ${m.file_name}...`);
 
                     if (ifcLoader && worldRef.current) {
-                        const model = await ifcLoader.load(uint8Array, true, m.file_name);
+                        const model = await ifcLoader.load(uint8Array, true, m.file_name, {
+                            instanceCallback: (importer: any) => {
+                                // Many VN IFC exports bake absolute survey coords
+                                // (VN-2000/UTM) into geometry. Default 100km
+                                // distanceThreshold then skips ALL elements →
+                                // empty viewport. null = keep everything;
+                                // COORDINATE_TO_ORIGIN recenters near origin.
+                                importer.distanceThreshold = null;
+                            },
+                        });
                         console.log(`[BimUpload] Successfully loaded existing model: ${m.file_name}`);
-                        
+
                         // Force add to scene to prevent silent failures
                         const obj = (model as any).object || model;
                         if (obj && !worldRef.current.scene.three.children.includes(obj)) {
@@ -145,22 +157,18 @@ export function useBimUpload(
                         setLoadingProgress((completed / readyModels.length) * 100);
                         setStatusMessage(`Đã tải ${completed}/${readyModels.length}: ${m.file_name}`);
 
-                        return { model: m, visible: true, fragModel: model } as DisciplineModel;
+                        newDisciplineModels.push({ model: m, visible: true, fragModel: model });
+                    } else {
+                        console.warn(`[BimUpload] ifcLoader or worldRef is null during load for ${m.file_name}`);
+                        newDisciplineModels.push({ model: m, visible: false });
                     }
-                    console.warn(`[BimUpload] ifcLoader or worldRef is null during load for ${m.file_name}`);
-                    return { model: m, visible: false } as DisciplineModel;
                 } catch (err) {
                     console.warn(`[BimUpload] Failed to load ${m.file_name}:`, err);
                     completed++;
                     setLoadingProgress((completed / readyModels.length) * 100);
-                    return { model: m, visible: false } as DisciplineModel;
+                    newDisciplineModels.push({ model: m, visible: false });
                 }
-            });
-
-            const results = await Promise.allSettled(loadPromises);
-            results.forEach(r => {
-                if (r.status === 'fulfilled') newDisciplineModels.push(r.value);
-            });
+            }
 
             // Add non-ready models
             models.filter(m => m.status !== 'ready' || !m.ifc_path).forEach(m => {
@@ -223,7 +231,13 @@ export function useBimUpload(
             const uint8Array = new Uint8Array(buffer);
             console.log(`[BimUpload] Buffer ready: ${uint8Array.byteLength} bytes.`);
 
-            const model = await ifcLoader.load(uint8Array, true, file.name);
+            const model = await ifcLoader.load(uint8Array, true, file.name, {
+                instanceCallback: (importer: any) => {
+                    // See loadExistingModels: disable 100km skip for IFCs
+                    // authored with absolute survey coordinates.
+                    importer.distanceThreshold = null;
+                },
+            });
             console.log(`[BimUpload] IFC conversion completed successfully. Model UUID: ${(model as any).uuid || 'N/A'}`);
             setLoadingProgress(85);
 
@@ -263,7 +277,7 @@ export function useBimUpload(
 
             // Fit camera to model
             console.log(`[BimUpload] Fitting camera to model bounds...`);
-            let targetObj = (model as any).object || model; // In TOC v2, model itself is a THREE.Group
+            const targetObj = (model as any).object || model;
 
             // Force add to scene to prevent silent failures
             if (targetObj && !worldRef.current.scene.three.children.includes(targetObj)) {
@@ -271,12 +285,29 @@ export function useBimUpload(
             }
 
             try {
+                const fragments = componentsRef.current.get(OBC.FragmentsManager);
+                // Let fragments stream the first tiles so the native box is ready
+                await fragments.core.update(true);
+                await new Promise(r => setTimeout(r, 150));
+
                 const camera = getSafeCamera(worldRef.current);
-                if (camera && targetObj instanceof THREE.Object3D) {
-                    const box = new THREE.Box3().setFromObject(targetObj);
-                    if (!box.isEmpty()) {
-                        const sphere = new THREE.Sphere();
-                        box.getBoundingSphere(sphere);
+                // Fragments v3 streams geometry — use the native model.box,
+                // NOT setFromObject (empty right after load).
+                const nativeBox = (model as any).box as THREE.Box3 | undefined;
+                let box: THREE.Box3 | null =
+                    nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty() ? nativeBox : null;
+                if (!box && targetObj instanceof THREE.Object3D) {
+                    const b = new THREE.Box3().setFromObject(targetObj);
+                    if (!b.isEmpty()) box = b;
+                }
+                if (camera && box && !box.isEmpty()) {
+                    const sphere = new THREE.Sphere();
+                    box.getBoundingSphere(sphere);
+                    if (isFinite(sphere.radius) && sphere.radius > 0) {
+                        const c = box.getCenter(new THREE.Vector3());
+                        console.log(
+                            `[BimUpload] Model box center=(${c.x.toFixed(0)}, ${c.y.toFixed(0)}, ${c.z.toFixed(0)}) radius=${sphere.radius.toFixed(1)}`
+                        );
                         camera.controls.fitToSphere(sphere, true);
                     }
                 }

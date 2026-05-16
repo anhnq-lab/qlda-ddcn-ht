@@ -52,10 +52,10 @@ const WorkPlanPage: React.FC = () => {
             </div>
 
             {/* ── Tab content ── */}
-            <div className="flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+            <div className="flex-1 min-h-0 flex flex-col">
                 <Suspense fallback={<PageLoadingFallback />}>
                     {active === 'tasks'   && (
-                        <div className="p-4 flex-1 overflow-auto custom-scrollbar">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4 flex-1 overflow-auto custom-scrollbar">
                             <TaskList />
                         </div>
                     )}
