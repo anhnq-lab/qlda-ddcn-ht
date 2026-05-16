@@ -7,9 +7,9 @@ import React, { useState, useRef, useMemo } from 'react';
 import {
     Folder, File as FileIcon, Download, Eye, PenTool, Box,
     History, Search, Upload, Image as ImageIcon, X, HardDrive,
-    CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '@/components/ui/Toast';
 import { getFileIcon } from '@/utils/fileIcons';
 import CDEFilePreview from './CDEFilePreview';
 import CDEDigitalSign from './CDEDigitalSign';
@@ -120,11 +120,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
     const [uploadedDocs, setUploadedDocs] = useState<Record<string, ArchiveDoc[]>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Toast state
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-    React.useEffect(() => {
-        if (toast) { const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t); }
-    }, [toast]);
+    const { showToast } = useToast();
 
     const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -177,7 +173,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                 }
             } catch (err: any) {
                 console.error('Upload error:', err);
-                setToast({ message: `Tải lên thất bại: ${err.message}`, type: 'error' });
+                showToast(`Tải lên thất bại: ${err.message}`, 'error');
             }
         }
 
@@ -188,7 +184,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
             const parts = [];
             if (newCount > 0) parts.push(`${newCount} tài liệu mới`);
             if (updatedCount > 0) parts.push(`${updatedCount} cập nhật phiên bản`);
-            setToast({ message: `Đã tải lên: ${parts.join(', ')}`, type: 'success' });
+            showToast(`Đã tải lên: ${parts.join(', ')}`, 'success');
         }
     };
 
@@ -384,22 +380,10 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                     file={{ doc_name: signFile.name, size: signFile.size }}
                     isOpen={true}
                     onClose={() => setSignFile(null)}
-                    onSignComplete={(name) => setToast({ message: `Ký số thành công: ${name}`, type: 'success' })}
+                    onSignComplete={(name) => showToast(`Ký số thành công: ${name}`, 'success')}
                 />
             )}
 
-            {/* Toast */}
-            {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-sm text-sm font-bold flex items-center gap-2 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
-                    {toast.type === 'success'
-                        ? <CheckCircle2 className="w-4 h-4 shrink-0" />
-                        : <AlertCircle className="w-4 h-4 shrink-0" />}
-                    {toast.message}
-                    <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100 p-0.5">
-                        <X className="w-3.5 h-3.5" />
-                    </button>
-                </div>
-            )}
         </div>
     );
 };

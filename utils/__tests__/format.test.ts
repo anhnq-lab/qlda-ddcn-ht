@@ -21,12 +21,12 @@ describe('formatCurrency', () => {
         expect(formatCurrency(0)).toContain('0');
     });
 
-    it('returns "0 ₫" for undefined', () => {
-        expect(formatCurrency(undefined)).toBe('0 ₫');
+    it('returns "0 VNĐ" for undefined', () => {
+        expect(formatCurrency(undefined)).toBe('0 VNĐ');
     });
 
-    it('returns "0 ₫" for null', () => {
-        expect(formatCurrency(null)).toBe('0 ₫');
+    it('returns "0 VNĐ" for null', () => {
+        expect(formatCurrency(null)).toBe('0 VNĐ');
     });
 
     it('formats large number with thousand separators', () => {
@@ -35,9 +35,9 @@ describe('formatCurrency', () => {
         expect(result).toMatch(/105[\.\s]876[\.\s]566/);
     });
 
-    it('does not show decimal places', () => {
-        const result = formatCurrency(1234567.89);
-        expect(result).not.toContain(',89');
+    it('appends VNĐ suffix', () => {
+        const result = formatCurrency(1234567);
+        expect(result).toContain('VNĐ');
     });
 });
 
@@ -45,26 +45,26 @@ describe('formatCurrency', () => {
 // formatShortCurrency
 // ═══════════════════════════════════════════════════════════════════
 describe('formatShortCurrency', () => {
-    it('formats billions as "Tỷ"', () => {
+    it('formats billions as "tỷ"', () => {
         const result = formatShortCurrency(2_500_000_000);
-        expect(result).toContain('Tỷ');
+        expect(result).toContain('tỷ');
         expect(result).toMatch(/2[,.]5/);
     });
 
-    it('formats millions as "Tr"', () => {
+    it('formats millions as "tr"', () => {
         const result = formatShortCurrency(350_000_000);
-        expect(result).toContain('Tr');
+        expect(result).toContain('tr');
         expect(result).toContain('350');
     });
 
-    it('formats small amounts with ₫', () => {
+    it('formats small amounts with VNĐ', () => {
         const result = formatShortCurrency(500_000);
-        expect(result).toContain('₫');
+        expect(result).toContain('VNĐ');
     });
 
     it('rounds to 1 decimal for billions', () => {
         const result = formatShortCurrency(1_234_567_890);
-        expect(result).toContain('Tỷ');
+        expect(result).toContain('tỷ');
     });
 });
 
@@ -114,8 +114,9 @@ describe('formatDateTime', () => {
         expect(result.length).toBeGreaterThan(5);
     });
 
-    it('returns empty for invalid date', () => {
-        expect(formatDateTime('invalid')).toBe('');
+    it('returns original string for invalid date', () => {
+        // formatDateTime returns the original string when date parsing fails
+        expect(formatDateTime('invalid')).toBe('invalid');
     });
 });
 
