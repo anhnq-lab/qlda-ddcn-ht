@@ -21,11 +21,11 @@ export interface WorkflowTemplate {
 
 export function getStandardWorkflowTemplates(): WorkflowTemplate[] {
     // ---------------------------------------------------------
-    // QUY TRÌNH 1: THIẾT KẾ 1 BƯỚC (QT-TK1B)
+    // QUY TRÌNH 1: DỰ ÁN 1 BƯỚC (QT-DA1B)
     // ---------------------------------------------------------
     const WF_1STEP: WorkflowTemplate = {
-        name: 'Quy trình DAXD - Thiết kế 1 bước',
-        code: 'QT-TK1B',
+        name: 'Quy trình DAXD - Dự án 1 bước',
+        code: 'QT-DA1B',
         category: 'project',
         description: 'Áp dụng cho dự án quy mô nhỏ, công trình có tính chất kỹ thuật đơn giản, lập Báo cáo Kinh tế - Kỹ thuật (TKBVTC tích hợp).',
         steps: [
@@ -53,11 +53,11 @@ export function getStandardWorkflowTemplates(): WorkflowTemplate[] {
     };
 
     // ---------------------------------------------------------
-    // QUY TRÌNH 2: THIẾT KẾ 2 BƯỚC (QT-TK2B)
+    // QUY TRÌNH 2: DỰ ÁN 2 BƯỚC (QT-DA2B)
     // ---------------------------------------------------------
     const WF_2STEP: WorkflowTemplate = {
-        name: 'Quy trình DAXD - Thiết kế 2 bước',
-        code: 'QT-TK2B',
+        name: 'Quy trình DAXD - Dự án 2 bước',
+        code: 'QT-DA2B',
         category: 'project',
         description: 'Áp dụng cho dự án lập Báo cáo nghiên cứu khả thi (BCNCKT), yêu cầu bước Thiết kế cơ sở (TKCS) trước khi tiến hành Thiết kế bản vẽ thi công.',
         steps: [
@@ -87,11 +87,11 @@ export function getStandardWorkflowTemplates(): WorkflowTemplate[] {
     };
 
     // ---------------------------------------------------------
-    // QUY TRÌNH 3: THIẾT KẾ 3 BƯỚC (QT-TK3B)
+    // QUY TRÌNH 3: DỰ ÁN 3 BƯỚC (QT-DA3B)
     // ---------------------------------------------------------
     const WF_3STEP: WorkflowTemplate = {
-        name: 'Quy trình DAXD - Thiết kế 3 bước',
-        code: 'QT-TK3B',
+        name: 'Quy trình DAXD - Dự án 3 bước',
+        code: 'QT-DA3B',
         category: 'project',
         description: 'Áp dụng cho dự án quy mô lớn, phức tạp yêu cầu 3 bước: Thiết kế cơ sở -> Thiết kế kỹ thuật -> Thiết kế bản vẽ thi công.',
         steps: [

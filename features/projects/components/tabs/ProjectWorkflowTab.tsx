@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Project } from '@/types';
-import { GitBranch, Play, CheckCircle2, AlertCircle, Clock, FileText, ChevronRight } from 'lucide-react';
+import { GitBranch, Play, Pencil } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { WorkflowVisualizer, WorkflowNodeStatus } from '../workflow/WorkflowVisualizer';
 import { ApprovalActions } from '../workflow/ApprovalActions';
 import { useProjectWorkflow, WorkflowNode } from '../../hooks/useProjectWorkflow';
 import { TaskStatus } from '@/types/task.types';
 import { getInternalWorkflowTemplates } from '../../../workflows/data/seedInternalWorkflows';
+import { isDesignWorkflow } from '../../../workflows/constants/designWorkflowStates';
 
 interface ProjectWorkflowTabProps {
     projectID: string;
@@ -18,16 +19,34 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
     
     const { nodes, loading, isInitiailizing, initializeWorkflow, updateNodeStatus } = useProjectWorkflow(projectID);
     
-    // Get templates
-    const templates = useMemo(() => getInternalWorkflowTemplates(), []);
-    
+    // Get templates — split into design workflows (QT-TK1B/2B/3B) and others
+    const allTemplates = useMemo(() => getInternalWorkflowTemplates(), []);
+    const templates = useMemo(() => allTemplates.filter(t => !isDesignWorkflow(t.code)), [allTemplates]);
+    const designTemplates = useMemo(() => allTemplates.filter(t => isDesignWorkflow(t.code)), [allTemplates]);
+
+    // Auto-select design template based on project.design_steps
+    const defaultDesignCode = useMemo(() => {
+        const steps = (project as any).DesignSteps ?? (project as any).design_steps ?? 1;
+        if (steps === 3) return 'QT-TK3B';
+        if (steps === 2) return 'QT-TK2B';
+        return 'QT-TK1B';
+    }, [project]);
+
     const [selectedTemplateCode, setSelectedTemplateCode] = useState<string>(templates[0]?.code);
+    const [selectedDesignCode, setSelectedDesignCode] = useState<string>(defaultDesignCode);
     
     // UI state for approval modal
     const [selectedNode, setSelectedNode] = useState<WorkflowNodeStatus | null>(null);
 
     const handleRunProcess = () => {
         const templateToRun = templates.find(t => t.code === selectedTemplateCode);
+        if (templateToRun) {
+            initializeWorkflow(templateToRun);
+        }
+    };
+
+    const handleRunDesignProcess = () => {
+        const templateToRun = designTemplates.find(t => t.code === selectedDesignCode);
         if (templateToRun) {
             initializeWorkflow(templateToRun);
         }
@@ -55,6 +74,44 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
 
     return (
         <div className="space-y-4">
+            {/* ── Quy trình Thiết kế Nội bộ ── */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-800/50 p-5">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                    <div>
+                        <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                            <Pencil className="w-4 h-4 text-primary-500" />
+                            Quy trình Thiết kế Nội bộ
+                        </h2>
+                        <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">
+                            Quản lý lập, thẩm định, phê duyệt hồ sơ thiết kế — dự toán theo QT-DAXD-TK-QLDA2-2026
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                        <select
+                            value={selectedDesignCode}
+                            onChange={e => setSelectedDesignCode(e.target.value)}
+                            className="flex-1 text-sm rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-primary-500 focus:border-primary-500 min-w-[220px]"
+                        >
+                            {designTemplates.map(t => (
+                                <option key={t.code} value={t.code}>{t.code} — {t.name.split('(')[0].trim()}</option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={handleRunDesignProcess}
+                            disabled={isInitiailizing}
+                            className="flex items-center justify-center gap-2 gradient-btn text-white px-3 py-2 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap disabled:opacity-50"
+                        >
+                            <Play className="w-4 h-4" />
+                            {isInitiailizing ? '...' : 'Khởi tạo'}
+                        </button>
+                    </div>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-lg px-3 py-2 border border-slate-200 dark:border-slate-700">
+                    <strong>Lưu ý:</strong> Chỉ chuyên viên phụ trách dự án mới khởi tạo quy trình thiết kế. Quy trình áp dụng từ <strong>01/7/2026</strong> theo Luật Xây dựng số 135/2025/QH15. Mã được chọn tự động dựa trên số bước thiết kế của dự án.
+                </p>
+            </div>
+
+            {/* ── Quy trình Phê duyệt Chung ── */}
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
                     <div>
@@ -122,7 +179,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                 ) : (
                     <div className="space-y-8">
                         {Object.entries(groupedNodes).map(([tmplCode, tmplNodes]) => {
-                            const tmpl = templates.find(t => t.code === tmplCode);
+                            const tmpl = allTemplates.find(t => t.code === tmplCode);
                             return (
                                 <div key={tmplCode} className="space-y-4">
                                     <h3 className="font-bold text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-slate-700 pb-2">Quy trình: {tmpl?.name || tmplCode}</h3>

@@ -60,7 +60,24 @@ const WorkflowManagerPage: React.FC = () => {
 
     const hasAutoSeeded = useRef(false);
 
-    // Auto-seed disabled. Users can manually seed data via the UI if needed.
+    // Auto-seed: chạy 1 lần nếu phát hiện thiếu bất kỳ quy trình mẫu nào trong DB
+    useEffect(() => {
+        if (hasAutoSeeded.current || isLoading) return;
+        if (workflows.length === 0) return; // chờ fetch xong
+
+        import('./data/seedInternalWorkflows').then(({ getInternalWorkflowTemplates }) => {
+            const allCodes = [
+                ...getStandardWorkflowTemplates(),
+                ...getInternalWorkflowTemplates(),
+            ].map(t => t.code);
+            const existingCodes = new Set(workflows.map(w => w.code));
+            const missing = allCodes.filter(c => !existingCodes.has(c));
+            if (missing.length > 0 && !hasAutoSeeded.current) {
+                hasAutoSeeded.current = true;
+                handleSeedWorkflows(true);
+            }
+        });
+    }, [workflows, isLoading]);
 
     const fetchWorkflows = async () => {
         setIsLoading(true);

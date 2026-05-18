@@ -209,9 +209,9 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
                 
                 // Find correct workflow to select by default based on project DesignSteps
                 const designSteps = project?.DesignSteps || project?.design_steps || 1;
-                let targetCode = 'QT-TK1B';
-                if (designSteps === 3) targetCode = 'QT-TK3B';
-                if (designSteps === 2) targetCode = 'QT-TK2B';
+                let targetCode = 'QT-DA1B';
+                if (designSteps === 3) targetCode = 'QT-DA3B';
+                if (designSteps === 2) targetCode = 'QT-DA2B';
 
                 const defaultWf = data.find(w => w.code === targetCode);
                 

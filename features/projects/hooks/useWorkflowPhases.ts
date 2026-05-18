@@ -82,13 +82,13 @@ interface WorkflowNodeRow {
 
 /**
  * Select the best workflow template for a project based on group_code
- * Default: "Quy trình DAXD - Thiết kế 1 bước" (QT-TK1B)
+ * Default: "Quy trình DAXD - Dự án 1 bước" (QT-DA1B)
  */
 function selectWorkflowCode(groupCode: string, project?: any): string {
     const designSteps = project?.DesignSteps || project?.design_steps || 1;
-    if (designSteps === 3) return 'QT-TK3B';
-    if (designSteps === 2) return 'QT-TK2B';
-    return 'QT-TK1B';
+    if (designSteps === 3) return 'QT-DA3B';
+    if (designSteps === 2) return 'QT-DA2B';
+    return 'QT-DA1B';
 }
 
 /**

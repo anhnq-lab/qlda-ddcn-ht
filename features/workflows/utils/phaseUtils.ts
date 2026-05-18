@@ -13,6 +13,7 @@ export interface PhaseConfig {
 }
 
 export const PHASE_CONFIG: Record<string, PhaseConfig> = {
+    // ── Macro project workflow phases (QT-DA1B/2B/3B) ─────────────
     preparation: {
         title: 'Chuẩn bị dự án',
         gradient: 'from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/10',
@@ -28,19 +29,29 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
         gradient: 'from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-900/10',
         icon: '✅',
     },
-    // Internal workflow phases
+    // ── Internal design workflow phases (QT-TK1B/2B/3B) ──────────
+    initiation: {
+        title: 'KHỞI TẠO & CHUẨN BỊ',
+        gradient: 'from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/10',
+        icon: '🚀',
+    },
+    consultant: {
+        title: 'GIAO TƯ VẤN & THỰC HIỆN',
+        gradient: 'from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-900/10',
+        icon: '📐',
+    },
     reception: {
         title: 'TIẾP NHẬN HỒ SƠ',
         gradient: 'from-sky-50 to-sky-100/50 dark:from-sky-900/30 dark:to-sky-900/10',
         icon: '📥',
     },
     review: {
-        title: 'THẨM ĐỊNH',
+        title: 'KIỂM TRA NỘI DUNG HỒ SƠ',
         gradient: 'from-violet-50 to-violet-100/50 dark:from-violet-900/30 dark:to-violet-900/10',
         icon: '🔍',
     },
     consolidation: {
-        title: 'TỔNG HỢP & THÔNG BÁO',
+        title: 'TỔNG HỢP & THẨM ĐỊNH',
         gradient: 'from-teal-50 to-teal-100/50 dark:from-teal-900/30 dark:to-teal-900/10',
         icon: '📊',
     },
@@ -48,6 +59,11 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
         title: 'PHÊ DUYỆT',
         gradient: 'from-rose-50 to-rose-100/50 dark:from-rose-900/30 dark:to-rose-900/10',
         icon: '✍️',
+    },
+    handover: {
+        title: 'BÀN GIAO & LƯU TRỮ',
+        gradient: 'from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-900/10',
+        icon: '📦',
     },
     other: {
         title: 'KHÁC',
@@ -57,10 +73,12 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
 };
 
 // ─── Phase Order ─────────────────────────────────────────────────
-// Thứ tự hiển thị phase — đảm bảo consistent giữa Builder và ProcessTable
+// Macro project: preparation → execution → completion
+// Design internal: initiation → consultant → reception → review → consolidation → approval → handover
 export const PHASE_ORDER = [
-    'preparation', 'execution', 'completion',
-    'reception', 'review', 'consolidation', 'approval', 'other',
+    'preparation', 'execution',
+    'initiation', 'consultant', 'reception', 'review', 'consolidation', 'approval', 'handover',
+    'completion', 'other',
 ];
 
 // ─── Group Nodes by Phase & Sub-process ─────────────────────────

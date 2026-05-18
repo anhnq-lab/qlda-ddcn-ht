@@ -42,7 +42,7 @@ export const WorkflowTemplateService = {
     };
   },
 
-  /** Lấy template theo code (e.g., 'QT-TK1B') */
+  /** Lấy template theo code (e.g., 'QT-DA1B', 'QT-TK1B') */
   getTemplateByCode: async (code: string): Promise<Workflow | null> => {
     const { data, error } = await supabase
       .from('workflows')

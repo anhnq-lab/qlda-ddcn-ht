@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { FileText, LayoutList, Clock, Shield, ArrowRight, BookOpen, AlertCircle, Users } from 'lucide-react';
+import { FileText, LayoutList, Clock, Shield, BookOpen, AlertCircle, Users, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Workflow, WorkflowNode } from '../../../types/workflow.types';
 import { useSlidePanel } from '../../../context/SlidePanelContext';
+import DesignFormRenderer from './DesignFormRenderer';
+import { isDesignWorkflow } from '../constants/designWorkflowStates';
 
 const renderSimpleMarkdown = (text: string) => {
     return text.split('\n').map((line, idx) => {
@@ -30,7 +32,12 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
     const [workflow, setWorkflow] = useState<Workflow | null>(null);
     const [nodes, setNodes] = useState<WorkflowNode[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [expandedForms, setExpandedForms] = useState<Record<string, boolean>>({});
     const { closePanel } = useSlidePanel();
+
+    const toggleForm = (nodeId: string) => {
+        setExpandedForms(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -119,13 +126,23 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
                                                     <Clock size={15} className="text-warning-500" />
-                                                    <span className="font-semibold">Thời gian: {node.sla_formula || 'Chưa có'}</span>
+                                                    <span className="font-semibold">Thời gian: {node.sla_formula || (meta.sla ? meta.sla : 'Theo hợp đồng')}</span>
                                                 </div>
                                                 {meta.phase && (
                                                     <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
                                                         <Shield size={15} className="text-emerald-500" />
                                                         <span className="font-semibold capitalize">Giai đoạn: {meta.phase}</span>
                                                     </div>
+                                                )}
+                                                {meta.form_code && (
+                                                    <button
+                                                        onClick={() => toggleForm(node.id)}
+                                                        className="flex items-center gap-1.5 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
+                                                    >
+                                                        <ClipboardList size={15} />
+                                                        <span>{meta.form_code}</span>
+                                                        {expandedForms[node.id] ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                                                    </button>
                                                 )}
                                             </div>
                                         </div>
@@ -156,6 +173,16 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                                             </li>
                                                         ))}
                                                     </ul>
+                                                </div>
+                                            )}
+
+                                            {/* Biểu mẫu inline */}
+                                            {meta.form_code && expandedForms[node.id] && (
+                                                <div className="mt-3">
+                                                    <DesignFormRenderer
+                                                        formCode={meta.form_code}
+                                                        readOnly={false}
+                                                    />
                                                 </div>
                                             )}
                                         </div>
