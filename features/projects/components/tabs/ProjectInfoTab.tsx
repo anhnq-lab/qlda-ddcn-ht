@@ -16,6 +16,7 @@ import { RiskIndicators } from '../RiskIndicators';
 import { BudgetVarianceCard } from '../BudgetVarianceCard';
 import { KeyDatesWidget, KeyDate } from '../KeyDatesWidget';
 import { QuickActionsPanel } from '../QuickActionsPanel';
+import { TemplateExportModal } from '../TemplateExportModal';
 import { LegalReferenceLink } from '../../../../components/common/LegalReferenceLink';
 import { useSlidePanel } from '@/context/SlidePanelContext';
 import { useProjectCapitalSummary } from '@/hooks/useCapital';
@@ -83,6 +84,9 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
         } catch { }
         return false;
     });
+
+    // State for Mẫu 16 Export
+    const [showExportKhoiCong, setShowExportKhoiCong] = useState(false);
 
     useEffect(() => {
         const handleStorageChange = () => {
@@ -576,6 +580,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     {/* Quick Actions — compact */}
                     <QuickActionsPanel
                         onGenerateMonthlyReport={() => onGenerateReport('Monitoring')}
+                        onExportKhoiCong={() => setShowExportKhoiCong(true)}
                         onSendReminder={() => {}}
                         onExportExcel={() => {}}
                         onScheduleMeeting={() => {}}
@@ -592,6 +597,17 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     />
                 </div>
             </div>
+
+            {/* Template Export Modal for Mẫu 16 */}
+            {/* Template Export Modal for Mẫu 16 */}
+            <TemplateExportModal
+                isOpen={showExportKhoiCong}
+                onClose={() => setShowExportKhoiCong(false)}
+                templatePath="mau-16-thong-bao-khoi-cong.md"
+                templateLabel="Thông báo khởi công"
+                project={project}
+                packages={projectPackages}
+            />
         </div>
     );
 };

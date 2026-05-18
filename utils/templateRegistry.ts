@@ -276,13 +276,77 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
         legalBasis: 'Phụ lục V, NĐ 06/2021',
         fields: [
             ...projectInfoFields,
-            { key: 'constructionPermit', label: 'Số GPXD', type: 'text' },
-            { key: 'contractorName', label: 'Nhà thầu thi công', type: 'text', autoFillFrom: (ctx) => ctx.project?.MainContractorName || '' },
-            { key: 'supervisorName', label: 'Tổ chức giám sát', type: 'text' },
-            { key: 'designerName', label: 'Tổ chức thiết kế', type: 'text' },
-            { key: 'startDate', label: 'Ngày khởi công', type: 'date' },
-            { key: 'expectedEndDate', label: 'Dự kiến hoàn thành', type: 'date' },
+            {
+                key: 'investorAddress',
+                label: 'Địa chỉ chủ đầu tư',
+                type: 'text' as const,
+                placeholder: 'Số 12, đường Võ Liêm Sơn, phường Thành Sen, tỉnh Hà Tĩnh',
+            },
+            {
+                key: 'contactPerson',
+                label: 'Phụ trách trực tiếp (họ tên)',
+                type: 'text' as const,
+                placeholder: 'Ví dụ: Nguyễn Văn Quang',
+            },
+            {
+                key: 'contactPhone',
+                label: 'Số điện thoại liên lạc',
+                type: 'text' as const,
+                placeholder: 'Ví dụ: 0979 352 606',
+            },
+            {
+                key: 'projectScope',
+                label: 'Quy mô công trình (mô tả chi tiết)',
+                type: 'textarea' as const,
+                placeholder: 'Mô tả chi tiết quy mô các hạng mục công trình, thông số kỹ thuật...',
+            },
+            {
+                key: 'designerName',
+                label: 'Nhà thầu tư vấn thiết kế',
+                type: 'text' as const,
+                autoFillFrom: (ctx: ExportDataContext) => {
+                    const pkg = ctx.packages?.find((p: any) => p.PackageName?.toLowerCase().includes('thiết kế'));
+                    return (pkg as any)?.WinningBidderName || ctx.project?.DesignContractor || '';
+                },
+            },
+            {
+                key: 'designerAddress',
+                label: 'Địa chỉ nhà thầu thiết kế',
+                type: 'text' as const,
+                placeholder: 'Địa chỉ nhà thầu thiết kế',
+            },
+            {
+                key: 'supervisorName',
+                label: 'Nhà thầu tư vấn giám sát',
+                type: 'text' as const,
+                autoFillFrom: (ctx: ExportDataContext) => {
+                    const pkg = ctx.packages?.find((p: any) => p.PackageName?.toLowerCase().includes('giám sát'));
+                    return (pkg as any)?.WinningBidderName || ctx.project?.SupervisionContractor || '';
+                },
+            },
+            {
+                key: 'supervisorAddress',
+                label: 'Địa chỉ nhà thầu giám sát',
+                type: 'text' as const,
+                placeholder: 'Địa chỉ nhà thầu giám sát',
+            },
+            {
+                key: 'contractorName',
+                label: 'Nhà thầu thi công xây dựng',
+                type: 'text' as const,
+                autoFillFrom: (ctx: ExportDataContext) => {
+                    if (ctx.project?.MainContractorName) return ctx.project.MainContractorName;
+                    const pkg = ctx.packages?.find((p: any) =>
+                        p.PackageName?.toLowerCase().includes('thi công') ||
+                        p.PackageName?.toLowerCase().includes('xây lắp')
+                    );
+                    return (pkg as any)?.WinningBidderName || '';
+                },
+            },
+            { key: 'startDate', label: 'Ngày khởi công', type: 'date' as const },
+            { key: 'expectedEndDate', label: 'Dự kiến hoàn thành', type: 'date' as const },
             ...documentFields,
+            ...signerFields,
         ],
     },
 

@@ -6,32 +6,37 @@
 
 ---
 
-| CHỦ ĐẦU TƯ | CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM |
+| **{{tenCoQuan}}** | **CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM** |
 |---|---|
-| Số: .../TB-... | Độc lập - Tự do - Hạnh phúc |
+| Số: {{soVanBan}} | Độc lập - Tự do - Hạnh phúc |
 
-<p align="right">…………, ngày … tháng … năm …..</p>
+<p align="right">{{diaDiem}}, ngày {{ngay}} tháng {{thang}} năm {{nam}}</p>
 
-<h3 align="center">THÔNG BÁO KHỞI CÔNG XÂY DỰNG CÔNG TRÌNH</h3>
-
----
-
-**Kính gửi:** *(UBND cấp xã nơi xây dựng công trình; Cơ quan cấp GPXD)*
-
-1. Tên công trình: ...
-2. Hạng mục: ...
-3. Địa điểm xây dựng: ...
-4. Giấy phép xây dựng số: ... ngày ... (nếu có)
-5. Tên chủ đầu tư: ...
-6. Tên nhà thầu thi công: ...
-7. Tên tổ chức/cá nhân giám sát thi công: ...
-8. Tên tổ chức/cá nhân thiết kế: ...
-9. Ngày khởi công: ...
-10. Dự kiến thời gian hoàn thành: ...
+<h3 align="center">THÔNG BÁO KHỞI CÔNG XÂY DỰNG HẠNG MỤC CÔNG TRÌNH, CÔNG TRÌNH XÂY DỰNG</h3>
 
 ---
 
-| Nơi nhận: | **CHỦ ĐẦU TƯ** |
+**Kính gửi:** {{kinhGui}}
+
+{{tenCoQuan}} báo cáo về việc khởi công xây dựng hạng mục công trình, công trình xây dựng như sau:
+
+1. Tên công trình xây dựng: {{tenDuAn}}
+2. Địa điểm xây dựng: {{diaDiemDuAn}}
+3. Tên và địa chỉ liên lạc của Chủ đầu tư: {{chuDauTu}}. Địa chỉ: {{diaChiChuDauTu}}
+4. Tên và số điện thoại liên lạc của cá nhân phụ trách trực tiếp: {{nguoiPhuTrach}}. Số điện thoại: {{soDienThoai}}
+5. Quy mô hạng mục công trình, công trình xây dựng: {{quyMoCongTrinh}}
+6. Danh sách các nhà thầu:
+   - Nhà thầu Tư vấn thiết kế: {{nhaThauThietKe}}. Địa chỉ: {{diaChiThietKe}}
+   - Nhà thầu Tư vấn giám sát: {{nhaThauGiamSat}}. Địa chỉ: {{diaChiGiamSat}}
+   - Nhà thầu thi công xây dựng: {{nhaThauThiCong}}
+7. Ngày khởi công và ngày hoàn thành (dự kiến):
+   - Ngày khởi công: {{ngayKhoiCong}}
+   - Ngày dự kiến hoàn thành: {{ngayHoanThanh}}
+
+---
+
+| Nơi nhận: | **{{chucDanh}}** |
 |---|---|
 | - Như trên; | *(Ký, ghi rõ họ tên, đóng dấu)* |
-| - Lưu: VT | |
+| - Giám đốc Ban (để báo cáo); | |
+| - Lưu: VT. | **{{nguoiKy}}** |

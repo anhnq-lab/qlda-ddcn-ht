@@ -250,6 +250,7 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     SelectionStartDate: row.selection_start_date || '',
     SelectionProcedure: row.selection_procedure || '',
     HasOption: row.has_option || false,
+    Personnel: Array.isArray(row.personnel) ? row.personnel : [],
 });
 
 export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
@@ -300,6 +301,7 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.BiddingScope !== undefined && { bidding_scope: bp.BiddingScope }),
     ...(bp.BiddersCount !== undefined && { bidders_count: bp.BiddersCount }),
     ...(bp.EvaluationBiddersCount !== undefined && { evaluation_bidders_count: bp.EvaluationBiddersCount }),
+    ...(bp.Personnel !== undefined && { personnel: bp.Personnel }),
 });
 
 export const dbToProcurementPlan = (row: any): ProcurementPlan => ({

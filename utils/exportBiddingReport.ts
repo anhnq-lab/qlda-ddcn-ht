@@ -93,8 +93,8 @@ export function aggregateBiddingData(
 } {
   const projectMap = new Map(projects.map(p => [p.ProjectID, p]));
 
-  // Chỉ tính gói thầu đã có kết quả (Awarded)
-  const awardedPackages = packages.filter(p => p.Status === 'Awarded' && p.WinningPrice != null);
+  // Chỉ tính gói thầu đã có kết quả
+  const awardedPackages = packages.filter(p => (p.Status === 'Execution' || p.Status === 'Completed') && p.WinningPrice != null);
 
   // === I. Theo lĩnh vực ===
   const byField: Record<string, Record<GroupKey, Record<BidTypeKey, AggregatedData>>> = {};

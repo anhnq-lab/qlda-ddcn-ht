@@ -65,12 +65,9 @@ const CONTRACT_TYPE_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-    { value: PackageStatus.Planning, label: 'Trong kế hoạch' },
-    { value: PackageStatus.Posted, label: 'Đã đăng tải TBMT' },
-    { value: PackageStatus.Bidding, label: 'Đang mời thầu' },
-    { value: PackageStatus.Evaluating, label: 'Đang xét thầu' },
-    { value: PackageStatus.Awarded, label: 'Đã có kết quả' },
-    { value: PackageStatus.Cancelled, label: 'Hủy thầu' },
+    { value: PackageStatus.Selection, label: 'Lựa chọn nhà thầu' },
+    { value: PackageStatus.Execution, label: 'Đang thực hiện' },
+    { value: PackageStatus.Completed, label: 'Kết thúc' },
 ];
 
 
@@ -96,7 +93,7 @@ const initialFormData: BiddingPackageFormValues = {
     SelectionProcedure: 'OneStageOneEnvelope',
     BidType: 'Online',
     ContractType: 'LumpSum',
-    Status: PackageStatus.Planning,
+    Status: PackageStatus.Selection,
     KHLCNTCode: '',
     NotificationCode: '',
     DecisionNumber: '',
@@ -193,7 +190,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 SelectionProcedure: (packageToEdit.SelectionProcedure as BiddingPackageFormValues['SelectionProcedure']) || 'OneStageOneEnvelope',
                 BidType: (packageToEdit.BidType as BiddingPackageFormValues['BidType']) || 'Online',
                 ContractType: (packageToEdit.ContractType as BiddingPackageFormValues['ContractType']) || 'LumpSum',
-                Status: packageToEdit.Status || PackageStatus.Planning,
+                Status: packageToEdit.Status || PackageStatus.Selection,
                 KHLCNTCode: packageToEdit.KHLCNTCode || '',
                 NotificationCode: packageToEdit.NotificationCode || '',
                 DecisionNumber: packageToEdit.DecisionNumber || '',
@@ -808,11 +805,11 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                         {/* Tab: Result */}
                         {activeTab === 'result' && (
                             <div className="space-y-4">
-                                {watchStatus !== PackageStatus.Awarded && watchStatus !== 'Awarded' ? (
+                                {watchStatus !== PackageStatus.Execution && watchStatus !== PackageStatus.Completed ? (
                                     <div className="p-4 text-center bg-gray-50 dark:bg-slate-700 rounded-xl">
                                         <AlertCircle className="w-12 h-12 text-gray-400 dark:text-slate-400 mx-auto mb-3" />
                                         <p className="text-gray-600 dark:text-slate-300">
-                                            Chỉ nhập kết quả khi gói thầu có trạng thái <strong>"Đã có kết quả"</strong>
+                                            Chỉ nhập kết quả khi gói thầu có trạng thái <strong>"Đang thực hiện"</strong> hoặc <strong>"Kết thúc"</strong>
                                         </p>
                                         <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                                             Thay đổi trạng thái ở tab "Thông tin cơ bản"

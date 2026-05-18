@@ -2,6 +2,7 @@
 import { supabase } from '../lib/supabase';
 import { CapitalPlan, Disbursement, CapitalPlanRow, DisbursementPlanRow, DisbursementRow } from '../types';
 import { normalizeSource } from '../utils/capitalConstants';
+import { toServiceError } from './ServiceError';
 
 export interface DisbursementAlert {
     ProjectID: string;
@@ -30,14 +31,14 @@ export class CapitalService {
      * Get Monthly Disbursement Plans for Project
      */
     static async getDisbursementPlans(projectId: string): Promise<DisbursementPlanItem[]> {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
             .from('disbursement_plans')
             .select('*')
             .eq('project_id', projectId)
             .order('year', { ascending: true })
             .order('month', { ascending: true });
 
-        if (error) throw new Error(`Failed to fetch disbursement plans: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tải kế hoạch giải ngân');
         return (data || []).map(this.mapDisbursementPlan);
     }
 
@@ -45,7 +46,7 @@ export class CapitalService {
      * Create a new Monthly Disbursement Plan
      */
     static async createDisbursementPlan(plan: Omit<DisbursementPlanItem, 'Id'>): Promise<DisbursementPlanItem> {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
             .from('disbursement_plans')
             .insert({
                 id: `DP-${Date.now()}`,
@@ -59,7 +60,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to create plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tạo kế hoạch giải ngân');
         return this.mapDisbursementPlan(data);
     }
 
@@ -68,13 +69,13 @@ export class CapitalService {
      */
     static async bulkSaveDisbursementPlans(projectId: string, year: number, plans: { id?: string, month: number, plannedAmount: number, actualAmount: number, notes: string }[]): Promise<void> {
         // First delete all plans for this project and year
-        const { error: deleteError } = await (supabase as any)
+        const { error: deleteError } = await supabase
             .from('disbursement_plans')
             .delete()
             .eq('project_id', projectId)
             .eq('year', year);
             
-        if (deleteError) throw new Error(`Failed to delete old plans: ${deleteError.message}`);
+        if (deleteError) throw toServiceError(deleteError, 'Không thể xóa kế hoạch cũ');
 
         const newPlans = plans
             .filter(p => p.plannedAmount > 0 || p.actualAmount > 0 || p.notes)
@@ -89,10 +90,10 @@ export class CapitalService {
             }));
 
         if (newPlans.length > 0) {
-            const { error: insertError } = await (supabase as any)
+            const { error: insertError } = await supabase
                 .from('disbursement_plans')
                 .insert(newPlans);
-            if (insertError) throw new Error(`Failed to insert new plans: ${insertError.message}`);
+            if (insertError) throw toServiceError(insertError, 'Không thể lưu kế hoạch giải ngân');
         }
     }
 
@@ -114,7 +115,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to update disbursement plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể cập nhật kế hoạch giải ngân');
         return this.mapDisbursementPlan(data);
     }
 
@@ -127,7 +128,7 @@ export class CapitalService {
             .delete()
             .eq('id', id);
 
-        if (error) throw new Error(`Failed to delete disbursement plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể xóa kế hoạch giải ngân');
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -144,7 +145,7 @@ export class CapitalService {
             .eq('project_id', projectId)
             .order('year', { ascending: false });
 
-        if (error) throw new Error(`Failed to fetch capital plans: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tải kế hoạch vốn');
         return (data || []).map(this.mapCapitalPlan);
     }
 
@@ -176,7 +177,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to create capital plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tạo kế hoạch vốn');
         return this.mapCapitalPlan(data);
     }
 
@@ -207,7 +208,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to update capital plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể cập nhật kế hoạch vốn');
         return this.mapCapitalPlan(data);
     }
 
@@ -220,7 +221,7 @@ export class CapitalService {
             .delete()
             .eq('plan_id', planId);
 
-        if (error) throw new Error(`Failed to delete capital plan: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể xóa kế hoạch vốn');
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -237,7 +238,7 @@ export class CapitalService {
             .eq('project_id', projectId)
             .order('date', { ascending: false });
 
-        if (error) throw new Error(`Failed to fetch disbursements: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tải giải ngân');
         return (data || []).map(this.mapDisbursement);
     }
 
@@ -266,7 +267,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to create disbursement: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể tạo giải ngân');
         return this.mapDisbursement(data);
     }
 
@@ -294,7 +295,7 @@ export class CapitalService {
             .select()
             .single();
 
-        if (error) throw new Error(`Failed to update disbursement: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể cập nhật giải ngân');
         return this.mapDisbursement(data);
     }
 
@@ -307,8 +308,9 @@ export class CapitalService {
             .delete()
             .eq('disbursement_id', id);
 
-        if (error) throw new Error(`Failed to delete disbursement: ${error.message}`);
+        if (error) throw toServiceError(error, 'Không thể xóa giải ngân');
     }
+
 
     // ═══════════════════════════════════════════════════════════
     // STATISTICS & ALERTS
@@ -469,7 +471,7 @@ export class CapitalService {
         const [plansRes, disbRes, disbPlanRes, projectRes] = await Promise.all([
             supabase.from('capital_plans').select('*').eq('project_id', projectId).order('year', { ascending: true }),
             supabase.from('disbursements').select('*').eq('project_id', projectId).order('date', { ascending: true }),
-            (supabase as any).from('disbursement_plans').select('*').eq('project_id', projectId).order('year').order('month'),
+            supabase.from('disbursement_plans').select('*').eq('project_id', projectId).order('year').order('month'),
             supabase.from('projects').select('total_investment').eq('project_id', projectId).maybeSingle(),
         ]);
 

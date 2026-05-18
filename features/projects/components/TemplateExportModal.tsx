@@ -38,6 +38,7 @@ interface TemplateExportModalProps {
     templatePath: string;
     templateLabel?: string;
     project?: Project | null;
+    packages?: any[];
     // Optional extra context
     stepTitle?: string;
     stepCode?: string;
@@ -53,6 +54,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
     templatePath,
     templateLabel,
     project,
+    packages,
     stepTitle,
 }) => {
     // State
@@ -70,8 +72,9 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
     // Build context
     const context = useMemo<ExportDataContext>(() => ({
         project,
-        locationName: 'Hà Nội',
-    }), [project]);
+        packages,
+        locationName: 'Hà Tĩnh',
+    }), [project, packages]);
 
     // Auto-fill on open
     useEffect(() => {

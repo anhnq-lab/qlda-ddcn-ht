@@ -72,7 +72,7 @@ function mergeAgg(a: AggregatedData, b: AggregatedData): AggregatedData {
 
 export function aggregateBiddingData(packages: BiddingPackage[], projects: Project[]) {
   const projectMap = new Map(projects.map(p => [p.ProjectID, p]));
-  const awardedPackages = packages.filter(p => p.Status === 'Awarded' || p.Status === ('Đã có kết quả' as any));
+  const awardedPackages = packages.filter(p => (p.Status === 'Execution' || p.Status === 'Completed') && p.WinningPrice != null);
 
   const byField: Record<string, Record<GroupKey, Record<BidTypeKey, AggregatedData>>> = {};
   for (const f of FIELDS) {

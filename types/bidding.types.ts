@@ -39,12 +39,9 @@ export interface Contractor {
 
 // 5.1. Bảng dữ liệu: BiddingPackages (Gói thầu)
 export enum PackageStatus {
-    Planning = 'Planning',
-    Bidding = 'Bidding',
-    Evaluating = 'Evaluating',
-    Awarded = 'Awarded',
-    Cancelled = 'Cancelled',
-    Posted = 'Posted'
+    Selection = 'Selection',       // Lựa chọn nhà thầu
+    Execution = 'Execution',       // Đang thực hiện
+    Completed = 'Completed',       // Kết thúc
 }
 
 /** Kế hoạch lựa chọn nhà thầu (KHLCNT) */
@@ -86,6 +83,13 @@ export type ApplicableSelectionMethod =
     | 'OnlineQuotation'
     | 'CompetitiveShopping'
     | 'OpenBidding';
+
+export interface PackagePersonnel {
+    name: string;
+    title: string;    // Chức vụ/chức danh
+    role: string;     // Vai trò trong gói thầu
+    certNo?: string;  // Số chứng chỉ hành nghề
+}
 
 export interface BiddingPackage {
     PackageID: string;
@@ -160,6 +164,7 @@ export interface BiddingPackage {
     BiddingScope?: 'Domestic' | 'International';    // Phạm vi: Trong nước / Quốc tế
     BiddersCount?: number;                           // Số nhà thầu nộp HSDT/HSĐX
     EvaluationBiddersCount?: number;                 // Số NTh vào bước đánh giá tài chính
+    Personnel?: PackagePersonnel[];                  // Nhân sự nhà thầu tham gia gói thầu
 }
 
 /** Tài liệu cần đăng tải trên muasamcong.vn */

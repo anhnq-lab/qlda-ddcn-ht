@@ -196,6 +196,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     const updateSortMutation = useMutation({
         mutationFn: async (updates: { packageId: string; sortOrder: number }[]) => {
             await Promise.all(updates.map(u =>
+                // sort_order is a valid DB column but missing from generated types — safe cast
                 (supabase.from('bidding_packages') as any)
                     .update({ sort_order: u.sortOrder })
                     .eq('package_id', u.packageId)
@@ -206,26 +207,22 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
         },
     });
 
+
+
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
-            case PackageStatus.Planning: return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
-            case PackageStatus.Posted: return 'bg-primary-100 text-primary-700 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800';
-            case PackageStatus.Bidding: return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800';
-            case PackageStatus.Evaluating: return 'bg-warning-100 text-primary-700 border-warning-200 dark:bg-warning-900/40 dark:text-warning-300 dark:border-warning-800';
-            case PackageStatus.Awarded: return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800';
-            case PackageStatus.Cancelled: return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800';
-            default: return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
+            case PackageStatus.Selection: return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800';
+            case PackageStatus.Execution: return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800';
+            case PackageStatus.Completed: return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
+            default: return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800';
         }
     };
 
     const getStatusLabel = (status: PackageStatus) => {
         switch (status) {
-            case PackageStatus.Planning: return 'Trong kế hoạch';
-            case PackageStatus.Posted: return 'Đã đăng tải';
-            case PackageStatus.Bidding: return 'Đang mời thầu';
-            case PackageStatus.Evaluating: return 'Đang xét thầu';
-            case PackageStatus.Awarded: return 'Đã có kết quả';
-            case PackageStatus.Cancelled: return 'Hủy thầu';
+            case PackageStatus.Selection: return 'Lựa chọn nhà thầu';
+            case PackageStatus.Execution: return 'Đang thực hiện';
+            case PackageStatus.Completed: return 'Kết thúc';
             default: return status;
         }
     };
@@ -487,11 +484,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
                         <option value="all">Tất cả trạng thái</option>
-                        <option value={PackageStatus.Planning}>Trong kế hoạch</option>
-                        <option value={PackageStatus.Posted}>Đã đăng tải</option>
-                        <option value={PackageStatus.Bidding}>Đang mời thầu</option>
-                        <option value={PackageStatus.Evaluating}>Đang xét thầu</option>
-                        <option value={PackageStatus.Awarded}>Đã có kết quả</option>
+                        <option value={PackageStatus.Selection}>Lựa chọn nhà thầu</option>
+                        <option value={PackageStatus.Execution}>Đang thực hiện</option>
+                        <option value={PackageStatus.Completed}>Kết thúc</option>
                     </select>
                 </div>
                 <div className="flex gap-2">
@@ -723,11 +718,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                 {visibleColumns.hasOption && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.HasOption ? 'Có' : 'Không'}</td>}
                                                                 {visibleColumns.status && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
                                                                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold ${getStatusColor(pkg.Status)}`}>
-                                                                        {pkg.Status === PackageStatus.Planning && <Circle className="w-2.5 h-2.5" />}
-                                                                        {pkg.Status === PackageStatus.Posted && <FileText className="w-2.5 h-2.5" />}
-                                                                        {pkg.Status === PackageStatus.Bidding && <Clock className="w-2.5 h-2.5 animate-pulse" />}
-                                                                        {pkg.Status === PackageStatus.Evaluating && <AlertTriangle className="w-2.5 h-2.5" />}
-                                                                        {pkg.Status === PackageStatus.Awarded && <CheckCircle2 className="w-2.5 h-2.5" />}
+                                                                        {pkg.Status === PackageStatus.Selection && <Clock className="w-2.5 h-2.5 animate-pulse" />}
+                                                                        {pkg.Status === PackageStatus.Execution && <AlertTriangle className="w-2.5 h-2.5" />}
+                                                                        {pkg.Status === PackageStatus.Completed && <CheckCircle2 className="w-2.5 h-2.5" />}
                                                                         {getStatusLabel(pkg.Status)}
                                                                     </span>
                                                                 </td>}

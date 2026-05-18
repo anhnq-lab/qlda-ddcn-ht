@@ -6,6 +6,7 @@ import { NotificationCenter } from './NotificationCenter';
 import { useTheme } from '../../context/ThemeContext';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { UserProfilePanel } from '../../features/profile/UserProfilePanel';
+import { ProjectHeaderFilters } from './ProjectHeaderFilters';
 
 interface HeaderProps {
     onOpenSearch: () => void;
@@ -84,8 +85,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                 </button>
             </div>
 
-            {/* Right: Notifications, User Menu */}
+            {/* Right: Filter Chips + Notifications + User Menu */}
             <div className="flex items-center justify-end gap-2 sm:gap-3 flex-shrink-0">
+                {/* Project filters (only visible on /projects) */}
+                <ProjectHeaderFilters />
                 {/* Notifications */}
                 <div className="relative" ref={notifRef}>
                     <button

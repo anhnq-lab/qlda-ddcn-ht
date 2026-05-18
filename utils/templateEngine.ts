@@ -11,7 +11,8 @@
 
 import {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-    WidthType, AlignmentType, SectionType, TableLayoutType,
+    WidthType, AlignmentType, SectionType, TableLayoutType, UnderlineType,
+    convertMillimetersToTwip,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import {
@@ -184,6 +185,21 @@ export function replacePlaceholders(
         phanLoaiDuAn: formData.projectGroup ? `Nhóm ${formData.projectGroup}` : '...',
         chucDanh: formData.signerTitle || 'ĐẠI DIỆN CƠ QUAN',
         nguoiKy: formData.signerName || '',
+        // Mẫu 16 specific fields
+        hangMuc: formData.itemName || '...',
+        giayPhepXayDung: formData.constructionPermit || '...',
+        nhaThauThiCong: formData.contractorName || '...',
+        nhaThauGiamSat: formData.supervisorName || '...',
+        nhaThauThietKe: formData.designerName || '...',
+        ngayKhoiCong: formData.startDate ? formatDateVN(formData.startDate) : '...',
+        ngayHoanThanh: formData.expectedEndDate ? formatDateVN(formData.expectedEndDate) : '...',
+        // Mẫu 16 new fields (matching actual document structure)
+        diaChiChuDauTu: formData.investorAddress || '...',
+        nguoiPhuTrach: formData.contactPerson || '...',
+        soDienThoai: formData.contactPhone || '...',
+        quyMoCongTrinh: formData.projectScope || '...',
+        diaChiThietKe: formData.designerAddress || '...',
+        diaChiGiamSat: formData.supervisorAddress || '...',
         // Optional fields - default to "..."
         phanKyDauTu: formData.phanKyDauTu || '...',
         duKienBoTriVon: formData.duKienBoTriVon || '...',
@@ -307,21 +323,30 @@ function parseTableRows(rows: string[]): Table | null {
 
         return new TableRow({
             children: cleanCells.map(cellText => {
-                const isBold = cellText.startsWith('**') && cellText.endsWith('**');
-                const isItalic = cellText.startsWith('*') && cellText.endsWith('*') && !isBold;
-                const cleanText = stripMarkdown(cellText);
-
+                const isHeader = rowIdx === 0;
+                // Support multi-line cells split by \n
+                const lines = cellText.split('\n').filter(l => l.trim() !== '');
+                
                 return new TableCell({
-                    children: [new Paragraph({
-                        children: [new TextRun({
-                            text: cleanText,
-                            bold: isBold || rowIdx === 0,
-                            italics: isItalic,
-                            size: 20,
-                            font: 'Times New Roman',
-                        })],
-                        spacing: { before: 30, after: 30 },
-                    })],
+                    children: lines.map(line => {
+                        const lineStr = line.trim();
+                        // Naive bold/italic detection per line
+                        const isBold = lineStr.startsWith('**') && lineStr.endsWith('**');
+                        const isItalic = lineStr.startsWith('*') && lineStr.endsWith('*') && !isBold;
+                        const cleanText = stripMarkdown(lineStr);
+                        
+                        return new Paragraph({
+                            children: [new TextRun({
+                                text: cleanText,
+                                bold: isBold || isHeader,
+                                italics: isItalic,
+                                size: 24, // Matches document standard 12pt
+                                font: 'Times New Roman',
+                            })],
+                            spacing: { before: 30, after: 30 },
+                            alignment: isHeader ? AlignmentType.CENTER : AlignmentType.LEFT
+                        });
+                    }),
                     borders: THIN_BORDER,
                 });
             }),
@@ -472,7 +497,11 @@ export async function exportTemplateAsDocx(
     const filledContent = replacePlaceholders(rawContent, formData, context);
 
     // 3. Detect template type
-    const isNewStyleTemplate = rawContent.includes('{{tenCoQuan}}') || rawContent.includes('{{tenDuAn}}');
+    const NEW_STYLE_TEMPLATES = [
+        'mau-01-to-trinh-chu-truong.md',
+        'mau-16-thong-bao-khoi-cong.md',
+    ];
+    const isNewStyleTemplate = NEW_STYLE_TEMPLATES.includes(config.templatePath);
 
     if (!isNewStyleTemplate) {
         // Old-style: use improved markdown conversion
@@ -487,6 +516,171 @@ export async function exportTemplateAsDocx(
         });
         const blob = await Packer.toBlob(doc);
         saveAs(blob, `${config.shortLabel}.docx`);
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // MẪU 16: THÔNG BÁO KHỞI CÔNG XÂY DỰNG CÔNG TRÌNH
+    // ═══════════════════════════════════════════════════════════════
+    if (config.templatePath === 'mau-16-thong-bao-khoi-cong.md') {
+        const fd16 = (key: string, ...alt: string[]) => {
+            if (formData[key]) return formData[key];
+            for (const a of alt) if (formData[a]) return formData[a];
+            return '';
+        };
+
+        const F = 'Times New Roman';
+        const S = 28; // 14pt body
+        const Ss = 26; // 13pt small
+
+        const tenCoQuan16 = fd16('tenCoQuan', 'investorName') || 'BAN QLDA ĐTXD CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC';
+        const soVanBan16  = fd16('documentNumber') || '         /TB-BQLDA';
+        const docDate16   = fd16('documentDate') || '';
+        const location16  = fd16('locationName') || 'Hà Tĩnh';
+
+        const tenDuAn16   = fd16('projectName') || '……………………………………………………………………………………………';
+        const diaDiem16   = fd16('location') || '………………………………………………………………';
+        const chuDauTu16  = fd16('investorName') || '………………………………………………………………';
+        const diaChiCDT16 = fd16('investorAddress') || '………………………………………………………………';
+        const phuTrach16  = fd16('contactPerson') || '………………………………………………………';
+        const sdt16       = fd16('contactPhone') || '……………………………………………';
+        const quyMo16     = fd16('projectScope') || '………………………………………………………………';
+        const thietKe16   = fd16('designerName') || '………………………………………………………………';
+        const dcThietKe16 = fd16('designerAddress') || '………………………………………………………………';
+        const giamSat16   = fd16('supervisorName') || '………………………………………………………………';
+        const dcGiamSat16 = fd16('supervisorAddress') || '………………………………………………………………';
+        const thiCong16   = fd16('contractorName') || '………………………………………………………………';
+        const ngayKC16    = fd16('startDate') ? formatDateVN(fd16('startDate')) : '…………………………………';
+        const ngayHT16    = fd16('expectedEndDate') ? formatDateVN(fd16('expectedEndDate')) : '…………………………………';
+        const chucDanh16  = fd16('signerTitle') || 'KT. GIÁM ĐỐC\nPHÓ GIÁM ĐỐC';
+        const nguoiKy16   = fd16('signerName') || '';
+        const kinhGui16   = fd16('kinhGui', 'recipientAuthority') || '- Sở Xây dựng;\n- Ủy ban nhân dân xã (phường) nơi xây dựng công trình.';
+
+        // ── Helpers for bold-label paragraphs ──
+        const pItem = (label: string, value: string) => pMulti([
+            { text: label, bold: true, size: S, font: F },
+            { text: value, size: S, font: F },
+        ], { indent: 12.7, after: 120 });
+
+        const pSub = (text: string) => new Paragraph({
+            children: [new TextRun({ text, size: S, font: F })],
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: convertMillimetersToTwip(12.7) },
+            spacing: { after: 80, line: 360 },
+        });
+
+        const c16: (Paragraph | Table)[] = [];
+
+        // ── HEADER TABLE: left = tên cơ quan + số; right = quốc hiệu + tiêu ngữ + ngày ──
+        const dateStr16 = docDate16 ? formatDateVN(docDate16) : `ngày      tháng      năm ${new Date().getFullYear()}`;
+        const leftH16: Paragraph[] = [
+            new Paragraph({ children: [new TextRun({ text: 'UBND TỈNH HÀ TĨNH', size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: tenCoQuan16.toUpperCase(), bold: true, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: '-------', size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: `Số: ${soVanBan16}`, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
+        ];
+        const rightH16: Paragraph[] = [
+            new Paragraph({ children: [new TextRun({ text: 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold: true, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: 'Độc lập - Tự do - Hạnh phúc', bold: true, underline: { type: UnderlineType.SINGLE }, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [], spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: `${location16}, ${dateStr16}`, italics: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
+        ];
+        c16.push(new Table({
+            rows: [new TableRow({ children: [layoutCell(leftH16, 4000), layoutCell(rightH16, 5800)] })],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            layout: TableLayoutType.FIXED,
+        }));
+        c16.push(pEmpty(200));
+
+        // ── TITLE ──
+        c16.push(new Paragraph({ children: [new TextRun({ text: 'THÔNG BÁO', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 60, before: 0 } }));
+        c16.push(new Paragraph({ children: [new TextRun({ text: 'KHỞI CÔNG XÂY DỰNG HẠNG MỤC CÔNG TRÌNH, CÔNG TRÌNH XÂY DỰNG', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 240 } }));
+
+        // ── KÍNH GỬI ──
+        const kgLines = kinhGui16.split('\n');
+        c16.push(pMulti([
+            { text: 'Kính gửi: ', bold: true, italics: true, size: S, font: F },
+            { text: kgLines[0] || '', italics: true, size: S, font: F },
+        ], { after: 0 }));
+        for (let i = 1; i < kgLines.length; i++) {
+            c16.push(new Paragraph({ children: [new TextRun({ text: kgLines[i], italics: true, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 0, line: 360 } }));
+        }
+        c16.push(pEmpty(120));
+
+        // ── INTRO ──
+        c16.push(pBody(`${tenCoQuan16} (Ban QLDA) báo cáo về việc khởi công xây dựng hạng mục công trình, công trình xây dựng như sau:`));
+
+        // ── MỤC 1–4 ──
+        c16.push(pItem('1. Tên công trình xây dựng: ', tenDuAn16));
+        c16.push(pItem('2. Địa điểm xây dựng: ', diaDiem16));
+
+        c16.push(pMulti([
+            { text: '3. Tên và địa chỉ liên lạc của Chủ đầu tư: ', bold: true, size: S, font: F },
+            { text: chuDauTu16 + '.', size: S, font: F },
+        ], { indent: 12.7, after: 60 }));
+        c16.push(pSub(`Địa chỉ: ${diaChiCDT16}`));
+
+        c16.push(pMulti([
+            { text: '4. Tên và số điện thoại liên lạc của cá nhân phụ trách trực tiếp: ', bold: true, size: S, font: F },
+        ], { indent: 12.7, after: 0 }));
+        c16.push(pSub(`Ông/Bà: ${phuTrach16}         Số điện thoại: ${sdt16}`));
+
+        // ── MỤC 5: QUY MÔ ──
+        c16.push(pMulti([
+            { text: '5. Quy mô hạng mục công trình, công trình xây dựng: ', bold: true, size: S, font: F },
+        ], { indent: 12.7, after: 0 }));
+        const quyMoLines = quyMo16.split('\n').filter(l => l.trim());
+        if (quyMoLines.length === 0) {
+            c16.push(pSub('………………………………………………………………………………………………………………'));
+        } else {
+            for (const line of quyMoLines) c16.push(pSub(line));
+        }
+
+        // ── MỤC 6: DANH SÁCH NHÀ THẦU ──
+        c16.push(pMulti([{ text: '6. Danh sách các nhà thầu: ', bold: true, size: S, font: F }], { indent: 12.7, after: 80 }));
+        c16.push(pSub(`- Nhà thầu Tư vấn thiết kế: ${thietKe16}.`));
+        c16.push(new Paragraph({ children: [new TextRun({ text: `  Địa chỉ: ${dcThietKe16}`, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 80, line: 360 }, alignment: AlignmentType.JUSTIFIED }));
+        c16.push(pSub(`- Nhà thầu Tư vấn giám sát: ${giamSat16}.`));
+        c16.push(new Paragraph({ children: [new TextRun({ text: `  Địa chỉ: ${dcGiamSat16}`, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 80, line: 360 }, alignment: AlignmentType.JUSTIFIED }));
+        c16.push(pSub(`- Nhà thầu thi công xây dựng: ${thiCong16}.`));
+
+        // ── MỤC 7: NGÀY THÁNG ──
+        c16.push(pMulti([{ text: '7. Ngày khởi công và ngày hoàn thành (dự kiến):', bold: true, size: S, font: F }], { indent: 12.7, after: 80 }));
+        c16.push(pSub(`- Ngày khởi công: ${ngayKC16};`));
+        c16.push(pSub(`- Ngày dự kiến hoàn thành: ${ngayHT16}.`));
+        c16.push(pEmpty(200));
+
+        // ── SIGNATURE ──
+        const titleLines16 = chucDanh16.split('\n').map(l => l.trim()).filter(Boolean);
+        const sigRight16: Paragraph[] = [
+            ...titleLines16.map((line, i) => new Paragraph({
+                children: [new TextRun({ text: line.toUpperCase(), bold: true, size: S, font: F })],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: i < titleLines16.length - 1 ? 0 : 40, line: 240 },
+            })),
+            new Paragraph({ children: [new TextRun({ text: '(Ký, ghi rõ họ tên, chức vụ và đóng dấu)', italics: true, size: 24, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 1200 } }),
+            new Paragraph({ children: [new TextRun({ text: nguoiKy16 || '', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
+        ];
+        const sigLeft16: Paragraph[] = [
+            new Paragraph({ children: [new TextRun({ text: 'Nơi nhận:', bold: true, italics: true, size: 22, font: F })], spacing: { after: 40 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Như trên;', size: 22, font: F })], spacing: { after: 20 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Giám đốc Ban (để báo cáo);', size: 22, font: F })], spacing: { after: 20 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Lưu: VT, QLDA.', size: 22, font: F })], spacing: { after: 0 } }),
+        ];
+        c16.push(new Table({
+            rows: [new TableRow({ children: [layoutCell(sigLeft16, 4200), layoutCell(sigRight16, 5600)] })],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            layout: TableLayoutType.FIXED,
+        }));
+
+        // ── BUILD & SAVE ──
+        const doc16 = new Document({
+            styles: { default: { document: { run: { font: F, size: S }, paragraph: { spacing: { line: 360 } } } } },
+            sections: [{ properties: { ...PORTRAIT_A4 }, footers: { default: buildPageFooter() }, children: c16 }],
+        });
+        const blob16 = await Packer.toBlob(doc16);
+        const safeName16 = tenDuAn16.replace(/[^a-zA-ZÀ-ỹ0-9\s]/g, '_').substring(0, 40).trim();
+        saveAs(blob16, `TB-Khoi-cong_${safeName16}.docx`);
         return;
     }
 

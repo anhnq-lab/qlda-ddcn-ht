@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash2, Plus, X, Search, Users, HardHat, Ruler, Eye, MapPin, Phone, User, Calendar, Loader2, Hash, AlertCircle, Filter, ArrowUpDown, ChevronLeft, ChevronRight, Building2, Download } from 'lucide-react';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { ContractorDetailPanel } from '../../components/common/ContractorDetailPanel';
+import { ContractorFormPanel } from './ContractorFormPanel';
 import { exportContractorsToExcel } from '../../utils/contractorExcelIO';
 import { StatCard } from '../../components/ui';
 import { SkeletonStatCard } from '../../components/ui/Skeleton';
@@ -24,13 +25,9 @@ const ContractorList: React.FC = () => {
     const [page, setPage] = useState(1);
     const ITEMS_PER_PAGE = 20;
 
-    // Modal State
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Modal State for Delete
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [currentContractor, setCurrentContractor] = useState<Partial<Contractor>>({});
-    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     // Stats by ContractorType
     const totalContractors = contractors.length;
@@ -91,28 +88,24 @@ const ContractorList: React.FC = () => {
     );
 
     const handleAdd = () => {
-        setIsEditing(false);
-        setFormErrors({});
-        setCurrentContractor({
-            FullName: '',
-            TaxCode: '',
-            CapCertCode: '',
-            IsForeign: false,
-            ContractorType: 'Construction',
-            Address: '',
-            ContactInfo: '',
-            Representative: '',
-            EstablishedYear: undefined,
+        openPanel({
+            title: 'Thêm nhà thầu',
+            icon: <Building2 size={14} />,
+            url: '/contractors/new',
+            width: 768,
+            component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
         });
-        setIsModalOpen(true);
     };
 
     const handleEdit = (e: React.MouseEvent, contractor: Contractor) => {
         e.stopPropagation();
-        setIsEditing(true);
-        setFormErrors({});
-        setCurrentContractor({ ...contractor });
-        setIsModalOpen(true);
+        openPanel({
+            title: 'Chỉnh sửa nhà thầu',
+            icon: <Building2 size={14} />,
+            url: `/contractors/${contractor.ContractorID}/edit`,
+            width: 768,
+            component: <ContractorFormPanel contractor={contractor} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+        });
     };
 
     const handleDelete = (e: React.MouseEvent, id: string) => {
@@ -137,54 +130,6 @@ const ContractorList: React.FC = () => {
         }
     };
 
-    // Validate MST format: 10 or 13 digits
-    const validateTaxCode = (code: string): string | null => {
-        if (!code) return null; // optional
-        const cleaned = code.replace(/[\s-]/g, '');
-        if (!/^\d{10}(\d{3})?$/.test(cleaned)) {
-            return 'MST phải có 10 hoặc 13 chữ số';
-        }
-        return null;
-    };
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const errors: Record<string, string> = {};
-
-        if (!currentContractor?.FullName?.trim()) {
-            errors.FullName = 'Vui lòng nhập tên nhà thầu';
-        }
-        const taxErr = validateTaxCode(currentContractor.TaxCode || '');
-        if (taxErr) errors.TaxCode = taxErr;
-
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            return;
-        }
-        setFormErrors({});
-
-        try {
-            setSaving(true);
-            if (isEditing && currentContractor.ContractorID) {
-                await ContractorService.update(currentContractor.ContractorID, currentContractor);
-                showToast('Đã cập nhật thông tin nhà thầu', 'success');
-            } else {
-                // DB auto-generates ContractorID
-                await ContractorService.create(currentContractor);
-                showToast('Đã thêm nhà thầu mới thành công', 'success');
-            }
-            await queryClient.invalidateQueries({ queryKey: ['contractors'] });
-            setIsModalOpen(false);
-        } catch (err: any) {
-            if (err.message?.includes('idx_contractors_tax_code_unique')) {
-                setFormErrors({ TaxCode: 'Mã số thuế đã tồn tại trong hệ thống' });
-            } else {
-                showToast(`Lỗi lưu: ${err.message}`, 'error');
-            }
-        } finally {
-            setSaving(false);
-        }
-    };
 
     const stats = [
         { label: 'Tổng nhà thầu', value: totalContractors, icon: Users, color: 'blue' as const },
@@ -434,183 +379,6 @@ const ContractorList: React.FC = () => {
                 </div>
             </div>
 
-            {/* Add/Edit Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
-                        <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
-                                {isEditing ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
-                            </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <form onSubmit={handleSave} className="p-4 space-y-4">
-                            {/* Row: Tên nhà thầu */}
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tên nhà thầu <span className="text-red-500">*</span></label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                    value={currentContractor.FullName || ''}
-                                    onChange={e => { setCurrentContractor(prev => ({ ...prev, FullName: e.target.value })); setFormErrors(prev => ({ ...prev, FullName: '' })); }}
-                                    placeholder="VD: Công Ty CP Tư Vấn XD..."
-                                />
-                                {formErrors.FullName && <p className="text-red-500 text-xs mt-1">{formErrors.FullName}</p>}
-                            </div>
-
-                            {/* Row: Loại hình nhà thầu */}
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Loại hình <span className="text-red-500">*</span></label>
-                                <select
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                    value={currentContractor.ContractorType || 'Construction'}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, ContractorType: e.target.value as ContractorType }))}
-                                >
-                                    {(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => (
-                                        <option key={value} value={value}>{label}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Row: MST + Năm thành lập */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                        <Hash className="w-3 h-3 inline mr-1" />Mã số thuế
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
-                                        value={currentContractor.TaxCode || ''}
-                                        onChange={e => { setCurrentContractor(prev => ({ ...prev, TaxCode: e.target.value })); setFormErrors(prev => ({ ...prev, TaxCode: '' })); }}
-                                        placeholder="0100106112"
-                                    />
-                                    {formErrors.TaxCode && <p className="text-red-500 text-xs mt-1">{formErrors.TaxCode}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                        <Calendar className="w-3 h-3 inline mr-1" />Năm thành lập
-                                    </label>
-                                    <input
-                                        type="number"
-                                        min="1900"
-                                        max="2030"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                        value={currentContractor.EstablishedYear || ''}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, EstablishedYear: e.target.value ? parseInt(e.target.value) : undefined }))}
-                                        placeholder="1998"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Row: Người đại diện */}
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                    <User className="w-3 h-3 inline mr-1" />Người đại diện
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                    value={currentContractor.Representative || ''}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, Representative: e.target.value }))}
-                                    placeholder="Nguyễn Văn A"
-                                />
-                            </div>
-
-                            {/* Row: Địa chỉ */}
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                    <MapPin className="w-3 h-3 inline mr-1" />Địa chỉ
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                    value={currentContractor.Address || ''}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, Address: e.target.value }))}
-                                />
-                            </div>
-
-                            {/* Row: Email + Website */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                        📧 Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                        value={currentContractor.Email || ''}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, Email: e.target.value }))}
-                                        placeholder="info@contractor.vn"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                        🌐 Website
-                                    </label>
-                                    <input
-                                        type="url"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                        value={currentContractor.Website || ''}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, Website: e.target.value }))}
-                                        placeholder="https://contractor.vn"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Row: Liên hệ + Chứng chỉ */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                                        <Phone className="w-3 h-3 inline mr-1" />Điện thoại
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                        value={currentContractor.ContactInfo || ''}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, ContactInfo: e.target.value }))}
-                                        placeholder="024 xxxx xxxx"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mã chứng chỉ năng lực</label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                        value={currentContractor.CapCertCode || ''}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertCode: e.target.value }))}
-                                    />
-                                </div>
-                            </div>
-
-
-
-                            {/* Actions */}
-                            <div className="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700 mt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
-                                    disabled={saving}
-                                >
-                                    Hủy bỏ
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
-                                >
-                                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    {saving ? 'Đang lưu...' : 'Lưu thông tin'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
 
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (

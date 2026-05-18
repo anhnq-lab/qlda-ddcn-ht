@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualList } from '../../hooks/useVirtualList';
-import { useScopedProjects } from '../../hooks/useScopedProjects';
 import { useProjectsRealtime } from '../../hooks/useProjectsRealtime';
 import { useInvalidateProjects } from '../../hooks/usePaginatedProjects';
 import { ProjectGroup, MANAGEMENT_BOARDS, ProjectStatus, PROJECT_CURRENT_STATUS_CONFIG } from '../../types';
@@ -85,37 +84,28 @@ const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }:
 PaginationBar.displayName = 'PaginationBar';
 
 import { ProjectMemberService } from '../../services/ProjectMemberService';
-import { useProjectFilters, STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SortOption } from './hooks/useProjectFilters';
+import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SortOption } from './hooks/useProjectFilters';
+import { useProjectFilterContext } from '../../context/ProjectFilterContext';
 import { useToast } from '../../components/ui/Toast';
 
 const ProjectList: React.FC = () => {
     const navigate = useNavigate();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const { addToast } = useToast();
 
     // ── Real-time: auto-refresh when other users modify projects ──
     useProjectsRealtime();
     const invalidateProjects = useInvalidateProjects();
 
-    // ── Filter Hook (debounce, URL sync, builds QueryParams) ──
+    // ── Filter + Data from shared Context (same instance as Header) ──
     const {
         searchQuery, setSearchQuery,
-        selectedStatus, setSelectedStatus,
-        selectedCurrentStatus, setSelectedCurrentStatus,
-        selectedGroup, setSelectedGroup,
-        selectedBoard, setSelectedBoard,
         sortBy, setSortBy,
         page, setPage,
         viewMode, setViewMode,
-        queryParams,
-        clearFilters, hasActiveFilters,
-    } = useProjectFilters();
-
-    // ── Data Fetching with scope + server-side pagination ──
-    const { 
-        scopedProjects, total, totalPages, pageSize, isLoading, isFetching, refetch,
-        statusCounts, currentStatusCounts, groupCounts, boardCounts, totalUnfiltered
-    } = useScopedProjects(queryParams);
+        hasActiveFilters, clearFilters,
+        scopedProjects, total, totalPages, pageSize,
+        isLoading, isFetching, refetch,
+    } = useProjectFilterContext();
 
     // Create Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -173,196 +163,10 @@ const ProjectList: React.FC = () => {
 
     return (
         <div className="flex flex-col gap-4 animate-in fade-in duration-300 pb-20">
-            <div className="flex flex-col lg:flex-row gap-4 items-start">
-                {/* 2. SIDEBAR FILTER (Premium Style) */}
-                <div className={`shrink-0 transition-all duration-300 ${isSidebarOpen ? 'w-full lg:w-72' : 'w-0 lg:w-10'}`}>
-                    <div className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden sticky top-6 ${!isSidebarOpen ? 'hidden lg:flex lg:items-center lg:justify-center lg:py-4' : ''}`}>
-                        {/* Collapsed state */}
-                        {!isSidebarOpen && (
-                            <button
-                                onClick={() => setIsSidebarOpen(true)}
-                                className="p-2 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-all"
-                                title="Mở bộ lọc"
-                            >
-                                <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                            </button>
-                        )}
 
-                        {/* Expanded state */}
-                        {isSidebarOpen && (
-                            <>
-                                <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center">
-                                    <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                        <Filter className="w-4 h-4 text-primary-600 dark:text-primary-400" /> Bộ lọc dự án
-                                    </h3>
-                                    <div className="flex items-center gap-2">
-                                        {hasActiveFilters && (
-                                            <button onClick={clearFilters} className="text-xs text-red-500 dark:text-red-400 hover:underline">Xóa lọc</button>
-                                        )}
-                                        <button
-                                            onClick={() => setIsSidebarOpen(false)}
-                                            className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-all hidden lg:block"
-                                            title="Thu gọn bộ lọc"
-                                        >
-                                            <ChevronLeft className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="p-4 space-y-6">
-                                    {/* Status Filter */}
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Giai đoạn</label>
-                                        <div className="space-y-1">
-                                            {STATUS_OPTIONS.map(opt => {
-                                                const count = opt.val === 'all' ? totalUnfiltered : (statusCounts[Number(opt.val)] || 0);
-                                                return (
-                                                    <label
-                                                        key={opt.val}
-                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
-                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
-                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
-                                                            }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="status"
-                                                            checked={selectedStatus === opt.val}
-                                                            onChange={() => setSelectedStatus(opt.val)}
-                                                            className="sr-only"
-                                                        />
-                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: opt.hex }}></span>
-                                                        <span className={`text-sm flex-1 ${selectedStatus === opt.val ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{opt.label}</span>
-                                                        {count > 0 && (
-                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                                {count}
-                                                            </span>
-                                                        )}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full h-px bg-slate-100 dark:bg-slate-700"></div>
-
-                                    {/* Current Status Filter */}
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Trạng thái hiện tại</label>
-                                        <div className="space-y-1">
-                                            {CURRENT_STATUS_OPTIONS.map(opt => {
-                                                const count = opt.val === 'all' ? totalUnfiltered : (currentStatusCounts[Number(opt.val)] || 0);
-                                                return (
-                                                    <label
-                                                        key={opt.val}
-                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedCurrentStatus === opt.val
-                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
-                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
-                                                            }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="currentStatus"
-                                                            checked={selectedCurrentStatus === opt.val}
-                                                            onChange={() => setSelectedCurrentStatus(opt.val)}
-                                                            className="sr-only"
-                                                        />
-                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: opt.hex }}></span>
-                                                        <span className={`text-sm flex-1 ${selectedCurrentStatus === opt.val ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{opt.label}</span>
-                                                        {count > 0 && (
-                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                                {count}
-                                                            </span>
-                                                        )}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full h-px bg-slate-100 dark:bg-slate-700"></div>
-
-                                    {/* Group Filter */}
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Nhóm dự án</label>
-                                        <div className="space-y-1">
-                                            {GROUP_OPTIONS.map(g => {
-                                                const count = g === 'all' ? totalUnfiltered : (groupCounts[g] || 0);
-                                                return (
-                                                    <label
-                                                        key={g}
-                                                        className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedGroup === g
-                                                            ? 'bg-primary-50 dark:bg-slate-700 ring-1 ring-primary-200 dark:ring-slate-600'
-                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
-                                                            }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="group"
-                                                            checked={selectedGroup === g}
-                                                            onChange={() => setSelectedGroup(g)}
-                                                            className="sr-only"
-                                                        />
-                                                        <span className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white dark:ring-slate-800 shadow-sm" style={{ backgroundColor: getGroupColor(g) }}></span>
-                                                        <span className={`text-sm flex-1 ${selectedGroup === g ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>{g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}</span>
-                                                        {count > 0 && (
-                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                                {count}
-                                                            </span>
-                                                        )}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full h-px bg-slate-100 dark:bg-slate-700"></div>
-
-                                    {/* Management Board Filter */}
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Phòng QLDA</label>
-                                        <div className="space-y-1">
-                                            <button
-                                                onClick={() => setSelectedBoard('all')}
-                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === 'all' ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
-                                            >
-                                                <span>Tất cả phòng</span>
-                                                {totalUnfiltered > 0 && (
-                                                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                        {totalUnfiltered}
-                                                    </span>
-                                                )}
-                                            </button>
-                                            {MANAGEMENT_BOARDS.map(board => {
-                                                const count = boardCounts[board.value.toString()] || 0;
-                                                return (
-                                                    <button
-                                                        key={board.value}
-                                                        onClick={() => setSelectedBoard(board.value.toString())}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedBoard === board.value.toString() ? 'bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: board.hex }}></span>
-                                                            <span className="flex-1">{board.label}</span>
-                                                        </div>
-                                                        {count > 0 && (
-                                                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                                {count}
-                                                            </span>
-                                                        )}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* 3. MAIN LIST AREA */}
+                {/* MAIN LIST AREA — full width now that sidebar is removed */}
                 <div className="flex-1 w-full space-y-4">
+
                     {/* Toolbar */}
                     <div className="bg-white dark:bg-slate-800 p-2 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative w-full md:flex-1">
@@ -619,7 +423,6 @@ const ProjectList: React.FC = () => {
                         onPageChange={setPage}
                     />
                 </div>
-            </div>
 
             {/* Create Project Modal */}
             <CreateProjectModal

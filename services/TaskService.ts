@@ -2,6 +2,7 @@
 // Bảng `tasks` mới: UUID PK, unified schema
 import { supabase } from '../lib/supabase';
 import { WorkflowTemplateService } from './WorkflowTemplateService';
+import { toServiceError } from './ServiceError';
 
 // ── Types matching the new DB schema ─────────────────────────
 export type TaskType = 'project' | 'internal';
@@ -59,22 +60,24 @@ export const TaskService = {
 
   /** Lấy tất cả tasks (scoped theo project IDs nếu có) */
   getAllTasks: async (projectIds?: string[]): Promise<DbTask[]> => {
-    let query = supabase
-      .from('tasks')
-      .select('*, projects(project_name)')
-      .is('parent_id', null)
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false });
+    try {
+      let query = supabase
+        .from('tasks')
+        .select('*, projects(project_name)')
+        .is('parent_id', null)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
 
-    if (projectIds && projectIds.length > 0) {
-      // Lấy cả tasks thuộc projects + internal tasks
-      query = query.or(`project_id.in.(${projectIds.join(',')}),task_type.eq.internal`);
+      if (projectIds && projectIds.length > 0) {
+        query = query.or(`project_id.in.(${projectIds.join(',')}),task_type.eq.internal`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw toServiceError(error, 'Không thể tải danh sách công việc');
+      return (data || []) as unknown as DbTask[];
+    } catch (err) {
+      throw toServiceError(err, 'Không thể tải danh sách công việc');
     }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    
-    return (data || []) as unknown as DbTask[];
   },
 
   /** Lấy tasks theo dự án */
@@ -85,8 +88,8 @@ export const TaskService = {
       .eq('project_id', projectId)
       .order('sort_order', { ascending: true });
 
-    if (error) throw error;
-    
+    if (error) throw toServiceError(error, 'Không thể tải công việc dự án');
+
     // Tách master tasks và sub tasks
     const masterTasks = (data || []).filter((r: any) => !r.parent_id);
     const subTasks = (data || []).filter((r: any) => r.parent_id);
@@ -113,13 +116,13 @@ export const TaskService = {
 
   /** Lấy tasks nội bộ (không thuộc dự án nào) */
   getInternalTasks: async (): Promise<DbTask[]> => {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('tasks')
       .select('*')
       .eq('task_type', 'internal')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) throw toServiceError(error, 'Không thể tải công việc nội bộ');
     return (data || []) as unknown as DbTask[];
   },
 
@@ -190,20 +193,22 @@ export const TaskService = {
     return (data || []) as unknown as DbSubTask[];
   },
 
-  /** Đếm tasks theo project (cho Dashboard) */
+  /** Đếm tasks theo project (cho Dashboard) — song song, không N+1 */
   countByProject: async (projectId: string) => {
-    const { count: total } = await supabase
-      .from('tasks')
-      .select('*', { count: 'exact', head: true })
-      .eq('project_id', projectId);
-
-    const { count: done } = await supabase
-      .from('tasks')
-      .select('*', { count: 'exact', head: true })
-      .eq('project_id', projectId)
-      .eq('status', 'done');
-
-    return { total: total || 0, done: done || 0 };
+    const [totalRes, doneRes] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .is('parent_id', null),
+      supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .eq('status', 'done')
+        .is('parent_id', null),
+    ]);
+    return { total: totalRes.count || 0, done: doneRes.count || 0 };
   },
 
   // ─── COLLABORATION READ ──────────────────────────────────
@@ -255,8 +260,7 @@ export const TaskService = {
       .select()
       .single();
 
-    if (error) throw error;
-    
+    if (error) throw toServiceError(error, 'Không thể tạo công việc');
     return data as unknown as DbTask;
   },
 
@@ -295,7 +299,7 @@ export const TaskService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throw toServiceError(error, 'Không thể cập nhật công việc');
 
     // Sync sub-tasks if provided
     if (subTasks !== null) {
@@ -364,7 +368,7 @@ export const TaskService = {
       .delete()
       .eq('id', taskId);
 
-    if (error) throw error;
+    if (error) throw toServiceError(error, 'Không thể xóa công việc');
   },
 
   /** Xóa tất cả tasks của dự án */
@@ -375,7 +379,7 @@ export const TaskService = {
       .eq('project_id', projectId)
       .select('id');
 
-    if (error) throw error;
+    if (error) throw toServiceError(error, 'Không thể xóa công việc dự án');
     return data?.length || 0;
   },
 

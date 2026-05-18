@@ -17,6 +17,7 @@ interface QuickAction {
 interface QuickActionsPanelProps {
     actions?: QuickAction[];
     onGenerateMonthlyReport?: () => void;
+    onExportKhoiCong?: () => void;
     onSendReminder?: () => void;
     onExportExcel?: () => void;
     onScheduleMeeting?: () => void;
@@ -28,6 +29,7 @@ interface QuickActionsPanelProps {
 export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     actions,
     onGenerateMonthlyReport,
+    onExportKhoiCong,
     onSendReminder,
     onExportExcel,
     onScheduleMeeting,
@@ -42,6 +44,13 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
             icon: FileText,
             onClick: onGenerateMonthlyReport || (() => { }),
             variant: 'primary'
+        },
+        {
+            id: 'export-khoi-cong',
+            label: 'TB khởi công',
+            icon: FileText,
+            onClick: onExportKhoiCong || (() => { }),
+            variant: 'secondary'
         },
         {
             id: 'send-reminder',

@@ -21,17 +21,17 @@ export const dbToContractor = (row: any): Contractor => ({
 
 export const contractorToDb = (c: Partial<Contractor>) => ({
     ...(c.ContractorID !== undefined && { contractor_id: c.ContractorID }),
-    ...(c.CapCertCode !== undefined && { cap_cert_code: c.CapCertCode }),
+    ...(c.CapCertCode !== undefined && { cap_cert_code: c.CapCertCode || null }),
     ...(c.FullName !== undefined && { full_name: c.FullName }),
     ...(c.IsForeign !== undefined && { is_foreign: c.IsForeign }),
     ...(c.ContractorType !== undefined && { contractor_type: c.ContractorType }),
-    ...(c.OpLicenseNo !== undefined && { op_license_no: c.OpLicenseNo }),
+    ...(c.OpLicenseNo !== undefined && { op_license_no: c.OpLicenseNo || null }),
     ...(c.Address !== undefined && { address: c.Address }),
     ...(c.ContactInfo !== undefined && { contact_info: c.ContactInfo }),
-    ...(c.TaxCode !== undefined && { tax_code: c.TaxCode }),
-    ...(c.Representative !== undefined && { representative: c.Representative }),
+    ...(c.TaxCode !== undefined && { tax_code: c.TaxCode || null }),
+    ...(c.Representative !== undefined && { representative: c.Representative || null }),
     ...(c.EstablishedYear !== undefined && { established_year: c.EstablishedYear }),
-    ...(c.Email !== undefined && { email: c.Email }),
-    ...(c.Website !== undefined && { website: c.Website }),
+    ...(c.Email !== undefined && { email: c.Email || null }),
+    ...(c.Website !== undefined && { website: c.Website || null }),
 });
 

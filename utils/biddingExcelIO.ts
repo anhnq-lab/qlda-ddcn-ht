@@ -89,12 +89,9 @@ const CONTRACT_TYPE_REVERSE: Record<string, string> = {};
 Object.entries(CONTRACT_TYPE_MAP).forEach(([k, v]) => { CONTRACT_TYPE_REVERSE[v.toLowerCase()] = k; });
 
 const STATUS_MAP: Record<string, string> = {
-    Planning: 'Trong kế hoạch',
-    Posted: 'Đã đăng tải',
-    Bidding: 'Đang mời thầu',
-    Evaluating: 'Đang xét thầu',
-    Awarded: 'Đã có kết quả',
-    Cancelled: 'Hủy thầu',
+    Selection: 'Lựa chọn nhà thầu',
+    Execution: 'Đang thực hiện',
+    Completed: 'Kết thúc',
 };
 const STATUS_REVERSE: Record<string, string> = {};
 Object.entries(STATUS_MAP).forEach(([k, v]) => { STATUS_REVERSE[v.toLowerCase()] = k; });
@@ -305,7 +302,7 @@ export async function parseBiddingPackagesFromExcel(
 
             const pkg: Partial<BiddingPackage> = {
                 ProjectID: projectId,
-                Status: PackageStatus.Planning,
+                Status: PackageStatus.Selection,
                 BidType: 'Offline',
             };
 
@@ -367,20 +364,21 @@ export async function parseBiddingPackagesFromExcel(
                         pkg.HasOption = strValue.toLowerCase().includes('có') && !strValue.toLowerCase().includes('không');
                         break;
                     case 'Status': {
-                        // DB stores English status: 'Planning', 'Bidding', 'Executing'...
+                        // DB stores English status: 'Selection', 'Execution', 'Completed'
                         const statusMap: Record<string, string> = {
-                            'trong kế hoạch': 'Planning',
-                            'đã đăng tải': 'Posted',
-                            'đang mời thầu': 'Bidding',
-                            'đang xét thầu': 'Evaluating',
-                            'đã có kết quả': 'Awarded',
-                            'hủy thầu': 'Cancelled',
-                            'đang thực hiện': 'Executing',
+                            'trong kế hoạch': 'Selection',
+                            'đã đăng tải': 'Selection',
+                            'đang mời thầu': 'Selection',
+                            'đang xét thầu': 'Selection',
+                            'đã có kết quả': 'Execution',
+                            'hủy thầu': 'Completed',
+                            'đang thực hiện': 'Execution',
                             'hoàn thành': 'Completed',
+                            'kết thúc': 'Completed',
+                            'lựa chọn nhà thầu': 'Selection',
                         };
                         const lower = strValue.toLowerCase().trim();
-                        pkg.Status = (statusMap[lower] || strValue || 'Planning') as any;
-                        if (lower.includes('tbmt')) pkg.Status = 'Posted' as any;
+                        pkg.Status = (statusMap[lower] || strValue || 'Selection') as any;
                         break;
                     }
                 }

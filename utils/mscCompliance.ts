@@ -58,7 +58,7 @@ export function getMSCRequirements(pkg: BiddingPackage): MSCPublishingRequiremen
     }
 
     // === 4. Làm rõ / Sửa đổi HSMT ===
-    if (pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Posted) {
+    if (pkg.Status === PackageStatus.Selection) {
         requirements.push({
             documentType: 'Sửa đổi HSMT',
             description: 'Văn bản làm rõ, sửa đổi HSMT (nếu có) phải đăng tải',
@@ -69,7 +69,7 @@ export function getMSCRequirements(pkg: BiddingPackage): MSCPublishingRequiremen
     }
 
     // === 5. KQLCNT (Kết quả lựa chọn nhà thầu) ===
-    const isAwarded = pkg.Status === PackageStatus.Awarded;
+    const isAwarded = pkg.Status === PackageStatus.Execution || pkg.Status === PackageStatus.Completed;
     const hasResult = !!pkg.WinningContractorID || !!pkg.ApprovalDate_Result;
     requirements.push({
         documentType: 'KQLCNT',
@@ -175,10 +175,8 @@ function isOpenBiddingRequired(pkg: BiddingPackage): boolean {
 
 function shouldHaveTBMT(pkg: BiddingPackage): boolean {
     if (!isOpenBiddingRequired(pkg)) return false;
-    const statusOrder = [PackageStatus.Planning, PackageStatus.Posted, PackageStatus.Bidding, PackageStatus.Evaluating, PackageStatus.Awarded];
-    const currentIdx = statusOrder.indexOf(pkg.Status);
-    // After Planning, should have TBMT
-    return currentIdx >= 1;
+    // Since there is no "Planning" state anymore, any active package in Selection/Execution/Completed requires TBMT
+    return true;
 }
 
 function isOnlineBiddingRequired(pkg: BiddingPackage): boolean {

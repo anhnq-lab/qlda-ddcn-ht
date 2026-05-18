@@ -71,6 +71,7 @@ const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
 const WorkflowManagerPage = lazyWithRetry(() => import('./features/workflows/WorkflowManagerPage'));
 const WorkPlanPage = lazyWithRetry(() => import('./features/work-plan/WorkPlanPage'));
 import ProtectedRoute from './components/ProtectedRoute';
+import { ProjectFilterProvider } from './context/ProjectFilterContext';
 
 
 import { ToastProvider } from './components/ui/Toast';
@@ -111,6 +112,7 @@ const App: React.FC = () => {
                         <PermissionProvider>
                         <ToastProvider>
                             <Router>
+                                <ProjectFilterProvider>
                                 <Routes>
                                     <Route path="/login" element={<Login />} />
 
@@ -267,6 +269,7 @@ const App: React.FC = () => {
                                         <Route path="*" element={<Navigate to="/" replace />} />
                                     </Route>
                                 </Routes>
+                                </ProjectFilterProvider>
                             </Router>
                         </ToastProvider>
                         </PermissionProvider>

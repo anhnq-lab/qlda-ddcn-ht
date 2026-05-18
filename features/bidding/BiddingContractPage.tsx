@@ -234,17 +234,14 @@ const TabLoadingFallback: React.FC = () => (
 // ========================================
 const STATUS_LABELS: Record<string, string> = {
     // PackageStatus
-    'planning': 'Trong kế hoạch',
-    'posted': 'Đã đăng tải',
-    'bidding': 'Đang mời thầu',
-    'evaluating': 'Đang xét thầu',
-    'awarded': 'Đã có kết quả',
-    'cancelled': 'Đã hủy',
+    'selection': 'Lựa chọn nhà thầu',
+    'execution': 'Đang thực hiện',
+    // 'completed': 'Kết thúc', // Removed to avoid duplicate key with PaymentStatus
     // PaymentStatus
     'draft': 'Nháp',
     'pending': 'Chờ duyệt',
     'approved': 'Đã duyệt',
-    'completed': 'Hoàn thành',
+    'completed': 'Hoàn thành / Kết thúc',
     'transferred': 'Đã chuyển tiền',
     'rejected': 'Từ chối',
     'paid': 'Đã thanh toán',
@@ -297,18 +294,14 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             : scopedPackages.filter(p => p.ProjectID === projectFilter);
         const totalValue = filtered.reduce((sum, p) => sum + (p.Price || 0), 0);
         const byStatus = (s: PackageStatus) => filtered.filter(p => p.Status === s);
-        const planningCount = byStatus(PackageStatus.Planning).length;
-        const postedCount = byStatus(PackageStatus.Posted).length;
-        const biddingCount = byStatus(PackageStatus.Bidding).length;
-        const evaluatingCount = byStatus(PackageStatus.Evaluating).length;
-        const awardedCount = byStatus(PackageStatus.Awarded).length;
-        const cancelledCount = byStatus(PackageStatus.Cancelled).length;
-        const awardedValue = byStatus(PackageStatus.Awarded).reduce((sum, p) => sum + (p.Price || 0), 0);
+        const selectionCount = byStatus(PackageStatus.Selection).length;
+        const executionCount = byStatus(PackageStatus.Execution).length;
+        const completedCount = byStatus(PackageStatus.Completed).length;
+        const awardedValue = [...byStatus(PackageStatus.Execution), ...byStatus(PackageStatus.Completed)].reduce((sum, p) => sum + (p.Price || 0), 0);
         const uniqueProjects = new Set(filtered.map(p => p.ProjectID)).size;
         return {
             total: filtered.length, totalValue,
-            planningCount, postedCount, biddingCount, evaluatingCount,
-            awardedCount, cancelledCount, awardedValue, uniqueProjects,
+            selectionCount, executionCount, completedCount, awardedValue, uniqueProjects,
         };
     }, [scopedPackages, projectFilter]);
 
@@ -330,24 +323,18 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
 
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
-            case PackageStatus.Planning: return { bg: 'bg-gray-100 dark:bg-slate-700', text: 'text-gray-600 dark:text-slate-300', ring: 'ring-gray-200 dark:ring-slate-600' };
-            case PackageStatus.Posted: return { bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-700 dark:text-primary-400', ring: 'ring-primary-100 dark:ring-primary-900/30' };
-            case PackageStatus.Bidding: return { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', ring: 'ring-blue-100 dark:ring-blue-900/30' };
-            case PackageStatus.Evaluating: return { bg: 'bg-warning-50 dark:bg-warning-900/20', text: 'text-primary-700 dark:text-warning-400', ring: 'ring-warning-100 dark:ring-warning-900/30' };
-            case PackageStatus.Awarded: return { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', ring: 'ring-emerald-100 dark:ring-emerald-900/30' };
-            case PackageStatus.Cancelled: return { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-400', ring: 'ring-red-100 dark:ring-red-900/30' };
+            case PackageStatus.Selection: return { bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-700 dark:text-primary-400', ring: 'ring-primary-100 dark:ring-primary-900/30' };
+            case PackageStatus.Execution: return { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', ring: 'ring-emerald-100 dark:ring-emerald-900/30' };
+            case PackageStatus.Completed: return { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', ring: 'ring-blue-100 dark:ring-blue-900/30' };
             default: return { bg: 'bg-gray-100 dark:bg-slate-700', text: 'text-gray-600 dark:text-slate-300', ring: 'ring-gray-200 dark:ring-slate-600' };
         }
     };
 
     const getStatusIcon = (status: PackageStatus) => {
         switch (status) {
-            case PackageStatus.Planning: return <Circle className="w-2.5 h-2.5" />;
-            case PackageStatus.Posted: return <FileText className="w-2.5 h-2.5" />;
-            case PackageStatus.Bidding: return <Clock className="w-2.5 h-2.5 animate-pulse" />;
-            case PackageStatus.Evaluating: return <AlertTriangle className="w-2.5 h-2.5" />;
-            case PackageStatus.Awarded: return <CheckCircle2 className="w-2.5 h-2.5" />;
-            case PackageStatus.Cancelled: return <XCircle className="w-2.5 h-2.5" />;
+            case PackageStatus.Selection: return <Clock className="w-2.5 h-2.5 animate-pulse" />;
+            case PackageStatus.Execution: return <TrendingUp className="w-2.5 h-2.5" />;
+            case PackageStatus.Completed: return <CheckCircle2 className="w-2.5 h-2.5" />;
             default: return null;
         }
     };
@@ -375,19 +362,19 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                     color="amber"
                 />
                 <StatCard
-                    label="Đã có kết quả"
-                    value={<>{stats.awardedCount} <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">gói</span></>}
-                    icon={<CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
-                    color="emerald"
-                    progressPercentage={stats.total > 0 ? Math.round((stats.awardedCount / stats.total) * 100) : 0}
-                    progressLabel="HOÀN THÀNH"
+                    label="Lựa chọn nhà thầu"
+                    value={<>{stats.selectionCount} <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">gói</span></>}
+                    icon={<Clock className="w-5 h-5 flex-shrink-0" />}
+                    color="blue"
                 />
                 <StatCard
                     label="Đang thực hiện"
-                    value={<>{stats.biddingCount + stats.evaluatingCount} <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">gói</span></>}
-                    sublabel={`${stats.biddingCount} mời thầu · ${stats.evaluatingCount} xét thầu`}
+                    value={<>{stats.executionCount} <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">gói</span></>}
+                    sublabel={`${stats.completedCount} đã kết thúc`}
                     icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
-                    color="blue"
+                    color="emerald"
+                    progressPercentage={stats.total > 0 ? Math.round(((stats.executionCount + stats.completedCount) / stats.total) * 100) : 0}
+                    progressLabel="ĐÃ CÓ KẾT QUẢ"
                 />
             </div>
 
@@ -411,10 +398,9 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                     <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5 flex-wrap">
                         {[
                             { value: 'all' as const, label: 'Tất cả', count: stats.total },
-                            { value: PackageStatus.Planning, label: 'Trong KH', count: stats.planningCount },
-                            { value: PackageStatus.Bidding, label: 'Mời thầu', count: stats.biddingCount },
-                            { value: PackageStatus.Evaluating, label: 'Xét thầu', count: stats.evaluatingCount },
-                            { value: PackageStatus.Awarded, label: 'Có KQ', count: stats.awardedCount },
+                            { value: PackageStatus.Selection, label: 'Lựa chọn NT', count: stats.selectionCount },
+                            { value: PackageStatus.Execution, label: 'Thực hiện', count: stats.executionCount },
+                            { value: PackageStatus.Completed, label: 'Kết thúc', count: stats.completedCount },
                         ].filter(opt => opt.value === 'all' || opt.count > 0).map(opt => (
                             <button
                                 key={opt.value}
@@ -556,12 +542,12 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6 flex-wrap">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                <span className="text-xs text-gray-500 dark:text-slate-400">Đã có KQ: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.awardedCount}</span></span>
+                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                <span className="text-xs text-gray-500 dark:text-slate-400">Lựa chọn NT: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.selectionCount}</span></span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                <span className="text-xs text-gray-500 dark:text-slate-400">Đang thực hiện: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.biddingCount + stats.evaluatingCount}</span></span>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                <span className="text-xs text-gray-500 dark:text-slate-400">Đang thực hiện: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.executionCount}</span></span>
                             </div>
                             <div className="w-px h-4 bg-gray-200 dark:bg-slate-600"></div>
                             <span className="text-xs text-gray-500 dark:text-slate-400">Tổng giá trị: <span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(stats.totalValue)}</span></span>

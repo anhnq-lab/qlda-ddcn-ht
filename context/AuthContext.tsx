@@ -132,6 +132,26 @@ async function fetchUserProfile(authUserId: string): Promise<{
 
 let autoLoginAttempted = false;
 
+// --- INACTIVITY TIMEOUT ---
+const INACTIVITY_KEY = 'lastActivityTime';
+const INACTIVITY_TIMEOUT_MS = 8 * 60 * 60 * 1000; // 8 hours
+
+function isSessionExpiredByInactivity(): boolean {
+    const last = localStorage.getItem(INACTIVITY_KEY);
+    // No recorded activity = session predates this feature → treat as expired
+    if (!last) return true;
+    return Date.now() - parseInt(last, 10) > INACTIVITY_TIMEOUT_MS;
+}
+
+let activityDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+function recordActivity() {
+    if (activityDebounceTimer) return;
+    activityDebounceTimer = setTimeout(() => {
+        localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
+        activityDebounceTimer = null;
+    }, 30_000);
+}
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<Employee | null>(null);
     const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
@@ -191,6 +211,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
     }, []);
 
+    // Track user activity to enforce inactivity timeout
+    useEffect(() => {
+        const events = ['click', 'keydown', 'scroll', 'touchstart', 'mousemove'] as const;
+        events.forEach(e => window.addEventListener(e, recordActivity, { passive: true }));
+        return () => {
+            events.forEach(e => window.removeEventListener(e, recordActivity));
+        };
+    }, []);
+
     // Initialize: restore session + setup auth listener
     useEffect(() => {
         let mounted = true;
@@ -213,6 +242,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     console.warn('[Auth] getSession failed:', e.message);
                 }
                 
+                // --- INACTIVITY TIMEOUT CHECK ---
+                if (existingSession && isSessionExpiredByInactivity()) {
+                    console.log('[Auth] Session expired due to inactivity (>8h), signing out');
+                    await supabase.auth.signOut({ scope: 'local' });
+                    existingSession = null;
+                    localStorage.removeItem(INACTIVITY_KEY);
+                }
+
                 // --- DEV AUTO-LOGIN ---
                 if (import.meta.env.DEV && !existingSession) {
                     const explicitlyLoggedOut = localStorage.getItem('explicitlyLoggedOut') === 'true';
@@ -313,6 +350,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         console.log('[Auth] Login success for:', email);
         localStorage.removeItem('explicitlyLoggedOut');
+        localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
 
         // Update last_login (fire-and-forget)
         supabase
@@ -340,6 +378,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setContractorId(null);
         localStorage.removeItem('currentUser');
         localStorage.removeItem('demoBypassActive');
+        localStorage.removeItem(INACTIVITY_KEY);
         localStorage.setItem('explicitlyLoggedOut', 'true');
     };
 
