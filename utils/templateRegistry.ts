@@ -229,10 +229,10 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
     // ĐẤU THẦU (Mẫu 07-09)
     // ═══════════════════════════════════
 
-    'mau-07-van-ban-trinh-duyet-khlcnt.md': {
-        templatePath: 'mau-07-van-ban-trinh-duyet-khlcnt.md',
-        label: 'Văn bản trình duyệt KHLCNT',
-        shortLabel: 'Mẫu 07 – VB trình KHLCNT',
+    'mau-07-van-ban-trinh-duyet-du-toan-goi-thau.md': {
+        templatePath: 'mau-07-van-ban-trinh-duyet-du-toan-goi-thau.md',
+        label: 'Văn bản trình duyệt dự toán gói thầu',
+        shortLabel: 'Mẫu 07 – VB trình ĐTGT',
         category: 'bidding',
         dataContext: ['project', 'package'],
         icon: '📝',
@@ -240,10 +240,10 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
         fields: [...projectInfoFields, ...documentFields, ...signerFields],
     },
 
-    'mau-08-bc-tham-dinh-khlcnt.md': {
-        templatePath: 'mau-08-bc-tham-dinh-khlcnt.md',
-        label: 'BC thẩm định KHLCNT',
-        shortLabel: 'Mẫu 08 – BC TĐ KHLCNT',
+    'mau-08-bc-tham-dinh-du-toan-goi-thau.md': {
+        templatePath: 'mau-08-bc-tham-dinh-du-toan-goi-thau.md',
+        label: 'BC thẩm định dự toán gói thầu',
+        shortLabel: 'Mẫu 08 – BC TĐ ĐTGT',
         category: 'bidding',
         dataContext: ['project', 'package'],
         icon: '🔍',
@@ -251,10 +251,10 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
         fields: [...projectInfoFields, ...signerFields],
     },
 
-    'mau-09-qd-phe-duyet-khlcnt.md': {
-        templatePath: 'mau-09-qd-phe-duyet-khlcnt.md',
-        label: 'QĐ phê duyệt KHLCNT',
-        shortLabel: 'Mẫu 09 – QĐ PD KHLCNT',
+    'mau-09-qd-phe-duyet-du-toan-goi-thau.md': {
+        templatePath: 'mau-09-qd-phe-duyet-du-toan-goi-thau.md',
+        label: 'QĐ phê duyệt dự toán gói thầu',
+        shortLabel: 'Mẫu 09 – QĐ PD ĐTGT',
         category: 'bidding',
         dataContext: ['project', 'package'],
         icon: '📜',

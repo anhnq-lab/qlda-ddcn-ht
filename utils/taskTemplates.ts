@@ -64,7 +64,7 @@ export const TASK_TEMPLATES: Record<string, TaskTemplate[]> = {
     'PREP_DECISION': [
         { name: 'Tờ trình phê duyệt dự án', description: 'Tờ trình trình cấp CQ phê duyệt dự án đầu tư XD', fileType: 'docx', legalBasis: 'NĐ 15/2021/NĐ-CP', keywords: ['tờ trình', 'trình phê duyệt'], templatePath: 'to-trinh-tham-dinh-bcnckt.md' },
         { name: 'Quyết định phê duyệt dự án ĐT XD', description: 'QĐ phê duyệt dự án bao gồm TK cơ sở', fileType: 'pdf', legalBasis: 'Điều 60 Luật XD 2014', keywords: ['quyết định', 'phê duyệt', 'qđ'], templatePath: 'quyet-dinh-phe-duyet-du-an-bcnckt.md' },
-        { name: 'Kế hoạch lựa chọn nhà thầu', description: 'Kế hoạch tổng thể và chi tiết lựa chọn nhà thầu', fileType: 'xlsx', legalBasis: 'Luật Đấu thầu 2023', keywords: ['kế hoạch', 'lựa chọn nhà thầu', 'khlcnt'], templatePath: 'mau-09-qd-phe-duyet-khlcnt.md' },
+        { name: 'Danh mục gói thầu', description: 'Danh mục các gói thầu của dự án', fileType: 'xlsx', legalBasis: 'Luật Đấu thầu 2023', keywords: ['kế hoạch', 'lựa chọn nhà thầu'], templatePath: 'mau-09-qd-phe-duyet-kqlcnt.md' },
     ],
 
     // ═══════════════════════════════════════════════════
@@ -98,8 +98,8 @@ export const TASK_TEMPLATES: Record<string, TaskTemplate[]> = {
 
     'IMPL_BIDDING': [
         { name: 'Hồ sơ mời thầu (HSMT)', description: 'HSMT gói thầu xây lắp/tư vấn', fileType: 'docx', legalBasis: 'Luật Đấu thầu 2023', keywords: ['hồ sơ mời thầu', 'hsmt', 'lập hsmt'], templatePath: 'mau-46-55-dau-thau-nhom-1.md' },
-        { name: 'Báo cáo đánh giá HSDT', description: 'Báo cáo đánh giá hồ sơ dự thầu', fileType: 'docx', keywords: ['đánh giá', 'hsdt', 'báo cáo'], templatePath: 'mau-08-bc-tham-dinh-khlcnt.md' },
-        { name: 'QĐ phê duyệt KQLCNT', description: 'Quyết định phê duyệt kết quả lựa chọn nhà thầu', fileType: 'pdf', keywords: ['quyết định', 'phê duyệt', 'kqlcnt', 'kết quả'], templatePath: 'mau-09-qd-phe-duyet-khlcnt.md' },
+        { name: 'Báo cáo đánh giá HSDT', description: 'Báo cáo đánh giá hồ sơ dự thầu', fileType: 'docx', keywords: ['đánh giá', 'hsdt', 'báo cáo'], templatePath: 'mau-08-bc-tham-dinh-kqlcnt.md' },
+        { name: 'QĐ phê duyệt KQLCNT', description: 'Quyết định phê duyệt kết quả lựa chọn nhà thầu', fileType: 'pdf', keywords: ['quyết định', 'phê duyệt', 'kqlcnt', 'kết quả'], templatePath: 'mau-09-qd-phe-duyet-kqlcnt.md' },
         { name: 'Hợp đồng xây dựng', description: 'Hợp đồng thi công xây dựng CT', fileType: 'docx', legalBasis: 'NĐ 37/2015/NĐ-CP', keywords: ['hợp đồng', 'ký hđ', 'ký hợp đồng'], templatePath: 'mau-42-45-hop-dong-xay-dung.md' },
     ],
 

@@ -8,7 +8,6 @@ import { BiddingPackage } from '../types';
 export const packageKeys = {
     all: ['bidding-packages-all'] as const,
     byProject: (projectId: string) => ['project-packages', projectId] as const,
-    plans: (projectId: string) => ['project-plans', projectId] as const,
 };
 
 /**
@@ -23,7 +22,6 @@ export const useCreatePackage = () => {
             // Invalidate relevant queries
             if (variables.ProjectID) {
                 queryClient.invalidateQueries({ queryKey: packageKeys.byProject(variables.ProjectID) });
-                queryClient.invalidateQueries({ queryKey: packageKeys.plans(variables.ProjectID) });
             }
             queryClient.invalidateQueries({ queryKey: packageKeys.all });
         },
@@ -43,7 +41,6 @@ export const useUpdatePackage = () => {
             // Invalidate all package queries — update could affect plan totals, status, etc.
             if (variables.data.ProjectID) {
                 queryClient.invalidateQueries({ queryKey: packageKeys.byProject(variables.data.ProjectID) });
-                queryClient.invalidateQueries({ queryKey: packageKeys.plans(variables.data.ProjectID) });
             }
             queryClient.invalidateQueries({ queryKey: packageKeys.all });
             // Also invalidate contracts in case winning contractor changed
@@ -63,37 +60,8 @@ export const useDeletePackage = () => {
             ProjectService.deletePackage(id),
         onSuccess: (_result, variables) => {
             queryClient.invalidateQueries({ queryKey: packageKeys.byProject(variables.projectId) });
-            queryClient.invalidateQueries({ queryKey: packageKeys.plans(variables.projectId) });
             queryClient.invalidateQueries({ queryKey: packageKeys.all });
         },
     });
 };
 
-/**
- * Hook: Assign packages to a KHLCNT
- */
-export const useAssignPackagesToPlan = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ planId, packageIds }: { planId: string; packageIds: string[] }) =>
-            ProjectService.assignPackagesToPlan(planId, packageIds),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: packageKeys.all });
-        },
-    });
-};
-
-/**
- * Hook: Remove a package from its KHLCNT
- */
-export const useRemovePackageFromPlan = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (packageId: string) => ProjectService.removePackageFromPlan(packageId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: packageKeys.all });
-        },
-    });
-};

@@ -8,7 +8,7 @@ DELETE FROM procurement_plans WHERE project_id LIKE 'SEED-%';
 
 INSERT INTO procurement_plans (plan_id, project_id, plan_name, decision_number, decision_date, total_value, status, plan_type)
 SELECT 
-  'KHLCNT-' || project_id, 
+  'KHDA-' || project_id, 
   project_id, 
   'Kế hoạch LCNT - ' || project_name, 
   'QĐ-' || floor(random() * 1000 + 100)::text || '/QĐ-UBND', 
@@ -31,7 +31,7 @@ DECLARE
   v_price NUMERIC;
 BEGIN
   FOR v_proj IN SELECT project_id, total_investment, stage FROM projects WHERE project_id LIKE 'SEED-%' LOOP
-    v_plan_id := 'KHLCNT-' || v_proj.project_id;
+    v_plan_id := 'KHDA-' || v_proj.project_id;
     
     -- Gói 1: Tư vấn khảo sát, lập thiết kế BVTC - Dự toán
     v_pkg_id := 'PKG-TV-' || v_proj.project_id;

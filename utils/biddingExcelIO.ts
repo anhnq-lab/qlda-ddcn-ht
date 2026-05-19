@@ -1,7 +1,7 @@
 /**
  * Bidding Package Excel Import/Export Utility
  * 
- * Export: BiddingPackage[] → .xlsx file (KHLCNT format)
+ * Export: BiddingPackage[] → .xlsx file (Project Packages format)
  * Import: .xlsx file → Partial<BiddingPackage>[] with validation
  */
 import * as XLSX from 'xlsx';

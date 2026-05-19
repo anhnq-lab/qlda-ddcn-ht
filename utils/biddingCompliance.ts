@@ -65,13 +65,13 @@ function getCDTThreshold(
 }
 
 /**
- * Kiểm tra gói thầu có cần thẩm định KHLCNT không
- * Theo NĐ 214/2025: Bãi bỏ yêu cầu thẩm định KHLCNT
+ * Kiểm tra gói thầu có cần thẩm định không
+ * Theo NĐ 214/2025: Bãi bỏ yêu cầu thẩm định kế hoạch
  */
 export function requiresAppraisal(
-    _packageType: 'KHLCNT' | 'HSMT' | 'KQLCNT'
+    _packageType: 'QĐPD' | 'HSMT' | 'KQLCNT'
 ): boolean {
-    // Theo NĐ 214/2025: KHLCNT không bắt buộc thẩm định
+    // Theo NĐ 214/2025: Kế hoạch không bắt buộc thẩm định
     // HSMT và KQLCNT: Không bắt buộc, thẩm định khi có yêu cầu
     return false;
 }

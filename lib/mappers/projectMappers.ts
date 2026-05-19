@@ -4,8 +4,9 @@
  */
 import type {
     Project, ProjectGroup, InvestmentType, ProjectStatus,
-    BiddingPackage, ProcurementPlan, CapitalAllocation,
+    BiddingPackage, CapitalAllocation,
 } from '../../types';
+import { PackageStatus } from '../../types';
 
 export const dbToProject = (row: any): Project => ({
     ProjectID: row.project_id,
@@ -215,21 +216,19 @@ export const projectToDb = (p: Partial<Project>) => {
 export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     PackageID: row.package_id,
     ProjectID: row.project_id,
-    PlanID: row.plan_id || undefined,
     PackageNumber: row.package_number,
     PackageName: row.package_name,
     Price: Number(row.price) || 0,
     SelectionMethod: row.selection_method || '',
     BidType: row.bid_type || '',
     ContractType: row.contract_type || '',
-    Status: row.status || 'Planning',
+    Status: (row.status as PackageStatus) || PackageStatus.Selection,
     NotificationCode: row.notification_code || '',
     PostingDate: row.posting_date || '',
     BidClosingDate: row.bid_closing_date || '',
     EstimatePrice: Number(row.estimate_price) || 0,
     WinningContractorID: row.winning_contractor_id || '',
     WinningPrice: Number(row.winning_price) || 0,
-    KHLCNTCode: row.khlcnt_code || '',
     Field: row.field || '',
     Duration: row.duration || '',
     BidFee: Number(row.bid_fee) || 0,
@@ -237,10 +236,6 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     DecisionDate: row.decision_date || '',
     DecisionAgency: row.decision_agency || '',
     DecisionFile: row.decision_file || '',
-    PlanGroupName: row.plan_group_name || '',
-    PlanDecisionNumber: row.plan_decision_number || '',
-    PlanDecisionDate: row.plan_decision_date || '',
-    MSCPlanCode: row.msc_plan_code || '',
     MSCPackageLink: row.msc_package_link || '',
     MSCPublishStatus: row.msc_publish_status || 'NotRequired',
     SortOrder: row.sort_order ?? 0,
@@ -251,12 +246,22 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     SelectionProcedure: row.selection_procedure || '',
     HasOption: row.has_option || false,
     Personnel: Array.isArray(row.personnel) ? row.personnel : [],
+    BidOpeningDate: row.bid_opening_date || '',
+    ApprovalDate_Result: row.approval_date_result || '',
+    ContractID: row.contract_id || '',
+    BiddingScope: row.bidding_scope || undefined,
+    BiddersCount: row.bidders_count ? Number(row.bidders_count) : undefined,
+    EvaluationBiddersCount: row.evaluation_bidders_count ? Number(row.evaluation_bidders_count) : undefined,
+    // Tiến độ thực hiện
+    CompletionPct: row.completion_pct !== null && row.completion_pct !== undefined ? Number(row.completion_pct) : undefined,
+    CompletionUpdatedAt: row.completion_updated_at || undefined,
+    // Join data (khi select với contractors)
+    WinningContractorName: row.contractors?.full_name || row.winning_contractor_name || undefined,
 });
 
 export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.PackageID !== undefined && { package_id: bp.PackageID }),
     ...(bp.ProjectID !== undefined && { project_id: bp.ProjectID }),
-    ...(bp.PlanID !== undefined && { plan_id: bp.PlanID }),
     ...(bp.PackageNumber !== undefined && { package_number: bp.PackageNumber }),
     ...(bp.PackageName !== undefined && { package_name: bp.PackageName }),
     ...(bp.Price !== undefined && { price: bp.Price }),
@@ -265,10 +270,6 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.ContractType !== undefined && { contract_type: bp.ContractType }),
     ...(bp.Status !== undefined && { status: bp.Status }),
     ...(bp.Duration !== undefined && { duration: bp.Duration }),
-    ...(bp.PlanGroupName !== undefined && { plan_group_name: bp.PlanGroupName }),
-    ...(bp.PlanDecisionNumber !== undefined && { plan_decision_number: bp.PlanDecisionNumber }),
-    ...(bp.PlanDecisionDate !== undefined && { plan_decision_date: bp.PlanDecisionDate }),
-    ...(bp.MSCPlanCode !== undefined && { msc_plan_code: bp.MSCPlanCode }),
     ...(bp.MSCPackageLink !== undefined && { msc_package_link: bp.MSCPackageLink }),
     ...(bp.MSCPublishStatus !== undefined && { msc_publish_status: bp.MSCPublishStatus }),
     ...(bp.SortOrder !== undefined && { sort_order: bp.SortOrder }),
@@ -279,7 +280,6 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.SelectionProcedure !== undefined && { selection_procedure: bp.SelectionProcedure }),
     ...(bp.HasOption !== undefined && { has_option: bp.HasOption }),
     ...(bp.NotificationCode !== undefined && { notification_code: bp.NotificationCode }),
-    ...(bp.KHLCNTCode !== undefined && { khlcnt_code: bp.KHLCNTCode }),
     ...(bp.Field !== undefined && { field: bp.Field }),
     ...(bp.DecisionNumber !== undefined && { decision_number: bp.DecisionNumber }),
     ...(bp.DecisionDate !== undefined && { decision_date: bp.DecisionDate }),
@@ -302,39 +302,12 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.BiddersCount !== undefined && { bidders_count: bp.BiddersCount }),
     ...(bp.EvaluationBiddersCount !== undefined && { evaluation_bidders_count: bp.EvaluationBiddersCount }),
     ...(bp.Personnel !== undefined && { personnel: bp.Personnel }),
+    // Tiến độ thực hiện
+    ...(bp.CompletionPct !== undefined && { completion_pct: bp.CompletionPct }),
+    ...(bp.CompletionUpdatedAt !== undefined && { completion_updated_at: bp.CompletionUpdatedAt }),
 });
 
-export const dbToProcurementPlan = (row: any): ProcurementPlan => ({
-    PlanID: row.plan_id,
-    ProjectID: row.project_id,
-    PlanCode: row.plan_code || '',
-    PlanName: row.plan_name || '',
-    PlanType: row.plan_type || 'EGP',
-    DecisionNumber: row.decision_number || '',
-    DecisionDate: row.decision_date || '',
-    DecisionAgency: row.decision_agency || '',
-    MSCPlanCode: row.msc_plan_code || '',
-    TotalValue: Number(row.total_value) || 0,
-    Status: row.status || 'Active',
-    Notes: row.notes || '',
-    CreatedAt: row.created_at,
-    UpdatedAt: row.updated_at,
-});
 
-export const procurementPlanToDb = (plan: Partial<ProcurementPlan>) => ({
-    ...(plan.PlanID !== undefined && { plan_id: plan.PlanID }),
-    ...(plan.ProjectID !== undefined && { project_id: plan.ProjectID }),
-    ...(plan.PlanCode !== undefined && { plan_code: plan.PlanCode }),
-    ...(plan.PlanName !== undefined && { plan_name: plan.PlanName }),
-    ...(plan.PlanType !== undefined && { plan_type: plan.PlanType }),
-    ...(plan.DecisionNumber !== undefined && { decision_number: plan.DecisionNumber }),
-    ...(plan.DecisionDate !== undefined && { decision_date: plan.DecisionDate }),
-    ...(plan.DecisionAgency !== undefined && { decision_agency: plan.DecisionAgency }),
-    ...(plan.MSCPlanCode !== undefined && { msc_plan_code: plan.MSCPlanCode }),
-    ...(plan.TotalValue !== undefined && { total_value: plan.TotalValue }),
-    ...(plan.Status !== undefined && { status: plan.Status }),
-    ...(plan.Notes !== undefined && { notes: plan.Notes }),
-});
 
 export const dbToCapitalAllocation = (row: any): CapitalAllocation => ({
     AllocationID: row.plan_id,

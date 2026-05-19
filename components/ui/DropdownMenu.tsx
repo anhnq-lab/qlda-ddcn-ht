@@ -11,23 +11,23 @@ import { cn } from '../../lib/utils';
 
 const contentStyles = cn(
     'z-50 min-w-[8rem] overflow-hidden rounded-xl border shadow-dropdown',
-    'bg-[var(--bg-surface)] border-[var(--border-default)]',
-    'text-[var(--text-primary)]',
+    'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700',
+    'text-slate-900 dark:text-slate-100',
     'data-[state=open]:animate-fade-in-down data-[state=closed]:animate-fade-out',
     'p-1'
 );
 
 const itemStyles = cn(
     'relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-3 py-2',
-    'text-sm text-[var(--text-primary)]',
+    'text-sm text-slate-700 dark:text-slate-200',
     'outline-none transition-colors duration-150',
-    'focus:bg-[var(--bg-muted)] focus:text-[var(--text-primary)]',
+    'focus:bg-slate-100 dark:focus:bg-slate-700 focus:text-slate-900 dark:focus:text-white',
     'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
 );
 
-const separatorStyles = 'my-1 h-px bg-[var(--border-default)]';
+const separatorStyles = 'my-1 h-px bg-slate-200 dark:bg-slate-700';
 
-const labelStyles = 'px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]';
+const labelStyles = 'px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400';
 
 // ── Root ──────────────────────────────────────────────────────
 export const DropdownMenu = RadixDropdown.Root;
@@ -114,7 +114,7 @@ export const DropdownMenuSubTrigger = React.forwardRef<
 >(({ className, inset, children, ...props }, ref) => (
     <RadixDropdown.SubTrigger
         ref={ref}
-        className={cn(itemStyles, 'data-[state=open]:bg-[var(--bg-muted)]', inset && 'pl-8', className)}
+        className={cn(itemStyles, 'data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-700', inset && 'pl-8', className)}
         {...props}
     >
         {children}
@@ -165,7 +165,7 @@ DropdownMenuSeparator.displayName = RadixDropdown.Separator.displayName;
 // ── Shortcut ──────────────────────────────────────────────────
 export const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
     <span
-        className={cn('ml-auto text-[10px] tracking-widest text-[var(--text-muted)]', className)}
+        className={cn('ml-auto text-[10px] tracking-widest text-slate-500 dark:text-slate-400', className)}
         {...props}
     />
 );

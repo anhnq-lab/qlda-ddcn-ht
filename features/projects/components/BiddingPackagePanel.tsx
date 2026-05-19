@@ -14,8 +14,7 @@ import { BiddingPackageFormSchema, type BiddingPackageFormValues } from '../../.
 // BIDDING PACKAGE MODAL - NĐ 214/2025 Compliance
 // ========================================
 
-interface BiddingPackageModalProps {
-    isOpen: boolean;
+interface BiddingPackagePanelProps {
     onClose: () => void;
     projectId: string;
     packageToEdit?: BiddingPackage | null;
@@ -94,7 +93,6 @@ const initialFormData: BiddingPackageFormValues = {
     BidType: 'Online',
     ContractType: 'LumpSum',
     Status: PackageStatus.Selection,
-    KHLCNTCode: '',
     NotificationCode: '',
     DecisionNumber: '',
     DecisionDate: '',
@@ -109,18 +107,13 @@ const initialFormData: BiddingPackageFormValues = {
     SelectionDuration: '45 ngày',
     SelectionStartDate: '',
     HasOption: 'false',
-    // Plan Group
-    PlanGroupName: '',
-    PlanDecisionNumber: '',
-    PlanDecisionDate: '',
     // Báo cáo đấu thầu
     BiddingScope: 'Domestic',
     BiddersCount: '',
     EvaluationBiddersCount: '',
 };
 
-export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
-    isOpen,
+export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
     onClose,
     projectId,
     packageToEdit,
@@ -150,11 +143,9 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
     const watchStatus = watch('Status');
     const watchWinningPrice = watch('WinningPrice');
 
-    // Fetch contractors for winner selection
     const { data: contractors } = useQuery({
         queryKey: ['contractors'],
         queryFn: (): Promise<any[]> => ApiClient.get('/api/contractors', (): any[] => []),
-        enabled: isOpen,
     });
 
     // NĐ 214/2025: Auto-detect applicable selection method based on price + field
@@ -191,7 +182,6 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 BidType: (packageToEdit.BidType as BiddingPackageFormValues['BidType']) || 'Online',
                 ContractType: (packageToEdit.ContractType as BiddingPackageFormValues['ContractType']) || 'LumpSum',
                 Status: packageToEdit.Status || PackageStatus.Selection,
-                KHLCNTCode: packageToEdit.KHLCNTCode || '',
                 NotificationCode: packageToEdit.NotificationCode || '',
                 DecisionNumber: packageToEdit.DecisionNumber || '',
                 DecisionDate: packageToEdit.DecisionDate || '',
@@ -214,7 +204,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             reset(initialFormData);
         }
         setActiveTab('basic');
-    }, [packageToEdit, isOpen, reset]);
+    }, [packageToEdit, reset]);
 
     // Create mutation
     const createMutation = useMutation({
@@ -251,7 +241,6 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             BidType: data.BidType as any,
             ContractType: data.ContractType as any,
             Status: data.Status as PackageStatus,
-            KHLCNTCode: data.KHLCNTCode || undefined,
             NotificationCode: data.NotificationCode || undefined,
             DecisionNumber: data.DecisionNumber || undefined,
             DecisionDate: data.DecisionDate || undefined,
@@ -266,11 +255,6 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             SelectionDuration: data.SelectionDuration || undefined,
             SelectionStartDate: data.SelectionStartDate || undefined,
             HasOption: data.HasOption === 'true',
-            PlanID: planId || undefined,
-            // Plan Group
-            PlanGroupName: data.PlanGroupName || undefined,
-            PlanDecisionNumber: data.PlanDecisionNumber || undefined,
-            PlanDecisionDate: data.PlanDecisionDate || undefined,
             // Báo cáo đấu thầu
             BiddingScope: (data.BiddingScope as any) || 'Domestic',
             BiddersCount: data.BiddersCount ? parseInt(data.BiddersCount) : undefined,
@@ -284,8 +268,6 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
         }
     });
 
-    if (!isOpen) return null;
-
     const tabs = [
         { id: 'basic', label: 'Thông tin cơ bản', icon: FileText },
         { id: 'legal', label: 'Phân loại pháp lý', icon: Building2 },
@@ -294,35 +276,16 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
     ] as const;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
-                onClick={onClose}
-            />
+        <form onSubmit={onFormSubmit} className="flex flex-col h-full bg-white dark:bg-slate-800">
+            {/* Subtitle / Context */}
+            <div className="px-6 py-3 bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700">
+                <p className="text-sm text-gray-500 dark:text-slate-400">
+                    <LegalReferenceLink text="Theo quy định NĐ 175/2024 và Luật Đấu thầu" />
+                </p>
+            </div>
 
-            {/* Modal */}
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-4xl max-h-[90vh] overflow-hidden animate-scale-in">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100">
-                            {isEditMode ? 'Chỉnh sửa gói thầu' : 'Thêm gói thầu mới'}
-                        </h2>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                            <LegalReferenceLink text="Theo quy định NĐ 175/2024 và Luật Đấu thầu" />
-                        </p>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                    >
-                        <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
-                    </button>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex border-b border-gray-200 dark:border-slate-700 px-6">
+            {/* Tabs */}
+            <div className="flex border-b border-gray-200 dark:border-slate-700 px-6 shrink-0 overflow-x-auto">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -341,9 +304,8 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                     ))}
                 </div>
 
-                {/* Form */}
-                <form onSubmit={onFormSubmit}>
-                    <div className="p-4 overflow-y-auto max-h-[calc(90vh-200px)]">
+            {/* Form Content */}
+            <div className="flex-1 overflow-y-auto p-6">
                         {/* Tab: Basic Info */}
                         {activeTab === 'basic' && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -652,106 +614,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                         {/* Tab: Timeline */}
                         {activeTab === 'timeline' && (
                             <div className="space-y-6">
-                                {/* KHLCNT Section */}
-                                <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded-xl">
-                                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Kế hoạch lựa chọn nhà thầu</h4>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Mã KHLCNT
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: PL202400001"
-                                                {...register('KHLCNTCode')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Số QĐ phê duyệt KHLCNT
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: 123/QĐ-UBND"
-                                                {...register('DecisionNumber')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Ngày phê duyệt KHLCNT
-                                            </label>
-                                            <input
-                                                type="date"
-                                                {...register('DecisionDate')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Thời gian tổ chức LCNT
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: 45 ngày"
-                                                {...register('SelectionDuration')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Thời gian bắt đầu tổ chức LCNT
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: Quý I/2026 hoặc Tháng 3/2026"
-                                                {...register('SelectionStartDate')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Plan Group Section */}
-                                <div className="p-4 bg-primary-50 dark:bg-primary-950/30 rounded-xl">
-                                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Nhóm Kế hoạch LCNT (giai đoạn)</h4>
-                                    <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Trên muasamcong.vn, mỗi KHLCNT (giai đoạn) có mã riêng. Dùng để group các gói thầu theo kế hoạch.</p>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Tên nhóm kế hoạch
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: KHLCNT giai đoạn 1 - Tư vấn"
-                                                {...register('PlanGroupName')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Số QĐ phê duyệt KH
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="VD: 456/QĐ-UBND"
-                                                {...register('PlanDecisionNumber')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                                Ngày QĐ phê duyệt KH
-                                            </label>
-                                            <input
-                                                type="date"
-                                                {...register('PlanDecisionDate')}
-                                                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* TBMT Section */}
                                 {/* TBMT Section */}
                                 <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl">
                                     <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Thông báo mời thầu (E-TBMT)</h4>
@@ -868,44 +731,42 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                         )}
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="flex items-center gap-2 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Đang xử lý...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="w-4 h-4" />
-                                    {isEditMode ? 'Cập nhật' : 'Tạo gói thầu'}
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </form>
-
-                {/* Error display */}
-                {(createMutation.isError || updateMutation.isError) && (
-                    <div className="absolute bottom-20 left-6 right-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
-                        Có lỗi xảy ra. Vui lòng thử lại.
-                    </div>
-                )}
+            {/* Footer */}
+            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                >
+                    Hủy
+                </button>
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex items-center gap-2 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Đang xử lý...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="w-4 h-4" />
+                            {isEditMode ? 'Cập nhật' : 'Tạo gói thầu'}
+                        </>
+                    )}
+                </button>
             </div>
-        </div>
+
+            {/* Error display */}
+            {(createMutation.isError || updateMutation.isError) && (
+                <div className="absolute bottom-20 left-6 right-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
+                    Có lỗi xảy ra. Vui lòng thử lại.
+                </div>
+            )}
+        </form>
     );
 };
 
-export default BiddingPackageModal;
+export default BiddingPackagePanel;

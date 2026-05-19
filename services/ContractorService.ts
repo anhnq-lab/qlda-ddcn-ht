@@ -61,9 +61,12 @@ export class ContractorService {
      * Create a new contractor
      */
     static async create(contractorData: Partial<Contractor>): Promise<Contractor> {
-        // Let DB generate contractor_id via default if not provided
+        // Generate UUID on client if DB lacks default (resolves null value constraint)
         const { ContractorID, ...rest } = contractorData;
+        const newId = ContractorID || crypto.randomUUID();
+
         const insertData = contractorToDb({
+            ContractorID: newId,
             FullName: rest.FullName || 'Nhà thầu mới',
             IsForeign: rest.IsForeign || false,
             ContractorType: rest.ContractorType || 'Construction',

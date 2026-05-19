@@ -140,8 +140,8 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                     ${disabled
                         ? 'bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed'
                         : isOpen
-                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-slate-800 dark:border-primary-400'
-                            : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500'
+                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-[#151d2e] dark:border-primary-400'
+                            : 'border-slate-200 dark:border-[#293548] bg-white dark:bg-[#151d2e] hover:border-slate-300 dark:hover:border-slate-500'
                     }
                 `}
             >

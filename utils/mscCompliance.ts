@@ -25,14 +25,14 @@ export function getMSCRequirements(pkg: BiddingPackage): MSCPublishingRequiremen
         }];
     }
 
-    // === 1. KHLCNT (Kế hoạch lựa chọn nhà thầu) ===
-    const hasKHLCNT = !!pkg.KHLCNTCode || !!pkg.DecisionNumber;
+    // === 1. Quyết định phê duyệt dự án/kế hoạch (Thay thế KHLCNT) ===
+    const hasDecision = !!pkg.DecisionNumber;
     requirements.push({
-        documentType: 'KHLCNT',
-        description: 'Kế hoạch lựa chọn nhà thầu (đăng sau khi có QĐ phê duyệt)',
+        documentType: 'QĐPD',
+        description: 'Quyết định phê duyệt dự án (hoặc QĐ phê duyệt dự toán gói thầu)',
         isRequired: true,
         legalBasis: 'Điều 45 Luật Đấu thầu 2023',
-        status: hasKHLCNT ? 'Done' : 'NotDone',
+        status: hasDecision ? 'Done' : 'NotDone',
         deadline: pkg.DecisionDate ? addDays(pkg.DecisionDate, 7) : undefined,
     });
 
@@ -142,7 +142,7 @@ export function getMSCSummary(packages: BiddingPackage[]): {
 }
 
 /**
- * Generate link muasamcong.vn cho KHLCNT
+ * Generate link muasamcong.vn cho Kế hoạch dự án
  */
 export function getMSCPlanLink(mscPlanCode: string): string {
     if (!mscPlanCode) return '';

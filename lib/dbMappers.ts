@@ -15,7 +15,6 @@ export { dbToContractor, contractorToDb } from './mappers/contractorMappers';
 export {
     dbToProject, projectToDb,
     dbToBiddingPackage, biddingPackageToDb,
-    dbToProcurementPlan, procurementPlanToDb,
     dbToCapitalAllocation,
 } from './mappers/projectMappers';
 

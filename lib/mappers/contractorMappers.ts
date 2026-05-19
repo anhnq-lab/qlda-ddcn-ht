@@ -6,6 +6,7 @@ import type { Contractor, ContractorType } from '../../types';
 export const dbToContractor = (row: any): Contractor => ({
     ContractorID: row.contractor_id,
     CapCertCode: row.cap_cert_code || '',
+    CapCertLink: row.cap_cert_link || '',
     FullName: row.full_name,
     IsForeign: row.is_foreign,
     ContractorType: (row.contractor_type || 'Construction') as ContractorType,
@@ -22,6 +23,7 @@ export const dbToContractor = (row: any): Contractor => ({
 export const contractorToDb = (c: Partial<Contractor>) => ({
     ...(c.ContractorID !== undefined && { contractor_id: c.ContractorID }),
     ...(c.CapCertCode !== undefined && { cap_cert_code: c.CapCertCode || null }),
+    ...(c.CapCertLink !== undefined && { cap_cert_link: c.CapCertLink || null }),
     ...(c.FullName !== undefined && { full_name: c.FullName }),
     ...(c.IsForeign !== undefined && { is_foreign: c.IsForeign }),
     ...(c.ContractorType !== undefined && { contractor_type: c.ContractorType }),

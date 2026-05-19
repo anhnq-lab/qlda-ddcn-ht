@@ -26,7 +26,7 @@ const KB_ARTICLES: Article[] = [
   },
   {
     id: 'a2',
-    title: 'Quy trình lập Kế hoạch Lựa chọn nhà thầu (KHLCNT)',
+    title: 'Quy trình quản lý các gói thầu',
     excerpt: 'Các bước thêm gói thầu, phân bổ chi phí dự toán vào gói thầu, cài đặt hình thức LCNT.',
     type: 'doc',
     module: 'bidding',

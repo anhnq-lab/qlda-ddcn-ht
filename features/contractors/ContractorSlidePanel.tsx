@@ -6,7 +6,7 @@ import { formatShortCurrency } from '../../utils/format';
 import {
     X, Building2, MapPin, Phone, Hash, Calendar, FileText,
     CircleDollarSign, User, Award, Briefcase, Pencil, Loader2,
-    ChevronRight, ExternalLink
+    ChevronRight, ExternalLink, Globe
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -135,7 +135,7 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
         { icon: Phone, label: 'Liên hệ', value: contractor.ContactInfo },
         { icon: User, label: 'Người đại diện', value: contractor.Representative },
         { icon: Calendar, label: 'Năm thành lập', value: contractor.EstablishedYear ? String(contractor.EstablishedYear) : undefined },
-        { icon: Award, label: 'Chứng chỉ năng lực', value: contractor.CapCertCode },
+        { icon: Award, label: 'Chứng chỉ năng lực', value: contractor.CapCertCode, link: contractor.CapCertLink },
     ].filter(item => item.value);
 
     const statusInfo = (status: number) => CONTRACT_STATUS_MAP[status] || { label: `Trạng thái ${status}`, color: 'text-gray-500 bg-gray-100' };
@@ -254,7 +254,13 @@ const ContractorSlidePanel: React.FC<ContractorSlidePanelProps> = ({ contractor,
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-medium">{item.label}</p>
-                                                <p className="text-sm text-gray-800 dark:text-slate-200 font-medium truncate mt-0.5">{item.value}</p>
+                                                {item.link ? (
+                                                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 dark:text-blue-400 font-medium truncate mt-0.5 hover:underline flex items-center gap-1">
+                                                        {item.value} <Globe className="w-3 h-3" />
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-sm text-gray-800 dark:text-slate-200 font-medium truncate mt-0.5">{item.value}</p>
+                                                )}
                                             </div>
                                         </div>
                                     )) : (

@@ -46,7 +46,6 @@ export const BiddingPackageFormSchema = z.object({
     HasOption: HasOptionSchema,
 
     // Optional text / date fields (all strings, empty string = absent)
-    KHLCNTCode: z.string(),
     NotificationCode: z.string(),
     DecisionNumber: z.string(),
     DecisionDate: z.string(),
@@ -60,10 +59,6 @@ export const BiddingPackageFormSchema = z.object({
     Description: z.string(),
     SelectionDuration: z.string(),
     SelectionStartDate: z.string(),
-    // Plan Group
-    PlanGroupName: z.string(),
-    PlanDecisionNumber: z.string(),
-    PlanDecisionDate: z.string(),
     // Báo cáo đấu thầu
     BiddersCount: z.string(),
     EvaluationBiddersCount: z.string(),

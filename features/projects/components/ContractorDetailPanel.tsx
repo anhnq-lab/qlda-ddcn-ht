@@ -25,6 +25,7 @@ interface ContractorData {
     established_year: number | null;
     contractor_type: string | null;
     cap_cert_code: string | null;
+    cap_cert_link: string | null;
     op_license_no: string | null;
 }
 
@@ -212,7 +213,7 @@ const OverviewTab: React.FC<{ contractor: ContractorData, contractorId: string, 
                 </div>
                 <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
                     {contractor.cap_cert_code ? (
-                        <InfoRow icon={Award} label="Mã chứng chỉ năng lực" value={contractor.cap_cert_code} />
+                        <InfoRow icon={Award} label="Mã chứng chỉ năng lực" value={contractor.cap_cert_code} link={contractor.cap_cert_link || undefined} />
                     ) : (
                         <EmptyRow icon={Award} label="Mã chứng chỉ năng lực" />
                     )}
@@ -469,14 +470,20 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
 // UTILITY COMPONENTS
 // ==========================================
 
-const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string }> = ({ icon: Icon, label, value }) => (
+const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string; link?: string }> = ({ icon: Icon, label, value, link }) => (
     <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
         <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
             <Icon className="w-3.5 h-3.5 text-gray-500 dark:text-slate-400" />
         </div>
         <div className="flex-1 min-w-0">
             <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-bold">{label}</p>
-            <p className="text-sm text-gray-800 dark:text-slate-200 font-medium mt-0.5" style={{ wordBreak: 'break-word' }}>{value}</p>
+            {link ? (
+                <a href={link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 font-medium mt-0.5 hover:underline flex items-center gap-1" style={{ wordBreak: 'break-word' }}>
+                    {value} <Globe className="w-3 h-3" />
+                </a>
+            ) : (
+                <p className="text-sm text-gray-800 dark:text-slate-200 font-medium mt-0.5" style={{ wordBreak: 'break-word' }}>{value}</p>
+            )}
         </div>
     </div>
 );

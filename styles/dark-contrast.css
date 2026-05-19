@@ -74,7 +74,8 @@
 .dark hr { border-color: #293548 !important; }
 
 /* ── 7. FORM — legacy inputs without CSS variables ──────────────────────── */
-.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="bg-[var"]) {
+.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="bg-[var"]),
+.dark select:not([class*="bg-[var"]) {
     background-color: #151d2e !important;
     border-color: #293548 !important;
     color: #e2e8f0 !important;

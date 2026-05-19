@@ -1,7 +1,7 @@
 // Project Service - Supabase CRUD operations
 import { supabase } from '../lib/supabase';
-import { dbToProject, projectToDb, dbToBiddingPackage, dbToCapitalAllocation, dbToProcurementPlan, procurementPlanToDb, biddingPackageToDb } from '../lib/dbMappers';
-import { Project, ProjectStatus, ProjectGroup, BiddingPackage, ProcurementPlan, CapitalAllocation, Disbursement } from '../types';
+import { dbToProject, projectToDb, dbToBiddingPackage, dbToCapitalAllocation, biddingPackageToDb } from '../lib/dbMappers';
+import { Project, ProjectStatus, ProjectGroup, BiddingPackage, CapitalAllocation, Disbursement } from '../types';
 import type { QueryParams } from '../types/api';
 import { CapitalService } from './CapitalService';
 import { ServiceError, toServiceError } from './ServiceError';
@@ -414,7 +414,7 @@ export class ProjectService {
     static async getPackagesByProject(projectId: string): Promise<BiddingPackage[]> {
         const { data, error } = await supabase
             .from('bidding_packages')
-            .select('*')
+            .select('*, contractors(full_name)')
             .eq('project_id', projectId)
             .order('sort_order', { ascending: true })
             .order('created_at', { ascending: true });
@@ -422,6 +422,7 @@ export class ProjectService {
         if (error) throw new Error(`Failed to fetch packages: ${error.message}`);
         return (data || []).map(dbToBiddingPackage);
     }
+
 
     /**
      * Create a new bidding package
@@ -511,118 +512,6 @@ export class ProjectService {
         // Plan total is auto-recalculated by DB trigger trg_recalculate_plan_total
     }
 
-    // ============================================================
-    // PROCUREMENT PLANS (KHLCNT)
-    // ============================================================
-
-    /** Get all KHLCNT for a project */
-    static async getPlansByProject(projectId: string): Promise<ProcurementPlan[]> {
-        const { data, error } = await supabase
-            .from('procurement_plans')
-            .select('*')
-            .eq('project_id', projectId)
-            .order('created_at', { ascending: true });
-
-        if (error) throw new Error(`Failed to fetch plans: ${error.message}`);
-        return (data || []).map(dbToProcurementPlan);
-    }
-
-    /** Create a new KHLCNT */
-    static async createPlan(plan: Partial<ProcurementPlan>): Promise<ProcurementPlan> {
-        const dbRow = procurementPlanToDb(plan);
-        const { data, error } = await supabase
-            .from('procurement_plans')
-            .insert(dbRow as any)
-            .select()
-            .single();
-
-        if (error) throw new Error(`Failed to create plan: ${error.message}`);
-        return dbToProcurementPlan(data);
-    }
-
-    /** Update a KHLCNT */
-    static async updatePlan(planId: string, updates: Partial<ProcurementPlan>): Promise<ProcurementPlan> {
-        const dbRow = procurementPlanToDb(updates);
-        const { data, error } = await supabase
-            .from('procurement_plans')
-            .update(dbRow as any)
-            .eq('plan_id', planId)
-            .select()
-            .single();
-
-        if (error) throw new Error(`Failed to update plan: ${error.message}`);
-        return dbToProcurementPlan(data);
-    }
-
-    /** Delete a KHLCNT — with safety check for Awarded/contracted packages */
-    static async deletePlan(planId: string): Promise<void> {
-        // Safety: check if plan has packages with Awarded status or contracts
-        const { data: packages } = await (supabase as any)
-            .from('bidding_packages')
-            .select('package_id, status')
-            .eq('plan_id', planId);
-
-        if (packages && packages.length > 0) {
-            const awardedPkgs = packages.filter((p: any) => p.status === 'Awarded');
-            if (awardedPkgs.length > 0) {
-                throw new Error(
-                    `Không thể xóa KHLCNT: có ${awardedPkgs.length} gói thầu đã có kết quả LCNT. Hãy hủy kết quả trước.`
-                );
-            }
-
-            // Check if any package has contracts
-            const pkgIds = packages.map((p: any) => p.package_id);
-            const { data: contracts } = await supabase
-                .from('contracts')
-                .select('contract_id')
-                .in('package_id', pkgIds)
-                .limit(1);
-
-            if (contracts && contracts.length > 0) {
-                throw new Error(
-                    'Không thể xóa KHLCNT: có gói thầu đã ký hợp đồng. Hãy xóa hợp đồng trước.'
-                );
-            }
-        }
-
-        // 1. Delete all bidding packages associated with this plan
-        const { error: pkgError } = await (supabase as any)
-            .from('bidding_packages')
-            .delete()
-            .eq('plan_id', planId);
-
-        if (pkgError) throw new Error(`Failed to delete associated packages: ${pkgError.message}`);
-
-        // 2. Then delete the plan itself
-        const { error } = await supabase
-            .from('procurement_plans')
-            .delete()
-            .eq('plan_id', planId);
-
-        if (error) throw new Error(`Failed to delete plan: ${error.message}`);
-    }
-
-    /** Assign packages to a KHLCNT */
-    static async assignPackagesToPlan(planId: string, packageIds: string[]): Promise<void> {
-        const { error } = await supabase
-            .from('bidding_packages')
-            .update({ plan_id: planId } as any)
-            .in('package_id', packageIds);
-
-        if (error) throw new Error(`Failed to assign packages: ${error.message}`);
-    }
-
-    /** Remove a package from its KHLCNT */
-    static async removePackageFromPlan(packageId: string): Promise<void> {
-        const { error } = await supabase
-            .from('bidding_packages')
-            .update({ plan_id: null } as any)
-            .eq('package_id', packageId);
-
-        if (error) throw new Error(`Failed to remove package from plan: ${error.message}`);
-    }
-
-    // recalculatePlanTotal removed — handled by DB trigger trg_recalculate_plan_total
 
     /**
      * Get capital and disbursement info (NĐ 99/2021/NĐ-CP)

@@ -127,10 +127,10 @@ export const Select: React.FC<SelectProps> = ({
                         disabled={disabled}
                         className={cn(
                             "w-full flex items-center justify-between gap-2",
-                            "bg-white dark:bg-slate-800 border rounded-xl",
+                            "bg-white dark:bg-[#151d2e] border rounded-xl",
                             "text-left transition-all duration-200",
                             "focus:outline-none focus:ring-2",
-                            "disabled:bg-slate-50 dark:bg-slate-800 dark:disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed",
+                            "disabled:bg-slate-50 dark:disabled:bg-[#151d2e] disabled:text-slate-500 disabled:cursor-not-allowed",
                             sizeStyles[size],
                             isOpen ? "ring-2 ring-primary-100 dark:ring-primary-900 border-primary-500" : "",
                             hasError
@@ -167,13 +167,13 @@ export const Select: React.FC<SelectProps> = ({
                             }
                         }}
                         className={cn(
-                            "z-[70] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl shadow-dropdown overflow-hidden",
+                            "z-[70] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-dropdown overflow-hidden",
                             "animate-in data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200"
                         )}
                     >
                         {/* Search Input */}
                         {searchable && (
-                            <div className="p-2 border-b border-slate-200 dark:border-slate-800">
+                            <div className="p-2 border-b border-slate-200 dark:border-slate-700">
                                 <div className="relative flex items-center">
                                     <Search className="absolute left-3 w-4 h-4 text-slate-400" />
                                     <input
@@ -182,7 +182,7 @@ export const Select: React.FC<SelectProps> = ({
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         placeholder="Tìm kiếm..."
-                                        className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border-0 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border-0 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     />
                                 </div>
                             </div>

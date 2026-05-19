@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useContractors } from '../../hooks/useContractors';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { useContracts } from '../../hooks/useContracts';
-import { ArrowLeft, Building2, MapPin, Phone, FileText, DollarSign, Award, User, Calendar, Hash, Briefcase } from 'lucide-react';
+import { ArrowLeft, Building2, MapPin, Phone, FileText, DollarSign, Award, User, Calendar, Hash, Briefcase, Globe } from 'lucide-react';
 
 const ContractorDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -34,7 +34,7 @@ const ContractorDetail: React.FC = () => {
         { icon: Phone, label: 'Liên hệ', value: contractor.ContactInfo },
         { icon: User, label: 'Người đại diện', value: contractor.Representative },
         { icon: Calendar, label: 'Năm thành lập', value: contractor.EstablishedYear ? String(contractor.EstablishedYear) : undefined },
-        { icon: Award, label: 'Mã chứng chỉ năng lực', value: contractor.CapCertCode },
+        { icon: Award, label: 'Mã chứng chỉ năng lực', value: contractor.CapCertCode, link: contractor.CapCertLink },
     ].filter(item => item.value);
 
     const statCards = [
@@ -67,7 +67,13 @@ const ContractorDetail: React.FC = () => {
                                     <p key={item.label} className="flex items-center gap-2 text-gray-600 dark:text-slate-300">
                                         <item.icon className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
                                         <span className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase w-28 shrink-0">{item.label}:</span>
-                                        <span className="font-medium">{item.value}</span>
+                                        {item.link ? (
+                                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center gap-1">
+                                                {item.value} <Globe className="w-3 h-3" />
+                                            </a>
+                                        ) : (
+                                            <span className="font-medium">{item.value}</span>
+                                        )}
                                     </p>
                                 ))}
                             </div>

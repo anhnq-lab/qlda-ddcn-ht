@@ -85,8 +85,8 @@ export const DOC_CROSS_REFS: DocCrossRef[] = [
         stepTitle: 'Lựa chọn nhà thầu và ký kết hợp đồng',
         tt24Stt: '9',
         tt24Label: 'Lựa chọn nhà thầu',
-        legalKeywords: ['kế hoạch lựa chọn', 'khlcnt', 'hợp đồng', 'contract'],
-        legalDocName: 'KHLCNT / Hợp đồng',
+        legalKeywords: ['gói thầu', 'hợp đồng', 'contract'],
+        legalDocName: 'Hợp đồng gói thầu',
     },
     {
         stepCode: 'IMPL_PERMIT',

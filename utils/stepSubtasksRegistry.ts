@@ -96,18 +96,18 @@ const PREP_POLICY: SubTaskDef[] = [
 
 const PREP_SURVEY: SubTaskDef[] = [
     {
-        code: 'SURVEY_01', title: 'Lập KHLCNT giai đoạn CBDA',
+        code: 'SURVEY_01', title: 'Lập dự toán giai đoạn CBDA',
         responsible: 'P.KH-ĐT (Ban QLDA)',
         legalBasis: 'Đ36-39 Luật ĐT 2023',
     },
     {
-        code: 'SURVEY_02', title: 'Thẩm định KHLCNT',
+        code: 'SURVEY_02', title: 'Thẩm định dự toán',
         responsible: 'P.KH-ĐT, P.TC-KT',
         estimatedDays: 20,
         legalBasis: 'K3 Đ40 Luật ĐT 2023',
     },
     {
-        code: 'SURVEY_03', title: 'Phê duyệt KHLCNT',
+        code: 'SURVEY_03', title: 'Phê duyệt dự toán',
         responsible: 'Giám đốc Ban QLDA',
         estimatedDays: 10,
         legalBasis: 'Đ39, K2 Đ40 Luật ĐT 2023',
@@ -329,26 +329,26 @@ const IMPL_PERMIT: SubTaskDef[] = [
 
 const IMPL_BIDDING: SubTaskDef[] = [
     {
-        code: 'BID_01', title: 'Lập Tờ trình KHLCNT giai đoạn THDA',
+        code: 'BID_01', title: 'Lập Tờ trình dự toán gói thầu giai đoạn THDA',
         responsible: 'P.KH-ĐT (Ban QLDA)',
-        templatePath: 'mau-07-van-ban-trinh-duyet-khlcnt.md',
-        templateLabel: 'Mẫu 07 – VB trình duyệt KHLCNT',
+        templatePath: 'mau-07-van-ban-trinh-duyet-du-toan-goi-thau.md',
+        templateLabel: 'Mẫu 07 – VB trình duyệt dự toán gói thầu',
     },
     {
-        code: 'BID_02', title: 'Thẩm định KHLCNT',
+        code: 'BID_02', title: 'Thẩm định dự toán gói thầu',
         responsible: 'Sở TC TP.HCM',
         estimatedDays: 20,
         legalBasis: 'K3 Đ45 Luật ĐT 2023',
-        templatePath: 'mau-08-bc-tham-dinh-khlcnt.md',
-        templateLabel: 'Mẫu 08 – BC thẩm định KHLCNT',
+        templatePath: 'mau-08-bc-tham-dinh-du-toan-goi-thau.md',
+        templateLabel: 'Mẫu 08 – BC thẩm định dự toán gói thầu',
     },
     {
-        code: 'BID_03', title: 'Phê duyệt KHLCNT',
+        code: 'BID_03', title: 'Phê duyệt dự toán gói thầu',
         responsible: 'Giám đốc Ban QLDA',
         estimatedDays: 10,
         legalBasis: 'Đ40 Luật ĐT 2023',
-        templatePath: 'mau-09-qd-phe-duyet-khlcnt.md',
-        templateLabel: 'Mẫu 09 – QĐ phê duyệt KHLCNT',
+        templatePath: 'mau-09-qd-phe-duyet-du-toan-goi-thau.md',
+        templateLabel: 'Mẫu 09 – QĐ phê duyệt dự toán gói thầu',
     },
     {
         code: 'BID_04', title: 'Lập HSMT/HSYC',

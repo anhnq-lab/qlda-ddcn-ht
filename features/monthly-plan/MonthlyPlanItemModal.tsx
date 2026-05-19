@@ -590,7 +590,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                     outline: none; transition: border-color 0.15s, box-shadow 0.15s;
                 }
                 .field-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-                .dark .field-input { background: #1e293b; border-color: #475569; color: #e2e8f0; }
+                .dark .field-input { background: #151d2e; border-color: #293548; color: #e2e8f0; }
                 .dark .field-input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.2); }
             `}</style>
         </div>

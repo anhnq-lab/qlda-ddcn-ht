@@ -5,7 +5,8 @@ import {
     AlertTriangle, CheckCircle2, Phone, Mail, MapPin, Target, DollarSign,
     ClipboardList, Gavel, FileSignature, Calculator, Package,
     Plus, Trash2, Save, UserCheck, TrendingDown, Globe, BadgeCheck,
-    CalendarDays, ChevronRight,
+    CalendarDays, ChevronRight, Shield, FileText, Download, Info,
+    ArrowRight, Percent, Bell,
 } from 'lucide-react';
 import { BiddingPackage, PackageStatus, ContractStatus, PaymentStatus, PackagePersonnel } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/format';
@@ -14,11 +15,12 @@ import { usePayments, useSubmitPayment, useApprovePayment, useTransferPayment, u
 import { useContractors } from '../../../hooks/useContractors';
 import { PaymentService } from '../../../services/PaymentService';
 import { useAuth } from '../../../context/AuthContext';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { WinningContractorSelector } from './WinningContractorSelector';
 import { BidderListSection } from './BidderEvaluationSection';
 import { ContractFormInline } from './ContractFormInline';
 import { PaymentFormInline } from './PaymentFormInline';
-import { useVariationOrders } from '../../../hooks/useVariationOrders';
+import { useVariationOrders, useCreateVariationOrder, useUpdateVariationOrder, useDeleteVariationOrder } from '../../../hooks/useVariationOrders';
 import { AcceptanceSection } from './AcceptanceSection';
 import { DocumentAttachments } from '../../../components/common/DocumentAttachments';
 import { SettlementSection } from './SettlementSection';
@@ -26,11 +28,13 @@ import ContractDetail from '../../contracts/ContractDetail';
 import { useSlidePanel } from '../../../context/SlidePanelContext';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ProjectService } from '../../../services/ProjectService';
+import { VariationOrderFormInline } from './VariationOrderFormInline';
+import { useToast } from '../../../components/ui/Toast';
 
 // ========================================
 // BIDDING PACKAGE DETAIL — Vòng đời quản lý gói thầu
 // 3 trạng thái: Lựa chọn nhà thầu → Đang thực hiện → Kết thúc
-// 4 tab: Tổng quan | Nhà thầu | Hợp đồng | Thanh quyết toán
+// 4 tab: Thông tin | Lựa chọn nhà thầu | Hợp đồng | Thanh toán
 // ========================================
 
 interface BiddingPackageDetailProps {
@@ -88,7 +92,13 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const [personnelList, setPersonnelList] = useState<PackagePersonnel[]>([]);
     const [personnelLoaded, setPersonnelLoaded] = useState(false);
     const [isSavingPersonnel, setIsSavingPersonnel] = useState(false);
+    const [isAddingVO, setIsAddingVO] = useState(false);
+    const [editingVO, setEditingVO] = useState<string | null>(null); // VOID being edited
+    const [completionPct, setCompletionPct] = useState<number>(pkg?.CompletionPct ?? 0);
+    const [isSavingPct, setIsSavingPct] = useState(false);
     const { openPanel } = useSlidePanel();
+    const { addToast } = useToast();
+    const queryClient = useQueryClient();
 
     React.useEffect(() => {
         if (initialTab) setActiveTab(initialTab as TabType);
@@ -108,7 +118,35 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const { contractors } = useContractors();
 
     const relatedContractInit = contracts.find(c => c.PackageID === pkg?.PackageID);
-    const { variationOrders } = useVariationOrders(relatedContractInit?.ContractID || '');
+    const contractId = relatedContractInit?.ContractID || '';
+    const { variationOrders } = useVariationOrders(contractId);
+    const createVO = useCreateVariationOrder(contractId);
+    const updateVO = useUpdateVariationOrder(contractId);
+    const deleteVO = useDeleteVariationOrder(contractId);
+
+    // Status transition mutation
+    const updateStatusMutation = useMutation({
+        mutationFn: (newStatus: PackageStatus) =>
+            ProjectService.updatePackage(pkg!.PackageID, { Status: newStatus }),
+        onSuccess: (updated) => {
+            queryClient.invalidateQueries({ queryKey: ['project-packages'] });
+            addToast({ title: 'Thành công', message: `Đã chuyển trạng thái gói thầu`, type: 'success' });
+        },
+        onError: () => addToast({ title: 'Lỗi', message: 'Không thể cập nhật trạng thái', type: 'error' }),
+    });
+
+    const saveCompletionPct = async (pct: number) => {
+        setIsSavingPct(true);
+        try {
+            await ProjectService.updatePackage(pkg!.PackageID, {
+                CompletionPct: pct,
+                CompletionUpdatedAt: new Date().toISOString(),
+            });
+            queryClient.invalidateQueries({ queryKey: ['project-packages'] });
+        } finally {
+            setIsSavingPct(false);
+        }
+    };
 
     if (!isOpen || !pkg) return null;
 
@@ -155,10 +193,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     };
 
     const tabs = [
-        { id: 'overview' as TabType, label: 'Tổng quan', icon: BarChart3 },
-        { id: 'contractor' as TabType, label: 'Nhà thầu', icon: Users },
+        { id: 'overview' as TabType, label: 'Thông tin', icon: BarChart3 },
+        { id: 'contractor' as TabType, label: 'Lựa chọn nhà thầu', icon: Users },
         { id: 'contract' as TabType, label: 'Hợp đồng', icon: FileSignature },
-        { id: 'settlement' as TabType, label: 'Thanh quyết toán', icon: Calculator },
+        { id: 'settlement' as TabType, label: 'Thanh toán', icon: Calculator },
     ];
 
     const content = (
@@ -206,6 +244,56 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 </div>
             </div>
 
+            {/* Status Action Bar — Chuyển trạng thái vòng đời */}
+            {(() => {
+                const canTransitionToExecution =
+                    pkg.Status === PackageStatus.Selection &&
+                    pkg.WinningContractorID && pkg.ApprovalDate_Result;
+                const canComplete =
+                    pkg.Status === PackageStatus.Execution &&
+                    relatedContract && paymentProgress >= 95;
+                const canCancel = pkg.Status === PackageStatus.Execution;
+                if (!canTransitionToExecution && !canComplete && !canCancel) return null;
+                return (
+                    <div className="shrink-0 px-6 py-2 border-b border-gray-200 dark:border-slate-700 bg-amber-50 dark:bg-amber-900/10 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
+                            <Bell className="w-3.5 h-3.5 shrink-0" />
+                            {canTransitionToExecution && <span>Đã có KQLCNT — gói thầu sẵn sàng chuyển sang Đang thực hiện</span>}
+                            {canComplete && <span>Thanh toán ≥ 95% — gói thầu có thể hoàn thành</span>}
+                            {canCancel && !canComplete && <span>Gói thầu đang thực hiện hợp đồng</span>}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            {canTransitionToExecution && (
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Xác nhận chuyển gói thầu sang trạng thái "Đang thực hiện"?'))
+                                            updateStatusMutation.mutate(PackageStatus.Execution);
+                                    }}
+                                    disabled={updateStatusMutation.isPending}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                    <ArrowRight className="w-3.5 h-3.5" />
+                                    {updateStatusMutation.isPending ? 'Đang lưu...' : 'Chuyển sang Đang thực hiện'}
+                                </button>
+                            )}
+                            {canComplete && (
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Xác nhận hoàn thành gói thầu?'))
+                                            updateStatusMutation.mutate(PackageStatus.Completed);
+                                    }}
+                                    disabled={updateStatusMutation.isPending}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    Hoàn thành gói thầu
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            })()}
+
             {/* Tabs */}
             <div className="shrink-0 flex border-b border-gray-200 dark:border-slate-700 px-6 bg-slate-50 dark:bg-slate-800">
                 {tabs.map(tab => (
@@ -218,6 +306,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 ))}
             </div>
 
+
             {/* Tab Content */}
             <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900">
 
@@ -226,32 +315,109 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     <div className="space-y-4">
                         {/* Phần A: Thông tin chung */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <SectionCard title="Kế hoạch lựa chọn nhà thầu" icon={ClipboardList} color="blue">
-                                <InfoRow label="Mã KHLCNT" value={pkg.KHLCNTCode ? <span className="font-mono">{pkg.KHLCNTCode}</span> : '-'} />
-                                <InfoRow label="QĐ phê duyệt KHLCNT" value={pkg.DecisionNumber || '-'} />
-                                <InfoRow label="Ngày phê duyệt" value={pkg.DecisionDate ? formatDate(pkg.DecisionDate) : '-'} />
-                                <div className="border-t border-gray-100 dark:border-slate-700 my-2" />
+                            <SectionCard title="Thông tin cơ bản" icon={ClipboardList} color="blue">
                                 <InfoRow label="Giá gói thầu" value={<span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(pkg.Price)}</span>} />
+                                {(pkg.EstimatePrice ?? 0) >= 1000 && pkg.EstimatePrice !== pkg.Price && (
+                                    <InfoRow label="Giá dự toán" value={<span className="text-gray-600 dark:text-slate-300">{formatCurrency(pkg.EstimatePrice)}</span>} />
+                                )}
+                                {(pkg.BidFee ?? 0) >= 1000 && (
+                                    <InfoRow label="Phí dự thầu" value={formatCurrency(pkg.BidFee)} />
+                                )}
                                 <InfoRow label="Nguồn vốn" value={pkg.FundingSource || 'Ngân sách Nhà nước'} />
                                 <InfoRow label="Thời gian thực hiện" value={pkg.Duration || '-'} />
+                                {pkg.HasOption && (
+                                    <div className="mt-1">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700 rounded text-xs font-medium">
+                                            <Info className="w-3 h-3" /> Có hạng mục tùy chọn
+                                        </span>
+                                    </div>
+                                )}
                             </SectionCard>
 
                             <SectionCard title="Phương thức & Hình thức" icon={Gavel} color="purple">
                                 <InfoRow label="Lĩnh vực" value={FIELD_LABELS[pkg.Field || ''] || pkg.Field || '-'} />
                                 <InfoRow label="Hình thức LCNT" value={METHOD_LABELS[pkg.SelectionMethod] || pkg.SelectionMethod || '-'} />
-                                <InfoRow label="Phương thức" value={PROCEDURE_LABELS[pkg.SelectionProcedure || ''] || pkg.SelectionProcedure || '-'} />
+                                <InfoRow label="Phương thức" value={
+                                    (pkg.SelectionMethod === 'Appointed' || pkg.SelectionMethod === 'SelfExecution')
+                                        ? <span className="text-gray-400 dark:text-slate-500 italic">Không áp dụng</span>
+                                        : PROCEDURE_LABELS[pkg.SelectionProcedure || ''] || pkg.SelectionProcedure || '-'
+                                } />
                                 <InfoRow label="Loại hợp đồng" value={CONTRACT_TYPE_LABELS[pkg.ContractType] || pkg.ContractType || '-'} />
                                 <InfoRow label="Hình thức đấu thầu" value={
                                     <span className={pkg.BidType === 'Online' ? 'text-blue-600 dark:text-blue-400' : ''}>
                                         {pkg.BidType === 'Online' ? '🌐 Qua mạng (E-Bidding)' : '📋 Trực tiếp'}
                                     </span>
                                 } />
+                                {pkg.BiddingScope && (
+                                    <InfoRow label="Phạm vi" value={
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${pkg.BiddingScope === 'International' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-700' : 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-700'}`}>
+                                            {pkg.BiddingScope === 'International' ? '🌐 Quốc tế' : '🇻🇳 Trong nước'}
+                                        </span>
+                                    } />
+                                )}
+                                {pkg.DecisionAgency && (
+                                    <InfoRow label="Cơ quan phê duyệt" value={pkg.DecisionAgency} />
+                                )}
                             </SectionCard>
                         </div>
+
+                        {/* Section Mô tả gói thầu */}
+                        {pkg.Description && (
+                            <SectionCard title="Mô tả gói thầu" icon={FileText} color="slate">
+                                <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{pkg.Description}</p>
+                            </SectionCard>
+                        )}
+
+                        {/* Section Tuân thủ & Đăng tải MSC */}
+                        {(pkg.MSCPublishStatus || pkg.MSCPackageLink || pkg.DecisionFile) && (
+                            <SectionCard title="Tuân thủ & Đăng tải MSC" icon={Shield} color="amber">
+                                <div className="flex flex-wrap gap-3 items-start">
+                                    {pkg.MSCPublishStatus && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gray-500 dark:text-slate-400">Trạng thái MSC:</span>
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                                pkg.MSCPublishStatus === 'Published' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' :
+                                                pkg.MSCPublishStatus === 'Pending' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400' :
+                                                pkg.MSCPublishStatus === 'Overdue' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400' :
+                                                'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
+                                            }`}>
+                                                {pkg.MSCPublishStatus === 'Published' ? '✓ Đã đăng tải' :
+                                                 pkg.MSCPublishStatus === 'Pending' ? '⏳ Chờ đăng tải' :
+                                                 pkg.MSCPublishStatus === 'Overdue' ? '⚠ Quá hạn đăng tải' :
+                                                 'Không yêu cầu'}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-2 space-y-1.5">
+                                    {pkg.MSCPackageLink && (
+                                        <InfoRow label="Link gói thầu MSC" value={
+                                            <a href={pkg.MSCPackageLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
+                                                Xem trên muasamcong.vn <ExternalLink className="w-3 h-3" />
+                                            </a>
+                                        } />
+                                    )}
+                                    {pkg.DecisionFile && (
+                                        <InfoRow label="File QĐ phê duyệt" value={
+                                            <a href={pkg.DecisionFile} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
+                                                <Download className="w-3 h-3" /> Tải file QĐ
+                                            </a>
+                                        } />
+                                    )}
+                                </div>
+                            </SectionCard>
+                        )}
 
                         {/* Phần B: Tình hình thực hiện — context-aware theo Status */}
                         {pkg.Status === PackageStatus.Selection && (
                             <SectionCard title="Tiến trình lựa chọn nhà thầu" icon={CalendarDays} color="indigo">
+                                {pkg.SelectionStartDate && (
+                                    <div className="mb-3 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
+                                        <CalendarDays className="w-3.5 h-3.5 shrink-0" />
+                                        <span>Bắt đầu LCNT: <span className="font-medium text-gray-700 dark:text-slate-200">{formatDate(pkg.SelectionStartDate)}</span></span>
+                                        {pkg.SelectionDuration && <span className="text-gray-400 dark:text-slate-500">— Thời gian LCNT: {pkg.SelectionDuration}</span>}
+                                    </div>
+                                )}
                                 <div className="relative">
                                     {/* Timeline */}
                                     <div className="flex items-start gap-0 overflow-x-auto pb-2">
@@ -276,6 +442,18 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         ))}
                                     </div>
                                 </div>
+                                {(pkg.BiddersCount || pkg.EvaluationBiddersCount) && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700 grid grid-cols-2 gap-3">
+                                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
+                                            <p className="text-xs text-gray-400 dark:text-slate-500">Số NTh nộp HSDT</p>
+                                            <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">{pkg.BiddersCount ?? '—'}</p>
+                                        </div>
+                                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-center">
+                                            <p className="text-xs text-gray-400 dark:text-slate-500">Vào đánh giá TC</p>
+                                            <p className="font-bold text-indigo-600 dark:text-indigo-400 text-lg">{pkg.EvaluationBiddersCount ?? '—'}</p>
+                                        </div>
+                                    </div>
+                                )}
                                 {pkg.NotificationCode && (
                                     <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
                                         <InfoRow label="Mã TBMT" value={<span className="font-mono text-blue-600 dark:text-blue-400">{pkg.NotificationCode}</span>} />
@@ -295,14 +473,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <StatBox label="Giá trị HĐ (sau ĐC)" value={relatedContract ? formatCurrency(contractValue) : '-'} color="blue" />
                                     <StatBox label="Tiết kiệm" value={savings > 0 ? `${formatCurrency(savings)}` : '-'} sub={savings > 0 ? `${savingsPercent}%` : undefined} color="purple" />
                                 </div>
-                                {relatedContract ? (
-                                    <>
-                                        <div className="mb-2">
+
+                                {/* KPI Bars: Thanh toán + Khối lượng hoàn thành */}
+                                <div className="space-y-3 mb-4">
+                                    {relatedContract && (
+                                        <div>
                                             <div className="flex justify-between text-sm mb-1">
                                                 <span className="text-gray-500 dark:text-slate-400">Tiến độ thanh toán</span>
                                                 <span className="font-bold text-green-600 dark:text-green-400">{paymentProgress.toFixed(1)}%</span>
                                             </div>
-                                            <div className="h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div className="h-2.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(paymentProgress, 100)}%` }} />
                                             </div>
                                             <div className="flex justify-between text-xs text-gray-400 dark:text-slate-500 mt-1">
@@ -310,16 +490,58 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 <span>Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 mt-3">
-                                            <button onClick={() => setActiveTab('contract')} className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline">
-                                                Hợp đồng <ChevronRight className="w-3 h-3" />
-                                            </button>
-                                            <button onClick={() => setActiveTab('settlement')} className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 hover:underline">
-                                                Thanh quyết toán <ChevronRight className="w-3 h-3" />
-                                            </button>
+                                    )}
+
+                                    {/* % Khối lượng hoàn thành — nhập thủ công */}
+                                    <div>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-gray-500 dark:text-slate-400 flex items-center gap-1">
+                                                <Percent className="w-3.5 h-3.5" /> Khối lượng hoàn thành
+                                                {pkg.CompletionUpdatedAt && (
+                                                    <span className="text-xs text-gray-400 dark:text-slate-500 ml-1">
+                                                        (cập nhật {formatDate(pkg.CompletionUpdatedAt)})
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className="font-bold text-blue-600 dark:text-blue-400">{completionPct}%</span>
                                         </div>
-                                    </>
-                                ) : (
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="range" min={0} max={100} step={1}
+                                                value={completionPct}
+                                                onChange={e => setCompletionPct(Number(e.target.value))}
+                                                onMouseUp={e => saveCompletionPct(Number((e.target as HTMLInputElement).value))}
+                                                onTouchEnd={e => saveCompletionPct(Number((e.target as HTMLInputElement).value))}
+                                                className="flex-1 h-2 accent-blue-600 cursor-pointer"
+                                            />
+                                            <span className="text-xs text-gray-400 dark:text-slate-500 w-12 text-right">
+                                                {isSavingPct ? '...' : `${completionPct}%`}
+                                            </span>
+                                        </div>
+                                        <div className="h-2.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mt-1">
+                                            <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all" style={{ width: `${completionPct}%` }} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Risk alert */}
+                                {completionPct >= 90 && paymentProgress < 80 && (
+                                    <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl text-xs text-amber-700 dark:text-amber-400 mb-3">
+                                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                                        <span>Khối lượng hoàn thành cao ({completionPct}%) nhưng thanh toán còn thấp ({paymentProgress.toFixed(0)}%) — cần đẩy nhanh tiến độ thanh toán</span>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2 mt-2">
+                                    <button onClick={() => setActiveTab('contract')} className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                                        Hợp đồng <ChevronRight className="w-3 h-3" />
+                                    </button>
+                                    <button onClick={() => setActiveTab('settlement')} className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 hover:underline">
+                                        Thanh toán <ChevronRight className="w-3 h-3" />
+                                    </button>
+                                </div>
+
+                                {!relatedContract && (
                                     <div className="text-center py-3">
                                         <AlertTriangle className="w-5 h-5 text-warning-500 mx-auto mb-1" />
                                         <p className="text-sm text-gray-400 dark:text-slate-500">Chưa có hợp đồng —
@@ -362,6 +584,18 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         {pkg.Status === PackageStatus.Selection && (
                             <>
                                 <SectionCard title="Kết quả lựa chọn nhà thầu" icon={Award} color="green">
+                                    {(pkg.BiddersCount || pkg.EvaluationBiddersCount) && (
+                                        <div className="grid grid-cols-2 gap-3 mb-4">
+                                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
+                                                <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">Số NTh tham dự</p>
+                                                <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">{pkg.BiddersCount ?? '—'}</p>
+                                            </div>
+                                            <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-center">
+                                                <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">Vào đánh giá TC</p>
+                                                <p className="font-bold text-indigo-600 dark:text-indigo-400 text-lg">{pkg.EvaluationBiddersCount ?? '—'}</p>
+                                            </div>
+                                        </div>
+                                    )}
                                     <WinningContractorSelector packageId={pkg.PackageID} />
                                     {pkg.WinningPrice ? (
                                         <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
@@ -450,6 +684,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         <InfoRow label="QĐ phê duyệt KQLCNT" value={pkg.DecisionNumber || '-'} />
                                         <InfoRow label="Ngày phê duyệt" value={pkg.ApprovalDate_Result ? formatDate(pkg.ApprovalDate_Result) : '-'} />
                                         {pkg.DecisionAgency && <InfoRow label="Cơ quan phê duyệt" value={pkg.DecisionAgency} />}
+                                        {pkg.BiddingScope && (
+                                            <InfoRow label="Phạm vi đấu thầu" value={
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${pkg.BiddingScope === 'International' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400'}`}>
+                                                    {pkg.BiddingScope === 'International' ? '🌐 Quốc tế' : '🇻🇳 Trong nước'}
+                                                </span>
+                                            } />
+                                        )}
+                                        {pkg.BidFee && pkg.BidFee > 0 && (
+                                            <InfoRow label="Phí dự thầu thu" value={formatCurrency(pkg.BidFee)} />
+                                        )}
                                     </SectionCard>
                                 </div>
 
@@ -577,6 +821,25 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         <InfoRow label="Thời gian TH" value={pkg.Duration || '-'} />
                                         <InfoRow label="Tỷ lệ tạm ứng" value={relatedContract.AdvanceRate ? `${relatedContract.AdvanceRate}%` : '-'} />
                                         <InfoRow label="Bảo hành" value={relatedContract.Warranty ? `${relatedContract.Warranty} tháng` : '-'} />
+                                        {relatedContract.Warranty && relatedContract.Warranty > 0 && relatedContract.SignDate && (() => {
+                                            const expiry = new Date(relatedContract.SignDate);
+                                            expiry.setMonth(expiry.getMonth() + relatedContract.Warranty);
+                                            const isExpired = expiry < new Date();
+                                            return (
+                                                <InfoRow label="Ngày hết bảo hành" value={
+                                                    <span className={isExpired ? 'text-red-500 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-slate-200'}>
+                                                        {formatDate(expiry.toISOString())} {isExpired && '(Đã hết)'}
+                                                    </span>
+                                                } />
+                                            );
+                                        })()}
+                                        {pkg.HasOption && (
+                                            <InfoRow label="Hạng mục tùy chọn" value={
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700 rounded text-xs font-medium">
+                                                    <Info className="w-3 h-3" /> Có hạng mục tùy chọn
+                                                </span>
+                                            } />
+                                        )}
                                         <InfoRow label="Trạng thái" value={
                                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === ContractStatus.Executing ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : relatedContract.Status === ContractStatus.Liquidated ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'}`}>
                                                 {relatedContract.Status === ContractStatus.Executing ? 'Đang thực hiện' : relatedContract.Status === ContractStatus.Liquidated ? 'Đã thanh lý' : 'Tạm dừng'}
@@ -612,39 +875,139 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             </SectionCard>
                         )}
 
-                        {/* Phụ lục điều chỉnh */}
-                        {relatedContract && variationOrders.length > 0 && (
-                            <SectionCard title="Phụ lục điều chỉnh hợp đồng" icon={Receipt} color="amber" badge={`${variationOrders.length} phụ lục`}>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                        <thead>
-                                            <tr className="border-b border-gray-100 dark:border-slate-700">
-                                                <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Số phụ lục</th>
-                                                <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Ngày ký</th>
-                                                <th className="text-right py-2 text-xs font-medium text-gray-400 dark:text-slate-500">Điều chỉnh giá trị</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {variationOrders.map((vo, idx) => (
-                                                <tr key={idx} className="border-b border-gray-50 dark:border-slate-700/50">
-                                                    <td className="py-2 pr-3 font-mono text-xs text-gray-700 dark:text-slate-300">{vo.Number || `PL-${idx + 1}`}</td>
-                                                    <td className="py-2 pr-3 text-gray-500 dark:text-slate-400">{vo.SignDate ? formatDate(vo.SignDate) : '-'}</td>
-                                                    <td className={`py-2 text-right font-medium ${(vo.AdjustedAmount || 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                        {(vo.AdjustedAmount || 0) >= 0 ? '+' : ''}{formatCurrency(vo.AdjustedAmount || 0)}
-                                                    </td>
+                        {/* Phụ lục điều chỉnh — CRUD đầy đủ */}
+                        {relatedContract && (
+                            <SectionCard
+                                title="Phụ lục điều chỉnh hợp đồng"
+                                icon={Receipt}
+                                color="amber"
+                                badge={variationOrders.length > 0 ? `${variationOrders.length} phụ lục` : undefined}
+                            >
+                                {/* Header action */}
+                                {!isAddingVO && (
+                                    <div className="flex justify-end mb-3">
+                                        <button
+                                            onClick={() => { setIsAddingVO(true); setEditingVO(null); }}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-white text-xs font-medium rounded-lg transition-colors"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" /> Tạo phụ lục
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Inline form — tạo mới */}
+                                {isAddingVO && (
+                                    <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-xl">
+                                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-3 uppercase tracking-wide">Tạo phụ lục mới</p>
+                                        <VariationOrderFormInline
+                                            contractId={relatedContract.ContractID}
+                                            baseContractValue={relatedContract.Value}
+                                            currentAdjustedTotal={sumVariationOrders}
+                                            isSaving={createVO.isPending}
+                                            onCancel={() => setIsAddingVO(false)}
+                                            onSaved={(data) => {
+                                                createVO.mutate(data, {
+                                                    onSuccess: () => setIsAddingVO(false),
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Bảng danh sách */}
+                                {variationOrders.length > 0 ? (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="border-b border-gray-100 dark:border-slate-700">
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Số phụ lục</th>
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Ngày ký</th>
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Nội dung</th>
+                                                    <th className="text-right py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Điều chỉnh giá trị</th>
+                                                    <th className="text-right py-2 text-xs font-medium text-gray-400 dark:text-slate-500">Thời gian</th>
+                                                    <th className="w-16"></th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td colSpan={2} className="py-2 pr-3 text-sm font-medium text-gray-600 dark:text-slate-300">Tổng điều chỉnh</td>
-                                                <td className={`py-2 text-right font-bold ${sumVariationOrders >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                    {sumVariationOrders >= 0 ? '+' : ''}{formatCurrency(sumVariationOrders)}
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
+                                            </thead>
+                                            <tbody>
+                                                {variationOrders.map((vo, idx) => (
+                                                    <React.Fragment key={vo.VOID || idx}>
+                                                        <tr className="border-b border-gray-50 dark:border-slate-700/50 group hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                                                            <td className="py-2 pr-3 font-mono text-xs text-gray-700 dark:text-slate-300">{vo.Number || `PL-${idx + 1}`}</td>
+                                                            <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs">{vo.SignDate ? formatDate(vo.SignDate) : '-'}</td>
+                                                            <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs max-w-[180px] truncate" title={vo.Content}>{vo.Content || '-'}</td>
+                                                            <td className={`py-2 pr-3 text-right font-medium text-xs ${(vo.AdjustedAmount || 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                                {(vo.AdjustedAmount || 0) >= 0 ? '+' : ''}{formatCurrency(vo.AdjustedAmount || 0)}
+                                                            </td>
+                                                            <td className="py-2 text-right text-xs text-gray-400 dark:text-slate-500">
+                                                                {vo.AdjustedDuration !== 0 && vo.AdjustedDuration !== undefined
+                                                                    ? `${vo.AdjustedDuration > 0 ? '+' : ''}${vo.AdjustedDuration} ngày`
+                                                                    : '-'
+                                                                }
+                                                            </td>
+                                                            <td className="py-2">
+                                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity justify-end">
+                                                                    <button
+                                                                        onClick={() => setEditingVO(editingVO === vo.VOID ? null : vo.VOID)}
+                                                                        className="p-1 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 rounded transition-colors"
+                                                                        title="Sửa"
+                                                                    >
+                                                                        <Edit className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            if (confirm(`Xóa phụ lục "${vo.Number}"?`))
+                                                                                deleteVO.mutate(vo.VOID);
+                                                                        }}
+                                                                        className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded transition-colors"
+                                                                        title="Xóa"
+                                                                    >
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {/* Inline edit form */}
+                                                        {editingVO === vo.VOID && (
+                                                            <tr>
+                                                                <td colSpan={6} className="py-3 px-2">
+                                                                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-700 rounded-xl">
+                                                                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-3 uppercase tracking-wide">Chỉnh sửa phụ lục</p>
+                                                                        <VariationOrderFormInline
+                                                                            contractId={relatedContract.ContractID}
+                                                                            existing={vo}
+                                                                            baseContractValue={relatedContract.Value}
+                                                                            currentAdjustedTotal={sumVariationOrders - (vo.AdjustedAmount || 0)}
+                                                                            isSaving={updateVO.isPending}
+                                                                            onCancel={() => setEditingVO(null)}
+                                                                            onSaved={(data) => {
+                                                                                updateVO.mutate({ id: vo.VOID, data }, {
+                                                                                    onSuccess: () => setEditingVO(null),
+                                                                                });
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr className="border-t border-gray-200 dark:border-slate-600">
+                                                    <td colSpan={3} className="py-2 pr-3 text-sm font-medium text-gray-600 dark:text-slate-300">Tổng điều chỉnh</td>
+                                                    <td className={`py-2 pr-3 text-right font-bold text-sm ${sumVariationOrders >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                        {sumVariationOrders >= 0 ? '+' : ''}{formatCurrency(sumVariationOrders)}
+                                                    </td>
+                                                    <td colSpan={2}></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                ) : !isAddingVO && (
+                                    <p className="text-sm text-gray-400 dark:text-slate-500 text-center py-4">
+                                        Chưa có phụ lục điều chỉnh — click "Tạo phụ lục" để thêm mới
+                                    </p>
+                                )}
                             </SectionCard>
                         )}
 
@@ -662,11 +1025,14 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     <div className="space-y-4">
                         {/* Tổng hợp giá trị */}
                         <SectionCard title="Tổng hợp giá trị" icon={Package} color="slate">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className={`grid gap-3 ${pkg.BidFee && pkg.BidFee > 0 ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4'}`}>
                                 <StatBox label="Giá gói thầu" value={formatCurrency(pkg.Price)} color="slate" />
                                 <StatBox label="Giá trúng thầu" value={pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'} color="green" />
                                 <StatBox label="Giá trị HĐ (sau ĐC)" value={relatedContract ? formatCurrency(contractValue) : '-'} color="blue" />
                                 <StatBox label="Tiết kiệm" value={savings > 0 ? formatCurrency(savings) : '-'} sub={savings > 0 ? `${savingsPercent}%` : undefined} color="purple" />
+                                {pkg.BidFee && pkg.BidFee > 0 && (
+                                    <StatBox label="Phí dự thầu" value={formatCurrency(pkg.BidFee)} color="amber" />
+                                )}
                             </div>
                         </SectionCard>
 
@@ -689,6 +1055,17 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         <span className="text-gray-400 dark:text-slate-500">Đã thanh toán</span>
                                         <span className="text-warning-600 dark:text-warning-400 font-medium">Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                     </div>
+                                    {relatedContract.Warranty && relatedContract.Warranty > 0 && relatedContract.SignDate && (() => {
+                                        const expiry = new Date(relatedContract.SignDate);
+                                        expiry.setMonth(expiry.getMonth() + relatedContract.Warranty);
+                                        const isExpired = expiry < new Date();
+                                        return (
+                                            <div className={`mt-3 pt-3 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between text-sm ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-slate-400'}`}>
+                                                <span>Bảo hành: {relatedContract.Warranty} tháng</span>
+                                                <span className="font-medium">Hết hạn: {formatDate(expiry.toISOString())} {isExpired && '⚠ Đã hết'}</span>
+                                            </div>
+                                        );
+                                    })()}
                                 </SectionCard>
 
                                 {/* Danh sách đợt thanh toán */}
@@ -807,10 +1184,10 @@ const SectionCard = ({ title, icon: Icon, color, children, badge, action }: {
         slate: 'text-slate-600 dark:text-slate-400',
     };
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+        <div className="bg-white dark:bg-slate-800/90 rounded-xl border border-gray-200 dark:border-slate-600 p-4 shadow-sm dark:shadow-slate-900/40">
             {title && (
-                <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-gray-100 dark:border-slate-700">
+                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                         <Icon className={`w-4 h-4 ${colorMap[color] || 'text-gray-500 dark:text-slate-400'}`} />
                         {title}
                     </h4>
@@ -820,7 +1197,7 @@ const SectionCard = ({ title, icon: Icon, color, children, badge, action }: {
                     </div>
                 </div>
             )}
-            <div className="space-y-2 text-sm">{children}</div>
+            <div className="divide-y divide-gray-50 dark:divide-slate-700/50 text-sm">{children}</div>
         </div>
     );
 };
@@ -838,6 +1215,7 @@ const StatBox = ({ label, value, sub, color }: { label: string; value: string; s
         green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
         blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
         purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+        amber: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400',
     };
     return (
         <div className={`p-3 rounded-lg text-center ${colorMap[color] || colorMap.slate}`}>

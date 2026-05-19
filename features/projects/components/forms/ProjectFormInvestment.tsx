@@ -45,7 +45,7 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                 <div className="relative z-20">
                     <label className={labelClass}>Nguồn vốn đầu tư</label>
                     <div
-                        className={`w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-slate-100 cursor-pointer flex justify-between items-center transition-all shadow-sm`}
+                        className={`w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-[#293548] bg-white dark:bg-[#151d2e] dark:text-slate-100 cursor-pointer flex justify-between items-center transition-all shadow-sm`}
                         onClick={() => setShowCapitalDropdown(v => !v)}
                     >
                         <span className={formData.CapitalSource ? 'text-gray-900 dark:text-slate-100 line-clamp-1 text-sm' : 'text-gray-500 dark:text-slate-400 text-sm'}>

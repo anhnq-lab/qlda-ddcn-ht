@@ -18,7 +18,6 @@ interface BiddingImportModalProps {
     isOpen: boolean;
     onClose: () => void;
     projectId: string;
-    planId?: string;
 }
 
 type Step = 'upload' | 'preview' | 'done';
@@ -27,7 +26,6 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
     isOpen,
     onClose,
     projectId,
-    planId,
 }) => {
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +84,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
     // Step 3: Insert into DB
     const insertMutation = useMutation({
         mutationFn: async (packages: Partial<BiddingPackage>[]) => {
-            const dbRows = packages.map(bp => biddingPackageToDb({ ...bp, PlanID: planId || undefined }));
+            const dbRows = packages.map(bp => biddingPackageToDb(bp as any));
             const { error } = await supabase
                 .from('bidding_packages')
                 .insert(dbRows as any);

@@ -234,8 +234,8 @@ BEGIN
 
         -- Giai đoạn thực hiện
         ('SEED-T' || LPAD(i::text, 3, '0') || '-04', v_pid,
-         'Lập kế hoạch lựa chọn nhà thầu (KHLCNT)',
-         'Xây dựng KHLCNT tuân thủ Luật Đấu thầu 2023',
+         'Lập quyết định phê duyệt dự án (QĐPD)',
+         'Xây dựng QĐPD tuân thủ NĐ 214/2025/NĐ-CP',
          CASE WHEN i <= 4 THEN 'Done' WHEN i <= 7 THEN 'InProgress' ELSE 'Todo' END,
          'high',
          CASE WHEN i % 5 = 0 THEN 'NV017' WHEN i % 5 = 1 THEN 'NV021' WHEN i % 5 = 2 THEN 'NV025' WHEN i % 5 = 3 THEN 'NV028' ELSE 'NV031' END,

@@ -180,16 +180,28 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                                 </div>
                             </div>
                             
-                            {/* Mã chứng chỉ */}
-                            <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mã chứng chỉ năng lực</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
-                                    value={currentContractor.CapCertCode || ''}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertCode: e.target.value }))}
-                                    placeholder="BXD-..."
-                                />
+                            {/* Mã chứng chỉ & Link */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mã chứng chỉ năng lực</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
+                                        value={currentContractor.CapCertCode || ''}
+                                        onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertCode: e.target.value }))}
+                                        placeholder="BXD-..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Link tra cứu chứng chỉ</label>
+                                    <input
+                                        type="url"
+                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                        value={currentContractor.CapCertLink || ''}
+                                        onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertLink: e.target.value }))}
+                                        placeholder="https://nangluchdxd.gov.vn/..."
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

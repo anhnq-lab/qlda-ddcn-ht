@@ -9,7 +9,7 @@ import { BiddingPackageDetail } from './components/BiddingPackageDetail';
  * PackageDetail — Route-level page for /projects/:projectId/packages/:packageId
  *
  * Loads the bidding package by ID and renders the full BiddingPackageDetail
- * lifecycle component (KHLCNT → Selection → Contract → Settlement).
+ * lifecycle component (Selection → Contract → Settlement).
  */
 const PackageDetail: React.FC = () => {
     const { projectId = '', packageId = '' } = useParams<{ projectId: string; packageId: string }>();

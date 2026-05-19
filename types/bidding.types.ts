@@ -24,6 +24,7 @@ export const CONTRACTOR_TYPE_LABELS: Record<ContractorType, string> = {
 export interface Contractor {
     ContractorID: string;
     CapCertCode: string;
+    CapCertLink?: string;
     FullName: string;
     IsForeign: boolean;           // Legacy — kept for backward compat
     ContractorType: ContractorType;
@@ -44,23 +45,7 @@ export enum PackageStatus {
     Completed = 'Completed',       // Kết thúc
 }
 
-/** Kế hoạch lựa chọn nhà thầu (KHLCNT) */
-export interface ProcurementPlan {
-    PlanID: string;
-    ProjectID: string;
-    PlanCode?: string;           // Số hiệu KHLCNT (e.g. PL2500231393)
-    PlanName: string;            // Tên KHLCNT
-    PlanType: 'EGP' | 'Legacy';  // Phân loại
-    DecisionNumber?: string;     // Số QĐ phê duyệt KHLCNT
-    DecisionDate?: string;
-    DecisionAgency?: string;
-    MSCPlanCode?: string;        // Mã trên muasamcong.vn
-    TotalValue?: number;         // Tổng giá gói thầu (tính tự động)
-    Status: 'Active' | 'Completed' | 'Cancelled';
-    Notes?: string;
-    CreatedAt?: string;
-    UpdatedAt?: string;
-}
+
 
 /**
  * Hạn mức áp dụng hình thức lựa chọn nhà thầu theo NĐ 214/2025/NĐ-CP
@@ -94,7 +79,6 @@ export interface PackagePersonnel {
 export interface BiddingPackage {
     PackageID: string;
     ProjectID: string;
-    PlanID?: string;              // FK → ProcurementPlan
     PackageNumber: string;
     PackageName: string;
     Price: number;
@@ -128,7 +112,6 @@ export interface BiddingPackage {
     | 'Goods'
     | 'Mixed';
     Status: PackageStatus;
-    KHLCNTCode?: string;
     NotificationCode?: string;
     PostingDate?: string;
     BidClosingDate?: string;
@@ -153,10 +136,6 @@ export interface BiddingPackage {
     EstimatePrice?: number;
     DecisionAgency?: string;
     DecisionFile?: string;
-    PlanGroupName?: string;
-    PlanDecisionNumber?: string;
-    PlanDecisionDate?: string;
-    MSCPlanCode?: string;
     MSCPackageLink?: string;
     MSCPublishStatus?: 'NotRequired' | 'Pending' | 'Published' | 'Overdue';
     SortOrder?: number;
@@ -165,6 +144,11 @@ export interface BiddingPackage {
     BiddersCount?: number;                           // Số nhà thầu nộp HSDT/HSĐX
     EvaluationBiddersCount?: number;                 // Số NTh vào bước đánh giá tài chính
     Personnel?: PackagePersonnel[];                  // Nhân sự nhà thầu tham gia gói thầu
+    // Tiến độ thực hiện (nhập thủ công)
+    CompletionPct?: number;                          // % Khối lượng hoàn thành (0-100)
+    CompletionUpdatedAt?: string;                    // Ngày cập nhật % hoàn thành
+    // Join data
+    WinningContractorName?: string;                  // Tên nhà thầu trúng thầu (join từ contractors)
 }
 
 /** Tài liệu cần đăng tải trên muasamcong.vn */
