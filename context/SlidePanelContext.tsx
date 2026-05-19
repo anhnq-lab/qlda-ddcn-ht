@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback, useMemo, useRe
 
 export interface PanelEntry {
     id: string;
-    component: React.ReactNode;
+    component: React.ReactNode | (() => React.ReactNode);
     title?: string;
     icon?: React.ReactNode;
     url?: string;

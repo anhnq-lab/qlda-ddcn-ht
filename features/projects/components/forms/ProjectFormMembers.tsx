@@ -176,10 +176,8 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                 className="text-xs bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 rounded-lg px-2 py-1 border border-blue-200 dark:border-blue-500/30 outline-none cursor-pointer font-medium"
                                             >
                                                 <option value="Giám đốc dự án">Giám đốc dự án</option>
-                                                <option value="Phó Giám đốc dự án">Phó Giám đốc dự án</option>
                                                 <option value="Trưởng phòng phụ trách">Trưởng phòng phụ trách</option>
-                                                <option value="Kỹ sư giám sát">Kỹ sư giám sát</option>
-                                                <option value="Cán bộ kỹ thuật">Cán bộ kỹ thuật</option>
+                                                <option value="Chuyên viên phụ trách">Chuyên viên phụ trách</option>
                                                 <option value="Kế toán dự án">Kế toán dự án</option>
                                                 <option value="Thành viên">Thành viên</option>
                                             </select>

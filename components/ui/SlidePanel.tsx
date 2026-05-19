@@ -212,7 +212,9 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                    {panel.component}
+                    {typeof panel.component === 'function'
+                        ? (panel.component as () => React.ReactNode)()
+                        : panel.component}
                 </div>
             </motion.div>
         </div>

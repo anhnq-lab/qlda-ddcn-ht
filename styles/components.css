@@ -359,9 +359,9 @@
 
   /* ── Filter Primary — Cam theme cho select/input ── */
   .filter-primary {
-    @apply bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600;
+    @apply bg-white dark:bg-slate-800 border border-solid border-gray-200 dark:border-slate-600;
     @apply text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl;
-    @apply shadow-sm transition-all appearance-none cursor-pointer;
+    @apply shadow-sm transition-all cursor-pointer;
   }
 
   .filter-primary:hover {
