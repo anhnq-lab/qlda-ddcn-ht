@@ -13,8 +13,18 @@ const ATTEMPTS_KEY = 'login_attempts';
 const LOCKOUT_UNTIL_KEY = 'login_lockout_until';
 
 const MAX_ATTEMPTS = 5;
-const LOCKOUT_DURATION_MS = 60 * 1000; // 60 seconds
-const PERSISTENT_LOCKOUT_THRESHOLD = 10; // After 10 total fails → longer message
+/**
+ * Progressive lockout:
+ * - Lần 1 block (fail >= 5): 60 giây
+ * - Lần 2 block (fail >= 10): 2 phút
+ * - Lần 3+ block (fail >= 15): 5 phút
+ */
+const LOCKOUT_TIERS = [
+    { failThreshold: 5,  durationMs: 60 * 1000 },   // 60 giây
+    { failThreshold: 10, durationMs: 2 * 60 * 1000 }, // 2 phút
+    { failThreshold: 15, durationMs: 5 * 60 * 1000 }, // 5 phút
+];
+const PERSISTENT_LOCKOUT_THRESHOLD = 10;
 
 interface RateLimitState {
     isLocked: boolean;
@@ -78,8 +88,10 @@ export function useLoginRateLimit(): UseLoginRateLimitReturn {
             const current = getStoredAttempts() + 1;
             localStorage.setItem(ATTEMPTS_KEY, String(current));
 
-            if (current >= MAX_ATTEMPTS) {
-                const lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
+            // Tính lockout duration theo tier
+            const tier = [...LOCKOUT_TIERS].reverse().find(t => current >= t.failThreshold);
+            if (tier) {
+                const lockoutUntil = Date.now() + tier.durationMs;
                 localStorage.setItem(LOCKOUT_UNTIL_KEY, String(lockoutUntil));
             }
         } catch {

@@ -180,6 +180,9 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 cached.permissionPairs as [string, PermissionAction[]][]
             );
             fetchingRef.current = null;
+            if (import.meta.env.DEV) {
+                console.debug(`[PermissionCtx] 🗃️ Cache HIT for user ${userId}`);
+            }
             setState({
                 permissionMap: map,
                 systemRole: cached.systemRole as SystemRole,
@@ -189,6 +192,9 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 cachedForUserId: userId,
             });
             return; // ← Cache hit: skip DB query
+        }
+        if (import.meta.env.DEV) {
+            console.debug(`[PermissionCtx] 🌐 Cache MISS for user ${userId} — fetching from DB`);
         }
 
         // Prevent duplicate concurrent fetches
@@ -305,20 +311,32 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             // 1) DB override exists for this user → use it (even empty means "no access")
             if (state.permissionMap.size > 0) {
                 const actions = state.permissionMap.get(resource);
-                return actions ? actions.includes(action) : false;
+                const result = actions ? actions.includes(action) : false;
+                if (import.meta.env.DEV) {
+                    console.debug(`[PermissionCtx] [DB-override] ${resource}.${action} = ${result}`);
+                }
+                return result;
             }
 
             // 2) Fallback to DB role defaults if available
             if (dbRoleDefaults.size > 0) {
                 const actions = dbRoleDefaults.get(resource);
-                return actions ? actions.includes(action) : false;
+                const result = actions ? actions.includes(action) : false;
+                if (import.meta.env.DEV) {
+                    console.debug(`[PermissionCtx] [DB-role-defaults] ${resource}.${action} = ${result}`);
+                }
+                return result;
             }
 
             // 3) Fallback to hardcoded role defaults (Safety Net)
             const defaults = DEFAULT_ROLE_PERMISSIONS[state.systemRole];
             if (!defaults) return false;
             const defaultActions = defaults[resource as keyof typeof defaults];
-            return defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
+            const result = defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
+            if (import.meta.env.DEV) {
+                console.debug(`[PermissionCtx] [hardcoded-fallback] ${resource}.${action} = ${result}`);
+            }
+            return result;
         },
         [state.permissionMap, state.loaded, state.systemRole, dbRoleDefaults]
     );

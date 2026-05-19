@@ -329,7 +329,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('[Auth] Resolved email:', email);
 
         if (!email) {
+            // Identifier không khớp với username / phone nào trong hệ thống
             console.error('[Auth] Could not resolve email for:', identifier);
+            // Fire-and-forget: ghi audit log đăng nhập thất bại (username không tồn tại)
+            supabaseExt.from('audit_logs').insert({
+                action: 'LOGIN_FAILED',
+                target_entity: 'auth',
+                details: `Identifier not found: ${identifier}`,
+            }).then(() => {});
             return false;
         }
 
@@ -345,12 +352,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (error || !data.user) {
             console.error('[Auth] Login failed:', error?.message);
+            // Fire-and-forget: ghi audit log đăng nhập thất bại (sai mật khẩu)
+            supabaseExt.from('audit_logs').insert({
+                action: 'LOGIN_FAILED',
+                target_entity: 'auth',
+                details: `Wrong password for: ${identifier}`,
+            }).then(() => {});
             return false;
         }
 
         console.log('[Auth] Login success for:', email);
         localStorage.removeItem('explicitlyLoggedOut');
         localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
+
+        // Fire-and-forget: ghi audit log đăng nhập thành công
+        supabaseExt.from('audit_logs').insert({
+            action: 'LOGIN_SUCCESS',
+            target_entity: 'auth',
+            target_id: data.user.id,
+            changed_by: data.user.id,
+            details: `Login via: ${identifier}`,
+        }).then(() => {});
 
         // Update last_login (fire-and-forget)
         supabase

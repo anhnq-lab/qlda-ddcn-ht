@@ -41,12 +41,37 @@ export interface CreateAccountInput {
 // Helpers
 // ============================================================
 
+/**
+ * LEGACY: SHA-256 hash — kept ONLY for backward-compat fallback.
+ * Mọi password mới đều quản lý qua Supabase Auth (signInWithPassword).
+ * Không dùng hàm này cho logic authentication mới.
+ */
 async function hashPassword(password: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Validate độ mạnh mật khẩu.
+ * Yêu cầu: tối thiểu 8 ký tự, có chữ HOA, chữ thường, và số.
+ */
+export function validatePasswordStrength(password: string): { valid: boolean; message?: string } {
+    if (password.length < 8) {
+        return { valid: false, message: 'Mật khẩu phải có ít nhất 8 ký tự' };
+    }
+    if (!/[A-Z]/.test(password)) {
+        return { valid: false, message: 'Mật khẩu phải có ít nhất 1 chữ hoa (A-Z)' };
+    }
+    if (!/[a-z]/.test(password)) {
+        return { valid: false, message: 'Mật khẩu phải có ít nhất 1 chữ thường (a-z)' };
+    }
+    if (!/[0-9]/.test(password)) {
+        return { valid: false, message: 'Mật khẩu phải có ít nhất 1 chữ số (0-9)' };
+    }
+    return { valid: true };
 }
 
 // ============================================================
@@ -100,6 +125,11 @@ export class UserAccountService {
      */
     static async create(input: CreateAccountInput, createdBy?: string): Promise<UserAccount> {
         if (!input.email) throw new Error("Bắt buộc phải có email để tạo tài khoản");
+
+        // Validate password policy
+        const pwCheck = validatePasswordStrength(input.password);
+        if (!pwCheck.valid) throw new Error(pwCheck.message);
+
         const password_hash = await hashPassword(input.password);
 
         let authUserId: string | null = null;
@@ -149,6 +179,10 @@ export class UserAccountService {
      * Reset password for account
      */
     static async resetPassword(id: string, newPassword: string): Promise<void> {
+        // Validate password policy
+        const pwCheck = validatePasswordStrength(newPassword);
+        if (!pwCheck.valid) throw new Error(pwCheck.message);
+
         const password_hash = await hashPassword(newPassword);
 
         // Attempt to update Supabase Auth password
@@ -368,15 +402,29 @@ export class UserAccountService {
     }
 
     /**
-     * Generate a random password (8 chars)
+     * Generate a random password đáp ứng password policy:
+     * - 10 ký tự
+     * - Đảm bảo có ít nhất 1 HOA, 1 thường, 1 số
      */
     static generatePassword(): string {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-        let password = '';
-        for (let i = 0; i < 8; i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const lower = 'abcdefghjkmnpqrstuvwxyz';
+        const digits = '23456789';
+        const all = upper + lower + digits;
+
+        // Đảm bảo ít nhất 1 ký tự mỗi loại
+        let password =
+            upper.charAt(Math.floor(Math.random() * upper.length)) +
+            lower.charAt(Math.floor(Math.random() * lower.length)) +
+            digits.charAt(Math.floor(Math.random() * digits.length));
+
+        // Điền thêm để đủ 10 ký tự
+        for (let i = password.length; i < 10; i++) {
+            password += all.charAt(Math.floor(Math.random() * all.length));
         }
-        return password;
+
+        // Shuffle để tránh pattern cố định
+        return password.split('').sort(() => Math.random() - 0.5).join('');
     }
 }
 

@@ -11,6 +11,33 @@ import { supabase } from '../../lib/supabase';
 import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS, ALL_ROLES } from '../../types/permission.types';
 
 // ============================================================
+// Helpers
+// ============================================================
+
+/**
+ * Ghi audit log cho các hành động quản trị tài khoản.
+ * Fire-and-forget: không block UI khi ghi log.
+ */
+async function logAuditEvent(
+    action: string,
+    targetId: string,
+    details: string,
+    changedBy?: string
+): Promise<void> {
+    try {
+        await (supabase as any).from('audit_logs').insert({
+            action,
+            changed_by: changedBy,
+            target_entity: 'UserAccount',
+            target_id: targetId,
+            details,
+        });
+    } catch (err) {
+        console.warn('[AuditLog] Failed to write audit log:', err);
+    }
+}
+
+// ============================================================
 // ADMIN USER ACCOUNT MANAGER
 // ============================================================
 
@@ -85,15 +112,12 @@ const UserAccountManager: React.FC = () => {
     const handleToggleActive = async (account: UserAccount) => {
         try {
             await UserAccountService.toggleActive(account.account_id, !account.is_active);
-            if (currentUser) {
-                await (supabase as any).from('audit_logs').insert({
-                    action: !account.is_active ? 'ENABLE_ACCOUNT' : 'DISABLE_ACCOUNT',
-                    changed_by: currentUser.EmployeeID,
-                    target_entity: 'UserAccount',
-                    target_id: account.account_id,
-                    details: `Toggled active status for user ${account.username} to ${!account.is_active}`
-                });
-            }
+            logAuditEvent(
+                !account.is_active ? 'ENABLE_ACCOUNT' : 'DISABLE_ACCOUNT',
+                account.account_id,
+                `Toggled active status for user ${account.username} to ${!account.is_active}`,
+                currentUser?.EmployeeID
+            );
             await loadAccounts();
         } catch (err: any) {
             setError(err.message);
@@ -105,15 +129,12 @@ const UserAccountManager: React.FC = () => {
         if (!window.confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản của ${account.full_name || account.username}? Hành động này không thể hoàn tác.`)) return;
         try {
             await UserAccountService.delete(account.account_id);
-            if (currentUser) {
-                await (supabase as any).from('audit_logs').insert({
-                    action: 'DELETE_ACCOUNT',
-                    changed_by: currentUser.EmployeeID,
-                    target_entity: 'UserAccount',
-                    target_id: account.account_id,
-                    details: `Deleted user account ${account.username}`
-                });
-            }
+            logAuditEvent(
+                'DELETE_ACCOUNT',
+                account.account_id,
+                `Deleted user account ${account.username}`,
+                currentUser?.EmployeeID
+            );
             setAccounts(prev => prev.filter(a => a.account_id !== account.account_id));
         } catch (err: any) {
             setError(err.message || 'Lỗi khi xóa tài khoản');
@@ -125,15 +146,12 @@ const UserAccountManager: React.FC = () => {
         if (!resetTarget || !newPassword) return;
         try {
             await UserAccountService.resetPassword(resetTarget.account_id, newPassword);
-            if (currentUser) {
-                await (supabase as any).from('audit_logs').insert({
-                    action: 'RESET_PASSWORD',
-                    changed_by: currentUser.EmployeeID,
-                    target_entity: 'UserAccount',
-                    target_id: resetTarget.account_id,
-                    details: `Reset password for user ${resetTarget.username}`
-                });
-            }
+            logAuditEvent(
+                'RESET_PASSWORD',
+                resetTarget.account_id,
+                `Reset password for user ${resetTarget.username}`,
+                currentUser?.EmployeeID
+            );
             setResetTarget(null);
             setNewPassword('');
             await loadAccounts();

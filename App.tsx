@@ -11,6 +11,7 @@ import MainLayout from './layouts/MainLayout';
 
 // Auth Features (eager load - needed immediately)
 import Login from './features/auth/Login';
+import ResetPassword from './features/auth/ResetPassword';
 
 // lazyWithRetry wrapper to automatically handle chunk load errors after deployment
 const lazyWithRetry = (componentImport: () => Promise<any>) =>
@@ -115,6 +116,7 @@ const App: React.FC = () => {
                                 <ProjectFilterProvider>
                                 <Routes>
                                     <Route path="/login" element={<Login />} />
+                                    <Route path="/reset-password" element={<ResetPassword />} />
 
                                     {/* Protected Routes inside MainLayout */}
                                     <Route path="/" element={<MainLayout />}>
