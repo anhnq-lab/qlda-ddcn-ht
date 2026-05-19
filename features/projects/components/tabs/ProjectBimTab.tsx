@@ -497,13 +497,13 @@ const ProjectBimTabContent: React.FC = () => {
                         flex items-center gap-2 text-xs font-medium
                         backdrop-blur-xl shadow-sm border
                         animate-[fadeSlideIn_0.25s_cubic-bezier(0.16,1,0.3,1)]
-                        ${isDark ? 'bg-slate- text-blue-300 border-slate-600/40' : 'bg-white/92 text-blue-700 border-blue-200/60'}
+                        ${isDark ? 'bg-slate-50 text-blue-300 border-slate-600/40' : 'bg-white/92 text-blue-700 border-blue-200/60'}
                     `}>
                         <span>{activeToolLabel}</span>
                         <button
                             onClick={() => tools.activateTool('select')}
                             className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer
-                                ${isDark ? 'bg-slate- hover:bg-slate-600 text-slate-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}
+                                ${isDark ? 'bg-slate-50 hover:bg-slate-600 text-slate-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}
                             `}
                         >
                             ESC
@@ -517,7 +517,7 @@ const ProjectBimTabContent: React.FC = () => {
                         absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2.5
                         shadow-sm backdrop-blur-xl text-xs font-medium
                         animate-[fadeSlideIn_0.25s_cubic-bezier(0.16,1,0.3,1)]
-                        ${isDark ? 'bg-slate- text-slate-300 border border-slate-600/40' : 'bg-white/95 text-gray-700 border border-gray-200/80'}
+                        ${isDark ? 'bg-slate-50 text-slate-300 border border-slate-600/40' : 'bg-white/95 text-gray-700 border border-gray-200/80'}
                     `}>
                         <StatusIcon />
                         <span>{upload.statusMessage}</span>
@@ -605,7 +605,7 @@ const ProjectBimTabContent: React.FC = () => {
                             ${isFullscreen
                                 ? 'bg-blue-500/20 text-blue-400 border-blue-500/40 hover:bg-blue-500/30'
                                 : isDark
-                                    ? 'bg-slate- text-slate-400 border-slate-700/60 hover:bg-slate-800 hover:text-white'
+                                    ? 'bg-slate-50 text-slate-400 border-slate-700/60 hover:bg-slate-800 hover:text-white'
                                     : 'bg-white/90 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-gray-800'
                             }
                         `}
@@ -625,7 +625,7 @@ const ProjectBimTabContent: React.FC = () => {
                             ${showAgent
                                 ? 'bg-primary-500/20 text-primary-400 border-primary-500/40 hover:bg-primary-500/30'
                                 : isDark
-                                    ? 'bg-slate- text-primary-400 border-primary-500/30 hover:bg-slate-800 hover:text-primary-300'
+                                    ? 'bg-slate-50 text-primary-400 border-primary-500/30 hover:bg-slate-800 hover:text-primary-300'
                                     : 'bg-white/90 text-primary-600 border-primary-200 hover:bg-primary-50 hover:text-primary-700'
                             }
                         `}
@@ -638,7 +638,7 @@ const ProjectBimTabContent: React.FC = () => {
                 {/* AI Agent Panel */}
                 {showAgent && (
                     <div className={`absolute top-28 right-3 bottom-3 w-96 z-40 shadow-2xl transition-all duration-300 transform origin-top-right rounded-xl overflow-hidden
-                        ${isDark ? 'border border-slate-700/60 bg-slate-' : 'border border-gray-200 bg-white/95'}
+                        ${isDark ? 'border border-slate-700/60 bg-slate-50' : 'border border-gray-200 bg-white/95'}
                         backdrop-blur-xl flex flex-col`}
                     >
                         <BIMAgentChat onClose={() => setShowAgent(false)} isDark={isDark} embedded selectedElement={selection.selectedElement} />
@@ -690,7 +690,7 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div className={`
                             text-center p-10 rounded-2xl pointer-events-auto max-w-sm
-                            ${isDark ? 'bg-slate-' : 'bg-white/95'} backdrop-blur-xl
+                            ${isDark ? 'bg-slate-50' : 'bg-white/95'} backdrop-blur-xl
                             border ${isDark ? 'border-slate-700/40' : 'border-gray-200'}
                             shadow-sm
                         `}>
@@ -730,7 +730,7 @@ const ProjectBimTabContent: React.FC = () => {
                 {/* Loading skeleton */}
                 {!engine.viewerReady && !engine.initError && (
                     <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/20 backdrop-blur-sm">
-                        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate- border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
+                        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate-50 border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
                             <div className="relative w-16 h-16 mx-auto mb-4">
                                 <div className={`absolute inset-0 border-4 border-t-transparent rounded-full animate-spin ${isDark ? 'border-blue-500' : 'border-blue-600'}`}></div>
                                 <div className={`absolute inset-2 border-4 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse] ${isDark ? 'border-cyan-400' : 'border-cyan-500'}`}></div>
@@ -810,7 +810,7 @@ const ProjectBimTabContent: React.FC = () => {
                     ref={contextMenuRef}
                     className={`fixed z-[99999] w-48 py-1.5 rounded-xl shadow-sm border backdrop-blur-xl
                         animate-[fadeSlideIn_0.15s_cubic-bezier(0.16,1,0.3,1)]
-                        ${isDark ? 'bg-slate- border-slate-600/40 text-slate-200' : 'bg-white/98 border-gray-200/80 text-gray-800'}
+                        ${isDark ? 'bg-slate-50 border-slate-600/40 text-slate-200' : 'bg-white/98 border-gray-200/80 text-gray-800'}
                     `}
                     style={{ left: contextMenu.x, top: contextMenu.y }}
                     onClick={(e) => e.stopPropagation()}
@@ -873,7 +873,7 @@ const ProjectBimTabContent: React.FC = () => {
             {/* ─── SHORTCUT TOAST ─── */}
             {keyboard.lastShortcutLabel && (
                 <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-xl text-xs font-semibold shadow-sm animate-[fadeSlideIn_0.15s_ease-out] backdrop-blur-lg
-                    ${isDark ? 'bg-slate- text-slate-200 border border-slate-700/50' : 'bg-white/95 text-gray-700 border border-gray-200'}
+                    ${isDark ? 'bg-slate-50 text-slate-200 border border-slate-700/50' : 'bg-white/95 text-gray-700 border border-gray-200'}
                 `}>
                     <span className="font-mono">{keyboard.lastShortcutLabel}</span>
                 </div>

@@ -82,14 +82,14 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
 
     if (isLoading) {
         return (
-            <div className="p-4 h-full flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-">
+            <div className="p-4 h-full flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-800">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-">
+        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-800">
             <DataTable
                 data={filteredTasks}
                 columns={columns}

@@ -288,7 +288,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                         const paidPct = val > 0 ? (paid / val) * 100 : 0;
                                         const isDone = c.status === 2 || c.status === 'completed';
                                         return (
-                                            <tr key={c.contract_id} className="hover:bg-slate-50/50 dark:hover:bg-slate- transition-colors">
+                                            <tr key={c.contract_id} className="hover:bg-slate-50/50 dark:hover:bg-slate-50 transition-colors">
                                                 <td className="px-4 py-3">
                                                     <p className="font-semibold text-gray-800 dark:text-slate-200 truncate max-w-[280px]">{c.contract_name || '—'}</p>
                                                     <div className="mt-1 w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">

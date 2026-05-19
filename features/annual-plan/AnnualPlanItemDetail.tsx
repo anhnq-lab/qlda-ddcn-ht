@@ -243,7 +243,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                         {loadingLinks ? (
                             <p className="text-xs text-slate-400 text-center py-3">Đang tải...</p>
                         ) : monthlyLinks.length === 0 ? (
-                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate- rounded-xl">
+                            <div className="text-center py-5 border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800 rounded-xl">
                                 <CalendarClock className="w-8 h-8 text-slate-200 dark:text-slate-700 mx-auto mb-2" />
                                 <p className="text-sm text-slate-400">Chưa có kế hoạch tháng nào liên kết</p>
                                 <p className="text-xs text-slate-300 dark:text-slate-600 mt-1">Khi tạo KH tháng, chọn nhiệm vụ này từ KH khung</p>
@@ -260,7 +260,7 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                                         deferred: 'bg-blue-50 text-blue-500 dark:bg-blue-500/10 dark:text-blue-400',
                                     };
                                     return (
-                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate- border border-slate-100 dark:border-slate-800 rounded-lg">
+                                        <div key={link.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-lg">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{link.task_name}</p>
                                                 {plan && (

@@ -368,7 +368,7 @@ const OrgChartPage: React.FC = () => {
                     </ReactFlow>
 
                     {/* Legend */}
-                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate- backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
+                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800 backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
                         <p className="text-[9px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Chú giải</p>
                         {[
                             { color: 'bg-red-600', label: 'UBND tỉnh Hà Tĩnh' },

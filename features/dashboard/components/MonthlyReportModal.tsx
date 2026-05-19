@@ -224,7 +224,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                     className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300"
                                 />
                             ) : (
-                                <div className="bg-gray-50 dark:bg-slate- border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
+                                <div className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
                                     <div 
                                         className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200"
                                         style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -245,7 +245,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate- rounded-b-2xl">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 rounded-b-2xl">
                     <button
                         onClick={onClose}
                         className="btn btn-outline text-sm"

@@ -96,7 +96,7 @@ Properties: ${JSON.stringify(selectedElement.propertySets)}]\n\nQuestion: ${inpu
              style={{ backgroundColor: isDark ? '#0f172a' : '#ffffff', border: embedded ? `1px solid ${isDark ? '#334155' : '#e2e8f0'}` : 'none' }}>
             
             {/* Header */}
-            <div className={`flex items-center justify-between px-4 py-3 border-b ${isDark ? 'border-slate-800 bg-slate-' : 'border-gray-200 bg-gray-50'}`}>
+            <div className={`flex items-center justify-between px-4 py-3 border-b ${isDark ? 'border-slate-800 bg-slate-50' : 'border-gray-200 bg-gray-50'}`}>
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-500">
                         <Bot className="w-5 h-5" />
@@ -108,7 +108,7 @@ Properties: ${JSON.stringify(selectedElement.propertySets)}]\n\nQuestion: ${inpu
                 </div>
                 {embedded && (
                     <div className="flex items-center gap-1">
-                        <button onClick={() => setIsExpanded(!isExpanded)} className={`p-1.5 rounded-md hover:bg-slate- text-slate-400 transition-colors`}>
+                        <button onClick={() => setIsExpanded(!isExpanded)} className={`p-1.5 rounded-md hover:bg-slate-50 text-slate-400 transition-colors`}>
                             {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                         </button>
                         {onClose && (
@@ -146,7 +146,7 @@ Properties: ${JSON.stringify(selectedElement.propertySets)}]\n\nQuestion: ${inpu
                                         const isInteractive = r.type === 'html' && (r.content.includes('<script') || r.content.includes('plotly.js'));
                                         
                                         return (
-                                            <div key={j} className={`rounded-lg overflow-hidden ${isDark ? 'bg-slate-' : 'bg-white'} border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+                                            <div key={j} className={`rounded-lg overflow-hidden ${isDark ? 'bg-slate-50' : 'bg-white'} border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
                                                 {r.type === 'html' && isInteractive && (
                                                     <div className="w-full h-[400px]">
                                                         <iframe 

@@ -65,7 +65,7 @@ export const ContextualHelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose,
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-slate- backdrop-blur-sm z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-slate-50 backdrop-blur-sm z-40 transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}

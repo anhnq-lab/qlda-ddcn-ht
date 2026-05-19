@@ -34,7 +34,7 @@ const colorStyles: Record<Exclude<ProgressBarColor, 'auto'>, string> = {
     blue: 'bg-gradient-to-r from-blue-400 to-blue-500',
     primary: 'bg-gradient-to-r from-primary-400 to-primary-500',
     red: 'bg-gradient-to-r from-red-400 to-red-500',
-    slate: 'bg-slate-300 dark:bg-slate-50 dark:bg-slate-8000',
+    slate: 'bg-slate-300 dark:bg-slate-50 dark:bg-slate-800',
 };
 
 function getAutoColor(value: number): string {

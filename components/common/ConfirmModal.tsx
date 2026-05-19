@@ -75,7 +75,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     <button
                         onClick={onClose}
                         disabled={isLoading}
-                        className="px-4 py-2.5 bg-white dark:bg-slate-800 dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-50 dark:bg-slate-8000 transition-colors disabled:opacity-50"
+                        className="px-4 py-2.5 bg-white dark:bg-slate-800 dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-xl text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors disabled:opacity-50"
                     >
                         {cancelText}
                     </button>

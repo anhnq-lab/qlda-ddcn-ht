@@ -189,7 +189,7 @@ export const EvaluationPage: React.FC = () => {
                 {/* Tabs & Filters */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     {/* Tabs */}
-                    <div className="flex bg-slate-100 dark:bg-slate- p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
                         <button 
                             onClick={() => setActiveSubTab('leader')}
                             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${

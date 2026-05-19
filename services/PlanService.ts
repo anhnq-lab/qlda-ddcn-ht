@@ -345,7 +345,7 @@ export const MonthlyPlanItemService = {
         // 1. Lấy sub-tasks (cấp cá nhân) của dự án thuộc phòng và trong tháng
         let query = supabase
             .from('tasks')
-            .select('id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata')
+            .select('id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata, status, actual_end_date')
             .eq('task_type', 'project')
             .eq('responsibility_level', 'individual')
             .gte('due_date', startOfMonth)
@@ -356,9 +356,26 @@ export const MonthlyPlanItemService = {
             query = query.in('assignee_id', deptEmployeeIds);
         }
 
-        const { data: subtasks, error } = await query.order('due_date');
+        const { data: subtasksRaw, error } = await query.order('due_date');
         if (error) throw error;
-        if (!subtasks || subtasks.length === 0) return { inserted: [], skipped: 0 };
+        if (!subtasksRaw || subtasksRaw.length === 0) return { inserted: [], skipped: 0 };
+
+        const startOfMonthDate = new Date(year, month - 1, 1);
+        const subtasks = (subtasksRaw as any[]).filter(t => {
+            if (t.status === 'done') {
+                if (t.actual_end_date) {
+                    const actualEnd = new Date(t.actual_end_date);
+                    if (actualEnd < startOfMonthDate) return false; // Completed before this month
+                } else {
+                    // If no actual_end_date but it's done, and we are seeding for a future/current month,
+                    // we might want to skip it if we assume it was done before now. 
+                    // But to be safe, if it's due this month, we keep it unless actual_end_date proves otherwise.
+                }
+            }
+            return true;
+        });
+
+        if (subtasks.length === 0) return { inserted: [], skipped: 0 };
 
         // 2. Kiểm tra đã seed rồi chưa
         const subtaskIds = (subtasks as any[]).map(t => t.id);

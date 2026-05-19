@@ -163,7 +163,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 key={view.id}
                                 onClick={() => onViewChange(view.id)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isActive
-                                    ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
+                                    ? 'bg-white dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
                                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                                 title={view.label}

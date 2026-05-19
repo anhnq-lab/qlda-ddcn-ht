@@ -69,7 +69,7 @@ export const getStatusConfig = (status?: TaskStatus | string): StatusConfig => {
             return {
                 label: 'Chờ thực hiện',
                 color: 'text-gray-500 dark:text-slate-400',
-                bg: 'bg-gray-50 dark:bg-slate-',
+                bg: 'bg-gray-50 dark:bg-slate-800',
                 border: 'border-gray-200 dark:border-slate-600',
                 dot: 'bg-gray-300 dark:bg-slate-500',
             };

@@ -453,7 +453,7 @@ const WorkflowManagerPage: React.FC = () => {
                     )}
 
                     {!error && !isLoading && filteredWorkflows.length === 0 && (
-                        <div className="bg-slate-50 dark:bg-slate- rounded-3xl p-16 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500">
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-3xl p-16 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500">
                             <FileText size={48} className="text-slate-300 mb-4" />
                             <p className="text-lg font-bold mb-2">Chưa có quy trình nào.</p>
                             <p className="text-sm">Hãy tạo quy trình đầu tiên hoặc nạp dữ liệu mẫu.</p>
@@ -514,7 +514,7 @@ const WorkflowManagerPage: React.FC = () => {
                                 </thead>
                                 <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-800 text-sm font-medium">
                                     {filteredWorkflows.map(wf => (
-                                        <tr key={wf.id} onClick={() => handleViewWorkflowOverview(wf)} className="hover:bg-slate-50 dark:hover:bg-slate- cursor-pointer transition-colors group">
+                                        <tr key={wf.id} onClick={() => handleViewWorkflowOverview(wf)} className="hover:bg-slate-50 dark:hover:bg-slate-50 cursor-pointer transition-colors group">
                                             <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-xs">{wf.code}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-slate-800 dark:text-white font-bold group-hover:text-primary-600 transition-colors uppercase font-display">{wf.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">

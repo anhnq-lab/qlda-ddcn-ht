@@ -131,7 +131,7 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                     )}
                 </div>
                 
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-2 bg-gray-50 dark:bg-slate- rounded-b-2xl">
+                <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-2 bg-gray-50 dark:bg-slate-800 rounded-b-2xl">
                     <button onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         Hủy
                     </button>

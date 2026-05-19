@@ -53,8 +53,8 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
                     flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold
                     border transition-all duration-150 cursor-pointer select-none whitespace-nowrap
                     ${isActive
-                        ? 'bg-primary-600 border-primary-500 text-white shadow-md shadow-primary-500/20'
-                        : 'bg-white/10 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600'
+                        ? 'bg-white dark:bg-slate-800 border-primary-500 dark:border-primary-500 text-primary-700 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/20'
+                        : 'bg-white dark:bg-slate-800 border-border dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                     }
                 `}
             >

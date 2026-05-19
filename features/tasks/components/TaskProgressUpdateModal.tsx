@@ -34,7 +34,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate- backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50 backdrop-blur-sm p-4">
             <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                     <div>

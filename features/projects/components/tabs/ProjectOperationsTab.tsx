@@ -276,7 +276,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 const count = stats.byStatus[key as keyof typeof stats.byStatus] || 0;
                                 const Icon = cfg.icon;
                                 return (
-                                    <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-' : 'bg-slate-50 dark:bg-slate-800'}`}>
+                                    <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-50' : 'bg-slate-50 dark:bg-slate-800'}`}>
                                         <Icon className={`w-4 h-4 text-${cfg.color}-500`} />
                                         <div>
                                             <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{count}</div>
@@ -311,7 +311,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                 {maintenanceTimeline.map((item, idx) => (
                                     <div
                                         key={item.asset.asset_id}
-                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-' : 'hover:bg-blue-50/30'}`}
+                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-50' : 'hover:bg-blue-50/30'}`}
                                     >
                                         {/* Timeline dot */}
                                         <div className="flex flex-col items-center gap-0.5 shrink-0">
@@ -469,7 +469,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                             {/* Group header */}
                                             {groupBy !== 'none' && (
                                                 <tr
-                                                    className={`cursor-pointer ${isDark ? 'bg-slate- hover:bg-slate-' : 'bg-slate-50 dark:bg-slate-800 hover:bg-gray-100'}`}
+                                                    className={`cursor-pointer ${isDark ? 'bg-slate-50 hover:bg-slate-50' : 'bg-slate-50 dark:bg-slate-800 hover:bg-gray-100'}`}
                                                     onClick={() => toggleGroup(group)}
                                                 >
                                                     <td colSpan={9} className={`px-3 py-2 font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
@@ -491,7 +491,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                 return (
                                                     <tr
                                                         key={a.asset_id}
-                                                        className={`border-t transition-colors ${isDark ? 'border-slate-800/50 hover:bg-slate-' : 'border-gray-50 hover:bg-blue-50/30'}`}
+                                                        className={`border-t transition-colors ${isDark ? 'border-slate-800/50 hover:bg-slate-50' : 'border-gray-50 hover:bg-blue-50/30'}`}
                                                     >
                                                         <td className={`px-3 py-2 font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                                                             {a.asset_code || '—'}

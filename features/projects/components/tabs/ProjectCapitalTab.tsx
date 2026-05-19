@@ -660,7 +660,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         return (
                         <div className="flex flex-col">
                             {filteredAnnualPlans.length > 0 && (
-                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate- flex items-center justify-between">
+                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800 flex items-center justify-between">
                                     <div className="text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                                         Tổng hợp Kế hoạch Hằng năm
                                     </div>

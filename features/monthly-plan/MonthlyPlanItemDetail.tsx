@@ -6,15 +6,16 @@ import {
 } from 'lucide-react';
 import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus } from '../../types/plan.types';
 import { useSlidePanel } from "../../context/SlidePanelContext";
-import { supabaseExt as supabase } from '../../lib/supabase'; // avoid deep type instantiation
+import { supabaseExt as supabase } from '../../lib/supabase';
+import { StatusBadge, BadgeVariant } from '../../components/ui';
 
 // ─── Status config ────────────────────────────────────────────
-const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; color: string; bg: string; ring: string }> = {
-    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        color: 'text-slate-600',  bg: 'bg-slate-100',  ring: 'ring-slate-300/20' },
-    completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, color: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-500/20' },
-    incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      color: 'text-red-600',    bg: 'bg-red-50',     ring: 'ring-red-500/20' },
-    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  color: 'text-warning-600',  bg: 'bg-warning-50',   ring: 'ring-warning-500/20' },
-    deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   color: 'text-blue-600',   bg: 'bg-blue-50',    ring: 'ring-blue-500/20' },
+const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; variant: BadgeVariant; topBar: string }> = {
+    planned:    { label: 'Chua b�o c�o', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-500' },
+    completed:  { label: 'Ho�n th�nh',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500' },
+    incomplete: { label: 'Chua HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500' },
+    partial:    { label: 'M?t ph?n',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500' },
+    deferred:   { label: 'Chuy?n th�ng', icon: <ArrowRight className="w-3.5 h-3.5" />,   variant: 'info',    topBar: 'bg-blue-500' },
 };
 
 
@@ -61,7 +62,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate- animate-in fade-in duration-300">
+        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-800 animate-in fade-in duration-300">
             {/* Header Toolbar */}
             <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 shadow-sm shrink-0">
                 <h3 className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
@@ -160,7 +161,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate- rounded-xl p-3 border border-slate-100">
+                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-100">
                                         <p className="text-xs font-bold text-slate-500 mb-1">Ghi chú</p>
                                         <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.notes}</p>
                                     </div>
@@ -303,3 +304,6 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 };
 
 export default MonthlyPlanItemDetail;
+
+
+

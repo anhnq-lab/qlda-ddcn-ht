@@ -65,7 +65,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
                     )}
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-800 dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-50 dark:bg-slate-8000 transition-colors dark:text-slate-200">
+                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-800 dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors dark:text-slate-200">
                         Đóng
                     </button>
                 </div>

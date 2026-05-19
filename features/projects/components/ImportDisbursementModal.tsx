@@ -101,9 +101,9 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate- backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-xl">
                             <FileSpreadsheet className="w-5 h-5" />
@@ -128,7 +128,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-'}`}
+                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-50'}`}
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <input
@@ -183,7 +183,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                                         {parsedData.slice(0, 10).map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-">
+                                            <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-50">
                                                 <td className="px-4 py-2">{new Date(row.Date).toLocaleDateString('vi-VN')}</td>
                                                 <td className="px-4 py-2">{DISBURSEMENT_TYPE_LABELS[row.Type ?? ''] || row.Type}</td>
                                                 <td className="px-4 py-2 text-right font-mono font-medium text-emerald-600">{formatCurrency(row.Amount)}</td>
@@ -194,7 +194,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                     </tbody>
                                 </table>
                                 {parsedData.length > 10 && (
-                                    <div className="px-4 py-2 bg-slate-50 dark:bg-slate- text-center text-xs text-slate-500 italic">
+                                    <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 text-center text-xs text-slate-500 italic">
                                         ...và {parsedData.length - 10} bản ghi khác
                                     </div>
                                 )}
@@ -213,7 +213,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                     )}
                 </div>
 
-                <div className="px-6 py-4 bg-slate-50 dark:bg-slate- border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
                     {!importSuccess && (
                         <>
                             <button

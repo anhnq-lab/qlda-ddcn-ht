@@ -260,7 +260,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
             </div>
 
             {/* Sticky Footer Actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate- backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 z-10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 z-10">
                 <button onClick={closePanel} className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                     Hủy bỏ
                 </button>

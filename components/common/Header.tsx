@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
     }, []);
 
     return (
-        <header className="layout-header h-16 bg-white dark:bg-slate- dark:bg-slate-900 backdrop-blur-md border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-colors duration-200">
+        <header className="layout-header h-16 bg-white dark:bg-slate-900 backdrop-blur-md border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-colors duration-200">
             {/* Left: Mobile menu + Search */}
             <div className="flex items-center gap-2 sm:gap-4 flex-1">
                 <button

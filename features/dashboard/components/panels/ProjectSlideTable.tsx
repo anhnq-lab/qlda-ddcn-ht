@@ -87,7 +87,7 @@ const ProjectSlideTable: React.FC<ProjectSlideTableProps> = ({ projects, filterS
     ];
 
     return (
-        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-">
+        <div className="p-4 h-full flex flex-col bg-slate-50/50 dark:bg-slate-800">
             <DataTable
                 data={filteredProjects}
                 columns={columns}

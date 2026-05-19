@@ -23,7 +23,7 @@ const getPriorityInfo = (p: TaskPriority) => {
         case TaskPriority.Urgent: return { label: 'Khẩn cấp', color: 'bg-red-500/10 text-red-600 ring-1 ring-red-500/20', dot: 'bg-red-500' };
         case TaskPriority.High: return { label: 'Cao', color: 'bg-warning-500/10 text-warning-600 ring-1 ring-warning-500/20', dot: 'bg-warning-500' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/20', dot: 'bg-sky-500' };
-        case TaskPriority.Low: return { label: 'Thấp', color: 'bg-slate- text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+        case TaskPriority.Low: return { label: 'Thấp', color: 'bg-slate-50 text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
         default: return { label: p, color: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' };
     }
 };
@@ -41,7 +41,7 @@ const getRoleInfo = (role: Role) => {
     switch (role) {
         case Role.Admin: return { label: 'Quản trị viên', color: 'bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20' };
         case Role.Manager: return { label: 'Quản lý', color: 'bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20' };
-        default: return { label: 'Nhân viên', color: 'bg-slate- text-slate-500 ring-1 ring-slate-500/20' };
+        default: return { label: 'Nhân viên', color: 'bg-slate-50 text-slate-500 ring-1 ring-slate-500/20' };
     }
 };
 

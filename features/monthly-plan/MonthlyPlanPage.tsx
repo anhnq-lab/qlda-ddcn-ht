@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { useMonthlyPlan } from './hooks/useMonthlyPlan';
 import {
     CalendarDays, Plus, ChevronDown, ChevronRight,
     CheckCircle2, XCircle, Clock, AlertCircle,
@@ -6,161 +7,49 @@ import {
     FolderSync, Users,
 } from 'lucide-react';
 import { exportMonthlyReport } from './exportMonthlyReport';
-import { MonthlyPlanService, MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
     DepartmentCode, DEPARTMENT_CODES, DEPARTMENT_NAMES,
     MONTHLY_STATUS_LABELS, MonthlyReportSummary,
     SOURCE_TYPE_CONFIG, getStaffDisplay,
 } from '../../types/plan.types';
-import { useEmployees } from '../../hooks/useEmployees';
-import { useAuth } from '../../context/AuthContext';
 import MonthlyPlanItemModal from './MonthlyPlanItemModal';
 import MonthlyPlanItemDetail from './MonthlyPlanItemDetail';
 import { useSlidePanel } from "../../context/SlidePanelContext";
 import DataTable, { Column } from '../../components/ui/DataTable';
+import { StatusBadge, BadgeVariant } from '../../components/ui';
 
 const CURRENT_DATE = new Date();
 const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
     'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
 
-const STATUS_CONFIG: Record<MonthlyTaskStatus, { icon: React.ReactNode; color: string; bg: string }> = {
-    planned:    { icon: <Clock className="w-3.5 h-3.5" />,         color: 'text-slate-500',  bg: 'bg-slate-100' },
-    completed:  { icon: <CheckCircle2 className="w-3.5 h-3.5" />,  color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    incomplete: { icon: <XCircle className="w-3.5 h-3.5" />,       color: 'text-red-500',    bg: 'bg-red-50' },
-    partial:    { icon: <AlertCircle className="w-3.5 h-3.5" />,   color: 'text-warning-500',  bg: 'bg-warning-50' },
-    deferred:   { icon: <ArrowRight className="w-3.5 h-3.5" />,    color: 'text-blue-500',   bg: 'bg-blue-50' },
+const STATUS_CONFIG: Record<MonthlyTaskStatus, { icon: React.ReactNode; variant: BadgeVariant }> = {
+    planned:    { icon: <Clock className="w-3.5 h-3.5" />,         variant: 'neutral' },
+    completed:  { icon: <CheckCircle2 className="w-3.5 h-3.5" />,  variant: 'success' },
+    incomplete: { icon: <XCircle className="w-3.5 h-3.5" />,       variant: 'danger' },
+    partial:    { icon: <AlertCircle className="w-3.5 h-3.5" />,   variant: 'warning' },
+    deferred:   { icon: <ArrowRight className="w-3.5 h-3.5" />,    variant: 'info' },
 };
 
 type ViewMode = 'plan' | 'report';
 
 const MonthlyPlanPage: React.FC = () => {
-    const [viewMode, setViewMode] = useState<ViewMode>('plan');
-    const [month, setMonth] = useState(CURRENT_DATE.getMonth() + 1);
-    const [year, setYear] = useState(CURRENT_DATE.getFullYear());
-    const [activeDept, setActiveDept] = useState<DepartmentCode>('HCTH');
-    const [currentPlan, setCurrentPlan] = useState<MonthlyPlan | null>(null);
-    const [items, setItems] = useState<MonthlyPlanItem[]>([]);
-    const [summaries, setSummaries] = useState<MonthlyReportSummary[]>([]);
-    const [loading, setLoading] = useState(false);
+    const { state, actions } = useMonthlyPlan();
     const { openPanel, closePanel } = useSlidePanel();
-    const [exporting, setExporting] = useState(false);
-    const [seedLoading, setSeedLoading] = useState(false);
-    const [seedProjectLoading, setSeedProjectLoading] = useState(false);
-    const [seedResult, setSeedResult] = useState<{ count: number; source: string; show: boolean } | null>(null);
 
-    const { data: employees = [] } = useEmployees();
-    const { currentUser } = useAuth();
+    const {
+        viewMode, month, year, activeDept, currentPlan,
+        items, summaries, loading, exporting,
+        seedLoading, seedProjectLoading, seedResult,
+        sortedItems
+    } = state;
 
-    // Danh sách EmployeeID thuộc phòng đang chọn
-    // Employee.Department là tên đầy đủ, ví dụ "Phòng Quản lý dự án 1"
-    const deptEmployeeIds = useMemo(() => {
-        const deptFullName = DEPARTMENT_NAMES[activeDept];
-        return employees
-            .filter(e => e.Department === deptFullName || e.Department === activeDept)
-            .map(e => e.EmployeeID)
-            .filter(Boolean) as string[];
-    }, [employees, activeDept]);
-
-    useEffect(() => { loadPlan(); }, [month, year, activeDept]);
-    useEffect(() => { if (viewMode === 'report') loadSummaries(); }, [viewMode, month, year]);
-
-    const loadPlan = async () => {
-        setLoading(true);
-        try {
-            const plan = await MonthlyPlanService.getOrCreate(
-                month, year, activeDept, DEPARTMENT_NAMES[activeDept]
-            );
-            setCurrentPlan(plan);
-            const detail = await MonthlyPlanService.getWithItems(plan.id);
-            setItems(detail.items ?? []);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadSummaries = async () => {
-        try {
-            const data = await MonthlyPlanItemService.getSummary(month, year);
-            setSummaries(data);
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const handleSeedFromAnnual = async () => {
-        if (!currentPlan) return;
-        if (!confirm(`Tự động sinh nhiệm vụ từ KH khung năm ${year} cho tháng ${month}?\n\n(Các nhiệm vụ đã có sẽ được giữ nguyên, không tạo trùng.)`)) return;
-        setSeedLoading(true);
-        setSeedResult(null);
-        try {
-            const seeded = await MonthlyPlanItemService.seedFromAnnualPlan(currentPlan.id, month, year, activeDept);
-            setSeedResult({ count: seeded.length, source: 'KH khung', show: true });
-            setTimeout(() => setSeedResult(null), 4000);
-            await loadPlan();
-        } catch (e) {
-            console.error(e);
-            alert('Có lỗi khi sinh nhiệm vụ. Vui lòng thử lại.');
-        } finally {
-            setSeedLoading(false);
-        }
-    };
-
-    const handleSeedFromProject = async () => {
-        if (!currentPlan) return;
-        if (deptEmployeeIds.length === 0) {
-            alert(`Không tìm thấy nhân viên thuộc phòng ${activeDept}. Vui lòng kiểm tra cấu hình phòng ban.`);
-            return;
-        }
-        if (!confirm(
-            `Sinh nhiệm vụ từ công việc dự án đang chạy cho tháng ${month}/${year}?\n` +
-            `Tiêu chí: công việc có hạn trong tháng AND giao cho nhân viên thuộc phòng ${activeDept}.\n\n` +
-            `(Không tạo trùng nếu đã sinh rồi.)`
-        )) return;
-
-        setSeedProjectLoading(true);
-        setSeedResult(null);
-        try {
-            const result = await MonthlyPlanItemService.seedFromProjectTasks(
-                currentPlan.id,
-                month,
-                year,
-                activeDept,
-                deptEmployeeIds,
-                currentUser?.EmployeeID
-            );
-            setSeedResult({ count: result.inserted.length, source: 'dự án', show: true });
-            setTimeout(() => setSeedResult(null), 4000);
-            await loadPlan();
-        } catch (e) {
-            console.error(e);
-            alert('Có lỗi khi sinh từ dự án. Vui lòng thử lại.');
-        } finally {
-            setSeedProjectLoading(false);
-        }
-    };
-
-    const handleStatusChange = async (item: MonthlyPlanItem, status: MonthlyTaskStatus) => {
-        await MonthlyPlanItemService.updateResult(item.id, status);
-        setItems(prev => prev.map(i => i.id === item.id ? { ...i, status } : i));
-    };
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('Xóa nhiệm vụ này?')) return;
-        await MonthlyPlanItemService.delete(id);
-        setItems(prev => prev.filter(i => i.id !== id));
-    };
-
-    const sortedItems = useMemo(() => {
-        return [...items].sort((a, b) => {
-            const gA = a.group_name || 'Công việc khác';
-            const gB = b.group_name || 'Công việc khác';
-            if (gA !== gB) return gA.localeCompare(gB);
-            return (a.task_name || '').localeCompare(b.task_name || '');
-        });
-    }, [items]);
+    const {
+        setViewMode, setMonth, setYear, setActiveDept,
+        setExporting, loadPlan,
+        handleSeedFromAnnual, handleSeedFromProject,
+        handleStatusChange, handleDelete
+    } = actions;
 
     const columns: Column<MonthlyPlanItem>[] = useMemo(() => [
         {
@@ -252,16 +141,11 @@ const MonthlyPlanPage: React.FC = () => {
                 }
                 return (
                     <div className="flex justify-center">
-                        <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${
-                            item.status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' :
-                            item.status === 'incomplete' ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400' :
-                            item.status === 'planned' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' :
-                            item.status === 'partial' ? 'bg-warning-100 text-warning-700 dark:bg-warning-500/10 dark:text-warning-400' :
-                            'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
-                        }`}>
-                            {cfg?.icon}
-                            {MONTHLY_STATUS_LABELS[item.status]}
-                        </span>
+                        <StatusBadge
+                            variant={cfg?.variant || 'neutral'}
+                            label={MONTHLY_STATUS_LABELS[item.status]}
+                            icon={cfg?.icon}
+                        />
                     </div>
                 );
             }
@@ -555,13 +439,10 @@ const MonthlyPlanPage: React.FC = () => {
                                             <td className="px-4 py-3 text-center text-red-500 dark:text-red-400 bg-red-50/30 dark:bg-red-900/10">{s.incomplete}</td>
                                             <td className="px-4 py-3 text-center text-blue-500 dark:text-blue-400">{s.deferred}</td>
                                             <td className="px-4 py-3 text-center">
-                                                <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
-                                                    s.completion_rate >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
-                                                    : s.completion_rate >= 50 ? 'bg-warning-100 text-warning-700 dark:bg-warning-500/20 dark:text-warning-300'
-                                                    : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
-                                                }`}>
-                                                    {s.completion_rate}%
-                                                </span>
+                                                <StatusBadge
+                                                    variant={s.completion_rate >= 80 ? 'success' : s.completion_rate >= 50 ? 'warning' : 'danger'}
+                                                    label={`${s.completion_rate}%`}
+                                                />
                                             </td>
                                         </tr>
                                     ))}
@@ -642,3 +523,5 @@ const MonthlyPlanPage: React.FC = () => {
 };
 
 export default MonthlyPlanPage;
+
+

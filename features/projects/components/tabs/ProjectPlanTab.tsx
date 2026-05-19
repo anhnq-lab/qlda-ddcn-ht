@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
-import { PlanStatisticsHeader } from '../PlanStatisticsHeader';
 import { PhaseProgressCard } from '../PhaseProgressCard';
 import { MilestoneTimeline } from '../MilestoneTimeline';
 import { TaskFilterBar, TaskFilter, TaskViewMode } from '../TaskFilterBar';
@@ -677,11 +676,13 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
 
-            {/* 1. Statistics Header — click card to filter */}
-            <PlanStatisticsHeader tasks={tasks} onFilterChange={setCurrentFilter} />
-
-            {/* 1.5 Smart Alerts */}
+            {/* 1. Overall Progress & Smart Alerts */}
             {(() => {
+                const total = tasks.length;
+                const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
+                const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 const threeDays = new Date(today);
@@ -706,27 +707,67 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     return d.getTime() === today.getTime();
                 });
 
-                const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success' }[] = [];
-                if (overdue.length > 0) alerts.push({ icon: '🔴', text: `${overdue.length} công việc đã quá hạn — cần xử lý ngay!`, type: 'danger' });
-                if (upcoming.length > 0) alerts.push({ icon: '⚠️', text: `${upcoming.length} công việc sẽ đến hạn trong 3 ngày tới`, type: 'warn' });
-                if (todayDone.length > 0) alerts.push({ icon: '✅', text: `${todayDone.length} công việc vừa hoàn thành hôm nay`, type: 'success' });
-
-                if (alerts.length === 0) return null;
+                const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success'; filterVal?: TaskFilter }[] = [];
+                if (overdue.length > 0) alerts.push({ icon: '🔴', text: `${overdue.length} công việc đã quá hạn`, type: 'danger', filterVal: 'overdue' });
+                if (upcoming.length > 0) alerts.push({ icon: '⚠️', text: `${upcoming.length} công việc sắp tới hạn`, type: 'warn', filterVal: 'this-week' });
+                if (todayDone.length > 0) alerts.push({ icon: '✅', text: `${todayDone.length} hoàn thành hôm nay`, type: 'success', filterVal: 'completed' });
 
                 const typeStyles = {
-                    danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400',
-                    warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400',
-                    success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400',
+                    danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40',
+                    warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40',
+                    success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
                 };
 
                 return (
-                    <div className="flex flex-wrap gap-2">
-                        {alerts.map((a, i) => (
-                            <div key={i} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium ${typeStyles[a.type]}`}>
-                                <span>{a.icon}</span>
-                                <span>{a.text}</span>
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
+                                {alerts.map((a, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => a.filterVal && setCurrentFilter(a.filterVal)}
+                                        className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-bold cursor-pointer transition-colors shadow-sm ${typeStyles[a.type]}`}
+                                    >
+                                        <span>{a.icon}</span>
+                                        <span>{a.text}</span>
+                                    </button>
+                                ))}
                             </div>
-                        ))}
+                            <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-700 ease-out"
+                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
+                            />
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold">
+                            <button 
+                                onClick={() => setCurrentFilter('completed')}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-emerald-600 dark:text-emerald-400`}
+                            >
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                Hoàn thành: {done}
+                            </button>
+                            <button 
+                                onClick={() => setCurrentFilter('in-progress')}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-blue-600 dark:text-blue-400`}
+                            >
+                                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                                Đang thực hiện: {inProgress}
+                            </button>
+                            <button 
+                                onClick={() => setCurrentFilter('all')}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-gray-100 dark:bg-slate-700 ring-1 ring-gray-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-gray-500 dark:text-slate-400`}
+                            >
+                                <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600" />
+                                Chưa bắt đầu: {total - done - inProgress}
+                            </button>
+                            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-gray-700 dark:text-slate-300">
+                                Tổng cộng: {total}
+                            </div>
+                        </div>
                     </div>
                 );
             })()}
@@ -743,42 +784,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 taskCounts={taskCounts}
                 currentUserId={currentUserId}
             />
-
-            {/* 2.5 Overall Progress Bar */}
-            {(() => {
-                const total = tasks.length;
-                const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
-                const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
-                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-                return (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
-                            <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
-                        </div>
-                        <div className="h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div
-                                className="h-full rounded-full transition-all duration-700 ease-out"
-                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
-                            />
-                        </div>
-                        <div className="flex items-center gap-4 mt-2 text-[10px] font-medium">
-                            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                Hoàn thành: {done}
-                            </span>
-                            <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                                Đang thực hiện: {inProgress}
-                            </span>
-                            <span className="flex items-center gap-1 text-gray-400 dark:text-slate-400">
-                                <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600" />
-                                Chưa bắt đầu: {total - done - inProgress}
-                            </span>
-                        </div>
-                    </div>
-                );
-            })()}
 
             {/* 3. Main Layout: Content + Sidebar */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

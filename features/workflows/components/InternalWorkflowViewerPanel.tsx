@@ -116,7 +116,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                     </div>
 
                                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow">
-                                        <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-">
+                                        <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800">
                                             <h4 className="text-[17px] font-bold text-primary-700 dark:text-primary-400 mb-3">{node.name}</h4>
                                             
                                             <div className="flex flex-wrap gap-4 text-sm mt-3">

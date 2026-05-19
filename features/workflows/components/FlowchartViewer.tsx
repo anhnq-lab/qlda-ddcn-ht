@@ -248,9 +248,9 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
     }, []);
 
     return (
-        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate- rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden relative">
+        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden relative">
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate- backdrop-blur-md border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                         <Network size={18} className="text-primary-600 dark:text-primary-400" />
@@ -288,7 +288,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                     elementsSelectable={false}
                     minZoom={0.3}
                     maxZoom={2}
-                    className="bg-slate-50 dark:bg-slate-"
+                    className="bg-slate-50 dark:bg-slate-800"
                 >
                     <Background color="#cbd5e1" gap={16} size={1.5} />
                     <Controls className="!mb-6 !mr-6 shadow-sm border-none" showInteractive={false} />
@@ -296,7 +296,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                         nodeStrokeColor="#94a3b8"
                         nodeColor="#e2e8f0"
                         maskColor="rgba(0,0,0,0.08)"
-                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate- rounded-lg shadow-lg border border-gray-200 dark:border-slate-700"
+                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate-50 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700"
                         pannable
                         zoomable
                     />

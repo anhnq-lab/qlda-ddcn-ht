@@ -381,7 +381,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                                                     navigate(`/tasks/${dep.TaskID}`);
                                                                 }
                                                             }}
-                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate- hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
+                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
                                                         >
                                                             <Link2 className="w-3 h-3 shrink-0 text-slate-400 group-hover/dep:text-blue-500 transition-colors" />
                                                             <span className="truncate font-medium">{depTask ? depTask.Title : dep.TaskID}</span>

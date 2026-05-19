@@ -58,7 +58,7 @@ class BimErrorBoundary extends React.Component<BimEBProps, BimEBState> {
 // ─── Loading Skeleton ───
 const BimViewerSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
     <div className="flex items-center justify-center h-full">
-        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate- border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
+        <div className={`text-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl ${isDark ? 'bg-slate-50 border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
             <div className="relative w-16 h-16 mx-auto mb-4">
                 <div className={`absolute inset-0 border-4 border-t-transparent rounded-full animate-spin ${isDark ? 'border-blue-500' : 'border-blue-600'}`} />
                 <div className={`absolute inset-2 border-4 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse] ${isDark ? 'border-cyan-400' : 'border-cyan-500'}`} />
@@ -475,12 +475,12 @@ const BimPage: React.FC = () => {
                                                     onClick={() => handleOpenBim(ps.projectId)}
                                                     className={`group flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-200
                                                         ${isDark
-                                                            ? 'bg-slate- border-slate-700/40 hover:border-slate-600 hover:bg-slate-'
+                                                            ? 'bg-slate-50 border-slate-700/40 hover:border-slate-600 hover:bg-slate-50'
                                                             : 'bg-slate-50 dark:bg-slate-800 border-gray-200 hover:border-gray-300 hover:bg-white dark:bg-slate-800'
                                                         }
                                                     `}
                                                 >
-                                                    <div className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-slate-' : 'bg-gray-100'}`}>
+                                                    <div className={`p-2 rounded-lg shrink-0 ${isDark ? 'bg-slate-50' : 'bg-gray-100'}`}>
                                                         <Building2 className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
                                                     </div>
                                                     <div className="min-w-0 flex-1">
@@ -537,7 +537,7 @@ const BimProjectCard: React.FC<{
             onClick={onClick}
             className={`group relative w-full text-left rounded-2xl border transition-all duration-300 overflow-hidden
                 ${isDark
-                    ? 'bg-slate- border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
+                    ? 'bg-slate-50 border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
                     : 'bg-white dark:bg-slate-800 border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
                 }
             `}

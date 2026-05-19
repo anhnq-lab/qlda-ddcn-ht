@@ -94,7 +94,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
             case 'danger':
                 return 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200';
             default:
-                return 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate- text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
+                return 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-50 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600';
         }
     };
 

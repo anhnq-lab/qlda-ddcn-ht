@@ -240,7 +240,7 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
               <Section title="Chi tiết các công việc thành phần" icon={CheckSquare} color="emerald">
                 <ul className="space-y-3">
                   {meta.sub_tasks.map((st: any) => (
-                    <li key={st.id} className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate- rounded-xl border border-slate-100 dark:border-slate-700/50">
+                    <li key={st.id} className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
                       <div className="mt-0.5"><CheckCircle size={16} className="text-slate-300 dark:text-slate-600" /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">{st.name}</p>

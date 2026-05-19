@@ -52,8 +52,8 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         onClick={() => setFilterPersonal(!filterPersonal)}
                         className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all ${
                             filterPersonal 
-                            ? 'bg-primary-50 border-primary-200 text-primary-600 shadow-sm' 
-                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-slate-600'
+                            ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-400 shadow-sm' 
+                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                         }`}
                         title={filterPersonal ? "Đang hiện việc cá nhân" : "Hiện việc cá nhân"}
                     >
@@ -65,8 +65,8 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         onClick={() => setFilterOverdue(!filterOverdue)}
                         className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all ${
                             filterOverdue 
-                            ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-sm' 
-                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-slate-600'
+                            ? 'bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 shadow-sm' 
+                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                         }`}
                         title={filterOverdue ? "Đang hiện việc quá hạn" : "Hiện việc quá hạn"}
                     >
@@ -181,7 +181,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 setFilterPersonal(false);
                                 setFilterTaskType('All');
                             }}
-                            className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                            className="text-xs text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                         >
                             Xóa bộ lọc
                         </button>
@@ -194,13 +194,13 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
                         <button
                             onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <ListTodo className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setViewMode('board')}
-                            className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-white dark:bg-slate-600 shadow-lg text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <LayoutGrid className="w-4 h-4" />
                         </button>
@@ -220,3 +220,4 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
         </div>
     );
 };
+

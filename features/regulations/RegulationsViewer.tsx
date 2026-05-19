@@ -379,7 +379,7 @@ const RegulationsViewer: React.FC = () => {
                                             <textarea 
                                                 value={editContent}
                                                 onChange={(e) => setEditContent(e.target.value)}
-                                                className="w-full min-h-[200px] p-3 border border-blue-300 dark:border-blue-600 rounded-lg bg-blue-50/50 dark:bg-slate- text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs leading-relaxed"
+                                                className="w-full min-h-[200px] p-3 border border-blue-300 dark:border-blue-600 rounded-lg bg-blue-50/50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs leading-relaxed"
                                             />
                                         ) : (
                                             typeof (editedArticles[article.id]?.content || article.content) === 'string' ? (
@@ -405,7 +405,7 @@ const RegulationsViewer: React.FC = () => {
                                                         <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs shrink-0 border border-blue-200 dark:border-blue-800">
                                                             {comment.user.charAt(0)}
                                                         </div>
-                                                        <div className="bg-gray-50 dark:bg-slate- rounded-2xl rounded-tl-none p-3 flex-1 border border-gray-100 dark:border-slate-600/50">
+                                                        <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl rounded-tl-none p-3 flex-1 border border-gray-100 dark:border-slate-600/50">
                                                             <div className="flex justify-between items-center mb-1">
                                                                 <span className="text-xs font-bold text-gray-800 dark:text-slate-200">{comment.user}</span>
                                                                 <span className="text-[10px] text-gray-400 dark:text-slate-400">{comment.date}</span>

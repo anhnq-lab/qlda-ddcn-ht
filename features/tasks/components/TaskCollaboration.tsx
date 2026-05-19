@@ -79,7 +79,7 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
 
     if (type === 'comments') {
         return (
-            <div className="flex flex-col h-full bg-slate-50 dark:bg-slate- relative">
+            <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-800 relative">
                 {/* Comments List */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
                     {isCommentsError ? (
@@ -169,7 +169,7 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
                                 ))}
                             </div>
                         )}
-                        <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate- border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
                             <input 
                                 type="file" 
                                 className="hidden" 
@@ -201,7 +201,7 @@ export const TaskCollaboration: React.FC<TaskCollaborationProps> = ({ taskId, ty
 
     if (type === 'history') {
         return (
-            <div className="p-4 md:p-6 h-full bg-slate-50 dark:bg-slate-">
+            <div className="p-4 md:p-6 h-full bg-slate-50 dark:bg-slate-800">
                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
                     <Clock className="w-4 h-4" /> Nhật ký hoạt động
                 </h3>

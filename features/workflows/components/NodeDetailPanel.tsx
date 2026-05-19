@@ -311,7 +311,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                         {subTasks.map((st, i) => (
                             <div key={st.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group/st">
                                 {/* Header */}
-                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate- border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-bold">
                                             {i + 1}

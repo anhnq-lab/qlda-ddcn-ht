@@ -1,7 +1,7 @@
 import React from 'react';
 import { FolderOpen, Calendar, AlertTriangle, Edit, Trash2, Layers, Sparkles } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
-import { EmptyState } from '../../../components/ui';
+import { EmptyState, StatusBadge } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
 import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
 interface TaskTableViewProps {
@@ -208,11 +208,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                             )}
                                         </td>
 
-                                        <td className="px-3 py-3.5 hidden sm:table-cell">
-                                            <span className={`inline-flex items-center gap-1 text-[10px] whitespace-nowrap font-bold px-2 py-1 rounded-md ${statusInfo.bg}/10 ${statusInfo.color} border border-dashed border-transparent`}>
-                                                {statusInfo.label}
-                                            </span>
-                                        </td>
+                                        <td className="px-3 py-3.5 hidden sm:table-cell"><StatusBadge label={statusInfo.label} variant={statusInfo.variant} size="sm" /></td>
 
                                         {/* Due */}
                                         <td className="px-3 py-3.5 hidden sm:table-cell">
@@ -269,3 +265,4 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
         </div>
     );
 };
+

@@ -549,7 +549,7 @@ const UserAccountManager: React.FC = () => {
                             </div>
                         </div>
                         
-                        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate- flex justify-end">
+                        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end">
                             <button
                                 onClick={() => setViewingAccount(null)}
                                 className="px-5 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"

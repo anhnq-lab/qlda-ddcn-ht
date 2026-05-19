@@ -291,7 +291,7 @@ const AnnualPlanPage: React.FC = () => {
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Tìm kiếm nhiệm vụ..."
-                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate- text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
                     />
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">

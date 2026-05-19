@@ -78,7 +78,7 @@ const Login: React.FC = () => {
             <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate- backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
+                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
                 title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'}
             >
                 {theme === 'dark' ? <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
             {/* ─── LEFT COLUMN: BRANDING & FEATURES (Hidden on Mobile) ─── */}
             <div className="hidden lg:flex w-1/2 flex-col justify-between relative overflow-hidden bg-[#F2EDE4] dark:bg-[#0A101D] border-r border-[#E8E1D5] dark:border-white/5 p-12 xl:p-20 transition-colors duration-300">
                 {/* Background ambient accents - CIC style */}
-                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-slate- dark:bg-white/[0.02] blur-[120px] pointer-events-none" />
+                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-slate-50 dark:bg-white/[0.02] blur-[120px] pointer-events-none" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/5 dark:bg-primary-500/[0.03] blur-[100px] pointer-events-none" />
                 
                 {/* Diagonal lines pattern / Grid pattern */}

@@ -128,7 +128,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className={`
             flex flex-col sm:flex-row items-start sm:items-center gap-3
             px-4 py-3
-            bg-slate-50 dark:bg-slate-
+            bg-slate-50 dark:bg-slate-800
             border-b border-border-DEFAULT dark:border-slate-700/60
             ${className}
         `}>

@@ -137,7 +137,7 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
                     iconColor: 'text-gray-400 dark:text-slate-400',
                     lineColor: 'bg-gray-200 dark:bg-slate-600',
                     textColor: 'text-gray-500 dark:text-slate-400',
-                    dotColor: 'bg-gray-300 dark:bg-slate-50 dark:bg-slate-8000'
+                    dotColor: 'bg-gray-300 dark:bg-slate-50 dark:bg-slate-800'
                 };
         }
     };

@@ -63,7 +63,7 @@ function getDisciplineColor(d: string | null) {
         HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-warning-500',
         LAND: 'bg-emerald-500', MEP: 'bg-purple-500', COMBINE: 'bg-slate-400',
     };
-    return c[d || ''] || 'bg-slate-50 dark:bg-slate-8000';
+    return c[d || ''] || 'bg-slate-50 dark:bg-slate-800';
 }
 
 // ── Component ────────────────────────────────────────
@@ -186,7 +186,7 @@ export const BimModelTree: React.FC = () => {
                                 <span className={`text-xs flex-1 truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                                     {group.type.replace('Ifc', '')}
                                 </span>
-                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate- text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
+                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-slate-50 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
                                     {group.count}
                                 </span>
                                 <button
@@ -293,7 +293,7 @@ export const BimModelTree: React.FC = () => {
     return (
         <div className={`
             ${isMobile ? 'absolute inset-y-0 left-0 z-30 w-72 border-r' : 'w-full h-full'}
-            ${isDarkMode ? 'bg-slate- border-slate-700/50' : 'bg-white dark:bg-slate-800 border-gray-200'}
+            ${isDarkMode ? 'bg-slate-50 border-slate-700/50' : 'bg-white dark:bg-slate-800 border-gray-200'}
             flex flex-col shrink-0 backdrop-blur-xl
         `}>
             {/* Header */}
@@ -317,7 +317,7 @@ export const BimModelTree: React.FC = () => {
             {/* Search (spatial + types only) */}
             {(mode === 'spatial' || mode === 'types') && (
                 <div className={`p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
-                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-slate- focus-within:ring-1 focus-within:ring-cyan-500/30' : 'bg-gray-100 focus-within:ring-1 focus-within:ring-blue-300'}`}>
+                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-slate-50 focus-within:ring-1 focus-within:ring-cyan-500/30' : 'bg-gray-100 focus-within:ring-1 focus-within:ring-blue-300'}`}>
                         <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                         <input
                             value={searchQuery}

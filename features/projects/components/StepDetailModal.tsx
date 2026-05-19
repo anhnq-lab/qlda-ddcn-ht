@@ -262,7 +262,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         </div>
 
                         {linkedTasks.length === 0 ? (
-                            <div className="text-center py-10 bg-gray-50 dark:bg-slate- rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+                            <div className="text-center py-10 bg-gray-50 dark:bg-slate-800 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
                                 <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
                                 <p className="text-sm text-gray-500 dark:text-slate-400">
                                     Chưa có công việc nào trong bước này
@@ -381,7 +381,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate- flex items-center justify-between">
+                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center justify-between">
                     <span className="text-xs text-gray-400 dark:text-slate-400">
                         Mã bước: {item.code.substring(0, 8)}...
                     </span>

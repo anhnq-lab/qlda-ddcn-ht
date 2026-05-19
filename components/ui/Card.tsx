@@ -33,7 +33,7 @@ const variantStyles: Record<CardVariant, string> = {
     `,
     glass: `
         bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg
-        dark:bg-slate- dark:border-slate-600/30 dark:shadow-slate-900/40
+        dark:bg-slate-800 dark:border-slate-600/30 dark:shadow-slate-900/40
     `,
     gradient: `
         bg-gradient-to-br from-bg-surface to-bg-subtle border border-border-DEFAULT shadow-card

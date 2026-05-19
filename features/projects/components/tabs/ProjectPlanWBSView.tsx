@@ -197,7 +197,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
             {/* Global Task Header - sticky for better UX */}
             {tasks.length > 0 && (
-                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
+                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-800" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
                     <div className="w-8 shrink-0 px-2"></div>
                     <div className="flex-1 min-w-[200px] px-2 text-left">Công việc</div>
                     <div className="w-24 shrink-0 px-2 text-center">Tiến độ</div>
@@ -424,7 +424,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         <React.Fragment key={t.TaskID}>
                                                                         <tr
                                                                             onClick={() => onEditTask(t)}
-                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate- ${isOverdue(t) ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
+                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-50 ${isOverdue(t) ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
                                                                         >
                                                                             {/* Status Dot */}
                                                                             <td className="px-2 py-2 text-center">
@@ -586,7 +586,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         
                                                                         {/* Subtask Row */}
                                                                         {t.SubTasks && t.SubTasks.length > 0 && expandedMasterTasks[t.TaskID] && (
-                                                                            <tr className="bg-[#FAF8F5] dark:bg-slate- border-b border-gray-100 dark:border-slate-700/50">
+                                                                            <tr className="bg-[#FAF8F5] dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700/50">
                                                                                 <td></td>
                                                                                 <td colSpan={8} className="p-3">
                                                                                     <div className="pl-4 sm:pl-8 border-l-2 border-primary-200 dark:border-slate-600">
@@ -595,7 +595,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                         </h6>
                                                                                         <div className="space-y-1.5">
                                                                                             {t.SubTasks.map(sub => (
-                                                                                                <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate- rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
+                                                                                                <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate-50 rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
                                                                                                     <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${(sub.Status as any) === 'Done' ? 'bg-emerald-500' : (sub.Status as any) === 'InProgress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
                                                                                                     <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                                                         {sub.Title.replace(/^[\d\.\s]+/, '').trim()}
