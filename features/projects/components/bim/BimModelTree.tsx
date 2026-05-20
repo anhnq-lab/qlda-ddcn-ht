@@ -255,10 +255,11 @@ export const BimModelTree: React.FC = () => {
                     <div key={dm.model.id} className={`group flex items-center gap-2.5 p-2 rounded-lg transition-all duration-200 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
                         <div className={`w-3 h-3 rounded-full ${getDisciplineColor(dm.model.discipline)} shrink-0 ring-2 ring-offset-1 ${isDarkMode ? 'ring-offset-slate-800 ring-white/10' : 'ring-offset-white ring-black/5'}`} />
                         <div className="flex-1 min-w-0">
-                            <p className={`text-xs truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
-                                {dm.model.discipline || dm.model.file_name.slice(0, 25)}
+                            <p className={`text-xs font-medium truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`} title={dm.model.file_name}>
+                                {dm.model.file_name}
                             </p>
-                            <p className={`text-[9px] ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>
+                            <p className={`text-[9px] ${isDarkMode ? 'text-slate-500' : 'text-gray-400'} truncate`}>
+                                {dm.model.discipline ? `${dm.model.discipline} • ` : ''}
                                 {dm.model.status === 'ready'
                                     ? (dm.model.element_count && dm.model.element_count > 0
                                         ? `${dm.model.element_count.toLocaleString('vi-VN')} elements`

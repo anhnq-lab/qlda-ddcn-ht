@@ -133,6 +133,14 @@ CREATE TABLE IF NOT EXISTS bidding_packages (
     decision_file TEXT,
     winning_contractor_id TEXT,
     winning_price NUMERIC,
+    bidding_scope TEXT,
+    bidders_count INTEGER,
+    evaluation_bidders_count INTEGER,
+    bid_opening_date TEXT,
+    approval_date_result TEXT,
+    completion_pct NUMERIC(5,2) DEFAULT 0,
+    completion_updated_at TIMESTAMPTZ,
+    contract_id TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -534,6 +542,8 @@ ALTER TABLE public.package_bidders
 -- Bidding Packages
 ALTER TABLE bidding_packages DROP CONSTRAINT IF EXISTS bidding_packages_project_id_fkey;
 ALTER TABLE bidding_packages ADD CONSTRAINT bidding_packages_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE;
+ALTER TABLE bidding_packages DROP CONSTRAINT IF EXISTS fk_bidding_packages_winning_contractor_id;
+ALTER TABLE bidding_packages ADD CONSTRAINT fk_bidding_packages_winning_contractor_id FOREIGN KEY (winning_contractor_id) REFERENCES contractors(contractor_id) ON DELETE SET NULL;
 
 -- BIM Models
 ALTER TABLE bim_models DROP CONSTRAINT IF EXISTS bim_models_project_id_fkey;

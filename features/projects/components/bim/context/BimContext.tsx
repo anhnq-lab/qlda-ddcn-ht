@@ -86,9 +86,13 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         engine.componentsRef,
         engine.worldRef,
         engine.ifcLoaderRef,
-        (ifcData) => {
+        (ifcData, propertiesData, fileName) => {
             if (selectionRef.current) {
-                selectionRef.current.buildSpatialTree(ifcData);
+                if (propertiesData) {
+                    selectionRef.current.loadPropertiesAndTree(fileName || 'model', propertiesData);
+                } else if (ifcData) {
+                    selectionRef.current.buildSpatialTree(ifcData);
+                }
             }
             setOpRefreshTrigger(prev => prev + 1);
         }

@@ -93,3 +93,32 @@ export const formatFileSize = (bytes: number | undefined | null): string => {
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return `${(bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0)} ${sizes[i]}`;
 };
+
+/** Format planning period string (could be string description, ISO date, or Excel serial date) */
+export const formatPeriod = (period: string | undefined | null): string => {
+    if (!period) return '—';
+    const trimmed = period.trim();
+    // Check if it's an Excel serial date
+    if (/^\d{5}$/.test(trimmed)) {
+        const num = Number(trimmed);
+        const date = new Date((num - (num > 60 ? 2 : 1)) * 86400 * 1000 + Date.UTC(1900, 0, 1));
+        return new Intl.DateTimeFormat('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(date);
+    }
+    // Check if it's a standard ISO date or date string (e.g., 2026-05-20)
+    if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+        const date = new Date(trimmed);
+        if (!isNaN(date.getTime())) {
+            return new Intl.DateTimeFormat('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).format(date);
+        }
+    }
+    // Return original string if it is a general description (e.g. "Quý I", "Hàng tháng")
+    return period;
+};

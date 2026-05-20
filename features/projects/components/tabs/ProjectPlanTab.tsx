@@ -27,8 +27,9 @@ import { useTaskFilters } from '../../hooks/useTaskFilters';
 import { useStepAggregates } from '../../hooks/useStepAggregates';
 import { usePlanPersist } from '../../hooks/usePlanPersist';
 import { taskKeys } from '@/hooks/useWorkflowTasks';
-import { PlanDateRangeModal, PlanDateRange } from '../PlanDateRangeModal';
+import { CreateMasterPlanPanel } from '../CreateMasterPlanPanel';
 import { StepDetailModal } from '../StepDetailModal';
+import { PlanDateRange } from '../PlanDateRangeModal';
 
 
 interface ProjectPlanTabProps {
@@ -495,12 +496,14 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             estimated_cost: (taskData as any).EstimatedCost || null,
             actual_cost: (taskData as any).ActualCost || null,
             duration_days: taskData.DurationDays || null,
+            monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
             metadata: {
                 ui_status: taskData.Status,
                 assignee_role: taskData.AssigneeID && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskData.AssigneeID) ? taskData.AssigneeID : undefined,
                 sub_tasks: taskData.SubTasks,
                 attachments: taskData.Attachments,
                 dependencies: taskData.Dependencies,
+                monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
             }
         };
 
@@ -810,10 +813,23 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                             onSetExpandedPhases={setExpandedPhases}
                             onDeleteAllTasks={handleDeleteAllTasks}
                             onOpenPlanModal={(trigger, title, desc) => {
-                                setPlanTrigger(trigger);
-                                setPlanModalTitle(title);
-                                setPlanModalDesc(desc);
-                                setPlanModalOpen(true);
+                                openPanel({
+                                    title: 'Thiết lập kế hoạch tổng thể',
+                                    icon: <ListPlus className="w-5 h-5 text-emerald-500" />,
+                                    component: (
+                                        <CreateMasterPlanPanel
+                                            project={project}
+                                            hasExistingTasks={tasks.length > 0}
+                                            onClose={() => closePanel()}
+                                            onSuccess={() => {
+                                                showToast('✅ Đã thiết lập kế hoạch tổng thể thành công', 'success');
+                                                queryClient.invalidateQueries({ queryKey: taskKeys.all });
+                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
+                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
+                                            }}
+                                        />
+                                    )
+                                });
                             }}
                             onAddTask={(stepName, stepCode) => {
                                 setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
@@ -981,21 +997,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     <button onClick={() => setToast(null)} className="ml-2 text-white/60 hover:text-white text-lg leading-none">&times;</button>
                 </div>
             )}
-            {/* Plan Date Range Modal */}
-            <PlanDateRangeModal
-                isOpen={planModalOpen}
-                onClose={() => setPlanModalOpen(false)}
-                onConfirm={handlePlanModalConfirm}
-                title={planModalTitle}
-                description={planModalDesc}
-                defaultStartDate={project?.StartDate
-                    ? new Date(project.StartDate).toISOString().split('T')[0]
-                    : undefined}
-                isLoading={planModalLoading}
-                showWorkflowOption={planTrigger?.type === 'all'}
-                project={project}
-            />
-
             {/* Step Detail Modal */}
             {stepDetailItem && (
                 <StepDetailModal

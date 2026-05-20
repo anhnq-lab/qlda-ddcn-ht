@@ -13,6 +13,8 @@ export interface AgencyEvent {
   start_time: string;
   end_time: string;
   location: string | null;
+  report_content: string | null;
+  report_files: any[] | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -38,6 +40,8 @@ export interface CreateAgencyEventDTO {
   start_time: string; // ISO String
   end_time: string; // ISO String
   location?: string | null;
+  report_content?: string | null;
+  report_files?: any[] | null;
   attendee_ids?: string[]; // Array of employee_id
 }
 

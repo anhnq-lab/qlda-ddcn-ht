@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Send, Minimize2, Maximize2, Bot, User, Sparkles, Database, RefreshCw } from 'lucide-react';
-import { sendMessageToGemini, ChatMessage, isAIAvailable } from '../../services/aiService';
+import { MessageCircle, X, Send, Minimize2, Maximize2, Bot, User, Sparkles, Database, RefreshCw, FileText, Presentation, FileSpreadsheet, Download } from 'lucide-react';
+import { sendMessageToGemini, ChatMessage, isAIAvailable, checkCompliance } from '../../services/aiService';
 import { QUICK_SUGGESTIONS } from '../../services/ai/aiTools';
+import { docxGenerator } from '../../services/ai/docxGenerator';
+import { ProjectService } from '../../services/ProjectService';
+import { TaskService } from '../../services/TaskService';
 
 const CHAT_STORAGE_KEY = 'qlda_ai_chat_history';
 const MAX_STORED_MESSAGES = 50;
@@ -25,7 +28,7 @@ function saveChatHistory(messages: ChatMessage[]) {
 }
 
 // Simple markdown-ish renderer for AI responses
-function renderMessageText(text: string) {
+function renderMessageText(text: string, onActionClick?: (action: string) => void) {
     // Split by lines and process
     const lines = text.split('\n');
     const elements: React.ReactNode[] = [];
@@ -37,7 +40,7 @@ function renderMessageText(text: string) {
             elements.push(
                 <ul key={`list-${listKey++}`} className="list-disc list-inside space-y-0.5 my-1">
                     {listItems.map((item, i) => (
-                        <li key={i} className="text-sm">{formatInline(item)}</li>
+                        <li key={i} className="text-sm">{formatInline(item, onActionClick)}</li>
                     ))}
                 </ul>
             );
@@ -72,7 +75,7 @@ function renderMessageText(text: string) {
         } else if (line.trim() === '') {
             elements.push(<div key={i} className="h-1" />);
         } else {
-            elements.push(<p key={i} className="text-sm my-0.5">{formatInline(line)}</p>);
+            elements.push(<p key={i} className="text-sm my-0.5">{formatInline(line, onActionClick)}</p>);
         }
     }
     flushList();
@@ -80,8 +83,8 @@ function renderMessageText(text: string) {
     return <div className="space-y-0.5">{elements}</div>;
 }
 
-// Format inline markdown: **bold**, *italic*, `code`
-function formatInline(text: string): React.ReactNode {
+// Format inline markdown: **bold**, *italic*, `code`, [label](action:name)
+function formatInline(text: string, onActionClick?: (action: string) => void): React.ReactNode {
     const parts: React.ReactNode[] = [];
     let remaining = text;
     let key = 0;
@@ -91,19 +94,73 @@ function formatInline(text: string): React.ReactNode {
         const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
         // Code
         const codeMatch = remaining.match(/`(.+?)`/);
+        // Action link
+        const actionMatch = remaining.match(/\[([^\]]+)\]\(action:([a-zA-Z0-9_\?=&]+)\)/);
 
-        if (boldMatch && boldMatch.index !== undefined && (!codeMatch || boldMatch.index < (codeMatch.index ?? Infinity))) {
-            if (boldMatch.index > 0) parts.push(remaining.slice(0, boldMatch.index));
-            parts.push(<strong key={key++} className="font-semibold">{boldMatch[1]}</strong>);
-            remaining = remaining.slice(boldMatch.index + boldMatch[0].length);
-        } else if (codeMatch && codeMatch.index !== undefined) {
-            if (codeMatch.index > 0) parts.push(remaining.slice(0, codeMatch.index));
-            parts.push(
-                <code key={key++} className="bg-slate-200 dark:bg-slate-600 px-1 rounded text-xs font-mono">
-                    {codeMatch[1]}
-                </code>
-            );
-            remaining = remaining.slice(codeMatch.index + codeMatch[0].length);
+        // Find the one that occurs first
+        let firstMatch: { index: number; length: number; render: () => React.ReactNode } | null = null;
+
+        if (boldMatch && boldMatch.index !== undefined) {
+            firstMatch = {
+                index: boldMatch.index,
+                length: boldMatch[0].length,
+                render: () => <strong key={key++} className="font-semibold">{boldMatch[1]}</strong>
+            };
+        }
+
+        if (codeMatch && codeMatch.index !== undefined && (firstMatch === null || codeMatch.index < firstMatch.index)) {
+            firstMatch = {
+                index: codeMatch.index,
+                length: codeMatch[0].length,
+                render: () => (
+                    <code key={key++} className="bg-slate-200 dark:bg-slate-600 px-1 rounded text-xs font-mono">
+                        {codeMatch[1]}
+                    </code>
+                )
+            };
+        }
+
+        if (actionMatch && actionMatch.index !== undefined && (firstMatch === null || actionMatch.index < firstMatch.index)) {
+            firstMatch = {
+                index: actionMatch.index,
+                length: actionMatch[0].length,
+                render: () => {
+                    const label = actionMatch[1];
+                    const action = actionMatch[2];
+                    const isWord = action.startsWith('download_word');
+                    const isPptx = action.startsWith('download_pptx');
+                    const isExcel = action.startsWith('download_excel');
+                    
+                    const icon = isWord 
+                        ? <FileText size={12} className="inline mr-1" /> 
+                        : isPptx 
+                        ? <Presentation size={12} className="inline mr-1" /> 
+                        : <FileSpreadsheet size={12} className="inline mr-1" />;
+                    
+                    const bgClass = isWord 
+                        ? 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800' 
+                        : isPptx 
+                        ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800' 
+                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800';
+
+                    return (
+                        <button
+                            key={key++}
+                            onClick={() => onActionClick?.(action)}
+                            className={`inline-flex items-center justify-center px-2 py-0.5 mx-1 rounded border font-semibold text-xs transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer align-middle ${bgClass}`}
+                        >
+                            {icon}
+                            {label}
+                        </button>
+                    );
+                }
+            };
+        }
+
+        if (firstMatch) {
+            if (firstMatch.index > 0) parts.push(remaining.slice(0, firstMatch.index));
+            parts.push(firstMatch.render());
+            remaining = remaining.slice(firstMatch.index + firstMatch.length);
         } else {
             parts.push(remaining);
             break;
@@ -119,6 +176,65 @@ export const AIChatbot: React.FC = () => {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isQuerying, setIsQuerying] = useState(false);
+    const [actionMessage, setActionMessage] = useState<string | null>(null);
+
+    const match = window.location.pathname.match(/\/projects\/([^\/]+)/);
+    const currentProjectId = match ? decodeURIComponent(match[1]) : null;
+
+    const handleActionClick = async (action: string) => {
+        const parts = action.split('?');
+        const actionType = parts[0];
+        const params = new URLSearchParams(parts[1] || '');
+        const projectId = params.get('projectId') || currentProjectId;
+
+        if (!projectId) {
+            alert('Không tìm thấy mã dự án để thực hiện hành động này.');
+            return;
+        }
+
+        setIsLoading(true);
+        setActionMessage('Đang lấy dữ liệu chi tiết dự án...');
+        try {
+            const project = await ProjectService.getById(projectId);
+            if (!project) {
+                alert('Không thể tìm thấy thông tin dự án trong cơ sở dữ liệu.');
+                return;
+            }
+
+            setActionMessage('Đang lấy danh sách công việc và kiểm tra tuân thủ...');
+            const [tasks, compliance] = await Promise.all([
+                TaskService.getProjectTasks(projectId),
+                checkCompliance(project)
+            ]);
+
+            const payload = {
+                ...project,
+                projectCode: project.ProjectNumber || project.ProjectID,
+                investor: project.InvestorName,
+                totalInvestment: project.TotalInvestment,
+                disbursedAmount: project.DisbursedAmount || 0,
+                tasks,
+                compliance
+            };
+
+            if (actionType === 'download_word') {
+                setActionMessage('Đang sinh báo cáo Word (NĐ 30/2020)...');
+                await docxGenerator.generateWordReport(project.ProjectName, payload);
+            } else if (actionType === 'download_pptx') {
+                setActionMessage('Đang thiết kế slide trình chiếu (Midnight Gold)...');
+                await docxGenerator.generatePowerPoint(project.ProjectName, payload);
+            } else if (actionType === 'download_excel') {
+                setActionMessage('Đang tạo bảng tính kế hoạch nguồn vốn...');
+                await docxGenerator.generateExcelCapitalPlan(project.ProjectName, payload);
+            }
+        } catch (err: any) {
+            console.error('Document generation failed:', err);
+            alert(`Lỗi xuất tài liệu: ${err.message || err}`);
+        } finally {
+            setIsLoading(false);
+            setActionMessage(null);
+        }
+    };
 
     const WELCOME_MSG: ChatMessage = {
         id: 'welcome',
@@ -169,7 +285,7 @@ export const AIChatbot: React.FC = () => {
         try {
             const TIMEOUT_MS = 30_000;
             const responseText = await Promise.race([
-                sendMessageToGemini(messages, msgText),
+                sendMessageToGemini(messages, msgText, currentProjectId),
                 new Promise<never>((_, reject) =>
                     setTimeout(() => reject(new Error('Hết thời gian chờ (30s). Vui lòng thử lại.')), TIMEOUT_MS)
                 ),
@@ -286,6 +402,41 @@ export const AIChatbot: React.FC = () => {
                 </div>
             </div>
 
+            {currentProjectId && (
+                <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between text-[11px] transition-all duration-300">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        <Sparkles size={12} className="text-blue-500 animate-pulse" />
+                        Xuất nhanh:
+                    </span>
+                    <div className="flex gap-1.5">
+                        <button
+                            onClick={() => handleActionClick('download_word')}
+                            disabled={isLoading}
+                            className="flex items-center gap-1 px-2 py-1 bg-white hover:bg-blue-50 dark:bg-slate-750 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-slate-200 dark:border-slate-700 rounded font-semibold shadow-sm hover:border-blue-350 transition-all duration-205 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <FileText size={11} />
+                            Word
+                        </button>
+                        <button
+                            onClick={() => handleActionClick('download_pptx')}
+                            disabled={isLoading}
+                            className="flex items-center gap-1 px-2 py-1 bg-white hover:bg-amber-50 dark:bg-slate-750 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-slate-200 dark:border-slate-700 rounded font-semibold shadow-sm hover:border-amber-350 transition-all duration-205 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Presentation size={11} />
+                            Slide
+                        </button>
+                        <button
+                            onClick={() => handleActionClick('download_excel')}
+                            disabled={isLoading}
+                            className="flex items-center gap-1 px-2 py-1 bg-white hover:bg-emerald-50 dark:bg-slate-750 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded font-semibold shadow-sm hover:border-emerald-350 transition-all duration-205 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <FileSpreadsheet size={11} />
+                            Excel
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900">
                 {messages.map(msg => (
@@ -307,7 +458,7 @@ export const AIChatbot: React.FC = () => {
                                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-lg border border-slate-100 dark:border-slate-700 rounded-tl-sm'
                                     } ${msg.isError ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : ''}`}
                             >
-                                {msg.sender === 'ai' ? renderMessageText(msg.text) : msg.text}
+                                {msg.sender === 'ai' ? renderMessageText(msg.text, handleActionClick) : msg.text}
                                 <div className={`text-[10px] mt-1.5 ${msg.sender === 'user' ? 'text-blue-200' : 'text-slate-400'}`}>
                                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
@@ -365,6 +516,12 @@ export const AIChatbot: React.FC = () => {
 
             {/* Input Area */}
             <div className="p-3 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 rounded-b-xl">
+                {actionMessage && (
+                    <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-xl mb-2 border border-blue-100 dark:border-blue-800 animate-pulse font-medium">
+                        <RefreshCw size={12} className="animate-spin text-blue-500" />
+                        {actionMessage}
+                    </div>
+                )}
                 {!aiAvailable && (
                     <div className="text-[11px] text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-lg mb-2">
                         ⚠️ Chưa cấu hình Gemini API Key

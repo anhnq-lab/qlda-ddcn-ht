@@ -21,6 +21,7 @@ export interface DbTask {
   priority: DbTaskPriority;
   progress: number;
   assignee_id: string | null;
+  collaborator_ids: string[] | null;
   approver_id: string | null;
   start_date: string | null;
   due_date: string | null;
@@ -36,6 +37,7 @@ export interface DbTask {
   output_document: string | null;
   predecessor_task_id: string | null;
   metadata: Record<string, any>;
+  monthly_plan_item_id: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -641,6 +643,148 @@ export const TaskService = {
       }
 
       // Trả lại task đã tạo
+      return (data || []) as unknown as DbTask[];
+    }
+
+    return [];
+  },
+
+  /** Tạo kế hoạch tổng thể tùy chỉnh từ danh sách các bước tùy biến */
+  createTasksFromCustomPlan: async (
+    projectId: string,
+    workflowId: string | null,
+    steps: Array<{
+      workflow_node_id: string | null;
+      title: string;
+      phase: string;
+      assignee_role: string;
+      start_date: string;
+      due_date: string;
+      duration_days: number;
+      legal_basis?: string;
+      output_document?: string;
+      metadata?: any;
+      sub_tasks?: any[];
+    }>,
+    targetEndDate?: string
+  ): Promise<DbTask[]> => {
+    // 1. Dọn dẹp tasks cũ và workflow instances của dự án
+    await TaskService.deleteProjectTasks(projectId);
+    await supabase.from('workflow_instances').delete().eq('reference_id', projectId).eq('reference_type', 'project');
+
+    const generateUUID = () => {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
+
+    const tasksToInsert: any[] = [];
+    const subTasksToInsert: any[] = [];
+    const stepIdsMap: Record<number, string> = {};
+
+    // Tạo sẵn danh sách UUID để liên kết predecessor
+    steps.forEach((_, index) => {
+      stepIdsMap[index] = generateUUID();
+    });
+
+    // 2. Xây dựng danh sách công việc chính và con
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const taskId = stepIdsMap[i];
+      const previousTaskId = i > 0 ? stepIdsMap[i - 1] : null;
+
+      const nodeMetadata = step.metadata || {};
+
+      tasksToInsert.push({
+        id: taskId,
+        project_id: projectId,
+        title: step.title.length > 450 ? step.title.substring(0, 447) + '...' : step.title,
+        status: 'todo',
+        task_type: 'project',
+        workflow_id: workflowId,
+        workflow_node_id: step.workflow_node_id,
+        priority: 'medium',
+        progress: 0,
+        start_date: step.start_date,
+        due_date: step.due_date,
+        duration_days: step.duration_days,
+        phase: step.phase || 'preparation',
+        step_code: step.workflow_node_id || taskId, // Dùng node_id hoặc chính taskId làm step_code
+        sort_order: i,
+        predecessor_task_id: previousTaskId,
+        legal_basis: step.legal_basis || nodeMetadata.legal_basis || nodeMetadata.legalBasis || '',
+        output_document: step.output_document || nodeMetadata.output_document || nodeMetadata.output || '',
+        metadata: {
+          sub_process: nodeMetadata.sub_process || '',
+          sla_formula: `${step.duration_days}d`,
+          assignee_role: step.assignee_role || nodeMetadata.assignee_role || '',
+          node_type: nodeMetadata.node_type || 'approval',
+        },
+      });
+
+      // Tạo các công việc con (nếu có)
+      if (step.sub_tasks && step.sub_tasks.length > 0) {
+        step.sub_tasks.forEach((st: any, idx: number) => {
+          const subTaskName = st.name || st.title || `Công việc ${idx + 1}`;
+          subTasksToInsert.push({
+            id: generateUUID(),
+            parent_id: taskId,
+            project_id: projectId,
+            title: subTaskName.length > 255 ? subTaskName.substring(0, 252) + '...' : subTaskName,
+            status: 'todo',
+            task_type: 'project',
+            sort_order: idx,
+            due_date: null,
+            assignee_id: null,
+            metadata: {
+              assignee_role: st.assignee_role || st.metadata?.assignee_role || st.assignedTo || '',
+              legal_basis: st.legal_basis || st.metadata?.legal_basis || st.legalBasis || '',
+              output: st.output || st.metadata?.output || '',
+            }
+          });
+        });
+      }
+    }
+
+    // 3. Insert hàng loạt vào CSDL
+    if (tasksToInsert.length > 0) {
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert(tasksToInsert)
+        .select();
+
+      if (error) throw toServiceError(error, `Tạo kế hoạch tùy chỉnh thất bại`);
+
+      if (subTasksToInsert.length > 0) {
+        const { error: subErr } = await supabase
+          .from('tasks')
+          .insert(subTasksToInsert);
+        if (subErr) {
+          console.error("Lỗi khi tạo công việc con tùy chỉnh:", subErr);
+        }
+      }
+
+      // Đăng ký workflow instance
+      if (workflowId) {
+        const { error: instErr } = await supabase.from('workflow_instances').insert({
+          id: generateUUID(),
+          workflow_id: workflowId,
+          reference_id: projectId,
+          reference_type: 'project',
+          status: 'in_progress',
+          started_at: new Date().toISOString(),
+          context_data: targetEndDate ? { target_end_date: targetEndDate } : {}
+        });
+
+        if (instErr) {
+          console.error("Lỗi khi đăng ký custom workflow instance:", instErr);
+        }
+      }
+
       return (data || []) as unknown as DbTask[];
     }
 

@@ -4,12 +4,20 @@
  * Build system prompt với ngày giờ hiện tại
  * Gọi hàm này mỗi lần tạo request để AI biết ngữ cảnh thời gian
  */
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(currentProjectId?: string | null): string {
     const now = new Date();
     const dateStr = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
     const quarterEnd = currentMonth <= 3 ? 'Q1' : currentMonth <= 6 ? 'Q2' : currentMonth <= 9 ? 'Q3' : 'Q4';
+
+    let projectContextStr = '';
+    if (currentProjectId) {
+        projectContextStr = `\n## Dự án hiện tại
+- Người dùng đang xem trực tiếp trang chi tiết dự án có Mã Dự Án (ProjectID) là: **${currentProjectId}**.
+- Khi người dùng hỏi chung chung hoặc nói về "dự án này", "tiến độ giải ngân ra sao", "danh sách công việc", v.v., hãy ƯU TIÊN tra cứu và thực thi các câu hỏi liên quan đến dự án **${currentProjectId}** này.
+- Khi người dùng muốn tạo công việc mới (create_project_task) mà không chỉ rõ projectId, hãy ngầm hiểu là tạo cho dự án **${currentProjectId}**.`;
+    }
 
     return `Bạn là trợ lý ảo chuyên về quản lý dự án đầu tư công Việt Nam, phục vụ cán bộ Ban Quản Lý Dự Án (BQLDA).
 
@@ -18,6 +26,7 @@ export function buildSystemPrompt(): string {
 - Năm kế hoạch: ${currentYear}
 - Quý hiện tại: ${quarterEnd}/${currentYear}
 - Tháng ${currentMonth}/${currentYear} — đây là thời điểm quan trọng để đánh giá tiến độ giải ngân
+${projectContextStr}
 
 ## Vai trò
 - Hỗ trợ tra cứu thông tin dự án, hợp đồng, thanh toán, giải ngân
@@ -39,6 +48,8 @@ Bạn có các công cụ sau — hãy dùng khi cần dữ liệu thực:
 - get_project_tasks: Công việc chi tiết của 1 dự án (tham số: projectId)
 - get_contract_expiry: Hợp đồng sắp hết hạn (tham số: days)
 - get_bidding_packages: Gói thầu, KHLCNT
+- search_regulations: Tìm kiếm quy định pháp luật xây dựng, đầu tư công (tham số: query, documentId)
+- create_project_task: Tạo công việc mới cho dự án (tham số: projectId, title, dueDate, priority)
 
 ## Quy định pháp lý nắm vững
 - Luật Đầu tư công 58/2024/QH15
@@ -73,7 +84,7 @@ Bạn có các công cụ sau — hãy dùng khi cần dữ liệu thực:
 }
 
 /** Backward-compatible export */
-export const SYSTEM_PROMPT_QLDA = buildSystemPrompt();
+export const SYSTEM_PROMPT_QLDA = buildSystemPrompt(null);
 
 /**
  * Prompt phân tích rủi ro dự án

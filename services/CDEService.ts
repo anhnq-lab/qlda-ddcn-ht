@@ -9,6 +9,7 @@ import type { CDEFolder, CDEDocument, CDEWorkflowEntry, CDEStats, CDEStatusCode,
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cde: any = supabase;
 import { CDE_WORKFLOW_STEPS, getContainerFromStatus, formatFileSize } from '../features/cde/constants';
+import { calculateFileHash } from '../utils/cryptoUtils';
 
 // ═══════════════════════════════════════════════════════════════
 // FOLDERS
@@ -172,8 +173,13 @@ export class CDEService {
         userName: string;
         userOrg: string;
         contractorId?: string;
+        isEncrypted?: boolean;
+        encryptionKeyId?: string;
     }): Promise<CDEDocument> {
-        const { file, projectId, folderId, discipline, docType, notes, userId, userName, userOrg, contractorId } = params;
+        const { file, projectId, folderId, discipline, docType, notes, userId, userName, userOrg, contractorId, isEncrypted, encryptionKeyId } = params;
+
+        // Calculate file hash for integrity (BCA Compliance)
+        const fileHash = await calculateFileHash(file);
 
         // Upload to storage
         const timestamp = Date.now();
@@ -209,6 +215,9 @@ export class CDEService {
                 notes,
                 source: 'cde_upload',
                 upload_date: new Date().toISOString(),
+                file_hash: fileHash,
+                is_encrypted: isEncrypted || false,
+                encryption_key_id: encryptionKeyId || null,
             })
             .select()
             .single();
@@ -524,8 +533,8 @@ export class CDEService {
                     try {
                         const { data: urlData } = supabase.storage.from('documents').getPublicUrl(path);
                         
-                        // Calculate a fast pseudo-hash for deduplication, or leave empty if not available
-                        const fileHash = `${file.size}-${file.lastModified}-${file.name}`;
+                        // Calculate full pseudo-hash for integrity (BCA Compliance)
+                        const fileHash = await calculateFileHash(file);
 
                         // Insert DB record
                         const { data, error } = await supabase.from('documents').insert({

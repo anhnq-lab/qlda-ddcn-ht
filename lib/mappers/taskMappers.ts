@@ -11,10 +11,11 @@ export const dbToTask = (row: DbTask): Task => ({
     Description: row.description || '',
     TaskType: row.task_type as TaskType,
     ProjectID: row.project_id || '',
-    MonthlyPlanItemID: row.metadata?.monthly_plan_item_id || undefined,
+    MonthlyPlanItemID: row.monthly_plan_item_id || row.metadata?.monthly_plan_item_id || undefined,
     WorkflowID: row.workflow_id || undefined,
     WorkflowNodeID: row.workflow_node_id || undefined,
     AssigneeID: row.assignee_id || row.metadata?.assignee_role || '',
+    CollaboratorIDs: row.collaborator_ids || [],
     ApproverID: row.approver_id || undefined,
     Status: row.status as TaskStatus,
     Priority: row.priority as TaskPriority,
@@ -57,6 +58,7 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.Priority) row.priority = task.Priority;
     if (task.ProgressPercent !== undefined) row.progress = task.ProgressPercent;
     if (task.AssigneeID !== undefined) row.assignee_id = task.AssigneeID || null;
+    if (task.CollaboratorIDs !== undefined) row.collaborator_ids = task.CollaboratorIDs || null;
     if (task.ApproverID !== undefined) row.approver_id = task.ApproverID || null;
     if (task.StartDate !== undefined) row.start_date = task.StartDate || null;
     if (task.DueDate !== undefined) row.due_date = task.DueDate || null;
@@ -71,6 +73,7 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.LegalBasis !== undefined) row.legal_basis = task.LegalBasis || null;
     if (task.OutputDocument !== undefined) row.output_document = task.OutputDocument || null;
     if (task.PredecessorTaskID !== undefined) row.predecessor_task_id = task.PredecessorTaskID || null;
+    if (task.MonthlyPlanItemID !== undefined) row.monthly_plan_item_id = task.MonthlyPlanItemID || null;
     
     // Build metadata
     row.metadata = {
@@ -79,8 +82,8 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
         attachments: task.Attachments,
         dependencies: task.Dependencies,
         isCritical: task.IsCritical,
-        monthly_plan_item_id: task.MonthlyPlanItemID || undefined
     };
     
     return row;
 };
+

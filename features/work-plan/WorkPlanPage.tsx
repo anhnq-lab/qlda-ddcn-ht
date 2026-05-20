@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { ClipboardList, CalendarDays, ListChecks } from 'lucide-react';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 // Lazy-load each sub-module inside the bundle
 const AnnualPlanPage  = React.lazy(() => import('../annual-plan/AnnualPlanPage'));
@@ -23,11 +23,10 @@ const TABS: TabDef[] = [
 ];
 
 const WorkPlanPage: React.FC = () => {
-    const [params, setParams] = useSearchParams();
-    const active = (params.get('tab') as TabKey) || 'monthly';
+    const [active, setActive] = useTabSearchParam<TabKey>('monthly', ['tasks', 'annual', 'monthly'] as const);
 
     const switchTab = (key: TabKey) => {
-        setParams({ tab: key }, { replace: true });
+        setActive(key);
     };
 
     return (

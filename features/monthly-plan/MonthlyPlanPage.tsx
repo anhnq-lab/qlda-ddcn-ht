@@ -103,18 +103,26 @@ const MonthlyPlanPage: React.FC = () => {
             render: (_, item) => <span className="text-xs text-slate-500">{item.deadline_note ?? '—'}</span>
         },
         {
-            key: 'staff',
-            header: 'Phụ trách',
-            width: '160px',
+            key: 'collaborating',
+            header: 'Đơn vị phối hợp',
+            width: '180px',
             render: (_, item) => {
-                const names = item.staff_names && item.staff_names.length > 0 ? item.staff_names : item.staff_name ? [item.staff_name] : [];
-                if (names.length === 0) return <span className="text-slate-400">—</span>;
-                if (names.length === 1) return <span className="text-xs text-slate-700 font-medium">{names[0]}</span>;
+                const codes = item.collaborating_dept_codes ?? [];
+                const text = item.collaborating_text;
+                if (codes.length === 0 && !text) return <span className="text-slate-400">—</span>;
                 return (
-                    <span className="flex items-center gap-1 text-xs text-slate-700 font-medium">
-                        <Users className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="truncate">{names.join(', ')}</span>
-                    </span>
+                    <div className="flex flex-col gap-0.5 text-xs text-slate-700 dark:text-slate-300">
+                        {codes.length > 0 && (
+                            <span className="font-semibold text-slate-700 dark:text-slate-200">
+                                {codes.join(', ')}
+                            </span>
+                        )}
+                        {text && (
+                            <span className="text-[11px] text-slate-500 italic truncate" title={text}>
+                                {text}
+                            </span>
+                        )}
+                    </div>
                 );
             }
         },
@@ -193,6 +201,7 @@ const MonthlyPlanPage: React.FC = () => {
                 />
             ),
             title: item ? 'Chỉnh sửa nhiệm vụ' : 'Thêm nhiệm vụ',
+            width: '50vw',
         });
     };
 
@@ -203,6 +212,7 @@ const MonthlyPlanPage: React.FC = () => {
                     item={item}
                     month={month}
                     year={year}
+                    departmentCode={activeDept}
                     onEdit={() => openFormPanel(item)}
                     onDelete={() => {
                         handleDelete(item.id);
@@ -212,6 +222,7 @@ const MonthlyPlanPage: React.FC = () => {
                 />
             ),
             title: 'Chi tiết nhiệm vụ',
+            width: '50vw',
         });
     };
 

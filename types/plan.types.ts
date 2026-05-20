@@ -77,10 +77,8 @@ export interface AnnualPlanItem {
     source_task_id?: string;
     source_type?: 'manual' | 'from_project_task';
 
-    responsible_text?: string;
+    collaborating_dept_codes?: DepartmentCode[];
     collaborating_text?: string;
-    responsible_ids?: string[];
-    collaborating_ids?: string[];
 
     notes?: string;
     sort_order?: number;
@@ -137,19 +135,8 @@ export interface MonthlyPlanItem {
     deadline_note?: string;
     due_date?: string;
 
-    // Phân công — nhiều người thực hiện
-    staff_ids?: string[];         // Mảng ID nhân viên (Cán bộ phụ trách)
-    staff_names?: string[];       // Mảng tên nhân viên (Cán bộ phụ trách)
-    executor_ids?: string[];      // Mảng ID người thực hiện
-    executor_names?: string[];    // Mảng tên người thực hiện
-    
-    // Legacy single fields (giữ backward compat)
-    staff_id?: string;
-    staff_name?: string;
-    dept_head_id?: string;
-    dept_head_name?: string;
-    ban_head_id?: string;
-    ban_head_name?: string;
+    collaborating_dept_codes?: DepartmentCode[];
+    collaborating_text?: string;
 
     // Kết quả
     status: MonthlyTaskStatus;
@@ -171,10 +158,12 @@ export interface MonthlyPlanItem {
 
 export type MonthlyPlanItemInput = Omit<MonthlyPlanItem, 'id' | 'created_at' | 'updated_at' | 'annual_plan_item' | 'tasks'>;
 
-// Helper: lấy danh sách tên người thực hiện
+// Helper: lấy danh sách phòng phối hợp để hiển thị
 export function getStaffDisplay(item: MonthlyPlanItem): string {
-    if (item.staff_names && item.staff_names.length > 0) return item.staff_names.join(', ');
-    if (item.staff_name) return item.staff_name;
+    if (item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) {
+        return item.collaborating_dept_codes.join(', ');
+    }
+    if (item.collaborating_text) return item.collaborating_text;
     return '—';
 }
 

@@ -18,10 +18,11 @@ export interface ChatMessage {
 // ── 1. Context-Aware Chatbot (GĐ 1A) ──────────────────────────────
 export const sendMessageToGemini = async (
     history: ChatMessage[],
-    newMessage: string
+    newMessage: string,
+    currentProjectId?: string | null
 ): Promise<string> => {
     // Upgraded: now uses function calling + system prompt
-    return sendContextAwareMessage(history, newMessage);
+    return sendContextAwareMessage(history, newMessage, currentProjectId);
 };
 
 // ── 2. Risk Intelligence (GĐ 1B) ──────────────────────────────────

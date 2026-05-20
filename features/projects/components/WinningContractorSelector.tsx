@@ -7,6 +7,8 @@ import {
 import { Contractor } from '../../../types';
 import { useContractors } from '../../../hooks/useContractors';
 import { supabase } from '../../../lib/supabase';
+import { useSlidePanel } from '../../../context/SlidePanelContext';
+import { ContractorFormPanel } from '../../contractors/ContractorFormPanel';
 import ProjectService from '../../../services/ProjectService';
 
 // ========================================
@@ -26,18 +28,31 @@ interface WinningContractorSelectorProps {
     packageId: string;
     filterByBidders?: boolean;
     onSaved?: () => void;
+    onCancel?: () => void;
+    initialMembers?: WinningMember[];
+    initialWinningPrice?: number | null;
+    initialApprovalDate?: string | null;
+    initialDecisionNumber?: string | null;
 }
 
 export const WinningContractorSelector: React.FC<WinningContractorSelectorProps> = ({
     packageId,
     filterByBidders = false,
     onSaved,
+    onCancel,
+    initialMembers,
+    initialWinningPrice,
+    initialApprovalDate,
+    initialDecisionNumber,
 }) => {
     const queryClient = useQueryClient();
     const { contractors } = useContractors();
-    const [isEditing, setIsEditing] = useState(false);
-    const [members, setMembers] = useState<WinningMember[]>([]);
+    const { openPanel } = useSlidePanel();
+    const [members, setMembers] = useState<WinningMember[]>(() => initialMembers || []);
     const [searchText, setSearchText] = useState('');
+    const [winningPrice, setWinningPrice] = useState<string>(() => initialWinningPrice ? initialWinningPrice.toString() : '');
+    const [approvalDate, setApprovalDate] = useState<string>(() => initialApprovalDate || '');
+    const [decisionNumber, setDecisionNumber] = useState<string>(() => initialDecisionNumber || '');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
@@ -47,34 +62,57 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
     const { data: pkg, isLoading } = useQuery({
         queryKey: ['bidding-package-winner', packageId],
         queryFn: async () => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('bidding_packages')
-                .select('winning_contractor_id')
+                .select('winning_contractor_id, winning_price, approval_date_result, decision_number, winning_consortium')
                 .eq('package_id', packageId)
                 .single();
             if (error) throw error;
             return {
-                WinningContractorID: data.winning_contractor_id
+                WinningContractorID: data.winning_contractor_id as string | null,
+                WinningPrice: data.winning_price as number | null,
+                ApprovalDate_Result: data.approval_date_result as string | null,
+                DecisionNumber: data.decision_number as string | null,
+                WinningConsortium: data.winning_consortium as any[] | null,
             };
         },
     });
 
-    // Sync existing data when loaded
+    // Sync existing data when loaded (if initialMembers wasn't provided or we want to update cache)
     useEffect(() => {
-        if (pkg && contractors.length > 0) {
-            if (pkg.WinningContractorID) {
+        // Only override state if we didn't receive initialMembers (meaning we rely entirely on the query)
+        if (!initialMembers && pkg && contractors.length > 0) {
+            if (pkg.WinningConsortium && pkg.WinningConsortium.length > 0) {
+                const mappedMembers = pkg.WinningConsortium.map((m: any) => ({
+                    id: m.contractor_id,
+                    contractor_id: m.contractor_id,
+                    contractor: contractors.find(c => c.ContractorID === m.contractor_id),
+                    role: m.role || 'member',
+                    share_percent: m.share_percent || 0
+                }));
+                setMembers(mappedMembers);
+                setWinningPrice(pkg.WinningPrice ? pkg.WinningPrice.toString() : '');
+                setApprovalDate(pkg.ApprovalDate_Result || '');
+                setDecisionNumber(pkg.DecisionNumber || '');
+            } else if (pkg.WinningContractorID) {
                 setMembers([{
-                    id: pkg.WinningContractorID, // Temporary ID since we don't have a join table
+                    id: pkg.WinningContractorID,
                     contractor_id: pkg.WinningContractorID,
                     contractor: contractors.find(c => c.ContractorID === pkg.WinningContractorID),
                     role: 'lead',
                     share_percent: 100,
                 }]);
+                setWinningPrice(pkg.WinningPrice ? pkg.WinningPrice.toString() : '');
+                setApprovalDate(pkg.ApprovalDate_Result || '');
+                setDecisionNumber(pkg.DecisionNumber || '');
             } else {
                 setMembers([]);
+                setWinningPrice('');
+                setApprovalDate('');
+                setDecisionNumber('');
             }
         }
-    }, [pkg, contractors]);
+    }, [pkg, contractors, initialMembers]);
 
     // Save mutation
     const saveMutation = useMutation({
@@ -83,29 +121,45 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 // If the user selected multiple, we still only save the lead in bidding_packages
                 const leadContractor = newMembers.find(m => m.role === 'lead') || newMembers[0];
                 
-                // Try to get bid price from package_bidders
-                let winningPrice = 0;
-                // @ts-ignore
-                const { data } = await (supabase as any)
-                    .from('package_bidders')
-                    .select('bid_price')
-                    .eq('package_id', packageId)
-                    .eq('contractor_id', leadContractor.contractor_id)
-                    .single();
+                // Parse the winning price from state, if not specified fallback to bid_price query
+                let finalWinningPrice: number | null = winningPrice ? parseFloat(winningPrice) : null;
                 
-                if (data && data.bid_price) {
-                    winningPrice = data.bid_price;
+                if (finalWinningPrice === null || isNaN(finalWinningPrice)) {
+                    // Try to get bid price from package_bidders as fallback
+                    try {
+                        const { data } = await (supabase as any)
+                            .from('package_bidders')
+                            .select('bid_price')
+                            .eq('package_id', packageId)
+                            .eq('contractor_id', leadContractor.contractor_id)
+                            .single();
+                        if (data && data.bid_price) {
+                            finalWinningPrice = data.bid_price;
+                        }
+                    } catch (e) {
+                        console.log('No bidder entry to fallback to');
+                    }
                 }
 
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: leadContractor.contractor_id,
-                    WinningPrice: winningPrice,
+                    WinningPrice: finalWinningPrice,
+                    ApprovalDate_Result: approvalDate || null as any,
+                    DecisionNumber: decisionNumber || null as any,
+                    WinningConsortium: newMembers.map(m => ({
+                        contractor_id: m.contractor_id,
+                        role: m.role,
+                        share_percent: m.share_percent || (m.role === 'lead' ? 100 : 0)
+                    }))
                 });
             } else {
-                // Clear winning_contractor_id
+                // Clear winning contractor info
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: null as any,
-                    WinningPrice: undefined,
+                    WinningPrice: null as any,
+                    ApprovalDate_Result: null as any,
+                    DecisionNumber: null as any,
+                    WinningConsortium: null
                 });
             }
         },
@@ -113,7 +167,6 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
             queryClient.invalidateQueries({ queryKey: ['bidding-package-winner', packageId] });
             queryClient.invalidateQueries({ queryKey: ['bidding-package', packageId] });
             queryClient.invalidateQueries({ queryKey: ['project-packages'] });
-            setIsEditing(false);
             onSaved?.();
         },
     });
@@ -198,7 +251,6 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     share_percent: 100
                 }];
                 setMembers(newMembers);
-                setIsEditing(false);
                 saveMutation.mutate(newMembers);
             }
         } catch (err) {
@@ -206,7 +258,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
         }
     };
 
-    const addContractor = (c: Contractor) => {
+    const addContractor = async (c: Contractor) => {
         const role = members.length === 0 ? 'lead' : 'member';
         setMembers(prev => [...prev, {
             contractor_id: c.ContractorID,
@@ -215,6 +267,21 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
         }]);
         setSearchText('');
         setIsDropdownOpen(false);
+
+        // Fetch bid price to prefill
+        try {
+            const { data } = await (supabase as any)
+                .from('package_bidders')
+                .select('bid_price')
+                .eq('package_id', packageId)
+                .eq('contractor_id', c.ContractorID)
+                .single();
+            if (data && data.bid_price) {
+                setWinningPrice(data.bid_price.toString());
+            }
+        } catch (e) {
+            console.log('No bidder entry found to prefill winning price');
+        }
     };
 
     const removeContractor = (contractorId: string) => {
@@ -245,7 +312,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
         saveMutation.mutate(members);
     };
 
-    if (isLoading) {
+    if (isLoading && (!initialMembers)) {
         return (
             <div className="flex items-center justify-center py-6">
                 <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
@@ -253,70 +320,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
         );
     }
 
-    // View mode — display consortium
-    if (!isEditing && members.length > 0) {
-        return (
-            <div 
-                className={`space-y-3 p-2 -mx-2 rounded-xl transition-all duration-200 border-2 ${isDragOver ? 'border-dashed border-green-500 bg-green-50/30' : 'border-transparent'}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-            >
-                {members.length > 1 && (
-                    <div className="flex items-center gap-2 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                        <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                            Liên danh {members.length} nhà thầu
-                        </span>
-                    </div>
-                )}
-                {members.map(m => (
-                    <div
-                        key={m.contractor_id}
-                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${m.role === 'lead'
-                            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                            : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
-                            }`}
-                    >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'lead'
-                            ? 'bg-green-100 dark:bg-green-900/40'
-                            : 'bg-gray-100 dark:bg-slate-700'
-                            }`}>
-                            {m.role === 'lead' ? (
-                                <Crown className="w-5 h-5 text-primary-500" />
-                            ) : (
-                                <Building2 className="w-5 h-5 text-gray-400 dark:text-slate-400" />
-                            )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-gray-800 dark:text-slate-100 text-xs truncate">
-                                {m.contractor?.FullName || m.contractor_id}
-                            </p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-[11px] text-gray-500 dark:text-slate-400">
-                                    MST: {m.contractor?.TaxCode || m.contractor_id}
-                                </span>
-                                {m.role === 'lead' && members.length > 1 && (
-                                    <span className="text-[10px] px-1.5 py-0.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 rounded font-medium">
-                                        Đứng đầu liên danh
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-                <button
-                    onClick={() => setIsEditing(true)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg border border-dashed border-blue-300 dark:border-blue-700 transition-colors"
-                >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    Chỉnh sửa
-                </button>
-            </div>
-        );
-    }
-
-    // Edit mode / Empty state
+    // Edit mode
     return (
         <div 
             className={`space-y-3 p-2 -mx-2 rounded-xl transition-all duration-200 border-2 ${isDragOver ? 'border-dashed border-green-500 bg-green-50/30' : 'border-transparent'}`}
@@ -408,41 +412,92 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                 </button>
                             ))
                         ) : (
-                            <div className="px-3 py-4 text-center text-sm text-gray-400 dark:text-slate-400">
-                                {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
+                            <div className="px-3 py-4 text-center">
+                                <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
+                                    {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setIsDropdownOpen(false);
+                                        openPanel({
+                                            title: "Thêm nhà thầu mới",
+                                            component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                        });
+                                    }}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-medium rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Thêm nhà thầu mới
+                                </button>
                             </div>
                         )}
                     </div>
                 )}
             </div>
 
-            {/* Actions */}
-            {(members.length > 0 || !!pkg?.WinningContractorID) && (
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
-                    {isEditing && (
-                        <button
-                            onClick={() => {
-                                // Reset to existing data
-                                if (pkg && contractors.length > 0) {
-                                    if (pkg.WinningContractorID) {
-                                        setMembers([{
-                                            id: pkg.WinningContractorID,
-                                            contractor_id: pkg.WinningContractorID,
-                                            contractor: contractors.find(c => c.ContractorID === pkg.WinningContractorID),
-                                            role: 'lead',
-                                            share_percent: 100,
-                                        }]);
-                                    } else {
-                                        setMembers([]);
-                                    }
-                                }
-                                setIsEditing(false);
-                            }}
-                            className="px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                        >
-                            Hủy
-                        </button>
+            {/* Price Input — Giá trúng thầu */}
+            {members.length > 0 && (
+                <div className="space-y-3 mt-3">
+                    <div className="space-y-1">
+                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            Giá trúng thầu (VNĐ)
+                        </label>
+                        <input
+                            type="number"
+                            placeholder="Nhập giá trúng thầu..."
+                            value={winningPrice}
+                            onChange={(e) => setWinningPrice(e.target.value)}
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                QĐ phê duyệt KQLCNT
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Số quyết định..."
+                                value={decisionNumber}
+                                onChange={(e) => setDecisionNumber(e.target.value)}
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                Ngày phê duyệt <span className="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                value={approvalDate}
+                                onChange={(e) => setApprovalDate(e.target.value)}
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            />
+                        </div>
+                    </div>
+                    {!approvalDate && members.length > 0 && (
+                        <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                            ⚠️ Nhập ngày phê duyệt để có thể chuyển gói thầu sang "Đang thực hiện"
+                        </p>
                     )}
+                </div>
+            )}
+
+            {/* Actions */}
+            {(members.length > 0 || !!pkg?.WinningContractorID || (initialMembers && initialMembers.length > 0)) && (
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
+                    <button
+                        onClick={() => {
+                            if (onCancel) {
+                                onCancel();
+                            } else if (onSaved) {
+                                onSaved();
+                            }
+                        }}
+                        className="px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                        Hủy
+                    </button>
                     <button
                         onClick={handleSave}
                         disabled={saveMutation.isPending}
@@ -459,7 +514,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
             )}
 
             {/* Empty hint */}
-            {members.length === 0 && !isEditing && (
+            {members.length === 0 && (
                 <div className="text-center py-2">
                     <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">
                         Tìm và chọn nhà thầu trúng thầu từ danh sách. Hỗ trợ liên danh.

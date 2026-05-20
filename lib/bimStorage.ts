@@ -231,7 +231,7 @@ export async function uploadFragments(
     projectId: string,
     fragData: Uint8Array,
     fileName: string
-): Promise<void> {
+): Promise<string> {
     const sb = requireSupabase();
     const fragPath = `${projectId}/${fileName.replace(/\.ifc$/i, '.frag')}`;
 
@@ -242,6 +242,7 @@ export async function uploadFragments(
     if (error) throw new Error(`Fragment upload error: ${error.message}`);
 
     await sb.from('bim_models').update({ frag_path: fragPath, status: 'ready' }).eq('id', modelId);
+    return fragPath;
 }
 
 /**
@@ -252,7 +253,7 @@ export async function uploadProperties(
     projectId: string,
     propertiesJson: string,
     fileName: string
-): Promise<void> {
+): Promise<string> {
     const sb = requireSupabase();
     const propsPath = `${projectId}/${fileName.replace(/\.ifc$/i, '-properties.json')}`;
 
@@ -263,6 +264,7 @@ export async function uploadProperties(
     if (error) throw new Error(`Properties upload error: ${error.message}`);
 
     await sb.from('bim_models').update({ properties_path: propsPath }).eq('id', modelId);
+    return propsPath;
 }
 
 /**

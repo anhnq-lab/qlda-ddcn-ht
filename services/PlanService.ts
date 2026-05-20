@@ -310,6 +310,8 @@ export const MonthlyPlanItemService = {
                 task_name: item.task_name,
                 deliverable: item.deliverable ?? null,
                 deadline_note: `Tháng ${month}`,
+                collaborating_dept_codes: item.collaborating_dept_codes ?? [],
+                collaborating_text: item.collaborating_text ?? null,
                 status: 'planned' as MonthlyTaskStatus,
                 sort_order: idx,
             }));
@@ -409,12 +411,6 @@ export const MonthlyPlanItemService = {
                 deliverable: t.description ?? null,
                 due_date: t.due_date,
                 deadline_note: t.due_date ? `${new Date(t.due_date).getDate()}/${month}` : `Tháng ${month}`,
-                staff_id: t.assignee_id ?? null,
-                staff_name: t.assignee_id ? (employeeMap[t.assignee_id] ?? null) : null,
-                staff_ids: t.assignee_id ? [t.assignee_id] : [],
-                staff_names: t.assignee_id ? [employeeMap[t.assignee_id] ?? ''] : [],
-                executor_ids: t.assignee_id ? [t.assignee_id] : [],
-                executor_names: t.assignee_id ? [employeeMap[t.assignee_id] ?? ''] : [],
                 source_task_id: t.metadata?.parent_task_id ?? null,
                 source_subtask_id: t.id,
                 source_type: 'from_subtask' as const,
@@ -559,19 +555,43 @@ const QUARTER_START_MONTH: Record<number, number> = {
 /** Parse quý từ chuỗi, trả về số quý (1-4) hoặc null */
 function parseQuarterNum(period?: string | null): number | null {
     if (!period) return null;
-    for (const [label, num] of Object.entries(QUARTER_NUM_MAP)) {
-        if (period.includes(label)) return num;
-    }
+    const clean = period.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (clean.includes('quy i') && !clean.includes('quy ii') && !clean.includes('quy iii') && !clean.includes('quy iv')) return 1;
+    if (clean.includes('quy ii')) return 2;
+    if (clean.includes('quy iii')) return 3;
+    if (clean.includes('quy iv')) return 4;
     return null;
 }
 
 /** Parse tháng từ chuỗi ("Tháng 4", "Quý II" → 4), trả về null nếu không nhận dạng được */
 function parseMonthNum(period?: string | null): number | null {
     if (!period) return null;
-    const m = period.match(/Tháng\s*(\d+)/i);
-    if (m) return parseInt(m[1]);
-    const q = parseQuarterNum(period);
+    const clean = period.toString().trim();
+    
+    // 1. Kiểm tra định dạng số Excel serial (ví dụ "46203")
+    if (/^\d{5}$/.test(clean)) {
+        const serial = parseInt(clean, 10);
+        const date = new Date((serial - 25569) * 86400 * 1000);
+        if (!isNaN(date.getTime())) {
+            return date.getMonth() + 1;
+        }
+    }
+    
+    // 2. Kiểm tra định dạng ngày dd/mm/yyyy
+    const dateParts = clean.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (dateParts) {
+        return parseInt(dateParts[2], 10);
+    }
+    
+    // 3. Định dạng text tiếng Việt như "Tháng 4", "thang 04"
+    const normalized = clean.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const m = normalized.match(/thang\s*(\d+)/i);
+    if (m) return parseInt(m[1], 10);
+    
+    // 4. Định dạng quý như "Quý II"
+    const q = parseQuarterNum(clean);
     if (q) return QUARTER_START_MONTH[q];
+    
     return null;
 }
 

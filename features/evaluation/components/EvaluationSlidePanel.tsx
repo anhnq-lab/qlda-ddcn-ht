@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Save, Send, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import {
     type EvaluationForm, type EvalScores, type FormType, type G2_1_Leader, type G2_1_Staff,
@@ -187,6 +187,68 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
         fetchTasks();
         return () => { isMounted = false; };
     }, [targetEmployeeId, month, year]);
+
+    const taskCompletionRate = useMemo(() => {
+        if (!employeeTasks || employeeTasks.length === 0) return 0;
+        const total = employeeTasks.reduce((sum, t) => sum + (t.progress || 0), 0);
+        return Math.round(total / employeeTasks.length);
+    }, [employeeTasks]);
+
+    const taskRecommendation = useMemo(() => {
+        const rate = taskCompletionRate;
+        const count = employeeTasks?.length || 0;
+        let lv = '2.5';
+        let sc = 30;
+        if (count > 0) {
+            if (rate >= 90) { lv = '2.1'; sc = 55; }
+            else if (rate >= 80) { lv = '2.2'; sc = 45; }
+            else if (rate >= 70) { lv = '2.3'; sc = 40; }
+            else if (rate >= 60) { lv = '2.4'; sc = 35; }
+        }
+        const found = COMPLETION_LEVELS.find(c => c.level === lv);
+        return {
+            level: lv,
+            score: sc,
+            rate,
+            count,
+            label: found?.label || 'Hoàn thành dưới 60%'
+        };
+    }, [taskCompletionRate, employeeTasks]);
+
+    // Auto-apply recommendation for draft or new forms if not manually set yet
+    useEffect(() => {
+        if (isSelfEditable && !loadingTasks && taskRecommendation) {
+            setScores(p => {
+                if (!p.g2_2 || !p.g2_2.level) {
+                    return {
+                        ...p,
+                        g2_2: {
+                            level: taskRecommendation.level as any,
+                            score: taskRecommendation.score
+                        }
+                    };
+                }
+                return p;
+            });
+        }
+    }, [taskRecommendation, isSelfEditable, loadingTasks]);
+
+    useEffect(() => {
+        if (isManagerEditable && !loadingTasks && taskRecommendation) {
+            setManagerScores(p => {
+                if (!p.g2_2 || !p.g2_2.level) {
+                    return {
+                        ...p,
+                        g2_2: {
+                            level: taskRecommendation.level as any,
+                            score: taskRecommendation.score
+                        }
+                    };
+                }
+                return p;
+            });
+        }
+    }, [taskRecommendation, isManagerEditable, loadingTasks]);
 
     const total = calcTotal(scores);
     const managerTotal = calcTotal(managerScores);
@@ -383,6 +445,39 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
 
                 {/* II.2 — Mức hoàn thành */}
                 <Section title="II.2 Kết quả thực hiện nhiệm vụ" subtitle="(chọn 1 mức)" maxScore={55} selfScore={scores.g2_2.score} managerScore={managerScores.g2_2.score} defaultOpen={true} showManager={showManager}>
+                    {/* Hộp khuyến nghị tự động */}
+                    <div className="mb-4 p-3.5 rounded-xl border border-primary-100 bg-primary-50/40 dark:border-primary-900/30 dark:bg-primary-950/20 backdrop-blur-md flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center shrink-0">
+                                <svg className="w-5.5 h-5.5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Gợi ý từ kết quả công việc tháng</h4>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                    {taskRecommendation.count > 0 ? (
+                                        <>Hoàn thành <b>{taskRecommendation.rate}%</b> từ {taskRecommendation.count} công việc. Đề xuất: <b className="text-primary-600 dark:text-primary-400">Mức {taskRecommendation.level} ({taskRecommendation.score} điểm)</b></>
+                                    ) : (
+                                        <>Không có công việc nào được giao trong tháng. Đề xuất tối thiểu: <b className="text-primary-600 dark:text-primary-400">Mức 2.5 ({taskRecommendation.score} điểm)</b></>
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                        {((isSelfEditable && scores.g2_2.level !== taskRecommendation.level) || 
+                          (isManagerEditable && managerScores.g2_2.level !== taskRecommendation.level)) && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (isSelfEditable) setG2_2Level(taskRecommendation.level);
+                                    if (isManagerEditable) setManagerG2_2Level(taskRecommendation.level);
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 active:scale-95 text-white text-[11px] font-bold shadow-sm shadow-primary-200 dark:shadow-none transition-all"
+                            >
+                                Áp dụng
+                            </button>
+                        )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Self */}
                         <div className="space-y-1.5 pt-1">

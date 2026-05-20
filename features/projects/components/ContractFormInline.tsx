@@ -55,7 +55,7 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
     const isEditing = !!existingContract;
 
     const [form, setForm] = useState<FormData>({
-        contractId: existingContract?.ContractID || `HD-${Date.now()}`,
+        contractId: existingContract?.ContractID || '',
         contractName: existingContract?.ContractName || pkg.PackageName || '',
         signDate: existingContract?.SignDate || new Date().toISOString().split('T')[0],
         value: existingContract ? String(existingContract.Value) : String(pkg.WinningPrice || pkg.Price || 0),

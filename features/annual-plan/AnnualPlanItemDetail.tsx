@@ -3,8 +3,9 @@ import {
     X, Edit2, Trash2, Link2, Users, ClipboardList, CalendarClock,
     Plus, CalendarDays,
 } from 'lucide-react';
-import { AnnualPlanItem, FREQUENCY_LABELS } from '../../types/plan.types';
+import { AnnualPlanItem, FREQUENCY_LABELS, DepartmentCode, DEPARTMENT_NAMES } from '../../types/plan.types';
 import { supabase as _supabase } from '../../lib/supabase';
+import { formatPeriod } from '../../utils/format';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
 import EmployeeSlideContent from '../../components/common/EmployeeSlideContent';
@@ -153,63 +154,50 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <p className="text-xs text-slate-400 mb-0.5">Thời gian bắt đầu</p>
-                                    <p className="text-sm text-slate-700 dark:text-slate-300">{item.start_period || '—'}</p>
+                                    <p className="text-sm text-slate-700 dark:text-slate-300">{formatPeriod(item.start_period)}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-slate-400 mb-0.5">Thời gian hoàn thành</p>
-                                    <p className="text-sm text-slate-700 dark:text-slate-300">{item.end_period || '—'}</p>
+                                    <p className="text-sm text-slate-700 dark:text-slate-300">{formatPeriod(item.end_period)}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* ── Phân công ── */}
-                    {(item.responsible_ids?.length || item.responsible_text || item.collaborating_text) && (
-                        <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
-                            <p className="section-title"><Users className="w-3.5 h-3.5" />Phân công</p>
-                            <div className="mt-3 space-y-3">
-                                {/* Nhân viên thực hiện — từ responsible_ids */}
-                                {item.responsible_ids && item.responsible_ids.length > 0 ? (
-                                    <div>
-                                        <p className="text-xs text-slate-400 mb-1.5">Thực hiện</p>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {item.responsible_ids.map(id => {
-                                                const emp = empMap[id];
-                                                return (
-                                                    <button
-                                                        key={id}
-                                                        onClick={() => openEmployeePanel(id)}
-                                                        className="flex items-center gap-1.5 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50 px-2 py-1 rounded-full transition-colors cursor-pointer"
-                                                    >
-                                                        {emp?.avatar ? (
-                                                            <img src={emp.avatar} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
-                                                        ) : (
-                                                            <span className="w-4 h-4 rounded-full bg-primary-200 dark:bg-primary-700 flex items-center justify-center text-[9px] font-bold shrink-0">
-                                                                {emp?.name?.charAt(emp.name.lastIndexOf(' ') + 1) ?? '?'}
-                                                            </span>
-                                                        )}
-                                                        {emp?.name ?? id}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ) : item.responsible_text ? (
-                                    <div>
-                                        <p className="text-xs text-slate-400 mb-1">Thực hiện</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.responsible_text}</p>
-                                    </div>
-                                ) : null}
-                                {/* Phối hợp */}
-                                {item.collaborating_text && (
-                                    <div>
-                                        <p className="text-xs text-slate-400 mb-1">Phối hợp</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.collaborating_text}</p>
-                                    </div>
-                                )}
+                    <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-800">
+                        <p className="section-title"><Users className="w-3.5 h-3.5" />Phân công thực hiện</p>
+                        <div className="mt-3 space-y-3">
+                            <div>
+                                <p className="text-xs text-slate-400 mb-1">Đơn vị chủ trì</p>
+                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    {item.department_code} - {DEPARTMENT_NAMES[item.department_code] ?? item.department_name}
+                                </p>
                             </div>
+                            {(item.collaborating_dept_codes?.length || item.collaborating_text) ? (
+                                <div>
+                                    <p className="text-xs text-slate-400 mb-1.5">Đơn vị phối hợp</p>
+                                    {item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5 mb-1.5">
+                                            {item.collaborating_dept_codes.map(code => (
+                                                <span
+                                                    key={code}
+                                                    className="inline-block text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 px-2 py-1 rounded-full font-medium"
+                                                >
+                                                    {code} - {DEPARTMENT_NAMES[code] ?? code}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {item.collaborating_text && (
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                            Chi tiết phối hợp: {item.collaborating_text}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : null}
                         </div>
-                    )}
+                    </div>
 
                     {/* ── Dự án liên kết ── */}
                     {project && (

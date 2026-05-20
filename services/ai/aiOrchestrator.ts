@@ -8,6 +8,8 @@ import { ProjectService } from '../ProjectService';
 import { ContractService } from '../ContractService';
 import { PaymentService } from '../PaymentService';
 import { DashboardService } from '../DashboardService';
+import { TaskService } from '../TaskService';
+import { LegalDocumentService } from '../LegalDocumentService';
 import { supabase } from '../../lib/supabase';
 import type { ChatMessage } from '../aiService';
 import { FunctionCall, FunctionResponse, Part } from '@google/generative-ai';
@@ -18,6 +20,8 @@ const DATA_KEYWORDS = [
     'rủi ro', 'deadline', 'hết hạn', 'gói thầu', 'nhà thầu', 'kế hoạch',
     'số liệu', 'thống kê', 'tổng quan', 'bao nhiêu', 'danh sách', 'liệt kê',
     'project', 'contract', 'payment', 'risk', 'budget', 'tổng mức',
+    'luật', 'quy định', 'nghị định', 'thông tư', 'điều khoản', 'tờ trình',
+    'tạo việc', 'thêm việc', 'giao việc', 'công việc', 'task', 'phân công',
 ];
 
 function needsDataQuery(message: string): boolean {
@@ -190,6 +194,53 @@ async function executeFunctionCall(
                 return await ProjectService.getAllBiddingPackages();
             }
 
+            case 'search_regulations': {
+                const query = args.query as string;
+                const documentId = args.documentId as string | undefined;
+                if (!query) return { error: 'query là bắt buộc' };
+                const results = await LegalDocumentService.searchArticles(query, documentId);
+                return results.map(r => ({
+                    id: r.id,
+                    articleCode: r.code,
+                    articleTitle: r.title,
+                    summary: r.summary,
+                    content: r.content || r.full_content,
+                    documentCode: r.document?.code,
+                    documentTitle: r.document?.short_title || r.document?.title,
+                }));
+            }
+
+            case 'create_project_task': {
+                const projectId = args.projectId as string;
+                const title = args.title as string;
+                if (!projectId || !title) return { error: 'projectId và title là bắt buộc' };
+
+                const taskPayload: any = {
+                    project_id: projectId,
+                    title: title,
+                    task_type: 'project',
+                    status: 'todo',
+                    priority: (args.priority as string) || 'medium',
+                };
+                if (args.dueDate) {
+                    taskPayload.due_date = args.dueDate as string;
+                }
+
+                const createdTask = await TaskService.createTask(taskPayload);
+                return {
+                    success: true,
+                    message: `Đã tạo công việc thành công: "${createdTask.title}"`,
+                    action: 'create_task_success',
+                    task: {
+                        id: createdTask.id,
+                        title: createdTask.title,
+                        status: createdTask.status,
+                        priority: createdTask.priority,
+                        dueDate: createdTask.due_date,
+                    }
+                };
+            }
+
             default:
                 return { error: `Unknown function: ${name}` };
         }
@@ -199,21 +250,19 @@ async function executeFunctionCall(
     }
 }
 
-// ── Main chat handler with function calling loop ──────────────────
-
 export async function sendContextAwareMessage(
     history: ChatMessage[],
-    newMessage: string
+    newMessage: string,
+    currentProjectId?: string | null
 ): Promise<string> {
     const useTools = needsDataQuery(newMessage);
 
     // Initialize Generative Model with tools and system instruction
     const model = getGenerativeModel({
         tools: useTools ? AI_TOOLS_GEMINI : undefined,
-        systemInstruction: buildSystemPrompt(),
+        systemInstruction: buildSystemPrompt(currentProjectId),
     });
 
-    // Build chat history: Gemini requires strictly alternating user/model messages, starting with user.
     const validHistory = history.filter(msg => !msg.isError);
     const firstUserIdx = validHistory.findIndex(m => m.sender === 'user');
     const geminiHistory: { role: string; parts: { text: string }[] }[] = [];
@@ -262,32 +311,36 @@ export async function sendContextAwareMessage(
 
     // Send the user's message
     let result = await chat.sendMessage(newMessage);
-    let call = result.response.functionCalls()?.[0];
+    let calls = result.response.functionCalls();
     let iterations = 0;
 
-    // Function calling loop
-    while (call && iterations < 2) {
-        console.log(`[AI] Function Call: ${call.name}`, call.args);
+    // Function calling loop (with parallel calls support)
+    while (calls && calls.length > 0 && iterations < 5) {
+        console.log(`[AI] Parallel Function Calls: ${calls.map(c => c.name).join(', ')}`);
         
-        // Execute the function
-        const fnResult = await executeFunctionCall(call.name, call.args as Record<string, unknown>);
-        
-        // Prepare the response part
-        // Gemini's protobuf Struct requires the top level to be an Object, not an Array.
-        const responseData = Array.isArray(fnResult) 
-            ? { data: fnResult } 
-            : (typeof fnResult === 'object' && fnResult !== null ? fnResult : { result: fnResult });
+        // Execute all function calls in parallel
+        const functionResponseParts = await Promise.all(
+            calls.map(async (call) => {
+                const fnResult = await executeFunctionCall(call.name, call.args as Record<string, unknown>);
+                
+                // Prepare the response part
+                // Gemini's protobuf Struct requires the top level to be an Object, not an Array.
+                const responseData = Array.isArray(fnResult) 
+                    ? { data: fnResult } 
+                    : (typeof fnResult === 'object' && fnResult !== null ? fnResult : { result: fnResult });
 
-        const functionResponsePart: Part = {
-            functionResponse: {
-                name: call.name,
-                response: responseData as object,
-            }
-        };
+                return {
+                    functionResponse: {
+                        name: call.name,
+                        response: responseData as object,
+                    }
+                } as Part;
+            })
+        );
 
-        // Send the function result back to Gemini
-        result = await chat.sendMessage([functionResponsePart]);
-        call = result.response.functionCalls()?.[0];
+        // Send the function results back to Gemini
+        result = await chat.sendMessage(functionResponseParts);
+        calls = result.response.functionCalls();
         iterations++;
     }
 

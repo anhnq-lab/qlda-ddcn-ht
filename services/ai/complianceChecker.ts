@@ -4,6 +4,7 @@
 import { Project, ProjectGroup, ProjectStatus } from '../../types';
 import { checkCompliance, ComplianceResult, ComplianceCheck } from '../aiService';
 import { ProjectService } from '../ProjectService';
+import { LegalDocumentService } from '../LegalDocumentService';
 import { PROJECT_THRESHOLDS_2024 } from '../../types/project.types';
 
 export interface EnrichedComplianceCheck extends ComplianceCheck {
@@ -144,6 +145,43 @@ function runRuleBasedChecks(project: Project): EnrichedComplianceCheck[] {
 }
 
 /**
+ * Trích xuất điều luật từ cơ sở dữ liệu để làm bằng chứng pháp lý (RAG)
+ */
+async function enrichCheckWithDBLegalText(check: EnrichedComplianceCheck): Promise<void> {
+    try {
+        let searchQuery = '';
+        if (check.regulation.includes('Đầu tư công') || check.regulation.includes('58/2024')) {
+            searchQuery = `Điều ${check.article.replace('Điều ', '').split('-')[0]} đầu tư công`;
+        } else if (check.regulation.includes('175/2024')) {
+            searchQuery = `Điều ${check.article.replace('Điều ', '').split('-')[0]} BIM`;
+        } else if (check.regulation.includes('BVMT') || check.regulation.includes('môi trường')) {
+            searchQuery = `Điều ${check.article.replace('Điều ', '').split('-')[0]} đánh giá tác động môi trường`;
+        } else if (check.regulation.includes('Xây dựng')) {
+            searchQuery = `Điều ${check.article.replace('Điều ', '').split('-')[0]} thẩm định thiết kế`;
+        } else {
+            searchQuery = `${check.regulation} ${check.article}`;
+        }
+
+        if (searchQuery) {
+            const articles = await LegalDocumentService.searchArticles(searchQuery);
+            if (articles && articles.length > 0) {
+                const match = articles[0];
+                const cleanContent = match.content || match.full_content || match.summary || '';
+                if (cleanContent) {
+                    // Loại bỏ thẻ HTML (nếu có)
+                    const textOnly = cleanContent.replace(/<[^>]*>/g, '').trim();
+                    const snippet = textOnly.length > 350 ? textOnly.slice(0, 350) + '...' : textOnly;
+                    
+                    check.detail += `\n\n[Trích dẫn CSDL Pháp luật - ${match.document?.code || 'CSDL'}] ${match.title}:\n"${snippet}"`;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn(`Failed to enrich check ${check.id} with DB legal text:`, e);
+    }
+}
+
+/**
  * Kiểm tra tuân thủ đầy đủ (rule-based + AI)
  */
 export async function checkProjectCompliance(projectId: string): Promise<FullComplianceReport> {
@@ -169,6 +207,9 @@ export async function checkProjectCompliance(projectId: string): Promise<FullCom
     const ruleIds = new Set(ruleChecks.map(c => c.id));
     const uniqueAiChecks = aiChecks.filter(c => !ruleIds.has(c.id));
     const allChecks = [...ruleChecks, ...uniqueAiChecks];
+
+    // Làm giàu dữ liệu kiểm tra với trích dẫn thực tế từ cơ sở dữ liệu pháp luật
+    await Promise.all(allChecks.map(enrichCheckWithDBLegalText));
 
     // Calculate score
     const violations = allChecks.filter(c => c.status === 'violation').length;

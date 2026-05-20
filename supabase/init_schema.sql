@@ -123,6 +123,14 @@ CREATE TABLE IF NOT EXISTS bidding_packages (
     decision_file TEXT,
     winning_contractor_id TEXT,
     winning_price NUMERIC,
+    bidding_scope TEXT,
+    bidders_count INTEGER,
+    evaluation_bidders_count INTEGER,
+    bid_opening_date TEXT,
+    approval_date_result TEXT,
+    completion_pct NUMERIC(5,2) DEFAULT 0,
+    completion_updated_at TIMESTAMPTZ,
+    contract_id TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -241,6 +249,9 @@ CREATE TABLE IF NOT EXISTS documents (
     reference_id TEXT,
     iso_status TEXT,
     is_digitized BOOLEAN DEFAULT false,
+    file_hash TEXT,
+    is_encrypted BOOLEAN DEFAULT false,
+    encryption_key_id TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -322,6 +333,8 @@ CREATE TABLE IF NOT EXISTS bim_models (
     element_count INTEGER,
     error_message TEXT,
     uploaded_by TEXT,
+    file_hash TEXT,
+    is_encrypted BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );

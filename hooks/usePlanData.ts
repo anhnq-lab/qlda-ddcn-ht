@@ -153,7 +153,7 @@ export function useTasksByMonthlyPlanItem(monthlyPlanItemId?: string) {
         supabase
             .from('tasks')
             .select('id, title, status, priority, progress, assignee_id, due_date, sort_order')
-            .eq('monthly_plan_item_id', monthlyPlanItemId)
+            .or(`monthly_plan_item_id.eq.${monthlyPlanItemId},metadata->>monthly_plan_item_id.eq.${monthlyPlanItemId}`)
             .order('sort_order')
             .then(({ data }: any) => {
                 if (!cancelled) {

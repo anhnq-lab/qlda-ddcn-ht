@@ -5,7 +5,7 @@ import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp } fro
 import { MonthlyPlanItemService } from '../../services/PlanService';
 import {
     MonthlyPlanItem, MonthlyPlanItemInput,
-    DepartmentCode, MonthlyTaskStatus, MONTHLY_STATUS_LABELS,
+    DepartmentCode, MonthlyTaskStatus, MONTHLY_STATUS_LABELS, DEPARTMENT_NAMES,
 } from '../../types/plan.types';
 import ComboboxSelect from '../../components/ui/ComboboxSelect';
 import Select from '../../components/ui/Select';
@@ -44,9 +44,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
     const { options: employeeOptions, loading: empLoading } = useEmployeeOptions();
     const { options: projectOptions, loading: projLoading } = useProjectOptions(projectSearch);
 
-    const groupOptions = groups.map(g => ({ value: g, label: g }));
-
-    const buildDefaultValues = useCallback((): MonthlyPlanItemFormInput => ({
+    const groupOptions = groups.map(g => ({ value: g, label: g }));    const buildDefaultValues = useCallback((): MonthlyPlanItemFormInput => ({
         monthly_plan_id: monthlyPlanId,
         task_name: '',
         deliverable: '',
@@ -58,11 +56,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
         incomplete_reason: '',
         notes: '',
         sort_order: 0,
-        staff_ids: [],
-        staff_names: [],
-        staff_name: '',
-        dept_head_name: '',
-        ban_head_name: '',
+        collaborating_dept_codes: [],
+        collaborating_text: '',
     }), [monthlyPlanId, month]);
 
     const {
@@ -78,15 +73,27 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
     });
 
     const watchedStatus = watch('status');
-    const watchedStaffIds = watch('staff_ids') ?? [];
-    const watchedStaffNames = watch('staff_names') ?? [];
-    const watchedStaffName = watch('staff_name') ?? '';
+    const watchedCollaboratingDeptCodes = watch('collaborating_dept_codes') ?? [];
     const watchedAnnualItemId = watch('annual_plan_item_id');
     const watchedProjectId = watch('project_id');
     const watchedGroupName = watch('group_name') ?? '';
     const watchedTaskName = watch('task_name') ?? '';
-    const watchedDeptHeadId = watch('dept_head_id') ?? '';
-    const watchedBanHeadId = watch('ban_head_id') ?? '';
+
+    // Danh sách phòng ban phối hợp (bỏ phòng đang active)
+    const deptOptions = React.useMemo(() => {
+        return (Object.keys(DEPARTMENT_NAMES) as DepartmentCode[])
+            .filter(code => code !== departmentCode)
+            .map(code => ({
+                value: code,
+                label: `${code} - ${DEPARTMENT_NAMES[code]}`,
+            }));
+    }, [departmentCode]);
+
+    const handleCollaboratingDeptsChange = useCallback((val: string | number | (string | number)[]) => {
+        const codes = (Array.isArray(val) ? val : val ? [val] : []).map(String) as DepartmentCode[];
+        setValue('collaborating_dept_codes', codes);
+        setValue('collaborating_text', codes.join(', '));
+    }, [setValue]);
 
     useEffect(() => {
         if (item) {
@@ -100,14 +107,8 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 deliverable: item.deliverable ?? '',
                 deadline_note: item.deadline_note ?? `Tháng ${month}`,
                 due_date: item.due_date,
-                staff_id: item.staff_id,
-                staff_name: item.staff_name ?? '',
-                staff_ids: item.staff_ids ?? (item.staff_id ? [item.staff_id] : []),
-                staff_names: item.staff_names ?? (item.staff_name ? [item.staff_name] : []),
-                dept_head_id: item.dept_head_id,
-                dept_head_name: item.dept_head_name ?? '',
-                ban_head_id: item.ban_head_id,
-                ban_head_name: item.ban_head_name ?? '',
+                collaborating_dept_codes: item.collaborating_dept_codes ?? [],
+                collaborating_text: item.collaborating_text ?? '',
                 status: item.status,
                 completion_result: item.completion_result ?? '',
                 incomplete_reason: item.incomplete_reason ?? '',
@@ -122,7 +123,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
             reset(buildDefaultValues());
         }
     }, [item, monthlyPlanId, month, reset, buildDefaultValues]);
-
     // Khi chọn từ KH khung → auto-fill
     const handleAnnualItemSelect = (value: string) => {
         const found = annualItems.find(i => i.id === value);
@@ -378,137 +378,41 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                             </div>
                         </SectionPanel>
 
-                        {/* ── SECTION: Phân công ── */}
+                        {/* ── SECTION: Phân công phối hợp ── */}
                         <SectionPanel
                             icon={<Users className="w-4 h-4 text-emerald-500" />}
-                            title="Phân công thực hiện"
+                            title="Đơn vị phối hợp thực hiện"
                             sectionKey="phancong"
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                (watchedStaffNames && watchedStaffNames.length > 0)
-                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{watchedStaffNames.join(', ')}</span>
-                                    : watchedStaffName
-                                        ? <span className="text-xs bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full">{watchedStaffName}</span>
-                                        : null
+                                watchedCollaboratingDeptCodes.length > 0
+                                    ? <span className="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
+                                        {watchedCollaboratingDeptCodes.length} đơn vị
+                                    </span>
+                                    : null
                             }
                         >
                             <div className="space-y-3 pt-3">
-                                {/* Multi-select cán bộ phụ trách / Người thực hiện */}
                                 <div>
-                                    <label className="field-label">Người thực hiện (Cán bộ phụ trách)</label>
-                                    {empLoading ? (
-                                        <div className="text-xs text-slate-400 py-2">Đang tải danh sách...</div>
-                                    ) : (
-                                        <Select
-                                            options={employeeOptions.map(opt => ({
-                                                value: opt.value,
-                                                label: opt.label,
-                                                icon: opt.avatar ? (
-                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                                                ) : undefined
-                                            }))}
-                                            value={watchedStaffIds}
-                                            onChange={(val) => {
-                                                const ids = val as string[];
-                                                const names = ids.map(id => employeeOptions.find(o => o.value === id)?.label ?? '');
-
-                                                setValue('staff_ids', ids);
-                                                setValue('staff_names', names);
-                                                setValue('executor_ids', ids);
-                                                setValue('executor_names', names);
-                                                setValue('staff_id', ids.length > 0 ? ids[0] : undefined);
-                                                setValue('staff_name', names.length > 0 ? names[0] : '');
-
-                                                if (ids.length > 0) {
-                                                    const firstEmp = employeeOptions.find(o => o.value === ids[0]);
-                                                    if (firstEmp) {
-                                                        if (firstEmp.department) {
-                                                            const deptHead = employeeOptions.find(o =>
-                                                                o.department === firstEmp.department &&
-                                                                o.position &&
-                                                                /trưởng phòng|chánh văn phòng|giám đốc trung tâm/i.test(o.position)
-                                                            ) || employeeOptions.find(o =>
-                                                                o.department === firstEmp.department &&
-                                                                o.position &&
-                                                                /phó phòng|phó văn phòng|phó giám đốc trung tâm/i.test(o.position)
-                                                            );
-
-                                                            if (deptHead) {
-                                                                setValue('dept_head_id', deptHead.value);
-                                                                setValue('dept_head_name', deptHead.label);
-                                                            }
-                                                        }
-
-                                                        const banHead = employeeOptions.find(o =>
-                                                            o.position &&
-                                                            /giám đốc ban|trưởng ban/i.test(o.position)
-                                                        ) || employeeOptions.find(o =>
-                                                            o.position &&
-                                                            /phó giám đốc ban|phó trưởng ban/i.test(o.position)
-                                                        );
-
-                                                        if (banHead) {
-                                                            setValue('ban_head_id', banHead.value);
-                                                            setValue('ban_head_name', banHead.label);
-                                                        }
-                                                    }
-                                                }
-                                            }}
-                                            multiple={true}
-                                            searchable={true}
-                                            clearable={true}
-                                            placeholder="Chọn người thực hiện..."
-                                        />
-                                    )}
+                                    <label className="field-label">Phòng ban phối hợp</label>
+                                    <Select
+                                        options={deptOptions}
+                                        value={watchedCollaboratingDeptCodes}
+                                        onChange={handleCollaboratingDeptsChange}
+                                        multiple
+                                        searchable
+                                        clearable
+                                        placeholder="Chọn phòng ban phối hợp..."
+                                    />
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                                    <div>
-                                        <label className="field-label">Lãnh đạo Phòng</label>
-                                        <Select
-                                            options={employeeOptions.filter(o =>
-                                                o.value === watchedDeptHeadId || (o.position && /trưởng phòng|chánh văn phòng|giám đốc trung tâm|phó phòng|phó văn phòng|phó giám đốc trung tâm|kế toán trưởng/i.test(o.position))
-                                            ).map(opt => ({
-                                                value: opt.value,
-                                                label: opt.label,
-                                                icon: opt.avatar ? (
-                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                                                ) : undefined
-                                            }))}
-                                            value={watchedDeptHeadId}
-                                            onChange={(val) => {
-                                                const opt = employeeOptions.find(o => o.value === val);
-                                                setValue('dept_head_id', (val as string) || undefined);
-                                                setValue('dept_head_name', opt?.label ?? '');
-                                            }}
-                                            searchable={true}
-                                            clearable={true}
-                                            placeholder="Chọn lãnh đạo phòng..."
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="field-label">Lãnh đạo Ban</label>
-                                        <Select
-                                            options={employeeOptions.filter(o =>
-                                                o.value === watchedBanHeadId || (o.position && /giám đốc ban|trưởng ban|phó giám đốc ban|phó trưởng ban/i.test(o.position))
-                                            ).map(opt => ({
-                                                value: opt.value,
-                                                label: opt.label,
-                                                icon: opt.avatar ? (
-                                                    <img src={opt.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                                                ) : undefined
-                                            }))}
-                                            value={watchedBanHeadId}
-                                            onChange={(val) => {
-                                                const opt = employeeOptions.find(o => o.value === val);
-                                                setValue('ban_head_id', (val as string) || undefined);
-                                                setValue('ban_head_name', opt?.label ?? '');
-                                            }}
-                                            searchable={true}
-                                            clearable={true}
-                                            placeholder="Chọn lãnh đạo ban..."
-                                        />
-                                    </div>
+                                <div>
+                                    <label className="field-label">Ghi chú phối hợp / Đơn vị ngoài Ban</label>
+                                    <input
+                                        {...register('collaborating_text')}
+                                        placeholder="VD: Sở Xây dựng, Sở Tài nguyên..."
+                                        className="field-input"
+                                    />
                                 </div>
                             </div>
                         </SectionPanel>

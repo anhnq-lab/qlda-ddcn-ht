@@ -55,17 +55,15 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
         { width: 48 },  // B: task name
         { width: 32 },  // C: deliverable / result
         { width: 16 },  // D: deadline
-        { width: 24 },  // E: staff
-        { width: 19 },  // F: dept head
-        { width: 19 },  // G: ban head
-        { width: 22 },  // H: result status
-        { width: 28 },  // I: reason
-        { width: 22 },  // J: notes
+        { width: 28 },  // E: collaborating depts
+        { width: 22 },  // F: result status
+        { width: 28 },  // G: reason
+        { width: 22 },  // H: notes
     ];
 
     // ── Title rows ─────────────────────────────────────────────
     const titleRow1 = ws.addRow([null, null, 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\nĐộc lập - Tự do - Hạnh phúc']);
-    ws.mergeCells(`C1:J1`);
+    ws.mergeCells(`C1:H1`);
     titleRow1.height = 40;
     titleRow1.getCell(3).font = { name: 'Times New Roman', bold: true, size: 12 };
     titleRow1.getCell(3).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -73,7 +71,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
     ws.addRow([]); // empty row 2
 
     const titleRow3 = ws.addRow([null, null, 'BÁO CÁO']);
-    ws.mergeCells(`C3:J3`);
+    ws.mergeCells(`C3:H3`);
     titleRow3.height = 20;
     titleRow3.getCell(3).font = { name: 'Times New Roman', bold: true, size: 14 };
     titleRow3.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
@@ -84,7 +82,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
         null, null,
         `Kết quả thực hiện nhiệm vụ tháng ${month}/${year} - Kế hoạch thực hiện tháng ${nextMonth}/${nextYear}`,
     ]);
-    ws.mergeCells(`C4:J4`);
+    ws.mergeCells(`C4:H4`);
     titleRow4.height = 20;
     titleRow4.getCell(3).font = { name: 'Times New Roman', bold: true, size: 12 };
     titleRow4.getCell(3).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -97,9 +95,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
         'Nội dung công việc/nhiệm vụ',
         'Kết quả đầu ra của nhiệm vụ',
         'Thời gian\nhoàn thành',
-        'Cán bộ trực tiếp\nphụ trách',
-        'Lãnh đạo Phòng\ntrực tiếp quản lý',
-        'Lãnh đạo Ban\n(phụ trách)',
+        'Đơn vị phối hợp',
         'Kết quả\n(Hoàn thành/\nchưa HT)',
         'Lý do chưa\nhoàn thành\n(nếu có)',
         'Ghi chú',
@@ -109,7 +105,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
 
     // ── Section I: BC kết quả tháng hiện tại ───────────────────
     const secRow1 = ws.addRow(['I', `Nhiệm vụ đã thực hiện trong tháng ${month}/${year}`]);
-    ws.mergeCells(`B${secRow1.number}:J${secRow1.number}`);
+    ws.mergeCells(`B${secRow1.number}:H${secRow1.number}`);
     secRow1.height = 20;
     applyRow(secRow1, { fillColor: COLOR.sectionFill, bold: true });
 
@@ -117,7 +113,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
 
     // ── Section II: KH tháng tiếp theo ─────────────────────────
     const secRow2 = ws.addRow(['II', `Kế hoạch thực hiện tháng ${nextMonth}/${nextYear}`]);
-    ws.mergeCells(`B${secRow2.number}:J${secRow2.number}`);
+    ws.mergeCells(`B${secRow2.number}:H${secRow2.number}`);
     secRow2.height = 20;
     applyRow(secRow2, { fillColor: COLOR.sectionFill, bold: true });
 
@@ -150,7 +146,7 @@ async function writeAllDepts(
 
         // Dept header row
         const deptRow = ws.addRow([romanIdx, deptName]);
-        ws.mergeCells(`B${deptRow.number}:J${deptRow.number}`);
+        ws.mergeCells(`B${deptRow.number}:H${deptRow.number}`);
         deptRow.height = 18;
         applyRow(deptRow, { fillColor: COLOR.deptFill, bold: true });
 
@@ -169,7 +165,7 @@ async function writeAllDepts(
 
         if (items.length === 0) {
             const emptyRow = ws.addRow([null, '(Không có nhiệm vụ)']);
-            ws.mergeCells(`B${emptyRow.number}:J${emptyRow.number}`);
+            ws.mergeCells(`B${emptyRow.number}:H${emptyRow.number}`);
             emptyRow.height = 16;
             applyRow(emptyRow, { fillColor: COLOR.white });
             continue;
@@ -188,7 +184,7 @@ async function writeAllDepts(
             // Group header row (if group name exists)
             if (groupName) {
                 const groupRow = ws.addRow([null, groupName]);
-                ws.mergeCells(`B${groupRow.number}:J${groupRow.number}`);
+                ws.mergeCells(`B${groupRow.number}:H${groupRow.number}`);
                 groupRow.height = 18;
                 applyRow(groupRow, { fillColor: COLOR.groupFill, bold: true });
             }
@@ -197,22 +193,27 @@ async function writeAllDepts(
                 const resultText = mode === 'report'
                     ? (item.completion_result || MONTHLY_STATUS_LABELS[item.status])
                     : '';
+                const collaboratingTextParts = [
+                    item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0
+                        ? item.collaborating_dept_codes.join(', ')
+                        : '',
+                    item.collaborating_text || ''
+                ].filter(Boolean).join('; ');
+
                 const taskRow = ws.addRow([
                     taskCounter++,
                     item.task_name,
                     item.deliverable ?? '',
                     item.deadline_note ?? `Tháng ${month}`,
-                    item.staff_name ?? '',
-                    item.dept_head_name ?? '',
-                    item.ban_head_name ?? '',
+                    collaboratingTextParts,
                     resultText,
                     item.incomplete_reason ?? '',
                     item.notes ?? '',
                 ]);
                 taskRow.height = 18;
                 applyRow(taskRow, { fillColor: COLOR.white, vAlign: 'top' });
-                // Center specific columns: A=1, D=4, E=5, F=6, G=7, H=8
-                [1, 4, 5, 6, 7, 8].forEach(colNum => {
+                // Center specific columns: A=1, D=4, E=5, F=6
+                [1, 4, 5, 6].forEach(colNum => {
                     taskRow.getCell(colNum).alignment = { horizontal: 'center', vertical: 'top', wrapText: true };
                 });
             }

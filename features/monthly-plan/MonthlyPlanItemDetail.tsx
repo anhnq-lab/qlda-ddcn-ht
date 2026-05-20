@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-    X, Edit2, Trash2, Link2, Briefcase, Users, ClipboardList,
+    X, Edit2, Trash2, Link2, Briefcase, Users, User, ClipboardList,
     Calendar, CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight,
-    Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen, ChevronRight
+    Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen, ChevronRight, Circle
 } from 'lucide-react';
-import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus } from '../../types/plan.types';
+import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus, DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
 import { useSlidePanel } from "../../context/SlidePanelContext";
 import { supabaseExt as supabase } from '../../lib/supabase';
 import { StatusBadge, BadgeVariant } from '../../components/ui';
+import { Task } from '../../types';
+import { ProjectTaskModal } from '../projects/components/ProjectTaskModal';
+import { TaskService } from '../../services/TaskService';
+import { workflowTaskToTask, taskToDbTask } from '../../lib/mappers/workflowTaskMappers';
+import { useEmployees } from '../../hooks/useEmployees';
 
 // ─── Status config ────────────────────────────────────────────
-const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; variant: BadgeVariant; topBar: string }> = {
-    planned:    { label: 'Chua b�o c�o', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-500' },
-    completed:  { label: 'Ho�n th�nh',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500' },
-    incomplete: { label: 'Chua HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500' },
-    partial:    { label: 'M?t ph?n',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500' },
-    deferred:   { label: 'Chuy?n th�ng', icon: <ArrowRight className="w-3.5 h-3.5" />,   variant: 'info',    topBar: 'bg-blue-500' },
+const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; variant: BadgeVariant; topBar: string; bg: string; color: string; ring: string }> = {
+    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-500',    bg: 'bg-slate-50 dark:bg-slate-500/10',    color: 'text-slate-700 dark:text-slate-400',    ring: 'ring-slate-600/10 dark:ring-slate-500/20' },
+    completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500',  bg: 'bg-emerald-50 dark:bg-emerald-500/10', color: 'text-emerald-700 dark:text-emerald-400', ring: 'ring-emerald-600/10 dark:ring-emerald-500/20' },
+    incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500',      bg: 'bg-rose-50 dark:bg-rose-500/10',       color: 'text-rose-700 dark:text-rose-400',       ring: 'ring-rose-600/10 dark:ring-rose-500/20' },
+    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500',  bg: 'bg-amber-50 dark:bg-amber-500/10',    color: 'text-amber-700 dark:text-amber-400',    ring: 'ring-amber-600/10 dark:ring-amber-500/20' },
+    deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   variant: 'info',    topBar: 'bg-blue-500',     bg: 'bg-sky-50 dark:bg-sky-500/10',        color: 'text-sky-700 dark:text-sky-400',        ring: 'ring-sky-600/10 dark:ring-sky-500/20' },
 };
 
 
@@ -24,17 +29,92 @@ interface Props {
     item: MonthlyPlanItem;
     month: number;
     year: number;
+    departmentCode?: DepartmentCode;
     onEdit: () => void;
     onDelete: () => void;
     onClose: () => void;
 }
 
 const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
-    const { item, month, year, onEdit, onDelete, onClose } = props;
+    const { item, month, year, departmentCode, onEdit, onDelete, onClose } = props;
     const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG['planned'];
     const [annualItem, setAnnualItem] = useState<any>(null);
     const [project, setProject] = useState<any>(null);
     const { openPanel } = useSlidePanel();
+
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [tasksLoading, setTasksLoading] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const { data: employees = [] } = useEmployees();
+
+    const getAssigneeName = (assigneeId: string) => {
+        if (!assigneeId) return 'Chưa phân công';
+        const emp = employees.find(e => e.EmployeeID === assigneeId);
+        return emp ? emp.FullName : 'Không xác định';
+    };
+
+    const loadTasks = async () => {
+        setTasksLoading(true);
+        try {
+            const conditions = [`monthly_plan_item_id.eq.${item.id}`, `metadata->>monthly_plan_item_id.eq.${item.id}`];
+            if (item.source_subtask_id) {
+                conditions.push(`id.eq.${item.source_subtask_id}`);
+            }
+            
+            const { data, error } = await supabase
+                .from('tasks')
+                .select('id, title, status, priority, progress, assignee_id, due_date')
+                .or(conditions.join(','));
+            if (error) throw error;
+            setTasks(data || []);
+        } catch (err) {
+            console.error('Error fetching execution tasks:', err);
+        } finally {
+            setTasksLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadTasks();
+    }, [item.id, item.source_subtask_id]);
+
+    const averageProgress = useMemo(() => {
+        if (tasks.length === 0) return 0;
+        const total = tasks.reduce((sum, t) => sum + (t.progress || 0), 0);
+        return Math.round(total / tasks.length);
+    }, [tasks]);
+
+    const handleEditTask = async (taskId: string) => {
+        try {
+            const dbTask = await TaskService.getTaskById(taskId);
+            if (dbTask) {
+                const uiTask = workflowTaskToTask(dbTask, item.project_id);
+                setSelectedTask(uiTask);
+                setIsTaskModalOpen(true);
+            }
+        } catch (err) {
+            console.error('Error fetching task details:', err);
+        }
+    };
+
+    const handleSaveTask = async (taskData: Partial<Task>) => {
+        try {
+            const dbTaskData = taskToDbTask(taskData, item.project_id);
+            dbTaskData.monthly_plan_item_id = item.id;
+            if (dbTaskData.metadata) {
+                dbTaskData.metadata.monthly_plan_item_id = item.id;
+            } else {
+                dbTaskData.metadata = { monthly_plan_item_id: item.id };
+            }
+            await TaskService.saveTask(dbTaskData);
+            setIsTaskModalOpen(false);
+            setSelectedTask(null);
+            loadTasks();
+        } catch (err) {
+            console.error('Error saving task:', err);
+        }
+    };
 
     useEffect(() => {
         if (!item.annual_plan_item_id) { setAnnualItem(null); return; }
@@ -98,7 +178,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                 
                 {/* ══════════ HEADER CARD ══════════ */}
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className={`h-1 ${cfg.bg.replace('bg-', 'bg-').replace('50', '500')}`} />
+                    <div className={`h-1 ${cfg.topBar}`} />
                     <div className="p-4">
                         <div className="flex flex-col lg:flex-row justify-between gap-5">
                             <div className="flex-1 min-w-0">
@@ -161,13 +241,134 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-100">
+                                    <div className="bg-slate-50 dark:bg-slate-850 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
                                         <p className="text-xs font-bold text-slate-500 mb-1">Ghi chú</p>
                                         <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.notes}</p>
                                     </div>
                                 )}
                             </div>
                         )}
+
+                        {/* Linked Execution Tasks */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 space-y-4">
+                            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <CheckSquare className="w-4 h-4" />
+                                    Công việc thực tế ({tasks.length})
+                                </h3>
+                                {item.project_id && (
+                                    <button
+                                        onClick={() => setIsTaskModalOpen(true)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-400 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Tạo công việc
+                                    </button>
+                                )}
+                            </div>
+
+                            {tasksLoading ? (
+                                <div className="flex justify-center items-center py-6 text-slate-400 text-xs">
+                                    Đang tải công việc...
+                                </div>
+                            ) : tasks.length === 0 ? (
+                                <div className="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                                    <ClipboardList className="w-8 h-8 text-slate-300 mx-auto" />
+                                    <p className="text-xs text-slate-500">Chưa có công việc thực tế nào được liên kết.</p>
+                                    {item.project_id ? (
+                                        <button
+                                            onClick={() => setIsTaskModalOpen(true)}
+                                            className="text-xs text-primary-600 font-bold hover:underline cursor-pointer"
+                                        >
+                                            Tạo công việc đầu tiên
+                                        </button>
+                                    ) : (
+                                        <p className="text-[10px] text-slate-400">Vui lòng liên kết nhiệm vụ này với một dự án để tạo công việc.</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {/* Summary Progress Bar */}
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-700">
+                                        <div className="flex justify-between items-center text-xs">
+                                            <span className="font-medium text-slate-600 dark:text-slate-400">Tiến độ thực tế trung bình</span>
+                                            <span className="font-bold text-primary-600 dark:text-primary-400">{averageProgress}%</span>
+                                        </div>
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                                            <div
+                                                className="bg-gradient-to-r from-primary-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${averageProgress}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Task Card List */}
+                                    <div className="space-y-2">
+                                        {tasks.map((task) => {
+                                            const isDone = task.status === 'done' || task.status === 'completed';
+                                            const isInProgress = task.status === 'in_progress';
+                                            const isReview = task.status === 'review';
+                                            
+                                            let statusColor = 'text-slate-400 bg-slate-100 dark:bg-slate-800';
+                                            let statusIcon = <Circle className="w-4 h-4 text-slate-400" />;
+                                            if (isDone) {
+                                                statusColor = 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30';
+                                                statusIcon = <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+                                            } else if (isInProgress) {
+                                                statusColor = 'text-amber-600 bg-amber-50 dark:bg-amber-950/30';
+                                                statusIcon = <Clock className="w-4 h-4 text-amber-500" />;
+                                            } else if (isReview) {
+                                                statusColor = 'text-blue-600 bg-blue-50 dark:bg-blue-950/30';
+                                                statusIcon = <Eye className="w-4 h-4 text-blue-500" />;
+                                            }
+
+                                            return (
+                                                <div
+                                                    key={task.id}
+                                                    onClick={() => handleEditTask(task.id)}
+                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-850 rounded-xl border border-slate-100 hover:border-slate-200 dark:border-slate-700/80 dark:hover:border-slate-600/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
+                                                >
+                                                    <div className="flex items-center gap-3 min-w-0 md:w-1/2">
+                                                        <div className={`p-1.5 rounded-lg shrink-0 ${statusColor}`}>
+                                                            {statusIcon}
+                                                        </div>
+                                                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 truncate transition-colors">
+                                                            {task.title}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 shrink-0">
+                                                        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-700 px-2 py-1 rounded-md">
+                                                            <User className="w-3.5 h-3.5 text-slate-400" />
+                                                            <span>{getAssigneeName(task.assignee_id)}</span>
+                                                        </div>
+                                                        
+                                                        {task.due_date && (
+                                                            <div className="flex items-center gap-1">
+                                                                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                                                <span>{new Date(task.due_date).toLocaleDateString('vi-VN')}</span>
+                                                            </div>
+                                                        )}
+
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-16 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                                                <div
+                                                                    className="bg-primary-500 h-full rounded-full"
+                                                                    style={{ width: `${task.progress || 0}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="font-bold text-slate-600 dark:text-slate-300 w-8 text-right">{task.progress || 0}%</span>
+                                                        </div>
+
+                                                        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-400 dark:group-hover:text-slate-400 group-hover:translate-x-0.5 transition-all" />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* ── RIGHT 1/3 ── */}
@@ -226,48 +427,43 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                             </div>
                         </div>
 
-                        {/* People */}
+                        {/* Đơn vị thực hiện */}
                         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Users className="w-4 h-4" /> Phân công
+                                <Users className="w-4 h-4" /> Đơn vị thực hiện
                             </h3>
                             <div className="space-y-4">
-                                {(() => {
-                                    const names = item.staff_names && item.staff_names.length > 0
-                                        ? item.staff_names
-                                        : item.staff_name ? [item.staff_name] : [];
-                                    if (names.length === 0) return null;
-                                    return names.map((name, idx) => (
-                                        <div key={idx} className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center shrink-0 border border-primary-100">
-                                                <span className="text-xs font-bold text-primary-600">{name.charAt(0).toUpperCase()}</span>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-slate-700">{name}</p>
-                                                <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider">Phụ trách / Thực hiện</p>
-                                            </div>
-                                        </div>
-                                    ));
-                                })()}
-                                {item.dept_head_name && (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-warning-50 flex items-center justify-center shrink-0 border border-warning-100">
-                                            <span className="text-xs font-bold text-warning-600">{item.dept_head_name.charAt(0).toUpperCase()}</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-slate-700">{item.dept_head_name}</p>
-                                            <p className="text-[10px] uppercase font-bold text-warning-500 tracking-wider">Lãnh đạo phòng</p>
-                                        </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-primary-50 dark:bg-primary-950/30 flex items-center justify-center shrink-0 border border-primary-100 dark:border-primary-900/50">
+                                        <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                     </div>
-                                )}
-                                {item.ban_head_name && (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center shrink-0 border border-rose-100">
-                                            <span className="text-xs font-bold text-rose-600">{item.ban_head_name.charAt(0).toUpperCase()}</span>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                            {departmentCode ? `${departmentCode} - ${DEPARTMENT_NAMES[departmentCode] ?? ''}` : 'Chưa xác định'}
+                                        </p>
+                                        <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider">Đơn vị chủ trì</p>
+                                    </div>
+                                </div>
+
+                                {((item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) || item.collaborating_text) && (
+                                    <div className="flex items-start gap-3 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                                        <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/50">
+                                            <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium text-slate-700">{item.ban_head_name}</p>
-                                            <p className="text-[10px] uppercase font-bold text-rose-500 tracking-wider">Lãnh đạo Ban</p>
+                                            <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 space-y-1">
+                                                {item.collaborating_dept_codes?.map(code => (
+                                                    <div key={code} className="text-xs">
+                                                        • {code} - {DEPARTMENT_NAMES[code as DepartmentCode] ?? ''}
+                                                    </div>
+                                                ))}
+                                                {item.collaborating_text && (
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400 italic">
+                                                        {item.collaborating_text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p className="text-[10px] uppercase font-bold text-emerald-500 tracking-wider mt-1">Đơn vị phối hợp</p>
                                         </div>
                                     </div>
                                 )}
@@ -299,6 +495,24 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     </div>
                 </div>
             </div>
+            {isTaskModalOpen && (
+                <ProjectTaskModal
+                    isOpen={isTaskModalOpen}
+                    onClose={() => {
+                        setIsTaskModalOpen(false);
+                        setSelectedTask(null);
+                        loadTasks();
+                    }}
+                    onSubmit={handleSaveTask}
+                    initialData={selectedTask || {
+                        ProjectID: item.project_id,
+                        MonthlyPlanItemID: item.id,
+                        Title: item.task_name,
+                        Description: item.deliverable,
+                        DueDate: item.due_date
+                    }}
+                />
+            )}
         </div>
     );
 };

@@ -62,10 +62,8 @@ const AnnualPlanItemModal: React.FC<Props> = ({
         end_period: '',
         frequency: 'one_time',
         project_id: undefined,
-        responsible_ids: [],
-        responsible_text: '',
+        collaborating_dept_codes: [],
         collaborating_text: '',
-        collaborating_ids: [],
         notes: '',
         sort_order: 0,
     };
@@ -82,31 +80,27 @@ const AnnualPlanItemModal: React.FC<Props> = ({
         defaultValues,
     });
 
-    const watchedResponsibleIds = watch('responsible_ids') ?? [];
+    const watchedCollaboratingDeptCodes = watch('collaborating_dept_codes') ?? [];
     const watchedFrequency = watch('frequency');
     const watchedProjectId = watch('project_id');
 
     const selectedProject = projectOptions.find(o => o.value === watchedProjectId);
 
-    // Lọc nhân viên theo phòng đang active
-    const deptEmployees = useMemo(() => {
-        const deptName = DEPARTMENT_NAMES[departmentCode];
-        const filtered = employeeOptions.filter(o => o.department === deptName);
-        return (filtered.length > 0 ? filtered : employeeOptions).map(o => ({
-            value: o.value,
-            label: o.label,
-            icon: o.avatar
-                ? <img src={o.avatar} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                : undefined,
-        }));
-    }, [employeeOptions, departmentCode]);
+    // Danh sách phòng ban phối hợp (bỏ phòng đang active)
+    const deptOptions = useMemo(() => {
+        return (Object.keys(DEPARTMENT_NAMES) as DepartmentCode[])
+            .filter(code => code !== departmentCode)
+            .map(code => ({
+                value: code,
+                label: `${code} - ${DEPARTMENT_NAMES[code]}`,
+            }));
+    }, [departmentCode]);
 
-    const handleResponsibleChange = useCallback((val: string | number | (string | number)[]) => {
-        const ids = (Array.isArray(val) ? val : val ? [val] : []).map(String);
-        const names = ids.map(id => deptEmployees.find(o => String(o.value) === id)?.label ?? '').filter(Boolean);
-        setValue('responsible_ids', ids);
-        setValue('responsible_text', names.join(', '));
-    }, [deptEmployees, setValue]);
+    const handleCollaboratingDeptsChange = useCallback((val: string | number | (string | number)[]) => {
+        const codes = (Array.isArray(val) ? val : val ? [val] : []).map(String) as DepartmentCode[];
+        setValue('collaborating_dept_codes', codes);
+        setValue('collaborating_text', codes.join(', '));
+    }, [setValue]);
 
     useEffect(() => {
         if (item) {
@@ -122,10 +116,8 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                 end_period: item.end_period ?? '',
                 frequency: item.frequency,
                 project_id: item.project_id,
-                responsible_ids: item.responsible_ids ?? [],
-                responsible_text: item.responsible_text ?? '',
+                collaborating_dept_codes: item.collaborating_dept_codes ?? [],
                 collaborating_text: item.collaborating_text ?? '',
-                collaborating_ids: item.collaborating_ids ?? [],
                 notes: item.notes ?? '',
                 sort_order: item.sort_order ?? 0,
             });
@@ -288,51 +280,38 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                         {/* ── Phân công ── */}
                         <SectionPanel
                             icon={<Users className="w-4 h-4 text-emerald-500" />}
-                            title="Phân công thực hiện"
+                            title="Đơn vị phối hợp thực hiện"
                             sectionKey="phancong"
                             expanded={expanded}
                             onToggle={toggleSection}
                             badge={
-                                watchedResponsibleIds.length > 0
+                                watchedCollaboratingDeptCodes.length > 0
                                     ? <span className="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
-                                        {watchedResponsibleIds.length} người
+                                        {watchedCollaboratingDeptCodes.length} đơn vị
                                     </span>
                                     : null
                             }
                         >
                             <div className="space-y-3 pt-3">
                                 <div>
-                                    <label className="field-label">Nhân viên thực hiện</label>
-                                    {empLoading ? (
-                                        <div className="text-xs text-slate-400 py-2">Đang tải danh sách...</div>
-                                    ) : (
-                                        <Select
-                                            options={deptEmployees}
-                                            value={watchedResponsibleIds}
-                                            onChange={handleResponsibleChange}
-                                            multiple
-                                            searchable
-                                            clearable
-                                            placeholder="Chọn nhân viên thực hiện..."
-                                        />
-                                    )}
-                                    {watchedResponsibleIds.length === 0 && !empLoading && (
-                                        <p className="text-xs text-slate-400 mt-1">
-                                            Hiển thị nhân viên {DEPARTMENT_NAMES[departmentCode]}
-                                        </p>
-                                    )}
+                                    <label className="field-label">Phòng ban phối hợp</label>
+                                    <Select
+                                        options={deptOptions}
+                                        value={watchedCollaboratingDeptCodes}
+                                        onChange={handleCollaboratingDeptsChange}
+                                        multiple
+                                        searchable
+                                        clearable
+                                        placeholder="Chọn phòng ban phối hợp..."
+                                    />
                                 </div>
                                 <div>
-                                    <label className="field-label">Phòng / Cá nhân phối hợp</label>
+                                    <label className="field-label">Ghi chú phối hợp / Đơn vị ngoài Ban</label>
                                     <input
-                                        list="dept-suggestions"
                                         {...register('collaborating_text')}
-                                        placeholder="VD: KHDT, KTTD"
+                                        placeholder="VD: Sở Xây dựng, Sở Tài nguyên..."
                                         className="field-input"
                                     />
-                                    <datalist id="dept-suggestions">
-                                        {DEPT_SUGGESTIONS.map(d => <option key={d} value={d} />)}
-                                    </datalist>
                                 </div>
                             </div>
                         </SectionPanel>

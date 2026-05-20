@@ -248,6 +248,10 @@ export function useBimEngine(
                 const workerUrl = URL.createObjectURL(workerFile);
                 fragments.init(workerUrl);
 
+                (window as any).components = components;
+                (window as any).world = world;
+                (window as any).fragments = fragments;
+
                 // Camera update for fragments
                 world.camera.controls.addEventListener('update', () => fragments.core.update());
 

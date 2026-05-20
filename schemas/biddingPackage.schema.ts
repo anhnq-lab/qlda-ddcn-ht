@@ -53,15 +53,24 @@ export const BiddingPackageFormSchema = z.object({
     BidClosingDate: z.string(),
     BidOpeningDate: z.string(),
     WinningContractorID: z.string(),
-    WinningPrice: z.string(),
+    WinningPrice: z.string().refine(
+        (v) => !v || (!isNaN(parseFloat(v)) && parseFloat(v) >= 0),
+        'Giá trúng thầu phải là số không âm',
+    ),
     ApprovalDate_Result: z.string(),
     FundingSource: z.string(),
     Description: z.string(),
     SelectionDuration: z.string(),
     SelectionStartDate: z.string(),
     // Báo cáo đấu thầu
-    BiddersCount: z.string(),
-    EvaluationBiddersCount: z.string(),
+    BiddersCount: z.string().refine(
+        (v) => !v || (!isNaN(parseInt(v)) && parseInt(v) >= 0),
+        'Số lượng nhà thầu tham dự phải là số nguyên không âm',
+    ),
+    EvaluationBiddersCount: z.string().refine(
+        (v) => !v || (!isNaN(parseInt(v)) && parseInt(v) >= 0),
+        'Số lượng nhà thầu vào đánh giá TC phải là số nguyên không âm',
+    ),
 });
 
 export type BiddingPackageFormValues = z.infer<typeof BiddingPackageFormSchema>;

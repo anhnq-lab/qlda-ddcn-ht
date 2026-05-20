@@ -270,6 +270,7 @@ const TaskList: React.FC = () => {
                     allTasks={tasks}
                 />
             ),
+            width: '50vw',
         });
     };
 
@@ -279,6 +280,7 @@ const TaskList: React.FC = () => {
             icon: <CheckCircle2 className="w-5 h-5 text-blue-500" />,
             url: `/tasks/${task.TaskID}`,
             component: <TaskSlidePanel taskId={task.TaskID} onClose={() => {/* context handles close */}} />,
+            width: '50vw',
         });
     };
 
@@ -296,6 +298,7 @@ const TaskList: React.FC = () => {
                     allTasks={tasks}
                 />
             ),
+            width: '50vw',
         });
     };
 
@@ -330,11 +333,13 @@ const TaskList: React.FC = () => {
             actual_end_date: taskData.ActualEndDate,
             estimated_cost: taskData.EstimatedCost,
             actual_cost: taskData.ActualCost,
+            monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
             metadata: {
                  sub_tasks: taskData.SubTasks,
                  attachments: taskData.Attachments,
                  dependencies: taskData.Dependencies,
                  estimatedDays: taskData.DurationDays,
+                 monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
             }
         };
 

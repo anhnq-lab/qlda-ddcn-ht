@@ -57,6 +57,8 @@ export const ProjectCreateSchema = z.object({
     ConstructionGrade: z.string().optional(),
     ManagementBoard: z.coerce.number().int().min(1).max(7).optional(),
     ProvinceCode: z.string().optional(),
+    SpecialtyType: z.string().optional(),
+    SpecialtyDetails: z.string().optional(),
 
     // Quy mô công trình
     SiteArea: z.coerce.number().min(0).optional(),
@@ -172,6 +174,8 @@ export const ProjectModalFormSchema = z.object({
     OldInvestor: z.string().optional(),
     TransferDecision: z.string().optional(),
     CurrentStatusCode: z.number().int().min(1).max(10).nullable().optional(),
+    SpecialtyType: z.string().optional(),
+    SpecialtyDetails: z.string().optional(),
 });
 
 export type ProjectModalFormValues = z.infer<typeof ProjectModalFormSchema>;

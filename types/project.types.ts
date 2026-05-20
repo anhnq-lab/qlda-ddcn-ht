@@ -141,6 +141,7 @@ export interface Project {
     InvestmentType: InvestmentType;
     DecisionMakerID: number;
     TotalInvestment: number;
+    DisbursedAmount?: number;
     CapitalSource: string;
     LocationCode: string;
     ApprovalDate: string;
@@ -249,6 +250,9 @@ export interface Project {
     ContractorDetails?: ContractorDetails;
     ProjectManagement?: ProjectManagement;
     ProjectStatusInfo?: ProjectStatusInfo;
+    // Chuyên ngành dự án theo Phụ lục 2 Luật Đầu tư công 58/2024/QH15
+    SpecialtyType?: 'transport_urban' | 'civil_industrial' | 'agriculture_rural' | 'mixed' | 'other' | '';
+    SpecialtyDetails?: string;
 }
 
 /** Quyết định giao KHV + kế hoạch vốn */

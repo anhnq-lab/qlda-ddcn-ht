@@ -13,6 +13,7 @@ import AnnualPlanItemDetail from './AnnualPlanItemDetail';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
 import DataTable, { Column as ColumnDef } from '../../components/ui/DataTable';
+import { formatPeriod } from '../../utils/format';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -107,6 +108,7 @@ const AnnualPlanPage: React.FC = () => {
                     onClose={closePanel}
                 />
             ),
+            width: '50vw',
         });
     };
 
@@ -122,6 +124,7 @@ const AnnualPlanPage: React.FC = () => {
                     onClose={closePanel}
                 />
             ),
+            width: '50vw',
         });
     };
 
@@ -156,16 +159,16 @@ const AnnualPlanPage: React.FC = () => {
         {
             key: 'start_period',
             header: 'Bắt đầu',
-            width: '6rem',
+            width: '6.5rem',
             align: 'center',
-            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{item.start_period ?? '—'}</span>
+            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.start_period)}</span>
         },
         {
             key: 'end_period',
             header: 'Kết thúc',
-            width: '6rem',
+            width: '6.5rem',
             align: 'center',
-            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{item.end_period ?? '—'}</span>
+            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.end_period)}</span>
         },
         {
             key: 'frequency',
@@ -183,22 +186,23 @@ const AnnualPlanPage: React.FC = () => {
             }
         },
         {
-            key: 'responsible',
-            header: 'Phụ trách',
-            width: '10rem',
-            render: (_, item) => (
-                item.responsible_ids && item.responsible_ids.length > 0 ? (
-                    <div className="flex flex-wrap gap-1">
-                        {item.responsible_ids.map(id => (
-                            <span key={id} className="inline-block text-[11px] bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300 px-1.5 py-0.5 rounded-full font-medium leading-tight">
-                                {empMap[id] ? empMap[id].split(' ').pop() : id}
-                            </span>
-                        ))}
-                    </div>
-                ) : (
-                    <span className="text-xs text-slate-400">{item.responsible_text ?? '—'}</span>
-                )
-            )
+            key: 'collaborating',
+            header: 'Phòng phối hợp',
+            width: '12rem',
+            render: (_, item) => {
+                if (item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) {
+                    return (
+                        <div className="flex flex-wrap gap-1">
+                            {item.collaborating_dept_codes.map(code => (
+                                <span key={code} className="inline-block text-[11px] bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 px-1.5 py-0.5 rounded-full font-medium leading-tight">
+                                    {code}
+                                </span>
+                            ))}
+                        </div>
+                    );
+                }
+                return <span className="text-xs text-slate-400">{item.collaborating_text ?? '—'}</span>;
+            }
         },
         {
             key: 'notes',

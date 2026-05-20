@@ -8,6 +8,8 @@ import { Contractor } from '../../../types';
 import { useContractors } from '../../../hooks/useContractors';
 import { supabase } from '../../../lib/supabase';
 import { formatCurrency } from '../../../utils/format';
+import { useSlidePanel } from '../../../context/SlidePanelContext';
+import { ContractorFormPanel } from '../../contractors/ContractorFormPanel';
 
 // ========================================
 // BIDDER & EVALUATION SECTION
@@ -39,6 +41,7 @@ interface BidderEvaluationSectionProps {
 export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ packageId }) => {
     const queryClient = useQueryClient();
     const { contractors } = useContractors();
+    const { openPanel } = useSlidePanel();
     const [isAdding, setIsAdding] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -239,8 +242,23 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                     <Plus className="w-4 h-4 text-blue-400 shrink-0" />
                                 </button>
                             )) : (
-                                <div className="px-3 py-3 text-center text-sm text-gray-400">
-                                    {searchText ? 'Không tìm thấy' : 'Nhập tên hoặc MST'}
+                                <div className="px-3 py-4 text-center">
+                                    <p className="text-sm text-gray-400 mb-3">
+                                        {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            setIsDropdownOpen(false);
+                                            openPanel({
+                                                title: "Thêm nhà thầu mới",
+                                                component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                            });
+                                        }}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Thêm nhà thầu mới
+                                    </button>
                                 </div>
                             )}
                         </div>

@@ -70,6 +70,38 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
+                    <label className={labelClass}>Chuyên ngành dự án</label>
+                    <div className="relative">
+                        <select
+                            className={`${selectWithIconClass}${aiHighlight('SpecialtyType')}`}
+                            value={formData.SpecialtyType || ''}
+                            onChange={e => updateField('SpecialtyType', e.target.value)}
+                        >
+                            <option value="">-- Chọn chuyên ngành --</option>
+                            <option value="civil">Dân dụng</option>
+                            <option value="industrial">Công nghiệp</option>
+                            <option value="transportation">Giao thông</option>
+                            <option value="agriculture">Nông nghiệp & PTNT</option>
+                            <option value="technical_infrastructure">Hạ tầng kỹ thuật</option>
+                            <option value="other">Khác</option>
+                        </select>
+                        <Layers className={iconClass} />
+                    </div>
+                </div>
+                <div>
+                    <label className={labelClass}>Chi tiết chuyên ngành (Phân loại chi tiết)</label>
+                    <input
+                        type="text"
+                        placeholder="VD: Cầu đường bộ, Nhà văn hóa, Trạm y tế..."
+                        className={`${inputClass}${aiHighlight('SpecialtyDetails')}`}
+                        value={formData.SpecialtyDetails || ''}
+                        onChange={e => updateField('SpecialtyDetails', e.target.value)}
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
                     <label className={labelClass}>Mục tiêu đầu tư</label>
                     <textarea
                         placeholder="VD: Đáp ứng yêu cầu..."

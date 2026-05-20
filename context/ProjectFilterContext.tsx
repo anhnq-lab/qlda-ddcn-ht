@@ -26,6 +26,7 @@ export interface ProjectFilterContextValue extends ProjectFiltersResult {
     currentStatusCounts: Record<number, number>;
     groupCounts: Record<string, number>;
     boardCounts: Record<string, number>;
+    specialtyCounts: Record<string, number>;
     totalUnfiltered: number;
 }
 
@@ -51,6 +52,7 @@ export const ProjectFilterProvider: React.FC<{ children: React.ReactNode }> = ({
         currentStatusCounts: scoped.currentStatusCounts,
         groupCounts: scoped.groupCounts,
         boardCounts: scoped.boardCounts,
+        specialtyCounts: scoped.specialtyCounts,
         totalUnfiltered: scoped.totalUnfiltered,
     };
 

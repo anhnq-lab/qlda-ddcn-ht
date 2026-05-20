@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
-import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
+import { generateProjectCode, ConstructionType, PermitType, detectSpecialtyByName } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
 import { ProjectMemberService } from '../../../services/ProjectMemberService';
 import { extractProjectFromImage, fileToBase64, ExtractedProjectData } from '../../../services/ai/aiImageExtractor';
@@ -39,6 +39,7 @@ const FIELD_TO_TAB: Record<string, TabId> = {
     ProvinceCode: 'general', LocationCode: 'general', ConstructionType: 'general',
     CompetentAuthority: 'general', InvestorName: 'general', Duration: 'general',
     ExpectedEndDate: 'general', Objective: 'general', InvestmentScale: 'general',
+    SpecialtyType: 'general', SpecialtyDetails: 'general',
     PolicyDecisionLevel: 'legal', PolicyDecisionNumber: 'legal', PolicyDecisionDate: 'legal',
     PolicyDecisionAuthority: 'legal', DecisionNumber: 'legal', DecisionAuthority: 'legal',
     ApprovalDate: 'legal', ConstructionGrade: 'legal', SiteArea: 'legal',
@@ -107,6 +108,8 @@ const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
     OldInvestor: '',
     TransferDecision: '',
     CurrentStatusCode: null,
+    SpecialtyType: '',
+    SpecialtyDetails: '',
 };
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
@@ -144,6 +147,20 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const updateField = useCallback((field: string, value: any) => {
         setValue(field as keyof ProjectModalFormValues, value, { shouldDirty: true });
     }, [setValue]);
+
+    // Tự động nhận diện chuyên ngành khi tên dự án thay đổi (chỉ ở chế độ tạo mới)
+    const projectNameVal = watch('ProjectName');
+    useEffect(() => {
+        if (!isEditMode && projectNameVal) {
+            const currentSpecialty = getValues('SpecialtyType');
+            if (!currentSpecialty) {
+                const detected = detectSpecialtyByName(projectNameVal);
+                if (detected) {
+                    setValue('SpecialtyType', detected, { shouldDirty: true });
+                }
+            }
+        }
+    }, [projectNameVal, isEditMode, setValue, getValues]);
 
     const DEFAULT_BUDGET = { BudgetNSTW: 0, BudgetNSDiaphuong: 0, BudgetLoan: 0, BudgetODA: 0, BudgetOtherNSNN: 0 };
 
@@ -202,6 +219,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 OldInvestor: editProject.OldInvestor || '',
                 TransferDecision: editProject.TransferDecision || '',
                 CurrentStatusCode: editProject.CurrentStatusCode || null,
+                SpecialtyType: editProject.SpecialtyType || '',
+                SpecialtyDetails: editProject.SpecialtyDetails || '',
             });
         } else if (isOpen && !editProject) {
             reset(DEFAULT_FORM_VALUES);

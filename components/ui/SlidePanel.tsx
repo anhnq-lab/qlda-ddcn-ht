@@ -513,7 +513,7 @@ export const SlidePanelContainer: React.FC<SlidePanelContainerProps> = ({ isSide
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isAllExiting ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
-                className={`absolute inset-0 bg-slate-50 dark:bg-slate-800 backdrop-blur-[2px] transition-colors duration-200`}
+                className={`absolute inset-0 bg-slate-900/20 dark:bg-slate-950/50 backdrop-blur-sm transition-colors duration-200`}
                 onClick={() => guardedClose()}
                 aria-hidden="true"
             />

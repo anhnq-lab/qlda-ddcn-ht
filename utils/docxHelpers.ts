@@ -599,4 +599,4 @@ export async function exportDocx(
 }
 
 // Re-export constants for use by templateEngine
-export { SZ, LINE_SPACING, INDENT_MM, FONT };
+export { SZ, LINE_SPACING, INDENT_MM, FONT, AlignmentType };

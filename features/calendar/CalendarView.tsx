@@ -16,10 +16,11 @@ import { Select } from '@/components/ui/Select';
 import { useEvents, useUpdateEvent } from '@/hooks/useCalendar';
 import { AgencyEventWithAttendees, AgencyEventType, AgencyEventRoom } from '@/types/calendar.types';
 import { EventFormModal } from './components/EventFormModal';
-import { EventDetailPanel } from './components/EventDetailPanel';
+import { EventSlidePanel } from './components/EventSlidePanel';
 import { LobbyDisplay } from './components/LobbyDisplay';
 import { CustomToolbar } from './components/CustomToolbar';
-import { Monitor, Calendar as CalendarIcon } from 'lucide-react';
+import { Monitor, Calendar as CalendarIcon, FileText } from 'lucide-react';
+import { useSlidePanel } from '@/context/SlidePanelContext';
 
 const locales = {
   'vi': vi,
@@ -53,9 +54,9 @@ export default function CalendarView() {
   const { mutate: updateEvent } = useUpdateEvent();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<AgencyEventWithAttendees | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<Date | undefined>(undefined);
+  const { openPanel, closePanel } = useSlidePanel();
 
   const handleSelectSlot = (slotInfo: { start: Date, end: Date }) => {
     setSelectedSlot(slotInfo.start);
@@ -68,13 +69,29 @@ export default function CalendarView() {
     const fullEvent = events.find(e => e.id === event.id);
     if (fullEvent) {
       setSelectedEvent(fullEvent);
-      setIsDetailOpen(true);
+      openPanel({
+        id: 'event-detail',
+        title: 'Chi tiết lịch',
+        icon: <FileText size={16} />,
+        width: '50vw',
+        component: () => (
+          <EventSlidePanel
+            event={fullEvent}
+            onEdit={(e) => {
+              setSelectedEvent(e);
+              closePanel('event-detail');
+              setIsFormOpen(true);
+            }}
+            onClose={() => closePanel('event-detail')}
+          />
+        ),
+      });
     }
   };
 
   const handleEditEvent = (event: AgencyEventWithAttendees) => {
     setSelectedEvent(event);
-    setIsDetailOpen(false);
+    closePanel('event-detail');
     setIsFormOpen(true);
   };
 
@@ -228,13 +245,6 @@ export default function CalendarView() {
         onClose={() => setIsFormOpen(false)} 
         event={selectedEvent}
         selectedDate={selectedSlot}
-      />
-      
-      <EventDetailPanel 
-        isOpen={isDetailOpen} 
-        onClose={() => setIsDetailOpen(false)} 
-        event={selectedEvent}
-        onEdit={handleEditEvent}
       />
     </div>
   );

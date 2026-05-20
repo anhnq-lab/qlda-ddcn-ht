@@ -20,7 +20,7 @@ export const ReviewQueue: React.FC = () => {
         queryFn: async () => {
             const { data } = await supabase
                 .from('tasks')
-                .select('task_id, title, project_id, due_date, status, priority, created_at')
+                .select('id, title, project_id, due_date, status, priority, created_at')
                 .eq('status', 'review')
                 .order('created_at', { ascending: false })
                 .limit(8);
@@ -82,7 +82,7 @@ export const ReviewQueue: React.FC = () => {
                 ) : reviewTasks.map((task: any) => {
                     const isOverdue = task.due_date && new Date(task.due_date) < new Date();
                     return (
-                        <div key={task.task_id} onClick={() => navigate(`/tasks/${task.task_id}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
+                        <div key={task.id} onClick={() => navigate(`/tasks/${task.id}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                             <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{task.title}</p>

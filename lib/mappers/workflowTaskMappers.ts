@@ -59,6 +59,7 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         Dependencies: metadata.dependencies || [],
         EstimatedCost: Number(metadata.estimated_cost) || 0,
         ActualCost: Number(metadata.actual_cost) || 0,
+        MonthlyPlanItemID: wt.monthly_plan_item_id || metadata.monthly_plan_item_id || undefined,
         
         // Actual dates
         ActualStartDate: metadata.actualStartDate || wt.actual_start_date || '',
@@ -103,6 +104,7 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         workflow_node_id: task.TimelineStep || task.StepCode || null,
         step_code: task.TimelineStep || task.StepCode || null,
         task_type: 'project' as any,
+        monthly_plan_item_id: task.MonthlyPlanItemID || null,
         metadata: {
             ui_status: task.Status,
             step_code: task.TimelineStep || task.StepCode,

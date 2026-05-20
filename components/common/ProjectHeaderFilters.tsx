@@ -10,7 +10,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useMatch } from 'react-router-dom';
 import { ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { useProjectFilterContextSafe } from '../../context/ProjectFilterContext';
-import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS } from '../../features/projects/hooks/useProjectFilters';
+import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SPECIALTY_OPTIONS } from '../../features/projects/hooks/useProjectFilters';
 import { MANAGEMENT_BOARDS } from '../../types';
 
 
@@ -121,8 +121,9 @@ export const ProjectHeaderFilters: React.FC = () => {
         selectedCurrentStatus, setSelectedCurrentStatus,
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
+        selectedSpecialty, setSelectedSpecialty,
         hasActiveFilters, clearFilters,
-        statusCounts, currentStatusCounts, groupCounts, boardCounts, totalUnfiltered,
+        statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, totalUnfiltered,
     } = filters;
 
     // Build board options
@@ -153,11 +154,17 @@ export const ProjectHeaderFilters: React.FC = () => {
         label: g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`,
     }));
 
+    const specialtyOpts: ChipOption[] = SPECIALTY_OPTIONS.map(o => ({
+        val: o.val,
+        label: o.val === 'all' ? 'Tất cả chuyên ngành' : o.label,
+    }));
+
     const activeCount = [
         selectedStatus !== 'all',
         selectedCurrentStatus !== 'all',
         selectedGroup !== 'all',
         selectedBoard !== 'all',
+        selectedSpecialty !== 'all',
     ].filter(Boolean).length;
 
     return (
@@ -196,6 +203,14 @@ export const ProjectHeaderFilters: React.FC = () => {
                 counts={groupCounts}
                 totalUnfiltered={totalUnfiltered}
                 onChange={setSelectedGroup}
+            />
+            <ChipSelect
+                label="Chuyên ngành"
+                value={selectedSpecialty}
+                options={specialtyOpts}
+                counts={specialtyCounts}
+                totalUnfiltered={totalUnfiltered}
+                onChange={setSelectedSpecialty}
             />
             <ChipSelect
                 label="Phòng QLDA"

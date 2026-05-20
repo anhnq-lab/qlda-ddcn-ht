@@ -30,6 +30,15 @@ export const CURRENT_STATUS_OPTIONS = [
 
 export const GROUP_OPTIONS = ['all', ProjectGroup.A, ProjectGroup.B, ProjectGroup.C] as const;
 
+export const SPECIALTY_OPTIONS = [
+    { val: 'all', label: 'Tất cả chuyên ngành' },
+    { val: 'transport_urban', label: 'Giao thông & Đô thị' },
+    { val: 'civil_industrial', label: 'Dân dụng & Công nghiệp' },
+    { val: 'agriculture_rural', label: 'Nông nghiệp & PTNT' },
+    { val: 'mixed', label: 'Hỗn hợp' },
+    { val: 'other', label: 'Khác' }
+] as const;
+
 export type SortOption = 'name' | 'budget' | 'progress' | 'created';
 
 // ═══════════════════════════════════════════════════════════════
@@ -62,6 +71,8 @@ export interface ProjectFiltersResult {
     setSelectedGroup: (g: string) => void;
     selectedBoard: string;
     setSelectedBoard: (b: string) => void;
+    selectedSpecialty: string;
+    setSelectedSpecialty: (s: string) => void;
     sortBy: SortOption;
     setSortBy: (s: SortOption) => void;
     // Pagination
@@ -88,6 +99,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     const [selectedCurrentStatus, setSelectedCurrentStatus] = useState(searchParams.get('currentStatus') || 'all');
     const [selectedGroup, setSelectedGroup] = useState(searchParams.get('group') || 'all');
     const [selectedBoard, setSelectedBoard] = useState(searchParams.get('board') || 'all');
+    const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get('specialty') || 'all');
     const [sortBy, setSortBy] = useState<SortOption>((searchParams.get('sort') as SortOption) || 'created');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
@@ -98,7 +110,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     // Reset page when filters change
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, sortBy]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, sortBy]);
 
     // ── Sync state → URL (skip on first render) ──
     useEffect(() => {
@@ -112,11 +124,12 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         if (selectedCurrentStatus !== 'all') params.set('currentStatus', selectedCurrentStatus);
         if (selectedGroup !== 'all') params.set('group', selectedGroup);
         if (selectedBoard !== 'all') params.set('board', selectedBoard);
+        if (selectedSpecialty !== 'all') params.set('specialty', selectedSpecialty);
         if (sortBy !== 'created') params.set('sort', sortBy);
         if (viewMode !== 'grid') params.set('view', viewMode);
         if (page > 1) params.set('page', page.toString());
         setSearchParams(params, { replace: true });
-    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, sortBy, viewMode, page, setSearchParams]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, sortBy, viewMode, page, setSearchParams]);
 
     // ── Build QueryParams for server-side query ──
     const queryParams = useMemo((): QueryParams => ({
@@ -130,11 +143,12 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
             ...(selectedCurrentStatus !== 'all' && { currentStatus: selectedCurrentStatus }),
             ...(selectedGroup !== 'all' && { group: selectedGroup }),
             ...(selectedBoard !== 'all' && { board: selectedBoard }),
+            ...(selectedSpecialty !== 'all' && { specialtyType: selectedSpecialty }),
         },
-    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard]);
+    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty]);
 
     // ── Actions ──
-    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedCurrentStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all';
+    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedCurrentStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all' || selectedSpecialty !== 'all';
 
     const clearFilters = useCallback(() => {
         setSearchQuery('');
@@ -142,6 +156,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         setSelectedCurrentStatus('all');
         setSelectedGroup('all');
         setSelectedBoard('all');
+        setSelectedSpecialty('all');
         setPage(1);
     }, []);
 
@@ -151,6 +166,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         selectedCurrentStatus, setSelectedCurrentStatus,
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
+        selectedSpecialty, setSelectedSpecialty,
         sortBy, setSortBy,
         page, setPage,
         pageSize: defaultPageSize,

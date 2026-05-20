@@ -41,6 +41,7 @@ export interface BimSelectionAPI {
     handleShowAll: () => void;
     toggleTypeVisibility: (type: string) => void;
     buildSpatialTree: (ifcData: Uint8Array) => void;
+    loadPropertiesAndTree: (modelId: string, data: any) => void;
     clearSelection: () => void;
     cleanupModelCache: () => void;
 }
@@ -83,6 +84,100 @@ const COMMON_IFC_TYPES = [
     { code: 3495092785, name: 'IfcFurniture' },
 ];
 
+function convertJsonPropertyToSelectedElement(
+    expressId: number,
+    propertiesList: any[],
+    modelId: string
+): SelectedElement {
+    const itemData = propertiesList.find((p: any) => p.expressID === expressId || p.localId === expressId || p.id === expressId);
+    if (!itemData) {
+        return {
+            id: String(expressId),
+            name: `Element #${expressId}`,
+            type: 'Unknown',
+            globalId: '',
+            propertySets: [],
+            materials: [],
+        };
+    }
+
+    // Get type code and resolve name
+    const type = itemData.type ? (COMMON_IFC_TYPES.find(t => t.code === itemData.type)?.name || 'Unknown') : 'Unknown';
+    const name = itemData.Name?.value || itemData.LongName?.value || `${type} #${expressId}`;
+    const globalId = itemData.GlobalId?.value || '';
+
+    const propertySets: PropertySetGroup[] = [];
+
+    // Identity Set
+    const identityProps: PropertyItem[] = [
+        { name: 'Express ID', value: String(expressId) },
+        { name: 'IFC Type', value: type },
+    ];
+    if (globalId) identityProps.push({ name: 'GlobalId', value: globalId });
+    if (itemData.Description?.value) identityProps.push({ name: 'Description', value: itemData.Description.value });
+    if (itemData.ObjectType?.value) identityProps.push({ name: 'Object Type', value: itemData.ObjectType.value });
+    if (itemData.Tag?.value) identityProps.push({ name: 'Tag', value: itemData.Tag.value });
+    propertySets.push({ name: 'Identity', properties: identityProps });
+
+    // Custom Properties (excluding system fields)
+    const customProps: PropertyItem[] = [];
+    Object.keys(itemData).forEach(key => {
+        if (['expressID', 'localId', 'id', 'type', 'Name', 'LongName', 'GlobalId', 'Description', 'ObjectType', 'Tag', 'PredefinedType', 'relations', 'children'].includes(key)) {
+            return;
+        }
+        
+        const val = itemData[key];
+        if (val && typeof val === 'object' && 'value' in val) {
+            customProps.push({ name: key, value: String(val.value) });
+        } else if (val !== null && val !== undefined && (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean')) {
+            customProps.push({ name: key, value: String(val) });
+        }
+    });
+
+    if (customProps.length > 0) {
+        propertySets.push({ name: 'Attributes', properties: customProps });
+    }
+
+    // Nested relations (Property Sets)
+    if (itemData.relations && Array.isArray(itemData.relations)) {
+        itemData.relations.forEach((rel: any) => {
+            const psetName = rel.Name?.value || rel.Name || 'Property Set';
+            const props: PropertyItem[] = [];
+            
+            if (rel.HasProperties && Array.isArray(rel.HasProperties)) {
+                rel.HasProperties.forEach((prop: any) => {
+                    const pName = prop.Name?.value || prop.Name || 'Property';
+                    const pVal = prop.NominalValue?.value ?? prop.NominalValue ?? '';
+                    props.push({ name: pName, value: String(pVal) });
+                });
+            } else {
+                Object.keys(rel).forEach(rKey => {
+                    if (['expressID', 'localId', 'id', 'type', 'Name', 'GlobalId', 'Description'].includes(rKey)) return;
+                    const rVal = rel[rKey];
+                    if (rVal && typeof rVal === 'object' && 'value' in rVal) {
+                        props.push({ name: rKey, value: String(rVal.value) });
+                    } else if (rVal !== null && rVal !== undefined && (typeof rVal === 'string' || typeof rVal === 'number' || typeof rVal === 'boolean')) {
+                        props.push({ name: rKey, value: String(rVal) });
+                    }
+                });
+            }
+
+            if (props.length > 0) {
+                propertySets.push({ name: psetName, properties: props });
+            }
+        });
+    }
+
+    return {
+        id: String(expressId),
+        name,
+        type,
+        globalId,
+        propertySets,
+        materials: [],
+    };
+}
+
 export function useBimSelection(
     componentsRef: React.MutableRefObject<OBC.Components | null>,
     worldRef: React.MutableRefObject<OBC.World | null>,
@@ -101,6 +196,83 @@ export function useBimSelection(
     // ── IFC Model cache — avoid OpenModel/CloseModel on every click ──
     const openModelCacheRef = useRef<Map<string, { modelID: number; ifcApi: WebIFC.IfcAPI }>>(new Map());
     const MODEL_CACHE_MAX = 5;
+
+    const jsonPropertiesRef = useRef<Map<string, { spatialTree: any; properties: any[] }>>(new Map());
+
+    const loadPropertiesAndTree = useCallback((modelId: string, data: any) => {
+        if (!data) return;
+        jsonPropertiesRef.current.set(modelId, data);
+        
+        // Build Spatial Nodes from spatialTree in JSON
+        if (data.spatialTree) {
+            const mapSpatialNode = (node: any): SpatialNode => {
+                const id = node.localId ?? 0;
+                const type = node.category || 'Unknown';
+                
+                // Get name from properties list if available
+                let name = `${type} #${id}`;
+                if (data.properties && Array.isArray(data.properties)) {
+                    const itemData = data.properties.find((p: any) => p.expressID === id || p.localId === id || p.id === id);
+                    name = itemData?.Name?.value || itemData?.LongName?.value || `${type} #${id}`;
+                }
+                
+                const children = node.children ? node.children.map(mapSpatialNode) : [];
+                
+                // Calculate element count safely
+                let elementCount = 0;
+                if (children.length > 0) {
+                    elementCount = children.reduce((sum: number, c: any) => sum + (c.elementCount || 0) + (c.type && !c.type.toLowerCase().includes('storey') && !c.type.toLowerCase().includes('building') ? 1 : 0), 0);
+                }
+                
+                return { id, name, type, children, elementCount };
+            };
+            
+            const rootNode = mapSpatialNode(data.spatialTree);
+            setSpatialTree(prev => {
+                if (prev.some(node => node.name === rootNode.name)) return prev;
+                return [...prev, rootNode];
+            });
+        }
+
+        // Build Type Groups from properties in JSON
+        if (data.properties && Array.isArray(data.properties)) {
+            const typeMap = new Map<string, { id: number; name: string }[]>();
+            data.properties.forEach((p: any) => {
+                const id = p.expressID ?? p.localId ?? p.id;
+                if (!id) return;
+                const type = p.type ? getIfcTypeName(p.type) : 'Unknown';
+                const name = p.Name?.value || p.LongName?.value || `${type} #${id}`;
+                
+                const elements = typeMap.get(type) || [];
+                elements.push({ id, name });
+                typeMap.set(type, elements);
+            });
+            
+            const groups: TypeGroup[] = [];
+            typeMap.forEach((elements, type) => {
+                groups.push({ type, count: elements.length, elements, visible: true });
+            });
+            groups.sort((a, b) => b.count - a.count);
+            
+            setTypeGroups(prev => {
+                const merged = new Map<string, TypeGroup>();
+                prev.forEach(g => merged.set(g.type, g));
+                groups.forEach(g => {
+                    const existing = merged.get(g.type);
+                    if (existing) {
+                        merged.set(g.type, {
+                           ...existing,
+                           count: existing.count + g.count,
+                           elements: [...existing.elements, ...g.elements],
+                        });
+                    } else {
+                        merged.set(g.type, g);
+                    }
+                });
+                return Array.from(merged.values()).sort((a, b) => b.count - a.count);
+            });
+        }
+    }, []);
 
     // ── Convert getItemsData result → SelectedElement ──
     const convertToSelectedElement = useCallback((
@@ -399,6 +571,16 @@ export function useBimSelection(
                         break;
                     }
 
+                    // ── Try JSON Properties first ──
+                    const modelJsonData = jsonPropertiesRef.current.get(String(modelId));
+                    if (modelJsonData && modelJsonData.properties) {
+                        const selEl = convertJsonPropertyToSelectedElement(expressID, modelJsonData.properties, String(modelId));
+                        propertyCacheRef.current.set(cacheKey, selEl);
+                        setSelectedElement(selEl);
+                        onPanelOpen?.();
+                        break;
+                    }
+
                     // Step 1: Try official API — model.getItemsData()
                     const model = fragments.list.get(String(modelId));
                     let element: SelectedElement | null = null;
@@ -601,7 +783,29 @@ export function useBimSelection(
         }
 
         // Step 3: Enrich with full properties
-        const extra = await extractFullProperties(expressId);
+        let extra: Partial<SelectedElement> = {};
+        let foundInJson = false;
+        
+        for (const [modelId, data] of jsonPropertiesRef.current) {
+            const item = data.properties?.find((p: any) => p.expressID === expressId || p.localId === expressId || p.id === expressId);
+            if (item) {
+                const fullEl = convertJsonPropertyToSelectedElement(expressId, data.properties, modelId);
+                extra = {
+                    name: fullEl.name,
+                    type: fullEl.type,
+                    globalId: fullEl.globalId,
+                    propertySets: fullEl.propertySets,
+                    materials: fullEl.materials,
+                };
+                foundInJson = true;
+                break;
+            }
+        }
+        
+        if (!foundInJson) {
+            extra = await extractFullProperties(expressId);
+        }
+
         setSelectedElement(prev => {
             if (!prev || prev.id !== String(expressId)) return prev;
             // Merge: replace initial Identity-only set with full data
@@ -610,7 +814,7 @@ export function useBimSelection(
                 : prev.propertySets;
             return {
                 ...prev,
-                name: extra.propertySets ? prev.name : prev.name,
+                name: extra.name || prev.name,
                 type: prev.type,
                 propertySets: mergedPsets,
                 materials: [...new Set([...prev.materials, ...(extra.materials || [])])],
@@ -738,7 +942,53 @@ export function useBimSelection(
                 openModelCacheRef.current.set(cacheKey, { modelID, ifcApi });
             }
             try {
+                // ── Pre-index aggregates (Site -> Building -> Storey) to optimize buildNode recursion to O(N) ──
+                const aggregatesMap = new Map<number, number[]>();
+                const aggRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELAGGREGATES);
+                for (let i = 0; i < aggRelIds.size(); i++) {
+                    const relId = aggRelIds.get(i);
+                    try {
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatingObject || !rel?.RelatedObjects) continue;
+                        const parentId = rel.RelatingObject?.value ?? rel.RelatingObject;
+                        const relatedObjects = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+                        
+                        const list = aggregatesMap.get(parentId) || [];
+                        for (const obj of relatedObjects) {
+                            const childId = obj?.value ?? obj;
+                            if (childId) list.push(childId);
+                        }
+                        aggregatesMap.set(parentId, list);
+                    } catch { /* ignore relation read error */ }
+                }
+
+                // ── Pre-index contained elements count ──
+                const containedMap = new Map<number, number[]>();
+                const containRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELCONTAINEDINSPATIALSTRUCTURE);
+                for (let i = 0; i < containRelIds.size(); i++) {
+                    const relId = containRelIds.get(i);
+                    try {
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatingStructure || !rel?.RelatedElements) continue;
+                        const parentId = rel.RelatingStructure?.value ?? rel.RelatingStructure;
+                        const contained = Array.isArray(rel.RelatedElements) ? rel.RelatedElements : [rel.RelatedElements];
+                        
+                        const list = containedMap.get(parentId) || [];
+                        for (const el of contained) {
+                            const childId = el?.value ?? el;
+                            if (childId) list.push(childId);
+                        }
+                        containedMap.set(parentId, list);
+                    } catch { /* ignore relation read error */ }
+                }
+
+                const visited = new Set<number>();
                 const buildNode = (expressID: number): SpatialNode => {
+                    if (visited.has(expressID)) {
+                        return { id: expressID, name: `[Vòng lặp] #${expressID}`, type: 'Unknown', children: [], elementCount: 0 };
+                    }
+                    visited.add(expressID);
+
                     const line = ifcApi.GetLine(modelID, expressID, false);
                     const name = line?.Name?.value || line?.LongName?.value || `#${expressID}`;
                     let type = 'Unknown';
@@ -746,34 +996,17 @@ export function useBimSelection(
 
                     const children: SpatialNode[] = [];
 
-                    // Aggregated children (Site→Building→Storey)
-                    const aggRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELAGGREGATES);
-                    for (let i = 0; i < aggRelIds.size(); i++) {
-                        const relId = aggRelIds.get(i);
-                        const rel = ifcApi.GetLine(modelID, relId, false);
-                        if (!rel?.RelatingObject) continue;
-                        const relObjId = rel.RelatingObject?.value ?? rel.RelatingObject;
-                        if (relObjId !== expressID) continue;
-                        const relatedObjects = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
-                        for (const obj of relatedObjects) {
-                            const childId = obj?.value ?? obj;
-                            if (childId) children.push(buildNode(childId));
-                        }
+                    // Get children from pre-indexed aggregates
+                    const childIds = aggregatesMap.get(expressID) || [];
+                    for (const childId of childIds) {
+                        children.push(buildNode(childId));
                     }
 
-                    // Contained elements count
-                    let elementCount = 0;
-                    const containRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELCONTAINEDINSPATIALSTRUCTURE);
-                    for (let i = 0; i < containRelIds.size(); i++) {
-                        const relId = containRelIds.get(i);
-                        const rel = ifcApi.GetLine(modelID, relId, false);
-                        if (!rel?.RelatingStructure) continue;
-                        const structId = rel.RelatingStructure?.value ?? rel.RelatingStructure;
-                        if (structId !== expressID) continue;
-                        const contained = Array.isArray(rel.RelatedElements) ? rel.RelatedElements : [rel.RelatedElements];
-                        elementCount += contained.length;
-                    }
+                    // Get contained elements count from pre-indexed containedMap
+                    const containedElements = containedMap.get(expressID) || [];
+                    const elementCount = containedElements.length;
 
+                    visited.delete(expressID);
                     return { id: expressID, name, type, children, elementCount };
                 };
 
@@ -868,6 +1101,7 @@ export function useBimSelection(
         handleShowAll,
         toggleTypeVisibility,
         buildSpatialTree,
+        loadPropertiesAndTree,
         clearSelection,
         cleanupModelCache,
     };

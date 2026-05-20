@@ -54,6 +54,8 @@ export interface ScopedProjectsResult {
     groupCounts: Record<string, number>;
     /** Stats: Board counts */
     boardCounts: Record<string, number>;
+    /** Stats: Specialty counts */
+    specialtyCounts: Record<string, number>;
     /** Stats: Total (unfiltered by status) */
     totalUnfiltered: number;
     /** Whether user has global scope (sees all) */
@@ -98,7 +100,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     const { projects, total, page, pageSize, totalPages, isLoading, isFetching, refetch } = usePaginatedProjects(serverParams);
 
     // Fetch aggregate stats for the current scope (ignoring status/currentStatus filters)
-    const { statusCounts, currentStatusCounts, groupCounts, boardCounts, total: totalUnfiltered, isLoading: isLoadingStats } = useProjectStats(serverParams);
+    const { statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, total: totalUnfiltered, isLoading: isLoadingStats } = useProjectStats(serverParams);
 
     // Contractor: client-side filter by allowed IDs (small set, OK client-side)
     const scopedProjects = useMemo(() => {
@@ -127,6 +129,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         currentStatusCounts,
         groupCounts,
         boardCounts,
+        specialtyCounts,
         totalUnfiltered: systemRole === 'contractor' ? scopedProjects.length : totalUnfiltered,
         isGlobalScope,
         banNumber,

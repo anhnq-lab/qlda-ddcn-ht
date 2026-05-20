@@ -37,7 +37,7 @@ export const useProjectWorkflow = (projectID: string) => {
 
             if (data) {
                 const mapped: WorkflowNode[] = data.map((t: any) => ({
-                    id: t.task_id,
+                    id: t.id,
                     step_name: t.title,
                     status: t.status === 'todo' ? 'pending' : t.status,
                     assignee: t.metadata?.assigneeName || t.metadata?.role || 'Admin',
@@ -77,7 +77,7 @@ export const useProjectWorkflow = (projectID: string) => {
             const workflowID = uuidv4();
 
             const tasksToInsert = template.steps.map((step, index) => ({
-                task_id: uuidv4(),
+                id: uuidv4(),
                 project_id: projectID,
                 workflow_id: workflowID,
                 title: step.name,
@@ -151,7 +151,7 @@ export const useProjectWorkflow = (projectID: string) => {
             const { error } = await (supabase as any)
                 .from('tasks')
                 .update(updatePayload)
-                .eq('task_id', taskID);
+                .eq('id', taskID);
                 
             if (error) throw error;
 
@@ -164,7 +164,7 @@ export const useProjectWorkflow = (projectID: string) => {
                         await (supabase as any)
                             .from('tasks')
                             .update({ status: 'in_progress' })
-                            .eq('task_id', nextNode.id);
+                            .eq('id', nextNode.id);
                     }
                 }
             }

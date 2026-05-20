@@ -163,17 +163,51 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const navigate = useNavigate();
     const { data: employees = [] } = useEmployees();
     const { projects = [] } = useProjects();
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    const { options: planItemOptions } = useMonthlyPlanItemOptions(currentMonth, currentYear);
+    const [planMonth, setPlanMonth] = useState(new Date().getMonth() + 1);
+    const [planYear, setPlanYear] = useState(new Date().getFullYear());
+    const { options: planItemOptions } = useMonthlyPlanItemOptions(planMonth, planYear);
     const updateTaskMutation = useUpdateTask();
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<Partial<Task>>({
         Title: '', Description: '', Status: TaskStatus.Todo, Priority: TaskPriority.Medium,
         StartDate: '', DueDate: '', AssigneeID: '', ProgressPercent: 0, Dependencies: [],
         ...initialData
     });
+
+    // Đồng bộ tháng/năm kế hoạch theo hạn hoàn thành công việc
+    useEffect(() => {
+        if (formData.DueDate) {
+            const d = new Date(formData.DueDate);
+            if (!isNaN(d.getTime())) {
+                setPlanMonth(d.getMonth() + 1);
+                setPlanYear(d.getFullYear());
+            }
+        }
+    }, [formData.DueDate]);
+
+    // Đồng bộ tháng/năm từ Kế hoạch tháng liên kết sẵn
+    useEffect(() => {
+        const fetchPlanDate = async () => {
+            const planItemId = initialData?.MonthlyPlanItemID || formData.MonthlyPlanItemID;
+            if (planItemId) {
+                const { data } = await supabase
+                    .from('monthly_plan_items')
+                    .select('monthly_plans(plan_month, plan_year)')
+                    .eq('id', planItemId)
+                    .maybeSingle();
+                const plan = (data as any)?.monthly_plans;
+                if (plan) {
+                    setPlanMonth(plan.plan_month);
+                    setPlanYear(plan.plan_year);
+                }
+            }
+        };
+        if (isOpen) {
+            fetchPlanDate().catch(console.error);
+        }
+    }, [initialData?.MonthlyPlanItemID, formData.MonthlyPlanItemID, isOpen]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [activeSection, setActiveSection] = useState<string>('basic');
     const [isSubTaskModalOpen, setIsSubTaskModalOpen] = useState(false);
     const [editingSubTask, setEditingSubTask] = useState<any>(null);

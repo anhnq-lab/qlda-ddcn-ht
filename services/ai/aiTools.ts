@@ -114,6 +114,32 @@ export const AI_TOOLS_GEMINI: FunctionDeclaration[] = [
             },
         },
     },
+    {
+        name: 'search_regulations',
+        description: 'Tìm kiếm các quy định pháp lý, điều luật, tiêu chuẩn xây dựng, đầu tư công trong cơ sở dữ liệu. Dùng khi người dùng hỏi luật, quy định, nghị định, thông tư hoặc điều khoản xây dựng.',
+        parameters: {
+            type: Type.OBJECT,
+            properties: {
+                query: { type: Type.STRING, description: 'Từ khóa hoặc câu hỏi pháp lý cần tìm kiếm' },
+                documentId: { type: Type.STRING, description: 'ID tài liệu pháp luật cụ thể nếu cần giới hạn phạm vi' },
+            },
+            required: ['query'],
+        },
+    },
+    {
+        name: 'create_project_task',
+        description: 'Tạo một công việc (task) mới cho một dự án cụ thể. Dùng khi người dùng ra lệnh tạo việc hoặc phân công công việc.',
+        parameters: {
+            type: Type.OBJECT,
+            properties: {
+                projectId: { type: Type.STRING, description: 'Mã dự án (ProjectID) để thêm công việc' },
+                title: { type: Type.STRING, description: 'Tiêu đề công việc' },
+                dueDate: { type: Type.STRING, description: 'Ngày hết hạn hoàn thành công việc (định dạng YYYY-MM-DD)' },
+                priority: { type: Type.STRING, description: 'Mức độ ưu tiên: low (thấp), medium (trung bình), high (cao)' },
+            },
+            required: ['projectId', 'title'],
+        },
+    },
 ];
 
 // Provide backward compatibility export names if needed

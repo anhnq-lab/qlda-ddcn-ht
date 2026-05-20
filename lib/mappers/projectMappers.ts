@@ -108,6 +108,8 @@ export const dbToProject = (row: any): Project => ({
     ContractorDetails: row.contractor_details || {},
     ProjectManagement: row.project_management || {},
     ProjectStatusInfo: row.project_status_info || {},
+    SpecialtyType: row.specialty_type || '',
+    SpecialtyDetails: row.specialty_details || '',
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -210,6 +212,8 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.ContractorDetails !== undefined) result.contractor_details = p.ContractorDetails;
     if (p.ProjectManagement !== undefined) result.project_management = p.ProjectManagement;
     if (p.ProjectStatusInfo !== undefined) result.project_status_info = p.ProjectStatusInfo;
+    if (p.SpecialtyType !== undefined) result.specialty_type = p.SpecialtyType;
+    if (p.SpecialtyDetails !== undefined) result.specialty_details = p.SpecialtyDetails;
     return result;
 };
 
@@ -228,7 +232,7 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     BidClosingDate: row.bid_closing_date || '',
     EstimatePrice: Number(row.estimate_price) || 0,
     WinningContractorID: row.winning_contractor_id || '',
-    WinningPrice: Number(row.winning_price) || 0,
+    WinningPrice: row.winning_price !== null && row.winning_price !== undefined ? Number(row.winning_price) : undefined,
     Field: row.field || '',
     Duration: row.duration || '',
     BidFee: Number(row.bid_fee) || 0,
@@ -252,6 +256,7 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     BiddingScope: row.bidding_scope || undefined,
     BiddersCount: row.bidders_count ? Number(row.bidders_count) : undefined,
     EvaluationBiddersCount: row.evaluation_bidders_count ? Number(row.evaluation_bidders_count) : undefined,
+    WinningConsortium: Array.isArray(row.winning_consortium) ? row.winning_consortium : [],
     // Tiến độ thực hiện
     CompletionPct: row.completion_pct !== null && row.completion_pct !== undefined ? Number(row.completion_pct) : undefined,
     CompletionUpdatedAt: row.completion_updated_at || undefined,
@@ -302,6 +307,7 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.BiddersCount !== undefined && { bidders_count: bp.BiddersCount }),
     ...(bp.EvaluationBiddersCount !== undefined && { evaluation_bidders_count: bp.EvaluationBiddersCount }),
     ...(bp.Personnel !== undefined && { personnel: bp.Personnel }),
+    ...(bp.WinningConsortium !== undefined && { winning_consortium: bp.WinningConsortium }),
     // Tiến độ thực hiện
     ...(bp.CompletionPct !== undefined && { completion_pct: bp.CompletionPct }),
     ...(bp.CompletionUpdatedAt !== undefined && { completion_updated_at: bp.CompletionUpdatedAt }),

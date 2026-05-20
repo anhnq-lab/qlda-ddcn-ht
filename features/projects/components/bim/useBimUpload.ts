@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import {
     uploadIFCFile, getProjectModels,
     downloadFile, deleteModel, updateModelStatus,
+    uploadFragments, uploadProperties,
     type BimModel
 } from '../../../../lib/bimStorage';
 import { getSafeCamera } from './useBimEngine';
@@ -55,12 +56,103 @@ export interface BimUploadAPI {
     isIsolated: boolean;
 }
 
+async function getItemsDataInBatches(model: any, localIds: number[], batchSize = 1000): Promise<any[]> {
+    const properties: any[] = [];
+    for (let i = 0; i < localIds.length; i += batchSize) {
+        const batchIds = localIds.slice(i, i + batchSize);
+        try {
+            const batchProps = await model.getItemsData(batchIds, {
+                attributesDefault: true,
+                relationsDefault: { attributes: true, relations: true }
+            });
+            if (batchProps) {
+                if (Array.isArray(batchProps)) {
+                    properties.push(...batchProps);
+                } else {
+                    properties.push(...Object.values(batchProps));
+                }
+            }
+        } catch (e) {
+            console.warn(`[BimUpload] Failed to get items data for batch starting at ${i}:`, e);
+        }
+    }
+    return properties;
+}
+
+function getCircularReplacer() {
+    const seen = new WeakSet();
+    return (key: string, value: any) => {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return '[Circular]';
+            }
+            seen.add(value);
+        }
+        return value;
+    };
+}
+
+function cleanSpatialTree(node: any): any {
+    if (!node) return null;
+    const cleanNode: any = {
+        localId: node.localId ?? node.expressID ?? node.id ?? 0,
+        category: node.category ?? node.type ?? 'Unknown',
+        children: []
+    };
+    if (Array.isArray(node.children)) {
+        cleanNode.children = node.children
+            .map((child: any) => cleanSpatialTree(child))
+            .filter(Boolean);
+    }
+    return cleanNode;
+}
+
+async function triggerBackgroundMigration(
+    modelId: string,
+    projectId: string,
+    model: any,
+    fileName: string
+) {
+    try {
+        console.log(`[BimUpload] [Migration] Starting background migration for ${fileName}...`);
+        
+        // 1. Export fragment buffer
+        const fragBuffer = await model.getBuffer(false);
+        const fragData = new Uint8Array(fragBuffer);
+        
+        // 2. Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
+        const localIds = await model.getLocalIds();
+        const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
+        
+        // 3. Extract spatial tree
+        const rawSpatialTree = await model.getSpatialStructure();
+        const spatialTree = cleanSpatialTree(rawSpatialTree);
+        
+        const propertiesData = {
+            spatialTree,
+            properties: rawProperties
+        };
+        const propertiesJson = JSON.stringify(propertiesData, getCircularReplacer());
+        
+        // 4. Upload to Supabase Storage
+        console.log(`[BimUpload] [Migration] Uploading properties JSON...`);
+        await uploadProperties(modelId, projectId, propertiesJson, fileName);
+        
+        console.log(`[BimUpload] [Migration] Uploading fragments binary...`);
+        await uploadFragments(modelId, projectId, fragData, fileName);
+        
+        console.log(`[BimUpload] [Migration] Background migration completed for ${fileName}`);
+    } catch (err) {
+        console.warn(`[BimUpload] [Migration] Failed to migrate ${fileName}:`, err);
+    }
+}
+
 export function useBimUpload(
     projectID: string,
     componentsRef: React.MutableRefObject<OBC.Components | null>,
     worldRef: React.MutableRefObject<OBC.World | null>,
     ifcLoaderRef: React.MutableRefObject<OBC.IfcLoader | null>,
-    onModelLoaded?: (ifcData: Uint8Array) => void,
+    onModelLoaded?: (ifcData?: Uint8Array, propertiesData?: any, modelId?: string) => void,
 ): BimUploadAPI {
     const [status, setStatus] = useState<LoadStatus>('idle');
     const [statusMessage, setStatusMessage] = useState('');
@@ -72,6 +164,46 @@ export function useBimUpload(
     const ifcDataMapRef = useRef<Map<string, Uint8Array>>(new Map());
     const abortControllerRef = useRef<AbortController | null>(null);
     const [validationError, setValidationError] = useState<string | null>(null);
+
+    // Project-wide offset to coordinate models with large absolute coordinates to local origin
+    const coordinationOffsetRef = useRef<THREE.Vector3 | null>(null);
+
+    const coordinateModel = useCallback((model: any) => {
+        if (!model) return;
+        const obj = (model as any).object || model;
+        if (!(obj instanceof THREE.Object3D)) return;
+
+        const box = new THREE.Box3();
+        const nativeBox = (model as any).box;
+        if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+            box.copy(nativeBox);
+        } else {
+            box.setFromObject(obj);
+        }
+
+        if (box.isEmpty()) return;
+
+        const center = box.getCenter(new THREE.Vector3());
+        
+        // If center is far from origin and we don't have a project offset yet, initialize it
+        if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000) && !coordinationOffsetRef.current) {
+            coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
+            console.log(`[BIM Coordination] Set global project offset: (${center.x.toFixed(0)}, ${center.y.toFixed(0)}, ${center.z.toFixed(0)})`);
+        }
+
+        if (coordinationOffsetRef.current) {
+            const offset = coordinationOffsetRef.current;
+            console.log(`[BIM Coordination] Offsetting model by: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
+            
+            obj.position.set(-offset.x, -offset.y, -offset.z);
+            obj.updateMatrixWorld(true);
+
+            // Offset the bounding box in OBC so fitAll and camera controls map correctly
+            if ((model as any).box instanceof THREE.Box3) {
+                (model as any).box.translate(new THREE.Vector3(-offset.x, -offset.y, -offset.z));
+            }
+        }
+    }, []);
 
     // ── File validation ────────────────────────
     const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250MB
@@ -95,8 +227,8 @@ export function useBimUpload(
             const models = await getProjectModels(projectID);
             if (models.length === 0) return;
 
-            // Filter models that are ready and have an IFC path
-            const readyModels = models.filter(m => m.status === 'ready' && m.ifc_path);
+            // Filter models that are ready and have an IFC path or frag path
+            const readyModels = models.filter(m => m.status === 'ready' && (m.ifc_path || m.frag_path));
             if (readyModels.length === 0) {
                 setDisciplineModels(models.map(m => ({ model: m, visible: false })));
                 return;
@@ -107,60 +239,93 @@ export function useBimUpload(
 
             const newDisciplineModels: DisciplineModel[] = [];
             const ifcLoader = ifcLoaderRef.current;
+            const fragments = componentsRef.current?.get(OBC.FragmentsManager);
             let completed = 0;
 
-            // Load models SEQUENTIALLY — parallel IFC parsing of several large
-            // models saturates WASM memory and can OOM the worker, which then
-            // silently drops geometry. One at a time is slower per-tick but
-            // robust and keeps progress accurate.
             for (const m of readyModels) {
                 try {
-                    // Check module-level cache first
-                    const cacheKey = m.ifc_path!;
-                    let ifcBuffer: ArrayBuffer;
-                    if (ifcDownloadCache.has(cacheKey)) {
-                        ifcBuffer = ifcDownloadCache.get(cacheKey)!;
-                        console.log(`[BIM] Cache hit: ${m.file_name}`);
-                    } else {
-                        ifcBuffer = await downloadFile(cacheKey);
-                        ifcDownloadCache.set(cacheKey, ifcBuffer);
-                        console.log(`[BIM] Downloaded & cached: ${m.file_name}`);
-                    }
-                    const uint8Array = new Uint8Array(ifcBuffer);
-                    console.log(`[BimUpload] Starting IFC load for ${m.file_name}...`);
-
-                    if (ifcLoader && worldRef.current) {
-                        const model = await ifcLoader.load(uint8Array, true, m.file_name, {
-                            instanceCallback: (importer: any) => {
-                                // Many VN IFC exports bake absolute survey coords
-                                // (VN-2000/UTM) into geometry. Default 100km
-                                // distanceThreshold then skips ALL elements →
-                                // empty viewport. null = keep everything;
-                                // COORDINATE_TO_ORIGIN recenters near origin.
-                                importer.distanceThreshold = null;
-                            },
-                        });
-                        console.log(`[BimUpload] Successfully loaded existing model: ${m.file_name}`);
-
+                    // Try to load using optimized .frag file first
+                    if (m.frag_path && m.properties_path && fragments && worldRef.current) {
+                        setStatusMessage(`Đang tải fragment: ${m.file_name}...`);
+                        const fragBuffer = await downloadFile(m.frag_path);
+                        const fragModel = await fragments.core.load(new Uint8Array(fragBuffer), { modelId: m.id });
+                        coordinateModel(fragModel);
+                        
+                        console.log(`[BimUpload] Successfully loaded fragment model: ${m.file_name}`);
+                        
                         // Force add to scene to prevent silent failures
-                        const obj = (model as any).object || model;
+                        const obj = (fragModel as any).object || fragModel;
                         if (obj && !worldRef.current.scene.three.children.includes(obj)) {
                             worldRef.current.scene.three.add(obj);
                         }
 
-                        const groupUuid = (model as any).uuid || (model as any).id;
-                        if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
-                        ifcDataMapRef.current.set(m.file_name, uint8Array);
-                        onModelLoaded?.(uint8Array);
-
+                        // Load properties JSON
+                        try {
+                            const propsBuffer = await downloadFile(m.properties_path);
+                            const propsStr = new TextDecoder('utf-8').decode(propsBuffer);
+                            const propsData = JSON.parse(propsStr);
+                            
+                            // Load properties and spatial tree into selection
+                            onModelLoaded?.(undefined, propsData, m.file_name);
+                        } catch (propsErr) {
+                            console.warn(`[BimUpload] Failed to load/parse properties JSON for ${m.file_name}:`, propsErr);
+                        }
+                        
                         completed++;
                         setLoadingProgress((completed / readyModels.length) * 100);
                         setStatusMessage(`Đã tải ${completed}/${readyModels.length}: ${m.file_name}`);
-
-                        newDisciplineModels.push({ model: m, visible: true, fragModel: model });
+                        
+                        newDisciplineModels.push({ model: m, visible: true, fragModel });
                     } else {
-                        console.warn(`[BimUpload] ifcLoader or worldRef is null during load for ${m.file_name}`);
-                        newDisciplineModels.push({ model: m, visible: false });
+                        // Fallback to loading raw IFC file
+                        if (!m.ifc_path) {
+                            throw new Error(`Model ${m.file_name} has no IFC path or frag path`);
+                        }
+                        const cacheKey = m.ifc_path!;
+                        let ifcBuffer: ArrayBuffer;
+                        if (ifcDownloadCache.has(cacheKey)) {
+                            ifcBuffer = ifcDownloadCache.get(cacheKey)!;
+                            console.log(`[BIM] Cache hit: ${m.file_name}`);
+                        } else {
+                            ifcBuffer = await downloadFile(cacheKey);
+                            ifcDownloadCache.set(cacheKey, ifcBuffer);
+                            console.log(`[BIM] Downloaded & cached: ${m.file_name}`);
+                        }
+                        const uint8Array = new Uint8Array(ifcBuffer);
+                        console.log(`[BimUpload] Starting IFC load for ${m.file_name}...`);
+
+                        if (ifcLoader && worldRef.current) {
+                            const model = await ifcLoader.load(uint8Array, true, m.file_name, {
+                                instanceCallback: (importer: any) => {
+                                    importer.distanceThreshold = null;
+                                },
+                            });
+                            coordinateModel(model);
+                            console.log(`[BimUpload] Successfully loaded existing IFC model: ${m.file_name}`);
+
+                            // Force add to scene to prevent silent failures
+                            const obj = (model as any).object || model;
+                            if (obj && !worldRef.current.scene.three.children.includes(obj)) {
+                                worldRef.current.scene.three.add(obj);
+                            }
+
+                            const groupUuid = (model as any).uuid || (model as any).id;
+                            if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
+                            ifcDataMapRef.current.set(m.file_name, uint8Array);
+                            onModelLoaded?.(uint8Array);
+
+                            // Trigger background migration to convert to fragments and properties JSON
+                            triggerBackgroundMigration(m.id, projectID, model, m.file_name);
+
+                            completed++;
+                            setLoadingProgress((completed / readyModels.length) * 100);
+                            setStatusMessage(`Đã tải ${completed}/${readyModels.length}: ${m.file_name}`);
+
+                            newDisciplineModels.push({ model: m, visible: true, fragModel: model });
+                        } else {
+                            console.warn(`[BimUpload] ifcLoader or worldRef is null during load for ${m.file_name}`);
+                            newDisciplineModels.push({ model: m, visible: false });
+                        }
                     }
                 } catch (err) {
                     console.warn(`[BimUpload] Failed to load ${m.file_name}:`, err);
@@ -238,6 +403,7 @@ export function useBimUpload(
                     importer.distanceThreshold = null;
                 },
             });
+            coordinateModel(model);
             console.log(`[BimUpload] IFC conversion completed successfully. Model UUID: ${(model as any).uuid || 'N/A'}`);
             setLoadingProgress(85);
 
@@ -261,19 +427,69 @@ export function useBimUpload(
             }
             console.log(`[BimUpload] Calculated element count: ${elementCount}`);
 
-            // Mark model as ready
-            await updateModelStatus(record.id, 'ready', { element_count: elementCount });
+            // 1. Export and upload fragments & properties
+            let propertiesData: any = null;
+            let updatedRecord = record;
+            try {
+                setStatus('converting');
+                setStatusMessage(`Đang trích xuất thuộc tính mô hình...`);
+                
+                // Export fragment buffer
+                const fragBuffer = await (model as any).getBuffer(false);
+                const fragData = new Uint8Array(fragBuffer);
+                
+                // Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
+                const localIds = await (model as any).getLocalIds();
+                const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
+                
+                // Extract spatial tree
+                const rawSpatialTree = await (model as any).getSpatialStructure();
+                const spatialTree = cleanSpatialTree(rawSpatialTree);
+                
+                propertiesData = {
+                    spatialTree,
+                    properties: rawProperties
+                };
+                const propertiesJson = JSON.stringify(propertiesData, getCircularReplacer());
+                
+                setStatusMessage(`Đang lưu trữ dữ liệu mô hình...`);
+                
+                // Upload properties JSON first
+                const propPath = await uploadProperties(record.id, projectID, propertiesJson, file.name);
+                // Upload fragments (which updates status to 'ready')
+                const fragPath = await uploadFragments(record.id, projectID, fragData, file.name);
+                
+                // Construct updated record with new paths
+                updatedRecord = {
+                    ...record,
+                    status: 'ready',
+                    element_count: elementCount,
+                    frag_path: fragPath,
+                    properties_path: propPath
+                };
+                
+                console.log(`[BimUpload] Uploaded fragments & properties successfully`);
+            } catch (err) {
+                console.warn(`[BimUpload] Failed to automatically convert and upload fragments/properties:`, err);
+                // Fallback to updating DB status as ready with IFC only
+                await updateModelStatus(record.id, 'ready', { element_count: elementCount });
+            }
+
             setLoadingProgress(90);
 
             setDisciplineModels(prev => [...prev, {
-                model: { ...record, status: 'ready', element_count: elementCount },
+                model: { ...updatedRecord, status: 'ready', element_count: elementCount },
                 visible: true,
                 fragModel: model,
             }]);
             setObjectCount(prev => prev + elementCount);
 
-            // Notify parent to build spatial tree
-            onModelLoaded?.(uint8Array);
+            // Notify parent to load properties and spatial tree
+            if (propertiesData) {
+                onModelLoaded?.(undefined, propertiesData, file.name);
+            } else {
+                onModelLoaded?.(uint8Array);
+            }
 
             // Fit camera to model
             console.log(`[BimUpload] Fitting camera to model bounds...`);

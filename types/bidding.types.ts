@@ -76,6 +76,12 @@ export interface PackagePersonnel {
     certNo?: string;  // Số chứng chỉ hành nghề
 }
 
+export interface ConsortiumMember {
+    contractor_id: string;
+    role: 'lead' | 'member';
+    share_percent?: number;
+}
+
 export interface BiddingPackage {
     PackageID: string;
     ProjectID: string;
@@ -112,41 +118,42 @@ export interface BiddingPackage {
     | 'Goods'
     | 'Mixed';
     Status: PackageStatus;
-    NotificationCode?: string;
-    PostingDate?: string;
-    BidClosingDate?: string;
-    BidOpeningDate?: string;
-    DecisionNumber?: string;
-    DecisionDate?: string;
-    WinningContractorID?: string;
-    WinningPrice?: number;
-    ApprovalDate_Result?: string;
-    Duration?: string;
-    ContractID?: string;
-    FundingSource?: string;
-    Description?: string;
-    SelectionDuration?: string;
-    SelectionStartDate?: string;
-    HasOption?: boolean;
-    ApplicableMethod?: ApplicableSelectionMethod;
-    IsSimplifiedCDT?: boolean;
-    SimplifiedReason?: string;
-    RequiresAppraisal?: boolean;
-    BidFee?: number;
-    EstimatePrice?: number;
-    DecisionAgency?: string;
-    DecisionFile?: string;
-    MSCPackageLink?: string;
-    MSCPublishStatus?: 'NotRequired' | 'Pending' | 'Published' | 'Overdue';
-    SortOrder?: number;
+    NotificationCode?: string | null;
+    PostingDate?: string | null;
+    BidClosingDate?: string | null;
+    BidOpeningDate?: string | null;
+    DecisionNumber?: string | null;
+    DecisionDate?: string | null;
+    WinningContractorID?: string | null;
+    WinningPrice?: number | null;
+    ApprovalDate_Result?: string | null;
+    Duration?: string | null;
+    ContractID?: string | null;
+    FundingSource?: string | null;
+    Description?: string | null;
+    SelectionDuration?: string | null;
+    SelectionStartDate?: string | null;
+    HasOption?: boolean | null;
+    ApplicableMethod?: ApplicableSelectionMethod | null;
+    IsSimplifiedCDT?: boolean | null;
+    SimplifiedReason?: string | null;
+    RequiresAppraisal?: boolean | null;
+    BidFee?: number | null;
+    EstimatePrice?: number | null;
+    DecisionAgency?: string | null;
+    DecisionFile?: string | null;
+    MSCPackageLink?: string | null;
+    MSCPublishStatus?: 'NotRequired' | 'Pending' | 'Published' | 'Overdue' | null;
+    SortOrder?: number | null;
     // Báo cáo đấu thầu — Biểu 01A PL2
-    BiddingScope?: 'Domestic' | 'International';    // Phạm vi: Trong nước / Quốc tế
-    BiddersCount?: number;                           // Số nhà thầu nộp HSDT/HSĐX
-    EvaluationBiddersCount?: number;                 // Số NTh vào bước đánh giá tài chính
+    BiddingScope?: 'Domestic' | 'International' | null;    // Phạm vi: Trong nước / Quốc tế
+    BiddersCount?: number | null;                           // Số nhà thầu nộp HSDT/HSĐX
+    EvaluationBiddersCount?: number | null;                 // Số NTh vào bước đánh giá tài chính
     Personnel?: PackagePersonnel[];                  // Nhân sự nhà thầu tham gia gói thầu
+    WinningConsortium?: ConsortiumMember[] | null;          // Danh sách liên danh trúng thầu
     // Tiến độ thực hiện (nhập thủ công)
-    CompletionPct?: number;                          // % Khối lượng hoàn thành (0-100)
-    CompletionUpdatedAt?: string;                    // Ngày cập nhật % hoàn thành
+    CompletionPct?: number | null;                          // % Khối lượng hoàn thành (0-100)
+    CompletionUpdatedAt?: string | null;                    // Ngày cập nhật % hoàn thành
     // Join data
     WinningContractorName?: string;                  // Tên nhà thầu trúng thầu (join từ contractors)
 }

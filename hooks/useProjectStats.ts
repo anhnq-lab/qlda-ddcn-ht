@@ -9,6 +9,7 @@ export interface ProjectStatsResult {
     currentStatusCounts: Record<number, number>;
     groupCounts: Record<string, number>;
     boardCounts: Record<string, number>;
+    specialtyCounts: Record<string, number>;
     total: number;
     isLoading: boolean;
     error: string | null;
@@ -28,6 +29,7 @@ export function useProjectStats(params?: QueryParams): ProjectStatsResult {
         currentStatusCounts: data?.currentStatusCounts || {},
         groupCounts: data?.groupCounts || {},
         boardCounts: data?.boardCounts || {},
+        specialtyCounts: data?.specialtyCounts || {},
         total: data?.total || 0,
         isLoading,
         error: error ? (error as Error).message : null,

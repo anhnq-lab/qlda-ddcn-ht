@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProjectService from '../../../../services/ProjectService';
-import ApiClient from '../../../../services/api';
 import { BiddingPackage, PackageStatus, Project } from '../../../../types';
 import { formatCurrency } from '../../../../utils/format';
 import { BiddingPackageDetail } from '../BiddingPackageDetail';
@@ -15,6 +14,7 @@ import {
     Clock, AlertTriangle, CheckCircle2, MoreVertical, Loader2, GripVertical
 } from 'lucide-react';
 import { supabase } from '../../../../lib/supabase';
+import { ActionMenu } from '../../../../components/common/ActionMenu';
 
 // ========================================
 // PROJECT PACKAGES TAB - Flat List UI
@@ -37,9 +37,8 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
         queryFn: () => ProjectService.getPackagesByProject(projectID)
     });
 
-    const [filterStatus, setFilterStatus] = useState<string>('all');
+     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
 
     // Drag and Drop State
@@ -59,11 +58,19 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     }, [openPackageId, packages, autoOpenProcessed]);
 
     const deleteMutation = useMutation({
-        mutationFn: (packageId: string) => ApiClient.delete(`/api/bidding-packages/${packageId}`, () => { }),
+        mutationFn: (packageId: string) => ProjectService.deletePackage(packageId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
             addToast({ title: 'Thành công', message: 'Đã xóa gói thầu', type: 'success' });
         },
+        onError: (err: any) => {
+            console.error('Lỗi khi xóa gói thầu:', err);
+            addToast({
+                title: 'Lỗi',
+                message: err?.message || 'Không thể xóa gói thầu (gói thầu có thể đang liên kết với hợp đồng hoặc dữ liệu khác)',
+                type: 'error'
+            });
+        }
     });
 
     const updateSortMutation = useMutation({
@@ -122,7 +129,6 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 />
             )
         });
-        setOpenDropdownId(null);
     };
 
     const handleCreate = () => {
@@ -152,14 +158,12 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             ),
             width: '50vw'
         });
-        setOpenDropdownId(null);
     };
 
     const handleDelete = (pkg: BiddingPackage) => {
         if (confirm(`Bạn có chắc chắn muốn xóa gói thầu "${pkg.PackageName}"?`)) {
             deleteMutation.mutate(pkg.PackageID);
         }
-        setOpenDropdownId(null);
     };
 
     // Drag & Drop
@@ -364,33 +368,21 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                             </span>
                                         </td>
                                         <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
-                                            <div className="relative">
-                                                <button
-                                                    onClick={() => setOpenDropdownId(openDropdownId === pkg.PackageID ? null : pkg.PackageID)}
-                                                    className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                                                >
-                                                    <MoreVertical className="w-4 h-4" />
-                                                </button>
-                                                {openDropdownId === pkg.PackageID && (
-                                                    <>
-                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdownId(null)}></div>
-                                                        <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-50 py-1 animate-in fade-in zoom-in-95 duration-100">
-                                                            <button
-                                                                onClick={() => { handleEdit(pkg); }}
-                                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
-                                                            >
-                                                                <Edit className="w-4 h-4" /> Chỉnh sửa
-                                                            </button>
-                                                            <button
-                                                                onClick={() => { handleDelete(pkg); }}
-                                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" /> Xóa
-                                                            </button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </div>
+                                            <ActionMenu
+                                                items={[
+                                                    {
+                                                        label: 'Chỉnh sửa',
+                                                        icon: Edit,
+                                                        onClick: () => handleEdit(pkg),
+                                                    },
+                                                    {
+                                                        label: 'Xóa',
+                                                        icon: Trash2,
+                                                        onClick: () => handleDelete(pkg),
+                                                        variant: 'danger',
+                                                    },
+                                                ]}
+                                            />
                                         </td>
                                     </tr>
                                 ))}

@@ -112,11 +112,12 @@ export class ProjectService {
         currentStatusCounts: Record<number, number>; 
         groupCounts: Record<string, number>;
         boardCounts: Record<string, number>;
+        specialtyCounts: Record<string, number>;
         total: number;
     }> {
         return withRetry(async () => {
             // Fetch necessary columns for stats
-            let query = supabase.from('projects').select('status, current_status_code, group_code, management_board');
+            let query = supabase.from('projects').select('status, current_status_code, group_code, management_board, specialty_type');
             
             // Apply all filters EXCEPT the ones we are counting
             const statParams = { ...params };
@@ -126,6 +127,7 @@ export class ProjectService {
                 delete statParams.filters.currentStatus;
                 delete statParams.filters.group;
                 delete statParams.filters.board;
+                delete statParams.filters.specialtyType;
             }
             
             query = this._applyFilters(query, statParams);
@@ -137,48 +139,52 @@ export class ProjectService {
             const currentStatusCounts: Record<number, number> = {};
             const groupCounts: Record<string, number> = {};
             const boardCounts: Record<string, number> = {};
+            const specialtyCounts: Record<string, number> = {};
             let total = 0;
 
             const activeStatus = params?.filters?.status;
             const activeCurrentStatus = params?.filters?.currentStatus;
             const activeGroup = params?.filters?.group;
             const activeBoard = params?.filters?.board;
+            const activeSpecialty = params?.filters?.specialtyType;
 
             (data || []).forEach((row: any) => {
                 const s = row.status;
                 const cs = row.current_status_code;
                 const g = row.group_code;
                 const b = row.management_board;
+                const sp = row.specialty_type;
 
-                // For 'total', it should reflect the count IF all current filters were applied.
-                // Wait, 'total' is used for the "Tất cả" option in the UI. 
-                // "Tất cả" should just clear that specific filter. 
-                // So totalUnfiltered for Status should be: count where group and board match.
-                // We'll calculate totals for each category separately if needed, but for simplicity we return counts.
-
-                // Status Counts (ignoring status/currentStatus filters, but applying group/board)
                 const matchesGroup = !activeGroup || g === activeGroup;
                 const matchesBoard = !activeBoard || b?.toString() === activeBoard?.toString();
-                if (matchesGroup && matchesBoard) {
-                    total++; // This is the total number of items when status filters are cleared
+                const matchesSpecialty = !activeSpecialty || sp === activeSpecialty;
+                const matchesStatus = (!activeStatus || s?.toString() === activeStatus?.toString()) && 
+                                      (!activeCurrentStatus || cs?.toString() === activeCurrentStatus?.toString());
+
+                // Status & CurrentStatus Counts (applying group, board, specialty)
+                if (matchesGroup && matchesBoard && matchesSpecialty) {
+                    total++;
                     if (s !== null && s !== undefined) statusCounts[s] = (statusCounts[s] || 0) + 1;
                     if (cs !== null && cs !== undefined) currentStatusCounts[cs] = (currentStatusCounts[cs] || 0) + 1;
                 }
 
-                // Group Counts (ignoring group filter, but applying status/currentStatus/board)
-                const matchesStatus = (!activeStatus || s?.toString() === activeStatus?.toString()) && 
-                                      (!activeCurrentStatus || cs?.toString() === activeCurrentStatus?.toString());
-                if (matchesStatus && matchesBoard) {
+                // Group Counts (applying status, board, specialty)
+                if (matchesStatus && matchesBoard && matchesSpecialty) {
                     if (g) groupCounts[g] = (groupCounts[g] || 0) + 1;
                 }
 
-                // Board Counts (ignoring board filter, but applying status/currentStatus/group)
-                if (matchesStatus && matchesGroup) {
+                // Board Counts (applying status, group, specialty)
+                if (matchesStatus && matchesGroup && matchesSpecialty) {
                     if (b) boardCounts[b] = (boardCounts[b] || 0) + 1;
+                }
+
+                // Specialty Counts (applying status, group, board)
+                if (matchesStatus && matchesGroup && matchesBoard) {
+                    if (sp) specialtyCounts[sp] = (specialtyCounts[sp] || 0) + 1;
                 }
             });
 
-            return { statusCounts, currentStatusCounts, groupCounts, boardCounts, total };
+            return { statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, total };
         });
     }
 
@@ -199,6 +205,7 @@ export class ProjectService {
             if (f.currentStatus !== undefined && f.currentStatus !== '' && f.currentStatus !== 'all') query = query.eq('current_status_code', f.currentStatus);
             if (f.group && f.group !== 'all') query = query.eq('group_code', f.group);
             if (f.board && f.board !== 'all') query = query.eq('management_board', f.board);
+            if (f.specialtyType && f.specialtyType !== 'all') query = query.eq('specialty_type', f.specialtyType);
             if (f.investmentType) query = query.eq('investment_type', f.investmentType);
             if (f.stage) query = query.eq('stage', f.stage);
             if (f.sector) query = query.eq('sector', f.sector);
@@ -502,6 +509,18 @@ export class ProjectService {
             const contractIds = pkgContracts.map(c => c.contract_id);
             await supabase.from('payments').delete().in('contract_id', contractIds);
         }
+
+        // Delete associated package bidders first
+        await supabase
+            .from('package_bidders')
+            .delete()
+            .eq('package_id', packageId);
+
+        // Delete associated package issues first
+        await supabase
+            .from('package_issues')
+            .delete()
+            .eq('package_id', packageId);
 
         const { error } = await supabase
             .from('bidding_packages')

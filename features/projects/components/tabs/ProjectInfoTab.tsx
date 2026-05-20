@@ -252,7 +252,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
             // Overdue tasks (no date limit — show ALL overdue)
             const { data: overdueTasks } = await (supabase as any)
                 .from('tasks')
-                .select('task_id, title, due_date, status, priority')
+                .select('id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
                 .not('status', 'in', '("Done")')
                 .lt('due_date', nowISO)
@@ -263,7 +263,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 const dueDate = new Date(t.due_date);
                 const daysOverdue = Math.ceil((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
                 results.push({
-                    id: t.task_id,
+                    id: t.id,
                     title: t.title,
                     date: t.due_date?.split('T')[0] || '',
                     type: t.priority?.toLowerCase() === 'critical' ? 'milestone' : t.priority?.toLowerCase() === 'high' ? 'milestone' : 'deadline',
@@ -276,7 +276,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
             const in6Months = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
             const { data: upcomingTasks } = await (supabase as any)
                 .from('tasks')
-                .select('task_id, title, due_date, status, priority')
+                .select('id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
                 .not('status', 'in', '("Done")')
                 .gte('due_date', nowISO)
@@ -296,7 +296,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 if (daysUntil <= 7) status = 'due-soon';
 
                 results.push({
-                    id: t.task_id,
+                    id: t.id,
                     title: t.title,
                     date: t.due_date?.split('T')[0] || '',
                     type: isHighPriority ? 'milestone' : 'deadline',
@@ -466,6 +466,24 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                                 <EnhancedInfoItem icon={Hash} label="Mã dự án" value={project.ProjectNumber || project.ProjectID} copyable />
                                 <EnhancedInfoItem icon={Briefcase} label="Nhóm dự án" value={`Nhóm ${project.GroupCode}`} highlight />
+                                <EnhancedInfoItem 
+                                    icon={Layers} 
+                                    label="Chuyên ngành" 
+                                    value={
+                                        project.SpecialtyType 
+                                            ? ({
+                                                civil_industrial: 'Dân dụng & Công nghiệp',
+                                                transport_urban: 'Giao thông & Đô thị',
+                                                agriculture_rural: 'Nông nghiệp & PTNT',
+                                                mixed: 'Hỗn hợp',
+                                                other: 'Khác',
+                                                '': 'Chưa phân loại'
+                                              } as Record<string, string>)[project.SpecialtyType] || project.SpecialtyType 
+                                            : 'Chưa phân loại'
+                                    } 
+                                    highlight={!!project.SpecialtyType}
+                                />
+                                <EnhancedInfoItem icon={Info} label="Chi tiết chuyên ngành" value={project.SpecialtyDetails || '—'} />
                                 <EnhancedInfoItem icon={MapPin} label="Địa điểm" value={project.LocationCode} />
                                 <EnhancedInfoItem icon={Clock} label="Thời gian thực hiện" value={project.Duration || '—'} />
                                 <EnhancedInfoItem icon={Briefcase} label="Hình thức quản lý" value={project.ManagementForm || 'Chủ đầu tư trực tiếp quản lý'} />

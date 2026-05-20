@@ -68,3 +68,40 @@ export const generateProjectCode = (
     // Total: 2 + 2 + 1 + 1 + 5 + 2 = 13 chars
     return `${pCode}${yCode}${tCode}${sCode}${rCode}${mCode}`;
 };
+
+/**
+ * Tự động nhận diện chuyên ngành dự án dựa trên tên dự án (Phụ lục 2 Luật Đầu tư công 58/2024/QH15)
+ */
+export const detectSpecialtyByName = (name: string): 'transport_urban' | 'civil_industrial' | 'agriculture_rural' | 'mixed' | 'other' | '' => {
+    if (!name) return '';
+    const lower = name.toLowerCase();
+    
+    // Giao thông & Đô thị
+    if (lower.includes('đường') || lower.includes('cầu') || lower.includes('cao tốc') || 
+        lower.includes('cảng') || lower.includes('sân bay') || lower.includes('giao thông') || 
+        lower.includes('đại lộ') || lower.includes('hầm') || lower.includes('tuyến') || 
+        lower.includes('đô thị') || lower.includes('vỉa hè') || lower.includes('chiếu sáng') ||
+        lower.includes('thoát nước')) {
+        return 'transport_urban';
+    }
+    
+    // Dân dụng & Công nghiệp
+    if (lower.includes('trường') || lower.includes('bệnh viện') || lower.includes('trụ sở') || 
+        lower.includes('nhà') || lower.includes('trung tâm') || lower.includes('ký túc xá') || 
+        lower.includes('văn phòng') || lower.includes('nhà máy') || lower.includes('xí nghiệp') || 
+        lower.includes('công nghiệp') || lower.includes('y tế') || lower.includes('giáo dục') ||
+        lower.includes('học viện') || lower.includes('chợ') || lower.includes('bảo tàng') ||
+        lower.includes('thư viện')) {
+        return 'civil_industrial';
+    }
+    
+    // Nông nghiệp & Phát triển nông thôn
+    if (lower.includes('đê') || lower.includes('đập') || lower.includes('hồ chứa') || 
+        lower.includes('kênh') || lower.includes('mương') || lower.includes('trạm bơm') || 
+        lower.includes('thủy lợi') || lower.includes('nông thôn') || lower.includes('nông nghiệp') || 
+        lower.includes('lâm nghiệp') || lower.includes('thủy sản') || lower.includes('tưới tiêu')) {
+        return 'agriculture_rural';
+    }
+
+    return '';
+};
