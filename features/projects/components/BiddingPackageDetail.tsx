@@ -15,7 +15,7 @@ import { usePayments, useSubmitPayment, useApprovePayment, useTransferPayment, u
 import { useContractors } from '../../../hooks/useContractors';
 import { PaymentService } from '../../../services/PaymentService';
 import { useAuth } from '../../../context/AuthContext';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { WinningContractorSelector } from './WinningContractorSelector';
 import { BidderListSection } from './BidderEvaluationSection';
 import { ContractFormInline } from './ContractFormInline';
@@ -80,7 +80,7 @@ const CONTRACT_TYPE_LABELS: Record<string, string> = {
 export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     isOpen,
     onClose,
-    package_data: pkg,
+    package_data: initialPkg,
     onEdit,
     initialTab,
     asSlidePanel,
@@ -94,25 +94,34 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const [isSavingPersonnel, setIsSavingPersonnel] = useState(false);
     const [isAddingVO, setIsAddingVO] = useState(false);
     const [editingVO, setEditingVO] = useState<string | null>(null); // VOID being edited
-    const [completionPct, setCompletionPct] = useState<number>(pkg?.CompletionPct ?? 0);
+    const [completionPct, setCompletionPct] = useState<number>(initialPkg?.CompletionPct ?? 0);
     const [isSavingPct, setIsSavingPct] = useState(false);
     const [isEditingWinner, setIsEditingWinner] = useState(false);
     const { openPanel } = useSlidePanel();
     const { addToast } = useToast();
     const queryClient = useQueryClient();
 
+    // Fetch dynamic package details to keep SlidePanel reactive
+    const { data: pkg = initialPkg } = useQuery({
+        queryKey: ['bidding-package', initialPkg?.PackageID],
+        queryFn: () => initialPkg ? ProjectService.getPackageById(initialPkg.PackageID) : Promise.reject('No package ID'),
+        enabled: !!initialPkg?.PackageID,
+        initialData: initialPkg || undefined
+    });
+
     React.useEffect(() => {
         if (initialTab) setActiveTab(initialTab as TabType);
     }, [initialTab]);
 
-    // Load personnel from pkg when pkg changes
+    // Load personnel and status details when pkg changes
     React.useEffect(() => {
         if (pkg) {
             setPersonnelList(pkg.Personnel || []);
             setPersonnelLoaded(true);
             setIsEditingWinner(false);
+            setCompletionPct(pkg.CompletionPct ?? 0);
         }
-    }, [pkg?.PackageID]);
+    }, [pkg?.PackageID, pkg?.CompletionPct]);
 
     // All hooks before conditional return
     const { contracts } = useContracts();

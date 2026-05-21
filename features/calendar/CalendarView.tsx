@@ -29,7 +29,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek,
+  startOfWeek: (date: any, options: any) => startOfWeek(date, { ...options, weekStartsOn: 1 }),
   getDay,
   locales,
 });
@@ -138,9 +138,8 @@ export default function CalendarView() {
   const hasActiveFilters = filterType !== '' || filterRoom !== '';
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900/20">
       <PageHeader 
-        className="calendar-page-header"
         title="Lịch cơ quan" 
         description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
         actions={
@@ -186,64 +185,64 @@ export default function CalendarView() {
       {/* Filter Toolbar is now inside CustomToolbar */}
 
       {displayMode === 'lobby' ? (
-        <div className="flex-1 w-full min-h-[800px]">
+        <div className="flex-1 w-full min-h-[800px] px-6 py-6">
           <LobbyDisplay events={events} />
         </div>
       ) : (
-        <div className="flex-1 w-full flex flex-col">
-        {isLoading ? (
-          <div className="flex justify-center items-center flex-1 min-h-[600px]">
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : (
-          <div className="flex-1 w-full min-h-[600px] dnd-calendar-wrapper px-4 pb-4">
-            <DnDCalendar
-              localizer={localizer}
-              events={mappedEvents}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 800 }}
-              view={view}
-              onView={setView}
-              date={date}
-              onNavigate={setDate}
-              selectable
-              resizable
-              onEventDrop={handleEventDrop}
-              onEventResize={handleEventResize}
-              dayLayoutAlgorithm="no-overlap"
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-              eventPropGetter={eventStyleGetter}
-              components={{
-                toolbar: (toolbarProps) => (
-                  <CustomToolbar
-                    {...toolbarProps}
-                    filterType={filterType}
-                    setFilterType={setFilterType}
-                    filterRoom={filterRoom}
-                    setFilterRoom={setFilterRoom}
-                    clearFilters={clearFilters}
-                  />
-                )
-              }}
-              culture="vi"
-              messages={{
-                next: "Tiếp",
-                previous: "Trước",
-                today: "Hôm nay",
-                month: "Tháng",
-                week: "Tuần",
-                day: "Ngày",
-                agenda: "Lịch trình",
-                date: "Ngày",
-                time: "Thời gian",
-                event: "Sự kiện",
-                noEventsInRange: "Không có sự kiện nào trong thời gian này."
-              }}
-            />
-          </div>
-        )}
+        <div className="px-6 py-6 flex-1 w-full flex flex-col">
+          {isLoading ? (
+            <div className="flex justify-center items-center flex-1 min-h-[600px]">
+              <LoadingSpinner size="lg" />
+            </div>
+          ) : (
+            <div className="flex-1 w-full min-h-[600px] dnd-calendar-wrapper">
+              <DnDCalendar
+                localizer={localizer}
+                events={mappedEvents}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 800 }}
+                view={view}
+                onView={setView}
+                date={date}
+                onNavigate={setDate}
+                selectable
+                resizable
+                onEventDrop={handleEventDrop}
+                onEventResize={handleEventResize}
+                dayLayoutAlgorithm="no-overlap"
+                onSelectSlot={handleSelectSlot}
+                onSelectEvent={handleSelectEvent}
+                eventPropGetter={eventStyleGetter}
+                components={{
+                  toolbar: (toolbarProps) => (
+                    <CustomToolbar
+                      {...toolbarProps}
+                      filterType={filterType}
+                      setFilterType={setFilterType}
+                      filterRoom={filterRoom}
+                      setFilterRoom={setFilterRoom}
+                      clearFilters={clearFilters}
+                    />
+                  )
+                }}
+                culture="vi"
+                messages={{
+                  next: "Tiếp",
+                  previous: "Trước",
+                  today: "Hôm nay",
+                  month: "Tháng",
+                  week: "Tuần",
+                  day: "Ngày",
+                  agenda: "Lịch trình",
+                  date: "Ngày",
+                  time: "Thời gian",
+                  event: "Sự kiện",
+                  noEventsInRange: "Không có sự kiện nào trong thời gian này."
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 

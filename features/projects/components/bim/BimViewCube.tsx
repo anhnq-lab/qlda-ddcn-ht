@@ -41,6 +41,7 @@ export const BimViewCube: React.FC = () => {
     const [hoveredFace, setHoveredFace] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const dragRef = useRef<{ startX: number; startY: number } | null>(null);
+    const hasDraggedRef = useRef(false);
     const cubeRef = useRef<HTMLDivElement>(null);
 
     // Compute cube CSS transform from camera quaternion
@@ -56,6 +57,7 @@ export const BimViewCube: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         dragRef.current = { startX: e.clientX, startY: e.clientY };
+        hasDraggedRef.current = false;
         setIsDragging(true);
     }, []);
 
@@ -66,13 +68,19 @@ export const BimViewCube: React.FC = () => {
             if (!dragRef.current || !onOrbit) return;
             const dx = e.clientX - dragRef.current.startX;
             const dy = e.clientY - dragRef.current.startY;
+            if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                hasDraggedRef.current = true;
+            }
             dragRef.current = { startX: e.clientX, startY: e.clientY };
             onOrbit(dx * 0.5, dy * 0.5);
         };
 
         const handleMouseUp = () => {
             dragRef.current = null;
-            setIsDragging(false);
+            // Delay resetting isDragging slightly so mouseUp/click transition is clean
+            setTimeout(() => {
+                setIsDragging(false);
+            }, 50);
         };
 
         window.addEventListener('mousemove', handleMouseMove);
@@ -84,10 +92,10 @@ export const BimViewCube: React.FC = () => {
     }, [isDragging, onOrbit]);
 
     const handleFaceClick = useCallback((faceId: string) => {
-        if (!isDragging) {
+        if (!hasDraggedRef.current) {
             onSetView(faceId);
         }
-    }, [isDragging, onSetView]);
+    }, [onSetView]);
 
     const faceStyle = (faceId: string): React.CSSProperties => ({
         transform: FACES.find(f => f.id === faceId)?.transform,

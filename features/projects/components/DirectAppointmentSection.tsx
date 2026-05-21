@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     UserCheck, Building2, FileText, DollarSign, Save, Loader2, Search,
-    CheckCircle2, AlertCircle, X, Calendar, Hash
+    CheckCircle2, AlertCircle, X, Calendar, Hash, Plus
 } from 'lucide-react';
 import { useContractors } from '../../../hooks/useContractors';
 import { supabase } from '../../../lib/supabase';
@@ -10,6 +10,8 @@ import ProjectService from '../../../services/ProjectService';
 import { formatCurrency } from '../../../utils/format';
 import { DocumentAttachments } from '../../../components/common/DocumentAttachments';
 import { Contractor } from '../../../types';
+import { useSlidePanel } from '../../../context/SlidePanelContext';
+import { ContractorFormPanel } from '../../contractors/ContractorFormPanel';
 
 // ========================================
 // Tab 2 — Chỉ định thầu
@@ -70,6 +72,7 @@ const INITIAL_DATA: AppointmentData = {
 
 export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> = ({ packageId, packagePrice }) => {
     const queryClient = useQueryClient();
+    const { openPanel } = useSlidePanel();
     const [formData, setFormData] = useState<AppointmentData>(INITIAL_DATA);
     const [isEditing, setIsEditing] = useState(false);
     const [contractorSearch, setContractorSearch] = useState('');
@@ -260,17 +263,53 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                 </div>
                                 {showContractorList && (
                                     <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg shadow-sm max-h-72 overflow-y-auto">
-                                        {filteredContractors.length > 0 ? filteredContractors.map((c: Contractor) => (
-                                            <button
-                                                key={c.ContractorID}
-                                                onClick={() => selectContractor(c)}
-                                                className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors border-b border-gray-100 dark:border-slate-600 last:border-b-0"
-                                            >
-                                                <div className="font-medium text-gray-800 dark:text-slate-200">{c.FullName}</div>
-                                                {c.TaxCode && <div className="text-xs text-gray-500">MST: {c.TaxCode}</div>}
-                                            </button>
-                                        )) : (
-                                            <div className="px-3 py-2 text-sm text-gray-400">Không tìm thấy nhà thầu</div>
+                                        {filteredContractors.length > 0 ? (
+                                            <>
+                                                {filteredContractors.map((c: Contractor) => (
+                                                    <button
+                                                        key={c.ContractorID}
+                                                        onClick={() => selectContractor(c)}
+                                                        className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors border-b border-gray-100 dark:border-slate-600 last:border-b-0"
+                                                    >
+                                                        <div className="font-medium text-gray-800 dark:text-slate-200">{c.FullName}</div>
+                                                        {c.TaxCode && <div className="text-xs text-gray-500">MST: {c.TaxCode}</div>}
+                                                    </button>
+                                                ))}
+                                                <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowContractorList(false);
+                                                            openPanel({
+                                                                title: "Thêm nhà thầu mới",
+                                                                component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                                            });
+                                                        }}
+                                                        className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
+                                                        Thêm nhà thầu mới
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="px-3 py-4 text-center">
+                                                <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
+                                                    {contractorSearch ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
+                                                </p>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowContractorList(false);
+                                                        openPanel({
+                                                            title: "Thêm nhà thầu mới",
+                                                            component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                                        });
+                                                    }}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
+                                                >
+                                                    <Plus className="w-3.5 h-3.5" />
+                                                    Thêm nhà thầu mới
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                 )}

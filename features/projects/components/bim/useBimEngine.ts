@@ -319,20 +319,23 @@ export function useBimEngine(
                 const hoverer = components.get(OBCF.Hoverer);
                 hoverer.enabled = false;
 
-                // Track camera quaternion for ViewCube — throttled to 100ms
+                // Track camera quaternion for ViewCube — optimized to update smoothly using requestAnimationFrame
                 let lastQStr = '';
-                let lastQUpdate = 0;
+                let animationFrameId: number | null = null;
                 world.camera.controls.addEventListener('update', () => {
                     if (disposed) return;
-                    const now = performance.now();
-                    if (now - lastQUpdate < 100) return; // throttle: max 10 updates/sec
-                    lastQUpdate = now;
-                    const q = world.camera.three.quaternion;
-                    const qStr = `${q.x.toFixed(3)},${q.y.toFixed(3)},${q.z.toFixed(3)},${q.w.toFixed(3)}`;
-                    if (qStr !== lastQStr) {
-                        lastQStr = qStr;
-                        setCameraQuaternion(q.clone());
-                    }
+                    if (animationFrameId !== null) return;
+                    
+                    animationFrameId = requestAnimationFrame(() => {
+                        animationFrameId = null;
+                        if (disposed || !world.camera?.three) return;
+                        const q = world.camera.three.quaternion;
+                        const qStr = `${q.x.toFixed(3)},${q.y.toFixed(3)},${q.z.toFixed(3)},${q.w.toFixed(3)}`;
+                        if (qStr !== lastQStr) {
+                            lastQStr = qStr;
+                            setCameraQuaternion(q.clone());
+                        }
+                    });
                 });
 
                 if (!disposed) {

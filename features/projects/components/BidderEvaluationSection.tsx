@@ -227,23 +227,42 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                     </div>
                     {isDropdownOpen && (
                         <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-40 overflow-y-auto">
-                            {filteredContractors.length > 0 ? filteredContractors.map(c => (
-                                <button
-                                    key={c.ContractorID}
-                                    onClick={() => addMutation.mutate(c.ContractorID)}
-                                    disabled={addMutation.isPending}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-blue-50 dark:hover:bg-slate-700 text-left border-b border-gray-50 dark:border-slate-750 last:border-0"
-                                >
-                                    <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
-                                        <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
+                            {filteredContractors.length > 0 ? (
+                                <>
+                                    {filteredContractors.map(c => (
+                                        <button
+                                            key={c.ContractorID}
+                                            onClick={() => addMutation.mutate(c.ContractorID)}
+                                            disabled={addMutation.isPending}
+                                            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-blue-50 dark:hover:bg-slate-700 text-left border-b border-gray-50 dark:border-slate-750 last:border-0"
+                                        >
+                                            <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
+                                            </div>
+                                            <Plus className="w-4 h-4 text-blue-400 shrink-0" />
+                                        </button>
+                                    ))}
+                                    <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                        <button
+                                            onClick={() => {
+                                                setIsDropdownOpen(false);
+                                                openPanel({
+                                                    title: "Thêm nhà thầu mới",
+                                                    component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                                });
+                                            }}
+                                            className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" />
+                                            Thêm nhà thầu mới
+                                        </button>
                                     </div>
-                                    <Plus className="w-4 h-4 text-blue-400 shrink-0" />
-                                </button>
-                            )) : (
+                                </>
+                            ) : (
                                 <div className="px-3 py-4 text-center">
-                                    <p className="text-sm text-gray-400 mb-3">
+                                    <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
                                         {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
                                     </p>
                                     <button
@@ -254,7 +273,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                                 component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
                                             });
                                         }}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
                                         Thêm nhà thầu mới

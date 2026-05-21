@@ -537,7 +537,8 @@
 /* ─── Resize Handle (wider hit area for easy dragging) ─────────────── */
 .slide-panel-resize-handle {
   position: absolute;
-  right: 0;
+  left: 0;
+  transform: translateX(-50%);
   top: 0;
   bottom: 0;
   width: 14px;
@@ -547,8 +548,6 @@
   align-items: center;
   justify-content: center;
   transition: background-color 150ms ease;
-  /* Extend hit area beyond visual boundary */
-  margin-left: -4px;
 }
 
 .slide-panel-resize-handle:hover,
@@ -592,6 +591,7 @@ body.slide-panel-open {
 
 /* ─── Mobile: full-width panel ──────────────────────────────────────── */
 @media (max-width: 767px) {
+  .slide-panel-viewport .slide-panel-wrapper,
   .slide-panel-viewport .slide-panel-stacked {
     width: 100% !important;
     max-width: 100% !important;

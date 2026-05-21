@@ -35,6 +35,18 @@ interface WinningContractorSelectorProps {
     initialDecisionNumber?: string | null;
 }
 
+// Helper functions to format numbers with dots (thousands separator)
+const formatNumberWithDots = (val: string | number | null | undefined): string => {
+    if (val === null || val === undefined) return '';
+    const raw = val.toString().replace(/\D/g, '');
+    if (!raw) return '';
+    return raw.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+const getRawNumberString = (formattedVal: string): string => {
+    return formattedVal.replace(/\D/g, '');
+};
+
 export const WinningContractorSelector: React.FC<WinningContractorSelectorProps> = ({
     packageId,
     filterByBidders = false,
@@ -50,7 +62,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
     const { openPanel } = useSlidePanel();
     const [members, setMembers] = useState<WinningMember[]>(() => initialMembers || []);
     const [searchText, setSearchText] = useState('');
-    const [winningPrice, setWinningPrice] = useState<string>(() => initialWinningPrice ? initialWinningPrice.toString() : '');
+    const [winningPrice, setWinningPrice] = useState<string>(() => formatNumberWithDots(initialWinningPrice));
     const [approvalDate, setApprovalDate] = useState<string>(() => initialApprovalDate || '');
     const [decisionNumber, setDecisionNumber] = useState<string>(() => initialDecisionNumber || '');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -91,7 +103,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     share_percent: m.share_percent || 0
                 }));
                 setMembers(mappedMembers);
-                setWinningPrice(pkg.WinningPrice ? pkg.WinningPrice.toString() : '');
+                setWinningPrice(formatNumberWithDots(pkg.WinningPrice));
                 setApprovalDate(pkg.ApprovalDate_Result || '');
                 setDecisionNumber(pkg.DecisionNumber || '');
             } else if (pkg.WinningContractorID) {
@@ -102,7 +114,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     role: 'lead',
                     share_percent: 100,
                 }]);
-                setWinningPrice(pkg.WinningPrice ? pkg.WinningPrice.toString() : '');
+                setWinningPrice(formatNumberWithDots(pkg.WinningPrice));
                 setApprovalDate(pkg.ApprovalDate_Result || '');
                 setDecisionNumber(pkg.DecisionNumber || '');
             } else {
@@ -116,13 +128,20 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
     // Save mutation
     const saveMutation = useMutation({
-        mutationFn: async (newMembers: WinningMember[]) => {
+        mutationFn: async (args: {
+            newMembers: WinningMember[];
+            winningPriceVal: string;
+            approvalDateVal: string;
+            decisionNumberVal: string;
+        }) => {
+            const { newMembers, winningPriceVal, approvalDateVal, decisionNumberVal } = args;
             if (newMembers.length > 0) {
                 // If the user selected multiple, we still only save the lead in bidding_packages
                 const leadContractor = newMembers.find(m => m.role === 'lead') || newMembers[0];
                 
                 // Parse the winning price from state, if not specified fallback to bid_price query
-                let finalWinningPrice: number | null = winningPrice ? parseFloat(winningPrice) : null;
+                const rawPrice = getRawNumberString(winningPriceVal);
+                let finalWinningPrice: number | null = rawPrice ? parseFloat(rawPrice) : null;
                 
                 if (finalWinningPrice === null || isNaN(finalWinningPrice)) {
                     // Try to get bid price from package_bidders as fallback
@@ -144,8 +163,8 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: leadContractor.contractor_id,
                     WinningPrice: finalWinningPrice,
-                    ApprovalDate_Result: approvalDate || null as any,
-                    DecisionNumber: decisionNumber || null as any,
+                    ApprovalDate_Result: approvalDateVal || null as any,
+                    DecisionNumber: decisionNumberVal || null as any,
                     WinningConsortium: newMembers.map(m => ({
                         contractor_id: m.contractor_id,
                         role: m.role,
@@ -251,7 +270,12 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     share_percent: 100
                 }];
                 setMembers(newMembers);
-                saveMutation.mutate(newMembers);
+                saveMutation.mutate({
+                    newMembers,
+                    winningPriceVal: winningPrice,
+                    approvalDateVal: approvalDate,
+                    decisionNumberVal: decisionNumber,
+                });
             }
         } catch (err) {
             console.error('Drop error:', err);
@@ -277,7 +301,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 .eq('contractor_id', c.ContractorID)
                 .single();
             if (data && data.bid_price) {
-                setWinningPrice(data.bid_price.toString());
+                setWinningPrice(formatNumberWithDots(data.bid_price));
             }
         } catch (e) {
             // Expected: no bidder entry found to prefill
@@ -309,7 +333,12 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
     };
 
     const handleSave = () => {
-        saveMutation.mutate(members);
+        saveMutation.mutate({
+            newMembers: members,
+            winningPriceVal: winningPrice,
+            approvalDateVal: approvalDate,
+            decisionNumberVal: decisionNumber,
+        });
     };
 
     if (isLoading && (!initialMembers)) {
@@ -395,22 +424,39 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 {isDropdownOpen && (
                     <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-48 overflow-y-auto">
                         {filteredContractors.length > 0 ? (
-                            filteredContractors.map(c => (
-                                <button
-                                    key={c.ContractorID}
-                                    onClick={() => addContractor(c)}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 dark:hover:bg-slate-700 text-left transition-colors border-b border-gray-50 dark:border-slate-750 last:border-0"
-                                >
-                                    <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
-                                        <Building2 className="w-4 h-4 text-blue-500" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
-                                        <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
-                                    </div>
-                                    <Plus className="w-4 h-4 text-blue-400 shrink-0" />
-                                </button>
-                            ))
+                            <>
+                                {filteredContractors.map(c => (
+                                    <button
+                                        key={c.ContractorID}
+                                        onClick={() => addContractor(c)}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 dark:hover:bg-slate-700 text-left transition-colors border-b border-gray-50 dark:border-slate-750 last:border-0"
+                                    >
+                                        <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
+                                            <Building2 className="w-4 h-4 text-blue-500" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
+                                            <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
+                                        </div>
+                                        <Plus className="w-4 h-4 text-blue-400 shrink-0" />
+                                    </button>
+                                ))}
+                                <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                    <button
+                                        onClick={() => {
+                                            setIsDropdownOpen(false);
+                                            openPanel({
+                                                title: "Thêm nhà thầu mới",
+                                                component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
+                                            });
+                                        }}
+                                        className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Thêm nhà thầu mới
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <div className="px-3 py-4 text-center">
                                 <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
@@ -424,7 +470,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                             component: <ContractorFormPanel onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contractors'] })} />
                                         });
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-medium rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors border border-primary-100/50 dark:border-primary-850/30"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Thêm nhà thầu mới
@@ -443,10 +489,10 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             Giá trúng thầu (VNĐ)
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             placeholder="Nhập giá trúng thầu..."
                             value={winningPrice}
-                            onChange={(e) => setWinningPrice(e.target.value)}
+                            onChange={(e) => setWinningPrice(formatNumberWithDots(e.target.value))}
                             className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                         />
                     </div>

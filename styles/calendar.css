@@ -3,23 +3,6 @@
    Custom styling for react-big-calendar to match our premium dark theme
    ============================================================================= */
 
-/* Calendar Container Wrapper */
-.calendar-page-header {
-  background-color: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-.theme-light .calendar-page-header {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-}
-
-.theme-nature .calendar-page-header {
-  background-color: #FCF9F2 !important;
-  border-color: #cbd4c4 !important;
-}
 
 .rbc-calendar {
   @apply font-sans text-txt-primary bg-transparent;

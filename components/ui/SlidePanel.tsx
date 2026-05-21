@@ -100,10 +100,13 @@ interface SlidePanelItemProps {
     isExiting?: boolean;
     panelWidth: number;
     isResizing: boolean;
+    onResizeStart?: (startX: number) => void;
+    onResetWidth?: () => void;
 }
 
 const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
     panel, index, total, onClose, isExiting, panelWidth, isResizing,
+    onResizeStart, onResetWidth,
 }) => {
     const isTopPanel = index === total - 1;
     const stackOffset = BASE_GAP + index * STACKING_OFFSET;
@@ -140,10 +143,10 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
         touchStartRef.current = null;
     }, [swipeOffset, onClose]);
 
-    // Compute width style
+    // Compute width style (Default to 50% width instead of 100%)
     const widthValue = panel.width
         ? (typeof panel.width === 'number' ? `${panel.width}px` : panel.width)
-        : (panelWidth > 0 ? `${panelWidth}px` : `calc(100% - ${stackOffset}px)`);
+        : (panelWidth > 0 ? `${panelWidth}px` : `calc(50% - ${stackOffset}px)`);
 
     const widthStyle: React.CSSProperties = isMaximized
         ? {
@@ -151,7 +154,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
             maxWidth: '100%',
         }
         : {
-            width: isTopPanel ? widthValue : `calc(100% - ${stackOffset}px)`,
+            width: isTopPanel ? widthValue : `calc(50% - ${stackOffset}px)`,
             maxWidth: `calc(100% - ${stackOffset}px)`,
         };
 
@@ -173,48 +176,59 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
                 aria-hidden="true"
             />
 
-            {/* Panel Body */}
+            {/* Panel Wrapper (No overflow-hidden so handle can extend) */}
             <motion.div
                 initial={{ x: '100%', opacity: 0.5 }}
                 animate={{ x: isExiting ? '100%' : '0%', opacity: isExiting ? 0 : 1 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                className={`relative h-full bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 
-          flex flex-col overflow-hidden slide-panel-stacked
-          ${isResizing ? 'slide-panel-resizing' : ''}`}
+                className="slide-panel-wrapper relative h-full flex flex-col"
                 style={{
                     ...widthStyle,
-                    ...(isTopPanel ? {} : {
-                        filter: 'brightness(0.97)',
-                    }),
                     ...(swipeOffset > 0 ? {
                         transform: `translateX(${swipeOffset}px)`,
                         opacity: Math.max(0.3, 1 - swipeOffset / 400),
                         transition: 'none',
                     } : {}),
                 }}
-                role="dialog"
-                aria-modal={isTopPanel}
-                aria-label={panel.title || 'Panel'}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
             >
-                {/* Title Bar */}
-                {isTopPanel && (
-                    <PanelTitleBar
-                        panel={panel}
-                        onClose={onClose}
-                        panelWidth={panelWidth}
-                        onToggleMaximize={() => setIsMaximized(prev => !prev)}
-                        isMaximized={isMaximized}
+                {/* Resize handle — only on the top-most panel and when not maximized */}
+                {isTopPanel && !isMaximized && !isExiting && onResizeStart && onResetWidth && (
+                    <ResizeHandle
+                        onResizeStart={onResizeStart}
+                        onResetWidth={onResetWidth}
                     />
                 )}
 
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                    {typeof panel.component === 'function'
-                        ? (panel.component as () => React.ReactNode)()
-                        : panel.component}
+                {/* Actual Panel Body (stacked styles & overflow) */}
+                <div
+                    className={`relative w-full h-full bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 
+              flex flex-col overflow-hidden slide-panel-stacked
+              ${isResizing ? 'slide-panel-resizing' : ''}`}
+                    style={isTopPanel ? {} : { filter: 'brightness(0.97)' }}
+                    role="dialog"
+                    aria-modal={isTopPanel}
+                    aria-label={panel.title || 'Panel'}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    {/* Title Bar */}
+                    {isTopPanel && (
+                        <PanelTitleBar
+                            panel={panel}
+                            onClose={onClose}
+                            panelWidth={panelWidth}
+                            onToggleMaximize={() => setIsMaximized(prev => !prev)}
+                            isMaximized={isMaximized}
+                        />
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                        {typeof panel.component === 'function'
+                            ? (panel.component as () => React.ReactNode)()
+                            : panel.component}
+                    </div>
                 </div>
             </motion.div>
         </div>
@@ -532,24 +546,18 @@ export const SlidePanelContainer: React.FC<SlidePanelContainerProps> = ({ isSide
                 style={{ left: 0 }}
             >
                 {panels.map((panel, index) => (
-                    <React.Fragment key={panel.id}>
-                        {/* Resize handle — only on the top-most panel */}
-                        {index === panels.length - 1 && !closingPanels.has(panel.id) && (
-                            <ResizeHandle
-                                onResizeStart={handleResizeStart}
-                                onResetWidth={handleResetWidth}
-                            />
-                        )}
-                        <SlidePanelItem
-                            panel={panel}
-                            index={index}
-                            total={panels.length}
-                            onClose={() => guardedClose(panel.id)}
-                            isExiting={closingPanels.has(panel.id)}
-                            panelWidth={panelWidth}
-                            isResizing={isResizing}
-                        />
-                    </React.Fragment>
+                    <SlidePanelItem
+                        key={panel.id}
+                        panel={panel}
+                        index={index}
+                        total={panels.length}
+                        onClose={() => guardedClose(panel.id)}
+                        isExiting={closingPanels.has(panel.id)}
+                        panelWidth={panelWidth}
+                        isResizing={isResizing}
+                        onResizeStart={handleResizeStart}
+                        onResetWidth={handleResetWidth}
+                    />
                 ))}
             </div>
 

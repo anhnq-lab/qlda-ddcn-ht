@@ -125,15 +125,36 @@ const ProjectBimTabContent: React.FC = () => {
         }
     }, [engine.viewerReady]);
 
-    // ── Double-click: Measure + Section Plane ──────────
-    // Measure uses OBC LengthMeasurement.create() per OBC docs
-    // Section Plane uses OBC Clipper
+    // ── Click to Measure + Section Plane (Single-click with drag filtering) ──
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const onDblClick = async (e: MouseEvent) => {
-            // Measure tools: dblclick → create()
+        let dragDistance = 0;
+        let startX = 0;
+        let startY = 0;
+
+        const onMouseDown = (e: MouseEvent) => {
+            startX = e.clientX;
+            startY = e.clientY;
+            dragDistance = 0;
+        };
+
+        const onMouseMove = (e: MouseEvent) => {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            dragDistance += Math.sqrt(dx * dx + dy * dy);
+        };
+
+        const onClick = async (e: MouseEvent) => {
+            // Ignore if the user was dragging the camera (dragDistance > 5)
+            if (dragDistance > 5) return;
+
+            // Ignore clicks on UI overlays or buttons
+            const target = e.target as HTMLElement;
+            if (target.closest('button') || target.closest('[role="button"]') || target.closest('label') || target.closest('form')) return;
+
+            // Measure tools: click → create()
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -141,7 +162,7 @@ const ProjectBimTabContent: React.FC = () => {
                 return;
             }
 
-            // Section Plane
+            // Section Plane: click → create()
             if (tools.activeTool === 'section-plane') {
                 const components = engine.componentsRef.current;
                 const world = engine.worldRef.current;
@@ -164,10 +185,14 @@ const ProjectBimTabContent: React.FC = () => {
             }
         };
 
-        container.addEventListener('dblclick', onDblClick);
+        container.addEventListener('mousedown', onMouseDown);
+        container.addEventListener('mousemove', onMouseMove);
+        container.addEventListener('click', onClick);
         window.addEventListener('keydown', onKeyDown);
         return () => {
-            container.removeEventListener('dblclick', onDblClick);
+            container.removeEventListener('mousedown', onMouseDown);
+            container.removeEventListener('mousemove', onMouseMove);
+            container.removeEventListener('click', onClick);
             window.removeEventListener('keydown', onKeyDown);
         };
     }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);

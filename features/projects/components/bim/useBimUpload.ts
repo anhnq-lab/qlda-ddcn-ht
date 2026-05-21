@@ -2,7 +2,7 @@
  * useBimUpload — Upload IFC files, convert to model, load existing models
  * Handles: upload → load → cache. Error recovery with retry.
  */
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import * as OBC from '@thatopen/components';
 import * as THREE from 'three';
 import {
@@ -107,24 +107,109 @@ function cleanSpatialTree(node: any): any {
     return cleanNode;
 }
 
+function applyCoordination(model: any, offset: THREE.Vector3) {
+    if (!model) return;
+    const obj = model.object || model;
+    if (!(obj instanceof THREE.Object3D)) return;
+
+    obj.traverse((child: any) => {
+        if (child.isMesh) {
+            if (child.isInstancedMesh) {
+                const instMesh = child as THREE.InstancedMesh;
+                const tempMatrix = new THREE.Matrix4();
+                const tempPosition = new THREE.Vector3();
+                const tempRotation = new THREE.Quaternion();
+                const tempScale = new THREE.Vector3();
+                
+                for (let i = 0; i < instMesh.count; i++) {
+                    instMesh.getMatrixAt(i, tempMatrix);
+                    tempMatrix.decompose(tempPosition, tempRotation, tempScale);
+                    tempPosition.sub(offset);
+                    tempMatrix.compose(tempPosition, tempRotation, tempScale);
+                    instMesh.setMatrixAt(i, tempMatrix);
+                }
+                if (instMesh.instanceMatrix) {
+                    instMesh.instanceMatrix.needsUpdate = true;
+                }
+            } else {
+                child.position.sub(offset);
+            }
+            if (child.geometry) {
+                child.geometry.computeBoundingBox();
+                child.geometry.computeBoundingSphere();
+            }
+        }
+    });
+    obj.position.set(0, 0, 0);
+    obj.updateMatrixWorld(true);
+}
+
+function revertCoordination(model: any, offset: THREE.Vector3) {
+    if (!model) return;
+    const obj = model.object || model;
+    if (!(obj instanceof THREE.Object3D)) return;
+
+    obj.traverse((child: any) => {
+        if (child.isMesh) {
+            if (child.isInstancedMesh) {
+                const instMesh = child as THREE.InstancedMesh;
+                const tempMatrix = new THREE.Matrix4();
+                const tempPosition = new THREE.Vector3();
+                const tempRotation = new THREE.Quaternion();
+                const tempScale = new THREE.Vector3();
+                
+                for (let i = 0; i < instMesh.count; i++) {
+                    instMesh.getMatrixAt(i, tempMatrix);
+                    tempMatrix.decompose(tempPosition, tempRotation, tempScale);
+                    tempPosition.add(offset);
+                    tempMatrix.compose(tempPosition, tempRotation, tempScale);
+                    instMesh.setMatrixAt(i, tempMatrix);
+                }
+                if (instMesh.instanceMatrix) {
+                    instMesh.instanceMatrix.needsUpdate = true;
+                }
+            } else {
+                child.position.add(offset);
+            }
+            if (child.geometry) {
+                child.geometry.computeBoundingBox();
+                child.geometry.computeBoundingSphere();
+            }
+        }
+    });
+    obj.updateMatrixWorld(true);
+}
+
 async function triggerBackgroundMigration(
     modelId: string,
     projectId: string,
     model: any,
-    fileName: string
+    fileName: string,
+    appliedOffset?: THREE.Vector3
 ) {
     try {
         console.log(`[BimUpload] [Migration] Starting background migration for ${fileName}...`);
         
-        // 1. Export fragment buffer
+        // 1. Revert coordination offset if applied to export raw coordinates in .frag file
+        if (appliedOffset) {
+            console.log(`[BimUpload] [Migration] Temporarily reverting offset of (${appliedOffset.x.toFixed(0)}, ${appliedOffset.y.toFixed(0)}, ${appliedOffset.z.toFixed(0)}) for export`);
+            revertCoordination(model, appliedOffset);
+        }
+
+        // 2. Export fragment buffer
         const fragBuffer = await model.getBuffer(false);
         const fragData = new Uint8Array(fragBuffer);
         
-        // 2. Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
+        // 3. Re-apply offset to restore visual state on canvas
+        if (appliedOffset) {
+            applyCoordination(model, appliedOffset);
+        }
+
+        // 4. Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
         const localIds = await model.getLocalIds();
         const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
         
-        // 3. Extract spatial tree
+        // 5. Extract spatial tree
         const rawSpatialTree = await model.getSpatialStructure();
         const spatialTree = cleanSpatialTree(rawSpatialTree);
         
@@ -134,7 +219,7 @@ async function triggerBackgroundMigration(
         };
         const propertiesJson = JSON.stringify(propertiesData, getCircularReplacer());
         
-        // 4. Upload to Supabase Storage
+        // 6. Upload to Supabase Storage
         console.log(`[BimUpload] [Migration] Uploading properties JSON...`);
         await uploadProperties(modelId, projectId, propertiesJson, fileName);
         
@@ -167,6 +252,20 @@ export function useBimUpload(
 
     // Project-wide offset to coordinate models with large absolute coordinates to local origin
     const coordinationOffsetRef = useRef<THREE.Vector3 | null>(null);
+
+    // Pre-load project offset from LocalStorage if available
+    useEffect(() => {
+        const savedOffsetStr = localStorage.getItem(`bim_project_offset_${projectID}`);
+        if (savedOffsetStr) {
+            try {
+                const saved = JSON.parse(savedOffsetStr);
+                coordinationOffsetRef.current = new THREE.Vector3(saved.x, saved.y, saved.z);
+                console.log(`[BIM Coordination] Pre-loaded project offset from LocalStorage: (${saved.x}, ${saved.y}, ${saved.z})`);
+            } catch (err) {
+                console.warn('Failed to parse saved project offset:', err);
+            }
+        }
+    }, [projectID]);
 
     const coordinateModel = useCallback((model: any) => {
         if (!model) return;
@@ -211,8 +310,21 @@ export function useBimUpload(
         
         // If center is far from origin and we don't have a project offset yet, initialize it
         if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000) && !coordinationOffsetRef.current) {
-            coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
-            console.log(`[BIM Coordination] Set global project offset: (${center.x.toFixed(0)}, ${center.y.toFixed(0)}, ${center.z.toFixed(0)})`);
+            // First check LocalStorage to see if there is a saved offset for this project
+            const savedOffsetStr = localStorage.getItem(`bim_project_offset_${projectID}`);
+            if (savedOffsetStr) {
+                try {
+                    const saved = JSON.parse(savedOffsetStr);
+                    coordinationOffsetRef.current = new THREE.Vector3(saved.x, saved.y, saved.z);
+                    console.log(`[BIM Coordination] Restored project offset from LocalStorage: (${saved.x}, ${saved.y}, ${saved.z})`);
+                } catch {
+                    coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
+                }
+            } else {
+                coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
+                localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify({ x: center.x, y: center.y, z: center.z }));
+                console.log(`[BIM Coordination] Set global project offset: (${center.x.toFixed(0)}, ${center.y.toFixed(0)}, ${center.z.toFixed(0)})`);
+            }
         }
 
         if (coordinationOffsetRef.current) {
@@ -220,42 +332,7 @@ export function useBimUpload(
             console.log(`[BIM Coordination] Offsetting model by: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
             
             // Transform child meshes directly to solve single-precision float32 matrix distortion on GPU
-            obj.traverse((child: any) => {
-                if (child.isMesh) {
-                    if (child.isInstancedMesh) {
-                        const instMesh = child as THREE.InstancedMesh;
-                        const tempMatrix = new THREE.Matrix4();
-                        const tempPosition = new THREE.Vector3();
-                        const tempRotation = new THREE.Quaternion();
-                        const tempScale = new THREE.Vector3();
-                        
-                        for (let i = 0; i < instMesh.count; i++) {
-                            instMesh.getMatrixAt(i, tempMatrix);
-                            tempMatrix.decompose(tempPosition, tempRotation, tempScale);
-                            
-                            // Subtract project offset directly from instance world translation
-                            tempPosition.sub(offset);
-                            
-                            tempMatrix.compose(tempPosition, tempRotation, tempScale);
-                            instMesh.setMatrixAt(i, tempMatrix);
-                        }
-                        if (instMesh.instanceMatrix) {
-                            instMesh.instanceMatrix.needsUpdate = true;
-                        }
-                    } else {
-                        // Standard Mesh translation adjustment
-                        child.position.sub(offset);
-                    }
-                    if (child.geometry) {
-                        child.geometry.computeBoundingBox();
-                        child.geometry.computeBoundingSphere();
-                    }
-                }
-            });
-
-            // Set parent offset to 0 since geometry children are now translated directly
-            obj.position.set(0, 0, 0);
-            obj.updateMatrixWorld(true);
+            applyCoordination(model, offset);
 
             // Re-calculate the local model bounding box using only meshes close to local origin (building),
             // effectively throwing away localized survey points which now drift to (-offset)
@@ -287,7 +364,7 @@ export function useBimUpload(
                 }
             }
         }
-    }, []);
+    }, [projectID]);
 
     // ── File validation ────────────────────────
     const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250MB
@@ -317,6 +394,18 @@ export function useBimUpload(
                 setDisciplineModels(models.map(m => ({ model: m, visible: false })));
                 return;
             }
+
+            // Sort readyModels to prioritize main disciplines (arch, stru, combine) and then larger file sizes
+            readyModels.sort((a, b) => {
+                const aIsMain = /arch|stru|combine/i.test(a.file_name);
+                const bIsMain = /arch|stru|combine/i.test(b.file_name);
+                if (aIsMain && !bIsMain) return -1;
+                if (!aIsMain && bIsMain) return 1;
+                
+                const aSize = a.file_size || 0;
+                const bSize = b.file_size || 0;
+                return bSize - aSize;
+            });
 
             setStatus('loading');
             setStatusMessage(`Đang tải ${readyModels.length} mô hình...`);
@@ -399,7 +488,7 @@ export function useBimUpload(
                             onModelLoaded?.(uint8Array);
 
                             // Trigger background migration to convert to fragments and properties JSON
-                            triggerBackgroundMigration(m.id, projectID, model, m.file_name);
+                            triggerBackgroundMigration(m.id, projectID, model, m.file_name, coordinationOffsetRef.current || undefined);
 
                             completed++;
                             setLoadingProgress((completed / readyModels.length) * 100);
@@ -487,6 +576,12 @@ export function useBimUpload(
                     importer.distanceThreshold = null;
                 },
             });
+            // 1. Export fragment buffer BEFORE applying coordination offset
+            // This ensures the saved .frag file on storage retains its raw geodesic coordinates
+            const fragBuffer = await (model as any).getBuffer(false);
+            const fragData = new Uint8Array(fragBuffer);
+
+            // 2. Now coordinate the model to the local scene origin for immediate visualization
             coordinateModel(model);
             console.log(`[BimUpload] IFC conversion completed successfully. Model UUID: ${(model as any).uuid || 'N/A'}`);
             setLoadingProgress(85);
@@ -511,16 +606,12 @@ export function useBimUpload(
             }
             console.log(`[BimUpload] Calculated element count: ${elementCount}`);
 
-            // 1. Export and upload fragments & properties
+            // 3. Export and upload fragments & properties
             let propertiesData: any = null;
             let updatedRecord = record;
             try {
                 setStatus('converting');
                 setStatusMessage(`Đang trích xuất thuộc tính mô hình...`);
-                
-                // Export fragment buffer
-                const fragBuffer = await (model as any).getBuffer(false);
-                const fragData = new Uint8Array(fragBuffer);
                 
                 // Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
                 const localIds = await (model as any).getLocalIds();

@@ -430,6 +430,21 @@ export class ProjectService {
         return (data || []).map(dbToBiddingPackage);
     }
 
+    /**
+     * Get bidding package by ID
+     */
+    static async getPackageById(packageId: string): Promise<BiddingPackage> {
+        const { data, error } = await supabase
+            .from('bidding_packages')
+            .select('*, contractors(full_name)')
+            .eq('package_id', packageId)
+            .single();
+
+        if (error) throw new Error(`Failed to fetch package details: ${error.message}`);
+        return dbToBiddingPackage(data);
+    }
+
+
 
     /**
      * Create a new bidding package

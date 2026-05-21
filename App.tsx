@@ -71,6 +71,7 @@ const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
 
 const WorkflowManagerPage = lazyWithRetry(() => import('./features/workflows/WorkflowManagerPage'));
 const WorkPlanPage = lazyWithRetry(() => import('./features/work-plan/WorkPlanPage'));
+const PublicAssetList = lazyWithRetry(() => import('./features/public-assets/PublicAssetList'));
 import ProtectedRoute from './components/ProtectedRoute';
 import { ProjectFilterProvider } from './context/ProjectFilterContext';
 
@@ -260,6 +261,14 @@ const App: React.FC = () => {
                                             </ProtectedRoute>
                                         } />
                                         <Route path="workflows" element={<Navigate to="/quy-trinh" replace />} />
+
+                                        {/* Public Asset Management */}
+                                        <Route path="tai-san-cong" element={
+                                            <ProtectedRoute resource="projects">
+                                                <React.Suspense fallback={<PageLoadingFallback />}><PublicAssetList /></React.Suspense>
+                                            </ProtectedRoute>
+                                        } />
+                                        <Route path="public-assets" element={<Navigate to="/tai-san-cong" replace />} />
                                         
                                         {/* Backward-compatible redirects */}
                                         <Route path="admin" element={<Navigate to="/settings?tab=accounts" replace />} />

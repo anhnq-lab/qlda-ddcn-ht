@@ -27,6 +27,7 @@ import {
   Network,
   LayoutList,
   ClipboardCheck,
+  Landmark,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
@@ -58,6 +59,7 @@ const navItems: NavItem[] = [
   { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
   { name: 'Quản lý công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
   { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
+  { name: 'Tài sản công', path: '/tai-san-cong', icon: Landmark, resource: 'projects' },
   { name: 'Nhà thầu', path: '/contractors', icon: Users, resource: 'contractors' },
   { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase, resource: 'bidding' },
   { name: 'KH Vốn & Giải ngân', path: '/capital-planning', icon: CalendarRange, resource: 'capital' },
