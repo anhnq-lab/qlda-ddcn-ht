@@ -26,17 +26,17 @@ interface ProjectWorkflowTabProps {
 const STATUS_BADGE: Record<string, { label: string; cls: string; icon: React.ReactNode }> = {
     active: {
         label: 'Đang chạy',
-        cls: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800',
+        cls: 'bg-primary-500/10 text-primary-500 border-primary-500/20 rounded-xl',
         icon: <RotateCcw className="w-3 h-3" />,
     },
     completed: {
         label: 'Hoàn thành',
-        cls: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800',
+        cls: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 rounded-xl',
         icon: <CheckCircle2 className="w-3 h-3" />,
     },
     cancelled: {
         label: 'Đã hủy',
-        cls: 'bg-gray-100 text-gray-500 border-gray-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600',
+        cls: 'bg-bg-muted text-txt-muted border-border rounded-xl',
         icon: <XCircle className="w-3 h-3" />,
     },
 };
@@ -165,14 +165,14 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
         <div className="space-y-4">
 
             {/* ── Section: Quy trình Thiết kế Nội bộ ── */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-800/50 p-5">
+            <div className="bg-bg-surface rounded-2xl border border-border p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-4">
                     <div>
-                        <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                        <h2 className="text-sm font-black text-txt-primary flex items-center gap-2">
                             <Pencil className="w-4 h-4 text-primary-500" />
                             Quy trình Thiết kế Nội bộ
                         </h2>
-                        <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-[11px] text-txt-muted mt-0.5">
                             Lập, thẩm định, phê duyệt BCKTKT — QT-DAXD-TK-QLDA2-2026
                         </p>
                     </div>
@@ -180,7 +180,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                         <select
                             value={selectedDesignCode}
                             onChange={e => setSelectedDesignCode(e.target.value)}
-                            className="text-sm rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-primary-500 focus:border-primary-500 min-w-[220px]"
+                            className="text-sm rounded-xl border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/20 outline-none min-w-[220px] transition-all py-1.5"
                         >
                             {designTemplates.map(t => (
                                 <option key={t.code} value={t.code}>{t.code} — {t.name.split('(')[0].trim()}</option>
@@ -189,7 +189,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                         <button
                             onClick={handleInitiateDesignWorkflow}
                             disabled={isCreating}
-                            className="flex items-center gap-2 gradient-btn text-white px-3 py-2 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap disabled:opacity-50"
+                            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-xl text-sm font-bold shadow-sm whitespace-nowrap disabled:opacity-50 transition-all"
                         >
                             <Plus className="w-4 h-4" />
                             {isCreating ? 'Đang tạo...' : 'Khởi tạo'}
@@ -197,7 +197,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                     </div>
                 </div>
 
-                <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-lg px-3 py-2 border border-slate-200 dark:border-slate-700 mb-4">
+                <p className="text-xs text-txt-muted bg-bg-muted rounded-xl px-3 py-2 border border-border mb-4">
                     <strong>Lưu ý:</strong> Chỉ chuyên viên phụ trách dự án mới khởi tạo quy trình thiết kế.
                     Áp dụng từ <strong>01/7/2026</strong> theo Luật Xây dựng số 135/2025/QH15.
                 </p>
@@ -205,7 +205,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                 {/* Phiên đang chạy */}
                 {activeInstances.length > 0 && (
                     <div className="space-y-2">
-                        <p className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                        <p className="text-[10px] font-black text-txt-muted uppercase tracking-wider">
                             Phiên đang chạy
                         </p>
                         {activeInstances.map(inst => (
@@ -221,7 +221,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                 {/* Phiên hoàn thành */}
                 {doneInstances.length > 0 && (
                     <div className="mt-3 space-y-2">
-                        <p className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                        <p className="text-[10px] font-black text-txt-muted uppercase tracking-wider">
                             Lịch sử quy trình
                         </p>
                         {doneInstances.map(inst => (
@@ -236,8 +236,8 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                 {instances.length === 0 && (
                     <div className="flex items-center justify-center py-6 text-center">
                         <div>
-                            <GitBranch className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                            <p className="text-xs text-gray-400 dark:text-slate-500">
+                            <GitBranch className="w-8 h-8 text-txt-muted mx-auto mb-2" />
+                            <p className="text-xs text-txt-muted">
                                 Chưa có phiên quy trình nào. Chọn loại quy trình và nhấn "Khởi tạo".
                             </p>
                         </div>
@@ -246,14 +246,14 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
             </div>
 
             {/* ── Section: Quy trình Phê duyệt Chung ── */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5">
+            <div className="bg-bg-surface rounded-2xl border border-border p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
                     <div>
-                        <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                        <h2 className="text-sm font-black text-txt-primary flex items-center gap-2">
                             <GitBranch className="w-4 h-4 text-primary-500" />
                             Quy trình Phê duyệt
                         </h2>
-                        <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-[11px] text-txt-muted mt-0.5">
                             Quản lý tiến trình và các bước phê duyệt nội bộ
                         </p>
                     </div>
@@ -262,7 +262,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                             <select
                                 value={selectedTemplateCode}
                                 onChange={e => setSelectedTemplateCode(e.target.value)}
-                                className="flex-1 text-sm rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 min-w-[200px]"
+                                className="flex-1 text-sm rounded-xl border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/20 outline-none min-w-[200px] transition-all py-1.5"
                             >
                                 {templates.map(tmpl => (
                                     <option key={tmpl.code} value={tmpl.code}>{tmpl.name}</option>
@@ -271,7 +271,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                             <button
                                 onClick={handleRunProcess}
                                 disabled={isInitiailizing}
-                                className="flex items-center gap-2 gradient-btn text-white px-3 py-2 rounded-lg text-sm font-bold shadow-sm disabled:opacity-50"
+                                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-xl text-sm font-bold shadow-sm disabled:opacity-50 transition-all"
                             >
                                 <Play className="w-4 h-4" />
                                 {isInitiailizing ? '...' : 'Khởi chạy'}
@@ -282,16 +282,16 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
 
                 {nodes.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
-                        <GitBranch className="w-8 h-8 text-gray-300 dark:text-slate-600 mb-3" />
-                        <p className="text-sm font-bold text-gray-700 dark:text-white mb-1">Chưa chạy quy trình nào</p>
-                        <p className="text-xs text-gray-400 dark:text-slate-500 max-w-sm mb-5">
+                        <GitBranch className="w-8 h-8 text-txt-muted mb-3" />
+                        <p className="text-sm font-bold text-txt-primary mb-1">Chưa chạy quy trình nào</p>
+                        <p className="text-xs text-txt-muted max-w-sm mb-5">
                             Chọn mẫu quy trình và khởi chạy.
                         </p>
                         <div className="flex gap-2">
                             <select
                                 value={selectedTemplateCode}
                                 onChange={e => setSelectedTemplateCode(e.target.value)}
-                                className="text-sm rounded-lg border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-2 min-w-[200px]"
+                                className="text-sm rounded-xl border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/20 outline-none py-2 min-w-[200px] transition-all"
                             >
                                 {templates.map(tmpl => (
                                     <option key={tmpl.code} value={tmpl.code}>{tmpl.name}</option>
@@ -300,7 +300,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                             <button
                                 onClick={handleRunProcess}
                                 disabled={isInitiailizing}
-                                className="flex items-center gap-2 gradient-btn text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm disabled:opacity-50"
+                                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm disabled:opacity-50 transition-all"
                             >
                                 <Play className="w-4 h-4" />
                                 {isInitiailizing ? 'Đang tạo...' : 'Khởi chạy'}
@@ -313,7 +313,7 @@ export const ProjectWorkflowTab: React.FC<ProjectWorkflowTabProps> = ({ projectI
                             const tmpl = allTemplates.find(t => t.code === tmplCode);
                             return (
                                 <div key={tmplCode} className="space-y-4">
-                                    <h3 className="font-bold text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-slate-700 pb-2">
+                                    <h3 className="font-bold text-sm text-txt-secondary border-b border-border pb-2">
                                         Quy trình: {tmpl?.name || tmplCode}
                                     </h3>
                                     <WorkflowVisualizer
@@ -346,26 +346,26 @@ const InstanceRow: React.FC<{ instance: WorkflowInstance; onContinue?: () => voi
     const createdDate = new Date(instance.created_at).toLocaleDateString('vi-VN');
 
     return (
-        <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
+        <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-bg-muted">
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-gray-700 dark:text-white">{instance.workflow_code}</span>
+                    <span className="text-[10px] font-black text-txt-primary">{instance.workflow_code}</span>
                     <span className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${badge.cls}`}>
                         {badge.icon} {badge.label}
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-bg-surface rounded-full overflow-hidden">
                         <div
                             className="h-1.5 bg-primary-500 rounded-full transition-all"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
-                    <span className="text-[10px] text-gray-500 dark:text-slate-400 shrink-0">
+                    <span className="text-[10px] text-txt-muted shrink-0">
                         Bước {instance.current_step_index + 1}/{instance.total_steps}
                     </span>
                 </div>
-                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
+                <p className="text-[10px] text-txt-muted mt-0.5 flex items-center gap-1">
                     <Clock className="w-2.5 h-2.5" /> Khởi tạo {createdDate}
                     {instance.officer_name && ` · ${instance.officer_name}`}
                 </p>
@@ -373,7 +373,7 @@ const InstanceRow: React.FC<{ instance: WorkflowInstance; onContinue?: () => voi
             {instance.status === 'active' && onContinue && (
                 <button
                     onClick={onContinue}
-                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 gradient-btn text-white text-[11px] font-bold rounded-lg shadow-sm hover:-translate-y-0.5 transition-all"
+                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition-all"
                 >
                     <Play className="w-3 h-3" /> Tiếp tục
                 </button>

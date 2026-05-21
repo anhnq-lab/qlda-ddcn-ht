@@ -78,7 +78,7 @@ const PermissionManager: React.FC = () => {
                 // Also try to fetch all permissions (for lookup)
                 try {
                     const permRes = await PermissionService.getAll();
-                    console.log('[PermManager] Loaded', permRes.length, 'permission rows from DB');
+
                     setAllPermissions(permRes);
                 } catch (permErr) {
                     console.warn('[PermManager] getAll() failed (RLS?), will fetch per-user:', permErr);
@@ -146,13 +146,13 @@ const PermissionManager: React.FC = () => {
         const cached = allPermissions.filter(p => p.userId === emp.employeeId);
 
         if (cached.length > 0) {
-            console.log(`[PermManager] Using ${cached.length} cached permissions for ${emp.fullName}`);
+
             cached.forEach(p => { empPerms[p.resource] = [...p.actions]; });
         } else {
             // Fetch directly from DB for this employee
             try {
                 const dbPerms = await PermissionService.getByUserId(emp.employeeId);
-                console.log(`[PermManager] Fetched ${dbPerms.length} permissions for ${emp.fullName} from DB:`, dbPerms);
+
 
                 if (dbPerms.length > 0) {
                     dbPerms.forEach(p => { empPerms[p.resource] = [...p.actions]; });
@@ -163,7 +163,7 @@ const PermissionManager: React.FC = () => {
                     ]);
                 } else {
                     // Fallback: auto-apply role defaults
-                    console.log(`[PermManager] No DB data, using defaults for role: ${emp.systemRole}`);
+
                     Object.entries(roleDefaults).forEach(([resource, actions]) => {
                         empPerms[resource] = [...((actions as PermissionAction[]) || [])];
                     });
@@ -177,7 +177,7 @@ const PermissionManager: React.FC = () => {
             }
         }
 
-        console.log(`[PermManager] Final permissions for ${emp.fullName}:`, empPerms);
+
         setEditedPermissions(empPerms);
     }, [allPermissions, isCopyMode, copySourceEmployee]);
 

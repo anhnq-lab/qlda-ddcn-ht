@@ -639,7 +639,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             // Xóa tất cả tasks của dự án này từ bảng tasks thống nhất
             await TaskService.deleteProjectTasks(projectID);
 
-            console.log(`✅ Đã xoá toàn bộ kế hoạch cho dự án ${projectID}`);
+            // Successfully deleted all plan tasks
             setTasks([]); // Xóa local state
             queryClient.invalidateQueries({ queryKey: taskKeys.all });
             queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
@@ -657,10 +657,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // Priority color helper
     const getPriorityColor = (priority?: string) => {
         switch (priority) {
-            case 'High': return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700';
-            case 'Medium': return 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700';
-            case 'Low': return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700';
-            default: return 'text-gray-600 dark:text-gray-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
+            case 'High': return 'text-red-500 bg-red-500/10 border-red-500/20';
+            case 'Medium': return 'text-primary-500 bg-primary-500/10 border-primary-500/20';
+            case 'Low': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+            default: return 'text-txt-muted bg-bg-muted border-border';
         }
     };
 
@@ -722,10 +722,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 };
 
                 return (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm space-y-3">
+                    <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm space-y-3">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div className="flex flex-wrap items-center gap-3">
-                                <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
+                                <span className="text-xs font-bold text-txt-muted uppercase tracking-wide">Tiến độ tổng thể</span>
                                 {alerts.map((a, i) => (
                                     <button 
                                         key={i} 
@@ -737,9 +737,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                     </button>
                                 ))}
                             </div>
-                            <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
+                            <span className="text-sm font-black text-txt-primary">{pct}%</span>
                         </div>
-                        <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
                             <div
                                 className="h-full rounded-full transition-all duration-700 ease-out"
                                 style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
@@ -748,26 +748,26 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold">
                             <button 
                                 onClick={() => setCurrentFilter('completed')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-emerald-600 dark:text-emerald-400`}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-bg-muted'} text-emerald-600 dark:text-emerald-400`}
                             >
                                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                                 Hoàn thành: {done}
                             </button>
                             <button 
                                 onClick={() => setCurrentFilter('in-progress')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-blue-600 dark:text-blue-400`}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-bg-muted'} text-blue-600 dark:text-blue-400`}
                             >
                                 <span className="w-2 h-2 rounded-full bg-blue-500" />
                                 Đang thực hiện: {inProgress}
                             </button>
                             <button 
                                 onClick={() => setCurrentFilter('all')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-gray-100 dark:bg-slate-700 ring-1 ring-gray-200' : 'hover:bg-gray-50 dark:hover:bg-slate-700'} text-gray-500 dark:text-slate-400`}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-bg-muted ring-1 ring-border' : 'hover:bg-bg-muted'} text-txt-muted`}
                             >
-                                <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600" />
+                                <span className="w-2 h-2 rounded-full bg-border" />
                                 Chưa bắt đầu: {total - done - inProgress}
                             </button>
-                            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-gray-700 dark:text-slate-300">
+                            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-txt-secondary">
                                 Tổng cộng: {total}
                             </div>
                         </div>
@@ -850,12 +850,12 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     )}
 
                     {currentView === 'gantt' && (
-                        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
-                            <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 flex justify-between items-center">
-                                <h4 className="font-bold text-gray-700 dark:text-slate-200 text-xs uppercase flex items-center gap-2">
+                        <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+                            <div className="px-4 py-3 border-b border-border bg-bg-muted flex justify-between items-center">
+                                <h4 className="font-bold text-txt-primary text-xs uppercase flex items-center gap-2">
                                     <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
                                 </h4>
-                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-normal normal-case">
+                                <span className="text-[10px] text-txt-muted font-normal normal-case">
                                     * Chỉ hiển thị các hạng mục lớn đã có công việc thành phần
                                 </span>
                             </div>
@@ -863,7 +863,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                 {ganttTasks.length > 0 ? (
                                     <ProjectGanttChart tasks={ganttTasks} />
                                 ) : (
-                                    <div className="h-32 flex items-center justify-center text-gray-400 dark:text-slate-400 text-sm italic">
+                                    <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
                                         Chưa có công việc nào được cập nhật thời gian. Hãy thêm công việc bên dưới.
                                     </div>
                                 )}
@@ -928,24 +928,24 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                             const info = getScoreInfo(score);
 
                             return (
-                                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-                                    <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                                <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm">
+                                    <h4 className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3">
                                         Sức khỏe dự án
                                     </h4>
                                     <div className="flex items-center gap-3 mb-3">
                                         <span className="text-3xl">{info.emoji}</span>
                                         <div>
                                             <span className={`text-2xl font-black ${info.color}`}>{score}</span>
-                                            <span className="text-sm text-gray-400">/100</span>
+                                            <span className="text-sm text-txt-muted">/100</span>
                                             <p className={`text-xs font-semibold ${info.color}`}>{info.label}</p>
                                         </div>
                                     </div>
                                     {/* Score bar */}
-                                    <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
+                                    <div className="h-2 bg-bg-muted rounded-full overflow-hidden mb-3">
                                         <div className={`h-full ${info.bg} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
                                     </div>
                                     {/* Breakdown */}
-                                    <div className="space-y-1.5 text-[10px] text-gray-500">
+                                    <div className="space-y-1.5 text-[10px] text-txt-secondary">
                                         <div className="flex justify-between"><span>Hoàn thành ({done}/{total})</span><span className="font-bold">{Math.round(completionScore)}/30</span></div>
                                         <div className="flex justify-between"><span>Đúng hạn ({total - overdue}/{total})</span><span className="font-bold">{Math.round(onTimeScore)}/30</span></div>
                                         <div className="flex justify-between"><span>Có tiến độ</span><span className="font-bold">{Math.round(progressScore)}/20</span></div>

@@ -20,7 +20,7 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
 
     if (loading || !data) {
         return (
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col justify-center items-center min-h-[260px]">
+            <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col justify-center items-center min-h-[260px]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
             </div>
         );
@@ -34,7 +34,7 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
     ].filter(item => item.value > 0);
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col">
+        <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
             <div className="flex justify-between items-center mb-4 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><CheckSquare className="w-5 h-5" /></div>
@@ -73,9 +73,9 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
                                 if (!active || !payload?.[0]) return null;
                                 const d = payload[0].payload;
                                 return (
-                                    <div className="bg-white dark:bg-slate-900 px-3 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                                        <p className="text-[10px] font-black text-gray-700 dark:text-slate-200 mb-0.5" style={{ color: d.color }}>{d.name}</p>
-                                        <p className="text-[11px] text-gray-600 dark:text-slate-300 font-semibold">{d.value} công việc</p>
+                                    <div className="bg-bg-elevated px-3 py-2 rounded-xl shadow-sm border border-border">
+                                        <p className="text-[10px] font-black mb-0.5" style={{ color: d.color }}>{d.name}</p>
+                                        <p className="text-[11px] text-txt-secondary font-semibold">{d.value} công việc</p>
                                     </div>
                                 );
                             }}
@@ -84,7 +84,7 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
                             verticalAlign="bottom" 
                             height={36} 
                             iconType="circle"
-                            wrapperStyle={{ fontSize: '11px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : '#6B7280' }}
+                            wrapperStyle={{ fontSize: '11px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : (theme === 'nature' ? '#78716c' : '#6B7280') }}
                         />
                     </PieChart>
                 </ResponsiveContainer>

@@ -220,29 +220,29 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         <div className="animate-in slide-in-from-bottom-2 duration-500">
 
             {/* Header with View Toggle */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
-                <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-2xl border border-border mb-6 overflow-hidden">
+                <div className="px-5 py-3 flex justify-between items-center border-b border-border">
                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-primary-600" />
-                        <span className="text-sm font-bold text-gray-700 dark:text-slate-200">Văn bản pháp lý</span>
+                        <FileText className="w-4 h-4 text-primary-500" />
+                        <span className="text-sm font-bold text-txt-primary">Văn bản pháp lý</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-muted w-4 h-4" />
                             <input
                                 type="text" placeholder="Tìm kiếm..."
                                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200 dark:placeholder-slate-400"
+                                className="pl-9 pr-8 py-2 bg-bg-muted border border-border rounded-xl text-sm w-64 focus:ring-2 focus:ring-primary-500/20 outline-none text-txt-primary placeholder-txt-muted transition-all"
                             />
                             {searchQuery && (
-                                <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200">
+                                <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-txt-muted hover:text-txt-primary">
                                     <X className="w-3.5 h-3.5" />
                                 </button>
                             )}
                         </div>
                         <button
                             onClick={() => handleUpload()}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white text-sm font-bold rounded-lg transition-colors shadow-sm shadow-primary-200"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
                         >
                             <Upload className="w-4 h-4" /> Tải lên
                         </button>
@@ -321,7 +321,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                         return (
                                             <React.Fragment key={docKey}>
                                                 <tr
-                                                    className={`border-b border-gray-100 dark:border-slate-700/50 cursor-pointer transition-colors ${isDocExpanded ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-gray-50 dark:hover:bg-slate-700'}`}
+                                                    className={`border-b border-border cursor-pointer transition-colors ${isDocExpanded ? 'bg-primary-500/5' : 'hover:bg-bg-muted'}`}
                                                     onClick={() => {
                                                         setExpandedDocIdx(isDocExpanded ? null : docKey);
                                                         if (!isDocExpanded) {
@@ -346,41 +346,41 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                     }}
                                                 >
                                                     {/* STT */}
-                                                    <td className="px-3 py-2.5 text-xs text-gray-400 dark:text-slate-400 text-center font-medium">
+                                                    <td className="px-3 py-2.5 text-xs text-txt-muted text-center font-bold">
                                                         {idx + 1}
                                                     </td>
                                                     {/* Tài liệu */}
                                                     <td className="px-3 py-2.5">
                                                         <div className="flex items-center gap-2">
-                                                            <div className={`w-7 h-7 rounded-lg ${fileInfo.bg} flex items-center justify-center shrink-0`}>
-                                                                <fileInfo.icon className={`w-3.5 h-3.5 ${fileInfo.color}`} />
+                                                            <div className={`w-7 h-7 rounded-xl ${fileInfo.bg} flex items-center justify-center shrink-0`}>
+                                                                 <fileInfo.icon className={`w-3.5 h-3.5 ${fileInfo.color}`} />
                                                             </div>
-                                                            <span className="text-sm text-gray-800 dark:text-slate-100 font-medium line-clamp-2" title={doc.DocName}>
+                                                            <span className="text-sm text-txt-primary font-bold line-clamp-2" title={doc.DocName}>
                                                                 {doc.DocName}
                                                             </span>
                                                         </div>
                                                     </td>
                                                     {/* Số công văn */}
-                                                    <td className="px-3 py-2.5 text-xs font-semibold text-gray-700 dark:text-slate-300">
+                                                    <td className="px-3 py-2.5 text-xs font-semibold text-txt-secondary">
                                                         {doc.document_number || '—'}
                                                     </td>
                                                     {/* Ngày ban hành */}
-                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400">
+                                                    <td className="px-3 py-2.5 text-xs text-txt-muted">
                                                         {doc.issue_date || doc.UploadDate || '—'}
                                                     </td>
                                                     {/* CQ ban hành */}
-                                                    <td className="px-3 py-2.5 text-xs text-gray-600 dark:text-slate-400 pr-4">
+                                                    <td className="px-3 py-2.5 text-xs text-txt-muted pr-4">
                                                         <span className="normal-case line-clamp-2" title={doc.issuing_authority}>{formatAuthority(doc.issuing_authority)}</span>
                                                     </td>
                                                     {/* Thao tác */}
                                                     <td className="px-3 py-2.5 text-center">
                                                         <div className="flex items-center justify-center gap-1">
                                                             {(doc as any).source && (
-                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${(doc as any).source === 'task' ? 'bg-violet-100 text-violet-600' : (doc as any).source === 'tt24' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${(doc as any).source === 'task' ? 'bg-purple-500/10 text-purple-500' : (doc as any).source === 'tt24' ? 'bg-primary-500/10 text-primary-500' : 'bg-bg-muted text-txt-muted'}`}>
                                                                     {(doc as any).source === 'task' ? 'CV' : (doc as any).source === 'tt24' ? 'TT24' : 'UP'}
                                                                 </span>
                                                             )}
-                                                            {isDocExpanded ? <ChevronDown className="w-4 h-4 text-blue-500" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+                                                            {isDocExpanded ? <ChevronDown className="w-4 h-4 text-primary-500" /> : <ChevronRight className="w-4 h-4 text-txt-muted" />}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -412,25 +412,25 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
 
                     {/* Recently uploaded docs */}
                     {uploadedDocs.length > 0 && (
-                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                            <div className="px-5 py-3 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-800 border-b border-emerald-100 dark:border-emerald-800 flex items-center gap-2">
-                                <Upload className="w-4 h-4 text-emerald-600" />
-                                <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Mới tải lên ({uploadedDocs.length})</span>
+                        <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                            <div className="px-5 py-3 bg-bg-muted border-b border-border flex items-center gap-2">
+                                <Upload className="w-4 h-4 text-emerald-500" />
+                                <span className="text-sm font-bold text-emerald-500">Mới tải lên ({uploadedDocs.length})</span>
                             </div>
-                            <div className="divide-y divide-gray-50 dark:divide-slate-700">
+                            <div className="divide-y divide-border">
                                 {uploadedDocs.map((doc) => {
                                     const fIcon = getFileIcon(doc.DocName);
                                     return (
-                                        <div key={doc.DocID} className="flex items-center gap-3 px-5 py-3 hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
-                                            <div className={`w-8 h-8 rounded-lg ${fIcon.bg} flex items-center justify-center ring-2 ring-emerald-200`}>
+                                        <div key={doc.DocID} className="flex items-center gap-3 px-5 py-3 hover:bg-bg-muted transition-colors">
+                                            <div className={`w-8 h-8 rounded-xl ${fIcon.bg} flex items-center justify-center ring-2 ring-emerald-500/20`}>
                                                 <fIcon.icon className={`w-4 h-4 ${fIcon.color}`} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{doc.DocName}</p>
-                                                <p className="text-[11px] text-gray-400 dark:text-slate-400">{doc.Size} • {doc.UploadDate}</p>
+                                                <p className="text-sm font-bold text-txt-primary truncate">{doc.DocName}</p>
+                                                <p className="text-[11px] text-txt-muted">{doc.Size} • {doc.UploadDate}</p>
                                             </div>
-                                            <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold uppercase">Mới</span>
-                                            <span className="text-[10px] bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full font-bold">WIP</span>
+                                            <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded-xl font-bold uppercase">Mới</span>
+                                            <span className="text-[10px] bg-primary-500/10 text-primary-500 border border-primary-500/20 px-2 py-0.5 rounded-xl font-bold">WIP</span>
                                         </div>
                                     );
                                 })}

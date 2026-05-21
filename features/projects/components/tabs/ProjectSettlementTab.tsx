@@ -6,6 +6,7 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { StatCard } from '@/components/common/StatCard';
 import {
     CheckCircle2, Clock, AlertTriangle, FileText,
     DollarSign, TrendingUp, TrendingDown, BarChart3,
@@ -114,21 +115,21 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
 
     // ── Render ──────────────────────────────────────────────────
     return (
-        <div className="h-full overflow-y-auto bg-slate-50 dark:bg-slate-800 dark:bg-slate-950">
+        <div className="h-full overflow-y-auto bg-bg-muted/30">
             <div className="max-w-[1400px] mx-auto p-4 space-y-5">
 
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Receipt className="w-5 h-5 text-violet-500" />
+                        <h1 className="text-lg font-bold text-txt-primary flex items-center gap-2">
+                            <Receipt className="w-5 h-5 text-primary-500" />
                             Quyết toán dự án
                         </h1>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-txt-muted mt-0.5">
                             Tổng hợp vốn, hợp đồng và thủ tục quyết toán
                         </p>
                     </div>
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+                    <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-border rounded-xl hover:bg-bg-muted text-txt-secondary transition-colors">
                         <Download className="w-3.5 h-3.5" />
                         Xuất báo cáo
                     </button>
@@ -142,14 +143,14 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                             value: fmtB(stats.totalEstimate),
                             sub: 'Theo quyết định phê duyệt',
                             icon: Wallet,
-                            color: 'blue'
+                            color: 'blue' as const
                         },
                         {
                             label: 'Đã giải ngân',
                             value: fmtB(stats.totalApproved),
                             sub: `${disbursedPercent.toFixed(1)}% tổng mức`,
                             icon: DollarSign,
-                            color: 'emerald'
+                            color: 'emerald' as const
                         },
                         {
                             label: 'Tiết kiệm vốn',
@@ -158,68 +159,57 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                 ? `${stats.savingRate.toFixed(1)}% so với TM`
                                 : 'Vượt dự toán',
                             icon: stats.savingRate >= 0 ? TrendingDown : TrendingUp,
-                            color: stats.savingRate >= 0 ? 'emerald' : 'red'
+                            color: (stats.savingRate >= 0 ? 'emerald' : 'rose') as const
                         },
                         {
                             label: 'Hợp đồng hoàn thành',
                             value: `${stats.completedContracts}/${stats.totalContracts}`,
                             sub: 'Đã nghiệm thu thanh toán',
                             icon: CheckCircle2,
-                            color: 'violet'
+                            color: 'violet' as const
                         },
                     ].map((kpi, i) => (
-                        <div key={i} className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
-                            <div className="flex items-start justify-between mb-2">
-                                <p className="text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{kpi.label}</p>
-                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center
-                                    ${kpi.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
-                                      kpi.color === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/30' :
-                                      kpi.color === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
-                                      'bg-violet-100 dark:bg-violet-900/30'}`}>
-                                    <kpi.icon className={`w-3.5 h-3.5
-                                        ${kpi.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-                                          kpi.color === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' :
-                                          kpi.color === 'red' ? 'text-red-600 dark:text-red-400' :
-                                          'text-violet-600 dark:text-violet-400'}`} />
-                                </div>
-                            </div>
-                            <p className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{kpi.value}</p>
-                            <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5">{kpi.sub}</p>
-                        </div>
+                        <StatCard
+                            key={i}
+                            label={kpi.label}
+                            value={kpi.value}
+                            sublabel={kpi.sub}
+                            icon={<kpi.icon size={20} />}
+                            color={kpi.color}
+                        />
                     ))}
                 </div>
 
                 {/* ── Progress bar ── */}
-                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                            <BarChart3 className="w-4 h-4 text-violet-500" />
-                            <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Tiến độ giải ngân vốn quyết toán</span>
+                            <BarChart3 className="w-4 h-4 text-primary-500" />
+                            <span className="text-sm font-bold text-txt-primary">Tiến độ giải ngân vốn quyết toán</span>
                         </div>
-                        <span className="text-sm font-black text-violet-600 dark:text-violet-400">{disbursedPercent.toFixed(1)}%</span>
+                        <span className="text-sm font-black text-primary-500">{disbursedPercent.toFixed(1)}%</span>
                     </div>
-                    <div className="w-full h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-full h-3 bg-bg-muted rounded-full overflow-hidden">
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-primary-500 transition-all duration-700"
+                            className="h-full rounded-full bg-gradient-to-r from-purple-500 to-primary-500 transition-all duration-700"
                             style={{ width: `${Math.min(100, disbursedPercent)}%` }}
                         />
                     </div>
-                    <div className="flex items-center justify-between mt-2 text-[11px] text-gray-400 dark:text-slate-500">
-                        <span>Đã quyết toán: <b className="text-gray-700 dark:text-slate-200">{fmtB(stats.totalApproved)} đ</b></span>
-                        <span>Tổng mức: <b className="text-gray-700 dark:text-slate-200">{fmtB(stats.totalEstimate)} đ</b></span>
+                    <div className="flex items-center justify-between mt-2 text-[11px] text-txt-muted">
+                        <span>Đã quyết toán: <b className="text-txt-secondary">{fmtB(stats.totalApproved)} đ</b></span>
+                        <span>Tổng mức: <b className="text-txt-secondary">{fmtB(stats.totalEstimate)} đ</b></span>
                     </div>
                 </div>
 
                 {/* ── Settlement Steps ── */}
-                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
+                <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
-                        <ClipboardCheck className="w-4 h-4 text-violet-500" />
-                        <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Thủ tục quyết toán</span>
+                        <ClipboardCheck className="w-4 h-4 text-primary-500" />
+                        <span className="text-sm font-bold text-txt-primary">Thủ tục quyết toán</span>
                     </div>
                     <div className="flex items-center gap-0 overflow-x-auto pb-1">
                         {SETTLEMENT_STEPS.map((step, idx) => {
                             const Icon = step.icon;
-                            // Determine status based on disbursement progress (simplified)
                             const isComplete = idx < Math.floor(disbursedPercent / 25);
                             const isActive = idx === Math.floor(disbursedPercent / 25);
                             return (
@@ -227,23 +217,23 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                     <div className="flex flex-col items-center gap-1.5 min-w-[100px] flex-1">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors
                                             ${isComplete ? 'bg-emerald-500 border-emerald-500 text-white' :
-                                              isActive ? 'bg-violet-50 dark:bg-violet-900/30 border-violet-400 text-violet-600 dark:text-violet-400' :
-                                              'bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-300 dark:text-slate-600'}`}>
+                                              isActive ? 'bg-primary-500/10 border-primary-500 text-primary-500' :
+                                              'bg-bg-muted border-border text-txt-muted'}`}>
                                             {isComplete
                                                 ? <CheckCircle2 className="w-5 h-5" />
                                                 : <Icon className="w-4 h-4" />
                                             }
                                         </div>
-                                        <p className={`text-[10px] font-semibold text-center leading-tight max-w-[90px]
-                                            ${isComplete ? 'text-emerald-600 dark:text-emerald-400' :
-                                              isActive ? 'text-violet-600 dark:text-violet-400' :
-                                              'text-gray-400 dark:text-slate-600'}`}>
+                                        <p className={`text-[10px] font-bold text-center leading-tight max-w-[90px]
+                                            ${isComplete ? 'text-emerald-500' :
+                                              isActive ? 'text-primary-500' :
+                                              'text-txt-muted'}`}>
                                             {step.label}
                                         </p>
                                     </div>
                                     {idx < SETTLEMENT_STEPS.length - 1 && (
                                         <ChevronRight className={`w-4 h-4 shrink-0
-                                            ${isComplete ? 'text-emerald-400' : 'text-gray-200 dark:text-slate-700'}`} />
+                                            ${isComplete ? 'text-emerald-500' : 'text-border'}`} />
                                     )}
                                 </React.Fragment>
                             );
@@ -252,35 +242,35 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Contracts table ── */}
-                <div className="bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-violet-500" />
-                        <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Danh sách hợp đồng quyết toán</span>
-                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-primary-500" />
+                        <span className="text-sm font-bold text-txt-primary">Danh sách hợp đồng quyết toán</span>
+                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-xl bg-bg-muted text-txt-muted border border-border">
                             {contracts.length} hợp đồng
                         </span>
                     </div>
                     {loadingContracts ? (
-                        <div className="flex items-center justify-center py-12 text-sm text-slate-400">Đang tải...</div>
+                        <div className="flex items-center justify-center py-12 text-sm text-txt-muted">Đang tải...</div>
                     ) : contracts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 gap-2">
-                            <Receipt className="w-8 h-8 text-gray-200 dark:text-slate-700" />
-                            <p className="text-sm text-gray-400 dark:text-slate-500">Chưa có hợp đồng nào</p>
+                            <Receipt className="w-8 h-8 text-txt-muted" />
+                            <p className="text-sm text-txt-muted">Chưa có hợp đồng nào</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-xs">
-                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <table className="w-full text-xs text-left">
+                                <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Tên hợp đồng</th>
-                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Giá trị HĐ</th>
-                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Đã thanh toán</th>
-                                        <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Còn lại</th>
-                                        <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Trạng thái</th>
-                                        <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Ngày kết thúc</th>
+                                        <th className="px-4 py-3 text-txt-muted">Tên hợp đồng</th>
+                                        <th className="px-4 py-3 text-right text-txt-muted">Giá trị HĐ</th>
+                                        <th className="px-4 py-3 text-right text-txt-muted">Đã thanh toán</th>
+                                        <th className="px-4 py-3 text-right text-txt-muted">Còn lại</th>
+                                        <th className="px-4 py-3 text-center text-txt-muted">Trạng thái</th>
+                                        <th className="px-4 py-3 text-center text-txt-muted">Ngày kết thúc</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                                <tbody className="divide-y divide-border">
                                     {contracts.map((c: any) => {
                                         const val = Number(c.contract_value) || 0;
                                         const paid = Number(c.paid_amount) || 0;
@@ -288,33 +278,33 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                         const paidPct = val > 0 ? (paid / val) * 100 : 0;
                                         const isDone = c.status === 2 || c.status === 'completed';
                                         return (
-                                            <tr key={c.contract_id} className="hover:bg-slate-50/50 dark:hover:bg-slate-50 transition-colors">
+                                            <tr key={c.contract_id} className="hover:bg-bg-muted transition-colors">
                                                 <td className="px-4 py-3">
-                                                    <p className="font-semibold text-gray-800 dark:text-slate-200 truncate max-w-[280px]">{c.contract_name || '—'}</p>
-                                                    <div className="mt-1 w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                    <p className="font-bold text-txt-primary truncate max-w-[280px]">{c.contract_name || '—'}</p>
+                                                    <div className="mt-1 w-full h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full rounded-full bg-emerald-400 transition-all"
+                                                            className="h-full rounded-full bg-emerald-500 transition-all"
                                                             style={{ width: `${Math.min(100, paidPct)}%` }}
                                                         />
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-right font-semibold text-gray-700 dark:text-slate-200 tabular-nums">
+                                                <td className="px-4 py-3 text-right font-semibold text-txt-secondary tabular-nums">
                                                     {val > 0 ? `${fmtB(val)} đ` : '—'}
                                                 </td>
-                                                <td className="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                                <td className="px-4 py-3 text-right font-bold text-emerald-500 tabular-nums">
                                                     {paid > 0 ? `${fmtB(paid)} đ` : '—'}
-                                                    <span className="text-[10px] font-normal text-gray-400 dark:text-slate-500 ml-1">
+                                                    <span className="text-[10px] font-normal text-txt-muted ml-1">
                                                         {val > 0 ? `(${paidPct.toFixed(0)}%)` : ''}
                                                     </span>
                                                 </td>
-                                                <td className={`px-4 py-3 text-right font-semibold tabular-nums ${remain > 0 ? 'text-warning-600 dark:text-warning-400' : 'text-gray-400 dark:text-slate-600'}`}>
+                                                <td className={`px-4 py-3 text-right font-semibold tabular-nums ${remain > 0 ? 'text-warning-500' : 'text-txt-muted'}`}>
                                                     {remain > 0 ? `${fmtB(remain)} đ` : '—'}
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
-                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
-                                                        ${isDone ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
-                                                          c.status === 1 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
-                                                          'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'}`}>
+                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-xl text-[10px] font-bold
+                                                        ${isDone ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                                                          c.status === 1 ? 'bg-primary-500/10 text-primary-500 border border-primary-500/20' :
+                                                          'bg-bg-muted text-txt-muted border border-border'}`}>
                                                         {isDone
                                                             ? <><CheckCircle2 className="w-3 h-3" /> Hoàn thành</>
                                                             : c.status === 1
@@ -323,7 +313,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                                         }
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-3 text-center text-gray-500 dark:text-slate-400">
+                                                <td className="px-4 py-3 text-center text-txt-muted">
                                                     <div className="flex items-center justify-center gap-1">
                                                         <Calendar className="w-3 h-3" />
                                                         {c.end_date
@@ -338,18 +328,18 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                 {/* Totals row */}
                                 {contracts.length > 0 && (
                                     <tfoot>
-                                        <tr className="bg-violet-50/60 dark:bg-violet-900/10 border-t-2 border-violet-200 dark:border-violet-800/40">
-                                            <td className="px-4 py-2.5 font-black text-violet-700 dark:text-violet-300 text-xs">TỔNG CỘNG</td>
-                                            <td className="px-4 py-2.5 text-right font-black text-gray-800 dark:text-slate-100 tabular-nums">
+                                        <tr className="bg-primary-50/5 border-t-2 border-primary-500/20">
+                                            <td className="px-4 py-2.5 font-bold text-primary-500 text-xs">TỔNG CỘNG</td>
+                                            <td className="px-4 py-2.5 text-right font-bold text-txt-primary tabular-nums">
                                                 {fmtB(stats.totalContractValue)} đ
                                             </td>
-                                            <td className="px-4 py-2.5 text-right font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                            <td className="px-4 py-2.5 text-right font-bold text-emerald-500 tabular-nums">
                                                 {fmtB(stats.totalPaid)} đ
                                             </td>
-                                            <td className="px-4 py-2.5 text-right font-black text-warning-600 dark:text-warning-400 tabular-nums">
+                                            <td className="px-4 py-2.5 text-right font-bold text-warning-500 tabular-nums">
                                                 {fmtB(Math.max(0, stats.totalContractValue - stats.totalPaid))} đ
                                             </td>
-                                            <td colSpan={2} className="px-4 py-2.5 text-center text-[10px] text-violet-500 dark:text-violet-400 font-semibold">
+                                            <td colSpan={2} className="px-4 py-2.5 text-center text-[10px] text-primary-500 font-bold">
                                                 {stats.completedContracts}/{stats.totalContracts} hợp đồng hoàn thành
                                             </td>
                                         </tr>
@@ -361,12 +351,12 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Ghi chú quyết toán ── */}
-                <div className="bg-warning-50 dark:bg-warning-900/10 border border-warning-200 dark:border-warning-800/40 rounded-xl p-4">
+                <div className="bg-warning-500/5 border border-warning-500/20 rounded-2xl p-4">
                     <div className="flex items-start gap-3">
                         <AlertTriangle className="w-4 h-4 text-warning-500 mt-0.5 shrink-0" />
                         <div>
-                            <p className="text-xs font-bold text-warning-700 dark:text-warning-400 mb-1">Lưu ý quyết toán vốn đầu tư</p>
-                            <ul className="text-xs text-warning-600 dark:text-warning-500 space-y-0.5 list-disc list-inside">
+                            <p className="text-xs font-bold text-warning-600 dark:text-warning-400 mb-1">Lưu ý quyết toán vốn đầu tư</p>
+                            <ul className="text-xs text-warning-500 space-y-0.5 list-disc list-inside">
                                 <li>Quyết toán phải hoàn thành trong vòng <b>12 tháng</b> kể từ khi dự án hoàn thành (Nghị định 99/2021/NĐ-CP)</li>
                                 <li>Hồ sơ quyết toán cần bao gồm đầy đủ: biên bản nghiệm thu, thanh lý hợp đồng, và kết quả kiểm toán</li>
                                 <li>Chủ đầu tư chịu trách nhiệm lưu trữ hồ sơ quyết toán tối thiểu <b>10 năm</b></li>

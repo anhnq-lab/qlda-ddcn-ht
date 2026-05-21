@@ -1,3 +1,18 @@
+/* ⚠️ DEPRECATION NOTICE — Technical Debt
+   =========================================================================
+   File này là LEGACY dark mode override. Nó tồn tại vì nhiều component
+   vẫn dùng hardcoded Tailwind classes (bg-white, text-gray-900, v.v.)
+   thay vì CSS variable tokens (bg-bg-surface, text-txt-primary, v.v.).
+
+   KẾ HOẠCH MIGRATE:
+   - Mỗi khi sửa một feature component, chuyển hardcoded colors → CSS variable tokens
+   - Khi component đã dùng CSS variables, các override tương ứng ở đây sẽ không còn cần thiết
+   - Mục tiêu: giảm dần file này xuống chỉ còn third-party overrides (Recharts, RBC, v.v.)
+
+   KHÔNG SỬA NỘI DUNG CSS TRONG FILE NÀY trừ khi đã xác nhận component tương ứng
+   đã migrate xong sang CSS variables.
+   ========================================================================= */
+
 /* Dark mode — Third-party & legacy overrides
    Components using CSS variables (var(--bg-surface), etc.) do NOT need overrides here.
    This file handles: Recharts, feature components with hardcoded Tailwind classes,

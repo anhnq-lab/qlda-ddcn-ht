@@ -97,7 +97,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="px-6 py-4 text-white flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #4A4230 0%, #1c456c 50%, #4a90e2 100%)' }}>
+                <div className="px-6 py-4 text-white flex items-center justify-between bg-primary-700">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl">
                             <CreditCard className="w-5 h-5" />
@@ -133,7 +133,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                             </label>
                             <select
                                 {...register('contractId')}
-                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 ${errors.contractId ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-bg-surface text-txt-primary ${errors.contractId ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-border'
                                     }`}
                             >
                                 <option value="">-- Chọn hợp đồng --</option>
@@ -185,7 +185,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     type="number"
                                     min="1"
                                     {...register('batchNo', { valueAsNumber: true })}
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100"
+                                    className="w-full px-4 py-3 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-bg-surface text-txt-primary"
                                 />
                             </div>
 
@@ -197,7 +197,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 </label>
                                 <select
                                     {...register('type')}
-                                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100"
+                                    className="w-full px-4 py-3 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-bg-surface text-txt-primary"
                                 >
                                     <option value={PaymentType.Advance}>Tạm ứng</option>
                                     <option value={PaymentType.Volume}>Thanh toán khối lượng</option>
@@ -215,7 +215,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 type="number"
                                 {...register('amount', { valueAsNumber: true })}
                                 placeholder="0"
-                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-lg font-bold bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 ${errors.amount ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-lg font-bold bg-bg-surface text-txt-primary ${errors.amount ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-border'
                                     }`}
                             />
                             {(watchAmount ?? 0) > 0 && (
@@ -236,7 +236,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     type="text"
                                     {...register('treasuryRef')}
                                     placeholder="VD: KB-2025-001234"
-                                    className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 ${errors.treasuryRef ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-gray-200 dark:border-slate-600'
+                                    className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono bg-bg-surface text-txt-primary ${errors.treasuryRef ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : 'border-border'
                                         }`}
                                 />
                                 {errors.treasuryRef && <p className="text-xs text-red-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.treasuryRef.message}</p>}
@@ -280,7 +280,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                 {...register('note')}
                                 placeholder="Nhập nội dung ghi chú (nếu có)"
                                 rows={2}
-                                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                                className="w-full px-4 py-3 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none bg-bg-surface text-txt-primary placeholder-gray-400 dark:placeholder-slate-500"
                             />
                         </div>
 
@@ -296,7 +296,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-6 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200 dark:shadow-emerald-900/30 flex items-center gap-2 disabled:opacity-50"
+                                className="btn btn-primary flex items-center gap-2"
                             >
                                 {isSubmitting ? (
                                     <>

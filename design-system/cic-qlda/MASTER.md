@@ -18,21 +18,31 @@
 
 | Role | Hex / Tailwind | CSS Variable | Usage |
 |------|----------------|--------------|-------|
-| **Primary (Gold)** | `#D4A017` / `primary-500` | `--color-primary` | CTAs, active tabs, key highlights |
-| **Accent (Dark Gold)** | `#B8860B` / `primary-600` | — | Hover states for primary elements |
+| **Primary (Teal)** | `#00668c` / `primary-500` | `--color-primary` | CTAs, active tabs, key highlights |
+| **Primary Light** | `#3995b8` / `primary-400` | — | Hover nhạt của primary |
+| **Primary Dark** | `#00415a` / `primary-600` | — | Hover đậm / pressed |
+| **Primary Subtle** | `#d4eaf7` / `primary-50` | — | Background badge / highlight nhẹ |
+| **Accent (Đỏ cờ)** | `#AE1E23` | `--color-accent` | Tiêu đề tổ chức, badge quan trọng cấp cao |
+| **Gold** | `#D4A017` | — | Gradient header/sidebar, border highlight đặc biệt |
 | **Background Light** | `#F8FAFC` / `slate-50` | `--bg-page` | Main page background |
 | **Background Dark** | `#0F172A` / `slate-900` | `--bg-page-dark` | Dark mode page background |
-| **Surface Light** | `#FFFFFF` / `white` | — | Cards, panels in light mode |
-| **Surface Dark** | `#1E293B` / `slate-800` | — | Cards, panels in dark mode |
-| **Text Primary** | `#1E293B` / `slate-800` | — | Headings and strong text |
-| **Text Secondary** | `#64748B` / `slate-500` | — | Labels, subtitles |
-| **Text Muted** | `#94A3B8` / `slate-400` | — | Disabled, placeholders |
+| **Surface Light** | `#FFFFFF` / `white` | `--bg-surface` | Cards, panels in light mode |
+| **Surface Dark** | `#1E293B` / `slate-800` | `--bg-surface` (dark) | Cards, panels in dark mode |
+| **Subtle** | `#f1f5f9` / `slate-100` | `--bg-subtle` | Table header, sidebar |
+| **Muted** | `#e2e8f0` / `slate-200` | `--bg-muted` | Hover row, alt rows |
+| **Text Primary** | `#1d1c1c` | `--text-primary` | Headings and strong text |
+| **Text Secondary** | `#313d44` | `--text-secondary` | Labels, subtitles |
+| **Text Muted** | `#64748B` / `slate-500` | `--text-muted` | Disabled, placeholders |
+| **Text Inverse** | `#FFFFFF` | `--text-inverse` | Text trên nền tối |
+| **Border Default** | `#e2e8f0` / `slate-200` | `--border-default` | Border card, input |
+| **Border Subtle** | `#cbd5e1` / `slate-300` | `--border-subtle` | Border phụ |
+| **Border Focus** | `#00668c` | `--border-focus` | Focus ring (= primary) |
 | **Success** | `#10B981` / `emerald-500` | — | Completed, healthy, approved |
 | **Warning** | `#F59E0B` / `amber-500` | — | In-progress, caution |
 | **Danger** | `#EF4444` / `red-500` | — | Errors, overdue, rejected |
 | **Info** | `#3B82F6` / `blue-500` | — | Informational, pending |
 
-**Color Notes:** "Corporate Elegant & Utilitarian" — gold as brand accent, semantic colors for status.
+**Color Notes:** "Corporate Elegant & Utilitarian" — Teal (#00668c) as primary, semantic colors for status. Gold chỉ dùng cho gradient/border highlight.
 
 > ⚠️ Do NOT use orange/amber/blue/emerald/indigo mapped to gold. Each color must mean what it semantically represents.
 
@@ -48,21 +58,21 @@ Each Ban QLDA has its own brand color used in charts and badges:
 
 ### Typography
 
-- **Font:** `Be Vietnam Pro` (Google Fonts) — designed for Vietnamese diacritics
+- **Font:** `Inter` (Google Fonts, weights 300–700) — clean, readable, đầy đủ Unicode tiếng Việt
 - **Fallback:** `system-ui, -apple-system, sans-serif`
-- **Mono:** `JetBrains Mono` — for numbers in data tables
+- **Mono:** `JetBrains Mono` — for numbers in data tables (`tabular-nums`, right-aligned)
 - **Mood:** Modern, professional, Vietnamese-first
 
 **Google Fonts import:** (in `index.html`)
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 ```
 
 **Tailwind config:**
 ```js
 fontFamily: {
-  sans:    ['Be Vietnam Pro', 'system-ui', '-apple-system', 'sans-serif'],
-  heading: ['Be Vietnam Pro', 'system-ui', '-apple-system', 'sans-serif'],
+  sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+  heading: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
   mono:    ['JetBrains Mono', 'Fira Code', 'monospace'],
 }
 ```
@@ -106,14 +116,14 @@ fontFamily: {
 ### Buttons
 
 ```css
-/* Primary — Gold Brand */
+/* Primary — Teal Brand (#00668c) */
 .btn-primary {
   @apply bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl px-4 py-2 transition-all shadow-sm hover:shadow-md;
 }
 
 /* Secondary / Outline */
 .btn-secondary {
-  @apply bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 font-semibold rounded-xl px-4 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all;
+  @apply bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] font-semibold rounded-xl px-4 py-2 hover:bg-[var(--bg-muted)] transition-all;
 }
 
 /* Danger */
@@ -190,7 +200,7 @@ Neutral:              bg-gray-100 text-gray-700       dark:bg-slate-700 dark:tex
 - ❌ **Opacity hacks for dark mode** — `dark:bg-white/10` — use solid colors
 - ❌ **Color remapping** — orange=gold, blue=gold etc. Each color must be semantic
 - ❌ **Hardcoded hex in JSX** — except Recharts and board colors from `types/project.types.ts`
-- ❌ **`Inter` font** — use `Be Vietnam Pro` (better Vietnamese support)
+- ❌ **`Be Vietnam Pro` font** — đã chuyển sang `Inter` (clean, readable, tốt cho tiếng Việt)
 - ❌ **Missing `cursor-pointer`** — All clickable elements must have it
 - ❌ **Layout-shifting hovers** — scale transforms that shift layout
 - ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio (WCAG AA)

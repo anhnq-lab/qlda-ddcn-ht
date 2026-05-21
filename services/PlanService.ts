@@ -14,6 +14,7 @@ import type {
     DepartmentCode,
     MonthlyTaskStatus,
 } from '../types/plan.types';
+import { DEPARTMENT_NAMES } from '../types/plan.types';
 
 // ══════════════════════════════════════════════════════════════
 // ANNUAL PLAN — Kế hoạch khung năm
@@ -344,23 +345,38 @@ export const MonthlyPlanItemService = {
         const startOfMonth = `${year}-${String(month).padStart(2, '0')}-01`;
         const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0]; // Ngày cuối tháng
 
-        // 1. Lấy sub-tasks (cấp cá nhân) của dự án thuộc phòng và trong tháng
+        // 1. Lấy tất cả tasks dự án có due_date trong tháng
         let query = supabase
             .from('tasks')
-            .select('id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata, status, actual_end_date')
+            .select('id, parent_id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata, status, actual_end_date')
             .eq('task_type', 'project')
-            .eq('responsibility_level', 'individual')
             .gte('due_date', startOfMonth)
             .lte('due_date', endOfMonth);
-
-        // Lọc theo phòng (chỉ lấy tasks giao cho người thuộc phòng này)
-        if (deptEmployeeIds.length > 0) {
-            query = query.in('assignee_id', deptEmployeeIds);
-        }
 
         const { data: subtasksRaw, error } = await query.order('due_date');
         if (error) throw error;
         if (!subtasksRaw || subtasksRaw.length === 0) return { inserted: [], skipped: 0 };
+
+        // Helper so khớp phòng ban thông minh
+        const isDeptMatch = (assigneeRole: string | undefined | null): boolean => {
+            if (!assigneeRole) return false;
+            const roleLower = assigneeRole.toLowerCase();
+            const codeLower = deptCode.toLowerCase();
+            
+            if (roleLower.includes(codeLower)) return true;
+            
+            const deptName = DEPARTMENT_NAMES[deptCode as DepartmentCode] || '';
+            const deptNameLower = deptName.toLowerCase();
+            const cleanDeptName = deptNameLower.replace('phòng ', '').trim();
+            if (cleanDeptName && roleLower.includes(cleanDeptName)) return true;
+            
+            if (codeLower === 'hcth' && (roleLower.includes('hành chính') || roleLower.includes('tổng hợp'))) return true;
+            if (codeLower === 'khtv' && (roleLower.includes('kế hoạch') || roleLower.includes('tài vụ') || roleLower.includes('tài chính'))) return true;
+            if (codeLower === 'qlda' && (roleLower.includes('quản lý dự án') || roleLower.includes('chuyên viên qlda'))) return true;
+            if (codeLower === 'dtdn' && (roleLower.includes('đấu thầu') || roleLower.includes('đề án'))) return true;
+            
+            return false;
+        };
 
         const startOfMonthDate = new Date(year, month - 1, 1);
         const subtasks = (subtasksRaw as any[]).filter(t => {
@@ -368,58 +384,61 @@ export const MonthlyPlanItemService = {
                 if (t.actual_end_date) {
                     const actualEnd = new Date(t.actual_end_date);
                     if (actualEnd < startOfMonthDate) return false; // Completed before this month
-                } else {
-                    // If no actual_end_date but it's done, and we are seeding for a future/current month,
-                    // we might want to skip it if we assume it was done before now. 
-                    // But to be safe, if it's due this month, we keep it unless actual_end_date proves otherwise.
                 }
             }
-            return true;
+            // Lọc theo phòng ban:
+            // 1. Giao cho nhân viên phòng ban
+            const isAssignedToDeptEmployee = t.assignee_id && deptEmployeeIds.includes(t.assignee_id);
+            // 2. Hoặc metadata.assignee_role khớp với phòng ban
+            const isAssignedToDeptRole = isDeptMatch(t.metadata?.assignee_role);
+
+            return isAssignedToDeptEmployee || isAssignedToDeptRole;
         });
 
         if (subtasks.length === 0) return { inserted: [], skipped: 0 };
 
         // 2. Kiểm tra đã seed rồi chưa
-        const subtaskIds = (subtasks as any[]).map(t => t.id);
+        const taskIds = (subtasks as any[]).map(t => t.id);
         const { data: existing } = await supabase
             .from('monthly_plan_items')
-            .select('source_subtask_id')
+            .select('source_task_id, source_subtask_id')
             .eq('monthly_plan_id', monthlyPlanId)
-            .in('source_subtask_id', subtaskIds);
-        const existingSourceIds = new Set((existing ?? []).map((e: any) => e.source_subtask_id));
+            .or(`source_subtask_id.in.(${taskIds.join(',')}),source_task_id.in.(${taskIds.join(',')})`);
+        
+        const existingSubtaskIds = new Set((existing ?? []).map((e: any) => e.source_subtask_id).filter(Boolean));
+        const existingTaskIds = new Set((existing ?? []).map((e: any) => e.source_task_id).filter(Boolean));
 
-        // 3. Lấy thông tin assignee để điền staff_name
-        const assigneeIds = [...new Set((subtasks as any[]).map(t => t.assignee_id).filter(Boolean))];
-        let employeeMap: Record<string, string> = {};
-        if (assigneeIds.length > 0) {
-            const { data: emps } = await supabase
-                .from('employees')
-                .select('id, full_name')
-                .in('id', assigneeIds);
-            (emps ?? []).forEach((e: any) => { employeeMap[e.id] = e.full_name; });
-        }
-
-        // 4. Map và insert
+        // 3. Map và insert những task/subtask chưa được sinh kế hoạch tháng
         const toInsert = (subtasks as any[])
-            .filter(t => !existingSourceIds.has(t.id))
-            .map((t, idx) => ({
-                monthly_plan_id: monthlyPlanId,
-                project_id: t.project_id ?? null,
-                group_name: t.phase ?? t.step_code ?? 'Công việc dự án',
-                group_sort_order: 0,
-                task_name: t.title,
-                deliverable: t.description ?? null,
-                due_date: t.due_date,
-                deadline_note: t.due_date ? `${new Date(t.due_date).getDate()}/${month}` : `Tháng ${month}`,
-                source_task_id: t.metadata?.parent_task_id ?? null,
-                source_subtask_id: t.id,
-                source_type: 'from_subtask' as const,
-                status: 'planned' as MonthlyTaskStatus,
-                sort_order: idx,
-                created_by: createdBy ?? null,
-            }));
+            .filter(t => {
+                const isSubtask = !!t.parent_id;
+                if (isSubtask) {
+                    return !existingSubtaskIds.has(t.id);
+                } else {
+                    return !existingTaskIds.has(t.id);
+                }
+            })
+            .map((t, idx) => {
+                const isSubtask = !!t.parent_id;
+                return {
+                    monthly_plan_id: monthlyPlanId,
+                    project_id: t.project_id ?? null,
+                    group_name: t.phase ?? t.step_code ?? 'Công việc dự án',
+                    group_sort_order: 0,
+                    task_name: t.title,
+                    deliverable: t.description ?? null,
+                    due_date: t.due_date,
+                    deadline_note: t.due_date ? `${new Date(t.due_date).getDate()}/${month}` : `Tháng ${month}`,
+                    source_task_id: t.parent_id || t.id,
+                    source_subtask_id: isSubtask ? t.id : null,
+                    source_type: (isSubtask ? 'from_subtask' : 'from_project_task') as any,
+                    status: 'planned' as MonthlyTaskStatus,
+                    sort_order: idx,
+                    created_by: createdBy ?? null,
+                };
+            });
 
-        if (toInsert.length === 0) return { inserted: [], skipped: existingSourceIds.size };
+        if (toInsert.length === 0) return { inserted: [], skipped: subtasks.length };
 
         const { data: inserted, error: insertErr } = await supabase
             .from('monthly_plan_items')
@@ -429,7 +448,7 @@ export const MonthlyPlanItemService = {
 
         return {
             inserted: (inserted ?? []) as MonthlyPlanItem[],
-            skipped: existingSourceIds.size,
+            skipped: subtasks.length - toInsert.length,
         };
     },
 

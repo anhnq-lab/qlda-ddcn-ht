@@ -66,3 +66,29 @@ export {
     type PaymentUpdateInput,
     type ContractFormValues,
 } from './contract.schema';
+
+export {
+    TaskCreateSchema,
+    TaskUpdateSchema,
+    TaskTypeSchema,
+    TaskStatusSchema,
+    TaskPrioritySchema,
+    type TaskCreateInput,
+    type TaskUpdateInput,
+} from './task.schema';
+
+export {
+    ContractorCreateSchema,
+    ContractorUpdateSchema,
+    type ContractorCreateInput,
+    type ContractorUpdateInput,
+} from './contractor.schema';
+
+export {
+    DocumentCreateSchema,
+    DocumentUpdateSchema,
+    DocCategorySchema,
+    ISO19650StatusSchema,
+    type DocumentCreateInput,
+    type DocumentUpdateInput,
+} from './document.schema';

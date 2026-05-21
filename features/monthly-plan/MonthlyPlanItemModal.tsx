@@ -23,6 +23,7 @@ interface Props {
     year: number;
     departmentCode: DepartmentCode;
     item: MonthlyPlanItem | null;
+    initialAnnualPlanItem?: any;
     onSaved: () => void;
     onClose: () => void;
 }
@@ -30,7 +31,7 @@ interface Props {
 type SectionKey = 'lienket' | 'thongtin' | 'phancong' | 'ketqua';
 
 const MonthlyPlanItemModal: React.FC<Props> = ({
-    monthlyPlanId, month, year, departmentCode, item, onSaved, onClose,
+    monthlyPlanId, month, year, departmentCode, item, initialAnnualPlanItem, onSaved, onClose,
 }) => {
     const [saving, setSaving] = useState(false);
     const [serverError, setServerError] = useState('');
@@ -120,9 +121,19 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 setExpanded(prev => new Set([...prev, 'ketqua']));
             }
         } else {
-            reset(buildDefaultValues());
+            const defaults = buildDefaultValues();
+            if (initialAnnualPlanItem) {
+                defaults.annual_plan_item_id = initialAnnualPlanItem.id;
+                defaults.task_name = initialAnnualPlanItem.task_name;
+                defaults.deliverable = initialAnnualPlanItem.deliverable ?? '';
+                defaults.group_name = initialAnnualPlanItem.group_name ?? '';
+                defaults.project_id = initialAnnualPlanItem.project_id ?? undefined;
+                defaults.collaborating_dept_codes = initialAnnualPlanItem.collaborating_dept_codes ?? [];
+                defaults.collaborating_text = initialAnnualPlanItem.collaborating_text ?? '';
+            }
+            reset(defaults);
         }
-    }, [item, monthlyPlanId, month, reset, buildDefaultValues]);
+    }, [item, monthlyPlanId, month, reset, buildDefaultValues, initialAnnualPlanItem]);
     // Khi chọn từ KH khung → auto-fill
     const handleAnnualItemSelect = (value: string) => {
         const found = annualItems.find(i => i.id === value);

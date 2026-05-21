@@ -42,23 +42,20 @@ const CONDITION_CONFIG = {
 } as const;
 
 // ── Simple bar chart component ──
-const MiniBar: React.FC<{ label: string; value: number; max: number; color: string; isDark: boolean }> = ({ label, value, max, color, isDark }) => (
+const MiniBar: React.FC<{ label: string; value: number; max: number; color: string }> = ({ label, value, max, color }) => (
     <div className="flex items-center gap-2 text-xs">
-        <span className={`w-20 truncate ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{label}</span>
-        <div className={`flex-1 h-4 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
+        <span className="w-20 truncate text-txt-muted">{label}</span>
+        <div className="flex-1 h-4 rounded-full overflow-hidden bg-bg-muted border border-border/50">
             <div
                 className={`h-full rounded-full bg-${color}-500 transition-all duration-500`}
                 style={{ width: max > 0 ? `${(value / max) * 100}%` : '0%' }}
             />
         </div>
-        <span className={`w-6 text-right font-semibold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{value}</span>
+        <span className="w-6 text-right font-semibold text-txt-primary">{value}</span>
     </div>
 );
 
 export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
-
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -179,25 +176,23 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
 
     // ── RENDER ──
     return (
-        <div className={`h-full overflow-y-auto ${isDark ? 'bg-slate-950' : 'bg-slate-50 dark:bg-slate-800'}`}>
+        <div className="h-full overflow-y-auto bg-bg-muted">
             <div className="max-w-[1400px] mx-auto p-4 space-y-6">
                 {/* ── Header ── */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className={`text-lg font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <h1 className="text-lg font-bold flex items-center gap-2 text-txt-primary">
                             <Building2 className="w-5 h-5 text-emerald-500" />
                             Quản lý vận hành
                         </h1>
-                        <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        <p className="text-xs mt-0.5 text-txt-muted">
                             Tổng quan tài sản và thiết bị tòa nhà
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => window.location.reload()}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors
-                                ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700' : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-800 text-gray-600 border border-gray-200'}
-                            `}
+                            className="px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-all border border-border bg-bg-surface hover:bg-bg-muted text-txt-primary"
                         >
                             <RefreshCw className="w-3.5 h-3.5" />
                             Làm mới
@@ -247,40 +242,40 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 {/* ── Charts Row ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Chart: By Category */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm`}>
+                    <div className="rounded-2xl p-4 border border-border bg-bg-surface shadow-sm">
                         <div className="flex items-center gap-2 mb-3">
-                            <BarChart3 className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-                            <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo danh mục</span>
+                            <BarChart3 className="w-4 h-4 text-primary-500" />
+                            <span className="text-xs font-bold text-txt-primary">Theo danh mục</span>
                         </div>
                         <div className="space-y-2">
                             {Object.entries(stats.byCategory).length > 0 ? (
                                 Object.entries(stats.byCategory)
                                     .sort(([, a], [, b]) => (b as number) - (a as number))
                                     .map(([cat, count]) => (
-                                        <MiniBar key={cat} label={cat} value={count as number} max={maxCategory} color="blue" isDark={isDark} />
+                                        <MiniBar key={cat} label={cat} value={count as number} max={maxCategory} color="blue" />
                                     ))
                             ) : (
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Chưa có dữ liệu</p>
+                                <p className="text-xs text-txt-muted">Chưa có dữ liệu</p>
                             )}
                         </div>
                     </div>
 
                     {/* Chart: By Status */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm`}>
+                    <div className="rounded-2xl p-4 border border-border bg-bg-surface shadow-sm">
                         <div className="flex items-center gap-2 mb-3">
-                            <PieChart className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
-                            <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo trạng thái</span>
+                            <PieChart className="w-4 h-4 text-emerald-500" />
+                            <span className="text-xs font-bold text-txt-primary">Theo trạng thái</span>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
                                 const count = stats.byStatus[key as keyof typeof stats.byStatus] || 0;
                                 const Icon = cfg.icon;
                                 return (
-                                    <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-50' : 'bg-slate-50 dark:bg-slate-800'}`}>
+                                    <div key={key} className="flex items-center gap-2 p-2 rounded-xl bg-bg-muted border border-border">
                                         <Icon className={`w-4 h-4 text-${cfg.color}-500`} />
                                         <div>
-                                            <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{count}</div>
-                                            <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{cfg.label}</div>
+                                            <div className="text-sm font-bold text-txt-primary">{count}</div>
+                                            <div className="text-[10px] text-txt-muted">{cfg.label}</div>
                                         </div>
                                     </div>
                                 );
@@ -290,12 +285,12 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Maintenance Timeline ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm overflow-hidden`}>
-                    <div className={`px-4 py-3 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                <div className="rounded-2xl border border-border bg-bg-surface shadow-sm overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-bg-surface">
                         <div className="flex items-center gap-2">
-                            <Calendar className={`w-4 h-4 ${isDark ? 'text-primary-400' : 'text-primary-500'}`} />
-                            <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Lịch bảo trì</span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                            <Calendar className="w-4 h-4 text-primary-500" />
+                            <span className="text-xs font-bold text-txt-primary">Lịch bảo trì</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-bg-muted text-txt-muted border border-border">
                                 {maintenanceTimeline.length} mục
                             </span>
                         </div>
@@ -303,15 +298,15 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                     <div className="max-h-[280px] overflow-y-auto">
                         {maintenanceTimeline.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-10 gap-2">
-                                <Calendar className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Chưa có lịch bảo trì</p>
+                                <Calendar className="w-6 h-6 text-txt-muted" />
+                                <p className="text-xs text-txt-muted">Chưa có lịch bảo trì</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-slate-800/30">
+                            <div className="divide-y divide-border">
                                 {maintenanceTimeline.map((item, idx) => (
                                     <div
                                         key={item.asset.asset_id}
-                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-50' : 'hover:bg-blue-50/30'}`}
+                                        className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-bg-muted/50"
                                     >
                                         {/* Timeline dot */}
                                         <div className="flex flex-col items-center gap-0.5 shrink-0">
@@ -321,27 +316,27 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                         : 'bg-emerald-500'
                                                 }`} />
                                             {idx < maintenanceTimeline.length - 1 && (
-                                                <div className={`w-px h-3 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                                                <div className="w-px h-3 bg-border" />
                                             )}
                                         </div>
                                         {/* Date */}
                                         <div className="w-20 shrink-0">
-                                            <div className={`text-xs font-bold ${item.overdue ? 'text-red-500' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                            <div className={`text-xs font-bold ${item.overdue ? 'text-red-500' : 'text-txt-primary'}`}>
                                                 {item.date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                             </div>
                                             <div className={`text-[10px] ${item.overdue ? 'text-red-400 font-semibold'
                                                 : item.daysUntil <= 7 ? 'text-primary-500'
-                                                    : isDark ? 'text-slate-500' : 'text-gray-400'
+                                                    : 'text-txt-muted'
                                                 }`}>
                                                 {item.overdue ? `Quá ${Math.abs(item.daysUntil)} ngày` : item.daysUntil === 0 ? 'Hôm nay' : `${item.daysUntil} ngày nữa`}
                                             </div>
                                         </div>
                                         {/* Asset info */}
                                         <div className="flex-1 min-w-0">
-                                            <div className={`text-xs font-medium truncate ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                            <div className="text-xs font-medium truncate text-txt-primary">
                                                 {item.asset.asset_name}
                                             </div>
-                                            <div className={`text-[10px] truncate ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                            <div className="text-[10px] truncate text-txt-muted">
                                                 {item.asset.category && <span>{item.asset.category}</span>}
                                                 {item.asset.location && <span> · {item.asset.location}</span>}
                                             </div>
@@ -360,17 +355,15 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Asset Inventory ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white dark:bg-slate-800 border-gray-200'} shadow-sm overflow-hidden`}>
+                <div className="rounded-2xl border border-border bg-bg-surface shadow-sm overflow-hidden">
                     {/* Inventory header — sticky */}
-                    <div className={`px-4 py-3 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 z-10
-                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-white dark:bg-slate-800'}
-                    `}>
+                    <div className="px-4 py-3 border-b border-border flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 z-10 bg-bg-surface">
                         <div className="flex items-center gap-2">
-                            <Layers className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
-                            <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                            <Layers className="w-4 h-4 text-emerald-500" />
+                            <span className="text-sm font-bold text-txt-primary">
                                 Danh sách tài sản
                             </span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-bg-muted text-txt-muted border border-border">
                                 {filteredAssets.length} / {stats.total}
                             </span>
                         </div>
@@ -378,9 +371,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                         {/* Filters */}
                         <div className="flex items-center gap-2 flex-wrap">
                             {/* Search */}
-                            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs border
-                                ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
-                            `}>
+                            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs border border-border bg-bg-surface text-txt-primary">
                                 <Search className="w-3.5 h-3.5 opacity-50" />
                                 <input
                                     type="text"
@@ -395,9 +386,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                             <select
                                 value={statusFilter}
                                 onChange={e => setStatusFilter(e.target.value)}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
-                                `}
+                                className="px-2.5 py-1.5 rounded-xl text-xs border border-border cursor-pointer bg-bg-surface text-txt-primary"
                             >
                                 <option value="all">Tất cả trạng thái</option>
                                 {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -409,9 +398,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                             <select
                                 value={categoryFilter}
                                 onChange={e => setCategoryFilter(e.target.value)}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
-                                `}
+                                className="px-2.5 py-1.5 rounded-xl text-xs border border-border cursor-pointer bg-bg-surface text-txt-primary"
                             >
                                 <option value="all">Tất cả danh mục</option>
                                 {ASSET_CATEGORIES.map(c => (
@@ -423,9 +410,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                             <select
                                 value={groupBy}
                                 onChange={e => setGroupBy(e.target.value as any)}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs border cursor-pointer
-                                    ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-600'}
-                                `}
+                                className="px-2.5 py-1.5 rounded-xl text-xs border border-border cursor-pointer bg-bg-surface text-txt-primary"
                             >
                                 <option value="none">Không nhóm</option>
                                 <option value="category">Nhóm theo danh mục</option>
@@ -439,28 +424,28 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                     <div className="overflow-x-auto">
                         {loading ? (
                             <div className="flex items-center justify-center py-16">
-                                <RefreshCw className={`w-6 h-6 animate-spin ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+                                <RefreshCw className="w-6 h-6 animate-spin text-txt-muted" />
                             </div>
                         ) : filteredAssets.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-16 gap-2">
-                                <Package className={`w-8 h-8 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                <Package className="w-8 h-8 text-txt-muted" />
+                                <p className="text-xs text-txt-muted">
                                     {assets.length === 0 ? 'Chưa có tài sản nào' : 'Không tìm thấy tài sản phù hợp'}
                                 </p>
                             </div>
                         ) : (
                             <table className="w-full text-xs">
-                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                     <tr>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Mã TS</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Tên tài sản</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Danh mục</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Vị trí</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Trạng thái</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Tình trạng</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Bảo trì tiếp</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">Ghi chú</th>
-                                        <th className="px-3 py-2.5 text-left text-slate-500 dark:text-slate-400">BIM</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Mã TS</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Tên tài sản</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Danh mục</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Vị trí</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Trạng thái</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Tình trạng</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Bảo trì tiếp</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">Ghi chú</th>
+                                        <th className="px-3 py-2.5 text-left text-txt-muted">BIM</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -469,14 +454,14 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                             {/* Group header */}
                                             {groupBy !== 'none' && (
                                                 <tr
-                                                    className={`cursor-pointer ${isDark ? 'bg-slate-50 hover:bg-slate-50' : 'bg-slate-50 dark:bg-slate-800 hover:bg-gray-100'}`}
+                                                    className="cursor-pointer bg-bg-muted hover:bg-bg-muted/80"
                                                     onClick={() => toggleGroup(group)}
                                                 >
-                                                    <td colSpan={9} className={`px-3 py-2 font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                                    <td colSpan={9} className="px-3 py-2 font-bold text-txt-primary">
                                                         <div className="flex items-center gap-1.5">
                                                             {expandedGroups.has(group) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                                                             {group}
-                                                            <span className={`ml-1 text-[10px] font-normal ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                            <span className="ml-1 text-[10px] font-normal text-txt-muted">
                                                                 ({items.length})
                                                             </span>
                                                         </div>
@@ -491,43 +476,43 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                 return (
                                                     <tr
                                                         key={a.asset_id}
-                                                        className={`border-t transition-colors ${isDark ? 'border-slate-800/50 hover:bg-slate-50' : 'border-gray-50 hover:bg-blue-50/30'}`}
+                                                        className="border-t border-border/50 transition-colors hover:bg-bg-muted/30"
                                                     >
-                                                        <td className={`px-3 py-2 font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                        <td className="px-3 py-2 font-mono text-txt-muted">
                                                             {a.asset_code || '—'}
                                                         </td>
-                                                        <td className={`px-3 py-2 font-medium ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                                        <td className="px-3 py-2 font-medium text-txt-primary">
                                                             {a.asset_name}
                                                             {a.manufacturer && (
-                                                                <span className={`ml-1.5 text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                                <span className="ml-1.5 text-[10px] text-txt-muted">
                                                                     {a.manufacturer}
                                                                 </span>
                                                             )}
                                                         </td>
-                                                        <td className={`px-3 py-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                        <td className="px-3 py-2 text-txt-muted">
                                                             {a.category || '—'}
                                                         </td>
-                                                        <td className={`px-3 py-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                        <td className="px-3 py-2 text-txt-muted">
                                                             {a.location || '—'}
                                                         </td>
                                                         <td className="px-3 py-2">
-                                                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-${statusCfg.color}-500/10 text-${statusCfg.color}-500`}>
+                                                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-xl bg-${statusCfg.color}-500/10 text-${statusCfg.color}-500`}>
                                                                 <statusCfg.icon className="w-3 h-3" />
                                                                 {statusCfg.label}
                                                             </span>
                                                         </td>
                                                         <td className="px-3 py-2">
-                                                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded bg-${condCfg.color}-500/10 text-${condCfg.color}-500`}>
+                                                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-xl bg-${condCfg.color}-500/10 text-${condCfg.color}-500`}>
                                                                 {condCfg.label}
                                                             </span>
                                                         </td>
-                                                        <td className={`px-3 py-2 ${isOverdue ? 'text-red-500 font-semibold' : isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                        <td className={`px-3 py-2 ${isOverdue ? 'text-red-500 font-semibold' : 'text-txt-muted'}`}>
                                                             {a.next_maintenance
                                                                 ? new Date(a.next_maintenance).toLocaleDateString('vi-VN')
                                                                 : '—'}
                                                             {isOverdue && <AlertTriangle className="w-3 h-3 inline ml-1" />}
                                                         </td>
-                                                        <td className={`px-3 py-2 max-w-[120px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                        <td className="px-3 py-2 max-w-[120px] text-txt-muted">
                                                             {a.notes ? (
                                                                 <span className="flex items-center gap-1 truncate" title={a.notes}>
                                                                     <FileText className="w-3 h-3 shrink-0" />
@@ -539,7 +524,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                             {a.bim_element_id ? (
                                                                 <span className="text-emerald-500 text-[10px] font-bold">Có</span>
                                                             ) : (
-                                                                <span className={`text-[10px] ${isDark ? 'text-slate-600' : 'text-gray-300'}`}>—</span>
+                                                                <span className="text-[10px] text-txt-muted">—</span>
                                                             )}
                                                         </td>
                                                     </tr>

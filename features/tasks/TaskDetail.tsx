@@ -151,12 +151,20 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
         // Tự động ghi nhận báo cáo vào Monthly Plan nếu có liên kết
         if (task.MonthlyPlanItemID && note) {
+            const updatePayload: any = {
+                status: finalStatus === 'done' ? 'completed' : finalStatus === 'incomplete' ? 'incomplete' : 'planned'
+            };
+            if (finalStatus === 'done') {
+                updatePayload.completion_result = note;
+            } else if (finalStatus === 'incomplete') {
+                updatePayload.incomplete_reason = note;
+            } else {
+                updatePayload.completion_result = note;
+            }
+
             await supabase
                 .from('monthly_plan_items')
-                .update({ 
-                    completion_result: note,
-                    status: finalStatus === 'done' ? 'completed' : 'incomplete'
-                })
+                .update(updatePayload)
                 .eq('id', task.MonthlyPlanItemID);
         }
 

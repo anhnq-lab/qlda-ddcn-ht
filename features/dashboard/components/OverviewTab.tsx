@@ -37,15 +37,15 @@ const PhaseBadge: React.FC<{ status: number }> = ({ status }) => {
 };
 
 // ── Progress Bar Inline ──────────────────────────────────
-const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color = '#4a90e2' }) => (
+const ProgressBar: React.FC<{ value: number; color?: string }> = ({ value, color = '#00668c' }) => (
     <div className="flex items-center gap-2">
-        <div className="flex-1 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-bg-subtle rounded-full overflow-hidden">
             <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color, minWidth: value > 0 ? '4px' : '0' }}
             />
         </div>
-        <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300 w-8 text-right">{value}%</span>
+        <span className="text-[10px] font-bold text-txt-secondary w-8 text-right">{value}%</span>
     </div>
 );
 
@@ -204,13 +204,13 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
     };
 
     return (
-        <div className="space-y-6 animate-fade-in fade-in-up">
+        <div className="space-y-[var(--density-section-gap)] animate-fade-in fade-in-up">
 
 
             {/* ═══════════════════════════════════════════════════
                 1. STAT CARDS — 4 cards
             ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-[var(--density-form-gap)]">
                 <StatCard
                     label="Dự án đang quản lý"
                     value={filteredRows.length.toString()}
@@ -271,18 +271,18 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             {/* ═══════════════════════════════════════════════════
                 2. BIỂU ĐỒ TỔNG QUAN DỰ ÁN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[300px]">
-                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[300px]">
+                <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-[280px] animate-pulse" />}>
                     <ErrorBoundary>
                         <AISummaryWidget className="h-full overflow-y-auto" />
                     </ErrorBoundary>
                 </Suspense>
                 
-                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+                <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-[280px] animate-pulse" />}>
                     <ProjectStatusByBoardChart projects={filteredRows} onSegmentClick={handleProjectBoardStatusClick} />
                 </Suspense>
 
-                <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-[280px] animate-pulse" />}>
+                <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-[280px] animate-pulse" />}>
                     <ProjectDetailedStatusWidget projects={filteredRows} onSegmentClick={handleDetailedStatusClick} />
                 </Suspense>
             </div>
@@ -290,11 +290,11 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             {/* ═══════════════════════════════════════════════════
                 3. GIẢI NGÂN THEO BAN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[400px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[400px]">
                 <div className="lg:col-span-2">
                     {capitalVsDisbursement && (
                         <Suspense fallback={
-                            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex items-center justify-center">
+                            <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
                             </div>
                         }>
@@ -303,7 +303,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     )}
                 </div>
                 <div className="lg:col-span-1">
-                    <Suspense fallback={<div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full animate-pulse" />}>
+                    <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>
                         <TaskCompletionChart data={taskCompletion} loading={loadingTasks} onSegmentClick={handleTaskClick} />
                     </Suspense>
                 </div>
@@ -312,9 +312,9 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             {/* ═══════════════════════════════════════════════════
                 4. MAP + ALERTS
             ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[300px] xl:h-[500px]">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-[var(--density-form-gap)] min-h-[300px] xl:h-[500px]">
                 {/* Map (2/3) */}
-                <div className="xl:col-span-2 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden h-full flex flex-col">
+                <div className="xl:col-span-2 bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border relative overflow-hidden h-full flex flex-col">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 shrink-0">
                         <h3 className="section-header !mb-0">
                             <div className="section-icon"><MapIcon className="w-5 h-5" /></div>
@@ -327,7 +327,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
                                     showProjects 
                                         ? 'bg-primary-50 border-primary-200 text-primary-700 dark:bg-primary-900/20 dark:border-primary-700/50 dark:text-primary-400' 
-                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+                                        : 'bg-bg-surface border-border text-txt-secondary hover:bg-bg-muted'
                                 }`}
                                 title="Hiển thị Dự án trên bản đồ"
                             >
@@ -341,7 +341,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 className={`px-3 py-1.5 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 whitespace-nowrap ${
                                     showMines 
                                         ? 'bg-warning-50 border-warning-200 text-warning-700 dark:bg-warning-900/20 dark:border-warning-700/50 dark:text-warning-400' 
-                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+                                        : 'bg-bg-surface border-border text-txt-secondary hover:bg-bg-muted'
                                 }`}
                                 title="Hiển thị Mỏ vật liệu (Đất, Đá, Cát) trên bản đồ"
                             >
@@ -349,18 +349,18 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                 {showMines ? 'Đang hiện Mỏ vật liệu' : 'Hiện Mỏ vật liệu'}
                             </button>
                             <div className="relative flex-1 sm:w-64">
-                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <Search className="w-4 h-4 text-txt-muted absolute left-3 top-1/2 -translate-y-1/2" />
                                 <input
                                     type="text"
                                     placeholder="Tìm dự án, mỏ vật liệu..."
                                     value={mapSearchQuery}
                                     onChange={(e) => setMapSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:text-slate-200 transition-shadow"
+                                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-bg-subtle border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-txt-primary transition-shadow"
                                 />
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 w-full bg-gray-100 dark:bg-slate-300 rounded-2xl relative border border-gray-200 dark:border-slate-400 overflow-hidden z-0">
+                    <div className="flex-1 w-full bg-bg-app rounded-2xl relative border border-border overflow-hidden z-0">
                         {loadingProjects ? (
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
@@ -375,8 +375,8 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                             </Suspense>
                         )}
                         {/* Legend */}
-                        <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm z-[1000] max-h-[80%] overflow-y-auto w-56">
-                            <h4 className="text-[9px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2 whitespace-nowrap" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích trạng thái (Bấm để lọc)</h4>
+                        <div className="absolute top-4 right-4 bg-bg-elevated backdrop-blur-sm p-3 rounded-xl border border-border shadow-sm z-[1000] max-h-[80%] overflow-y-auto w-56">
+                            <h4 className="text-[9px] font-black text-txt-muted uppercase tracking-wide mb-2 whitespace-nowrap" title="Bấm vào một trạng thái để lọc dự án trên bản đồ">Chú thích trạng thái (Bấm để lọc)</h4>
                             <div className="space-y-1.5">
                                 {Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([key, config]) => {
                                     const statusNum = Number(key);
@@ -389,7 +389,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                                             title={activeStatusFilter === statusNum ? "Bấm để bỏ lọc" : "Bấm để lọc dự án theo trạng thái này"}
                                         >
                                             <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm transition-transform duration-200" style={{ backgroundColor: config.hex, transform: isActive ? 'scale(1.2)' : 'scale(1)' }} />
-                                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300 truncate" title={config.label}>{config.label}</span>
+                                            <span className="text-[10px] font-bold text-txt-secondary truncate" title={config.label}>{config.label}</span>
                                         </div>
                                     );
                                 })}
@@ -399,7 +399,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                 </div>
 
                 {/* Alerts (1/3) */}
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/30 relative overflow-hidden h-full flex flex-col">
+                <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-red-100 dark:border-red-950 relative overflow-hidden h-full flex flex-col">
                     <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
                     <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0" style={{ paddingLeft: '0.75rem', borderLeft: '3px solid #EF4444' }}>
                         <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
@@ -413,7 +413,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                         ) : risks && risks.length > 0 ? (
                             risks.map((r: any) => (
                                 <div key={r.id} className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 rounded-xl flex items-start gap-3 transition-transform hover:scale-[1.02]">
-                                    <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg text-red-500 shadow-sm shrink-0">
+                                    <div className="p-1.5 bg-bg-surface rounded-lg text-red-500 shadow-sm shrink-0">
                                         <AlertCircle className="w-4 h-4" />
                                     </div>
                                     <div>
@@ -428,7 +428,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     </div>
                     <button
                         onClick={() => navigate('/reports')}
-                        className="w-full mt-4 py-2 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0 shadow-sm hover:shadow"
+                        className="w-full mt-4 py-2 bg-bg-surface border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0 shadow-sm hover:shadow"
                     >
                         Xem chi tiết báo cáo rủi ro
                     </button>

@@ -31,18 +31,18 @@ const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }:
     const endItem = Math.min(page * pageSize, total);
 
     return (
-        <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 mt-3">
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <div className="flex items-center justify-between bg-bg-surface rounded-2xl border border-border px-4 py-2.5 mt-3">
+            <span className="text-xs text-txt-muted font-medium">
                 Hiển thị {startItem}-{endItem} / {total} dự án
             </span>
             <div className="flex items-center gap-1">
                 <button
                     onClick={() => onPageChange(Math.max(1, page - 1))}
                     disabled={page <= 1}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     aria-label="Trang trước"
                 >
-                    <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                    <ChevronLeft className="w-4 h-4 text-txt-secondary" />
                 </button>
                 {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
                     let pageNum: number;
@@ -62,7 +62,7 @@ const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }:
                             className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
                                 page === pageNum
                                     ? 'bg-primary-500 text-white shadow-sm'
-                                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                    : 'text-txt-secondary hover:bg-bg-muted'
                             }`}
                         >
                             {pageNum}
@@ -72,10 +72,10 @@ const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }:
                 <button
                     onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                     disabled={page >= totalPages}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     aria-label="Trang sau"
                 >
-                    <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                    <ChevronRight className="w-4 h-4 text-txt-secondary" />
                 </button>
             </div>
         </div>
@@ -168,38 +168,38 @@ const ProjectList: React.FC = () => {
                 <div className="flex-1 w-full space-y-4">
 
                     {/* Toolbar */}
-                    <div className="bg-white dark:bg-slate-800 p-2 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="bg-bg-surface p-2 pr-4 rounded-2xl border border-border shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative w-full md:flex-1">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 w-4 h-4" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-txt-muted w-4 h-4" />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm dự án, mã, chủ đầu tư..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-transparent border-none rounded-xl focus:ring-0 text-sm font-medium text-slate-800 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                                className="w-full pl-10 pr-4 py-3 bg-transparent border-none rounded-2xl focus:ring-0 text-sm font-medium text-txt-primary placeholder:text-txt-muted"
                                 aria-label="Tìm kiếm dự án"
                             />
                         </div>
 
                         <div className="flex items-center gap-3 shrink-0 px-2 pb-2 md:pb-0">
                             {/* Result count */}
-                            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap hidden sm:inline">
+                            <span className="text-xs text-txt-muted font-medium whitespace-nowrap hidden sm:inline">
                                 {total} dự án
                             </span>
 
-                            <div className="h-8 w-px bg-slate-100 dark:bg-slate-700 hidden md:block"></div>
+                            <div className="h-8 w-px bg-border-subtle hidden md:block"></div>
 
-                            <div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
+                            <div className="flex bg-bg-muted p-1 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
                                     aria-label="Hiển thị dạng lưới"
                                 >
                                     <LayoutGrid className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
                                     aria-label="Hiển thị dạng danh sách"
                                 >
                                     <ListIcon className="w-4 h-4" />
@@ -208,11 +208,11 @@ const ProjectList: React.FC = () => {
 
                             {/* Sort Dropdown */}
                             <div className="flex items-center gap-1.5">
-                                <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                                <ArrowUpDown className="w-3.5 h-3.5 text-txt-muted" />
                                 <select
                                     value={sortBy}
                                     onChange={e => setSortBy(e.target.value as SortOption)}
-                                    className="text-xs font-semibold bg-transparent border-none outline-none text-slate-600 dark:text-slate-300 cursor-pointer pr-4"
+                                    className="text-xs font-semibold bg-transparent border-none outline-none text-txt-secondary cursor-pointer pr-4"
                                     aria-label="Sắp xếp dự án"
                                 >
                                     <option value="name">Tên A→Z</option>
@@ -222,7 +222,7 @@ const ProjectList: React.FC = () => {
                                 </select>
                             </div>
 
-                            <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2 hidden sm:block"></div>
+                            <div className="h-6 w-px bg-border mx-2 hidden sm:block"></div>
 
                             <PermissionGate resource="projects" action="create">
                                 <button
@@ -249,7 +249,7 @@ const ProjectList: React.FC = () => {
                         {isLoading ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="bg-white dark:bg-slate-800 h-72 rounded-2xl p-4 space-y-4 border border-slate-200 dark:border-slate-700">
+                                    <div key={i} className="bg-bg-surface h-72 rounded-2xl p-4 space-y-4 border border-border">
                                         <Skeleton className="h-40 w-full rounded-xl" />
                                         <Skeleton className="h-4 w-3/4" />
                                         <Skeleton className="h-4 w-1/2" />
@@ -260,20 +260,20 @@ const ProjectList: React.FC = () => {
                             <EmptyState
                                 icon={
                                     <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="60" cy="60" r="56" fill="currentColor" className="text-gray-50 dark:text-slate-700/50" />
-                                        <rect x="30" y="35" width="60" height="45" rx="6" stroke="currentColor" strokeWidth="2" className="text-gray-300 dark:text-slate-600" fill="none" />
-                                        <path d="M30 47h60" stroke="currentColor" strokeWidth="2" className="text-gray-300 dark:text-slate-600" />
-                                        <circle cx="38" cy="41" r="2" fill="currentColor" className="text-gray-300 dark:text-slate-600" />
-                                        <circle cx="45" cy="41" r="2" fill="currentColor" className="text-gray-300 dark:text-slate-600" />
-                                        <circle cx="52" cy="41" r="2" fill="currentColor" className="text-gray-300 dark:text-slate-600" />
-                                        <path d="M50 62l6 6 14-14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 dark:text-slate-600" />
+                                        <circle cx="60" cy="60" r="56" fill="currentColor" className="text-bg-muted" />
+                                        <rect x="30" y="35" width="60" height="45" rx="6" stroke="currentColor" strokeWidth="2" className="text-border" fill="none" />
+                                        <path d="M30 47h60" stroke="currentColor" strokeWidth="2" className="text-border" />
+                                        <circle cx="38" cy="41" r="2" fill="currentColor" className="text-border" />
+                                        <circle cx="45" cy="41" r="2" fill="currentColor" className="text-border" />
+                                        <circle cx="52" cy="41" r="2" fill="currentColor" className="text-border" />
+                                        <path d="M50 62l6 6 14-14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-border" />
                                     </svg>
                                 }
                                 title={hasActiveFilters ? 'Không tìm thấy dự án phù hợp' : 'Chưa có dự án nào'}
                                 description={hasActiveFilters
                                     ? 'Không có dự án nào phù hợp với bộ lọc hiện tại. Hãy thử thay đổi từ khóa hoặc bộ lọc.'
                                     : 'Hãy bắt đầu bằng việc tạo dự án đầu tiên.'}
-                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 border-dashed"
+                                className="bg-bg-surface rounded-2xl border border-border border-dashed"
                             >
                                 {hasActiveFilters ? (
                                     <button
@@ -295,23 +295,23 @@ const ProjectList: React.FC = () => {
                                 )}
                             </EmptyState>
                         ) : viewMode === 'list' ? (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
                                     <table className="w-full text-left text-sm">
-                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                                            <tr className="text-slate-500 dark:text-slate-400">
-                                                <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
-                                                <th className="px-4 py-3 min-w-[280px] border-b border-slate-200 dark:border-slate-700">Tên dự án</th>
-                                                <th className="px-4 py-3 text-center w-20 border-b border-slate-200 dark:border-slate-700">Nhóm</th>
-                                                <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Phòng QLDA</th>
-                                                <th className="px-4 py-3 text-center w-36 border-b border-slate-200 dark:border-slate-700">Giai đoạn</th>
-                                                <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Tiến độ</th>
-                                                <th className="px-4 py-3 text-right w-28 border-b border-slate-200 dark:border-slate-700">Giải ngân</th>
-                                                <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-700">Tổng mức ĐT</th>
-                                                <th className="px-4 py-3 min-w-[160px] border-b border-slate-200 dark:border-slate-700">Nguồn vốn</th>
+                                        <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
+                                            <tr className="text-txt-muted">
+                                                <th className="px-3 py-3 text-center w-12 border-b border-border">STT</th>
+                                                <th className="px-4 py-3 min-w-[280px] border-b border-border">Tên dự án</th>
+                                                <th className="px-4 py-3 text-center w-20 border-b border-border">Nhóm</th>
+                                                <th className="px-4 py-3 text-center w-24 border-b border-border">Phòng QLDA</th>
+                                                <th className="px-4 py-3 text-center w-36 border-b border-border">Giai đoạn</th>
+                                                <th className="px-4 py-3 text-right w-28 border-b border-border">Tiến độ</th>
+                                                <th className="px-4 py-3 text-right w-28 border-b border-border">Giải ngân</th>
+                                                <th className="px-4 py-3 text-right w-32 border-b border-border">Tổng mức ĐT</th>
+                                                <th className="px-4 py-3 min-w-[160px] border-b border-border">Nguồn vốn</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                        <tbody className="divide-y divide-border-subtle">
                                             {scopedProjects.map((project, index) => {
                                                 const board = project.ManagementBoard ? MANAGEMENT_BOARDS.find(b => b.value === project.ManagementBoard) : null;
                                                 const currentStatus = project.CurrentStatusCode ? PROJECT_CURRENT_STATUS_CONFIG[project.CurrentStatusCode] : null;
@@ -320,25 +320,25 @@ const ProjectList: React.FC = () => {
                                                 return (
                                                     <tr
                                                         key={project.ProjectID}
-                                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/50"
+                                                        className="group cursor-pointer transition-all duration-200 hover:bg-bg-muted"
                                                         onClick={() => handleOpenProject(project)}
                                                     >
                                                         {/* STT */}
-                                                        <td className="px-3 py-4 text-center text-xs text-slate-500 dark:text-slate-400 font-medium tabular-nums">
+                                                        <td className="px-3 py-4 text-center text-xs text-txt-muted font-medium tabular-nums">
                                                             {(page - 1) * pageSize + index + 1}
                                                         </td>
                                                         {/* Dự án */}
                                                         <td className="px-4 py-4">
                                                             <div className="flex flex-col">
-                                                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm leading-snug line-clamp-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
+                                                                <p className="font-semibold text-txt-primary text-sm leading-snug line-clamp-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
                                                                     {project.ProjectName}
                                                                 </p>
                                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                                    <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1 rounded">
+                                                                    <span className="font-mono text-[10px] text-txt-muted bg-bg-muted px-1 rounded">
                                                                         #{(project.ProjectID || '').slice(-5)}
                                                                     </span>
                                                                     {project.LocationCode && (
-                                                                        <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[220px]">
+                                                                        <span className="text-[10px] text-txt-muted truncate max-w-[220px]">
                                                                             {project.LocationCode}
                                                                         </span>
                                                                     )}
@@ -358,7 +358,7 @@ const ProjectList: React.FC = () => {
                                                                     Phòng {board.value}
                                                                 </span>
                                                             ) : (
-                                                                <span className="text-slate-300 dark:text-slate-600">—</span>
+                                                                <span className="text-txt-muted">—</span>
                                                             )}
                                                         </td>
                                                         {/* Giai đoạn */}
@@ -383,14 +383,14 @@ const ProjectList: React.FC = () => {
                                                         </td>
                                                         {/* Tổng mức ĐT */}
                                                         <td className="px-4 py-4 text-right">
-                                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 tabular-nums whitespace-nowrap">
+                                                            <span className="text-xs font-bold text-txt-primary tabular-nums whitespace-nowrap">
                                                                 {formatCurrency(project.TotalInvestment)}
                                                             </span>
                                                         </td>
                                                         {/* Nguồn vốn */}
                                                         <td className="px-4 py-4">
-                                                            <span className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2">
-                                                                {project.CapitalSource || <span className="text-slate-300 dark:text-slate-600">—</span>}
+                                                            <span className="text-[11px] text-txt-secondary line-clamp-2">
+                                                                {project.CapitalSource || <span className="text-txt-muted">—</span>}
                                                             </span>
                                                         </td>
                                                     </tr>

@@ -137,7 +137,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             finalWinningPrice = data.bid_price;
                         }
                     } catch (e) {
-                        console.log('No bidder entry to fallback to');
+                        // Expected: no bidder entry to fallback to
                     }
                 }
 
@@ -280,7 +280,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 setWinningPrice(data.bid_price.toString());
             }
         } catch (e) {
-            console.log('No bidder entry found to prefill winning price');
+            // Expected: no bidder entry found to prefill
         }
     };
 

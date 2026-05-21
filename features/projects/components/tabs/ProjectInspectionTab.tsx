@@ -18,9 +18,9 @@ function formatFileSize(bytes: number): string {
 // ── Status Badge ──
 const FollowUpBadge: React.FC<{ status: FollowUpStatus }> = ({ status }) => {
     const config: Record<FollowUpStatus, { bg: string; text: string; icon: React.ElementType }> = {
-        pending: { bg: 'bg-primary-100 dark:bg-primary-900/30', text: 'text-primary-700 dark:text-primary-400', icon: Clock },
-        in_progress: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400', icon: AlertTriangle },
-        completed: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', icon: CheckCircle2 },
+        pending: { bg: 'bg-primary-500/10', text: 'text-primary-500', icon: Clock },
+        in_progress: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: AlertTriangle },
+        completed: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', icon: CheckCircle2 },
     };
     const c = config[status];
     const Icon = c.icon;
@@ -34,11 +34,11 @@ const FollowUpBadge: React.FC<{ status: FollowUpStatus }> = ({ status }) => {
 
 const TypeBadge: React.FC<{ type: InspectionType }> = ({ type }) => {
     const colors: Record<InspectionType, string> = {
-        thanh_tra: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-        kiem_toan: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+        thanh_tra: 'bg-red-500/10 text-red-500 border border-red-500/20',
+        kiem_toan: 'bg-purple-500/10 text-purple-500 border border-purple-500/20',
     };
     return (
-        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${colors[type]}`}>
+        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${colors[type]}`}>
             {INSPECTION_TYPE_LABELS[type]}
         </span>
     );
@@ -98,28 +98,28 @@ const StatusActionDropdown: React.FC<{
                 ref={btnRef}
                 onClick={handleToggle}
                 disabled={isUpdating}
-                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-bg-muted rounded-xl transition-colors"
                 title="Chuyển trạng thái"
             >
                 {isUpdating ? (
-                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
                 ) : (
-                    <ArrowUpDown className="w-4 h-4 text-blue-500" />
+                    <ArrowUpDown className="w-4 h-4 text-primary-500" />
                 )}
             </button>
             {open && (
                 <div
                     ref={dropRef}
-                    className="fixed bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[200px]"
+                    className="fixed bg-bg-surface rounded-2xl shadow-lg border border-border py-1 min-w-[200px]"
                     style={{ top: pos.top, right: pos.right, zIndex: 9999 }}
                     onClick={e => e.stopPropagation()}
                 >
-                    <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">Chuyển trạng thái</p>
+                    <p className="px-3 py-1.5 text-[10px] font-bold text-txt-muted uppercase tracking-wider">Chuyển trạng thái</p>
                     {t.next.map(status => (
                         <button
                             key={status}
                             onClick={() => { onChangeStatus(status); setOpen(false); }}
-                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors text-gray-700 dark:text-slate-300"
+                            className="w-full text-left px-3 py-2.5 text-sm hover:bg-bg-muted transition-colors text-txt-primary"
                         >
                             {t.labels[status]}
                         </button>
@@ -187,17 +187,17 @@ const AttachmentSection: React.FC<{
     return (
         <div>
             <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider">
                     File đính kèm ({attachments.length})
                 </p>
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-500 bg-primary-500/10 rounded-xl hover:bg-primary-500/20 transition-colors disabled:opacity-50"
                 >
                     {uploading ? (
-                        <div className="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="w-3.5 h-3.5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
                     ) : (
                         <Upload className="w-3.5 h-3.5" />
                     )}
@@ -215,26 +215,26 @@ const AttachmentSection: React.FC<{
             {attachments.length > 0 ? (
                 <div className="space-y-1.5">
                     {attachments.map((att, i) => (
-                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-700 rounded-lg group">
-                            <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                            <span className="text-xs text-gray-700 dark:text-slate-300 truncate flex-1">{att.name}</span>
-                            {att.size && <span className="text-[10px] text-gray-400 shrink-0">{att.size}</span>}
+                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-bg-muted rounded-xl group border border-border">
+                            <Paperclip className="w-3.5 h-3.5 text-txt-muted shrink-0" />
+                            <span className="text-xs text-txt-primary truncate flex-1">{att.name}</span>
+                            {att.size && <span className="text-[10px] text-txt-muted shrink-0">{att.size}</span>}
                             {att.url && (
-                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors shrink-0" title="Tải xuống">
-                                    <Download className="w-3.5 h-3.5 text-blue-500" />
+                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-bg-surface rounded-lg transition-colors shrink-0" title="Tải xuống">
+                                    <Download className="w-3.5 h-3.5 text-primary-500" />
                                 </a>
                             )}
-                            <button type="button" onClick={() => handleRemove(i)} className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors opacity-0 group-hover:opacity-100 shrink-0">
-                                <X className="w-3.5 h-3.5 text-red-400" />
+                            <button type="button" onClick={() => handleRemove(i)} className="p-1.5 hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100 shrink-0">
+                                <X className="w-3.5 h-3.5 text-red-500" />
                             </button>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="flex items-center justify-center py-4 bg-gray-50 dark:bg-slate-700 rounded-lg border border-dashed border-gray-300 dark:border-slate-600 cursor-pointer hover:border-blue-400 transition-colors" onClick={() => fileInputRef.current?.click()}>
+                <div className="flex items-center justify-center py-4 bg-bg-muted rounded-xl border border-dashed border-border cursor-pointer hover:border-primary-500 transition-colors" onClick={() => fileInputRef.current?.click()}>
                     <div className="text-center">
-                        <FileIcon className="w-5 h-5 text-gray-300 dark:text-slate-400 mx-auto mb-1" />
-                        <p className="text-[10px] text-gray-400 dark:text-slate-400">Kéo thả hoặc nhấn để tải file</p>
+                        <FileIcon className="w-5 h-5 text-txt-muted mx-auto mb-1" />
+                        <p className="text-[10px] text-txt-muted">Kéo thả hoặc nhấn để tải file</p>
                     </div>
                 </div>
             )}
@@ -275,20 +275,20 @@ const InspectionFormModal: React.FC<{
         }
     };
 
-    const inputCls = "w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all";
-    const labelCls = "text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1 block";
+    const inputCls = "w-full px-3 py-2 text-sm rounded-xl border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all";
+    const labelCls = "text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1 block";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 z-10">
-                    <h3 className="text-base font-black text-gray-800 dark:text-slate-100 flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-red-600" />
+            <div className="relative bg-bg-surface rounded-2xl shadow-lg border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-bg-surface z-10">
+                    <h3 className="text-base font-black text-txt-primary flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-red-500" />
                         {editData ? 'Sửa thông tin thanh tra' : 'Thêm đợt thanh tra/kiểm toán'}
                     </h3>
-                    <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                        <X className="w-5 h-5 text-gray-400" />
+                    <button onClick={onClose} className="p-1.5 hover:bg-bg-muted rounded-xl transition-colors">
+                        <X className="w-5 h-5 text-txt-muted" />
                     </button>
                 </div>
 
@@ -379,11 +379,11 @@ const InspectionFormModal: React.FC<{
                         onAttachmentsChange={(atts) => setForm(f => ({ ...f, Attachments: atts }))}
                     />
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-700">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold text-txt-secondary bg-bg-muted rounded-xl hover:bg-bg-muted/80 transition-colors">
                             Hủy
                         </button>
-                        <button type="submit" disabled={saving || !form.InspectionName?.trim()} className="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2">
+                        <button type="submit" disabled={saving || !form.InspectionName?.trim()} className="px-6 py-2 text-sm font-bold text-white bg-red-500 rounded-xl hover:bg-red-600 disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2">
                             {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Shield className="w-4 h-4" />}
                             {editData ? 'Cập nhật' : 'Thêm mới'}
                         </button>
@@ -459,9 +459,9 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
         return (
             <div className="space-y-4 animate-pulse">
                 <div className="grid grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-20 bg-gray-100 dark:bg-slate-700 rounded-2xl" />)}
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-20 bg-bg-muted rounded-2xl" />)}
                 </div>
-                <div className="h-64 bg-gray-100 dark:bg-slate-700 rounded-2xl" />
+                <div className="h-64 bg-bg-muted rounded-2xl" />
             </div>
         );
     }
@@ -486,17 +486,17 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Tìm kiếm..."
-                            className="pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-red-500 outline-none w-56"
+                            className="pl-9 pr-3 py-2 text-sm rounded-xl border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none w-56"
                         />
                     </div>
-                    <select value={filterType} onChange={e => setFilterType(e.target.value)} className="px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100">
+                    <select value={filterType} onChange={e => setFilterType(e.target.value)} className="px-3 py-2 text-sm rounded-xl border border-border bg-bg-surface text-txt-primary">
                         <option value="all">Tất cả loại</option>
                         {Object.entries(INSPECTION_TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                     </select>
                 </div>
                 <button
                     onClick={() => { setEditingItem(null); setShowModal(true); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all shadow-sm hover:shadow-md dark:bg-blue-500 dark:hover:bg-primary-600"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-sm"
                 >
                     <Plus className="w-4 h-4" /> Thêm đợt thanh tra
                 </button>
@@ -505,34 +505,34 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
             {/* List */}
             {filteredInspections.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded-full mb-4">
-                        <Shield className="w-8 h-8 text-gray-300 dark:text-slate-400" />
+                    <div className="p-4 bg-bg-muted rounded-full mb-4">
+                        <Shield className="w-8 h-8 text-txt-muted" />
                     </div>
-                    <p className="text-sm font-bold text-gray-400 dark:text-slate-400">Chưa có thông tin thanh tra / kiểm toán</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Nhấn "Thêm đợt thanh tra" để bắt đầu</p>
+                    <p className="text-sm font-bold text-txt-muted">Chưa có thông tin thanh tra / kiểm toán</p>
+                    <p className="text-xs text-txt-muted mt-1">Nhấn "Thêm đợt thanh tra" để bắt đầu</p>
                 </div>
             ) : (
                 <div className="space-y-3">
                     {filteredInspections.map((item: any) => {
                         const isExpanded = expandedId === item.InspectionID;
                         return (
-                            <div key={item.InspectionID} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
+                            <div key={item.InspectionID} className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden transition-shadow hover:shadow-md">
                                 {/* Header Row */}
                                 <div
                                     className="px-5 py-4 flex items-center justify-between cursor-pointer"
                                     onClick={() => setExpandedId(isExpanded ? null : item.InspectionID)}
                                 >
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                                        <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-xl shrink-0">
-                                            <Shield className="w-5 h-5 text-red-600 dark:text-red-400" />
+                                        <div className="p-2 bg-red-500/10 rounded-xl shrink-0">
+                                            <Shield className="w-5 h-5 text-red-500" />
                                         </div>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <h4 className="text-sm font-bold text-gray-800 dark:text-slate-100 truncate">{item.InspectionName}</h4>
+                                                <h4 className="text-sm font-bold text-txt-primary truncate">{item.InspectionName}</h4>
                                                 <TypeBadge type={item.InspectionType} />
                                                 <FollowUpBadge status={item.FollowUpStatus} />
                                             </div>
-                                            <div className="flex items-center gap-3 mt-1 text-[10px] text-gray-400 dark:text-slate-400 font-medium">
+                                            <div className="flex items-center gap-3 mt-1 text-[10px] text-txt-muted font-medium">
                                                 {item.InspectionAgency && (
                                                     <span className="flex items-center gap-1"><Building2 className="w-3 h-3" /> {item.InspectionAgency}</span>
                                                 )}
@@ -553,7 +553,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                                     </div>
                                     <div className="flex items-center gap-1 shrink-0 ml-3">
                                         {item.Penalties > 0 && (
-                                            <span className="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-md">
+                                            <span className="text-xs font-bold text-red-500 bg-red-500/10 px-2 py-0.5 rounded-xl border border-red-500/20">
                                                 {formatFullCurrency(item.Penalties)}
                                             </span>
                                         )}
@@ -562,55 +562,55 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                                             onChangeStatus={(s) => handleStatusChange(item, s)}
                                             isUpdating={updatingStatusId === item.InspectionID}
                                         />
-                                        <button onClick={(e) => { e.stopPropagation(); setEditingItem(item); setShowModal(true); }} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                            <Edit3 className="w-4 h-4 text-gray-400 dark:text-slate-400" />
+                                        <button onClick={(e) => { e.stopPropagation(); setEditingItem(item); setShowModal(true); }} className="p-1.5 hover:bg-bg-muted rounded-xl transition-colors">
+                                            <Edit3 className="w-4 h-4 text-txt-muted" />
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(item); }} className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                                            <Trash2 className="w-4 h-4 text-gray-300 dark:text-slate-600 hover:text-red-500" />
+                                        <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(item); }} className="p-1.5 hover:bg-red-500/10 rounded-xl transition-colors">
+                                            <Trash2 className="w-4 h-4 text-txt-muted hover:text-red-500" />
                                         </button>
-                                        {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                                        {isExpanded ? <ChevronUp className="w-4 h-4 text-txt-muted" /> : <ChevronDown className="w-4 h-4 text-txt-muted" />}
                                     </div>
                                 </div>
 
                                 {/* Expanded Details */}
                                 {isExpanded && (
-                                    <div className="px-5 pb-5 border-t border-gray-100 dark:border-slate-700 pt-4 space-y-3">
+                                    <div className="px-5 pb-5 border-t border-border pt-4 space-y-3">
                                         {item.Conclusion && (
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Kết luận</p>
-                                                <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{item.Conclusion}</p>
+                                                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Kết luận</p>
+                                                <p className="text-sm text-txt-secondary whitespace-pre-wrap">{item.Conclusion}</p>
                                             </div>
                                         )}
                                         {item.Recommendations && (
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Khuyến nghị / Kiến nghị</p>
-                                                <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{item.Recommendations}</p>
+                                                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Khuyến nghị / Kiến nghị</p>
+                                                <p className="text-sm text-txt-secondary whitespace-pre-wrap">{item.Recommendations}</p>
                                             </div>
                                         )}
                                         {item.FollowUpNotes && (
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Ghi chú xử lý sau thanh tra/kiểm toán</p>
-                                                <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{item.FollowUpNotes}</p>
+                                                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Ghi chú xử lý sau thanh tra/kiểm toán</p>
+                                                <p className="text-sm text-txt-secondary whitespace-pre-wrap">{item.FollowUpNotes}</p>
                                             </div>
                                         )}
                                         {item.FollowUpDeadline && (
-                                            <p className="text-xs text-gray-500 dark:text-slate-400">
+                                            <p className="text-xs text-txt-muted">
                                                 <span className="font-bold">Hạn xử lý:</span> {item.FollowUpDeadline}
                                             </p>
                                         )}
                                         {/* Attachments in expanded view */}
                                         {item.Attachments.length > 0 && (
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">File đính kèm ({item.Attachments.length})</p>
+                                                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-2">File đính kèm ({item.Attachments.length})</p>
                                                 <div className="space-y-1.5">
                                                     {item.Attachments.map((att: any, i: number) => (
-                                                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                                                            <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                                                            <span className="text-xs text-gray-700 dark:text-slate-300 truncate flex-1">{att.name}</span>
-                                                            {att.size && <span className="text-[10px] text-gray-400 shrink-0">{att.size}</span>}
+                                                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-bg-muted rounded-xl border border-border">
+                                                            <Paperclip className="w-3.5 h-3.5 text-txt-muted shrink-0" />
+                                                            <span className="text-xs text-txt-primary truncate flex-1">{att.name}</span>
+                                                            {att.size && <span className="text-[10px] text-txt-muted shrink-0">{att.size}</span>}
                                                             {att.url && (
-                                                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors shrink-0">
-                                                                    <Download className="w-3.5 h-3.5 text-blue-500" />
+                                                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-bg-surface rounded-lg transition-colors shrink-0">
+                                                                    <Download className="w-3.5 h-3.5 text-primary-500" />
                                                                 </a>
                                                             )}
                                                         </div>

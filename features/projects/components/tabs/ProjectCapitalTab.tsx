@@ -381,18 +381,18 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 SECTION E — Cảnh báo rủi ro (Moved to top)
                ════════════════════════════════════════════ */}
             {alerts.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-warning-50/50 dark:bg-warning-900/20">
-                        <h3 className="text-sm font-bold text-warning-800 dark:text-warning-400 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                    <div className="px-6 py-3 border-b border-border bg-yellow-500/10">
+                        <h3 className="text-sm font-bold text-yellow-500 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" />
                             Cảnh báo giải ngân
                         </h3>
                     </div>
                     <div className="p-4 space-y-2">
                         {alerts.map((a, i) => (
-                            <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${a.level === 'high'
-                                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300'
-                                : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-300'
+                            <div key={i} className={`p-3 rounded-xl border flex items-start gap-3 ${a.level === 'high'
+                                ? 'bg-red-500/10 border-red-500/20 text-red-500'
+                                : 'bg-primary-500/10 border-primary-500/20 text-primary-500'
                                 }`}>
                                 <div className="mt-0.5">{a.icon}</div>
                                 <p className="text-sm font-medium">{a.message}</p>
@@ -412,19 +412,19 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                ════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Capital Plan Table with Sub-tabs */}
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700">
+                <div className="lg:col-span-2 bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                    <div className="px-5 py-3 border-b border-border flex flex-wrap justify-between items-center gap-2 bg-bg-muted">
                         <div className="flex items-center gap-4">
-                            <div className="flex bg-gray-200/60 dark:bg-slate-800 p-1 rounded-xl items-center border border-gray-200/80 dark:border-slate-700">
+                            <div className="flex bg-bg-muted p-1 rounded-2xl items-center border border-border">
                                 <button
                                     onClick={() => setCapitalSubTab('mid_term')}
-                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'mid_term' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${capitalSubTab === 'mid_term' ? 'bg-bg-surface text-primary-500 shadow-sm' : 'text-txt-muted hover:text-txt-primary'}`}
                                 >
                                     <CalendarRange className="w-3.5 h-3.5" /> Trung hạn
                                 </button>
                                 <button
                                     onClick={() => setCapitalSubTab('annual')}
-                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all flex items-center gap-1.5 ${capitalSubTab === 'annual' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                                    className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${capitalSubTab === 'annual' ? 'bg-bg-surface text-primary-500 shadow-sm' : 'text-txt-muted hover:text-txt-primary'}`}
                                 >
                                     <Calendar className="w-3.5 h-3.5" /> Hàng năm
                                 </button>
@@ -434,7 +434,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <select
                                     value={annualPeriodFilter}
                                     onChange={(e) => setAnnualPeriodFilter(e.target.value)}
-                                    className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs text-gray-700 dark:text-slate-300 font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
+                                    className="px-3 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-primary font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
                                 >
                                     <option value="all">Tất cả giai đoạn</option>
                                     {capitalPlans.filter(p => p.PlanType === 'mid_term').sort((a, b) => (b.PeriodStart || 0) - (a.PeriodStart || 0)).map(p => (
@@ -445,7 +445,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         </div>
                         <button
                             onClick={() => { setEditingPlan(null); setModalPlanType(capitalSubTab); setPlanModalOpen(true); }}
-                            className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                            className="px-3 py-1.5 bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
                         >
                             <Plus className="w-3.5 h-3.5" /> {capitalSubTab === 'mid_term' ? 'Nhập KH trung hạn' : 'Nhập KH hằng năm'}
                         </button>
@@ -461,7 +461,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     icon={<CalendarRange className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
                                     title="Chưa có KH vốn trung hạn"
                                     description={'Nhấn "Nhập KH trung hạn" để tạo giai đoạn 5 năm'}
-                                    className="border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl"
+                                    className="border border-dashed border-border rounded-2xl"
                                 />
                                 ) : (
                                     midTermPlans.map(plan => {
@@ -475,31 +475,31 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         const canAddAnnual = linkedAnnual.length < ((plan.PeriodEnd || 0) - (plan.PeriodStart || 0) + 1);
 
                                         return (
-                                            <div key={plan.PlanID} className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                                            <div key={plan.PlanID} className="border border-border rounded-2xl overflow-hidden">
                                                 <div
-                                                    className="px-5 py-3 bg-gradient-to-r from-blue-50 to-primary-50 dark:from-blue-900/20 dark:to-primary-900/20 cursor-pointer hover:from-blue-100 hover:to-primary-100 dark:hover:from-blue-900/30 dark:hover:to-primary-900/30 transition-colors"
+                                                    className="px-5 py-3 bg-bg-muted/50 cursor-pointer hover:bg-bg-muted transition-colors"
                                                     onClick={() => setExpandedMidTermPlan(isExpanded ? null : plan.PlanID)}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
-                                                            {isExpanded ? <ChevronDown className="w-4 h-4 text-blue-600" /> : <ChevronRight className="w-4 h-4 text-blue-600" />}
+                                                            {isExpanded ? <ChevronDown className="w-4 h-4 text-primary-500" /> : <ChevronRight className="w-4 h-4 text-primary-500" />}
                                                             <div>
-                                                                <h4 className="text-sm font-black text-gray-800 dark:text-slate-100">
+                                                                <h4 className="text-sm font-black text-txt-primary">
                                                                     Giai đoạn {plan.PeriodStart}–{plan.PeriodEnd}
                                                                 </h4>
-                                                                <p className="text-[10px] text-gray-500 dark:text-slate-400">
+                                                                <p className="text-[10px] text-txt-muted">
                                                                     {plan.DecisionNumber} • {plan.DateAssigned ? new Date(plan.DateAssigned).toLocaleDateString('vi-VN') : ''} • {plan.Source}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-3">
                                                             <div className="text-right">
-                                                                <p className="text-base font-black text-blue-700 dark:text-blue-400">{formatCurrency(plan.Amount)}</p>
+                                                                <p className="text-base font-black text-primary-500">{formatCurrency(plan.Amount)}</p>
                                                                 <div className="flex items-center gap-1.5 mt-0.5 justify-end">
-                                                                    <div className="h-1.5 w-16 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(disbRate, 100)}%` }} />
+                                                                    <div className="h-1.5 w-16 bg-bg-muted rounded-full overflow-hidden">
+                                                                        <div className="h-full bg-primary-500 rounded-full" style={{ width: `${Math.min(disbRate, 100)}%` }} />
                                                                     </div>
-                                                                    <span className="text-[10px] font-bold text-gray-500">GN {disbRate.toFixed(1)}%</span>
+                                                                    <span className="text-[10px] font-bold text-txt-muted">GN {disbRate.toFixed(1)}%</span>
                                                                 </div>
                                                             </div>
                                                             <span className={`px-2 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1 ${badge.color}`}>
@@ -508,14 +508,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                             <div className="flex gap-1 ml-1">
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setEditingPlan(plan); setModalPlanType('mid_term'); setPlanModalOpen(true); }}
-                                                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                                                    className="p-1.5 text-txt-muted hover:text-primary-500 hover:bg-bg-muted rounded-xl transition-colors"
                                                                     title="Sửa KH trung hạn"
                                                                 >
                                                                     <Edit3 className="w-3.5 h-3.5" />
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ type: 'plan', id: plan.PlanID }); }}
-                                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                                                    className="p-1.5 text-txt-muted hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
                                                                     title="Xóa KH trung hạn"
                                                                 >
                                                                     <Trash2 className="w-3.5 h-3.5" />
@@ -526,39 +526,39 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                 </div>
 
                                                 {isExpanded && (
-                                                    <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                                    <div className="px-5 py-4 border-t border-border bg-bg-surface">
                                                         <div className="grid grid-cols-4 gap-3 mb-4">
-                                                            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                                                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">Tổng KH trung hạn</p>
-                                                                <p className="text-sm font-black text-blue-700 dark:text-blue-400 mt-1">{formatCurrency(plan.Amount)}</p>
+                                                            <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl">
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Tổng KH trung hạn</p>
+                                                                <p className="text-sm font-black text-blue-500 mt-1">{formatCurrency(plan.Amount)}</p>
                                                             </div>
-                                                            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg">
-                                                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">Đã giải ngân</p>
-                                                                <p className="text-sm font-black text-emerald-600 mt-1">{formatCurrency(totalAnnualDisbursed)}</p>
+                                                            <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-2xl">
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Đã giải ngân</p>
+                                                                <p className="text-sm font-black text-emerald-500 mt-1">{formatCurrency(totalAnnualDisbursed)}</p>
                                                             </div>
-                                                            <div className="bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg">
-                                                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">Đã phân bổ HN</p>
-                                                                <p className="text-sm font-black text-primary-600 mt-1">{formatCurrency(totalAnnualAllocated)}</p>
+                                                            <div className="bg-primary-500/10 border border-primary-500/20 p-3 rounded-2xl">
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Đã phân bổ HN</p>
+                                                                <p className="text-sm font-black text-primary-500 mt-1">{formatCurrency(totalAnnualAllocated)}</p>
                                                             </div>
-                                                            <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
-                                                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">Chưa phân bổ</p>
-                                                                <p className="text-sm font-black text-purple-600 mt-1">{formatCurrency(Math.max(0, plan.Amount - totalAnnualAllocated))}</p>
+                                                            <div className="bg-purple-500/10 border border-purple-500/20 p-3 rounded-2xl">
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Chưa phân bổ</p>
+                                                                <p className="text-sm font-black text-purple-500 mt-1">{formatCurrency(Math.max(0, plan.Amount - totalAnnualAllocated))}</p>
                                                             </div>
                                                         </div>
 
                                                         {plan.Notes && (
-                                                            <div className="bg-bg-app dark:bg-slate-800 p-2.5 rounded-lg mb-4 text-xs text-gray-600 dark:text-slate-300 italic flex items-start gap-1.5">
-                                                                <FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" />
+                                                            <div className="bg-bg-muted p-2.5 rounded-xl mb-4 text-xs text-txt-secondary italic flex items-start gap-1.5">
+                                                                <FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-txt-muted" />
                                                                 <span>{plan.Notes}</span>
                                                             </div>
                                                         )}
 
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <h5 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider">Phân bổ theo năm ({linkedAnnual.length} KH)</h5>
+                                                            <h5 className="text-[10px] font-black text-txt-muted uppercase tracking-wider">Phân bổ theo năm ({linkedAnnual.length} KH)</h5>
                                                             {canAddAnnual && (
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setEditingPlan(null); setModalPlanType('annual'); setPlanModalOpen(true); }}
-                                                                    className="text-blue-600 hover:text-blue-700 text-[10px] font-bold flex items-center gap-1 transition-colors"
+                                                                    className="text-primary-500 hover:text-primary-600 text-[10px] font-bold flex items-center gap-1 transition-colors"
                                                                 >
                                                                     <Plus className="w-3 h-3" /> Nhập KH hằng năm
                                                                 </button>
@@ -566,29 +566,29 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         </div>
                                                         {linkedAnnual.length > 0 ? (
                                                             <table className="w-full text-xs mb-4">
-                                                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                                                <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                                                     <tr>
-                                                                        <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Năm</th>
-                                                                        <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">QĐ giao vốn</th>
-                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Vốn giao</th>
-                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Đã GN</th>
-                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Tỷ lệ</th>
-                                                                        <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400 w-16">Thao tác</th>
+                                                                        <th className="px-3 py-2 text-left text-txt-muted">Năm</th>
+                                                                        <th className="px-3 py-2 text-left text-txt-muted">QĐ giao vốn</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">Vốn giao</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">Đã GN</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">Tỷ lệ</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted w-16">Thao tác</th>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                                                <tbody className="divide-y divide-border">
                                                                     {[...linkedAnnual].sort((a, b) => a.Year - b.Year).map(ap => {
                                                                         const apRate = ap.Amount > 0 ? ((ap.DisbursedAmount || 0) / ap.Amount) * 100 : 0;
                                                                         return (
-                                                                            <tr key={ap.PlanID} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10">
-                                                                                <td className="px-3 py-2 font-bold text-gray-800 dark:text-slate-100">{ap.Year}</td>
-                                                                                <td className="px-3 py-2 text-gray-600 dark:text-slate-300">{ap.DecisionNumber || '—'}</td>
-                                                                                <td className="px-3 py-2 text-right font-mono font-bold text-blue-700">{formatCurrency(ap.Amount)}</td>
-                                                                                <td className="px-3 py-2 text-right font-mono text-emerald-600">{formatCurrency(ap.DisbursedAmount || 0)}</td>
+                                                                            <tr key={ap.PlanID} className="group hover:bg-bg-muted/50">
+                                                                                <td className="px-3 py-2 font-bold text-txt-primary">{ap.Year}</td>
+                                                                                <td className="px-3 py-2 text-txt-secondary">{ap.DecisionNumber || '—'}</td>
+                                                                                <td className="px-3 py-2 text-right font-mono font-bold text-primary-500">{formatCurrency(ap.Amount)}</td>
+                                                                                <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(ap.DisbursedAmount || 0)}</td>
                                                                                 <td className="px-3 py-2 text-right">
                                                                                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                                                                        apRate >= 90 ? 'bg-emerald-100 text-emerald-600' :
-                                                                                        apRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-warning-100 text-warning-600'
+                                                                                        apRate >= 90 ? 'bg-emerald-500/10 text-emerald-500' :
+                                                                                        apRate >= 50 ? 'bg-primary-500/10 text-primary-500' : 'bg-yellow-500/10 text-yellow-500'
                                                                                     }`}>{apRate.toFixed(1)}%</span>
                                                                                 </td>
                                                                                 <td className="px-3 py-2 text-right">
@@ -603,13 +603,13 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                                                     setPlanModalOpen(true); 
                                                                                                 }
                                                                                             }} 
-                                                                                            className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"
+                                                                                            className="p-1 text-txt-muted hover:text-primary-500 hover:bg-bg-muted rounded-xl"
                                                                                         >
                                                                                             <Edit3 className="w-3.5 h-3.5" />
                                                                                         </button>
                                                                                         <button 
                                                                                             onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ type: 'plan', id: ap.PlanID }); }} 
-                                                                                            className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
+                                                                                            className="p-1 text-txt-muted hover:text-red-500 hover:bg-red-500/10 rounded-xl"
                                                                                         >
                                                                                             <Trash2 className="w-3.5 h-3.5" />
                                                                                         </button>
@@ -621,7 +621,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                 </tbody>
                                                             </table>
                                                         ) : (
-                                                            <div className="text-center py-4 text-gray-400 text-[10px]">Chưa có KH hàng năm trong giai đoạn này</div>
+                                                            <div className="text-center py-4 text-txt-muted text-[10px]">Chưa có KH hàng năm trong giai đoạn này</div>
                                                         )}
 
 
@@ -660,29 +660,29 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         return (
                         <div className="flex flex-col">
                             {filteredAnnualPlans.length > 0 && (
-                                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800 flex items-center justify-between">
-                                    <div className="text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
+                                <div className="px-5 py-3 border-b border-border bg-bg-muted flex items-center justify-between">
+                                    <div className="text-xs font-semibold text-txt-secondary uppercase tracking-wider">
                                         Tổng hợp Kế hoạch Hằng năm
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="text-right">
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase mb-0.5">Vốn giao</p>
-                                            <p className="text-xs font-black text-blue-700 dark:text-blue-400">{formatCurrency(totalAnnualPlanAmount)}</p>
+                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">Vốn giao</p>
+                                            <p className="text-xs font-black text-primary-500">{formatCurrency(totalAnnualPlanAmount)}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase mb-0.5">Đã giải ngân</p>
+                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">Đã giải ngân</p>
                                             <p className="text-xs font-black text-emerald-600">{formatCurrency(totalAnnualDisbursed)}</p>
                                         </div>
                                         <div className="w-32">
                                             <div className="flex justify-between text-[10px] font-bold mb-1">
-                                                <span className="text-gray-500">Tỷ lệ</span>
-                                                <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-blue-600' : 'text-warning-600'}>
+                                                <span className="text-txt-muted">Tỷ lệ</span>
+                                                <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-primary-500' : 'text-yellow-600'}>
                                                     {totalAnnualRate.toFixed(1)}%
                                                 </span>
                                             </div>
-                                            <div className="h-1.5 w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-bg-muted rounded-full overflow-hidden">
                                                 <div 
-                                                    className={`h-full rounded-full transition-all duration-500 ${totalAnnualRate >= 90 ? 'bg-emerald-500' : totalAnnualRate >= 50 ? 'bg-blue-500' : 'bg-warning-500'}`} 
+                                                    className={`h-full rounded-full transition-all duration-500 ${totalAnnualRate >= 90 ? 'bg-emerald-500' : totalAnnualRate >= 50 ? 'bg-primary-500' : 'bg-yellow-500'}`} 
                                                     style={{ width: `${Math.min(totalAnnualRate, 100)}%` }} 
                                                 />
                                             </div>
@@ -692,41 +692,41 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             )}
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                    <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                         <tr>
-                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">Năm</th>
-                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">QĐ giao vốn</th>
-                                            <th className="px-4 py-2.5 text-right text-slate-500 dark:text-slate-400">Vốn giao</th>
-                                            <th className="px-4 py-2.5 text-right text-slate-500 dark:text-slate-400">Đã giải ngân</th>
-                                            <th className="px-4 py-2.5 text-left text-slate-500 dark:text-slate-400">Tỷ lệ</th>
-                                            <th className="px-4 py-2.5 text-center text-slate-500 dark:text-slate-400 w-20">Thao tác</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">Năm</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">QĐ giao vốn</th>
+                                            <th className="px-4 py-2.5 text-right text-txt-muted">Vốn giao</th>
+                                            <th className="px-4 py-2.5 text-right text-txt-muted">Đã giải ngân</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">Tỷ lệ</th>
+                                            <th className="px-4 py-2.5 text-center text-txt-muted w-20">Thao tác</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
+                                    <tbody className="divide-y divide-border">
                                         {filteredAnnualPlans.sort((a, b) => a.Year - b.Year).map(a => (
-                                            <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
+                                            <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-bg-muted/50 transition-colors">
                                         <td className="px-4 py-2.5">
-                                            <span className="font-bold text-gray-800 dark:text-slate-100">Năm {a.Year}</span>
+                                            <span className="font-bold text-txt-primary">Năm {a.Year}</span>
                                         </td>
                                         <td className="px-4 py-2.5">
-                                            <span className="text-gray-700 dark:text-slate-300 font-medium text-xs">{a.DecisionNumber}</span>
-                                            <p className="text-[10px] text-gray-400 dark:text-slate-400 italic">{a.DateAssigned ? new Date(a.DateAssigned).toLocaleDateString('vi-VN') : ''}</p>
+                                            <span className="text-txt-secondary font-medium text-xs">{a.DecisionNumber}</span>
+                                            <p className="text-[10px] text-txt-muted italic">{a.DateAssigned ? new Date(a.DateAssigned).toLocaleDateString('vi-VN') : ''}</p>
                                         </td>
-                                        <td className="px-4 py-2.5 text-right font-mono font-bold text-blue-700 dark:text-blue-400 text-xs">
+                                        <td className="px-4 py-2.5 text-right font-mono font-bold text-primary-500 text-xs">
                                             {formatCurrency(a.Amount)}
                                         </td>
-                                        <td className="px-4 py-2.5 text-right font-mono font-medium text-emerald-600 dark:text-emerald-400 text-xs">
+                                        <td className="px-4 py-2.5 text-right font-mono font-medium text-emerald-500 text-xs">
                                             {formatCurrency(a.disbursed)}
                                         </td>
                                         <td className="px-4 py-2.5">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-16 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
+                                                <div className="w-16 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                                     <div
-                                                        className={`h-full rounded-full ${a.rate >= 90 ? 'bg-emerald-500' : a.rate >= 50 ? 'bg-blue-500' : 'bg-warning-500'}`}
+                                                        className={`h-full rounded-full ${a.rate >= 90 ? 'bg-emerald-500' : a.rate >= 50 ? 'bg-primary-500' : 'bg-yellow-500'}`}
                                                         style={{ width: `${Math.min(a.rate, 100)}%` }}
                                                     />
                                                 </div>
-                                                <span className={`text-[10px] font-bold ${a.rate >= 90 ? 'text-emerald-600 dark:text-emerald-400' : a.rate >= 50 ? 'text-blue-600 dark:text-blue-400' : 'text-warning-600 dark:text-warning-400'}`}>
+                                                <span className={`text-[10px] font-bold ${a.rate >= 90 ? 'text-emerald-500' : a.rate >= 50 ? 'text-primary-500' : 'text-yellow-500'}`}>
                                                     {a.rate.toFixed(0)}%
                                                 </span>
                                             </div>
@@ -744,14 +744,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         DateAssigned: a.DateAssigned,
                                                         DisbursedAmount: a.disbursed,
                                                     })}
-                                                    className="p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors"
+                                                    className="p-1 hover:bg-bg-muted text-txt-muted hover:text-primary-500 rounded-xl transition-colors"
                                                     title="Sửa"
                                                 >
                                                     <Pencil className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={() => setDeleteConfirm({ type: 'plan', id: a.PlanID || (a as any).AllocationID })}
-                                                    className="p-1 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                    className="p-1 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
                                                     title="Xóa"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
@@ -760,18 +760,18 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         </td>
                                     </tr>
                                 ))}
-                                <tr className="bg-blue-50/50 dark:bg-blue-900/20 font-bold border-t border-blue-200 dark:border-blue-800">
-                                    <td className="px-4 py-2.5 text-gray-800 dark:text-slate-100" colSpan={2}>
+                                <tr className="bg-bg-muted/50 font-bold border-t border-border">
+                                    <td className="px-4 py-2.5 text-txt-primary" colSpan={2}>
                                         Tổng cộng
                                     </td>
-                                    <td className="px-4 py-2.5 text-right font-mono text-blue-800 dark:text-blue-400 text-xs">
+                                    <td className="px-4 py-2.5 text-right font-mono text-primary-500 text-xs">
                                         {formatCurrency(totalAnnualPlanAmount)}
                                     </td>
-                                    <td className="px-4 py-2.5 text-right font-mono text-emerald-700 dark:text-emerald-400 text-xs">
+                                    <td className="px-4 py-2.5 text-right font-mono text-emerald-500 text-xs">
                                         {formatCurrency(totalAnnualDisbursed)}
                                     </td>
                                     <td className="px-4 py-2.5">
-                                        <span className={`text-xs font-bold ${totalAnnualRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-warning-600 dark:text-warning-400'}`}>
+                                        <span className={`text-xs font-bold ${totalAnnualRate >= 50 ? 'text-emerald-500' : 'text-yellow-500'}`}>
                                             {totalAnnualRate.toFixed(1)}%
                                         </span>
                                     </td>
@@ -786,9 +786,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         </div>
 
                 {/* Donut Chart — Nguồn vốn */}
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
-                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-                        <Wallet className="w-4 h-4 text-purple-600" />
+                <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
+                    <h3 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
+                        <Wallet className="w-4 h-4 text-purple-500" />
                         Phân bổ nguồn vốn
                     </h3>
                     <div className="h-52 w-full">
@@ -819,9 +819,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             <div key={s.name} className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                                    <span className="text-gray-600 dark:text-slate-400">{s.name}</span>
+                                    <span className="text-txt-muted">{s.name}</span>
                                 </div>
-                                <span className="font-bold text-gray-800 dark:text-slate-100">{formatCurrency(s.value)}</span>
+                                <span className="font-bold text-txt-primary">{formatCurrency(s.value)}</span>
                             </div>
                         ))}
                     </div>
@@ -831,21 +831,21 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION C — Kế hoạch giải ngân theo tháng
                ════════════════════════════════════════════ */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700">
-                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
-                        <CalendarRange className="w-4 h-4 text-violet-600" />
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border flex flex-wrap justify-between items-center gap-3 bg-bg-muted">
+                    <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wider flex items-center gap-2">
+                        <CalendarRange className="w-4 h-4 text-violet-500" />
                         Kế hoạch giải ngân theo tháng
                     </h3>
                     <div className="flex items-center gap-2">
-                        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
+                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5">
                             {planYears.map(year => (
                                 <button
                                     key={year}
                                     onClick={() => setPlanYearFilter(year)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${planYearFilter === year
-                                        ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
-                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${planYearFilter === year
+                                        ? 'bg-bg-surface text-txt-primary shadow-sm'
+                                        : 'text-txt-muted hover:text-txt-primary'
                                     }`}
                                 >
                                     {year}
@@ -854,16 +854,16 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         </div>
                         {/* Mini summary badges */}
                         <div className="hidden md:flex items-center gap-2 text-xs">
-                            <span className="px-2 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 font-bold">
+                            <span className="px-2 py-1 rounded-full bg-violet-500/10 text-violet-500 font-bold">
                                 KH: {formatCurrency(planSummary.totalPlanned)}
                             </span>
-                            <span className="px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">
+                            <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 font-bold">
                                 TT: {formatCurrency(planSummary.totalActual)} ({planSummary.rate.toFixed(1)}%)
                             </span>
                         </div>
                         <button
                             onClick={() => { setDisbPlanModalOpen(true); }}
-                            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all ml-2"
+                            className="px-3 py-1.5 bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all ml-2"
                         >
                             <Plus className="w-3.5 h-3.5" /> Lập KH tháng
                         </button>
@@ -875,26 +875,26 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     <div className="h-72 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <ComposedChart data={planChartData} barCategoryGap="15%">
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-border-subtle)" />
                                 <XAxis
                                     dataKey="label"
                                     axisLine={false}
                                     tickLine={false}
                                     fontSize={10}
-                                    tick={{ fill: '#9ca3af' }}
+                                    tick={{ fill: 'var(--txt-muted)' }}
                                     interval={0}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
                                     fontSize={10}
-                                    tick={{ fill: '#9ca3af' }}
+                                    tick={{ fill: 'var(--txt-muted)' }}
                                     tickFormatter={(v: number) => v >= 1e9 ? `${(v / 1e9).toFixed(0)} tỷ` : `${(v / 1e6).toFixed(0)} tr`}
                                     width={55}
                                 />
                                 <Tooltip
                                     cursor={{ fill: 'rgba(139, 92, 246, 0.05)' }}
-                                    contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }}
+                                    contentStyle={{ borderRadius: 12, border: '1px solid var(--border-border)', backgroundColor: 'var(--bg-surface)', fontSize: 12 }}
                                     formatter={(value: unknown, name: unknown) => {
                                         const labels: Record<string, string> = {
                                             planned: 'Kế hoạch',
@@ -911,7 +911,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             planned: 'Kế hoạch giải ngân',
                                             actual: 'Giải ngân thực tế',
                                         };
-                                        return <span className="text-xs">{labels[value] || value}</span>;
+                                        return <span className="text-xs text-txt-secondary">{labels[value] || value}</span>;
                                     }}
                                 />
                                 <Bar dataKey="planned" fill="#8b5cf6" radius={[4, 4, 0, 0]} opacity={0.7} name="planned" />
@@ -923,47 +923,47 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
 
                 {/* Table KH tháng */}
                 {filteredPlanData.length > 0 ? (
-                    <div className="px-6 pb-6 mt-4 border-t border-gray-100 dark:border-slate-700/50 pt-4">
+                    <div className="px-6 pb-6 mt-4 border-t border-border pt-4">
                         <table className="w-full text-xs">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                 <tr>
-                                    <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Tháng</th>
-                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">KH giải ngân</th>
-                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Thực tế</th>
-                                    <th className="px-3 py-2 text-right text-slate-500 dark:text-slate-400">Tỷ lệ</th>
-                                    <th className="px-3 py-2 text-left text-slate-500 dark:text-slate-400">Việc trong tháng</th>
-                                    <th className="px-3 py-2 text-center text-slate-500 dark:text-slate-400 w-16">Thao tác</th>
+                                    <th className="px-3 py-2 text-left text-txt-muted">Tháng</th>
+                                    <th className="px-3 py-2 text-right text-txt-muted">KH giải ngân</th>
+                                    <th className="px-3 py-2 text-right text-txt-muted">Thực tế</th>
+                                    <th className="px-3 py-2 text-right text-txt-muted">Tỷ lệ</th>
+                                    <th className="px-3 py-2 text-left text-txt-muted">Việc trong tháng</th>
+                                    <th className="px-3 py-2 text-center text-txt-muted w-16">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                            <tbody className="divide-y divide-border">
                                 {[...filteredPlanData].sort((a,b)=>a.Month - b.Month).map((d) => {
                                     const mRate = d.PlannedAmount > 0 ? (d.ActualAmount / d.PlannedAmount) * 100 : 0;
                                     return (
-                                        <tr key={d.Id} className="hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition-colors">
-                                            <td className="px-3 py-2 font-bold text-gray-800 dark:text-slate-100">Tháng {d.Month}</td>
-                                            <td className="px-3 py-2 text-right font-mono text-violet-700 dark:text-violet-400">{formatCurrency(d.PlannedAmount)}</td>
-                                            <td className="px-3 py-2 text-right font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(d.ActualAmount)}</td>
+                                        <tr key={d.Id} className="hover:bg-violet-500/10 transition-colors">
+                                            <td className="px-3 py-2 font-bold text-txt-primary">Tháng {d.Month}</td>
+                                            <td className="px-3 py-2 text-right font-mono text-violet-500">{formatCurrency(d.PlannedAmount)}</td>
+                                            <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(d.ActualAmount)}</td>
                                             <td className="px-3 py-2 text-right">
                                                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                                    mRate >= 90 ? 'bg-emerald-100 text-emerald-600' :
-                                                    mRate >= 50 ? 'bg-blue-100 text-blue-600' : 'bg-warning-100 text-warning-600'
+                                                    mRate >= 90 ? 'bg-emerald-500/10 text-emerald-500' :
+                                                    mRate >= 50 ? 'bg-primary-500/10 text-primary-500' : 'bg-yellow-500/10 text-yellow-500'
                                                 }`}>{mRate.toFixed(1)}%</span>
                                             </td>
-                                            <td className="px-3 py-2 text-gray-500 italic max-w-xs truncate" title={d.Notes}>{d.Notes || '—'}</td>
+                                            <td className="px-3 py-2 text-txt-muted italic max-w-xs truncate" title={d.Notes}>{d.Notes || '—'}</td>
                                             <td className="px-3 py-2 text-center">
                                                 <div className="flex items-center justify-center gap-1">
                                                     {!d.Id.startsWith('auto-') && (
                                                         <>
                                                             <button
                                                                 onClick={() => handleEditDisbPlan(d)}
-                                                                className="p-1 hover:bg-violet-100 dark:hover:bg-violet-900/40 text-gray-400 hover:text-violet-600 rounded-lg transition-colors"
+                                                                className="p-1 hover:bg-bg-muted text-txt-muted hover:text-violet-500 rounded-xl transition-colors"
                                                                 title="Sửa kế hoạch"
                                                             >
                                                                 <Pencil className="w-3.5 h-3.5" />
                                                             </button>
                                                             <button
                                                                 onClick={() => setDeleteConfirm({ type: 'disbPlan', id: d.Id })}
-                                                                className="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                                className="p-1 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
                                                                 title="Xóa kế hoạch"
                                                             >
                                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -976,12 +976,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     );
                                 })}
                                 {/* Tổng cộng footer */}
-                                <tr className="bg-violet-50/50 dark:bg-violet-900/20 font-bold border-t border-violet-200 dark:border-violet-800">
-                                    <td className="px-3 py-2 text-gray-800 dark:text-slate-100">Tổng cộng</td>
-                                    <td className="px-3 py-2 text-right font-mono text-violet-700 dark:text-violet-400">{formatCurrency(planSummary.totalPlanned)}</td>
-                                    <td className="px-3 py-2 text-right font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(planSummary.totalActual)}</td>
+                                <tr className="bg-violet-500/10 font-bold border-t border-border">
+                                    <td className="px-3 py-2 text-txt-primary">Tổng cộng</td>
+                                    <td className="px-3 py-2 text-right font-mono text-violet-500">{formatCurrency(planSummary.totalPlanned)}</td>
+                                    <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(planSummary.totalActual)}</td>
                                     <td className="px-3 py-2 text-right">
-                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${planSummary.rate >= 90 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' : planSummary.rate >= 50 ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-warning-100 text-warning-600 dark:bg-warning-900/40 dark:text-warning-400'}`}>{planSummary.rate.toFixed(1)}%</span>
+                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${planSummary.rate >= 90 ? 'bg-emerald-500/10 text-emerald-500' : planSummary.rate >= 50 ? 'bg-primary-500/10 text-primary-500' : 'bg-yellow-500/10 text-yellow-500'}`}>{planSummary.rate.toFixed(1)}%</span>
                                     </td>
                                     <td className="px-3 py-2"></td>
                                     <td className="px-3 py-2"></td>
@@ -991,9 +991,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     </div>
                 ) : (
                     <EmptyState
-                        icon={<CalendarRange className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
+                        icon={<CalendarRange className="w-12 h-12 text-txt-muted" />}
                         title={`Chưa có kế hoạch giải ngân cho năm ${planYearFilter}`}
-                        className="mt-4 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl"
+                        className="mt-4 border border-dashed border-border rounded-2xl"
                     />
                 )}
             </div>
@@ -1001,17 +1001,17 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION D — Lịch sử giải ngân chi tiết
                ════════════════════════════════════════════ */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
-                    <h3 className="font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
-                        <ArrowDownUp className="w-4 h-4 text-emerald-600" />
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border flex flex-wrap justify-between items-center gap-3">
+                    <h3 className="font-bold text-txt-primary flex items-center gap-2">
+                        <ArrowDownUp className="w-4 h-4 text-emerald-500" />
                         Lịch sử giải ngân (NĐ 99/2021/NĐ-CP)
                     </h3>
                     <div className="flex flex-wrap items-center gap-2">
                         <select
                             value={disbYearFilter}
                             onChange={(e) => setDisbYearFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                            className="px-3 py-1.5 text-xs font-medium bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 dark:text-slate-200"
+                            className="px-3 py-1.5 text-xs font-medium bg-bg-muted border border-border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-txt-primary"
                         >
                             <option value="all">Tất cả năm</option>
                             {Array.from(new Set(disbursements.map(d => new Date(d.Date).getFullYear()))).sort((a, b) => b - a).map(y => (
@@ -1022,7 +1022,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         <select
                             value={disbSourceFilter}
                             onChange={(e) => setDisbSourceFilter(e.target.value)}
-                            className="px-3 py-1.5 text-xs font-medium bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 dark:text-slate-200"
+                            className="px-3 py-1.5 text-xs font-medium bg-bg-muted border border-border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-txt-primary"
                         >
                             <option value="all">Tất cả nguồn vốn</option>
                             {Object.entries(SOURCE_LABELS).map(([val, label]) => (
@@ -1030,7 +1030,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             ))}
                         </select>
 
-                        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
+                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5">
                             {([
                                 ['all', 'Tất cả'],
                                 ['TamUng', 'Tạm ứng'],
@@ -1040,9 +1040,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <button
                                     key={key}
                                     onClick={() => setDisbursementFilter(key)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${disbursementFilter === key
-                                        ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
-                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${disbursementFilter === key
+                                        ? 'bg-bg-surface text-txt-primary shadow-sm'
+                                        : 'text-txt-muted hover:text-txt-primary'
                                         }`}
                                 >
                                     {label}
@@ -1051,61 +1051,61 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         </div>
                         <button
                             onClick={() => setIsImportModalOpen(true)}
-                            className="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-400 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                            className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
                         >
                             <ArrowDownUp className="w-3.5 h-3.5" /> Import (Kế toán)
                         </button>
                         <button
                             onClick={() => { setEditingDisb(null); setDisbModalOpen(true); }}
-                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                            className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
                             title="Nhập thanh toán tại tab Gói thầu → Thanh quyết toán, dữ liệu sẽ tự đồng bộ về đây"
                         >
                             <Plus className="w-3.5 h-3.5" /> Thêm bút toán
                         </button>
 
                         {/* Mẫu xuất văn bản (Moved from Section F) */}
-                        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5 ml-1 border border-gray-200 dark:border-slate-600">
-                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Đề nghị thanh toán vốn (Mẫu 25)"><FileDown className="w-3.5 h-3.5 text-primary-600" /> M.25</button>
-                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Đề nghị rút vốn (Mẫu 26)"><FileDown className="w-3.5 h-3.5 text-blue-600" /> M.26</button>
-                             <button className="px-3 py-1.5 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded transition-all flex items-center gap-1.5" title="Thu hồi vốn tạm ứng (Mẫu 27)"><FileDown className="w-3.5 h-3.5 text-green-600" /> M.27</button>
+                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5 ml-1">
+                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Đề nghị thanh toán vốn (Mẫu 25)"><FileDown className="w-3.5 h-3.5 text-primary-500" /> M.25</button>
+                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Đề nghị rút vốn (Mẫu 26)"><FileDown className="w-3.5 h-3.5 text-blue-500" /> M.26</button>
+                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Thu hồi vốn tạm ứng (Mẫu 27)"><FileDown className="w-3.5 h-3.5 text-emerald-500" /> M.27</button>
                         </div>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                             <tr>
-                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Ngày</th>
-                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">Nội dung</th>
-                                <th className="px-4 py-3 text-left text-slate-500 dark:text-slate-400">HĐ số</th>
-                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Loại</th>
-                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Biểu mẫu</th>
-                                <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Số tiền</th>
-                                <th className="px-4 py-3 text-right text-slate-500 dark:text-slate-400">Lũy kế TT</th>
-                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400">Trạng thái</th>
-                                <th className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 w-20">Thao tác</th>
+                                <th className="px-4 py-3 text-left text-txt-muted">Ngày</th>
+                                <th className="px-4 py-3 text-left text-txt-muted">Nội dung</th>
+                                <th className="px-4 py-3 text-left text-txt-muted">HĐ số</th>
+                                <th className="px-4 py-3 text-center text-txt-muted">Loại</th>
+                                <th className="px-4 py-3 text-center text-txt-muted">Biểu mẫu</th>
+                                <th className="px-4 py-3 text-right text-txt-muted">Số tiền</th>
+                                <th className="px-4 py-3 text-right text-txt-muted">Lũy kế TT</th>
+                                <th className="px-4 py-3 text-center text-txt-muted">Trạng thái</th>
+                                <th className="px-4 py-3 text-center text-txt-muted w-20">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
+                        <tbody className="divide-y divide-border">
                             {[...filteredDisbursements].sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime()).map((d) => (
-                                <tr key={d.DisbursementID} className={`hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-green-50/30 dark:bg-green-900/10' :
-                                    d.Type === 'TamUng' ? 'bg-primary-50/20 dark:bg-primary-900/10' : ''
+                                <tr key={d.DisbursementID} className={`hover:bg-bg-muted/50 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-emerald-500/5' :
+                                    d.Type === 'TamUng' ? 'bg-primary-500/5' : ''
                                     }`}>
-                                    <td className="px-4 py-3.5 text-gray-600 dark:text-slate-400 font-mono text-xs whitespace-nowrap">
+                                    <td className="px-4 py-3.5 text-txt-muted font-mono text-xs whitespace-nowrap">
                                         {d.Date ? new Date(d.Date).toLocaleDateString('vi-VN') : '—'}
                                     </td>
                                     <td className="px-4 py-3.5">
-                                        <p className="text-gray-800 dark:text-slate-200 font-medium text-xs line-clamp-1">{d.Description}</p>
-                                        <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 font-mono">{d.TreasuryCode || '—'}</p>
+                                        <p className="text-txt-primary font-medium text-xs line-clamp-1">{d.Description}</p>
+                                        <p className="text-[10px] text-txt-muted mt-0.5 font-mono">{d.TreasuryCode || '—'}</p>
                                     </td>
-                                    <td className="px-4 py-3.5 text-xs text-gray-600 dark:text-slate-400 font-medium whitespace-nowrap">
+                                    <td className="px-4 py-3.5 text-xs text-txt-secondary font-medium whitespace-nowrap">
                                         {d.ContractNumber || '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300' :
-                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
-                                                d.Type === 'ThuHoiTamUng' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
-                                                    'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-300'
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-primary-500/10 text-primary-500' :
+                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-500/10 text-blue-500' :
+                                                d.Type === 'ThuHoiTamUng' ? 'bg-emerald-500/10 text-emerald-500' :
+                                                    'bg-bg-muted text-txt-secondary'
                                             }`}>
                                             {d.Type === 'TamUng' && <Receipt className="w-3 h-3" />}
                                             {d.Type === 'ThanhToanKLHT' && <DollarSign className="w-3 h-3" />}
@@ -1114,25 +1114,25 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 rounded text-[10px] font-mono font-bold">
+                                        <span className="px-2 py-0.5 bg-bg-muted border border-border text-txt-secondary rounded text-[10px] font-mono font-bold">
                                             {d.FormType || '—'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 text-right font-mono font-bold">
-                                        <span className={d.Type === 'ThuHoiTamUng' ? 'text-green-600 dark:text-green-400' : 'text-gray-800 dark:text-slate-100'}>
+                                        <span className={d.Type === 'ThuHoiTamUng' ? 'text-emerald-500' : 'text-txt-primary'}>
                                             {d.Type === 'ThuHoiTamUng' ? '-' : ''}{formatCurrency(d.Amount)}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3.5 text-right font-mono text-xs text-gray-500 dark:text-slate-400">
+                                    <td className="px-4 py-3.5 text-right font-mono text-xs text-txt-muted">
                                         {d.CumulativeBefore != null ? formatCurrency(d.CumulativeBefore + d.Amount) : '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
-                                            d.Status === 'Pending' ? 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300' :
-                                                'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500' :
+                                            d.Status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                'bg-red-500/10 text-red-500'
                                             }`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-green-500' :
-                                                d.Status === 'Pending' ? 'bg-warning-500' : 'bg-red-500'
+                                            <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-emerald-500' :
+                                                d.Status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
                                                 }`} />
                                             {d.Status === 'Approved' ? 'Đã duyệt' :
                                                 d.Status === 'Pending' ? 'Chờ duyệt' : 'Từ chối'}
@@ -1142,14 +1142,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         <div className="flex items-center justify-center gap-1">
                                             <button
                                                 onClick={() => handleEditDisb(d)}
-                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors"
+                                                className="p-1.5 hover:bg-bg-muted text-txt-muted hover:text-primary-500 rounded-xl transition-colors"
                                                 title="Sửa"
                                             >
                                                 <Pencil className="w-3.5 h-3.5" />
                                             </button>
                                             <button
                                                 onClick={() => setDeleteConfirm({ type: 'disb', id: d.DisbursementID })}
-                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                className="p-1.5 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
                                                 title="Xóa"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1160,7 +1160,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             ))}
                             {filteredDisbursements.length === 0 && (
                                 <tr>
-                                    <td colSpan={9} className="px-6 py-8 text-center text-gray-400 dark:text-slate-400 text-sm">
+                                    <td colSpan={9} className="px-6 py-8 text-center text-txt-muted text-sm">
                                         Không có giao dịch nào cho bộ lọc này
                                     </td>
                                 </tr>
@@ -1216,29 +1216,29 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* Delete Confirmation Dialog */}
             {deleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-sm mx-4 p-4 border border-gray-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+                    <div className="bg-bg-surface rounded-2xl shadow-lg w-full max-w-sm mx-4 p-4 border border-border" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                                <Trash2 className="w-5 h-5 text-red-600" />
+                            <div className="p-2 bg-red-500/10 rounded-xl">
+                                <Trash2 className="w-5 h-5 text-red-500" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                            <h3 className="text-lg font-bold text-txt-primary">
                                 Xác nhận xóa
                             </h3>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-slate-400 mb-6">
+                        <p className="text-sm text-txt-secondary mb-6">
                             Bạn có chắc chắn muốn xóa {deleteConfirm.type === 'plan' ? 'kế hoạch vốn' : 'bút toán giải ngân'} này? Hành động không thể hoàn tác.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setDeleteConfirm(null)}
-                                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-txt-secondary bg-bg-muted rounded-xl hover:bg-bg-muted/80 transition-colors"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleConfirmDelete}
                                 disabled={deletePlan.isPending || deleteDisb.isPending}
-                                className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all"
+                                className="px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-xl hover:bg-red-600 disabled:opacity-50 transition-all"
                             >
                                 {(deletePlan.isPending || deleteDisb.isPending) ? 'Đang xóa...' : 'Xóa'}
                             </button>

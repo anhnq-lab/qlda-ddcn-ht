@@ -56,17 +56,17 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
 
     if (!clearance && !initializeClearance.isPending) {
         return (
-            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                <Map className="w-12 h-12 text-slate-400 mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Chưa có thông tin Giải phóng mặt bằng</h3>
-                <p className="text-slate-500 text-center max-w-md mb-6">
+            <div className="flex flex-col items-center justify-center h-64 bg-bg-muted rounded-2xl border border-dashed border-border">
+                <Map className="w-12 h-12 text-txt-muted mb-4" />
+                <h3 className="text-lg font-medium text-txt-primary mb-2">Chưa có thông tin Giải phóng mặt bằng</h3>
+                <p className="text-txt-muted text-center max-w-md mb-6 text-sm">
                     Dự án này chưa được khởi tạo dữ liệu quản lý GPMB (16 bước theo hướng dẫn 3254).
                 </p>
                 {canEdit && (
                     <button 
                         onClick={() => initializeClearance.mutate(projectId)}
                         disabled={initializeClearance.isPending}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-sm transition-colors flex items-center gap-2"
                     >
                         {initializeClearance.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                         Khởi tạo Quy trình GPMB
@@ -89,16 +89,16 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
         <div className="space-y-6">
             <div className="flex justify-between items-end">
                 <div>
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                         <Map className="w-5 h-5 text-emerald-500" />
                         Quản lý Giải phóng mặt bằng
                     </h2>
-                    <p className="text-sm text-slate-500 mt-1">Theo dõi tiến độ thu hồi đất và 16 bước thủ tục GPMB</p>
+                    <p className="text-xs text-txt-muted mt-1">Theo dõi tiến độ thu hồi đất và 16 bước thủ tục GPMB</p>
                 </div>
                 {canEdit && (
                     <button 
                         onClick={() => setIsEditingGlobal(!isEditingGlobal)}
-                        className="px-3 py-1.5 text-sm font-medium border rounded-lg transition-colors flex items-center gap-2 bg-white hover:bg-slate-50 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200"
+                        className="px-3 py-1.5 text-xs font-bold border rounded-xl transition-colors flex items-center gap-2 bg-bg-surface hover:bg-bg-muted border-border text-txt-primary"
                     >
                         {isEditingGlobal ? (
                             <>Hủy sửa</>
@@ -150,25 +150,25 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
             )}
 
             {/* 16 Steps Timeline */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm mt-6">
-                <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-slate-500" />
+            <div className="bg-bg-surface rounded-2xl border border-border overflow-hidden shadow-sm mt-6">
+                <div className="px-5 py-4 border-b border-border bg-bg-muted/30">
+                    <h3 className="font-semibold text-txt-primary flex items-center gap-2 text-sm">
+                        <FileText className="w-4 h-4 text-txt-muted" />
                         Quy trình thực hiện 16 bước
                     </h3>
                 </div>
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-400px)]">
                     <table className="w-full">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                             <tr>
-                                <th className="px-3 py-3 w-16 text-center text-slate-500 dark:text-slate-400">Bước</th>
-                                <th className="px-4 py-3 text-left min-w-[300px] text-slate-500 dark:text-slate-400">Nội dung công việc</th>
-                                <th className="px-4 py-3 text-center w-32 text-slate-500 dark:text-slate-400">Trạng thái</th>
-                                <th className="px-4 py-3 text-center w-32 text-slate-500 dark:text-slate-400">Ngày HT</th>
-                                {canEdit && <th className="px-4 py-3 text-center w-24 text-slate-500 dark:text-slate-400">Thao tác</th>}
+                                <th className="px-3 py-3 w-16 text-center text-txt-muted">Bước</th>
+                                <th className="px-4 py-3 text-left min-w-[300px] text-txt-muted">Nội dung công việc</th>
+                                <th className="px-4 py-3 text-center w-32 text-txt-muted">Trạng thái</th>
+                                <th className="px-4 py-3 text-center w-32 text-txt-muted">Ngày HT</th>
+                                {canEdit && <th className="px-4 py-3 text-center w-24 text-txt-muted">Thao tác</th>}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-border">
                             {milestones?.map((milestone) => (
                                 <MilestoneRow 
                                     key={milestone.id} 
@@ -189,21 +189,21 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
 
 const DashboardCard = ({ title, value, subValue, unit, icon, progress, colorClass }: any) => {
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+        <div className="bg-bg-surface rounded-2xl border border-border p-5 shadow-sm">
             <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <div className="p-2 bg-bg-muted rounded-xl">
                     {icon}
                 </div>
             </div>
             <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{title}</p>
+                <p className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1">{title}</p>
                 <div className="flex items-baseline gap-1">
-                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h4>
-                    {subValue && <span className="text-sm font-medium text-slate-500">{subValue}</span>}
-                    {unit && <span className="text-xs text-slate-500 ml-1">{unit}</span>}
+                    <h4 className="text-2xl font-black text-txt-primary">{value}</h4>
+                    {subValue && <span className="text-sm font-bold text-txt-secondary">{subValue}</span>}
+                    {unit && <span className="text-xs text-txt-muted ml-1">{unit}</span>}
                 </div>
                 {progress !== undefined && (
-                    <div className="mt-3 h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="mt-3 h-1.5 w-full bg-bg-muted rounded-full overflow-hidden">
                         <div className={`h-full ${colorClass} rounded-full`} style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}></div>
                     </div>
                 )}
@@ -230,47 +230,50 @@ const ClearanceGlobalEditor = ({ clearance, projectId, onClose }: { clearance: S
         onClose();
     };
 
+    const inputCls = "w-full px-3 py-2 border border-border rounded-xl text-sm bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all";
+    const labelCls = "block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1";
+
     return (
-        <form onSubmit={handleSubmit} className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-inner">
-            <h3 className="text-sm font-semibold mb-4 text-slate-700 dark:text-slate-300">Cập nhật số liệu tổng quan GPMB</h3>
+        <form onSubmit={handleSubmit} className="bg-bg-muted rounded-2xl border border-border p-5 shadow-inner">
+            <h3 className="text-sm font-black mb-4 text-txt-primary">Cập nhật số liệu tổng quan GPMB</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Tổng diện tích (ha)</label>
-                    <input type="number" step="0.01" value={formData.total_area} onChange={e => setFormData({...formData, total_area: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Tổng diện tích (ha)</label>
+                    <input type="number" step="0.01" value={formData.total_area} onChange={e => setFormData({...formData, total_area: Number(e.target.value)})} className={inputCls} />
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Diện tích đã GPMB (ha)</label>
-                    <input type="number" step="0.01" value={formData.cleared_area} onChange={e => setFormData({...formData, cleared_area: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Diện tích đã GPMB (ha)</label>
+                    <input type="number" step="0.01" value={formData.cleared_area} onChange={e => setFormData({...formData, cleared_area: Number(e.target.value)})} className={inputCls} />
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Trạng thái chung</label>
-                    <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as any})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700">
+                    <label className={labelCls}>Trạng thái chung</label>
+                    <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as any})} className={inputCls}>
                         <option value="Chưa bắt đầu">Chưa bắt đầu</option>
                         <option value="Đang thực hiện">Đang thực hiện</option>
                         <option value="Hoàn thành">Hoàn thành</option>
                     </select>
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Tổng số hộ dân</label>
-                    <input type="number" value={formData.total_households} onChange={e => setFormData({...formData, total_households: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Tổng số hộ dân</label>
+                    <input type="number" value={formData.total_households} onChange={e => setFormData({...formData, total_households: Number(e.target.value)})} className={inputCls} />
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Số hộ đã TĐC/Bồi thường</label>
-                    <input type="number" value={formData.resettled_households} onChange={e => setFormData({...formData, resettled_households: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Số hộ đã TĐC/Bồi thường</label>
+                    <input type="number" value={formData.resettled_households} onChange={e => setFormData({...formData, resettled_households: Number(e.target.value)})} className={inputCls} />
                 </div>
                 <div className="hidden lg:block"></div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Tổng kinh phí GPMB (VNĐ)</label>
-                    <input type="number" value={formData.compensation_budget} onChange={e => setFormData({...formData, compensation_budget: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Tổng kinh phí GPMB (VNĐ)</label>
+                    <input type="number" value={formData.compensation_budget} onChange={e => setFormData({...formData, compensation_budget: Number(e.target.value)})} className={inputCls} />
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Đã giải ngân (VNĐ)</label>
-                    <input type="number" value={formData.disbursed_compensation} onChange={e => setFormData({...formData, disbursed_compensation: Number(e.target.value)})} className="w-full px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900 dark:border-slate-700" />
+                    <label className={labelCls}>Đã giải ngân (VNĐ)</label>
+                    <input type="number" value={formData.disbursed_compensation} onChange={e => setFormData({...formData, disbursed_compensation: Number(e.target.value)})} className={inputCls} />
                 </div>
             </div>
             <div className="flex gap-2 justify-end">
-                <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium border rounded-lg bg-white hover:bg-slate-50">Hủy</button>
-                <button type="submit" disabled={updateClearance.isPending} className="px-4 py-2 text-sm font-medium border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold border border-border rounded-xl bg-bg-surface hover:bg-bg-muted text-txt-primary transition-colors">Hủy</button>
+                <button type="submit" disabled={updateClearance.isPending} className="px-4 py-2 text-sm font-bold border border-transparent rounded-xl text-white bg-primary-600 hover:bg-primary-700 flex items-center gap-2 transition-colors">
                     {updateClearance.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Lưu số liệu
                 </button>
@@ -320,18 +323,19 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
     };
 
     if (isEditing) {
+        const inputCls = "text-xs px-3 py-2 border border-border rounded-xl bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all";
         return (
-            <tr className="bg-blue-50/50 dark:bg-blue-900/10">
-                <td className="px-3 py-3.5 text-center font-mono text-xs text-slate-500">{milestone.step_number}</td>
+            <tr className="bg-bg-muted/50 border-b border-border">
+                <td className="px-3 py-3.5 text-center font-mono text-xs text-txt-muted">{milestone.step_number}</td>
                 <td colSpan={canEdit ? 4 : 3} className="px-4 py-3.5">
                     <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-center w-full">
                         <div className="flex-1 min-w-[200px]">
-                            <p className="text-sm font-medium text-slate-900 dark:text-white mb-2">{milestone.step_name}</p>
+                            <p className="text-sm font-bold text-txt-primary mb-2">{milestone.step_name}</p>
                             <input 
                                 type="text" 
                                 value={formData.notes} 
                                 onChange={e => setFormData({...formData, notes: e.target.value})}
-                                className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg dark:bg-slate-800 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                className="w-full text-xs px-3 py-2 border border-border rounded-xl bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" 
                                 placeholder="Nhập ghi chú..."
                             />
                         </div>
@@ -339,7 +343,7 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
                             <select 
                                 value={formData.status} 
                                 onChange={e => setFormData({...formData, status: e.target.value as any})}
-                                className="text-xs px-3 py-2 border border-slate-300 rounded-lg dark:bg-slate-800 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className={inputCls}
                             >
                                 <option value="pending">Chưa bắt đầu</option>
                                 <option value="in_progress">Đang thực hiện</option>
@@ -350,13 +354,13 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
                                 type="date" 
                                 value={formData.completed_date} 
                                 onChange={e => setFormData({...formData, completed_date: e.target.value})}
-                                className="text-xs px-3 py-2 border border-slate-300 rounded-lg dark:bg-slate-800 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-36" 
+                                className={`${inputCls} w-36`} 
                             />
                             <div className="flex gap-2">
-                                <button type="button" onClick={() => setIsEditing(false)} className="px-3 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors text-xs font-medium dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700">
+                                <button type="button" onClick={() => setIsEditing(false)} className="px-3 py-2 bg-bg-surface border border-border text-txt-secondary hover:bg-bg-muted rounded-xl transition-colors text-xs font-bold">
                                     Hủy
                                 </button>
-                                <button type="submit" disabled={updateMilestone.isPending} className="px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2 text-xs font-medium shadow-sm">
+                                <button type="submit" disabled={updateMilestone.isPending} className="px-3 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold shadow-sm">
                                     {updateMilestone.isPending ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                                     Lưu
                                 </button>
@@ -369,10 +373,10 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
     }
 
     return (
-        <tr className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-50">
+        <tr className="group cursor-pointer transition-all hover:bg-bg-muted border-b border-border">
             {/* Bước */}
             <td className="px-3 py-3.5 text-center">
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">B.{milestone.step_number}</span>
+                <span className="text-xs text-txt-secondary font-bold bg-bg-muted px-2.5 py-1 rounded-lg border border-border">B.{milestone.step_number}</span>
             </td>
             {/* Nội dung */}
             <td className="px-4 py-3.5">
@@ -381,10 +385,10 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
                         {getStatusIcon(milestone.status)}
                     </div>
                     <div className="min-w-0">
-                        <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm group-hover:text-blue-600 transition-colors">{milestone.step_name}</p>
+                        <p className="font-bold text-txt-primary text-sm group-hover:text-primary-500 transition-colors">{milestone.step_name}</p>
                         {milestone.notes && (
-                            <p className="text-xs text-slate-500 mt-1 truncate max-w-[400px]">
-                                <span className="font-medium mr-1 text-slate-600 dark:text-slate-400">Ghi chú:</span>{milestone.notes}
+                            <p className="text-xs text-txt-muted mt-1 truncate max-w-[400px]">
+                                <span className="font-bold mr-1 text-txt-secondary">Ghi chú:</span>{milestone.notes}
                             </p>
                         )}
                     </div>
@@ -392,11 +396,11 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
             </td>
             {/* Trạng thái */}
             <td className="px-4 py-3.5 text-center">
-                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-md whitespace-nowrap ${
-                    milestone.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20' :
-                    milestone.status === 'in_progress' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' :
-                    milestone.status === 'blocked' ? 'bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/20' :
-                    'bg-slate-50 text-slate-600 dark:text-slate-400 ring-1 ring-slate-500/20'
+                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-xl whitespace-nowrap border ${
+                    milestone.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                    milestone.status === 'in_progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                    milestone.status === 'blocked' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                    'bg-bg-muted text-txt-muted border-border'
                 }`}>
                     {getStatusText(milestone.status)}
                 </span>
@@ -404,11 +408,11 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
             {/* Ngày HT */}
             <td className="px-4 py-3.5 text-center">
                 {milestone.completed_date ? (
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                    <span className="text-xs font-bold text-txt-secondary bg-bg-muted px-2.5 py-1 rounded-lg border border-border">
                         {new Date(milestone.completed_date).toLocaleDateString('vi-VN')}
                     </span>
                 ) : (
-                    <span className="text-xs text-slate-400 italic">-</span>
+                    <span className="text-xs text-txt-muted italic">-</span>
                 )}
             </td>
             {/* Thao tác */}
@@ -416,7 +420,7 @@ const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteCleara
                 <td className="px-4 py-3.5 text-center">
                     <button 
                         onClick={() => setIsEditing(true)}
-                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="p-1.5 text-txt-muted hover:text-primary-500 hover:bg-bg-muted rounded-xl transition-colors"
                         title="Cập nhật"
                     >
                         <Pencil className="w-4 h-4" />

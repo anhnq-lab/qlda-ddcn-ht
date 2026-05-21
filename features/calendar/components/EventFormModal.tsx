@@ -276,13 +276,13 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-semibold text-txt-secondary mb-1">
             Nội dung / Ghi chú
           </label>
           <textarea
             {...register('description')}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-bg-surface text-txt-primary placeholder-txt-placeholder focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
             placeholder="Nội dung buổi họp, mục đích công tác..."
           />
         </div>
@@ -304,7 +304,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
           )}
         />
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-border">
           <Button variant="outline" type="button" onClick={onClose}>Hủy</Button>
           <Button
             type="submit"

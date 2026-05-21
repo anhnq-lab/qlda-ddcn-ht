@@ -239,10 +239,20 @@ export class UserAccountService {
     }
 
     /**
+     * @deprecated LEGACY — DO NOT USE FOR NEW CODE.
+     * This method validates login by comparing SHA-256 hashes client-side,
+     * which is INSECURE (no salting, no rate limiting, timing attacks).
+     * All new authentication MUST use Supabase Auth (signInWithPassword).
+     * Kept ONLY for backward-compat fallback — will be removed in a future release.
+     *
      * Validate login credentials — supports username, email, or phone
      * Returns employee_id if valid, null otherwise
      */
     static async validateLogin(identifier: string, password: string): Promise<string | null> {
+        console.warn(
+            '[UserAccountService] ⚠️ DEPRECATED: validateLogin() uses legacy SHA-256 password checking. ' +
+            'Migrate to Supabase Auth (signInWithPassword) as soon as possible.'
+        );
         const password_hash = await hashPassword(password);
 
         // 1) Try matching by username

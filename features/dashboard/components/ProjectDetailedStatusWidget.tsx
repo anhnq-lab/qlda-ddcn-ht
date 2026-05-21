@@ -29,7 +29,7 @@ const ProjectDetailedStatusWidget: React.FC<ProjectDetailedStatusWidgetProps> = 
     }, [projects]);
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col">
+        <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
             <div className="flex justify-between items-center mb-4 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><ListFilter className="w-5 h-5" /></div>
@@ -40,7 +40,7 @@ const ProjectDetailedStatusWidget: React.FC<ProjectDetailedStatusWidgetProps> = 
                 {data.map(item => (
                     <div 
                         key={item.id} 
-                        className={`flex items-center justify-between p-2 rounded-lg border border-transparent transition-colors ${onSegmentClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-200 dark:hover:border-slate-600' : ''}`}
+                        className={`flex items-center justify-between p-2 rounded-lg border border-transparent transition-colors ${onSegmentClick ? 'cursor-pointer hover:bg-bg-muted hover:border-border' : ''}`}
                         onClick={() => {
                             if (onSegmentClick && item.value > 0) {
                                 onSegmentClick(item.id, item.label);
@@ -49,11 +49,11 @@ const ProjectDetailedStatusWidget: React.FC<ProjectDetailedStatusWidgetProps> = 
                     >
                         <div className="flex items-center gap-3 overflow-hidden">
                             <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate" title={item.label}>
+                            <span className="text-[11px] font-semibold text-txt-primary truncate" title={item.label}>
                                 {item.label}
                             </span>
                         </div>
-                        <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0">
+                        <div className="bg-bg-muted text-txt-secondary px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0">
                             {item.value}
                         </div>
                     </div>

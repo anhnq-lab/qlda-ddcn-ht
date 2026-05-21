@@ -99,3 +99,27 @@ Mỗi khi chỉnh sửa liên quan đến giao diện frontend (bao gồm: sửa
 - [ ] Mọi `hover:bg-*` → `dark:hover:bg-*`
 - [ ] KHÔNG dùng opacity < 1.0 cho `dark:bg-slate-*`
 
+## 6. Database Conventions
+
+### 6.1 Primary Keys
+- **Bảng mới** PHẢI dùng `UUID` với `DEFAULT gen_random_uuid()` làm PK.
+- **KHÔNG** đổi PK của bảng hiện có (có thể gây cascade issues).
+- Ngoại lệ: bảng lookup nhỏ có thể dùng `TEXT` PK nếu giá trị có ý nghĩa business (vd: `employee_id`).
+
+### 6.2 Date & Time Columns
+- Dùng `DATE` cho ngày thuần (không có thời gian).
+- Dùng `TIMESTAMPTZ` cho datetime (luôn có timezone).
+- **KHÔNG** dùng `TEXT` để lưu ngày tháng (trừ trường text mô tả như `start_period`).
+- Các cột `created_at`, `updated_at` dùng `TIMESTAMPTZ NOT NULL DEFAULT NOW()`.
+
+### 6.3 Naming Conventions
+- Tên bảng: `snake_case`, số nhiều (vd: `notifications`, `user_preferences`).
+- Tên cột: `snake_case` (vd: `created_at`, `user_id`).
+- Tên index: `idx_{table}_{column}` (vd: `idx_notifications_user_id`).
+- Tên policy: `{table}_{action}` (vd: `notifications_select`, `notifications_insert`).
+
+### 6.4 RLS (Row Level Security)
+- Mọi bảng mới PHẢI enable RLS: `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;`
+- Pattern chuẩn: dùng helper functions `is_admin()`, `is_global_role()`, `is_project_member()`, `get_current_employee_id()`.
+- **KHÔNG** dùng `USING(true)` cho write policies (INSERT/UPDATE/DELETE).
+

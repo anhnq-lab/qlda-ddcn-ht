@@ -71,7 +71,7 @@ export const FacilityManagementPanel: React.FC = () => {
         const expressId = parseInt(asset.bim_element_id, 10);
         if (isNaN(expressId)) return;
 
-        console.log(`[FacilityMgmt] Navigating to expressId: ${expressId} (${asset.asset_name})`);
+        // Navigate to BIM element
 
         try {
             // Step 1: Select element first (highlights + loads properties)

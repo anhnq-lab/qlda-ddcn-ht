@@ -60,6 +60,7 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         EstimatedCost: Number(metadata.estimated_cost) || 0,
         ActualCost: Number(metadata.actual_cost) || 0,
         MonthlyPlanItemID: wt.monthly_plan_item_id || metadata.monthly_plan_item_id || undefined,
+        ResponsibilityLevel: wt.responsibility_level || 'individual',
         
         // Actual dates
         ActualStartDate: metadata.actualStartDate || wt.actual_start_date || '',
@@ -87,11 +88,16 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         case TaskStatus.Incomplete: dbStatus = 'incomplete'; break;
     }
 
+    const rawProjectId = projectId || task.ProjectID;
+    const cleanProjectId = rawProjectId && rawProjectId.trim() !== ''
+        ? rawProjectId
+        : null;
+
     return {
         id: task.TaskID && !task.TaskID.startsWith('NEW_') ? task.TaskID : undefined,
         title: task.Title || '',
         description: task.Description,
-        project_id: projectId || task.ProjectID,
+        project_id: cleanProjectId,
         status: dbStatus as any,
         progress: task.ProgressPercent || 0,
         priority: task.Priority as any,
@@ -103,8 +109,9 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
             ? task.AssigneeID : null,
         workflow_node_id: task.TimelineStep || task.StepCode || null,
         step_code: task.TimelineStep || task.StepCode || null,
-        task_type: 'project' as any,
+        task_type: (cleanProjectId ? 'project' : 'internal') as any,
         monthly_plan_item_id: task.MonthlyPlanItemID || null,
+        responsibility_level: task.ResponsibilityLevel || 'individual',
         metadata: {
             ui_status: task.Status,
             step_code: task.TimelineStep || task.StepCode,

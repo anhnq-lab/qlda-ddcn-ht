@@ -166,15 +166,15 @@ export const EvaluationPage: React.FC = () => {
     }, [forms, activeSubTab]);
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-bg-app">
             {/* Header */}
-            <div className="flex-none px-6 py-5 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+            <div className="flex-none px-6 py-[var(--density-row-h)] bg-bg-surface border-b border-border">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-display tracking-tight">
+                        <h1 className="text-2xl font-bold text-txt-primary font-display tracking-tight">
                             Đánh giá xếp loại (PL01 & PL02)
                         </h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        <p className="text-sm text-txt-secondary mt-1">
                             Quy chế đánh giá, xếp loại cán bộ, viên chức (QCDGXL-2026)
                         </p>
                     </div>
@@ -189,13 +189,13 @@ export const EvaluationPage: React.FC = () => {
                 {/* Tabs & Filters */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     {/* Tabs */}
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-max border border-slate-200 dark:border-slate-700/50">
+                    <div className="flex bg-bg-muted p-1 rounded-xl w-max border border-border">
                         <button 
                             onClick={() => setActiveSubTab('leader')}
                             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                                 activeSubTab === 'leader' 
-                                    ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50' 
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                    ? 'bg-bg-surface text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-border' 
+                                    : 'text-txt-secondary hover:text-txt-primary'
                             }`}
                         >
                             Lãnh đạo (PL01)
@@ -204,8 +204,8 @@ export const EvaluationPage: React.FC = () => {
                             onClick={() => setActiveSubTab('staff')}
                             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                                 activeSubTab === 'staff' 
-                                    ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50' 
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                    ? 'bg-bg-surface text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-border' 
+                                    : 'text-txt-secondary hover:text-txt-primary'
                             }`}
                         >
                             Nhân viên (PL02)
@@ -213,31 +213,31 @@ export const EvaluationPage: React.FC = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                            <Calendar size={14} className="text-slate-400" />
+                        <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
+                            <Calendar size={14} className="text-txt-muted" />
                             <select 
                                 value={month} 
                                 onChange={e => setMonth(+e.target.value)}
-                                className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                                className="bg-transparent text-sm font-semibold text-txt-primary focus:outline-none"
                             >
                                 {MONTHS_VI.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
                             </select>
-                            <span className="text-slate-300 dark:text-slate-600">/</span>
+                            <span className="text-border">/</span>
                             <select 
                                 value={year} 
                                 onChange={e => setYear(+e.target.value)}
-                                className="bg-transparent text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none"
+                                className="bg-transparent text-sm font-semibold text-txt-primary focus:outline-none"
                             >
                                 {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
                             </select>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                            <SlidersHorizontal size={14} className="text-slate-400" />
+                        <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
+                            <SlidersHorizontal size={14} className="text-txt-muted" />
                             <select 
                                 value={statusFilter} 
                                 onChange={e => setStatusFilter(e.target.value as any)}
-                                className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none"
+                                className="bg-transparent text-sm text-txt-primary focus:outline-none"
                             >
                                 <option value="all">Tất cả trạng thái</option>
                                 <option value="draft">Nháp</option>
@@ -248,12 +248,12 @@ export const EvaluationPage: React.FC = () => {
                         </div>
 
                         {currentUser?.Role === Role.Admin && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
-                                <Users size={14} className="text-slate-400" />
+                            <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
+                                <Users size={14} className="text-txt-muted" />
                                 <select 
                                     value={deptFilter} 
                                     onChange={e => setDeptFilter(e.target.value)}
-                                    className="bg-transparent text-sm text-slate-700 dark:text-slate-300 focus:outline-none max-w-[200px] truncate"
+                                    className="bg-transparent text-sm text-txt-primary focus:outline-none max-w-[200px] truncate"
                                 >
                                     <option value="all">Tất cả phòng ban</option>
                                     {departments.map(d => (
@@ -267,31 +267,31 @@ export const EvaluationPage: React.FC = () => {
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-auto p-6">
+            <div className="flex-1 overflow-auto p-[var(--density-section-gap)]">
                 {loading ? (
                     <div className="flex items-center justify-center h-40">
                         <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 ) : filteredAndSortedForms.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                    <div className="flex flex-col items-center justify-center h-64 text-txt-muted">
                         <FileText size={48} className="mb-4 opacity-20" />
                         <p className="text-sm">Chưa có phiếu đánh giá nào trong nhóm này.</p>
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
+                    <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
                         <table className="w-full">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                                <tr className="text-slate-500 dark:text-slate-400">
-                                    <th className="px-4 py-3 text-left min-w-[200px] border-b border-slate-200 dark:border-slate-700">Nhân sự</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Loại phiếu</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Tự chấm</th>
-                                    <th className="px-4 py-3 text-center w-24 border-b border-slate-200 dark:border-slate-700">Phê duyệt</th>
-                                    <th className="px-4 py-3 text-center min-w-[140px] border-b border-slate-200 dark:border-slate-700">Xếp loại</th>
-                                    <th className="px-4 py-3 text-center w-32 border-b border-slate-200 dark:border-slate-700">Trạng thái</th>
-                                    <th className="px-4 py-3 text-right w-32 border-b border-slate-200 dark:border-slate-700">Ngày nộp</th>
+                            <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
+                                <tr className="text-txt-secondary">
+                                    <th className="px-4 py-3 text-left min-w-[200px] border-b border-border">Nhân sự</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-border">Loại phiếu</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-border">Tự chấm</th>
+                                    <th className="px-4 py-3 text-center w-24 border-b border-border">Phê duyệt</th>
+                                    <th className="px-4 py-3 text-center min-w-[140px] border-b border-border">Xếp loại</th>
+                                    <th className="px-4 py-3 text-center w-32 border-b border-border">Trạng thái</th>
+                                    <th className="px-4 py-3 text-right w-32 border-b border-border">Ngày nộp</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                            <tbody className="divide-y divide-border">
                                 {filteredAndSortedForms.map((row) => {
                                     const selfTotal = calcSelfTotal(row);
                                     const managerTotal = calcManagerTotal(row);
@@ -304,41 +304,41 @@ export const EvaluationPage: React.FC = () => {
                                         <tr
                                             key={row.id}
                                             onClick={() => handleViewForm(row)}
-                                            className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700"
+                                            className="group cursor-pointer transition-all hover:bg-bg-muted"
                                         >
-                                            <td className="px-4 py-3.5 text-left">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-left">
                                                 <div className="min-w-0">
-                                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm group-hover:text-primary-600 transition-colors truncate">
+                                                    <p className="font-semibold text-txt-primary text-sm group-hover:text-primary-600 transition-colors truncate">
                                                         {row.employee_name}
                                                     </p>
-                                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                                                    <p className="text-[11px] text-txt-muted truncate">
                                                         {row.chuc_vu || row.department_name}
                                                     </p>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-center">
+                                                <span className="text-xs font-medium text-txt-secondary">
                                                     PL{row.form_type === 'leader' ? '01' : '02'}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3.5 text-center">
-                                                <span className="font-bold text-slate-700 dark:text-slate-200">{selfTotal.toFixed(0)}</span>
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-center">
+                                                <span className="font-bold text-txt-primary">{selfTotal.toFixed(0)}</span>
                                             </td>
-                                            <td className="px-4 py-3.5 text-center">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-center">
                                                 <span className="font-bold text-primary-600 dark:text-primary-400">{managerTotal.toFixed(0)}</span>
                                             </td>
-                                            <td className="px-4 py-3.5 text-center">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-center">
                                                 <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${clsCfg.bg} ${clsCfg.color}`}>
                                                     {cls}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3.5 text-center">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-center">
                                                 <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${statusCfg.bg} ${statusCfg.color}`}>
                                                     {statusCfg.label}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3.5 text-right">
-                                                <span className="text-xs text-slate-500">
+                                            <td className="px-4 py-[var(--density-table-py,12px)] text-right">
+                                                <span className="text-xs text-txt-secondary">
                                                     {row.self_submitted_at ? new Date(row.self_submitted_at).toLocaleDateString('vi-VN') : '—'}
                                                 </span>
                                             </td>

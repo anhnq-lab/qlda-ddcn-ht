@@ -21,8 +21,15 @@
 .theme-light .table-header-row,
 .theme-light .table-header-row th,
 .theme-light .table-footer {
-  background-color: #f1f5f9 !important;
-  border-color: #e2e8f0 !important;
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light thead,
+.theme-light thead tr,
+.theme-light thead th {
+  background-color: #e2e8f0 !important;
+  color: #334155 !important;
 }
 
 /* Header and Sidebar - Corporate Identity (Light Theme only) */
@@ -135,24 +142,24 @@
 
 /* ── Background catch-alls (solid colors only — NO opacity for neutral bg) ── */
 .dark .bg-white {
-  background-color: #1e293b; /* slate-800 solid */
+  background-color: #1f2332; /* Navy Slate solid */
 }
 
 .dark .bg-gray-50 {
-  background-color: #0f172a; /* slate-900 solid */
+  background-color: #1a1e2e; /* bg-subtle solid */
 }
 
 .dark .bg-gray-100 {
-  background-color: #1e293b; /* slate-800 solid */
+  background-color: #252a3b; /* bg-muted solid */
 }
 
 /* ── Slate backgrounds — KHÔNG dùng /opacity cho neutral bg ── */
 .dark .bg-slate-50 {
-  background-color: #0f172a; /* slate-900 solid */
+  background-color: #1a1e2e; /* bg-subtle solid */
 }
 
 .dark .bg-slate-100 {
-  background-color: #1e293b; /* slate-800 solid */
+  background-color: #252a3b; /* bg-muted solid */
 }
 
 /* ── Semantic light backgrounds → dark equivalents ── */
@@ -265,11 +272,11 @@
 
 /* ── Border catch-alls ── */
 .dark .border-gray-100 {
-  border-color: rgb(51 65 85);
+  border-color: #222533;
 }
 
 .dark .border-gray-200 {
-  border-color: rgb(71 85 105);
+  border-color: #262a39;
 }
 
 .dark .border-blue-100 {
@@ -409,7 +416,7 @@
 .dark textarea {
   background-color: rgb(30 41 59);
   color: rgb(226 232 240);
-  border-color: rgb(71 85 105);
+  border-color: #2c3143;
 }
 
 .dark input::placeholder,
@@ -439,4 +446,24 @@
 }
 .dark .custom-map-container {
   background-color: #cbd5e1; /* slate-300 — light enough for tiles to pop */
+}
+
+/* THEME-NATURE OVERRIDES
+   Tăng độ tương phản cho các header và border trong theme cát
+   ======================================== */
+.theme-nature .section-header,
+.theme-nature .section-card-header,
+.theme-nature .table-header-row,
+.theme-nature .table-header-row th,
+.theme-nature .table-footer {
+  background-color: #E6E0D4 !important;
+  border-color: #DBD4C4 !important;
+  color: #4a3426 !important;
+}
+
+.theme-nature thead,
+.theme-nature thead tr,
+.theme-nature thead th {
+  background-color: #E6E0D4 !important;
+  color: #4a3426 !important;
 }

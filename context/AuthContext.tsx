@@ -250,16 +250,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     localStorage.removeItem(INACTIVITY_KEY);
                 }
 
-                // --- DEV AUTO-LOGIN ---
+                // ╔════════════════════════════════════════════════════════════╗
+                // ║  🔒 SECURITY WARNING — DEV AUTO-LOGIN                      ║
+                // ║                                                            ║
+                // ║  This block auto-logs in with fallback credentials during  ║
+                // ║  local development ONLY. It is COMPLETELY STRIPPED from    ║
+                // ║  production builds by Vite (import.meta.env.DEV = false). ║
+                // ║                                                            ║
+                // ║  ⚠️  DO NOT use these credentials in production.           ║
+                // ║  ⚠️  Override via .env.local: VITE_DEV_EMAIL /            ║
+                // ║      VITE_DEV_PASSWORD to avoid committing real secrets.   ║
+                // ║                                                            ║
+                // ║  If import.meta.env.DEV is false, NONE of this code runs. ║
+                // ╚════════════════════════════════════════════════════════════╝
                 if (import.meta.env.DEV && !existingSession) {
                     const explicitlyLoggedOut = localStorage.getItem('explicitlyLoggedOut') === 'true';
                     
                     if (!explicitlyLoggedOut && !autoLoginAttempted) {
                         autoLoginAttempted = true;
                         console.log('[Auth] 🔧 Local Dev: Auto-logging in as Admin...');
-                        // ⚠️ DEV-ONLY: credentials below are stripped from production build by Vite.
-                        // import.meta.env.DEV = false in production → this entire block is dead code.
-                        // To change dev credentials: set VITE_DEV_EMAIL / VITE_DEV_PASSWORD in .env.local
+                        console.warn('[Auth] ⚠️ DEV AUTO-LOGIN ACTIVE — this MUST NOT run in production!');
                         const demoLogin = await supabase.auth.signInWithPassword({
                             email: import.meta.env.VITE_DEV_EMAIL ?? 'admin@bqlddcn.gov.vn',
                             password: import.meta.env.VITE_DEV_PASSWORD ?? '@Abc123456',

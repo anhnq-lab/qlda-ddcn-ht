@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Plus, Search, ChevronDown, ChevronRight, Edit2, Trash2,
-    BookOpen, Filter, Download, Upload, Calendar, Users, Building2
+    BookOpen, Filter, Download, Upload, Calendar, Users, Building2, X
 } from 'lucide-react';
-import { AnnualPlanService } from '../../services/PlanService';
+import { AnnualPlanService, MonthlyPlanService } from '../../services/PlanService';
 import {
     AnnualPlanItem, DepartmentCode, DEPARTMENT_CODES,
     DEPARTMENT_NAMES, FREQUENCY_LABELS, PlanFrequency,
 } from '../../types/plan.types';
 import AnnualPlanItemModal from './AnnualPlanItemModal';
 import AnnualPlanItemDetail from './AnnualPlanItemDetail';
+import MonthlyPlanItemModal from '../monthly-plan/MonthlyPlanItemModal';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
 import DataTable, { Column as ColumnDef } from '../../components/ui/DataTable';
@@ -40,6 +41,12 @@ const AnnualPlanPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+    
+    // Month selection state for creating monthly tasks
+    const [monthSelectOpen, setMonthSelectOpen] = useState(false);
+    const [selectedAnnualItem, setSelectedAnnualItem] = useState<AnnualPlanItem | null>(null);
+    const [targetMonth, setTargetMonth] = useState<number>(new Date().getMonth() + 1);
+    const [isCreatingMonthly, setIsCreatingMonthly] = useState(false);
 
     useEffect(() => {
         loadItems();
@@ -122,10 +129,62 @@ const AnnualPlanPage: React.FC = () => {
                     onEdit={() => openFormPanel(item)}
                     onDelete={() => { handleDelete(item.id); closePanel(); }}
                     onClose={closePanel}
+                    onCreateMonthlyTask={(selectedItem) => {
+                        setSelectedAnnualItem(selectedItem);
+                        let suggestedMonth = new Date().getMonth() + 1;
+                        if (selectedItem.start_period) {
+                            const match = selectedItem.start_period.match(/\d+/);
+                            if (match) suggestedMonth = parseInt(match[0], 10);
+                        }
+                        setTargetMonth(suggestedMonth);
+                        setMonthSelectOpen(true);
+                    }}
                 />
             ),
             width: '50vw',
         });
+    };
+
+    const handleConfirmMonth = async () => {
+        if (!selectedAnnualItem) return;
+        setIsCreatingMonthly(true);
+        try {
+            const monthlyPlan = await MonthlyPlanService.getOrCreate(
+                targetMonth,
+                year,
+                activeDept,
+                DEPARTMENT_NAMES[activeDept]
+            );
+            
+            setMonthSelectOpen(false);
+            closePanel();
+            
+            setTimeout(() => {
+                openPanel({
+                    title: `Thêm nhiệm vụ KH tháng ${targetMonth}/${year}`,
+                    component: (
+                        <MonthlyPlanItemModal
+                            monthlyPlanId={monthlyPlan.id}
+                            month={targetMonth}
+                            year={year}
+                            departmentCode={activeDept}
+                            item={null}
+                            initialAnnualPlanItem={selectedAnnualItem}
+                            onSaved={() => {
+                                closePanel();
+                            }}
+                            onClose={closePanel}
+                        />
+                    ),
+                    width: '50vw',
+                });
+            }, 150);
+        } catch (e) {
+            console.error('Lỗi khi khởi tạo kế hoạch tháng:', e);
+            alert('Có lỗi xảy ra khi khởi tạo kế hoạch tháng.');
+        } finally {
+            setIsCreatingMonthly(false);
+        }
     };
 
     const columns = useMemo<ColumnDef<AnnualPlanItem>[]>(() => [
@@ -354,6 +413,98 @@ const AnnualPlanPage: React.FC = () => {
                     />
                 )}
             </div>
+
+            {/* Month Selection Modal */}
+            {monthSelectOpen && selectedAnnualItem && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl rounded-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+                            <h3 className="font-bold text-slate-850 dark:text-slate-150 text-base">Chọn tháng lập kế hoạch</h3>
+                            <button 
+                                onClick={() => setMonthSelectOpen(false)}
+                                className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        {/* Modal Body */}
+                        <div className="p-5 space-y-4">
+                            <div>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 uppercase font-black tracking-wider mb-1">Nhiệm vụ khung năm</p>
+                                <p className="text-sm font-bold text-slate-750 dark:text-slate-200 leading-snug">{selectedAnnualItem.task_name}</p>
+                            </div>
+                            
+                            {selectedAnnualItem.start_period && (
+                                <div className="bg-blue-50/50 dark:bg-blue-500/5 border border-blue-100/50 dark:border-blue-500/10 rounded-xl p-3 text-xs text-blue-600 dark:text-blue-400 leading-relaxed flex items-center gap-2">
+                                    <span className="text-base leading-none">ℹ️</span>
+                                    <span>Nhiệm vụ này dự kiến thực hiện trong khoảng: <strong>{formatPeriod(selectedAnnualItem.start_period)} - {formatPeriod(selectedAnnualItem.end_period)}</strong>.</span>
+                                </div>
+                            )}
+
+                            <div>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 uppercase font-black tracking-wider mb-3">Chọn tháng áp dụng</p>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => {
+                                        const isSelected = targetMonth === m;
+                                        // Kiểm tra xem tháng này có nằm trong khoảng dự kiến không (nếu có định dạng Tháng X)
+                                        let inPeriod = true;
+                                        if (selectedAnnualItem.start_period && selectedAnnualItem.end_period) {
+                                            const startMatch = selectedAnnualItem.start_period.match(/\d+/);
+                                            const endMatch = selectedAnnualItem.end_period.match(/\d+/);
+                                            if (startMatch && endMatch) {
+                                                const start = parseInt(startMatch[0], 10);
+                                                const end = parseInt(endMatch[0], 10);
+                                                inPeriod = m >= start && m <= end;
+                                            }
+                                        }
+
+                                        return (
+                                            <button
+                                                key={m}
+                                                type="button"
+                                                onClick={() => setTargetMonth(m)}
+                                                className={`py-2 px-3 text-sm rounded-xl font-bold transition-all relative ${
+                                                    isSelected
+                                                        ? 'bg-primary-600 text-white shadow-sm ring-2 ring-primary-500/20'
+                                                        : inPeriod
+                                                            ? 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 dark:bg-slate-805 dark:border-slate-750 dark:text-slate-300 dark:hover:bg-slate-750'
+                                                            : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50 dark:bg-slate-900/50 dark:border-slate-850 dark:text-slate-550 dark:hover:bg-slate-850'
+                                                }`}
+                                            >
+                                                T. {m}
+                                                {inPeriod && !isSelected && (
+                                                    <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-805 flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setMonthSelectOpen(false)}
+                                className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleConfirmMonth}
+                                disabled={isCreatingMonthly}
+                                className="px-5 py-2 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 rounded-xl shadow-sm transition-all flex items-center gap-1.5 animate-pulse-once"
+                            >
+                                {isCreatingMonthly ? 'Đang tạo...' : 'Xác nhận'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

@@ -130,22 +130,22 @@ const BG_MAP: Record<StatCardColor, string> = {
 
 // BORDER_TOP_MAP: Accent top border color per color prop
 const BORDER_TOP_MAP: Record<StatCardColor, string> = {
-    primary: 'dark:border-t-primary-500 border-t-transparent',
-    success: 'dark:border-t-success-500 border-t-transparent',
-    warning: 'dark:border-t-warning-500 border-t-transparent',
-    danger:  'dark:border-t-danger-500 border-t-transparent',
-    info:    'dark:border-t-info-500 border-t-transparent',
-    blue:    'dark:border-t-info-500 border-t-transparent',
-    emerald: 'dark:border-t-success-500 border-t-transparent',
-    amber:   'dark:border-t-warning-500 border-t-transparent',
-    rose:    'dark:border-t-danger-500 border-t-transparent',
-    violet:  'dark:border-t-primary-500 border-t-transparent',
-    cyan:    'dark:border-t-info-500 border-t-transparent',
-    indigo:  'dark:border-t-primary-500 border-t-transparent',
-    orange:  'dark:border-t-warning-500 border-t-transparent',
-    purple:  'dark:border-t-warning-500 border-t-transparent',
-    slate:   'dark:border-t-slate-500 border-t-transparent',
-    gray:    'dark:border-t-gray-500 border-t-transparent',
+    primary: 'border-t-primary-500',
+    success: 'border-t-success-500',
+    warning: 'border-t-warning-500',
+    danger:  'border-t-danger-500',
+    info:    'border-t-info-500',
+    blue:    'border-t-info-500',
+    emerald: 'border-t-success-500',
+    amber:   'border-t-warning-500',
+    rose:    'border-t-danger-500',
+    violet:  'border-t-primary-500',
+    cyan:    'border-t-info-500',
+    indigo:  'border-t-primary-500',
+    orange:  'border-t-warning-500',
+    purple:  'border-t-warning-500',
+    slate:   'border-t-slate-500',
+    gray:    'border-t-gray-500',
 };
 
 /**
@@ -199,10 +199,13 @@ export const StatCard: React.FC<StatCardProps> = ({
     return (
         <div
             className={`
-                relative overflow-hidden flex flex-col gap-2 p-4 rounded-xl
-                bg-white dark:bg-slate-900 border border-border-DEFAULT dark:border-slate-700
-                shadow-sm h-full transition-all duration-200 border-t-[3px] ${borderTopCls}
-                ${onClick ? 'cursor-pointer hover:shadow-md hover:border-primary-200 dark:hover:border-slate-600' : ''}
+                relative overflow-hidden flex flex-col gap-2 p-5 rounded-2xl
+                bg-bg-surface border border-border
+                shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] 
+                h-full transition-all duration-200 border-t-[3px] ${borderTopCls}
+                hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] 
+                hover:-translate-y-0.5
+                ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''}
                 ${className}
             `}
             onClick={onClick}
@@ -212,7 +215,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         >
             {/* Row 1: Label + Trend */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase leading-none min-h-[14px]">
+                <div className="flex items-center text-[11px] font-black text-txt-secondary tracking-wider uppercase leading-none min-h-[14px]">
                     {label}
                 </div>
                 {(trendPercentage !== undefined || trend) && (
@@ -221,7 +224,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                     }`}>
                         {((trendPercentage !== undefined && trendPercentage >= 0) || trend === 'up') ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                         {trendPercentage !== undefined && <span>{Math.abs(trendPercentage)}%</span>}
-                        {trendLabel && <span className="text-slate-400 dark:text-slate-400 font-medium ml-0.5">{trendLabel}</span>}
+                        {trendLabel && <span className="text-txt-muted font-medium ml-0.5">{trendLabel}</span>}
                     </div>
                 )}
             </div>
@@ -229,11 +232,11 @@ export const StatCard: React.FC<StatCardProps> = ({
             {/* Row 2: Value + Icon inline */}
             <div className="flex items-center justify-between gap-2 mt-1">
                 <div className="flex items-baseline flex-wrap gap-x-1.5 gap-y-0.5 min-w-0">
-                    <div className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+                    <div className="text-2xl font-black text-txt-primary tracking-tight leading-none">
                         {loading ? <div className="h-7 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" /> : value}
                     </div>
                     {targetValue && !loading && (
-                        <span className="text-xs font-medium text-slate-400 dark:text-slate-400 truncate mt-1 lg:mt-0">
+                        <span className="text-xs font-medium text-txt-muted truncate mt-1 lg:mt-0">
                             / {targetValue}
                         </span>
                     )}
@@ -247,15 +250,15 @@ export const StatCard: React.FC<StatCardProps> = ({
             {progressPercentage !== undefined && progressLabel ? (
                 <div className="mt-1">
                     <div className="flex justify-between items-center mb-1">
-                        <span className="text-[9px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">{progressLabel}</span>
+                        <span className="text-[9px] font-bold text-txt-muted uppercase tracking-wider">{progressLabel}</span>
                         <span className={`text-[10px] font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
                     </div>
-                    <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div className={`h-full ${bgCls} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${Math.min(100, Math.max(0, progressPercentage))}%` }}></div>
                     </div>
                 </div>
             ) : sublabel ? (
-                <div className="text-[10px] font-medium text-slate-400 dark:text-slate-400 leading-none mt-1">
+                <div className="text-[10px] font-medium text-txt-muted leading-none mt-1">
                     {sublabel}
                 </div>
             ) : (

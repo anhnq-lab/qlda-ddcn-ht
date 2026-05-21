@@ -76,7 +76,12 @@ export const TaskService = {
 
       const { data, error } = await query;
       if (error) throw toServiceError(error, 'Không thể tải danh sách công việc');
-      return (data || []) as unknown as DbTask[];
+      
+      // Lọc bỏ các bước dự án lớn (task_type = project nhưng chưa sinh kế hoạch tháng)
+      const filtered = (data || []).filter((r: any) => {
+        return r.task_type === 'internal' || (r.task_type === 'project' && !!r.monthly_plan_item_id);
+      });
+      return filtered as unknown as DbTask[];
     } catch (err) {
       throw toServiceError(err, 'Không thể tải danh sách công việc');
     }

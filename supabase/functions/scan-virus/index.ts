@@ -1,3 +1,17 @@
+// ╔════════════════════════════════════════════════════════════════════╗
+// ║  ⚠️  SECURITY WARNING — PLACEHOLDER ONLY                        ║
+// ║                                                                  ║
+// ║  This edge function is a PLACEHOLDER. File uploads are           ║
+// ║  NOT actually scanned for viruses or malware.                    ║
+// ║  The function always returns { status: 'clean' } regardless      ║
+// ║  of the file content.                                            ║
+// ║                                                                  ║
+// ║  Before going to production, integrate a real antivirus API      ║
+// ║  (e.g., ClamAV REST, VirusTotal, or cloud-native scanning).     ║
+// ║                                                                  ║
+// ║  DO NOT rely on this function for security decisions.            ║
+// ╚════════════════════════════════════════════════════════════════════╝
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
@@ -6,6 +20,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 serve(async (req) => {
     try {
+        // WARNING: This is a PLACEHOLDER. File uploads are NOT actually scanned for viruses.
+        console.warn('[scan-virus] ⚠️ PLACEHOLDER FUNCTION — NO ACTUAL VIRUS SCANNING IS PERFORMED. All files marked as clean by default.');
         const payload = await req.json();
         
         // Example payload from Supabase Storage webhook or DB trigger

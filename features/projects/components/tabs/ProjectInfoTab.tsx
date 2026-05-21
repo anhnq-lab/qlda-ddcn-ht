@@ -439,7 +439,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 {/* Hide on Map Button */}
                                 <button
                                     onClick={toggleHideOnMap}
-                                    className={`flex items-center gap-1 text-[10px] font-bold ${isHiddenOnMap ? 'text-gray-500 hover:text-gray-700' : 'text-red-500 hover:text-red-700'}`}
+                                    className={`flex items-center gap-1 text-[10px] font-bold ${isHiddenOnMap ? 'text-txt-muted hover:text-txt-primary' : 'text-rose-500 hover:text-rose-700'}`}
                                 >
                                     {isHiddenOnMap ? (
                                         <>
@@ -455,7 +455,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 </button>
                                 <button
                                     onClick={onEditProject}
-                                    className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold"
+                                    className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline font-bold"
                                 >
                                     <Pencil className="w-3 h-3" />
                                     Chỉnh sửa
@@ -495,9 +495,9 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <div className="mt-2 px-2.5 pb-1">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <Target className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
-                                        <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Mục tiêu đầu tư</span>
+                                        <span className="text-[10px] font-bold text-txt-muted uppercase tracking-wider">Mục tiêu đầu tư</span>
                                     </div>
-                                    <p className="text-xs text-gray-700 dark:text-slate-200 leading-relaxed whitespace-pre-line bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-2.5 border border-blue-100 dark:border-blue-800/30">
+                                    <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line bg-bg-muted rounded-xl p-2.5 border border-border">
                                         {project.Objective}
                                     </p>
                                 </div>
@@ -508,9 +508,9 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <div className="mt-2 px-2.5 pb-1">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <Ruler className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-                                        <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Tóm tắt quy mô đầu tư</span>
+                                        <span className="text-[10px] font-bold text-txt-muted uppercase tracking-wider">Tóm tắt quy mô đầu tư</span>
                                     </div>
-                                    <p className="text-xs text-gray-700 dark:text-slate-200 leading-relaxed whitespace-pre-line bg-emerald-50/50 dark:bg-emerald-900/10 rounded-lg p-2.5 border border-emerald-100 dark:border-emerald-800/30">
+                                    <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line bg-bg-muted rounded-xl p-2.5 border border-border">
                                         {project.InvestmentScale}
                                     </p>
                                 </div>
@@ -535,16 +535,16 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                         { label: 'Diện tích (m²)', value: project.SiteArea, color: 'blue' },
                                         { label: 'DT xây dựng (m²)', value: project.ConstructionArea, color: 'emerald' },
                                     ].map((item, i) => (
-                                        <div key={i} className={`rounded-lg border py-1.5 px-2 text-center
-                                            ${item.color === 'red' ? 'border-red-200 dark:border-red-800/50 bg-red-50/50 dark:bg-red-900/15' :
-                                            item.color === 'blue' ? 'border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/15' :
-                                            'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/50 dark:bg-emerald-900/15'}`}
+                                        <div key={i} className={`rounded-xl border py-1.5 px-2 text-center
+                                            ${item.color === 'red' ? 'border-red-500/20 bg-red-500/10' :
+                                            item.color === 'blue' ? 'border-blue-500/20 bg-blue-500/10' :
+                                            'border-emerald-500/20 bg-emerald-500/10'}`}
                                         >
-                                            <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{item.label}</p>
+                                            <p className="text-[9px] font-bold text-txt-muted uppercase tracking-wide">{item.label}</p>
                                             <p className={`text-sm font-black tabular-nums
-                                                ${item.color === 'red' ? 'text-red-600 dark:text-red-400' :
-                                                item.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-                                                'text-emerald-600 dark:text-emerald-400'}`}
+                                                ${item.color === 'red' ? 'text-rose-500' :
+                                                item.color === 'blue' ? 'text-blue-500' :
+                                                'text-emerald-500'}`}
                                             >
                                                 {item.value ? Number(item.value).toLocaleString('vi-VN') : '—'}
                                             </p>
@@ -649,25 +649,25 @@ const EnhancedInfoItem: React.FC<{
     }, [value]);
 
     return (
-        <div className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-gray-100 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
-            <div className="w-6 h-6 rounded-md bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
-                <Icon className="w-3 h-3 text-gray-400 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+        <div className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-border-subtle last:border-b-0 hover:bg-bg-muted transition-colors">
+            <div className="w-6 h-6 rounded-md bg-bg-muted flex items-center justify-center shrink-0 group-hover:bg-primary-500/10 transition-colors">
+                <Icon className="w-3 h-3 text-txt-muted group-hover:text-primary-500 transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
-                <span className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-medium">{label}</span>
-                <p className={`text-xs truncate ${highlight ? 'text-primary-700 dark:text-primary-400 font-bold' : 'text-gray-800 dark:text-slate-200 font-medium'}`}>
+                <span className="text-[10px] text-txt-muted uppercase tracking-wide font-medium">{label}</span>
+                <p className={`text-xs truncate ${highlight ? 'text-primary-500 font-bold' : 'text-txt-secondary font-medium'}`}>
                     {value || '—'}
                 </p>
             </div>
             {copyable && value && (
                 <button
                     onClick={handleCopy}
-                    className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all"
+                    className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-bg-muted transition-all"
                     title="Sao chép"
                 >
                     {copied
-                        ? <Check className="w-3.5 h-3.5 text-emerald-500" />
-                        : <Copy className="w-3.5 h-3.5 text-gray-400" />
+                         ? <Check className="w-3.5 h-3.5 text-emerald-500" />
+                         : <Copy className="w-3.5 h-3.5 text-txt-muted" />
                     }
                 </button>
             )}

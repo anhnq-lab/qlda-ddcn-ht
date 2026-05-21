@@ -16,14 +16,12 @@ import { useEmployees } from '../../hooks/useEmployees';
 
 // ─── Status config ────────────────────────────────────────────
 const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; variant: BadgeVariant; topBar: string; bg: string; color: string; ring: string }> = {
-    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-500',    bg: 'bg-slate-50 dark:bg-slate-500/10',    color: 'text-slate-700 dark:text-slate-400',    ring: 'ring-slate-600/10 dark:ring-slate-500/20' },
-    completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500',  bg: 'bg-emerald-50 dark:bg-emerald-500/10', color: 'text-emerald-700 dark:text-emerald-400', ring: 'ring-emerald-600/10 dark:ring-emerald-500/20' },
-    incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500',      bg: 'bg-rose-50 dark:bg-rose-500/10',       color: 'text-rose-700 dark:text-rose-400',       ring: 'ring-rose-600/10 dark:ring-rose-500/20' },
-    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500',  bg: 'bg-amber-50 dark:bg-amber-500/10',    color: 'text-amber-700 dark:text-amber-400',    ring: 'ring-amber-600/10 dark:ring-amber-500/20' },
-    deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   variant: 'info',    topBar: 'bg-blue-500',     bg: 'bg-sky-50 dark:bg-sky-500/10',        color: 'text-sky-700 dark:text-sky-400',        ring: 'ring-sky-600/10 dark:ring-sky-500/20' },
+    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-400 dark:bg-slate-600', bg: 'bg-slate-100 dark:bg-slate-805', color: 'text-slate-600 dark:text-slate-400', ring: 'ring-slate-500/15' },
+    completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500',  bg: 'bg-emerald-50 dark:bg-emerald-500/10', color: 'text-emerald-600 dark:text-emerald-400', ring: 'ring-emerald-500/20' },
+    incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500',      bg: 'bg-rose-50 dark:bg-rose-500/10',       color: 'text-rose-600 dark:text-rose-400',       ring: 'ring-rose-500/20' },
+    partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500',  bg: 'bg-amber-50 dark:bg-amber-500/10',    color: 'text-amber-700 dark:text-amber-450',    ring: 'ring-amber-500/20' },
+    deferred:   { label: 'Chuyển tháng', icon: <ArrowRight className="w-3.5 h-3.5" />,   variant: 'info',    topBar: 'bg-blue-500',     bg: 'bg-sky-50 dark:bg-sky-500/10',        color: 'text-sky-700 dark:text-sky-400',        ring: 'ring-blue-500/20' },
 };
-
-
 
 interface Props {
     item: MonthlyPlanItem;
@@ -50,8 +48,11 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
     const getAssigneeName = (assigneeId: string) => {
         if (!assigneeId) return 'Chưa phân công';
-        const emp = employees.find(e => e.EmployeeID === assigneeId);
-        return emp ? emp.FullName : 'Không xác định';
+        if (assigneeId.startsWith('NV')) {
+            const emp = employees.find(e => e.EmployeeID === assigneeId);
+            return emp ? emp.FullName : assigneeId;
+        }
+        return assigneeId;
     };
 
     const loadTasks = async () => {
@@ -64,7 +65,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
             
             const { data, error } = await supabase
                 .from('tasks')
-                .select('id, title, status, priority, progress, assignee_id, due_date')
+                .select('id, title, status, priority, progress, assignee_id, due_date, metadata')
                 .or(conditions.join(','));
             if (error) throw error;
             setTasks(data || []);
@@ -113,6 +114,8 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
             loadTasks();
         } catch (err) {
             console.error('Error saving task:', err);
+            alert('Có lỗi xảy ra khi lưu công việc thực tế. Vui lòng kiểm tra lại.');
+            throw err;
         }
     };
 
@@ -142,161 +145,141 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-800 animate-in fade-in duration-300">
-            {/* Header Toolbar */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-900 shadow-sm shrink-0">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-primary-500" />
-                    Chi tiết Kế hoạch tháng
-                </h3>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={onEdit}
-                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
-                        title="Sửa"
-                    >
-                        <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        title="Xóa"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                    <div className="w-px h-4 bg-slate-200 mx-1" />
-                    <button
-                        onClick={onClose}
-                        className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-md transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/40 overflow-hidden animate-in fade-in duration-300">
+            {/* Header Card */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0 overflow-hidden">
+                {/* Top accent */}
+                <div className={`h-1 ${cfg.topBar}`} />
+
+                <div className="px-5 py-4">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                            {/* Tags row */}
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold ${cfg.bg} ${cfg.color} ring-1 ${cfg.ring}`}>
+                                    {cfg.icon} {MONTHLY_STATUS_LABELS[item.status]}
+                                </span>
+                                {item.group_name && (
+                                    <span className="text-[10px] font-bold text-slate-550 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2 py-1 rounded-md">
+                                        {item.group_name}
+                                    </span>
+                                )}
+                                <span className="text-[10px] font-mono text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2 py-1 rounded-md">
+                                    Tháng {month}/{year}
+                                </span>
+                            </div>
+
+                            {/* Title */}
+                            <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">
+                                {item.task_name}
+                            </h1>
+                        </div>
+
+                        {/* Close button */}
+                        <button
+                            onClick={onClose}
+                            className="shrink-0 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-855 mt-0.5 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    {/* Action buttons row */}
+                    <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                        <button
+                            onClick={onEdit}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-400 dark:hover:bg-primary-500/20 rounded-xl transition-all border border-primary-100 dark:border-primary-500/20 active:scale-[0.98]"
+                        >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            Sửa kế hoạch
+                        </button>
+                        
+                        <button
+                            onClick={handleDelete}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 rounded-xl transition-all border border-red-100 dark:border-red-500/20 ml-auto active:scale-[0.98]"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Xóa
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
-                
-                {/* ══════════ HEADER CARD ══════════ */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className={`h-1 ${cfg.topBar}`} />
-                    <div className="p-4">
-                        <div className="flex flex-col lg:flex-row justify-between gap-5">
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${cfg.bg} ${cfg.color} ring-1 ${cfg.ring}`}>
-                                        {cfg.icon} {MONTHLY_STATUS_LABELS[item.status]}
-                                    </span>
-                                    {item.group_name && (
-                                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1.5 rounded-md">
-                                            {item.group_name}
-                                        </span>
-                                    )}
-                                    <span className="text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1.5 rounded-md">
-                                        Tháng {month}/{year}
-                                    </span>
-                                </div>
-
-                                <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">
-                                    {item.task_name}
-                                </h1>
-
-                                {(project || annualItem) && (
-                                    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400 mt-3">
-                                        {project && (
-                                            <span className="flex items-center gap-1.5 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 px-2 py-1 rounded-md text-xs font-medium border border-violet-100 dark:border-violet-500/20">
-                                                <FolderOpen className="w-3.5 h-3.5" />
-                                                {project.ProjectName}
-                                            </span>
-                                        )}
-                                        {annualItem && (
-                                            <span className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-md text-xs font-medium border border-blue-100 dark:border-blue-500/20">
-                                                <Link2 className="w-3.5 h-3.5" />
-                                                KH Khung năm {year}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ══════════ CONTENT GRID ══════════ */}
+            {/* Scrollable Body - 2 Columns Layout */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* ── LEFT 2/3 ── */}
+                    {/* Left column (2/3) */}
                     <div className="lg:col-span-2 space-y-6">
                         
-                        {/* Description */}
+                        {/* Description / Deliverables */}
                         {(item.deliverable || item.notes) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <ClipboardList className="w-4 h-4" /> Nội dung chi tiết
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-450 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <ClipboardList className="w-4 h-4 text-slate-400" /> Nội dung chi tiết
                                 </h3>
                                 
                                 {item.deliverable && (
-                                    <div className="mb-4">
-                                        <p className="text-xs font-bold text-slate-500 mb-1">Kết quả đầu ra</p>
-                                        <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{item.deliverable}</p>
+                                    <div>
+                                        <p className="text-[10px] uppercase font-bold text-slate-450 dark:text-slate-500 mb-1 tracking-wider">Kết quả đầu ra cần đạt</p>
+                                        <div className="prose prose-sm max-w-none text-slate-705 dark:text-slate-350 leading-relaxed font-medium">
+                                            <p className="whitespace-pre-wrap">{item.deliverable}</p>
+                                        </div>
                                     </div>
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate-850 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
-                                        <p className="text-xs font-bold text-slate-500 mb-1">Ghi chú</p>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.notes}</p>
+                                    <div className="bg-slate-50 dark:bg-slate-850/50 rounded-xl p-3 border border-slate-100 dark:border-slate-800">
+                                        <p className="text-[10px] uppercase font-bold text-slate-450 dark:text-slate-500 mb-1 tracking-wider">Ghi chú thêm</p>
+                                        <p className="text-sm text-slate-650 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">{item.notes}</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
                         {/* Linked Execution Tasks */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 space-y-4">
-                            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <CheckSquare className="w-4 h-4" />
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                            <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
+                                    <CheckSquare className="w-4 h-4 text-slate-400" />
                                     Công việc thực tế ({tasks.length})
                                 </h3>
-                                {item.project_id && (
-                                    <button
-                                        onClick={() => setIsTaskModalOpen(true)}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-400 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer"
-                                    >
-                                        <Plus className="w-3.5 h-3.5" />
-                                        Tạo công việc
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => setIsTaskModalOpen(true)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:hover:bg-primary-500/20 text-primary-600 dark:text-primary-400 text-xs font-bold rounded-xl transition-all border border-primary-100/50 dark:border-primary-500/20 active:scale-[0.98] cursor-pointer"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Tạo công việc
+                                </button>
                             </div>
 
                             {tasksLoading ? (
-                                <div className="flex justify-center items-center py-6 text-slate-400 text-xs">
+                                <div className="flex justify-center items-center py-6 text-slate-450 dark:text-slate-400 text-xs">
                                     Đang tải công việc...
                                 </div>
                             ) : tasks.length === 0 ? (
-                                <div className="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
-                                    <ClipboardList className="w-8 h-8 text-slate-300 mx-auto" />
-                                    <p className="text-xs text-slate-500">Chưa có công việc thực tế nào được liên kết.</p>
-                                    {item.project_id ? (
-                                        <button
-                                            onClick={() => setIsTaskModalOpen(true)}
-                                            className="text-xs text-primary-600 font-bold hover:underline cursor-pointer"
-                                        >
-                                            Tạo công việc đầu tiên
-                                        </button>
-                                    ) : (
-                                        <p className="text-[10px] text-slate-400">Vui lòng liên kết nhiệm vụ này với một dự án để tạo công việc.</p>
-                                    )}
+                                <div className="text-center py-8 px-4 border border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-850/50 space-y-2">
+                                    <ClipboardList className="w-8 h-8 text-slate-350 dark:text-slate-650 mx-auto" />
+                                    <p className="text-xs text-slate-550 dark:text-slate-455 font-medium">Chưa có công việc thực tế nào được liên kết.</p>
+                                    <button
+                                        onClick={() => setIsTaskModalOpen(true)}
+                                        className="text-xs text-primary-605 dark:text-primary-400 font-bold hover:underline cursor-pointer"
+                                    >
+                                        Tạo công việc đầu tiên
+                                    </button>
                                 </div>
                             ) : (
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {/* Summary Progress Bar */}
-                                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-700">
+                                    <div className="bg-slate-50 dark:bg-slate-850/50 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-800">
                                         <div className="flex justify-between items-center text-xs">
-                                            <span className="font-medium text-slate-600 dark:text-slate-400">Tiến độ thực tế trung bình</span>
-                                            <span className="font-bold text-primary-600 dark:text-primary-400">{averageProgress}%</span>
+                                            <span className="font-bold text-slate-550 dark:text-slate-400 flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                                                <BarChart3 className="w-3.5 h-3.5 text-slate-400" /> Tiến độ thực tế trung bình
+                                            </span>
+                                            <span className="font-black text-primary-600 dark:text-primary-400 text-sm">{averageProgress}%</span>
                                         </div>
-                                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
                                             <div
-                                                className="bg-gradient-to-r from-primary-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                                                className="bg-gradient-to-r from-primary-500 to-indigo-500 dark:from-primary-400 dark:to-indigo-500 h-full rounded-full transition-all duration-500"
                                                 style={{ width: `${averageProgress}%` }}
                                             />
                                         </div>
@@ -326,7 +309,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleEditTask(task.id)}
-                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-850 rounded-xl border border-slate-100 hover:border-slate-200 dark:border-slate-700/80 dark:hover:border-slate-600/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
+                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-850/30 dark:hover:bg-slate-800 rounded-xl border border-slate-100/50 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
                                                 >
                                                     <div className="flex items-center gap-3 min-w-0 md:w-1/2">
                                                         <div className={`p-1.5 rounded-lg shrink-0 ${statusColor}`}>
@@ -337,14 +320,14 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                                         </span>
                                                     </div>
 
-                                                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 shrink-0">
-                                                        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-700 px-2 py-1 rounded-md">
+                                                    <div className="flex flex-wrap items-center justify-between md:justify-end gap-4 text-xs text-slate-500 dark:text-slate-400 shrink-0">
+                                                        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-750/80 px-2 py-1 rounded-md font-semibold text-slate-600 dark:text-slate-300">
                                                             <User className="w-3.5 h-3.5 text-slate-400" />
-                                                            <span>{getAssigneeName(task.assignee_id)}</span>
+                                                             <span>{getAssigneeName(task.assignee_id || task.metadata?.assignee_role)}</span>
                                                         </div>
                                                         
                                                         {task.due_date && (
-                                                            <div className="flex items-center gap-1">
+                                                            <div className="flex items-center gap-1 font-semibold text-slate-655 dark:text-slate-300">
                                                                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
                                                                 <span>{new Date(task.due_date).toLocaleDateString('vi-VN')}</span>
                                                             </div>
@@ -371,29 +354,28 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         </div>
                     </div>
 
-                    {/* ── RIGHT 1/3 ── */}
+                    {/* Right column (1/3) */}
                     <div className="space-y-6">
-
-                        {/* Nguồn gốc & Liên kết */}
+                        {/* Origin / Links */}
                         {(project || annualItem) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Link2 className="w-4 h-4" /> Nguồn gốc & Liên kết
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <Link2 className="w-4 h-4 text-slate-400" /> Nguồn gốc liên kết
                                 </h3>
                                 <div className="space-y-4">
                                     {project && (
                                         <div>
-                                            <p className="text-[10px] uppercase font-bold text-violet-500 tracking-wider mb-1">Thuộc dự án</p>
-                                            <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                            <p className="text-[10px] uppercase font-bold text-violet-500 tracking-wider mb-1.5">Thuộc dự án</p>
+                                            <div className="flex items-center gap-2 text-sm font-bold text-slate-750 dark:text-slate-200 bg-violet-50/50 dark:bg-violet-950/20 p-2.5 rounded-xl border border-violet-100/50 dark:border-violet-950/30">
                                                 <FolderOpen className="w-4 h-4 text-violet-400 shrink-0" />
-                                                {project.ProjectName}
+                                                <span>{project.ProjectName}</span>
                                             </div>
                                         </div>
                                     )}
                                     {annualItem && (
                                         <div>
-                                            <p className="text-[10px] uppercase font-bold text-blue-500 tracking-wider mb-1">Kế hoạch khung năm {year}</p>
-                                            <div className="flex items-start gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                            <p className="text-[10px] uppercase font-bold text-blue-500 tracking-wider mb-1.5">KH Khung năm {year}</p>
+                                            <div className="flex items-start gap-2 text-sm font-bold text-slate-750 dark:text-slate-200 bg-blue-50/50 dark:bg-blue-950/20 p-2.5 rounded-xl border border-blue-100/50 dark:border-blue-950/30">
                                                 <Target className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                                                 <span>{annualItem.task_name}</span>
                                             </div>
@@ -403,34 +385,34 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                             </div>
                         )}
                         
-                        {/* Timeline / Deadlines */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Clock className="w-4 h-4" /> Thời gian
+                        {/* Timeline / Dates */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-slate-400" /> Thời gian
                             </h3>
                             <div className="space-y-4">
                                 {item.deadline_note && (
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Thời hạn</p>
-                                        <p className="text-sm font-medium text-slate-700">{item.deadline_note}</p>
+                                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 block tracking-wider">Thời hạn báo cáo</p>
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-250 bg-slate-50 dark:bg-slate-850/50 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-800 inline-block">{item.deadline_note}</p>
                                     </div>
                                 )}
                                 {item.due_date && (
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Ngày cụ thể</p>
-                                        <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 block tracking-wider">Ngày cụ thể</p>
+                                        <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-355">
                                             <Calendar className="w-4 h-4 text-slate-400" />
-                                            {new Date(item.due_date).toLocaleDateString('vi-VN')}
+                                            {new Date(item.due_date).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
                                         </div>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Đơn vị thực hiện */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Users className="w-4 h-4" /> Đơn vị thực hiện
+                        {/* Executing Unit / Departments */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-slate-400" /> Đơn vị thực hiện
                             </h3>
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
@@ -438,32 +420,32 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                         <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
                                             {departmentCode ? `${departmentCode} - ${DEPARTMENT_NAMES[departmentCode] ?? ''}` : 'Chưa xác định'}
                                         </p>
-                                        <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider">Đơn vị chủ trì</p>
+                                        <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider mt-0.5">Đơn vị chủ trì</p>
                                     </div>
                                 </div>
 
                                 {((item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) || item.collaborating_text) && (
-                                    <div className="flex items-start gap-3 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                                    <div className="flex items-start gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                                         <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/50">
                                             <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 space-y-1">
+                                            <div className="text-sm font-bold text-slate-800 dark:text-slate-200 space-y-1.5">
                                                 {item.collaborating_dept_codes?.map(code => (
-                                                    <div key={code} className="text-xs">
-                                                        • {code} - {DEPARTMENT_NAMES[code as DepartmentCode] ?? ''}
+                                                    <div key={code} className="text-xs font-bold text-slate-700 dark:text-slate-350">
+                                                        • {code} - {DEPARTMENT_NAMES[code as DepartmentCode] ?? code}
                                                     </div>
                                                 ))}
                                                 {item.collaborating_text && (
-                                                    <div className="text-xs text-slate-500 dark:text-slate-400 italic">
+                                                    <div className="text-xs text-slate-550 dark:text-slate-400 italic font-medium">
                                                         {item.collaborating_text}
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="text-[10px] uppercase font-bold text-emerald-500 tracking-wider mt-1">Đơn vị phối hợp</p>
+                                            <p className="text-[10px] uppercase font-bold text-emerald-500 tracking-wider mt-1.5">Đơn vị phối hợp</p>
                                         </div>
                                     </div>
                                 )}
@@ -472,21 +454,21 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
                         {/* Report Results */}
                         {(item.completion_result || item.incomplete_reason) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Briefcase className="w-4 h-4" /> Báo cáo
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
+                                    <Briefcase className="w-4 h-4 text-slate-400" /> Báo cáo thực hiện
                                 </h3>
                                 <div className="space-y-3">
                                     {item.completion_result && (
-                                        <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3">
-                                            <p className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider mb-1">Kết quả thực hiện</p>
-                                            <p className="text-sm text-emerald-800">{item.completion_result}</p>
+                                        <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-950/30 rounded-xl p-3.5">
+                                            <p className="text-[10px] uppercase font-black text-emerald-600 dark:text-emerald-450 tracking-wider mb-1.5">Kết quả đạt được</p>
+                                            <p className="text-sm text-emerald-800 dark:text-emerald-300 font-bold leading-relaxed whitespace-pre-wrap">{item.completion_result}</p>
                                         </div>
                                     )}
                                     {item.incomplete_reason && (
-                                        <div className="bg-red-50/50 border border-red-100 rounded-xl p-3">
-                                            <p className="text-[10px] uppercase font-bold text-red-600 tracking-wider mb-1">Lý do chậm trễ</p>
-                                            <p className="text-sm text-red-800">{item.incomplete_reason}</p>
+                                        <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-100/50 dark:border-red-950/30 rounded-xl p-3.5">
+                                            <p className="text-[10px] uppercase font-black text-red-600 dark:text-red-450 tracking-wider mb-1.5">Lý do chậm trễ</p>
+                                            <p className="text-sm text-red-800 dark:text-red-300 font-bold leading-relaxed whitespace-pre-wrap">{item.incomplete_reason}</p>
                                         </div>
                                     )}
                                 </div>
@@ -495,6 +477,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     </div>
                 </div>
             </div>
+
             {isTaskModalOpen && (
                 <ProjectTaskModal
                     isOpen={isTaskModalOpen}
@@ -505,7 +488,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     }}
                     onSubmit={handleSaveTask}
                     initialData={selectedTask || {
-                        ProjectID: item.project_id,
+                        ProjectID: item.project_id || '',
                         MonthlyPlanItemID: item.id,
                         Title: item.task_name,
                         Description: item.deliverable,
@@ -518,6 +501,3 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 };
 
 export default MonthlyPlanItemDetail;
-
-
-

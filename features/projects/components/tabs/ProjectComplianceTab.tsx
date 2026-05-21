@@ -383,23 +383,23 @@ const CostBreakdownDisplay: React.FC<{
         <div className="space-y-2">
             {fields.map(f => (
                 <div key={f.key} className="flex items-center gap-3 text-xs">
-                    <span className="w-32 text-gray-500 dark:text-slate-400">{f.label}:</span>
+                    <span className="w-32 text-txt-secondary">{f.label}:</span>
                     {editing ? (
                         <input
                             type="number"
                             value={breakdown[f.key] || ''}
                             onChange={e => onChange({ ...breakdown, [f.key]: Number(e.target.value) || 0 })}
-                            className="flex-1 px-2 py-1 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-200 text-xs"
+                            className="flex-1 px-2 py-1 rounded-xl border border-border bg-bg-surface text-txt-primary text-xs"
                             placeholder="0"
                         />
                     ) : (
-                        <span className="font-medium text-gray-800 dark:text-slate-200">{formatCurrency(breakdown[f.key])}</span>
+                        <span className="font-medium text-txt-primary">{formatCurrency(breakdown[f.key])}</span>
                     )}
                 </div>
             ))}
-            <div className="pt-1 border-t border-gray-200 dark:border-slate-600 flex items-center gap-3 text-xs font-bold">
-                <span className="w-32 text-gray-700 dark:text-slate-300">Tổng cộng:</span>
-                <span className="text-blue-700 dark:text-blue-400">{formatCurrency(total as number)}</span>
+            <div className="pt-1 border-t border-border flex items-center gap-3 text-xs font-bold">
+                <span className="w-32 text-txt-primary">Tổng cộng:</span>
+                <span className="text-primary-500">{formatCurrency(total as number)}</span>
             </div>
         </div>
     );
@@ -637,13 +637,13 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
     const renderStatusBadge = (status: UploadState['status']) => {
         switch (status) {
             case 'done':
-                return <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-full"><CheckCircle2 className="w-3 h-3" />Đã có</span>;
+                return <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full"><CheckCircle2 className="w-3 h-3" />Đã có</span>;
             case 'extracting':
-                return <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full"><RefreshCw className="w-3 h-3 animate-spin" />Trích xuất...</span>;
+                return <span className="inline-flex items-center gap-1 text-xs font-bold text-primary-500 bg-primary-500/10 px-2 py-0.5 rounded-full"><RefreshCw className="w-3 h-3 animate-spin" />Trích xuất...</span>;
             case 'error':
-                return <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full"><AlertCircle className="w-3 h-3" />Lỗi</span>;
+                return <span className="inline-flex items-center gap-1 text-xs font-bold text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full"><AlertCircle className="w-3 h-3" />Lỗi</span>;
             default:
-                return <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-slate-400 px-2 py-0.5"><Clock className="w-3 h-3" />Chưa có</span>;
+                return <span className="inline-flex items-center gap-1 text-xs text-txt-muted px-2 py-0.5"><Clock className="w-3 h-3" />Chưa có</span>;
         }
     };
 
@@ -655,7 +655,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             if (row.projectKey === 'ConstructionType') {
                 return (
                     <select value={String(val)} onChange={e => setDataEdits(prev => ({ ...prev, [row.projectKey!]: e.target.value }))}
-                        className="w-full px-2 py-1.5 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-slate-200">
+                        className="w-full px-2 py-1.5 rounded-xl border border-border bg-bg-surface text-xs text-txt-primary">
                         <option value="">— Chọn —</option>
                         <option value="Dân dụng">Dân dụng</option>
                         <option value="Công nghiệp">Công nghiệp</option>
@@ -668,7 +668,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             if (row.projectKey === 'ConstructionGrade') {
                 return (
                     <select value={String(val)} onChange={e => setDataEdits(prev => ({ ...prev, [row.projectKey!]: e.target.value }))}
-                        className="w-full px-2 py-1.5 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-slate-200">
+                        className="w-full px-2 py-1.5 rounded-xl border border-border bg-bg-surface text-xs text-txt-primary">
                         <option value="">— Chọn —</option>
                         <option value="Đặc biệt">Đặc biệt</option>
                         <option value="I">Cấp I</option>
@@ -681,7 +681,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             if (row.projectKey === 'ManagementForm') {
                 return (
                     <select value={String(val)} onChange={e => setDataEdits(prev => ({ ...prev, [row.projectKey!]: e.target.value }))}
-                        className="w-full px-2 py-1.5 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-slate-200">
+                        className="w-full px-2 py-1.5 rounded-xl border border-border bg-bg-surface text-xs text-txt-primary">
                         <option value="">— Chọn —</option>
                         <option value="Ban QLDA chuyên ngành">Ban QLDA chuyên ngành</option>
                         <option value="Ban QLDA khu vực">Ban QLDA khu vực</option>
@@ -693,23 +693,23 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             if (row.projectKey === 'TotalInvestment') {
                 return (
                     <input type="number" value={val || ''} onChange={e => setDataEdits(prev => ({ ...prev, [row.projectKey!]: Number(e.target.value) }))}
-                        className="w-full px-2 py-1.5 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-slate-200" placeholder="VNĐ" />
+                        className="w-full px-2 py-1.5 rounded-xl border border-border bg-bg-surface text-xs text-txt-primary" placeholder="VNĐ" />
                 );
             }
             return (
                 <input type="text" value={String(val)} onChange={e => setDataEdits(prev => ({ ...prev, [row.projectKey!]: e.target.value }))}
-                    className="w-full px-2 py-1.5 rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-gray-900 dark:text-slate-200" />
+                    className="w-full px-2 py-1.5 rounded-xl border border-border bg-bg-surface text-xs text-txt-primary" />
             );
         }
 
         // Display mode
         if (row.projectKey === 'TotalInvestment') {
-            return <span className="text-xs font-semibold text-gray-800 dark:text-slate-200">{formatCurrency(Number(val)) || '—'}</span>;
+            return <span className="text-xs font-semibold text-txt-primary">{formatCurrency(Number(val)) || '—'}</span>;
         }
         if (row.projectKey === 'GroupCode') {
-            return <span className="text-xs font-semibold text-gray-800 dark:text-slate-200">{getGroupLabel(String(val))}</span>;
+            return <span className="text-xs font-semibold text-txt-primary">{getGroupLabel(String(val))}</span>;
         }
-        return <span className={`text-xs ${val ? 'font-medium text-gray-800 dark:text-slate-200' : 'text-gray-300 dark:text-slate-600 italic'}`}>{String(val) || '— chưa có —'}</span>;
+        return <span className={`text-xs ${val ? 'font-medium text-txt-primary' : 'text-txt-muted italic'}`}>{String(val) || '— chưa có —'}</span>;
     };
 
     const renderDocRow = (row: TT24Row) => {
@@ -723,16 +723,16 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     {upload.status === 'empty' ? (
                         <button
                             onClick={() => fileInputRefs.current[key]?.click()}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 transition-all"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-xl hover:bg-primary-500/20 border border-primary-500/20 transition-all"
                         >
                             <Upload className="w-3.5 h-3.5" /> Upload VB ký số
                         </button>
                     ) : (
-                        <div className="flex items-center gap-2 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 rounded-lg px-3 py-1.5">
+                        <div className="flex items-center gap-2 bg-bg-muted rounded-xl px-3 py-1.5 border border-border">
                             <FileCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                            <span className="text-xs text-gray-700 dark:text-slate-300 truncate max-w-[200px]">{upload.fileName}</span>
+                            <span className="text-xs text-txt-secondary truncate max-w-[200px]">{upload.fileName}</span>
                             {renderStatusBadge(upload.status)}
-                            <button onClick={() => removeUpload(key)} className="ml-1 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => removeUpload(key)} className="ml-1 text-txt-muted hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
                         </div>
                     )}
                     <input
@@ -750,12 +750,12 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
 
                 {/* Extracted data */}
                 {upload.extractedData && Object.entries(upload.extractedData).length > 0 && (
-                    <div className="ml-1 pl-3 border-l-2 border-emerald-300 dark:border-emerald-600 space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Dữ liệu trích xuất tự động</span>
+                    <div className="ml-1 pl-3 border-l-2 border-emerald-500 space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-emerald-500 tracking-wider">Dữ liệu trích xuất tự động</span>
                         {row.subFields?.map(sf => (
                             <div key={sf.key} className="flex items-center gap-2 text-xs">
-                                <span className="text-gray-500 dark:text-slate-400 w-20 flex-shrink-0">{sf.label}:</span>
-                                <span className="font-medium text-gray-800 dark:text-slate-200">{upload.extractedData?.[sf.key] || '—'}</span>
+                                <span className="text-txt-muted w-20 flex-shrink-0">{sf.label}:</span>
+                                <span className="font-medium text-txt-primary">{upload.extractedData?.[sf.key] || '—'}</span>
                             </div>
                         ))}
                     </div>
@@ -768,15 +768,15 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
 
                 {/* Auto-fill from project data when no upload */}
                 {upload.status === 'empty' && row.subFields && (
-                    <div className="ml-1 pl-3 border-l-2 border-gray-200 dark:border-slate-600 space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-gray-400 dark:text-slate-400 tracking-wider">Dữ liệu từ hệ thống</span>
+                    <div className="ml-1 pl-3 border-l-2 border-border space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-txt-muted tracking-wider">Dữ liệu từ hệ thống</span>
                         {row.subFields.map(sf => {
                             const v = (project as any)[sf.key];
                             const displayVal = sf.label.includes('Ngày') ? formatDate(v) : (sf.key === 'TotalInvestment' ? formatCurrency(Number(v)) : String(v || ''));
                             return (
                                 <div key={sf.key} className="flex items-center gap-2 text-xs">
-                                    <span className="text-gray-500 dark:text-slate-400 w-20 flex-shrink-0">{sf.label}:</span>
-                                    <span className={`${displayVal ? 'font-medium text-gray-600 dark:text-slate-300' : 'text-gray-300 dark:text-slate-600 italic'}`}>
+                                    <span className="text-txt-muted w-20 flex-shrink-0">{sf.label}:</span>
+                                    <span className={`${displayVal ? 'font-medium text-txt-secondary' : 'text-txt-muted italic'}`}>
                                         {displayVal || '— chưa có —'}
                                     </span>
                                 </div>
@@ -797,17 +797,17 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-5 py-4">
 
             {/* ── Header ── */}
-            <div className="section-card p-5">
+            <div className="section-card p-5 bg-bg-surface border border-border rounded-2xl">
                 <div className="flex items-start justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-xl flex items-center justify-center text-primary-600 dark:text-primary-400">
+                        <div className="w-12 h-12 bg-bg-muted rounded-2xl flex items-center justify-center text-primary-500 border border-border">
                             <Database className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-base font-black text-gray-800 dark:text-slate-100 tracking-wide">
+                            <h2 className="text-base font-black text-txt-primary tracking-wide">
                                 TT24/2025/TT-BXD — Phụ lục III, Bảng số 01
                             </h2>
-                            <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
+                            <p className="text-txt-muted text-xs mt-0.5">
                                 Phần A + B — Dữ liệu dự án & thiết kế xây dựng • {getGroupLabel(projectGroup)}
                             </p>
                         </div>
@@ -815,13 +815,13 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     <div className="flex items-center gap-2">
                         {!editingData ? (
                             <button onClick={() => setEditingData(true)}
-                                className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
+                                className="px-3 py-2 bg-bg-muted hover:bg-border text-txt-primary rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-border">
                                 <Pencil className="w-3.5 h-3.5" /> Chỉnh sửa dữ liệu
                             </button>
                         ) : (
                             <>
                                 <button onClick={() => { setEditingData(false); setDataEdits({}); }}
-                                    className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all">
+                                    className="px-3 py-2 bg-bg-muted hover:bg-border text-txt-primary rounded-xl text-xs font-bold transition-all border border-border">
                                     Hủy
                                 </button>
                                 <button onClick={handleSaveData} disabled={saving}
@@ -837,10 +837,10 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                 {/* Progress */}
                 <div className="mt-4">
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Hoàn thành dữ liệu</span>
-                        <span className="text-sm font-black text-gray-800 dark:text-slate-100">{completionPct}%</span>
+                        <span className="text-xs text-txt-muted font-medium">Hoàn thành dữ liệu</span>
+                        <span className="text-sm font-black text-txt-primary">{completionPct}%</span>
                     </div>
-                    <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-2 bg-bg-muted rounded-full overflow-hidden border border-border">
                         <div className={`h-full rounded-full transition-all duration-700 ${completionPct >= 80 ? 'bg-emerald-500' : completionPct >= 50 ? 'bg-warning-500' : 'bg-red-500'
                             }`} style={{ width: `${completionPct}%` }} />
                     </div>
@@ -848,14 +848,14 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             </div>
 
             {/* ── Table ── */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
 
                 {/* Table Header */}
-                <div className="grid grid-cols-[56px_1fr_130px_1fr] gap-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-[10px] font-black text-gray-600 dark:text-slate-300 uppercase tracking-widest">
+                <div className="grid grid-cols-[56px_1fr_130px_1fr] gap-0 bg-bg-muted border-b border-border text-[10px] font-black text-txt-muted uppercase tracking-widest">
                     <div className="px-3 py-3 text-center">STT</div>
-                    <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-600">Nội dung dữ liệu</div>
-                    <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-600 text-center">Biểu mẫu / Upload</div>
-                    <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-600">Giá trị / Dữ liệu trích xuất</div>
+                    <div className="px-3 py-3 border-l border-border">Nội dung dữ liệu</div>
+                    <div className="px-3 py-3 border-l border-border text-center">Biểu mẫu / Upload</div>
+                    <div className="px-3 py-3 border-l border-border">Giá trị / Dữ liệu trích xuất</div>
                 </div>
 
                 {/* Table Body */}
@@ -878,18 +878,18 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     return (
                         <div
                             key={key}
-                            className={`grid grid-cols-[56px_1fr_130px_1fr] gap-0 border-b border-gray-200 dark:border-slate-700 transition-colors ${isMainHeading
-                                ? 'bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-700 dark:to-slate-700 cursor-pointer hover:from-primary-100 hover:to-warning-100 dark:hover:from-slate-600 dark:hover:to-slate-600'
+                            className={`grid grid-cols-[56px_1fr_130px_1fr] gap-0 border-b border-border transition-colors ${isMainHeading
+                                ? 'bg-gradient-to-r from-primary-500/10 to-warning-500/10 cursor-pointer hover:from-primary-500/20 hover:to-warning-500/20'
                                 : isHeading
-                                    ? 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700'
-                                    : 'hover:bg-bg-app dark:bg-slate-900 dark:hover:bg-slate-700'
+                                    ? 'bg-bg-muted/80'
+                                    : 'hover:bg-bg-muted/40'
                                 }`}
                             onClick={isMainHeading ? () => toggleSection(row.stt) : undefined}
                         >
                             {/* STT */}
-                            <div className={`px-3 py-3 text-center text-xs ${isMainHeading ? 'font-black text-blue-700 dark:text-blue-400' :
-                                isHeading ? 'font-bold text-gray-600 dark:text-slate-300' :
-                                    'text-gray-500 dark:text-slate-400'
+                            <div className={`px-3 py-3 text-center text-xs ${isMainHeading ? 'font-black text-primary-500' :
+                                isHeading ? 'font-bold text-txt-secondary' :
+                                    'text-txt-muted'
                                 }`} style={{ paddingLeft: `${8 + row.depth * 12}px` }}>
                                 {isMainHeading && (
                                     expandedSections.has(row.stt) ? <ChevronUp className="w-3.5 h-3.5 inline mr-1" /> : <ChevronDown className="w-3.5 h-3.5 inline mr-1" />
@@ -898,9 +898,9 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Label */}
-                            <div className={`px-3 py-3 border-l border-gray-200 dark:border-slate-700 text-xs ${isMainHeading ? 'font-black text-blue-800 dark:text-blue-300 tracking-wider' :
-                                isHeading ? 'font-bold text-gray-700 dark:text-slate-200' :
-                                    'text-gray-700 dark:text-slate-300'
+                            <div className={`px-3 py-3 border-l border-border text-xs ${isMainHeading ? 'font-black text-primary-600 dark:text-primary-400 tracking-wider' :
+                                isHeading ? 'font-bold text-txt-primary' :
+                                    'text-txt-primary'
                                 }`} style={{ paddingLeft: `${12 + row.depth * 16}px` }}>
                                 {row.label}
                                 {row.type === 'document' && !upload && (
@@ -911,7 +911,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Biểu mẫu / Upload */}
-                            <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-700 text-center">
+                            <div className="px-3 py-3 border-l border-border text-center">
                                 {isMainHeading || isHeading ? null : row.type === 'document' ? (
                                     <div className="flex flex-col items-center gap-1">
                                         {row.templateFile && (
@@ -926,7 +926,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Value / Extracted Data */}
-                            <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-700">
+                            <div className="px-3 py-3 border-l border-border">
                                 {isMainHeading || isHeading ? null :
                                     row.type === 'data' ? renderDataValue(row) :
                                         row.type === 'cost_breakdown' ? (
@@ -946,8 +946,8 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             </div>
 
             {/* ── Footer Note ── */}
-            <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
-                <p className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed">
+            <div className="bg-bg-muted rounded-2xl p-4 border border-border">
+                <p className="text-xs text-txt-muted leading-relaxed">
                     <strong>Ghi chú:</strong> Khi upload văn bản ký số (PDF/ảnh), hệ thống sử dụng AI để tự động trích xuất dữ liệu.
                     Các dữ liệu không có trong văn bản sẽ tự động lấy từ thông tin dự án đã nhập.
                     Danh sách hiển thị theo <strong>{getGroupLabel(projectGroup)}</strong> — đúng theo TT24/2025/TT-BXD Phụ lục III, Bảng số 01.

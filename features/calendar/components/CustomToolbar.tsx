@@ -37,31 +37,31 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = (props) => {
     <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
       {/* Left: Navigation */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={goToCurrent} className="font-medium text-slate-600 dark:text-slate-300">
+        <Button variant="outline" size="sm" onClick={goToCurrent} className="font-semibold text-txt-secondary border-border hover:bg-bg-muted">
           Hôm nay
         </Button>
         <div className="flex items-center gap-1">
           <button 
             onClick={goToBack}
-            className="p-1.5 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all"
+            className="p-1.5 rounded-full text-txt-muted hover:text-txt-primary hover:bg-bg-muted border border-transparent hover:border-border transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button 
             onClick={goToNext}
-            className="p-1.5 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all"
+            className="p-1.5 rounded-full text-txt-muted hover:text-txt-primary hover:bg-bg-muted border border-transparent hover:border-border transition-all"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 ml-2 capitalize tracking-tight">
+        <h2 className="text-xl font-extrabold text-txt-primary ml-2 capitalize tracking-tight">
           {label}
         </h2>
       </div>
 
       {/* Right: Filters & View Switcher */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="w-40">
+        <div className="w-full sm:w-44">
           <Select
             size="sm"
             placeholder="Loại sự kiện..."
@@ -76,7 +76,7 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = (props) => {
             clearable
           />
         </div>
-        <div className="w-40">
+        <div className="w-full sm:w-44">
           <Select
             size="sm"
             placeholder="Phòng họp..."
@@ -92,23 +92,23 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = (props) => {
         </div>
         
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-gray-500 px-2 h-9">
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-txt-muted hover:text-txt-primary px-2 h-9">
             <FilterX className="w-4 h-4" />
           </Button>
         )}
 
-        <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <div className="hidden sm:block h-6 w-px bg-border mx-1"></div>
 
         {/* View Switcher */}
-        <div className="flex items-center bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-lg gap-1">
+        <div className="flex items-center bg-bg-muted border border-border p-1 rounded-lg gap-1">
           {(views as View[]).map((v) => (
             <button
               key={v}
               onClick={() => onView(v)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-all duration-200 ${
                 view === v 
-                  ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5' 
-                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                  ? 'bg-bg-surface text-txt-primary border border-border shadow-sm' 
+                  : 'text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 border border-transparent'
               }`}
             >
               {v === 'month' ? 'Tháng' : v === 'week' ? 'Tuần' : v === 'day' ? 'Ngày' : 'Lịch trình'}

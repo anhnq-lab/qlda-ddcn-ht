@@ -68,40 +68,40 @@ const TAB_IDS = TAB_DEFINITIONS.map(t => t.id) as unknown as readonly TabId[];
 
 // ─────── Skeleton Loading ───────
 const ProjectDetailSkeleton: React.FC = () => (
-    <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900 animate-pulse">
+    <div className="flex flex-col h-[calc(100vh-120px)] bg-transparent animate-pulse">
         <div className="shrink-0 px-4 pt-4 space-y-4">
             {/* Header skeleton */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-200 dark:border-slate-700">
+            <div className="bg-bg-surface rounded-2xl p-4 border border-border">
                 <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-xl" />
+                    <div className="w-10 h-10 bg-bg-muted rounded-xl" />
                     <div className="flex-1 space-y-3">
                         <div className="flex items-center gap-3">
-                            <div className="h-7 bg-gray-200 dark:bg-slate-700 rounded-lg w-2/3" />
-                            <div className="h-6 bg-primary-100 dark:bg-primary-900/20 rounded-md w-28" />
+                            <div className="h-7 bg-bg-muted rounded-lg w-2/3" />
+                            <div className="h-6 bg-bg-muted rounded-md w-28" />
                         </div>
                         <div className="flex gap-4">
-                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-24" />
-                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-32" />
-                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20" />
-                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-16" />
+                            <div className="h-4 bg-bg-muted rounded w-24" />
+                            <div className="h-4 bg-bg-muted rounded w-32" />
+                            <div className="h-4 bg-bg-muted rounded w-20" />
+                            <div className="h-4 bg-bg-muted rounded w-16" />
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <div className="h-9 w-24 bg-blue-100 dark:bg-blue-900/20 rounded-xl" />
-                        <div className="h-9 w-9 bg-gray-100 dark:bg-slate-700 rounded-xl" />
+                        <div className="h-9 w-24 bg-bg-muted rounded-xl" />
+                        <div className="h-9 w-9 bg-bg-muted rounded-xl" />
                     </div>
                 </div>
             </div>
             {/* Tab skeleton */}
-            <div className="flex gap-8 border-b border-gray-200 dark:border-slate-700 pb-2">
+            <div className="flex gap-8 border-b border-border pb-2">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                    <div key={i} className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20" />
+                    <div key={i} className="h-4 bg-bg-muted rounded w-20" />
                 ))}
             </div>
         </div>
         {/* Content skeleton */}
         <div className="flex-1 p-4 mt-2">
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 h-[calc(100vh-220px)] overflow-hidden p-4">
+            <div className="bg-bg-surface rounded-2xl border border-border h-[calc(100vh-220px)] overflow-hidden p-4">
                 <TableSkeleton columns={5} rows={10} />
             </div>
         </div>
@@ -335,21 +335,21 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
 
     // ─── Render ───
     if (loading) return <ProjectDetailSkeleton />;
-    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
+    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-txt-muted">Dự án không tồn tại.</div>;
 
     return (
-        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-white dark:bg-slate-800' : 'h-[calc(100vh-120px)] bg-transparent'} dark:bg-slate-900 border-l-0`}>
+        <div className={`flex flex-col relative ${inPanel ? 'h-screen bg-bg-surface' : 'h-[calc(100vh-120px)] bg-transparent'} border-l-0`}>
             {/* Fixed Header + Tabs — does NOT scroll */}
             <div className={`shrink-0 px-4 ${inPanel ? 'pt-1' : 'pt-2'}`}>
                 {/* 1. Minimal Header — just title + actions */}
                 <div className="flex items-center justify-between gap-3 mb-1.5">
                     <div className="flex items-center gap-2 min-w-0">
                         {!inPanel && (
-                            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0">
-                                <ArrowLeft className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                            <button onClick={() => navigate(-1)} className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors shrink-0">
+                                <ArrowLeft className="w-4 h-4 text-txt-muted" />
                             </button>
                         )}
-                        <h1 className="text-base font-black text-gray-900 dark:text-white truncate">{project.ProjectName}</h1>
+                        <h1 className="text-base font-black text-txt-primary truncate">{project.ProjectName}</h1>
                         <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide border ${
                             Number(project.Status) === 3 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
                             Number(project.Status) === 2 ? 'bg-warning-50 text-warning-700 border-warning-200 dark:bg-warning-900/30 dark:text-warning-400 dark:border-warning-800' :
@@ -376,13 +376,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             Chỉnh sửa
                         </button>
                         <div className="relative group">
-                            <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                <MoreVertical className="w-4 h-4 text-gray-400" />
+                            <button className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
+                                <MoreVertical className="w-4 h-4 text-txt-muted" />
                             </button>
-                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <div className="absolute right-0 top-full mt-1 bg-bg-surface rounded-xl shadow-sm border border-border py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                                 <button
                                     onClick={() => setShowDeleteModal(true)}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
                                     Xoá dự án
@@ -393,7 +393,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                 </div>
 
                 {/* 2. Tab Navigation */}
-                <div className={`border-b border-gray-200 dark:border-slate-700 flex gap-0.5 overflow-x-auto scrollbar-hide scroll-smooth`}>
+                <div className={`border-b border-border flex gap-0.5 overflow-x-auto scrollbar-hide scroll-smooth`}>
                     {TAB_DEFINITIONS.map(t => {
                         const isActive = activeTab === t.id;
                         // Badge counts
@@ -403,13 +403,13 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button
                                 id={`tab-${t.id}`}
                                 key={t.id} onClick={() => setActiveTab(t.id)}
-                                className={`${inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-400' : 'border-transparent text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500'}`}
+                                className={`${inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-500 text-txt-primary' : 'border-transparent text-txt-muted hover:text-txt-primary hover:border-border'}`}
                                 title={`${t.label} (← → chuyển tab)`}
                             >
                                 <t.icon className="w-3.5 h-3.5" />
                                 {t.label}
                                 {badgeCount > 0 && (
-                                    <span className={`ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[9px] font-black ${isActive ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300' : 'bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+                                    <span className={`ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[9px] font-black ${isActive ? 'bg-primary-500/10 text-primary-500' : 'bg-bg-muted text-txt-muted'}`}>
                                         {badgeCount}
                                     </span>
                                 )}
@@ -432,8 +432,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             syncResult={syncResult}
                             isGeneratingReport={isGeneratingReport}
                             onGenerateReport={handleGenerateReport}
-                            onViewMember={(employeeId) => {
-                                console.log('View member:', employeeId);
+                            onViewMember={(_employeeId) => {
+                                // TODO: Navigate to employee detail
                             }}
                             onViewPackage={(packageId) => {
                                 setActiveTab('packages');
@@ -479,7 +479,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         <div className="flex justify-end">
                             <button
                                 onClick={() => setShowDrafter(true)}
-                                className="flex items-center gap-2 px-4 py-2 text-white text-sm font-bold rounded-xl shadow-sm transition-all"
+                                className="flex items-center gap-2 px-4 py-2 gradient-btn text-white text-sm font-bold rounded-xl shadow-sm transition-all hover:-translate-y-0.5"
                             >
                                 <Sparkles className="w-4 h-4" /> Soạn văn bản AI
                             </button>
@@ -675,18 +675,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
             {/* ─── AI Summary Popup Dialog ─── */}
             {showAISummary && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAISummary(false)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg border border-gray-200 dark:border-slate-700 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-slate-700">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg border border-border max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                             <div className="flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-blue-500" />
-                                <span className="text-sm font-bold text-gray-800 dark:text-slate-100">Tóm tắt AI</span>
+                                <span className="text-sm font-bold text-txt-primary">Tóm tắt AI</span>
                             </div>
-                            <button onClick={() => setShowAISummary(false)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                <X className="w-4 h-4 text-gray-400" />
+                            <button onClick={() => setShowAISummary(false)} className="p-1.5 hover:bg-bg-muted rounded-full transition-colors">
+                                <X className="w-4 h-4 text-txt-muted" />
                             </button>
                         </div>
                         <div className="p-5 overflow-y-auto">
-                            <React.Suspense fallback={<div className="py-6 text-center text-sm text-slate-400">Đang tải...</div>}>
+                            <React.Suspense fallback={<div className="py-6 text-center text-sm text-txt-muted">Đang tải...</div>}>
                                 <AISummaryWidget projectId={project.ProjectID} />
                             </React.Suspense>
                         </div>

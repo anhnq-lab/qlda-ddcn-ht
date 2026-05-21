@@ -20,24 +20,19 @@ export interface CardProps {
 // Dùng CSS variables (--bg-surface, --border-default) thay hardcoded colors
 const variantStyles: Record<CardVariant, string> = {
     default: `
-        bg-white dark:bg-slate-800 border border-border-DEFAULT shadow-card
-        dark:bg-slate-800 dark:border-slate-700/60
+        bg-bg-surface border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]
     `,
     outlined: `
-        bg-white dark:bg-slate-800 border-2 border-border-DEFAULT
-        dark:bg-slate-800 dark:border-slate-600
+        bg-bg-surface border-2 border-border
     `,
     elevated: `
-        bg-white dark:bg-slate-800 border border-border-subtle shadow-lg
-        dark:bg-slate-800 dark:border-slate-700/40 dark:shadow-slate-900/40
+        bg-bg-surface border border-border-subtle shadow-[0_8px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
     `,
     glass: `
-        bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg
-        dark:bg-slate-800 dark:border-slate-600/30 dark:shadow-slate-900/40
+        bg-bg-surface/70 backdrop-blur-xl border border-border-subtle shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
     `,
     gradient: `
-        bg-gradient-to-br from-bg-surface to-bg-subtle border border-border-DEFAULT shadow-card
-        dark:from-slate-800 dark:to-slate-900 dark:border-slate-700/60
+        bg-gradient-to-br from-bg-surface to-bg-subtle border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]
     `,
 };
 
@@ -69,8 +64,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         `;
 
         const hoverStyles = hover || clickable ? `
-            hover:shadow-card-hover hover:-translate-y-0.5
-            cursor-pointer
+            hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] 
+            hover:-translate-y-0.5 cursor-pointer
         ` : '';
 
         const focusStyles = clickable ? `

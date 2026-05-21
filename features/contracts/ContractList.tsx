@@ -204,7 +204,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             </div>
 
             {/* === Toolbar === */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-border p-4">
                 <div className="flex flex-col md:flex-row items-center gap-3">
                     <div className="relative w-full md:w-80">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
@@ -258,7 +258,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             </div>
 
             {/* === Contract Table === */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
@@ -283,7 +283,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 return (
                                     <tr
                                         key={contract.ContractID}
-                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-50"
+                                        className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700"
                                         onClick={() => navigate(`/contracts/${encodeURIComponent(contract.ContractID)}`)}
                                     >
                                         {/* STT */}

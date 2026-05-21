@@ -82,8 +82,8 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         '--bg-muted':     '#252a3b',   // Muted
         '--bg-elevated':  '#252a3b',   // Elevated modal
         // Borders
-        '--border-default': '#2e3348',
-        '--border-subtle':  '#252a3b',
+        '--border-default': '#222533',
+        '--border-subtle':  '#191b26',
         // Text
         '--text-primary':   '#f8fafc',
         '--text-secondary': '#e2e8f0',
@@ -91,7 +91,7 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         '--text-placeholder': '#64748b',
         // Inputs
         '--input-bg':       '#1a1e2e',
-        '--input-border':   '#2e3348',
+        '--input-border':   '#262b3b',
     },
 };
 
@@ -112,8 +112,13 @@ const CSS_OVERRIDES: Record<Theme, string> = {
 .theme-nature input:not([type="checkbox"]):not([type="radio"]),
 .theme-nature textarea, .theme-nature select { background-color: #FCF9F2 !important; border-color: #ece7de !important; }
 .theme-nature [role="menu"], .theme-nature [role="listbox"], .theme-nature [role="dialog"] { background-color: #FCF9F2 !important; }
-.theme-nature thead tr, .theme-nature th { background-color: #F0ECE1 !important; }
+.theme-nature thead tr, .theme-nature th { background-color: #E6E0D4 !important; color: #4a3426 !important; }
 .theme-nature tbody tr:hover { background-color: #F5EFE6 !important; }
+.theme-nature .text-slate-900, .theme-nature .text-gray-900 { color: #1d1c1c !important; }
+.theme-nature .text-slate-800, .theme-nature .text-gray-800 { color: #1d1c1c !important; }
+.theme-nature .text-slate-700, .theme-nature .text-gray-700 { color: #4a3426 !important; }
+.theme-nature .text-slate-600, .theme-nature .text-slate-500, .theme-nature .text-gray-500 { color: #78716c !important; }
+.theme-nature .text-slate-400, .theme-nature .text-gray-400 { color: #a8a29e !important; }
     `,
     light: `
 /* ===== Light Theme: cát → trắng ===== */
@@ -123,22 +128,22 @@ const CSS_OVERRIDES: Record<Theme, string> = {
 /* ===== Dark Theme: sáng/cát → slate ===== */
 .dark aside, .dark aside > div, .dark aside > div > * { background-color: #0f172a !important; border-color: #1e293b !important; }
 .dark header { background-color: rgba(15,23,42,0.97) !important; border-bottom-color: #1e293b !important; }
-.dark .bg-white, .dark [class~="bg-white"] { background-color: #1e293b !important; }
-.dark .bg-gray-50, .dark [class~="bg-gray-50"] { background-color: #1e293b !important; }
-.dark .bg-gray-100, .dark [class~="bg-gray-100"] { background-color: #334155 !important; }
-.dark .bg-slate-50, .dark [class~="bg-slate-50"] { background-color: #1e293b !important; }
-.dark .bg-slate-100, .dark [class~="bg-slate-100"] { background-color: #334155 !important; }
+.dark .bg-white, .dark [class~="bg-white"] { background-color: #1f2332 !important; }
+.dark .bg-gray-50, .dark [class~="bg-gray-50"] { background-color: #1a1e2e !important; }
+.dark .bg-gray-100, .dark [class~="bg-gray-100"] { background-color: #252a3b !important; }
+.dark .bg-slate-50, .dark [class~="bg-slate-50"] { background-color: #1a1e2e !important; }
+.dark .bg-slate-100, .dark [class~="bg-slate-100"] { background-color: #252a3b !important; }
 .dark thead tr, .dark th { background-color: #0f172a !important; color: #94a3b8 !important; }
-.dark tbody tr { background-color: #1e293b !important; }
-.dark tbody tr:hover { background-color: #334155 !important; }
-.dark td { color: #cbd5e1 !important; border-color: #334155 !important; }
+.dark tbody tr { background-color: #1f2332 !important; }
+.dark tbody tr:hover { background-color: #252a3b !important; }
+.dark td { color: #cbd5e1 !important; border-color: #2e3348 !important; }
 .dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea, .dark select { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
-.dark [role="menu"], .dark [role="listbox"], .dark [role="dialog"] { background-color: #1e293b !important; border-color: #334155 !important; }
+.dark textarea, .dark select { background-color: #1a1e2e !important; border-color: #2e3348 !important; color: #f1f5f9 !important; }
+.dark [role="menu"], .dark [role="listbox"], .dark [role="dialog"] { background-color: #1f2332 !important; border-color: #2e3348 !important; }
 .dark .text-gray-900, .dark .text-slate-900 { color: #f1f5f9 !important; }
 .dark .text-gray-700, .dark .text-slate-700 { color: #cbd5e1 !important; }
 .dark .text-gray-600, .dark .text-slate-600 { color: #94a3b8 !important; }
-.dark .border-gray-100, .dark .border-gray-200, .dark .border-slate-100, .dark .border-slate-200 { border-color: #1e293b !important; }
+.dark .border-gray-100, .dark .border-gray-200, .dark .border-slate-100, .dark .border-slate-200 { border-color: #2e3348 !important; }
 .dark ::-webkit-scrollbar { width: 6px; height: 6px; }
 .dark ::-webkit-scrollbar-track { background: #0f172a; }
 .dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }

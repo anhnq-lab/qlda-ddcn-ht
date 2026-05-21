@@ -53,7 +53,7 @@ const EmployeeList: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-500">
 
             {/* ══════════ TAB NAVIGATION ══════════ */}
-            <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit">
+            <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border w-fit">
                 <button onClick={() => setActiveTab('list')} className={tabClass('list')}>
                     <Users className="w-4 h-4" />
                     Danh sách nhân sự
@@ -92,7 +92,7 @@ const EmployeeList: React.FC = () => {
                     <div className="flex-1 space-y-4">
 
                         {/* ══════════ TOOLBAR ══════════ */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
                             <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                                 {/* Left: Search + Filters */}
                                 <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
@@ -158,7 +158,7 @@ const EmployeeList: React.FC = () => {
                                     {canManageUsers && (
                                         <button
                                             onClick={handleCreate}
-                                            className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-[0.98] hover:shadow-lg hover:-translate-y-0.5 hover:from-primary-500 hover:to-primary-500"
+                                            className="btn btn-primary"
                                         >
                                             <UserPlus className="w-4 h-4" />
                                             <span>Thêm nhân sự</span>
@@ -170,7 +170,7 @@ const EmployeeList: React.FC = () => {
 
                         {/* ══════════ CONTENT ══════════ */}
                         {isLoading ? (
-                            <div className="flex items-center justify-center h-64 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+                            <div className="flex items-center justify-center h-64 bg-bg-surface rounded-2xl border border-border">
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
                                     <p className="text-sm text-slate-400">Đang tải dữ liệu...</p>

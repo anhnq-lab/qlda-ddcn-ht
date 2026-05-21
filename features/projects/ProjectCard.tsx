@@ -41,7 +41,7 @@ const LazyImage: React.FC<{ src: string; alt: string; className?: string }> = ({
         <div className={`relative ${className}`}>
             {/* Placeholder gradient — shown until image loads */}
             {!loaded && (
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-br from-bg-muted via-bg-subtle to-bg-muted animate-pulse" />
             )}
             <img
                 src={error ? DEFAULT_IMAGE : src}
@@ -79,7 +79,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         return (
             <div
                 onClick={() => onClick(project)}
-                className="group flex flex-col md:flex-row bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                className="group flex flex-col md:flex-row bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
                 <div className="w-full md:w-56 h-32 md:h-auto relative shrink-0">
                     <LazyImage
@@ -99,10 +99,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
 
                 <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
-                        <h3 className="font-bold text-gray-900 dark:text-slate-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
+                        <h3 className="font-bold text-txt-primary leading-tight group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-1">
                             {project.ProjectName}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-slate-400 mb-3">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-txt-muted mb-3">
                             <span className="flex items-center gap-1">
                                 <MapPin className="w-3 h-3" /> {project.LocationCode}
                             </span>
@@ -122,32 +122,32 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
 
                     <div className="grid grid-cols-4 gap-4 items-end">
                         <div>
-                            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase mb-1">Tổng mức ĐT</p>
-                            <p className="text-xs font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(totalInvestment)}</p>
+                            <p className="text-[10px] text-txt-muted uppercase mb-1">Tổng mức ĐT</p>
+                            <p className="text-xs font-bold text-txt-primary tabular-nums">{formatCurrency(totalInvestment)}</p>
                         </div>
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
-                                <span className="text-gray-500 dark:text-slate-400">KH Vốn</span>
+                                <span className="text-txt-muted">KH Vốn</span>
                                 <span className="font-bold text-blue-600 dark:text-blue-400">{khvPercent.toFixed(1)}%</span>
                             </div>
                             <ProgressBar value={khvPercent} color="blue" size="sm" />
-                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(khv)}</p>
+                            <p className="text-[10px] font-semibold text-txt-secondary mt-1 tabular-nums">{formatCurrency(khv)}</p>
                         </div>
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
-                                <span className="text-gray-500 dark:text-slate-400">Giải ngân</span>
+                                <span className="text-txt-muted">Giải ngân</span>
                                 <span className="font-bold text-emerald-600 dark:text-emerald-400">{disbursedPercent.toFixed(1)}%</span>
                             </div>
                             <ProgressBar value={disbursedPercent} color="emerald" size="sm" />
-                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(disbursed)}</p>
+                            <p className="text-[10px] font-semibold text-txt-secondary mt-1 tabular-nums">{formatCurrency(disbursed)}</p>
                         </div>
                         <div>
                             <div className="flex justify-between text-[10px] mb-1">
-                                <span className="text-gray-500 dark:text-slate-400">KL Hoàn thành</span>
+                                <span className="text-txt-muted">KL Hoàn thành</span>
                                 <span className="font-bold text-warning-600 dark:text-warning-500">{volumePercent.toFixed(1)}%</span>
                             </div>
                             <ProgressBar value={volumePercent} color={"warning" as any} size="sm" />
-                            <p className="text-[10px] font-semibold text-gray-700 dark:text-slate-300 mt-1 tabular-nums">{formatCurrency(volume)}</p>
+                            <p className="text-[10px] font-semibold text-txt-secondary mt-1 tabular-nums">{formatCurrency(volume)}</p>
                         </div>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     return (
         <div
             onClick={() => onClick(project)}
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
+            className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer h-full"
         >
             {/* Image - Only badges */}
             <div className="relative h-28 w-full overflow-hidden shrink-0">
@@ -199,17 +199,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
             {/* Content */}
             <div className="p-3 flex-1 flex flex-col">
                 {/* Title - fixed to 2 lines */}
-                <h3 className="font-bold text-[13px] text-gray-900 dark:text-slate-100 leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1.5 min-h-[2.5rem]" title={project.ProjectName}>
+                <h3 className="font-bold text-[13px] text-txt-primary leading-snug line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-1.5 min-h-[2.5rem]" title={project.ProjectName}>
                     {project.ProjectName}
                 </h3>
 
                 {/* Location + ID + Board */}
-                <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-slate-400 mb-3">
+                <div className="flex items-center justify-between text-[10px] text-txt-muted mb-3">
                     <span className="flex items-center gap-1 truncate">
-                        <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
+                        <MapPin className="w-3 h-3 text-txt-muted shrink-0" />
                         <span className="truncate">{project.LocationCode}</span>
                     </span>
-                    <span className="font-mono text-[9px] bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="font-mono text-[9px] bg-bg-muted text-txt-muted px-1.5 py-0.5 rounded shrink-0">
                         #{(project.ProjectID || '').slice(-5)}
                     </span>
                 </div>
@@ -218,14 +218,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                 <div className="space-y-2 mb-1 flex-1">
                     {/* Tổng mức */}
                     <div className="flex justify-between items-center text-[10px]">
-                        <span className="text-gray-500 dark:text-slate-400 uppercase font-medium">Tổng mức</span>
-                        <span className="font-bold text-gray-900 dark:text-slate-100 tabular-nums">{formatCurrency(totalInvestment)}</span>
+                        <span className="text-txt-muted uppercase font-medium">Tổng mức</span>
+                        <span className="font-bold text-txt-primary tabular-nums">{formatCurrency(totalInvestment)}</span>
                     </div>
                     
                     {/* Kế hoạch vốn */}
                     <div>
                         <div className="flex justify-between text-[10px] mb-1">
-                            <span className="text-gray-500 dark:text-slate-400 font-medium">Kế hoạch vốn</span>
+                            <span className="text-txt-muted font-medium">Kế hoạch vốn</span>
                             <div className="text-right">
                                 <span className="font-bold text-blue-600 dark:text-blue-400 tabular-nums">{formatCurrency(khv)}</span>
                                 <span className="text-[9px] text-blue-500/70 ml-1 font-medium">({khvPercent.toFixed(1)}%)</span>
@@ -237,7 +237,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                     {/* Giải ngân */}
                     <div>
                         <div className="flex justify-between text-[10px] mb-1">
-                            <span className="text-gray-500 dark:text-slate-400 font-medium">Giải ngân</span>
+                            <span className="text-txt-muted font-medium">Giải ngân</span>
                             <div className="text-right">
                                 <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{formatCurrency(disbursed)}</span>
                                 <span className="text-[9px] text-emerald-500/70 ml-1 font-medium">({disbursedPercent.toFixed(1)}%)</span>
@@ -247,9 +247,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                     </div>
                     
                     {/* Khối lượng hoàn thành */}
-                    <div className="pt-1 border-t border-gray-100 dark:border-slate-700/50">
+                    <div className="pt-1 border-t border-border-subtle">
                         <div className="flex justify-between text-[11px] mb-1">
-                            <span className="text-gray-500 dark:text-slate-400 font-medium">KL Hoàn thành</span>
+                            <span className="text-txt-muted font-medium">KL Hoàn thành</span>
                             <div className="text-right">
                                 <span className="font-bold text-warning-600 dark:text-warning-500 tabular-nums">{formatCurrency(volume)}</span>
                                 <span className="text-[10px] text-warning-500/70 ml-1 font-medium">({volumePercent.toFixed(1)}%)</span>

@@ -72,11 +72,11 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                             rows={3}
                             placeholder="Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc..."
                             className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
-                            required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done}
+                            required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete}
                         />
-                        {(targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done) && (
+                        {(targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete) && (
                             <p className="text-xs text-warning-600 dark:text-warning-400 font-medium">
-                                * Bắt buộc nhập ghi chú khi chuyển sang {targetStatusCfg?.label.toLowerCase()}
+                                * Bắt buộc nhập ghi chú kết quả/giải trình khi chuyển sang {targetStatusCfg?.label.toLowerCase()}
                             </p>
                         )}
                     </div>

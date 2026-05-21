@@ -140,24 +140,32 @@ export default function CalendarView() {
   return (
     <div className="flex flex-col h-full gap-4">
       <PageHeader 
-        className="!border-b-0 !bg-transparent"
+        className="calendar-page-header"
         title="Lịch cơ quan" 
         description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
         actions={
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-lg ring-1 ring-black/5 dark:ring-white/5">
+            <div className="flex items-center gap-1 bg-bg-muted border border-border p-1 rounded-lg">
               <button
                 onClick={() => setDisplayMode('manage')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${displayMode === 'manage' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                  displayMode === 'manage' 
+                    ? 'bg-bg-surface text-txt-primary border border-border shadow-sm' 
+                    : 'text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 border border-transparent'
+                }`}
               >
-                <CalendarIcon className="w-4 h-4" />
+                <CalendarIcon className="w-4.5 h-4.5" />
                 Quản lý
               </button>
               <button
                 onClick={() => setDisplayMode('lobby')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${displayMode === 'lobby' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                  displayMode === 'lobby' 
+                    ? 'bg-bg-surface text-txt-primary border border-border shadow-sm' 
+                    : 'text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 border border-transparent'
+                }`}
               >
-                <Monitor className="w-4 h-4" />
+                <Monitor className="w-4.5 h-4.5" />
                 Tivi Sảnh
               </button>
             </div>
