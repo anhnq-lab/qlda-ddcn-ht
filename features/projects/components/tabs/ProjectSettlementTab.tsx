@@ -159,7 +159,7 @@ export const ProjectSettlementTab: React.FC<Props> = ({ projectID }) => {
                                 ? `${stats.savingRate.toFixed(1)}% so với TM`
                                 : 'Vượt dự toán',
                             icon: stats.savingRate >= 0 ? TrendingDown : TrendingUp,
-                            color: (stats.savingRate >= 0 ? 'emerald' : 'rose') as const
+                            color: stats.savingRate >= 0 ? ('emerald' as const) : ('rose' as const)
                         },
                         {
                             label: 'Hợp đồng hoàn thành',

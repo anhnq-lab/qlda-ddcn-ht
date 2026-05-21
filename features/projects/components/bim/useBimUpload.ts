@@ -173,12 +173,36 @@ export function useBimUpload(
         const obj = (model as any).object || model;
         if (!(obj instanceof THREE.Object3D)) return;
 
+        // Smart bounding box: traverse child meshes and exclude survey origin points/lines (at 0,0,0)
+        // when calculating the actual offset of the buildings (which are at large coordinate numbers)
+        const childBoxes: THREE.Box3[] = [];
+        obj.traverse((child: any) => {
+            if (child.isMesh && child.geometry) {
+                const childBox = new THREE.Box3().setFromObject(child);
+                if (!childBox.isEmpty()) {
+                    childBoxes.push(childBox);
+                }
+            }
+        });
+
         const box = new THREE.Box3();
-        const nativeBox = (model as any).box;
-        if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
-            box.copy(nativeBox);
-        } else {
-            box.setFromObject(obj);
+        if (childBoxes.length > 0) {
+            // Filter child boxes that are far away from (0,0,0) in raw survey coordinate space (>1000 units)
+            const farBoxes = childBoxes.filter(b => {
+                const c = b.getCenter(new THREE.Vector3());
+                return Math.abs(c.x) > 1000 || Math.abs(c.z) > 1000;
+            });
+            const targetBoxes = farBoxes.length > 0 ? farBoxes : childBoxes;
+            for (const b of targetBoxes) {
+                box.union(b);
+            }
+        }
+
+        if (box.isEmpty()) {
+            const nativeBox = (model as any).box;
+            if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                box.copy(nativeBox);
+            }
         }
 
         if (box.isEmpty()) return;
@@ -198,9 +222,34 @@ export function useBimUpload(
             obj.position.set(-offset.x, -offset.y, -offset.z);
             obj.updateMatrixWorld(true);
 
-            // Offset the bounding box in OBC so fitAll and camera controls map correctly
+            // Re-calculate the local model bounding box using only meshes close to local origin (building),
+            // effectively throwing away localized survey points which now drift to (-offset)
             if ((model as any).box instanceof THREE.Box3) {
-                (model as any).box.translate(new THREE.Vector3(-offset.x, -offset.y, -offset.z));
+                const localizedBox = new THREE.Box3();
+                const localizedChildBoxes: THREE.Box3[] = [];
+                obj.traverse((child: any) => {
+                    if (child.isMesh && child.geometry) {
+                        const childBox = new THREE.Box3().setFromObject(child);
+                        if (!childBox.isEmpty()) {
+                            localizedChildBoxes.push(childBox);
+                        }
+                    }
+                });
+                if (localizedChildBoxes.length > 0) {
+                    const nearBoxes = localizedChildBoxes.filter(b => {
+                        const c = b.getCenter(new THREE.Vector3());
+                        return Math.abs(c.x) < 10000 && Math.abs(c.z) < 10000;
+                    });
+                    const targetBoxes = nearBoxes.length > 0 ? nearBoxes : localizedChildBoxes;
+                    for (const b of targetBoxes) {
+                        localizedBox.union(b);
+                    }
+                }
+                if (!localizedBox.isEmpty()) {
+                    (model as any).box.copy(localizedBox);
+                } else {
+                    (model as any).box.translate(new THREE.Vector3(-offset.x, -offset.y, -offset.z));
+                }
             }
         }
     }, []);
@@ -507,16 +556,35 @@ export function useBimUpload(
                 await new Promise(r => setTimeout(r, 150));
 
                 const camera = getSafeCamera(worldRef.current);
-                // Fragments v3 streams geometry — use the native model.box,
-                // NOT setFromObject (empty right after load).
-                const nativeBox = (model as any).box as THREE.Box3 | undefined;
-                let box: THREE.Box3 | null =
-                    nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty() ? nativeBox : null;
-                if (!box && targetObj instanceof THREE.Object3D) {
-                    const b = new THREE.Box3().setFromObject(targetObj);
-                    if (!b.isEmpty()) box = b;
+                const box = new THREE.Box3();
+                if (targetObj instanceof THREE.Object3D) {
+                    const childBoxes: THREE.Box3[] = [];
+                    targetObj.traverse((child: any) => {
+                        if (child.isMesh && child.geometry) {
+                            const childBox = new THREE.Box3().setFromObject(child);
+                            if (!childBox.isEmpty()) childBoxes.push(childBox);
+                        }
+                    });
+                    if (childBoxes.length > 0) {
+                        // Filter out drift points that are far away from localized building (at 0,0,0)
+                        const nearBoxes = childBoxes.filter(b => {
+                            const c = b.getCenter(new THREE.Vector3());
+                            return Math.abs(c.x) < 10000 && Math.abs(c.z) < 10000;
+                        });
+                        const targetBoxes = nearBoxes.length > 0 ? nearBoxes : childBoxes;
+                        for (const b of targetBoxes) {
+                            box.union(b);
+                        }
+                    }
                 }
-                if (camera && box && !box.isEmpty()) {
+                if (box.isEmpty()) {
+                    const nativeBox = (model as any).box as THREE.Box3 | undefined;
+                    if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                        box.copy(nativeBox);
+                    }
+                }
+                
+                if (camera && !box.isEmpty()) {
                     const sphere = new THREE.Sphere();
                     box.getBoundingSphere(sphere);
                     if (isFinite(sphere.radius) && sphere.radius > 0) {

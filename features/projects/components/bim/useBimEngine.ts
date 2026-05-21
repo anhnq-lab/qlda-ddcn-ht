@@ -485,21 +485,36 @@ export function useBimEngine(
         let hasModels = false;
         if (fragments && fragments.list.size > 0) {
             for (const [, model] of fragments.list) {
-                let modelBox: THREE.Box3 | null = null;
-                // v3 native box (correct for streamed fragments)
-                const nativeBox = (model as any).box;
-                if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
-                    modelBox = nativeBox;
-                } else {
-                    const targetObj = (model as any).object || model;
-                    if (targetObj instanceof THREE.Object3D) {
-                        const b = new THREE.Box3().setFromObject(targetObj);
-                        if (!b.isEmpty()) modelBox = b;
+                const targetObj = (model as any).object || model;
+                if (targetObj instanceof THREE.Object3D) {
+                    const childBoxes: THREE.Box3[] = [];
+                    targetObj.traverse((child: any) => {
+                        if (child.isMesh && child.geometry) {
+                            const childBox = new THREE.Box3().setFromObject(child);
+                            if (!childBox.isEmpty()) {
+                                childBoxes.push(childBox);
+                            }
+                        }
+                    });
+                    
+                    if (childBoxes.length > 0) {
+                        // Filter out drift points in local space (drift points now end up far at -offset)
+                        const nearBoxes = childBoxes.filter(b => {
+                            const c = b.getCenter(new THREE.Vector3());
+                            return Math.abs(c.x) < 10000 && Math.abs(c.z) < 10000;
+                        });
+                        const targetBoxes = nearBoxes.length > 0 ? nearBoxes : childBoxes;
+                        for (const b of targetBoxes) {
+                            box.union(b);
+                        }
+                        hasModels = true;
+                    } else {
+                        const nativeBox = (model as any).box;
+                        if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                            box.union(nativeBox);
+                            hasModels = true;
+                        }
                     }
-                }
-                if (modelBox) {
-                    box.union(modelBox);
-                    hasModels = true;
                 }
             }
         }
