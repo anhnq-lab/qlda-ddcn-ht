@@ -74,7 +74,7 @@ export const BimModelTree: React.FC = () => {
         tools,
         selection: { spatialTree, typeGroups, handleSelectElementFromTree, toggleTypeVisibility },
         upload: { disciplineModels, toggleDisciplineVisibility, handleFileUpload, handleDeleteModel },
-        engine: { viewerReady, zoomToExpressId }
+        engine: { viewerReady, zoomToExpressId, zoomToObject }
     } = useBimContext();
 
     const onClose = () => tools.toggleLeftPanel('none');
@@ -83,6 +83,13 @@ export const BimModelTree: React.FC = () => {
     const onToggleTypeVisibility = toggleTypeVisibility;
     const onUpload = handleFileUpload;
     const onDeleteModel = handleDeleteModel;
+
+    const onFocusModel = useCallback((dm: DisciplineModel) => {
+        if (dm.fragModel) {
+            console.log(`[BimModelTree] Focus camera to model ${dm.model.file_name}`);
+            zoomToObject(dm.fragModel.object || dm.fragModel);
+        }
+    }, [zoomToObject]);
     const [mode, setMode] = useState<TreeMode>('disciplines');
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['root']));
@@ -252,10 +259,18 @@ export const BimModelTree: React.FC = () => {
                 </div>
             ) : (
                 disciplineModels.map((dm, idx) => (
-                    <div key={dm.model.id} className={`group flex items-center gap-2.5 p-2 rounded-lg transition-all duration-200 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
+                    <div 
+                        key={dm.model.id} 
+                        onClick={() => onFocusModel(dm)}
+                        className={`
+                            group flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all duration-200 
+                            ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}
+                            ${dm.visible ? '' : 'opacity-60'}
+                        `}
+                    >
                         <div className={`w-3 h-3 rounded-full ${getDisciplineColor(dm.model.discipline)} shrink-0 ring-2 ring-offset-1 ${isDarkMode ? 'ring-offset-slate-800 ring-white/10' : 'ring-offset-white ring-black/5'}`} />
                         <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-medium truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`} title={dm.model.file_name}>
+                            <p className={`text-xs font-semibold truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`} title={dm.model.file_name}>
                                 {dm.model.file_name}
                             </p>
                             <p className={`text-[9px] ${isDarkMode ? 'text-slate-500' : 'text-gray-400'} truncate`}>
@@ -269,18 +284,27 @@ export const BimModelTree: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             {dm.model.status === 'ready' && (
-                                <button
-                                    onClick={() => onToggleVisibility(idx)}
-                                    className={`p-1 rounded ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
-                                    title={dm.visible ? 'Hide' : 'Show'}
-                                >
-                                    {dm.visible ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
-                                </button>
+                                <>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onFocusModel(dm); }}
+                                        className={`p-1 rounded ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
+                                        title="Định vị camera (Focus)"
+                                    >
+                                        <Crosshair className="w-3.5 h-3.5 text-blue-400" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onToggleVisibility(idx); }}
+                                        className={`p-1 rounded ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
+                                        title={dm.visible ? 'Ẩn mô hình' : 'Hiện mô hình'}
+                                    >
+                                        {dm.visible ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
+                                    </button>
+                                </>
                             )}
                             <button
-                                onClick={() => onDeleteModel(idx)}
+                                onClick={(e) => { e.stopPropagation(); onDeleteModel(idx); }}
                                 className={`p-1 rounded ${isDarkMode ? 'hover:bg-red-500/20' : 'hover:bg-red-50'}`}
-                                title="Delete"
+                                title="Xóa"
                             >
                                 <Trash2 className="w-3.5 h-3.5 text-red-400" />
                             </button>
