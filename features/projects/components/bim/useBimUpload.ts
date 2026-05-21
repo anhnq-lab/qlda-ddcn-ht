@@ -219,7 +219,42 @@ export function useBimUpload(
             const offset = coordinationOffsetRef.current;
             console.log(`[BIM Coordination] Offsetting model by: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
             
-            obj.position.set(-offset.x, -offset.y, -offset.z);
+            // Transform child meshes directly to solve single-precision float32 matrix distortion on GPU
+            obj.traverse((child: any) => {
+                if (child.isMesh) {
+                    if (child.isInstancedMesh) {
+                        const instMesh = child as THREE.InstancedMesh;
+                        const tempMatrix = new THREE.Matrix4();
+                        const tempPosition = new THREE.Vector3();
+                        const tempRotation = new THREE.Quaternion();
+                        const tempScale = new THREE.Vector3();
+                        
+                        for (let i = 0; i < instMesh.count; i++) {
+                            instMesh.getMatrixAt(i, tempMatrix);
+                            tempMatrix.decompose(tempPosition, tempRotation, tempScale);
+                            
+                            // Subtract project offset directly from instance world translation
+                            tempPosition.sub(offset);
+                            
+                            tempMatrix.compose(tempPosition, tempRotation, tempScale);
+                            instMesh.setMatrixAt(i, tempMatrix);
+                        }
+                        if (instMesh.instanceMatrix) {
+                            instMesh.instanceMatrix.needsUpdate = true;
+                        }
+                    } else {
+                        // Standard Mesh translation adjustment
+                        child.position.sub(offset);
+                    }
+                    if (child.geometry) {
+                        child.geometry.computeBoundingBox();
+                        child.geometry.computeBoundingSphere();
+                    }
+                }
+            });
+
+            // Set parent offset to 0 since geometry children are now translated directly
+            obj.position.set(0, 0, 0);
             obj.updateMatrixWorld(true);
 
             // Re-calculate the local model bounding box using only meshes close to local origin (building),
@@ -248,7 +283,7 @@ export function useBimUpload(
                 if (!localizedBox.isEmpty()) {
                     (model as any).box.copy(localizedBox);
                 } else {
-                    (model as any).box.translate(new THREE.Vector3(-offset.x, -offset.y, -offset.z));
+                    (model as any).box.makeEmpty();
                 }
             }
         }
