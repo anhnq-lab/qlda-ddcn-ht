@@ -3,6 +3,91 @@
 import { supabase } from '../lib/supabase';
 import { WorkflowTemplateService } from './WorkflowTemplateService';
 import { toServiceError } from './ServiceError';
+import { DEPARTMENT_CODES, DEPARTMENT_NAMES, DepartmentCode } from '../types/plan.types';
+
+const isDepartmentCode = (id: string | null | undefined): boolean => {
+  if (!id) return false;
+  return (DEPARTMENT_CODES as readonly string[]).includes(id.toUpperCase());
+};
+
+const getDeptCode = (assigneeRole: string | null | undefined): DepartmentCode => {
+  if (!assigneeRole) return 'QLDA1'; // Default fallback
+  const roleUpper = assigneeRole.toUpperCase();
+  for (const code of DEPARTMENT_CODES) {
+    if (roleUpper.includes(code)) return code;
+  }
+  const roleLower = assigneeRole.toLowerCase();
+  if (roleLower.includes('quản lý dự án 1') || roleLower.includes('qlda 1') || roleLower.includes('qlda1')) return 'QLDA1';
+  if (roleLower.includes('quản lý dự án 2') || roleLower.includes('qlda 2') || roleLower.includes('qlda2')) return 'QLDA2';
+  if (roleLower.includes('quản lý dự án 3') || roleLower.includes('qlda 3') || roleLower.includes('qlda3')) return 'QLDA3';
+  if (roleLower.includes('kế hoạch') || roleLower.includes('đấu thầu') || roleLower.includes('khđt') || roleLower.includes('kh-đt')) return 'KHDT';
+  if (roleLower.includes('kỹ thuật') || roleLower.includes('thẩm định') || roleLower.includes('kttđ') || roleLower.includes('kt-tđ')) return 'KTTD';
+  if (roleLower.includes('tài chính') || roleLower.includes('kế toán') || roleLower.includes('tckt') || roleLower.includes('tc-kt')) return 'TCKT';
+  if (roleLower.includes('hành chính') || roleLower.includes('tổng hợp') || roleLower.includes('hcth') || roleLower.includes('hc-th')) return 'HCTH';
+  if (roleLower.includes('phát triển') || roleLower.includes('ptdv') || roleLower.includes('pt-dv')) return 'PTDV';
+  return 'QLDA1';
+};
+
+const getOrCreateMonthlyPlan = async (
+  month: number,
+  year: number,
+  deptCode: DepartmentCode,
+  deptName: string,
+  cache: Record<string, string>
+): Promise<string> => {
+  const cacheKey = `${year}_${month}_${deptCode}`;
+  if (cache[cacheKey]) return cache[cacheKey];
+
+  const { data, error } = await (supabase as any)
+    .from('monthly_plans')
+    .upsert({
+      plan_month: month,
+      plan_year: year,
+      department_code: deptCode,
+      department_name: deptName,
+      status: 'draft',
+      notes: `Kế hoạch hoạt động tháng ${month}/${year}`
+    }, { onConflict: 'plan_month,plan_year,department_code' })
+    .select('id')
+    .single();
+
+  if (error) {
+    console.error(`Lỗi getOrCreateMonthlyPlan cho ${deptCode} tháng ${month}/${year}:`, error.message);
+    throw error;
+  }
+  
+  const planId = data.id;
+  cache[cacheKey] = planId;
+  return planId;
+};
+
+const distributeDates = (startDateStr: string, endDateStr: string, count: number, index: number) => {
+  const start = new Date(startDateStr);
+  const end = new Date(endDateStr);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  
+  const daysPerTask = Math.floor(diffDays / count);
+  const remainder = diffDays % count;
+  
+  let startOffset = 0;
+  for (let i = 0; i < index; i++) {
+    startOffset += daysPerTask + (i < remainder ? 1 : 0);
+  }
+  
+  const duration = daysPerTask + (index < remainder ? 1 : 0);
+  
+  const taskStart = new Date(start);
+  taskStart.setDate(start.getDate() + startOffset);
+  
+  const taskEnd = new Date(taskStart);
+  taskEnd.setDate(taskStart.getDate() + duration - 1);
+  
+  return {
+    start: taskStart.toISOString().split('T')[0],
+    end: taskEnd.toISOString().split('T')[0]
+  };
+};
 
 // ── Types matching the new DB schema ─────────────────────────
 export type TaskType = 'project' | 'internal';
@@ -253,11 +338,15 @@ export const TaskService = {
 
     // Sanitize assignee_id
     if (payload.assignee_id) {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(payload.assignee_id)) {
-        // Store non-UUID assignee in metadata as role name
+      if (isDepartmentCode(payload.assignee_id)) {
+        // Store department assignee in metadata as role name
         (payload as any).metadata = { ...(payload as any).metadata, assignee_role: payload.assignee_id };
         payload.assignee_id = null;
+      } else {
+        // If assigned to a human employee, clear any previous assignee_role from metadata
+        if ((payload as any).metadata) {
+          delete (payload as any).metadata.assignee_role;
+        }
       }
     }
 
@@ -284,9 +373,14 @@ export const TaskService = {
 
     // Sanitize assignee_id
     if (payload.assignee_id !== undefined) {
-      if (payload.assignee_id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.assignee_id)) {
+      if (payload.assignee_id && isDepartmentCode(payload.assignee_id)) {
         (payload as any).metadata = { ...((payload as any).metadata || {}), assignee_role: payload.assignee_id };
         payload.assignee_id = null;
+      } else {
+        // If assigned to a human employee or cleared, remove assignee_role from metadata
+        if (payload.metadata) {
+          delete payload.metadata.assignee_role;
+        }
       }
     }
 
@@ -321,7 +415,7 @@ export const TaskService = {
         const subId = isUUID ? st.SubTaskID : crypto.randomUUID();
         newIds.push(subId);
         
-        const isAssigneeUUID = st.AssigneeID && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(st.AssigneeID);
+        const isDept = isDepartmentCode(st.AssigneeID);
 
         return {
           id: subId,
@@ -331,8 +425,8 @@ export const TaskService = {
           title: st.Title,
           status: st.Status === 'Done' ? 'done' : (st.Status === 'InProgress' ? 'in_progress' : 'todo'),
           due_date: st.DueDate || null,
-          assignee_id: isAssigneeUUID ? st.AssigneeID : null,
-          metadata: isAssigneeUUID ? {} : { assignee_role: st.AssigneeID }
+          assignee_id: st.AssigneeID && !isDept ? st.AssigneeID : null,
+          metadata: isDept ? { assignee_role: st.AssigneeID } : {}
         };
       });
 
@@ -380,6 +474,9 @@ export const TaskService = {
 
   /** Xóa tất cả tasks của dự án */
   deleteProjectTasks: async (projectId: string): Promise<number> => {
+    // Dọn dẹp monthly_plan_items liên kết với dự án trước để tránh mồ côi
+    await (supabase as any).from('monthly_plan_items').delete().eq('project_id', projectId);
+
     const { data, error } = await supabase
       .from('tasks')
       .delete()
@@ -488,11 +585,12 @@ export const TaskService = {
     startDate: string,
     endDate?: string
   ): Promise<DbTask[]> => {
+    // Dọn dẹp tasks cũ, monthly plan items cũ và workflow instances cũ của dự án trước
+    await TaskService.deleteProjectTasks(projectId);
+    await supabase.from('workflow_instances').delete().eq('reference_id', projectId).eq('reference_type', 'project');
+
     // 1. Lấy nodes của workflow template
     const nodes = await WorkflowTemplateService.getTemplateNodes(workflowId);
-    // Bao gồm tất cả node types có công việc thực tế.
-    // 'end' = bước kết thúc dự án (Tất toán, Đóng mã DA) — PHẢI được tạo task.
-    // Chỉ loại trừ 'gateway' / 'connector' (nodes định tuyến thuần túy, không có SLA).
     const SKIP_TYPES = new Set(['gateway', 'connector']);
     const workNodes = nodes.filter(n => !SKIP_TYPES.has(n.type));
 
@@ -504,7 +602,6 @@ export const TaskService = {
       let added = 0;
       while (added < daysToAdd) {
         date.setDate(date.getDate() + 1);
-        // 0 = Sunday, 6 = Saturday
         if (date.getDay() !== 0 && date.getDay() !== 6) {
           added++;
         }
@@ -512,18 +609,34 @@ export const TaskService = {
       return date;
     };
 
+    const monthlyPlanCache: Record<string, string> = {};
+
+    // Map các annual plan items hiện có của dự án
+    const { data: annualPlanList } = await (supabase as any)
+      .from('annual_plan_items')
+      .select('id, plan_year, department_code')
+      .eq('project_id', projectId);
+
+    const annualPlanMap: Record<string, string> = {};
+    if (annualPlanList) {
+      annualPlanList.forEach((ap: any) => {
+        annualPlanMap[`${ap.plan_year}_${ap.department_code}`] = ap.id;
+      });
+    }
+
     let currentDate = new Date(startDate);
     let previousTaskId: string | null = null;
+    let currentSortOrder = 0;
     
     const tasksToInsert: any[] = [];
-    const subTasksToInsert: any[] = [];
+    const monthlyPlanItemsToInsert: any[] = [];
+    const linksToUpdate: Array<{ mpiId: string; taskId: string }> = [];
     
-    // Khởi tạo UUID helper (cho cả môi trường browser và fallback pseudo)
+    // Khởi tạo UUID helper
     const generateUUID = () => {
       if (typeof crypto !== 'undefined' && crypto.randomUUID) {
         return crypto.randomUUID();
       }
-      // Fallback
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -540,78 +653,189 @@ export const TaskService = {
         if (match) nodeSla = parseInt(match[1]);
       }
 
-      // Start Date = Current Tracker
       const nodeStartDate = new Date(currentDate);
-      // End Date = currentDate + SLA (working days)
       const nodeEndDate = addWorkingDays(currentDate, nodeSla);
 
-      const taskId = generateUUID();
       const nodeMetadata = (node.metadata || {}) as any;
       const subTasksDef = nodeMetadata.sub_tasks || [];
+      const phase = nodeMetadata.phase || 'preparation';
 
-      // Translate into existing DB columns
-      tasksToInsert.push({
-        id: taskId,
-        project_id: projectId,
-        title: node.name.length > 450 ? node.name.substring(0, 447) + '...' : node.name,
-        status: 'todo',
-        task_type: 'project',
-        workflow_id: workflowId,
-        workflow_node_id: node.id,
-        priority: 'medium',
-        progress: 0,
-        start_date: nodeStartDate.toISOString().split('T')[0],
-        due_date: nodeEndDate.toISOString().split('T')[0],
-        duration_days: nodeSla,
-        phase: nodeMetadata.phase || 'preparation',
-        // step_code = node.id (UUID) để WBS view có thể match task với đúng dòng step.
-        // Dùng UUID thay vì số thứ tự để khớp với PhaseItem.code trong useWorkflowPhases.
-        step_code: node.id,
-        sort_order: i,
-        predecessor_task_id: previousTaskId, // Link for Gantt
-        legal_basis: nodeMetadata.legalBasis || nodeMetadata.legal_basis || '',
-        output_document: nodeMetadata.output || nodeMetadata.output_document || '',
-        metadata: {
-          sub_process: nodeMetadata.sub_process || '',
-          sla_formula: node.sla_formula,
-          // assignee_role: ưu tiên trực tiếp trên node, rồi mới sub_task đầu tiên
-          assignee_role: nodeMetadata.assignee_role
-            || nodeMetadata.sub_tasks?.[0]?.assignee_role
-            || nodeMetadata.sub_tasks?.[0]?.actor
-            || '',
-          node_type: node.type,
-        },
-      } as any);
-
-      // Prepare Sub Tasks definitions stored directly to `tasks` table with `parent_id`
       if (subTasksDef.length > 0) {
-        subTasksDef.forEach((st: any, idx: number) => {
-          const subTaskName = st.name || st.title || `Công việc ${idx + 1}`;
-          subTasksToInsert.push({
-            id: generateUUID(),
-            parent_id: taskId,
+        // Tách các công việc chi tiết lên thành công việc chính độc lập (parent_id = null)
+        const subCount = subTasksDef.length;
+        const baseSla = Math.floor(nodeSla / subCount);
+        const remainderSla = nodeSla % subCount;
+
+        let currentSubStartDate = new Date(nodeStartDate);
+
+        for (let idx = 0; idx < subCount; idx++) {
+          const st = subTasksDef[idx];
+          const subTaskId = generateUUID();
+          const subMpiId = generateUUID();
+
+          const subSla = Math.max(1, baseSla + (idx < remainderSla ? 1 : 0));
+          const subStartDate = new Date(currentSubStartDate);
+          const subEndDate = addWorkingDays(subStartDate, subSla);
+
+          const subStartDateStr = subStartDate.toISOString().split('T')[0];
+          const subEndDateStr = subEndDate.toISOString().split('T')[0];
+
+          const subTitle = st.name || st.title || `Công việc ${idx + 1}`;
+          const subAssigneeRole = st.assignee_role || st.assignedTo || st.actor || nodeMetadata.assignee_role || '';
+          const subLegalBasis = st.legal_basis || st.legalBasis || nodeMetadata.legalBasis || nodeMetadata.legal_basis || '';
+          const subOutputDoc = st.output || st.output_document || nodeMetadata.output || nodeMetadata.output_document || '';
+
+          const subStartYear = subStartDate.getFullYear();
+          const subStartMonth = subStartDate.getMonth() + 1;
+          const deptCode = getDeptCode(subAssigneeRole);
+          const deptName = DEPARTMENT_NAMES[deptCode] || '';
+
+          let mPlanId: string | null = null;
+          try {
+            mPlanId = await getOrCreateMonthlyPlan(subStartMonth, subStartYear, deptCode, deptName, monthlyPlanCache);
+          } catch (err) {
+            console.error('Không thể tạo kế hoạch tháng:', err);
+          }
+
+          if (mPlanId) {
+            monthlyPlanItemsToInsert.push({
+              id: subMpiId,
+              monthly_plan_id: mPlanId,
+              annual_plan_item_id: annualPlanMap[`${subStartYear}_${deptCode}`] || null,
+              project_id: projectId,
+              group_name: phase === 'preparation' ? 'Giai đoạn Chuẩn bị đầu tư' : (phase === 'completion' || phase === 'closing' ? 'Giai đoạn Kết thúc dự án' : 'Giai đoạn Thực hiện xây lắp'),
+              task_name: subTitle,
+              deliverable: subOutputDoc || 'Sản phẩm hoàn thành nghiệm thu theo quy trình',
+              deadline_note: `Định hạn hoàn thành: ${subEndDateStr}`,
+              due_date: subEndDateStr,
+              status: 'planned',
+              source_task_id: null,
+              source_type: 'from_project_task',
+              collaborating_text: 'Ban Giám đốc',
+              collaborating_dept_codes: ['BGĐ'],
+              notes: 'Ánh xạ tự động từ quy trình WBS của Dự án'
+            });
+            linksToUpdate.push({ mpiId: subMpiId, taskId: subTaskId });
+          }
+
+          tasksToInsert.push({
+            id: subTaskId,
             project_id: projectId,
-            title: subTaskName.length > 255 ? subTaskName.substring(0, 252) + '...' : subTaskName,
+            title: subTitle.length > 450 ? subTitle.substring(0, 447) + '...' : subTitle,
             status: 'todo',
             task_type: 'project',
-            sort_order: idx,
-            due_date: null,
-            assignee_id: null,
+            workflow_id: workflowId,
+            workflow_node_id: node.id,
+            priority: 'medium',
+            progress: 0,
+            start_date: subStartDateStr,
+            due_date: subEndDateStr,
+            duration_days: subSla,
+            phase: phase,
+            step_code: node.id,
+            sort_order: currentSortOrder++,
+            predecessor_task_id: previousTaskId,
+            legal_basis: subLegalBasis,
+            output_document: subOutputDoc,
+            monthly_plan_item_id: mPlanId ? subMpiId : null,
             metadata: {
-              assignee_role: st.assignee_role || st.assignedTo || '',
-              legal_basis: st.legal_basis || st.legalBasis || '',
-              output: st.output || '',
+              assignee_role: subAssigneeRole,
+              is_wbs: true,
+              is_elevated_subtask: true,
+              node_id: node.id
             }
           });
+
+          previousTaskId = subTaskId;
+          currentSubStartDate = new Date(subEndDate);
+        }
+      } else {
+        // Không có công việc con: tạo một công việc đại diện cho bước
+        const taskId = generateUUID();
+        const mpiId = generateUUID();
+
+        const nodeStartDateStr = nodeStartDate.toISOString().split('T')[0];
+        const nodeEndDateStr = nodeEndDate.toISOString().split('T')[0];
+
+        const assigneeRole = nodeMetadata.assignee_role || '';
+        const nodeStartYear = nodeStartDate.getFullYear();
+        const nodeStartMonth = nodeStartDate.getMonth() + 1;
+        const deptCode = getDeptCode(assigneeRole);
+        const deptName = DEPARTMENT_NAMES[deptCode] || '';
+
+        let mPlanId: string | null = null;
+        try {
+          mPlanId = await getOrCreateMonthlyPlan(nodeStartMonth, nodeStartYear, deptCode, deptName, monthlyPlanCache);
+        } catch (err) {
+          console.error('Không thể tạo kế hoạch tháng:', err);
+        }
+
+        if (mPlanId) {
+          monthlyPlanItemsToInsert.push({
+            id: mpiId,
+            monthly_plan_id: mPlanId,
+            annual_plan_item_id: annualPlanMap[`${nodeStartYear}_${deptCode}`] || null,
+            project_id: projectId,
+            group_name: phase === 'preparation' ? 'Giai đoạn Chuẩn bị đầu tư' : (phase === 'completion' || phase === 'closing' ? 'Giai đoạn Kết thúc dự án' : 'Giai đoạn Thực hiện xây lắp'),
+            task_name: `Triển khai: ${node.name}`,
+            deliverable: nodeMetadata.output || nodeMetadata.output_document || 'Sản phẩm hoàn thành nghiệm thu theo quy trình',
+            deadline_note: `Định hạn hoàn thành: ${nodeEndDateStr}`,
+            due_date: nodeEndDateStr,
+            status: 'planned',
+            source_task_id: null,
+            source_type: 'from_project_task',
+            collaborating_text: 'Ban Giám đốc',
+            collaborating_dept_codes: ['BGĐ'],
+            notes: 'Ánh xạ tự động từ quy trình WBS của Dự án'
+          });
+          linksToUpdate.push({ mpiId: mpiId, taskId: taskId });
+        }
+
+        tasksToInsert.push({
+          id: taskId,
+          project_id: projectId,
+          title: node.name.length > 450 ? node.name.substring(0, 447) + '...' : node.name,
+          status: 'todo',
+          task_type: 'project',
+          workflow_id: workflowId,
+          workflow_node_id: node.id,
+          priority: 'medium',
+          progress: 0,
+          start_date: nodeStartDateStr,
+          due_date: nodeEndDateStr,
+          duration_days: nodeSla,
+          phase: phase,
+          step_code: node.id,
+          sort_order: currentSortOrder++,
+          predecessor_task_id: previousTaskId,
+          legal_basis: nodeMetadata.legalBasis || nodeMetadata.legal_basis || '',
+          output_document: nodeMetadata.output || nodeMetadata.output_document || '',
+          monthly_plan_item_id: mPlanId ? mpiId : null,
+          metadata: {
+            assignee_role: assigneeRole,
+            is_wbs: true,
+            node_id: node.id
+          }
         });
+
+        previousTaskId = taskId;
       }
 
-      // Update trackers for the next node
-      previousTaskId = taskId;
-      currentDate = new Date(nodeEndDate); // The next node starts on the day after the previous node ended (or technically same day if chain is continuous)
+      currentDate = new Date(nodeEndDate);
     }
 
-    // 3. Batch DB insertions
+    // 3. Insert hàng loạt monthly plan items trước để làm FK cho tasks
+    if (monthlyPlanItemsToInsert.length > 0) {
+      const { error: mpiErr } = await supabase
+        .from('monthly_plan_items')
+        .insert(monthlyPlanItemsToInsert);
+      if (mpiErr) {
+        console.error("Lỗi khi chèn monthly plan items:", mpiErr);
+        throw new Error(`Tạo kế hoạch thất bại: ${mpiErr.message}`);
+      }
+    }
+
+    // 4. Insert hàng loạt tasks vào CSDL
     if (tasksToInsert.length > 0) {
       const { data, error } = await supabase
         .from('tasks')
@@ -620,15 +844,19 @@ export const TaskService = {
 
       if (error) throw new Error(`Tạo kế hoạch thất bại: ${error.message}`);
       
-      // Batch insert sub_tasks if they exist into `tasks` table
-      if (subTasksToInsert.length > 0) {
-        const { error: subErr } = await supabase
-          .from('tasks')
-          .insert(subTasksToInsert as any);
-          
-        if (subErr) {
-          console.error("Lỗi khi tạo công việc con:", subErr);
-          // Không throw để tránh fail nguyên luồng tạo Master Plan
+      // 5. Cập nhật ngược source_task_id trong monthly_plan_items
+      if (linksToUpdate.length > 0) {
+        try {
+          await Promise.all(
+            linksToUpdate.map(link =>
+              supabase
+                .from('monthly_plan_items')
+                .update({ source_task_id: link.taskId } as any)
+                .eq('id', link.mpiId)
+            )
+          );
+        } catch (updErr) {
+          console.error("Lỗi khi cập nhật source_task_id cho monthly_plan_items:", updErr);
         }
       }
 
@@ -647,7 +875,6 @@ export const TaskService = {
         console.error("Lỗi khi đăng ký workflow instance:", instErr);
       }
 
-      // Trả lại task đã tạo
       return (data || []) as unknown as DbTask[];
     }
 
@@ -673,7 +900,7 @@ export const TaskService = {
     }>,
     targetEndDate?: string
   ): Promise<DbTask[]> => {
-    // 1. Dọn dẹp tasks cũ và workflow instances của dự án
+    // 1. Dọn dẹp tasks cũ, monthly plan items và workflow instances của dự án
     await TaskService.deleteProjectTasks(projectId);
     await supabase.from('workflow_instances').delete().eq('reference_id', projectId).eq('reference_type', 'project');
 
@@ -687,75 +914,200 @@ export const TaskService = {
       });
     };
 
-    const tasksToInsert: any[] = [];
-    const subTasksToInsert: any[] = [];
-    const stepIdsMap: Record<number, string> = {};
+    const monthlyPlanCache: Record<string, string> = {};
 
-    // Tạo sẵn danh sách UUID để liên kết predecessor
-    steps.forEach((_, index) => {
-      stepIdsMap[index] = generateUUID();
-    });
+    // Map các annual plan items hiện có của dự án
+    const { data: annualPlanList } = await (supabase as any)
+      .from('annual_plan_items')
+      .select('id, plan_year, department_code')
+      .eq('project_id', projectId);
+
+    const annualPlanMap: Record<string, string> = {};
+    if (annualPlanList) {
+      annualPlanList.forEach((ap: any) => {
+        annualPlanMap[`${ap.plan_year}_${ap.department_code}`] = ap.id;
+      });
+    }
+
+    const tasksToInsert: any[] = [];
+    const monthlyPlanItemsToInsert: any[] = [];
+    const linksToUpdate: Array<{ mpiId: string; taskId: string }> = [];
+    let previousTaskId: string | null = null;
+    let currentSortOrder = 0;
 
     // 2. Xây dựng danh sách công việc chính và con
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
-      const taskId = stepIdsMap[i];
-      const previousTaskId = i > 0 ? stepIdsMap[i - 1] : null;
-
       const nodeMetadata = step.metadata || {};
-
-      tasksToInsert.push({
-        id: taskId,
-        project_id: projectId,
-        title: step.title.length > 450 ? step.title.substring(0, 447) + '...' : step.title,
-        status: 'todo',
-        task_type: 'project',
-        workflow_id: workflowId,
-        workflow_node_id: step.workflow_node_id,
-        priority: 'medium',
-        progress: 0,
-        start_date: step.start_date,
-        due_date: step.due_date,
-        duration_days: step.duration_days,
-        phase: step.phase || 'preparation',
-        step_code: step.workflow_node_id || taskId, // Dùng node_id hoặc chính taskId làm step_code
-        sort_order: i,
-        predecessor_task_id: previousTaskId,
-        legal_basis: step.legal_basis || nodeMetadata.legal_basis || nodeMetadata.legalBasis || '',
-        output_document: step.output_document || nodeMetadata.output_document || nodeMetadata.output || '',
-        metadata: {
-          sub_process: nodeMetadata.sub_process || '',
-          sla_formula: `${step.duration_days}d`,
-          assignee_role: step.assignee_role || nodeMetadata.assignee_role || '',
-          node_type: nodeMetadata.node_type || 'approval',
-        },
-      });
+      const parentStepCode = step.workflow_node_id || generateUUID();
+      const phase = step.phase || 'preparation';
 
       // Tạo các công việc con (nếu có)
       if (step.sub_tasks && step.sub_tasks.length > 0) {
-        step.sub_tasks.forEach((st: any, idx: number) => {
-          const subTaskName = st.name || st.title || `Công việc ${idx + 1}`;
-          subTasksToInsert.push({
-            id: generateUUID(),
-            parent_id: taskId,
+        const subCount = step.sub_tasks.length;
+        
+        for (let idx = 0; idx < subCount; idx++) {
+          const st = step.sub_tasks[idx];
+          const subTaskId = generateUUID();
+          const subMpiId = generateUUID();
+
+          // Phân bổ ngày
+          const subDates = distributeDates(step.start_date, step.due_date, subCount, idx);
+
+          const subTitle = st.name || st.title || `Công việc ${idx + 1}`;
+          const subAssigneeRole = st.assignee_role || st.metadata?.assignee_role || st.assignedTo || step.assignee_role || '';
+          const subLegalBasis = st.legal_basis || st.metadata?.legal_basis || st.legalBasis || step.legal_basis || '';
+          const subOutputDoc = st.output || st.metadata?.output || st.output_document || step.output_document || '';
+
+          const subStartDateObj = new Date(subDates.start);
+          const subStartYear = subStartDateObj.getFullYear();
+          const subStartMonth = subStartDateObj.getMonth() + 1;
+          const deptCode = getDeptCode(subAssigneeRole);
+          const deptName = DEPARTMENT_NAMES[deptCode] || '';
+
+          let mPlanId: string | null = null;
+          try {
+            mPlanId = await getOrCreateMonthlyPlan(subStartMonth, subStartYear, deptCode, deptName, monthlyPlanCache);
+          } catch (err) {
+            console.error('Không thể tạo kế hoạch tháng:', err);
+          }
+
+          if (mPlanId) {
+            monthlyPlanItemsToInsert.push({
+              id: subMpiId,
+              monthly_plan_id: mPlanId,
+              annual_plan_item_id: annualPlanMap[`${subStartYear}_${deptCode}`] || null,
+              project_id: projectId,
+              group_name: phase === 'preparation' ? 'Giai đoạn Chuẩn bị đầu tư' : (phase === 'completion' || phase === 'closing' ? 'Giai đoạn Kết thúc dự án' : 'Giai đoạn Thực hiện xây lắp'),
+              task_name: subTitle,
+              deliverable: subOutputDoc || 'Sản phẩm hoàn thành nghiệm thu theo quy trình',
+              deadline_note: `Định hạn hoàn thành: ${subDates.end}`,
+              due_date: subDates.end,
+              status: 'planned',
+              source_task_id: null,
+              source_type: 'from_project_task',
+              collaborating_text: 'Ban Giám đốc',
+              collaborating_dept_codes: ['BGĐ'],
+              notes: 'Ánh xạ tự động từ quy trình WBS của Dự án'
+            });
+            linksToUpdate.push({ mpiId: subMpiId, taskId: subTaskId });
+          }
+
+          const subSla = Math.ceil(Math.abs(new Date(subDates.end).getTime() - new Date(subDates.start).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+          tasksToInsert.push({
+            id: subTaskId,
             project_id: projectId,
-            title: subTaskName.length > 255 ? subTaskName.substring(0, 252) + '...' : subTaskName,
+            title: subTitle.length > 450 ? subTitle.substring(0, 447) + '...' : subTitle,
             status: 'todo',
             task_type: 'project',
-            sort_order: idx,
-            due_date: null,
-            assignee_id: null,
+            workflow_id: workflowId,
+            workflow_node_id: step.workflow_node_id,
+            priority: 'medium',
+            progress: 0,
+            start_date: subDates.start,
+            due_date: subDates.end,
+            duration_days: subSla,
+            phase: phase,
+            step_code: parentStepCode,
+            sort_order: currentSortOrder++,
+            predecessor_task_id: previousTaskId,
+            legal_basis: subLegalBasis,
+            output_document: subOutputDoc,
+            monthly_plan_item_id: mPlanId ? subMpiId : null,
             metadata: {
-              assignee_role: st.assignee_role || st.metadata?.assignee_role || st.assignedTo || '',
-              legal_basis: st.legal_basis || st.metadata?.legal_basis || st.legalBasis || '',
-              output: st.output || st.metadata?.output || '',
+              assignee_role: subAssigneeRole,
+              is_wbs: true,
+              is_elevated_subtask: true,
+              node_id: step.workflow_node_id
             }
           });
+
+          previousTaskId = subTaskId;
+        }
+      } else {
+        // Không có công việc con: tạo một công việc đại diện cho chính bước đó
+        const taskId = generateUUID();
+        const mpiId = generateUUID();
+
+        const assigneeRole = step.assignee_role || nodeMetadata.assignee_role || '';
+        const startDateObj = new Date(step.start_date);
+        const startYear = startDateObj.getFullYear();
+        const startMonth = startDateObj.getMonth() + 1;
+        const deptCode = getDeptCode(assigneeRole);
+        const deptName = DEPARTMENT_NAMES[deptCode] || '';
+
+        let mPlanId: string | null = null;
+        try {
+          mPlanId = await getOrCreateMonthlyPlan(startMonth, startYear, deptCode, deptName, monthlyPlanCache);
+        } catch (err) {
+          console.error('Không thể tạo kế hoạch tháng:', err);
+        }
+
+        if (mPlanId) {
+          monthlyPlanItemsToInsert.push({
+            id: mpiId,
+            monthly_plan_id: mPlanId,
+            annual_plan_item_id: annualPlanMap[`${startYear}_${deptCode}`] || null,
+            project_id: projectId,
+            group_name: phase === 'preparation' ? 'Giai đoạn Chuẩn bị đầu tư' : (phase === 'completion' || phase === 'closing' ? 'Giai đoạn Kết thúc dự án' : 'Giai đoạn Thực hiện xây lắp'),
+            task_name: `Triển khai: ${step.title}`,
+            deliverable: step.output_document || nodeMetadata.output_document || nodeMetadata.output || 'Sản phẩm hoàn thành nghiệm thu theo quy trình',
+            deadline_note: `Định hạn hoàn thành: ${step.due_date}`,
+            due_date: step.due_date,
+            status: 'planned',
+            source_task_id: null,
+            source_type: 'from_project_task',
+            collaborating_text: 'Ban Giám đốc',
+            collaborating_dept_codes: ['BGĐ'],
+            notes: 'Ánh xạ tự động từ quy trình WBS của Dự án'
+          });
+          linksToUpdate.push({ mpiId: mpiId, taskId: taskId });
+        }
+
+        tasksToInsert.push({
+          id: taskId,
+          project_id: projectId,
+          title: step.title.length > 450 ? step.title.substring(0, 447) + '...' : step.title,
+          status: 'todo',
+          task_type: 'project',
+          workflow_id: workflowId,
+          workflow_node_id: step.workflow_node_id,
+          priority: 'medium',
+          progress: 0,
+          start_date: step.start_date,
+          due_date: step.due_date,
+          duration_days: step.duration_days,
+          phase: phase,
+          step_code: parentStepCode,
+          sort_order: currentSortOrder++,
+          predecessor_task_id: previousTaskId,
+          legal_basis: step.legal_basis || nodeMetadata.legal_basis || nodeMetadata.legalBasis || '',
+          output_document: step.output_document || nodeMetadata.output_document || nodeMetadata.output || '',
+          monthly_plan_item_id: mPlanId ? mpiId : null,
+          metadata: {
+            assignee_role: assigneeRole,
+            is_wbs: true,
+            node_id: step.workflow_node_id
+          }
         });
+
+        previousTaskId = taskId;
       }
     }
 
-    // 3. Insert hàng loạt vào CSDL
+    // 3. Insert hàng loạt monthly plan items trước để làm FK cho tasks
+    if (monthlyPlanItemsToInsert.length > 0) {
+      const { error: mpiErr } = await supabase
+        .from('monthly_plan_items')
+        .insert(monthlyPlanItemsToInsert);
+      if (mpiErr) {
+        console.error("Lỗi khi chèn monthly plan items:", mpiErr);
+        throw toServiceError(mpiErr, `Tạo kế hoạch tùy chỉnh thất bại`);
+      }
+    }
+
+    // 4. Insert hàng loạt tasks vào CSDL
     if (tasksToInsert.length > 0) {
       const { data, error } = await supabase
         .from('tasks')
@@ -764,12 +1116,19 @@ export const TaskService = {
 
       if (error) throw toServiceError(error, `Tạo kế hoạch tùy chỉnh thất bại`);
 
-      if (subTasksToInsert.length > 0) {
-        const { error: subErr } = await supabase
-          .from('tasks')
-          .insert(subTasksToInsert);
-        if (subErr) {
-          console.error("Lỗi khi tạo công việc con tùy chỉnh:", subErr);
+      // 5. Cập nhật ngược source_task_id trong monthly_plan_items
+      if (linksToUpdate.length > 0) {
+        try {
+          await Promise.all(
+            linksToUpdate.map(link =>
+              supabase
+                .from('monthly_plan_items')
+                .update({ source_task_id: link.taskId } as any)
+                .eq('id', link.mpiId)
+            )
+          );
+        } catch (updErr) {
+          console.error("Lỗi khi cập nhật source_task_id cho monthly_plan_items:", updErr);
         }
       }
 
