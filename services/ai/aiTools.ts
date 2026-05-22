@@ -1,4 +1,4 @@
-import { FunctionDeclaration, SchemaType as Type } from '@google/generative-ai';
+import { FunctionDeclaration, SchemaType as Type } from './geminiProxy';
 
 /**
  * Tool definitions in Gemini format for function calling

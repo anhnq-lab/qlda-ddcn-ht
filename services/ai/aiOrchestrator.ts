@@ -12,7 +12,7 @@ import { TaskService } from '../TaskService';
 import { LegalDocumentService } from '../LegalDocumentService';
 import { supabase } from '../../lib/supabase';
 import type { ChatMessage } from '../aiService';
-import { FunctionCall, FunctionResponse, Part } from '@google/generative-ai';
+import { FunctionCall, FunctionResponse, Part } from './geminiProxy';
 
 // Từ khóa gợi ý câu hỏi cần dữ liệu thực
 const DATA_KEYWORDS = [

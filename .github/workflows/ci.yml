@@ -43,7 +43,8 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          # Gemini API key is server-side only (Supabase Edge Function `gemini-proxy`),
+          # never embedded in the client bundle.
           VITE_DEV_BYPASS_AUTH: "false"
 
       - name: Upload build artifacts
