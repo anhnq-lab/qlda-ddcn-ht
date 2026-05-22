@@ -133,7 +133,9 @@
       "Bash(node scripts/import-assets.mjs)",
       "Bash(echo \"exitcode=$?\")",
       "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#\" styles/*.css)",
-      "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#|theme-light \\\\.bg\" styles/theme-overrides.css)"
+      "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#|theme-light \\\\.bg\" styles/theme-overrides.css)",
+      "Bash(node --check scripts/rls-audit.mjs)",
+      "Bash(echo \"build exitcode=$?\")"
     ]
   }
 }
