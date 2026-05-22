@@ -219,7 +219,7 @@ Internet
 |---|---|---|
 | **Máy chủ vật lý** | Singapore (AWS) | Việt Nam (FPT IDC) |
 | **Tuân thủ TT47** | ❌ Không | ✅ Có |
-| **Chi phí hàng tháng** | ~8–15 triệu VNĐ | ~15–25 triệu VNĐ |
+| **Chi phí hàng tháng** | ~650.000 VNĐ ($25) | ~3–23 triệu VNĐ (tùy phương án) |
 | **Kiểm soát dữ liệu** | Phụ thuộc Supabase Inc. | Toàn quyền tự chủ |
 | **Phí bản quyền** | Có (Supabase Cloud) | Miễn phí (mã nguồn mở) |
 | **Tốc độ truy cập** | Phụ thuộc đường quốc tế | Nhanh hơn (trong nước) |
@@ -275,39 +275,76 @@ Internet
 
 ## 8. CHI PHÍ ƯỚC TÍNH
 
-### Chi phí hạ tầng hàng tháng (thuê máy chủ FPT)
+### Tại sao chi phí tăng so với Supabase Cloud $25/tháng?
 
-| Hạng mục | Đơn vị | Đơn giá ước tính | Thành tiền |
-|---|---|---|---|
-| Máy chủ 1 (Application) | 1 máy | 8.000.000 VNĐ/tháng | 8.000.000 |
-| Máy chủ 2 (Database) | 1 máy | 12.000.000 VNĐ/tháng | 12.000.000 |
-| Băng thông Internet | 100 Mbps | 2.000.000 VNĐ/tháng | 2.000.000 |
-| IP Public tĩnh | 1 IP | 500.000 VNĐ/tháng | 500.000 |
-| **TỔNG/THÁNG** | | | **~22.500.000 VNĐ** |
+**Supabase Cloud Pro $25/tháng** là dịch vụ dùng chung (shared infrastructure): hàng nghìn khách hàng cùng dùng một cụm máy chủ khổng lồ của AWS, chi phí được chia đều nên rất rẻ. Khi tự đặt máy chủ riêng, bạn **thuê toàn bộ phần cứng vật lý** cho riêng mình — giá tất nhiên cao hơn.
 
-> *Giá thực tế cần xác nhận với FPT theo cấu hình cụ thể và điều khoản hợp đồng (thường chiết khấu khi ký hợp đồng 1–3 năm).*
+Đây là sự đánh đổi có chủ đích: **tuân thủ pháp lý và chủ quyền dữ liệu** thay vì tiết kiệm chi phí thuần túy.
 
-### Chi phí triển khai một lần
+### Ba phương án chi phí tùy ngân sách
 
-| Hạng mục | Chi phí ước tính |
+#### Phương án A – VPS trong nước (tiết kiệm nhất, đáp ứng TT47)
+
+> Thuê máy chủ ảo (VPS) tại các nhà cung cấp Việt Nam: FPT, VNPT, Viettel, CMC
+
+| Hạng mục | Chi phí/tháng |
 |---|---|
-| Phí cài đặt, cấu hình hạ tầng | 15.000.000 – 20.000.000 VNĐ |
-| Chứng chỉ SSL (2 năm) | 3.000.000 – 5.000.000 VNĐ |
-| Kiểm thử bảo mật (pentest) | 10.000.000 – 20.000.000 VNĐ |
-| Tài liệu & đào tạo vận hành | 5.000.000 VNĐ |
-| **TỔNG** | **~33–50 triệu VNĐ** |
+| 1 VPS: 8 vCPU, 32GB RAM, 500GB SSD | ~2.500.000 – 4.000.000 VNĐ |
+| Băng thông + IP tĩnh | ~500.000 VNĐ |
+| **TỔNG/THÁNG** | **~3–4,5 triệu VNĐ** |
 
-### So sánh chi phí 3 năm
+- ✅ Đáp ứng TT47 (máy chủ vật lý tại Việt Nam)
+- ✅ Rẻ hơn nhiều so với thuê dedicated
+- ⚠️ Không có dự phòng phần cứng vật lý (nếu node VPS hỏng cần chờ nhà cung cấp)
+- ⚠️ Phù hợp cho quy mô dưới 200 người dùng đồng thời
 
-| | Cloud nước ngoài | FPT Dedicated |
-|---|---|---|
-| Chi phí vận hành/năm | ~120–180 triệu | ~270 triệu |
-| Chi phí triển khai | ~10 triệu | ~40 triệu |
-| Phí bản quyền phần mềm | Có (Supabase) | **Miễn phí** (mã nguồn mở) |
-| Rủi ro pháp lý | **Cao** | Thấp |
-| Kiểm soát dữ liệu | **Thấp** | **Cao** |
+#### Phương án B – 1 Máy chủ vật lý FPT Dedicated (cân bằng)
 
-> **Lưu ý:** Chi phí FPT cao hơn một phần nhưng đổi lại tuân thủ pháp lý, chủ quyền dữ liệu và không phụ thuộc bên nước ngoài.
+| Hạng mục | Chi phí/tháng |
+|---|---|
+| 1 máy chủ vật lý: 16 core, 64GB RAM, 2TB NVMe | ~8.000.000 – 12.000.000 VNĐ |
+| Băng thông 100Mbps + IP tĩnh | ~2.500.000 VNĐ |
+| **TỔNG/THÁNG** | **~10–14,5 triệu VNĐ** |
+
+- ✅ Đáp ứng TT47, máy chủ vật lý riêng
+- ✅ Phù hợp 100–300 người dùng
+- ✅ Toàn quyền kiểm soát phần cứng
+- ⚠️ Nếu máy hỏng cần thời gian sửa/thay thế (FPT thường cam kết 4–8 giờ)
+
+#### Phương án C – 2 Máy chủ vật lý FPT Dedicated (dự phòng cao)
+
+| Hạng mục | Chi phí/tháng |
+|---|---|
+| Máy chủ 1 (Application): 16 core, 64GB RAM | ~8.000.000 VNĐ |
+| Máy chủ 2 (Database): 16 core, 128GB RAM | ~12.000.000 VNĐ |
+| Băng thông + IP tĩnh | ~2.500.000 VNĐ |
+| **TỔNG/THÁNG** | **~22–23 triệu VNĐ** |
+
+- ✅ Dự phòng cao nhất, tách biệt Application và Database
+- ✅ Phù hợp 300–500+ người dùng, yêu cầu uptime cao
+- ✅ Chuẩn enterprise cho cơ quan nhà nước cấp tỉnh
+
+### So sánh tổng thể
+
+| | Supabase Cloud Pro | Phương án A (VPS) | Phương án B (1 Dedicated) | Phương án C (2 Dedicated) |
+|---|---|---|---|---|
+| **Chi phí/tháng** | $25 (~650.000 VNĐ) | ~3–4,5 triệu | ~10–14,5 triệu | ~22–23 triệu |
+| **Tuân thủ TT47** | ❌ Không | ✅ Có | ✅ Có | ✅ Có |
+| **Máy chủ tại VN** | ❌ Singapore | ✅ Việt Nam | ✅ Việt Nam | ✅ Việt Nam |
+| **Phí bản quyền** | Có (trả Supabase Inc.) | Miễn phí | Miễn phí | Miễn phí |
+| **Dự phòng** | AWS multi-AZ | Thấp | Trung bình | Cao |
+| **Phù hợp quy mô** | Không giới hạn | <200 users | 100–300 users | 300–500+ users |
+| **Rủi ro pháp lý** | **Cao** | Thấp | Thấp | Thấp |
+
+### Khuyến nghị
+
+Với quy mô **100–500 người dùng** và yêu cầu tuân thủ TT47 của cơ quan nhà nước:
+
+- **Ngắn hạn / ngân sách hạn chế:** Phương án A (VPS ~3–4,5 triệu/tháng) — vừa tuân thủ pháp lý vừa tiết kiệm
+- **Dài hạn / tiêu chuẩn cơ quan nhà nước:** Phương án B (1 dedicated ~10–14,5 triệu/tháng) — ổn định, kiểm soát cao
+- **Nếu yêu cầu SLA cao:** Phương án C (2 dedicated ~22–23 triệu/tháng)
+
+> *Giá thực tế cần báo giá chính thức từ FPT. Thường có chiết khấu 10–20% khi ký hợp đồng 1–3 năm.*
 
 ---
 
