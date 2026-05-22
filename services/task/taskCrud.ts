@@ -52,7 +52,8 @@ export const getProjectTasks = async (projectId: string): Promise<DbTask[]> => {
         SubTaskID: s.id,
         Title: s.title,
         AssigneeID: s.assignee_id || s.metadata?.assignee_role,
-        DueDate: s.due_date,
+        StartDate: s.start_date || row.start_date,
+        DueDate: s.due_date || row.due_date,
         Status: s.status === 'done' ? 'Done' : s.status === 'in_progress' ? 'InProgress' : 'Todo',
       }));
 
@@ -122,7 +123,8 @@ export const getTaskById = async (taskId: string): Promise<DbTask | null> => {
       SubTaskID: s.id,
       Title: s.title,
       AssigneeID: s.assignee_id || s.metadata?.assignee_role,
-      DueDate: s.due_date,
+      StartDate: s.start_date || row.start_date,
+      DueDate: s.due_date || row.due_date,
       Status: s.status === 'done' ? 'Done' : s.status === 'in_progress' ? 'InProgress' : 'Todo',
     }));
   }

@@ -161,10 +161,10 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const currentStepCode = stepCode || formData.TimelineStep;
     const parentStepTask = allTasks.find(t => 
         t.TimelineStep === currentStepCode && 
-        (t.Metadata?.assignee_role || (t as any).metadata?.assignee_role)
+        (t.Metadata?.assignee_role || (t as any)?.metadata?.assignee_role)
     );
     const parentDeptCode = parentStepTask 
-        ? (parentStepTask.Metadata?.assignee_role || (parentStepTask as any).metadata?.assignee_role)
+        ? (parentStepTask.Metadata?.assignee_role || (parentStepTask as any)?.metadata?.assignee_role)
         : null;
 
     const filteredEmployees = parentDeptCode

@@ -1,19 +1,16 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { TaskService } from '@/services/TaskService';
-import { BarChart3, ChevronRight, CheckCircle2, Clock, AlertTriangle, Circle } from 'lucide-react';
-
-interface GanttTask {
-    id: string;
-    title: string;
-    startDate: Date;
-    endDate: Date;
-    progress: number;
-    status: string;
-    phase?: string;
-    stepCode?: string;
-    priority?: string;
-}
+import { supabase } from '@/lib/supabase';
+import { 
+    BarChart3, ChevronRight, ChevronDown, CheckCircle2, 
+    Clock, AlertTriangle, Circle, Maximize2, Minimize2 
+} from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { Task, TaskStatus, TaskPriority } from '@/types';
+import { useWorkflowPhases } from '@/features/projects/hooks/useWorkflowPhases';
+import { useEmployees } from '@/hooks/useEmployees';
 
 interface GanttChartWidgetProps {
     projectId: string;
@@ -22,18 +19,18 @@ interface GanttChartWidgetProps {
 }
 
 const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> = {
-    Done: { bar: 'bg-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-600 dark:text-emerald-400' },
-    InProgress: { bar: 'bg-primary-500', bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-600 dark:text-primary-400' },
-    Review: { bar: 'bg-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-600 dark:text-blue-400' },
-    Todo: { bar: 'bg-slate-300 dark:bg-slate-600', bg: 'bg-slate-50 dark:bg-slate-800', text: 'text-slate-500 dark:text-slate-400' },
-    overdue: { bar: 'bg-red-500', bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-600 dark:text-red-400' },
+    done: { bar: 'bg-emerald-500 dark:bg-emerald-400', bg: 'bg-emerald-50/80 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-300' },
+    in_progress: { bar: 'bg-blue-500 dark:bg-blue-400', bg: 'bg-blue-50/80 dark:bg-blue-950/40', text: 'text-blue-700 dark:text-blue-300' },
+    review: { bar: 'bg-amber-500 dark:bg-amber-400', bg: 'bg-amber-50/80 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-300' },
+    todo: { bar: 'bg-slate-300 dark:bg-slate-500', bg: 'bg-slate-100 dark:bg-slate-900/50', text: 'text-slate-600 dark:text-slate-300' },
+    overdue: { bar: 'bg-red-500 dark:bg-red-400', bg: 'bg-red-50/80 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300' },
 };
 
 const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, className = 'w-3 h-3' }) => {
     switch (status) {
-        case 'Done': return <CheckCircle2 className={`${className} text-emerald-500`} />;
-        case 'InProgress': return <Clock className={`${className} text-primary-500`} />;
-        case 'Review': return <Clock className={`${className} text-blue-500`} />;
+        case 'done': return <CheckCircle2 className={`${className} text-emerald-500`} />;
+        case 'in_progress': return <Clock className={`${className} text-primary-500`} />;
+        case 'review': return <Clock className={`${className} text-blue-500`} />;
         case 'overdue': return <AlertTriangle className={`${className} text-red-500`} />;
         default: return <Circle className={`${className} text-slate-400`} />;
     }
@@ -41,67 +38,272 @@ const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, 
 
 export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
     projectId,
-    maxTasks = 999,
+    maxTasks = 5,
     onViewAll
 }) => {
-    const { data: tasks = [], isLoading } = useQuery<GanttTask[]>({
+    const { theme } = useTheme();
+    const { data: employees = [] } = useEmployees();
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [expandedTaskIds, setExpandedTaskIds] = useState<Set<string>>(new Set());
+    const hasInitializedExpandedSteps = useRef(false);
+    const widgetRef = useRef<HTMLDivElement>(null);
+
+    const [hoveredTask, setHoveredTask] = useState<any | null>(null);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (e: React.MouseEvent, task: any) => {
+        const tooltipWidth = 288;
+        const tooltipHeight = task.isStep ? 220 : 180;
+        let x = e.clientX + 15;
+        let y = e.clientY + 15;
+
+        if (x + tooltipWidth > window.innerWidth) {
+            x = e.clientX - tooltipWidth - 15;
+        }
+        if (y + tooltipHeight > window.innerHeight) {
+            y = e.clientY - tooltipHeight - 15;
+        }
+        setMousePos({ x, y });
+        setHoveredTask(task);
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredTask(null);
+    };
+
+    // Lấy thông tin dự án mọi lúc để lấy group_code, design_steps
+    const { data: project } = useQuery({
+        queryKey: ['project-info-gantt', projectId],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('id', projectId)
+                .single();
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!projectId,
+    });
+
+    const groupCode = project?.group_code || 'C';
+    const { phases, isLoading: isLoadingPhases } = useWorkflowPhases(groupCode, project);
+
+    const { data: rawTasks = [], isLoading: isLoadingTasks } = useQuery({
         queryKey: ['gantt-tasks', projectId],
         queryFn: async () => {
-            const rawTasks = await TaskService.getProjectTasks(projectId);
-
-            if (!rawTasks || rawTasks.length === 0) return [];
-
-            const now = new Date();
-            return rawTasks
-                .filter(t => t.start_date || t.due_date) // Only tasks with dates
-                .sort((a, b) => {
-                    const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
-                    const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
-                    return dateA - dateB;
-                })
-                .map(t => {
-                    const startDate = t.start_date ? new Date(t.start_date) : new Date();
-                    const endDate = t.due_date ? new Date(t.due_date) : new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-                    const isOverdue = t.status !== 'done' && endDate < now;
-
-                    return {
-                        id: t.id,
-                        title: t.title,
-                        startDate,
-                        endDate,
-                        progress: t.progress ?? (t.status === 'done' ? 100 : 0),
-                        status: isOverdue ? 'overdue' : t.status || 'todo',
-                        phase: t.phase || undefined,
-                        stepCode: t.step_code || undefined,
-                        priority: t.priority,
-                    };
-                });
+            const data = await TaskService.getProjectTasks(projectId);
+            return data || [];
         },
         enabled: !!projectId,
         staleTime: 5 * 60 * 1000,
     });
 
+    // Map rawTasks thành Task[] chuẩn
+    const mappedTasks = useMemo<Task[]>(() => {
+        if (!rawTasks) return [];
+        return rawTasks.map((wt: any) => {
+            const phase = wt.workflow_nodes?.metadata?.phase || wt.metadata?.phase || wt.metadata?.groupCode || 'KH';
+            let mappedStatus = TaskStatus.Todo;
+            if (wt.status === 'in_progress') mappedStatus = TaskStatus.InProgress;
+            else if (wt.status === 'completed' || wt.status === 'done') mappedStatus = TaskStatus.Done;
+            else if (wt.status === 'overdue') mappedStatus = TaskStatus.InProgress;
+            
+            if (wt.metadata?.ui_status) {
+                mappedStatus = wt.metadata.ui_status;
+            }
+            
+            return {
+                TaskID: wt.id,
+                ProjectID: projectId || '',
+                Title: wt.name || wt.title || 'Untitled Task',
+                Description: wt.comments || wt.metadata?.description || '',
+                Status: mappedStatus,
+                Priority: wt.priority || TaskPriority.Medium,
+                StartDate: wt.start_date || wt.created_at,
+                DueDate: wt.due_date || undefined,
+                AssigneeID: wt.assignee_id || '',
+                TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || wt.metadata?.step_code || '',
+                StepCode: wt.step_code || wt.metadata?.step_code || wt.workflow_node_id || wt.node_id || '',
+                LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
+                DurationDays: wt.metadata?.estimatedDays || 10,
+                ActualStartDate: wt.metadata?.actualStartDate || wt.started_at,
+                ActualEndDate: wt.metadata?.actualEndDate || wt.completed_at,
+                ProgressPercent: wt.progress || 0,
+                Phase: phase,
+                SubTasks: wt.metadata?.sub_tasks || [],
+                Attachments: wt.metadata?.attachments || [],
+                Dependencies: wt.metadata?.dependencies || [],
+                EstimatedCost: wt.metadata?.estimated_cost,
+                ActualCost: wt.metadata?.actual_cost,
+                Metadata: wt.metadata || {},
+            } as Task;
+        });
+    }, [rawTasks, projectId]);
 
-    // Calculate timeline bounds
+    // Dựng cây các bước lớn và công việc con
+    const processedTasks = useMemo(() => {
+        if (!phases || !mappedTasks) return [];
+        const now = new Date();
+        const fallbackStart = project?.created_at ? new Date(project.created_at) : now;
+
+        const steps: any[] = [];
+        phases.forEach(phase => {
+            const subProcs = phase.subProcesses || [{ id: '0', title: '', fullTitle: '', items: phase.items || [] }];
+            subProcs.forEach((sp: any) => {
+                if (sp.items) {
+                    sp.items.forEach((item: any) => {
+                        steps.push(item);
+                    });
+                }
+            });
+        });
+
+        const result: any[] = [];
+        steps.forEach(step => {
+            const stepTasks = mappedTasks.filter(
+                t => t.StepCode === step.code || 
+                     t.TimelineStep === step.code ||
+                     t.StepCode === step.id ||
+                     t.TimelineStep === step.id
+            );
+
+            let stepStart = fallbackStart;
+            let stepEnd = new Date(fallbackStart.getTime() + (step.estimatedDays || 30) * 24 * 60 * 60 * 1000);
+
+            if (stepTasks.length > 0) {
+                const dates: number[] = [];
+                stepTasks.forEach(t => {
+                    if (t.StartDate) dates.push(new Date(t.StartDate).getTime());
+                    if (t.DueDate) dates.push(new Date(t.DueDate).getTime());
+                });
+                if (dates.length > 0) {
+                    stepStart = new Date(Math.min(...dates));
+                    stepEnd = new Date(Math.max(...dates));
+                }
+            }
+
+            const stepProgress = stepTasks.length > 0
+                ? Math.round(stepTasks.reduce((sum, t) => sum + (t.ProgressPercent || 0), 0) / stepTasks.length)
+                : 0;
+
+            let stepStatus = 'todo';
+            const isStepOverdue = stepProgress < 100 && stepEnd < now;
+            if (isStepOverdue) {
+                stepStatus = 'overdue';
+            } else if (stepProgress === 100) {
+                stepStatus = 'done';
+            } else if (stepProgress > 0) {
+                stepStatus = 'in_progress';
+            }
+
+            const mappedSubTasks = stepTasks.map(t => {
+                const tStart = t.StartDate && !isNaN(Date.parse(t.StartDate)) ? new Date(t.StartDate) : stepStart;
+                const tEnd = t.DueDate && !isNaN(Date.parse(t.DueDate)) ? new Date(t.DueDate) : new Date(tStart.getTime() + (t.DurationDays || 1) * 24 * 60 * 60 * 1000);
+                const isOverdue = t.Status !== TaskStatus.Done && tEnd < now;
+
+                return {
+                    id: t.TaskID,
+                    title: t.Title.replace(/^[\d\.\:\s]+/, '').trim(),
+                    startDate: tStart,
+                    endDate: tEnd,
+                    progress: t.ProgressPercent || 0,
+                    status: isOverdue ? 'overdue' : (t.Status || 'todo'),
+                    isMasterTask: true,
+                    level: 1,
+                    parentId: `step_${step.code}`,
+                    assigneeId: t.AssigneeID
+                };
+            });
+
+            const stepGanttTask = {
+                id: `step_${step.code}`,
+                title: `${step.id ? `${step.id}. ` : ''}${step.title.replace(/^[\d\.\:\s]+/, '').trim()}`,
+                startDate: stepStart,
+                endDate: stepEnd,
+                progress: stepProgress,
+                status: stepStatus,
+                isStep: true,
+                level: 0,
+                subTasks: mappedSubTasks,
+                assigneeRole: step.assigneeRole
+            };
+
+            result.push(stepGanttTask);
+        });
+
+        return result;
+    }, [phases, mappedTasks, project]);
+
+    // Tự động mở rộng các Step lớn (Cấp 1) ở lần tải đầu tiên
+    useEffect(() => {
+        if (processedTasks.length > 0 && !hasInitializedExpandedSteps.current) {
+            setExpandedTaskIds(prev => {
+                const next = new Set(prev);
+                processedTasks.forEach(task => {
+                    if (task.isStep) {
+                        next.add(task.id);
+                    }
+                });
+                return next;
+            });
+            hasInitializedExpandedSteps.current = true;
+        }
+    }, [processedTasks]);
+
+    // Lắng nghe phím Escape để thoát fullscreen
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isFullscreen) {
+                setIsFullscreen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isFullscreen]);
+
+    // Khóa cuộn trang khi mở fullscreen
+    useEffect(() => {
+        if (isFullscreen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isFullscreen]);
+
+    // Tính toán biên mốc thời gian
     const { timelineStart, timelineEnd, totalDays, months } = useMemo(() => {
-        if (tasks.length === 0) {
+        if (processedTasks.length === 0) {
             const now = new Date();
             const start = new Date(now.getFullYear(), now.getMonth(), 1);
             const end = new Date(now.getFullYear(), now.getMonth() + 6, 0);
             return { timelineStart: start, timelineEnd: end, totalDays: 180, months: [] as { label: string; width: number }[] };
         }
 
-        const allStarts = tasks.map(t => t.startDate.getTime());
-        const allEnds = tasks.map(t => t.endDate.getTime());
-        const minDate = new Date(Math.min(...allStarts));
-        const maxDate = new Date(Math.max(...allEnds));
+        const allDates: number[] = [];
+        processedTasks.forEach(step => {
+            allDates.push(step.startDate.getTime());
+            allDates.push(step.endDate.getTime());
+            if (step.subTasks) {
+                step.subTasks.forEach((sub: any) => {
+                    allDates.push(sub.startDate.getTime());
+                    allDates.push(sub.endDate.getTime());
+                });
+            }
+        });
 
-        // Pad by 15 days on each side
+        const minDate = new Date(Math.min(...allDates));
+        const maxDate = new Date(Math.max(...allDates));
+
+        // Thêm khoảng đệm 15 ngày ở hai đầu
         const start = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
         const end = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 0);
         const total = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 
-        // Generate month labels
+        // Tạo nhãn tháng
         const monthList: { label: string; width: number }[] = [];
         let cursor = new Date(start);
         while (cursor <= end) {
@@ -117,9 +319,9 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         }
 
         return { timelineStart: start, timelineEnd: end, totalDays: total, months: monthList };
-    }, [tasks]);
+    }, [processedTasks]);
 
-    // Today marker position
+    // Vị trí mốc ngày hôm nay
     const todayPosition = useMemo(() => {
         const now = new Date();
         if (now < timelineStart || now > timelineEnd) return -1;
@@ -127,17 +329,68 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         return (days / totalDays) * 100;
     }, [timelineStart, timelineEnd, totalDays]);
 
-    const visibleTasks = tasks.slice(0, maxTasks);
-    const hasMore = tasks.length > maxTasks;
+    // Xử lý dàn phẳng danh sách các tasks sẽ hiển thị (kèm mở rộng/thu gọn)
+    const visibleTasks = useMemo(() => {
+        const list: any[] = [];
+        // Nếu ở chế độ fullscreen, luôn hiển thị toàn bộ các task cha
+        const baseTasks = isFullscreen ? processedTasks : processedTasks.slice(0, maxTasks);
 
-    // Stats
+        baseTasks.forEach(step => {
+            list.push(step);
+            if (expandedTaskIds.has(step.id) && step.subTasks && step.subTasks.length > 0) {
+                step.subTasks.forEach((t: any) => {
+                    list.push(t);
+                });
+            }
+        });
+
+        return list;
+    }, [processedTasks, expandedTaskIds, isFullscreen, maxTasks]);
+
+    const hasMore = processedTasks.length > maxTasks;
+
+    // Thống kê tiến độ chung
     const stats = useMemo(() => {
-        const done = tasks.filter(t => t.status === 'Done').length;
-        const inProgress = tasks.filter(t => t.status === 'InProgress' || t.status === 'Review').length;
-        const overdue = tasks.filter(t => t.status === 'overdue').length;
-        const avgProgress = tasks.length > 0 ? Math.round(tasks.reduce((a, t) => a + t.progress, 0) / tasks.length) : 0;
-        return { total: tasks.length, done, inProgress, overdue, avgProgress };
-    }, [tasks]);
+        const total = mappedTasks.length;
+        const done = mappedTasks.filter(t => t.Status === TaskStatus.Done).length;
+        const inProgress = mappedTasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
+        const overdue = mappedTasks.filter(t => {
+            if (t.Status === TaskStatus.Done) return false;
+            if (!t.DueDate) return false;
+            return new Date(t.DueDate) < new Date();
+        }).length;
+        const avgProgress = total > 0 ? Math.round(mappedTasks.reduce((a, t) => a + (t.ProgressPercent || 0), 0) / total) : 0;
+        return { total, done, inProgress, overdue, avgProgress };
+    }, [mappedTasks]);
+
+    const toggleFullscreen = () => {
+        setIsFullscreen(prev => !prev);
+    };
+
+    const toggleExpand = (taskId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setExpandedTaskIds(prev => {
+            const next = new Set(prev);
+            if (next.has(taskId)) {
+                next.delete(taskId);
+            } else {
+                next.add(taskId);
+            }
+            return next;
+        });
+    };
+
+    const isAllCollapsed = expandedTaskIds.size === 0;
+    const handleToggleAllExpand = () => {
+        if (isAllCollapsed) {
+            const allStepIds = processedTasks.filter(t => t.isStep).map(t => t.id);
+            setExpandedTaskIds(new Set(allStepIds));
+        } else {
+            setExpandedTaskIds(new Set());
+        }
+    };
+
+    const isLoading = isLoadingTasks || isLoadingPhases;
 
     if (isLoading) {
         return (
@@ -162,7 +415,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         );
     }
 
-    if (tasks.length === 0) {
+    if (processedTasks.length === 0) {
         return (
             <div className="section-card">
                 <div className="section-card-header">
@@ -189,141 +442,236 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         );
     }
 
+    // Tăng nhẹ chiều rộng cột tên ở widget để dễ đọc chữ phân cấp hơn
+    const taskNameWidthClass = isFullscreen ? 'w-80' : 'w-48';
+
     return (
-        <div className="section-card">
+        <div 
+            ref={widgetRef}
+            className={
+                isFullscreen 
+                    ? "fixed inset-0 z-50 w-screen h-screen bg-bg-app overflow-y-auto p-6 md:p-8 flex flex-col transition-all duration-300 animate-in fade-in zoom-in-95"
+                    : "section-card"
+            }
+        >
             {/* Header */}
-            <div className="section-card-header">
-                <div className="flex items-center gap-2">
+            <div className="section-card-header flex items-center justify-between border-b border-border py-3 px-4 bg-slate-50 dark:bg-slate-800">
+                <div className="flex items-center gap-2 min-w-0">
                     <div className="section-icon"><BarChart3 className="w-3.5 h-3.5" /></div>
-                    <span>Tiến độ thực hiện</span>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400">
+                    <span className={`truncate text-slate-800 dark:text-slate-100 ${isFullscreen ? "text-base font-black" : "text-sm font-bold"}`}>
+                        Tiến độ thực hiện {isFullscreen && project?.project_name ? `— ${project.project_name}` : ''}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full shrink-0">
                         ({stats.avgProgress}%)
                     </span>
                 </div>
-                {onViewAll && (
-                    <button onClick={onViewAll} className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold">
-                        Xem kế hoạch <ChevronRight className="w-3 h-3" />
+                
+                <div className="flex items-center gap-3 shrink-0">
+                    <button 
+                        onClick={toggleFullscreen} 
+                        className="flex items-center gap-1.5 text-[10px] text-txt-muted hover:text-txt-primary font-bold bg-bg-muted hover:bg-bg-subtle px-2 py-1 rounded-md transition-colors"
+                        title={isFullscreen ? "Thu nhỏ (Esc)" : "Phóng to toàn màn hình"}
+                    >
+                        {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                        <span>{isFullscreen ? "Thu nhỏ" : "Toàn màn hình"}</span>
                     </button>
-                )}
-            </div>
-
-            <div className="p-2.5">
-                {/* Mini Stats */}
-                <div className="flex items-center gap-3 mb-2.5 text-[10px] font-bold">
-                    <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        Xong: {stats.done}/{stats.total}
-                    </span>
-                    <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-                        <span className="w-2 h-2 rounded-full bg-primary-500"></span>
-                        Đang làm: {stats.inProgress}
-                    </span>
-                    {stats.overdue > 0 && (
-                        <span className="flex items-center gap-1 text-red-600 dark:text-red-400">
-                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                            Quá hạn: {stats.overdue}
-                        </span>
+                    
+                    {onViewAll && !isFullscreen && (
+                        <button onClick={onViewAll} className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold">
+                            Xem kế hoạch <ChevronRight className="w-3 h-3" />
+                        </button>
                     )}
                 </div>
+            </div>
 
-                {/* Gantt Chart */}
-                <div className="relative overflow-x-auto">
-                    {/* Month headers */}
-                    <div className="flex border-b border-slate-200 dark:border-slate-700 mb-1">
-                        {months.map((m, i) => (
-                            <div
-                                key={i}
-                                className="text-[9px] font-bold text-slate-400 dark:text-slate-400 text-center py-0.5 border-r border-slate-100 dark:border-slate-700/50 last:border-r-0 shrink-0"
-                                style={{ width: `${m.width}%`, minWidth: '30px' }}
-                            >
-                                {m.label}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Task bars */}
-                    <div className="relative">
-                        {/* Today marker */}
-                        {todayPosition >= 0 && todayPosition <= 100 && (
-                            <div
-                                className="absolute top-0 bottom-0 w-px bg-red-400 dark:bg-red-500 z-10 pointer-events-none"
-                                style={{ left: `${todayPosition}%` }}
-                            >
-                                <div className="absolute -top-0.5 -left-1.5 w-3 h-1 bg-red-400 dark:bg-red-500 rounded-sm" />
-                            </div>
+            <div className={`p-2.5 flex-1 flex flex-col ${isFullscreen ? 'overflow-y-auto' : ''}`}>
+                {/* Mini Stats */}
+                <div className="flex items-center justify-between mb-2.5 shrink-0">
+                    <div className="flex items-center gap-3 text-[10px] font-bold">
+                        <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Xong: {stats.done}/{stats.total}
+                        </span>
+                        <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                            <span className="w-2 h-2 rounded-full bg-primary-500"></span>
+                            Đang làm: {stats.inProgress}
+                        </span>
+                        {stats.overdue > 0 && (
+                            <span className="flex items-center gap-1 text-red-600 dark:text-red-400">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                Quá hạn: {stats.overdue}
+                            </span>
                         )}
+                    </div>
+                    {/* Nút Thu gọn/Mở rộng tất cả */}
+                    <button 
+                        onClick={handleToggleAllExpand}
+                        className="text-[9px] font-bold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded transition-colors"
+                    >
+                        {isAllCollapsed ? "Mở tất cả" : "Thu gọn tất cả"}
+                    </button>
+                </div>
 
-                        {visibleTasks.map((task) => {
-                            const startOffset = Math.max(0, (task.startDate.getTime() - timelineStart.getTime()) / (1000 * 60 * 60 * 24));
-                            const duration = Math.max(1, (task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24));
-                            const left = (startOffset / totalDays) * 100;
-                            const width = Math.max(2, (duration / totalDays) * 100);
-                            const colors = STATUS_COLORS[task.status] || STATUS_COLORS.Todo;
-
-                            return (
-                                <div key={task.id} className="flex items-center gap-1.5 py-[3px] group hover:bg-slate-50 dark:hover:bg-slate-800 rounded transition-colors">
-                                    {/* Task name */}
-                                    <div className="w-28 shrink-0 flex items-center gap-1 pr-1">
-                                        <StatusIcon status={task.status} className="w-2.5 h-2.5 shrink-0" />
-                                        <span className="text-[10px] text-slate-700 dark:text-slate-300 truncate font-medium leading-tight" title={task.title}>
-                                            {task.title}
-                                        </span>
+                {/* Gantt Chart Area */}
+                <div className="relative overflow-x-auto flex-1 min-h-0 border border-slate-100 dark:border-slate-800 rounded-xl p-2 bg-bg-surface">
+                    <div className="min-w-[600px]">
+                        {/* Month headers */}
+                        <div className="flex mb-1 pb-1" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                            <div className={`${taskNameWidthClass} shrink-0`} />
+                            <div className="flex-1 flex">
+                                {months.map((m, i) => (
+                                    <div
+                                        key={i}
+                                        className="text-[9px] font-bold text-slate-400 dark:text-slate-400 text-center py-0.5 shrink-0"
+                                        style={{ width: `${m.width}%`, borderRight: '1px solid var(--border-subtle)' }}
+                                    >
+                                        {m.label}
                                     </div>
+                                ))}
+                            </div>
+                        </div>
 
-                                    {/* Bar area */}
-                                    <div className="flex-1 relative h-5 min-w-0">
-                                        {/* Background bar (full task span) */}
+                        {/* Task bars container */}
+                        <div className="relative">
+                            {/* Grid Lines Layer (Nét mờ mịn dưới nền, làm mờ tối đa) */}
+                            <div className="absolute inset-0 flex pointer-events-none z-0 opacity-[0.06]">
+                                <div className={`${taskNameWidthClass} shrink-0`} style={{ borderRight: '1px solid var(--border-subtle)' }} />
+                                <div className="flex-1 flex h-full">
+                                    {months.map((m, i) => (
                                         <div
-                                            className={`absolute top-1 h-3 rounded-sm ${colors.bg} border border-slate-200/50 dark:border-slate-700/50`}
-                                            style={{ left: `${left}%`, width: `${width}%` }}
-                                        >
-                                            {/* Progress fill */}
-                                            <div
-                                                className={`h-full rounded-sm ${colors.bar} transition-all duration-500 opacity-80`}
-                                                style={{ width: `${Math.min(100, task.progress)}%` }}
-                                            />
-                                        </div>
-
-                                        {/* Progress label on hover */}
-                                        <div
-                                            className="absolute top-0 h-5 flex items-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                                            style={{ left: `${left + width + 0.5}%` }}
-                                        >
-                                            <span className={`text-[9px] font-bold ${colors.text} whitespace-nowrap`}>
-                                                {task.progress}%
-                                            </span>
-                                        </div>
-                                    </div>
+                                            key={i}
+                                            style={{ width: `${m.width}%`, borderRight: '1px solid var(--border-subtle)' }}
+                                            className="h-full"
+                                        />
+                                    ))}
                                 </div>
-                            );
-                        })}
+                            </div>
+                            {/* Today marker */}
+                            {todayPosition >= 0 && todayPosition <= 100 && (
+                                <div
+                                    className="absolute top-0 bottom-0 w-px bg-red-400 dark:bg-red-500 z-10 pointer-events-none"
+                                    style={{ left: `calc(${taskNameWidthClass} + (100% - ${taskNameWidthClass}) * ${todayPosition} / 100)` }}
+                                >
+                                    <div className="absolute -top-0.5 -left-1.5 w-3 h-1 bg-red-400 dark:bg-red-500 rounded-sm" />
+                                </div>
+                            )}
+
+                            {visibleTasks.map((task) => {
+                                const startOffset = Math.max(0, (task.startDate.getTime() - timelineStart.getTime()) / (1000 * 60 * 60 * 24));
+                                const duration = Math.max(1, (task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24));
+                                const left = (startOffset / totalDays) * 100;
+                                const width = Math.max(2, (duration / totalDays) * 100);
+                                const colors = STATUS_COLORS[task.status] || STATUS_COLORS.todo;
+
+                                const isExpanded = expandedTaskIds.has(task.id);
+                                const hasSubtasks = task.subTasks && task.subTasks.length > 0;
+                                
+                                const isStep = task.isStep;
+                                const barHeightClass = isStep ? 'h-5 rounded-md top-1.5' : 'h-3.5 rounded-sm top-1';
+                                const rowBgClass = isStep 
+                                    ? 'bg-[var(--bg-subtle)]/70 dark:bg-[var(--bg-subtle)]/40' 
+                                    : 'bg-transparent';
+
+                                return (
+                                    <div 
+                                        key={task.id} 
+                                        className={`flex group ${rowBgClass} hover:bg-[var(--bg-muted)] transition-colors py-[6px] items-center`}
+                                        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+                                        onMouseEnter={(e) => handleMouseMove(e, task)}
+                                        onMouseMove={(e) => handleMouseMove(e, task)}
+                                        onMouseLeave={handleMouseLeave}
+                                    >
+                                        
+                                        {/* Task name column */}
+                                        {task.level === 1 ? (
+                                            /* Cột tên của công việc con */
+                                            <div 
+                                                className={`${taskNameWidthClass} shrink-0 flex items-center gap-0.5 pr-1 relative`}
+                                                style={{ paddingLeft: '24px' }}
+                                            >
+                                                <span className="w-2.5 shrink-0 border-l border-b h-2.5 -mt-1.5 mr-1 rounded-bl-sm" style={{ borderColor: 'var(--border-subtle)' }} />
+                                                <StatusIcon status={task.status} className="w-2.5 h-2.5 shrink-0 opacity-70" />
+                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate font-semibold leading-tight" title={task.title}>
+                                                    {task.title}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            /* Cột tên của Bước cha */
+                                            <div className={`${taskNameWidthClass} shrink-0 flex items-center gap-0.5 pr-1 pl-2`}>
+                                                {hasSubtasks ? (
+                                                    <button 
+                                                        onClick={(e) => toggleExpand(task.id, e)}
+                                                        className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors text-slate-500 shrink-0 mr-0.5"
+                                                        title={isExpanded ? "Thu gọn công việc con" : "Xem chi tiết công việc con"}
+                                                    >
+                                                        {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                                                    </button>
+                                                ) : (
+                                                    <span className="w-5 shrink-0" />
+                                                )}
+                                                <StatusIcon status={task.status} className="w-3 h-3 shrink-0" />
+                                                <span 
+                                                    className="text-[11px] text-[var(--text-primary)] font-bold truncate leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400" 
+                                                    title={task.title}
+                                                    onClick={hasSubtasks ? (e) => toggleExpand(task.id, e) : undefined}
+                                                >
+                                                    {task.title}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Bar timeline area */}
+                                        <div className="flex-1 relative h-7 min-w-0 ml-1.5 flex items-center">
+                                            {/* Background bar (full task span) */}
+                                            <div
+                                                className={`absolute ${colors.bg} border border-slate-200/50 dark:border-slate-700/50 flex items-center min-w-[16px] transition-all cursor-pointer hover:opacity-90 hover:shadow-sm ${barHeightClass}`}
+                                                style={{ left: `${left}%`, width: `${width}%` }}
+                                            >
+                                                {/* Progress fill */}
+                                                <div
+                                                    className={`h-full rounded-l-sm ${colors.bar} transition-all duration-500 ${task.progress === 100 ? 'rounded-r-sm' : ''} opacity-100`}
+                                                    style={{ width: `${Math.min(100, task.progress)}%` }}
+                                                />
+
+                                                {/* Progress text */}
+                                                {width > 6 && (
+                                                    <span className="absolute inset-0 flex items-center justify-center text-[8px] text-slate-700 dark:text-slate-300 font-bold whitespace-nowrap overflow-hidden px-1">
+                                                        {task.progress}%
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 
-                {/* View more */}
-                {hasMore && onViewAll && (
+                {/* View more (Ẩn khi ở chế độ fullscreen để tránh thừa thãi) */}
+                {hasMore && onViewAll && !isFullscreen && (
                     <button
                         onClick={onViewAll}
-                        className="w-full mt-2 py-1.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        className="w-full mt-2 py-1.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors shrink-0"
                     >
-                        Xem tất cả {tasks.length} công việc →
+                        Xem tất cả {processedTasks.length} bước quy trình →
                     </button>
                 )}
 
                 {/* Overall progress bar */}
-                <div className="mt-2 bg-slate-100 dark:bg-slate-700 rounded-lg px-2.5 py-1.5">
+                <div className="mt-3 bg-slate-100 dark:bg-slate-800/80 rounded-lg px-2.5 py-1.5 shrink-0">
                     <div className="flex items-center justify-between text-[10px] mb-1">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Tiến độ tổng thể</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide">Tiến độ tổng thể dự án</span>
                         <span className={`font-black tabular-nums ${stats.avgProgress >= 50 ? 'text-emerald-600' : stats.avgProgress > 20 ? 'text-primary-600' : 'text-red-600'}`}>
                             {stats.avgProgress}%
                         </span>
                     </div>
-                    <div className="h-1.5 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
                                 background: stats.avgProgress >= 50 ? 'linear-gradient(90deg, #10B981, #059669)' :
-                                    stats.avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #4a90e2)' :
+                                    stats.avgProgress > 20 ? 'linear-gradient(90deg, #fb923c, #00668c)' :
                                         'linear-gradient(90deg, #EF4444, #DC2626)',
                                 width: `${Math.min(100, Math.max(0, stats.avgProgress))}%`
                             }}
@@ -331,9 +679,100 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* Custom Premium Tooltip (Rendered via Portal, opaque background) */}
+            {hoveredTask && createPortal(
+                <div 
+                    className="fixed pointer-events-none w-72 border rounded-lg p-3.5 text-[11px] space-y-2.5 transition-none"
+                    style={{ 
+                        left: `${mousePos.x}px`, 
+                        top: `${mousePos.y}px`,
+                        zIndex: 99999,
+                        backgroundColor: theme === 'dark' ? '#1f2332' : theme === 'nature' ? '#FCF9F2' : '#ffffff',
+                        borderColor: theme === 'dark' ? '#2e3348' : theme === 'nature' ? '#ece7de' : '#e2e8f0',
+                        color: theme === 'dark' ? '#f8fafc' : theme === 'nature' ? '#1d1c1c' : '#0f172a',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4)',
+                        opacity: 1
+                    }}
+                >
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-1.5">
+                        <span className="font-bold text-slate-800 dark:text-slate-100 line-clamp-2 flex-1">
+                            {hoveredTask.title}
+                        </span>
+                        <div className="shrink-0 flex items-center gap-1">
+                            <StatusIcon status={hoveredTask.status} className="w-3.5 h-3.5" />
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                {hoveredTask.status}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Info list */}
+                    <div className="space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
+                        <div className="flex justify-between">
+                            <span className="text-slate-400 dark:text-slate-500">Bắt đầu:</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                                {hoveredTask.startDate ? new Date(hoveredTask.startDate).toLocaleDateString('vi-VN') : '-'}
+                            </span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-400 dark:text-slate-500">Kết thúc:</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                                {hoveredTask.endDate ? new Date(hoveredTask.endDate).toLocaleDateString('vi-VN') : '-'}
+                            </span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-400 dark:text-slate-500">Thời gian thực hiện:</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                                {hoveredTask.startDate && hoveredTask.endDate 
+                                    ? `${Math.max(1, Math.ceil((new Date(hoveredTask.endDate).getTime() - new Date(hoveredTask.startDate).getTime()) / (1000 * 60 * 60 * 24)))} ngày` 
+                                    : '-'}
+                            </span>
+                        </div>
+
+                        {/* Đơn vị chủ trì / Người thực hiện */}
+                        {hoveredTask.isStep ? (
+                            <div className="flex justify-between">
+                                <span className="text-slate-400 dark:text-slate-500">Đơn vị chủ trì:</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    {hoveredTask.assigneeRole || 'Chưa xác định'}
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="flex justify-between">
+                                <span className="text-slate-400 dark:text-slate-500">Người thực hiện:</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    {(() => {
+                                        if (!hoveredTask.assigneeId) return 'Chưa gán';
+                                        const matched = employees.find(e => e.EmployeeID === hoveredTask.assigneeId);
+                                        return matched ? matched.FullName : hoveredTask.assigneeId;
+                                    })()}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="space-y-1 pt-1 border-t border-slate-200 dark:border-slate-800">
+                        <div className="flex justify-between text-[10px]">
+                            <span className="text-slate-400 dark:text-slate-500 font-bold">TIẾN ĐỘ THỰC HIỆN</span>
+                            <span className="font-black text-slate-700 dark:text-slate-200">{hoveredTask.progress}%</span>
+                        </div>
+                        <div className="h-1 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
+                            <div 
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                    STATUS_COLORS[hoveredTask.status]?.bar || 'bg-slate-500'
+                                }`}
+                                style={{ width: `${hoveredTask.progress}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 };
 
 export default GanttChartWidget;
-

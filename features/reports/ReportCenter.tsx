@@ -8,10 +8,10 @@ import { useProjects } from '../../hooks/useProjects';
 import { usePayments } from '../../hooks/usePayments';
 import { useTasks } from '../../hooks/useTasks';
 
-type ReportType = 'monitoring' | 'disbursement' | 'issues' | 'all';
+type ReportType = 'monitoring' | 'disbursement' | 'issues' | 'all' | 'appendix1' | 'appendix2' | 'all_appendix';
 
 const REPORTS: {
-    type: ReportType;
+    type: ReportType | 'appendix';
     title: string;
     desc: string;
     period: string;
@@ -46,6 +46,15 @@ const REPORTS: {
         iconBg: 'bg-warning-50 dark:bg-warning-900/30',
         iconColor: 'text-warning-600 dark:text-warning-400',
     },
+    {
+        type: 'appendix',
+        title: 'Báo cáo Phụ lục Tổng hợp',
+        desc: 'Tổng hợp danh mục dự án của các phòng ban phân nhóm theo Tình trạng dự án hoặc Lĩnh vực chuyên ngành.',
+        period: 'Định kỳ: Báo cáo năm / Quý',
+        icon: FileSpreadsheet,
+        iconBg: 'bg-emerald-50 dark:bg-emerald-900/20',
+        iconColor: 'text-emerald-700 dark:text-emerald-400',
+    },
 ];
 
 const ReportCenter: React.FC = () => {
@@ -68,8 +77,14 @@ const ReportCenter: React.FC = () => {
         setExportingReport(reportType);
         setExportSuccess(null);
         try {
-            const { generateExcelReport } = await import('../../utils/excelReportGenerator');
-            await generateExcelReport(reportType, reportSource);
+            if (reportType === 'appendix1' || reportType === 'appendix2' || reportType === 'all_appendix') {
+                const genType = reportType === 'all_appendix' ? 'all' : reportType;
+                const { generateAppendixReport } = await import('../../utils/excelAppendixGenerator');
+                await generateAppendixReport(genType, projects);
+            } else {
+                const { generateExcelReport } = await import('../../utils/excelReportGenerator');
+                await generateExcelReport(reportType, reportSource);
+            }
             setExportSuccess(reportType);
             setTimeout(() => setExportSuccess(null), 4000);
         } catch (error) {
@@ -196,26 +211,94 @@ const ReportCenter: React.FC = () => {
                                 <h4 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-2">{title}</h4>
                                 <p className="text-sm text-gray-500 dark:text-slate-400 mb-4 flex-1">{desc}</p>
 
-                                <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                                    <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
-                                        {period}
-                                    </span>
-                                    <button
-                                        onClick={() => handleExportExcel(type)}
-                                        disabled={isExporting}
-                                        className={`text-sm font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${isSuccess
-                                            ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-                                            : 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 hover:shadow-sm'
-                                        } disabled:opacity-60`}
-                                    >
-                                        {isExporting ? (
-                                            <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
-                                        ) : isSuccess ? (
-                                            <><CheckCircle2 className="w-4 h-4" /> Đã tải</>
-                                        ) : (
-                                            <><Download className="w-4 h-4" /> Xuất Excel</>
-                                        )}
-                                    </button>
+                                <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex flex-col gap-3">
+                                    {type === 'appendix' ? (
+                                        <>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
+                                                    {period}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2 mt-1">
+                                                <button
+                                                    onClick={() => handleExportExcel('appendix1')}
+                                                    disabled={exportingReport !== null}
+                                                    className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
+                                                        exportSuccess === 'appendix1'
+                                                            ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
+                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    } disabled:opacity-60`}
+                                                >
+                                                    {exportingReport === 'appendix1' ? (
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    ) : exportSuccess === 'appendix1' ? (
+                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    ) : (
+                                                        <Download className="w-3.5 h-3.5" />
+                                                    )}
+                                                    {exportingReport === 'appendix1' ? 'Đang tạo...' : exportSuccess === 'appendix1' ? 'Đã tải' : 'Phụ lục 1'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleExportExcel('appendix2')}
+                                                    disabled={exportingReport !== null}
+                                                    className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
+                                                        exportSuccess === 'appendix2'
+                                                            ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
+                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    } disabled:opacity-60`}
+                                                >
+                                                    {exportingReport === 'appendix2' ? (
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    ) : exportSuccess === 'appendix2' ? (
+                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    ) : (
+                                                        <Download className="w-3.5 h-3.5" />
+                                                    )}
+                                                    {exportingReport === 'appendix2' ? 'Đang tạo...' : exportSuccess === 'appendix2' ? 'Đã tải' : 'Phụ lục 2'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleExportExcel('all_appendix')}
+                                                    disabled={exportingReport !== null}
+                                                    className={`col-span-2 text-xs font-bold flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl shadow-sm transition-all ${
+                                                        exportSuccess === 'all_appendix'
+                                                            ? 'text-emerald-600 border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
+                                                            : 'text-white bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-500/10 hover:shadow-md'
+                                                    } disabled:opacity-60`}
+                                                >
+                                                    {exportingReport === 'all_appendix' ? (
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    ) : exportSuccess === 'all_appendix' ? (
+                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    ) : (
+                                                        <FileSpreadsheet className="w-3.5 h-3.5" />
+                                                    )}
+                                                    {exportingReport === 'all_appendix' ? 'Đang tạo file gộp...' : exportSuccess === 'all_appendix' ? 'Đã tải file gộp' : 'Tải cả hai phụ lục (2 Sheet)'}
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex justify-between items-center w-full">
+                                            <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
+                                                {period}
+                                            </span>
+                                            <button
+                                                onClick={() => handleExportExcel(type as ReportType)}
+                                                disabled={isExporting}
+                                                className={`text-sm font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${isSuccess
+                                                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
+                                                    : 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 hover:shadow-sm'
+                                                } disabled:opacity-60`}
+                                            >
+                                                {isExporting ? (
+                                                    <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
+                                                ) : isSuccess ? (
+                                                    <><CheckCircle2 className="w-4 h-4" /> Đã tải</>
+                                                ) : (
+                                                    <><Download className="w-4 h-4" /> Xuất Excel</>
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );

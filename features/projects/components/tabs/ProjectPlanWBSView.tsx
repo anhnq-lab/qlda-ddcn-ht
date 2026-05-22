@@ -276,8 +276,8 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                             const isParentDone = parentStatus === TaskStatus.Done;
                                             const isParentActive = parentStatus === TaskStatus.InProgress || parentStatus === TaskStatus.Review;
                                             const completedCount = linkedTasks.filter(t => t.Status === TaskStatus.Done).length;
-                                            const taskWithRole = linkedTasks.find(t => t.Metadata?.assignee_role || (t as any).metadata?.assignee_role);
-                                            const displayRole = item.assigneeRole || taskWithRole?.Metadata?.assignee_role || (taskWithRole as any).metadata?.assignee_role;
+                                            const taskWithRole = linkedTasks.find(t => t.Metadata?.assignee_role || (t as any)?.metadata?.assignee_role);
+                                            const displayRole = item.assigneeRole || taskWithRole?.Metadata?.assignee_role || (taskWithRole as any)?.metadata?.assignee_role;
 
                                             const stepBorderColor = isParentDone
                                                 ? 'border-l-emerald-500'
