@@ -11,13 +11,13 @@ import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { PROJECTS_QUERY_KEY } from './usePaginatedProjects';
+import { LEGACY_PROJECTS_QUERY_KEY } from './useProjects';
 
 export function useProjectsRealtime() {
     const queryClient = useQueryClient();
     const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
     useEffect(() => {
-        // Create a unique channel for this subscription
         const channel = supabase
             .channel('projects-realtime')
             .on(
@@ -28,8 +28,11 @@ export function useProjectsRealtime() {
                     table: 'projects',
                 },
                 (_payload) => {
-                    // Invalidate all paginated project queries to trigger refetch
+                    // Invalidate both query namespaces so paginated list
+                    // views AND the legacy fetch-all consumers (widgets,
+                    // dropdowns, NotificationCenter, GlobalSearch) refresh.
                     queryClient.invalidateQueries({ queryKey: [PROJECTS_QUERY_KEY] });
+                    queryClient.invalidateQueries({ queryKey: [LEGACY_PROJECTS_QUERY_KEY] });
                 }
             )
             .subscribe();
