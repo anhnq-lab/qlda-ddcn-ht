@@ -2,16 +2,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, Employee, ProjectGroup, Project } from '@/types';
-import { DEPARTMENT_CODES } from '@/types/plan.types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
     FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink, ListPlus, Paperclip, Upload, X, Trash2
 } from 'lucide-react';
-
-const isDepartmentCode = (id: string | null | undefined): boolean => {
-    if (!id) return false;
-    return (DEPARTMENT_CODES as readonly string[]).includes(id.toUpperCase());
-};
+import { isDepartmentCode } from '@/services/task/helpers';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
 import { PhaseProgressCard } from '../PhaseProgressCard';
