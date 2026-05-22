@@ -1,5 +1,4 @@
 // Export all services
-export { api } from './api';
 export { ServiceError, toServiceError, type PaginatedResponse, type ServiceQueryParams } from './ServiceError';
 export { ProjectService } from './ProjectService';
 export { ContractService } from './ContractService';

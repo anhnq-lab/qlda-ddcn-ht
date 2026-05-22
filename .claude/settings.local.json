@@ -135,7 +135,10 @@
       "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#\" styles/*.css)",
       "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#|theme-light \\\\.bg\" styles/theme-overrides.css)",
       "Bash(node --check scripts/rls-audit.mjs)",
-      "Bash(echo \"build exitcode=$?\")"
+      "Bash(echo \"build exitcode=$?\")",
+      "Bash(echo \"tsc exitcode=$?\")",
+      "Bash(echo \"tsc=$?\")",
+      "Bash(echo \"build=$?\")"
     ]
   }
 }
