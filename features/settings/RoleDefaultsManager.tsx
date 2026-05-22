@@ -330,7 +330,7 @@ const RoleDefaultsManager: React.FC = () => {
                 {/* ─── Permission Matrix ─── */}
                 <div className="overflow-auto relative">
                     <table className="w-full text-sm">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                             <tr className="text-slate-500 dark:text-slate-400">
                                 <th className="text-left px-6 py-3 w-56 border-b border-slate-200 dark:border-slate-700">
                                     Phân hệ
@@ -372,7 +372,7 @@ const RoleDefaultsManager: React.FC = () => {
                                                         onClick={() => handleToggle(resource, action)}
                                                         className={`w-7 h-7 mx-auto rounded-md border-2 flex items-center justify-center transition-all ${hasAction
                                                             ? 'bg-blue-500 border-blue-500 text-white shadow-sm'
-                                                            : 'border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-primary-300 dark:hover:border-primary-500 text-transparent hover:text-primary-300'
+                                                            : 'border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 hover:border-primary-300 dark:hover:border-primary-500 text-transparent hover:text-primary-300'
                                                             }`}
                                                     >
                                                         {hasAction ? <Check className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}

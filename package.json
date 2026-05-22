@@ -17,7 +17,12 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "audit:rls": "node scripts/rls-audit.mjs"
+    "audit:rls": "node scripts/rls-audit.mjs",
+    "lint:migrations": "node scripts/lint-migrations.mjs",
+    "check:bundle": "node scripts/check-bundle-size.mjs",
+    "analyze": "ANALYZE=1 vite build",
+    "gen:rbac": "node scripts/gen-rbac-matrix.mjs",
+    "gen:rbac:check": "node scripts/gen-rbac-matrix.mjs --check"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -101,6 +106,7 @@
     "postcss": "^8.5.8",
     "pptxgenjs": "^4.0.1",
     "prettier": "^3.8.1",
+    "rollup-plugin-visualizer": "^7.0.1",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

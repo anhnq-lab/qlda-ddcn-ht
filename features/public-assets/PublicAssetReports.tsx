@@ -253,7 +253,7 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
                     {items.map((a) => {
                       stt++;
                       return (
-                        <tr key={a.id} className="border-b border-slate-100 dark:border-slate-700/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                        <tr key={a.id} className="border-b border-slate-100 dark:border-slate-700/60 hover:bg-slate-50/50 dark:hover:bg-slate-800">
                           <td className="p-2.5 border-r dark:border-slate-700 text-center text-slate-500">{stt}</td>
                           <td className="p-2.5 border-r dark:border-slate-700 font-mono font-medium text-primary-600 dark:text-primary-400">{a.asset_code}</td>
                           <td className="p-2.5 border-r dark:border-slate-700 font-medium">{a.asset_name}</td>

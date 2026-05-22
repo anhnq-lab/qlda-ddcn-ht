@@ -104,7 +104,18 @@ Mỗi khi chỉnh sửa liên quan đến giao diện frontend (bao gồm: sửa
 ### 6.1 Primary Keys
 - **Bảng mới** PHẢI dùng `UUID` với `DEFAULT gen_random_uuid()` làm PK.
 - **KHÔNG** đổi PK của bảng hiện có (có thể gây cascade issues).
-- Ngoại lệ: bảng lookup nhỏ có thể dùng `TEXT` PK nếu giá trị có ý nghĩa business (vd: `employee_id`).
+- Ngoại lệ: bảng lookup nhỏ có thể dùng `TEXT` PK nếu giá trị có ý nghĩa business (vd: `employee_id`, `departments.code`).
+
+#### Bảng legacy còn dùng `TEXT` PK — KHÔNG đổi
+Các bảng cốt lõi sau được tạo từ `init_schema.sql` với `TEXT PK` (thường `gen_random_uuid()::text`). Chúng có nhiều FK cascade phụ thuộc; chi phí refactor cao hơn lợi ích. Giữ nguyên TEXT PK, **không migrate sang UUID**:
+
+```
+employees           projects            bidding_packages    contracts
+construction_works  payments            capital_plans       disbursements
+documents           folders              variation_orders
+```
+
+Bảng mới (từ migration ≥ 2026-03-22) đã dùng `UUID DEFAULT gen_random_uuid()` đúng chuẩn. Khi viết code đọc FK của 2 nhóm trên, dùng `string` trong TS — `lib/database.types.ts` đã chuẩn hóa.
 
 ### 6.2 Date & Time Columns
 - Dùng `DATE` cho ngày thuần (không có thời gian).

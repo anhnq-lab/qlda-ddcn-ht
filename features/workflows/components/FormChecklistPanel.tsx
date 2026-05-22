@@ -201,7 +201,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                     className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all border ${
                                         isChecked
                                             ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/40'
-                                            : 'bg-gray-50 dark:bg-slate-700/40 border-gray-200 dark:border-slate-600/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 active:scale-[0.99]'
+                                            : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 active:scale-[0.99]'
                                     }`}
                                 >
                                     <span className="mt-0.5 shrink-0 text-[10px] font-black text-gray-400 dark:text-slate-500 w-5 text-right">
@@ -250,7 +250,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                         <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">
                             Cấu trúc bảng biểu
                         </p>
-                        <div className="bg-gray-50 dark:bg-slate-700/40 rounded-xl border border-gray-200 dark:border-slate-600 overflow-hidden">
+                        <div className="bg-gray-50 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600 overflow-hidden">
                             <table className="w-full text-xs">
                                 <thead>
                                     <tr className="bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
@@ -260,7 +260,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                 </thead>
                                 <tbody>
                                     {form.items.map((item, i) => (
-                                        <tr key={item.id} className={`border-b border-gray-100 dark:border-slate-700 ${i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-slate-700/20'}`}>
+                                        <tr key={item.id} className={`border-b border-gray-100 dark:border-slate-700 ${i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-slate-700'}`}>
                                             <td className="px-3 py-2.5 text-gray-400 dark:text-slate-500 font-bold">{item.id}</td>
                                             <td className="px-3 py-2.5 text-gray-700 dark:text-slate-300">{item.content}</td>
                                         </tr>
@@ -403,7 +403,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                 </p>
                                 <div className="space-y-2">
                                     {form.items.map(item => (
-                                        <div key={item.id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-700/40 rounded-xl border border-gray-200 dark:border-slate-600">
+                                        <div key={item.id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600">
                                             <span className="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-[9px] font-black text-primary-600 dark:text-primary-400 mt-0.5">
                                                 {item.id}
                                             </span>

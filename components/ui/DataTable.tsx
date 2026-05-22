@@ -300,7 +300,7 @@ function DataTable<T extends Record<string, any>>({
                     ${onRowClick ? 'cursor-pointer' : ''}
                     ${isSelected
                         ? 'bg-primary-50 dark:bg-primary-900/20'
-                        : 'hover:bg-slate-50/80 dark:hover:bg-slate-700/50'
+                        : 'hover:bg-slate-50/80 dark:hover:bg-slate-700'
                     }
                     ${rowClassName?.(row, index) || ''}
                 `}
@@ -366,7 +366,7 @@ function DataTable<T extends Record<string, any>>({
                     <table className="w-full">
                         {/* ── HEADER ── */}
                         <thead className={stickyHeader ? 'sticky top-0 z-10 shadow-sm' : ''}>
-                            <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest">
+                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
                                 {selectable && (
                                     <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
                                         <input
@@ -448,7 +448,7 @@ function DataTable<T extends Record<string, any>>({
                                             {renderGroupHeader ? (
                                                 renderGroupHeader(groupName, groupItems, isExpanded, toggle)
                                             ) : (
-                                                <tr className="bg-slate-50 dark:bg-slate-800/50 border-y border-slate-100 dark:border-slate-700/50" onClick={toggle}>
+                                                <tr className="bg-slate-50 dark:bg-slate-800 border-y border-slate-100 dark:border-slate-700/50" onClick={toggle}>
                                                     <td colSpan={totalCols} className="px-4 py-2 cursor-pointer select-none">
                                                         <div className="flex items-center gap-2 font-medium text-sm text-slate-700 dark:text-slate-300">
                                                             <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />

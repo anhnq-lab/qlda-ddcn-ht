@@ -421,7 +421,7 @@ const AnnualPlanPage: React.FC = () => {
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl rounded-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
-                            <h3 className="font-bold text-slate-850 dark:text-slate-150 text-base">Chọn tháng lập kế hoạch</h3>
+                            <h3 className="font-bold text-slate-850 dark:text-slate-100 text-base">Chọn tháng lập kế hoạch</h3>
                             <button 
                                 onClick={() => setMonthSelectOpen(false)}
                                 className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
@@ -471,7 +471,7 @@ const AnnualPlanPage: React.FC = () => {
                                                         ? 'bg-primary-600 text-white shadow-sm ring-2 ring-primary-500/20'
                                                         : inPeriod
                                                             ? 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 dark:bg-slate-805 dark:border-slate-750 dark:text-slate-300 dark:hover:bg-slate-750'
-                                                            : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50 dark:bg-slate-900/50 dark:border-slate-850 dark:text-slate-550 dark:hover:bg-slate-850'
+                                                            : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500 dark:hover:bg-slate-800'
                                                 }`}
                                             >
                                                 T. {m}

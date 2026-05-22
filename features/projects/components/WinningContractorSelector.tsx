@@ -537,7 +537,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             placeholder="Nhập giá trúng thầu..."
                             value={winningPrice}
                             onChange={(e) => setWinningPrice(formatNumberWithDots(e.target.value))}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -550,7 +550,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                 placeholder="Số quyết định..."
                                 value={decisionNumber}
                                 onChange={(e) => setDecisionNumber(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                             />
                         </div>
                         <div className="space-y-1">
@@ -561,7 +561,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                 type="date"
                                 value={approvalDate}
                                 onChange={(e) => setApprovalDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-250 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                             />
                         </div>
                     </div>

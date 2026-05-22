@@ -51,7 +51,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                     className={`w-full pl-10 pr-4 py-3 rounded-xl border flex items-center gap-2 transition-all duration-200 ${
                         showMemberDropdown 
                             ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-slate-800 dark:border-primary-500/50' 
-                            : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 hover:border-gray-300 dark:hover:border-slate-600'
+                            : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600'
                     }`}
                     onClick={() => setShowMemberDropdown(!showMemberDropdown)}
                 >
@@ -73,7 +73,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                         <div className="absolute z-20 mt-2 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg dark:shadow-2xl dark:shadow-black/50 max-h-[320px] overflow-y-auto flex flex-col">
                             {Object.keys(groupedEmployees).length === 0 ? (
                                 <div className="p-8 text-center flex flex-col items-center justify-center">
-                                    <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800/50 flex items-center justify-center mb-3">
+                                    <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center mb-3">
                                         <Search className="w-5 h-5 text-gray-400 dark:text-slate-500" />
                                     </div>
                                     <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Không tìm thấy nhân sự</p>

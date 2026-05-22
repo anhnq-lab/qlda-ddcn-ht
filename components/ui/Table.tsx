@@ -59,7 +59,7 @@ const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <tfoot
         ref={ref}
-        className={`bg-slate-50 dark:bg-slate-800/50 font-medium ${className || ""}`}
+        className={`bg-slate-50 dark:bg-slate-800 font-medium ${className || ""}`}
         {...props}
     />
 ))
@@ -74,7 +74,7 @@ const TableRow = React.forwardRef<
         className={
             isHeader
                 ? `bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest ${className || ""}`
-                : `group transition-all ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/50'} ${className || ""}`
+                : `group transition-all ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800'} ${className || ""}`
         }
         {...props}
     />

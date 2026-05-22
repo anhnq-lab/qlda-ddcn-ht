@@ -303,7 +303,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
             <div className="flex flex-1 min-h-0">
 
                 {/* Sidebar: Timeline */}
-                <div className="w-48 shrink-0 border-r border-gray-100 dark:border-slate-700 overflow-y-auto bg-gray-50 dark:bg-slate-800/50 py-2">
+                <div className="w-48 shrink-0 border-r border-gray-100 dark:border-slate-700 overflow-y-auto bg-gray-50 dark:bg-slate-800 py-2">
                     {steps.map((step, idx) => {
                         const record = stepRecords.find(r => r.step_index === idx);
                         const isActive = idx === currentIdx;
@@ -403,7 +403,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
 
                         {/* Sub-tasks */}
                         {currentMeta?.sub_tasks?.length > 0 && (
-                            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+                            <div className="bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ListChecks className="w-3.5 h-3.5 text-gray-500 dark:text-slate-400" />
                                     <span className="text-[10px] font-black text-gray-600 dark:text-slate-300 uppercase tracking-wider">Công việc cụ thể</span>
@@ -481,7 +481,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                 onChange={e => setNotes(e.target.value)}
                                 placeholder="Ghi chú bổ sung (tuỳ chọn)..."
                                 rows={2}
-                                className="w-full text-[12px] rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/50 px-3 py-2 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
+                                className="w-full text-[12px] rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-3 py-2 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
                             />
                         </div>
                     </div>

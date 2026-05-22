@@ -1,9 +1,12 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  // Set ANALYZE=1 (or any truthy value) to emit a treemap to dist/stats.html
+  const analyze = !!process.env.ANALYZE;
   return {
     server: {
       port: 5000,
@@ -24,7 +27,20 @@ export default defineConfig(({ mode }) => {
         'Cross-Origin-Embedder-Policy': 'require-corp',
       },
     },
-    plugins: [react()],
+    plugins: [
+      react(),
+      ...(analyze
+        ? [
+            visualizer({
+              filename: 'dist/stats.html',
+              template: 'treemap',
+              gzipSize: true,
+              brotliSize: true,
+              open: false,
+            }) as any,
+          ]
+        : []),
+    ],
     define: {
       // Gemini API key đã chuyển sang Edge Function secrets (gemini-proxy)
       // Không còn expose API key trong client bundle

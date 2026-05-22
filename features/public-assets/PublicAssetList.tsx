@@ -412,7 +412,7 @@ export const PublicAssetList: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900/20">
+    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900">
       
       {/* Page Header */}
       <PageHeader
@@ -696,7 +696,7 @@ export const PublicAssetList: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 shadow-2xl w-full max-w-xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
             
             {/* Panel Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/40">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
               <div>
                 <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
                   <History className="w-4 h-4 text-primary-500" />
@@ -748,7 +748,7 @@ export const PublicAssetList: React.FC = () => {
                       )}
 
                       {/* Cost Changes details */}
-                      <div className="mt-2 grid grid-cols-2 gap-2 p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800 text-[10px]">
+                      <div className="mt-2 grid grid-cols-2 gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800 text-[10px]">
                         <div>
                           <span className="text-slate-400 block">Biến động nguyên giá</span>
                           <span className={`font-bold ${tx.cost_change > 0 ? 'text-emerald-600' : tx.cost_change < 0 ? 'text-red-500' : 'text-slate-500'}`}>
@@ -773,7 +773,7 @@ export const PublicAssetList: React.FC = () => {
             </div>
 
             {/* Panel Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex justify-end">
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end">
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen(false)}

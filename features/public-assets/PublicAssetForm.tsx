@@ -167,7 +167,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
       <div className="bg-white dark:bg-slate-900 shadow-2xl w-full max-w-3xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/40">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
           <div>
             <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Landmark className="w-5 h-5 text-primary-500" />
@@ -429,7 +429,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                     className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   />
                   {depreciationRate > 0 && (
-                    <div className="px-3 py-2 text-sm border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 whitespace-nowrap font-semibold">
+                    <div className="px-3 py-2 text-sm border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 whitespace-nowrap font-semibold">
                       {Math.round(100 / depreciationRate)} năm
                     </div>
                   )}
@@ -489,7 +489,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                   Tổng Nguyên giá (Tự tính)
                 </label>
-                <div className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 font-bold">
+                <div className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
                   {formatCurrency(originalCost)}
                 </div>
               </div>
@@ -517,7 +517,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         </form>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex justify-end gap-3">
+        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}

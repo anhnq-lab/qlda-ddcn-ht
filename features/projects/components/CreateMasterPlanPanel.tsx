@@ -712,7 +712,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
                   <span>30 ngày</span>
                   <span>1200 ngày</span>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 p-2.5 rounded-xl text-[10px] text-gray-500 space-y-1 mt-2">
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-2.5 rounded-xl text-[10px] text-gray-500 space-y-1 mt-2">
                   <span className="font-semibold text-gray-700 dark:text-slate-300 block">Phân bổ tự động:</span>
                   Tỷ lệ ngày của các bước sẽ tự động điều chỉnh theo tổng thời gian thực hiện, đảm bảo ngày bắt đầu và kết thúc khớp nối tiếp liên tục.
                 </div>
@@ -751,7 +751,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
         <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900">
           
           {/* Header Bảng dự thảo */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/30">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
             <div>
               <h3 className="font-bold text-sm text-gray-800 dark:text-slate-200 flex items-center gap-2">
                 <CheckSquare className="w-4 h-4 text-emerald-500" />
@@ -782,7 +782,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
           {/* Nội dung bảng */}
           <div className="flex-1 overflow-x-auto overflow-y-auto p-6 min-h-0">
             {steps.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 dark:bg-slate-900/50 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl">
+              <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 dark:bg-slate-900 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl">
                 <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-4 border border-emerald-100 dark:border-emerald-900/30">
                   <Zap className="w-8 h-8" />
                 </div>
@@ -794,7 +794,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
             ) : (
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/30 dark:bg-slate-800/10">
+                  <tr className="border-b border-gray-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/30 dark:bg-slate-800">
                     <th className="py-3 px-3 w-12 text-center">TT</th>
                     <th className="py-3 px-3 w-36">Giai đoạn</th>
                     <th className="py-3 px-3 min-w-[200px]">Nội dung thực hiện</th>
@@ -812,7 +812,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
                     return (
                       <tr 
                         key={step.id} 
-                        className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors"
+                        className="group hover:bg-slate-50/70 dark:hover:bg-slate-800 transition-colors"
                       >
                         {/* Thứ tự */}
                         <td className="py-3.5 px-3 text-center font-medium text-slate-500 dark:text-slate-400">
@@ -957,7 +957,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-850 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer"
+            className="px-4 py-2 text-xs font-bold rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer"
           >
             Hủy bỏ
           </button>

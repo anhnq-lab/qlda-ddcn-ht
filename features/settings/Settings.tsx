@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
                                     rounded-lg transition-all duration-200
                                     ${isActive
                                         ? 'text-primary-700 dark:text-white bg-white dark:bg-primary-600 shadow-sm ring-1 ring-black/5 dark:ring-primary-500/50'
-                                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
+                                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700'
                                     }
                                 `}
                             >

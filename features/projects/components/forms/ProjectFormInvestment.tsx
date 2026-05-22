@@ -148,7 +148,7 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                                 { key: 'other', label: 'Chi phí khác' },
                                 { key: 'contingency', label: 'Chi phí dự phòng' },
                             ].map((item) => (
-                                <tr key={item.key} className="hover:bg-gray-50/50 dark:hover:bg-slate-700/30 transition-colors">
+                                <tr key={item.key} className="hover:bg-gray-50/50 dark:hover:bg-slate-700 transition-colors">
                                     <td className="px-4 py-3 font-medium text-gray-700 dark:text-slate-300">
                                         {item.label}
                                     </td>

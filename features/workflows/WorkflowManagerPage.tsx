@@ -503,7 +503,7 @@ const WorkflowManagerPage: React.FC = () => {
                     {!error && !isLoading && filteredWorkflows.length > 0 && viewMode === 'list' && (
                         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left">
-                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                     <tr className="text-slate-500 dark:text-slate-400">
                                         <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Mã QT</th>
                                         <th scope="col" className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Tên Quy Trình</th>

@@ -231,7 +231,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between
                   ${activeInventory?.id === inv.id 
                     ? 'border-primary-500 bg-primary-50/20 dark:bg-primary-950/20' 
-                    : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40'}
+                    : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'}
                 `}
               >
                 <div>
@@ -321,7 +321,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                   {details.map((d) => (
-                    <tr key={d.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                    <tr key={d.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
                       <td className="p-3">
                         <div className="font-bold text-slate-800 dark:text-slate-200">
                           {d.asset?.asset_name || 'Tài sản đã xóa'}
@@ -415,7 +415,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
             )}
           </div>
         ) : (
-          <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+          <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
             <ClipboardList className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
             <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Chưa chọn đợt kiểm kê</h4>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-sm">

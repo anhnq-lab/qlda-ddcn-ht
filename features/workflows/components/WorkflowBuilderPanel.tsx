@@ -539,7 +539,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                             </div>
                             <div className="overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm custom-scrollbar">
                                 <table className="w-full text-left text-[13px] border-collapse table-fixed">
-                                    <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50">
+                                    <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50">
                                         <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                             <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 text-center w-10 align-middle">TT</th>
                                             {isInternalWorkflow ? (

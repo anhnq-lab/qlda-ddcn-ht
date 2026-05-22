@@ -54,7 +54,7 @@ const CONTRACTOR_TYPE_COLORS: Record<string, string> = {
     Survey: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
     Appraisal: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
     Supplier: 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300',
-    Other: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
+    Other: 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300',
 };
 
 type TabKey = 'overview' | 'contracts' | 'bidding';

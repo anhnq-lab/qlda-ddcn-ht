@@ -640,7 +640,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 </div>
                                                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                                     {consortiumMembers.map((m: any, idx: number) => (
-                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800/40 border-gray-150 dark:border-slate-700/60'}`}>
+                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800 border-gray-150 dark:border-slate-700/60'}`}>
                                                             <div className="flex items-start gap-2.5">
                                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'}`}>
                                                                     {m.role === 'lead' ? <Crown className="w-4 h-4 text-amber-500" /> : <Building2 className="w-4 h-4" />}
@@ -675,7 +675,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                         <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{FIELD_LABELS[winningContractor.ContractorType] || winningContractor.ContractorType}</p>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-1.5 text-sm pl-1 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-100 dark:border-slate-700/60">
+                                                <div className="space-y-1.5 text-sm pl-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700/60">
                                                     <InfoRow label="Mã số thuế" value={<span className="font-mono">{winningContractor.TaxCode || winningContractor.ContractorID}</span>} />
                                                     {winningContractor.Representative && <InfoRow label="Người đại diện" value={winningContractor.Representative} />}
                                                     {winningContractor.ContactInfo && (
@@ -1007,7 +1007,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             <tbody>
                                                 {variationOrders.map((vo, idx) => (
                                                     <React.Fragment key={vo.VOID || idx}>
-                                                        <tr className="border-b border-gray-50 dark:border-slate-700/50 group hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                                                        <tr className="border-b border-gray-50 dark:border-slate-700/50 group hover:bg-gray-50 dark:hover:bg-slate-800">
                                                             <td className="py-2 pr-3 font-mono text-xs text-gray-700 dark:text-slate-300">{vo.Number || `PL-${idx + 1}`}</td>
                                                             <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs">{vo.SignDate ? formatDate(vo.SignDate) : '-'}</td>
                                                             <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs max-w-[180px] truncate" title={vo.Content}>{vo.Content || '-'}</td>

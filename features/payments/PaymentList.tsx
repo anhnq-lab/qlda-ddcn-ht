@@ -297,7 +297,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                         <table className="w-full text-left text-sm">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                 <tr className="text-slate-500 dark:text-slate-400">
                                     <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
                                     <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Mã TT</th>
@@ -320,7 +320,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50"
+                                            className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700"
                                             onClick={() => handleNavigateToSource(payment.ContractID)}
                                         >
                                             {/* STT */}

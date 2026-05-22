@@ -266,7 +266,7 @@ const ContractorAccountManager: React.FC = () => {
                 </div>
                 <div className="bg-bg-surface border border-border rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all duration-200">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600/50">
+                        <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600/50">
                             <UserPlus className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                         </div>
                         <div>
@@ -338,7 +338,7 @@ const ContractorAccountManager: React.FC = () => {
                                 className="bg-bg-surface rounded-2xl border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] overflow-hidden transition-all duration-200">
                                 {/* Org Header */}
                                 <div
-                                    className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors select-none"
+                                    className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors select-none"
                                     onClick={() => toggleExpand(group.contractor_id)}
                                 >
                                     {isExpanded

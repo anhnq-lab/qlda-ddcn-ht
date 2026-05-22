@@ -226,7 +226,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                 const EntityIcon = entityIcons[log.entityType] || FileText;
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/50 border-b border-gray-100 dark:border-slate-700 transition-colors">
+                                    <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700 border-b border-gray-100 dark:border-slate-700 transition-colors">
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />

@@ -29,16 +29,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Migration linter
+        run: npm run lint:migrations
+
+      - name: Dark mode opacity guard
+        run: node scripts/fix-dark-opacity.mjs --check
+
+      - name: Lint (non-blocking; remove `|| true` once warnings = 0)
         run: npm run lint 2>&1 || true
 
-      - name: Type check
-        run: npx tsc --noEmit || true
+      - name: Type check (blocking)
+        run: npx tsc --noEmit
 
-      - name: Unit tests
+      - name: Unit tests (blocking)
         run: npm run test:run
 
-      - name: Build
+      - name: Build (blocking)
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -46,6 +52,9 @@ jobs:
           # Gemini API key is server-side only (Supabase Edge Function `gemini-proxy`),
           # never embedded in the client bundle.
           VITE_DEV_BYPASS_AUTH: "false"
+
+      - name: Bundle budget guard (blocking)
+        run: npm run check:bundle
 
       - name: Upload build artifacts
         if: github.ref == 'refs/heads/main'

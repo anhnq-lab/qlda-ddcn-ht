@@ -147,7 +147,7 @@ export const UserProfilePanel: React.FC = () => {
                                     type="text"
                                     value={currentUser?.Username || currentUser?.Email || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed font-mono text-sm"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed font-mono text-sm"
                                 />
                             </div>
                             <div>
@@ -156,7 +156,7 @@ export const UserProfilePanel: React.FC = () => {
                                     type="text"
                                     value={currentUser?.FullName || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
                                 />
                             </div>
                             <div>
@@ -165,7 +165,7 @@ export const UserProfilePanel: React.FC = () => {
                                     type="text"
                                     value={currentUser?.Department || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -268,7 +268,7 @@ export const UserProfilePanel: React.FC = () => {
                 )}
             </div>
 
-            <div className="p-4 border-t border-border bg-slate-50 dark:bg-slate-800/50 shrink-0 flex justify-end gap-3">
+            <div className="p-4 border-t border-border bg-slate-50 dark:bg-slate-800 shrink-0 flex justify-end gap-3">
                 <button
                     type="button"
                     onClick={() => closePanel()}

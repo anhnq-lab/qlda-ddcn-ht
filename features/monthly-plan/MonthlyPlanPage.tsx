@@ -315,7 +315,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 <button
                                     onClick={handleSeedFromAnnual}
                                     disabled={seedLoading || loading}
-                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
                                     title="Sinh từ KH khung"
                                 >
                                     <RefreshCw className={`w-4 h-4 ${seedLoading ? 'animate-spin' : ''}`} />
@@ -335,7 +335,7 @@ const MonthlyPlanPage: React.FC = () => {
                 </div>
 
                 {/* Dòng 2: Bộ lọc (Tháng, Năm, Phòng ban) */}
-                <div className="px-6 py-3 bg-slate-50/50 dark:bg-slate-800/50 flex flex-wrap lg:flex-nowrap items-center gap-4">
+                <div className="px-6 py-3 bg-slate-50/50 dark:bg-slate-800 flex flex-wrap lg:flex-nowrap items-center gap-4">
                     {/* Time Filters */}
                     <div className="flex items-center gap-2 pr-4 border-r border-slate-200 dark:border-slate-700 shrink-0">
                         <select
@@ -367,7 +367,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 className={`flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${
                                     activeDept === code 
                                         ? 'bg-slate-800 border-slate-800 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-800 shadow-sm' 
-                                        : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                                        : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                                 }`}
                             >
                                 {code}
@@ -405,7 +405,7 @@ const MonthlyPlanPage: React.FC = () => {
                     </div>
                     
                     {stats.total > 0 && (
-                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800 w-full md:w-auto">
+                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800 w-full md:w-auto">
                             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tiến độ</span>
                             <div className="flex-1 md:w-48 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
                                 <div
@@ -445,7 +445,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                                     {summaries.map(s => (
-                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                             <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-200">{s.department_name}</td>
                                             <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{s.total_tasks}</td>
                                             <td className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50/30 dark:bg-emerald-900/10">{s.completed}</td>
@@ -506,7 +506,7 @@ const MonthlyPlanPage: React.FC = () => {
                                             <td colSpan={6} className="px-2 py-2">
                                                 <button
                                                     onClick={toggle}
-                                                    className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                                                    className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />

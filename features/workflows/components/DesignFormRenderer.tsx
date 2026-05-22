@@ -141,7 +141,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
             {/* Checklist */}
             {schema.checklist && schema.checklist.length > 0 && (
                 <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                    <div className="px-5 py-2 bg-slate-50 dark:bg-slate-900/50 grid grid-cols-[1fr_auto_auto] gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <div className="px-5 py-2 bg-slate-50 dark:bg-slate-900 grid grid-cols-[1fr_auto_auto] gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                         <span>Nội dung kiểm tra</span>
                         <span className="w-14 text-center">Đạt</span>
                         <span className="w-20 text-center">Không đạt</span>
@@ -271,7 +271,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                 <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="grid grid-cols-2 gap-6">
                         {schema.signature_blocks.map((sig, i) => (
-                            <div key={i} className="text-center border border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-4 bg-slate-50/50 dark:bg-slate-900/30">
+                            <div key={i} className="text-center border border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-4 bg-slate-50/50 dark:bg-slate-900">
                                 <p className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-8">{SIG_LABELS[sig] ?? sig}</p>
                                 <p className="text-xs text-slate-400">(Ký, ghi rõ họ tên)</p>
                             </div>

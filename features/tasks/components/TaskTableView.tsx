@@ -62,7 +62,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
             <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
                 <table className="w-full">
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                         <tr className="text-slate-500 dark:text-slate-400">
                             <th className="px-3 py-3 w-10 border-b border-slate-200 dark:border-slate-700 text-center">
                                 <input
@@ -123,7 +123,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                     <tr
                                         key={task.TaskID}
                                         onClick={() => openTaskPanel(task)}
-                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50 border-b border-slate-100 dark:border-slate-800 last:border-0 ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-800 last:border-0 ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''} ${selectedIds.has(task.TaskID) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
                                     >
                                         {/* Checkbox */}
                                         <td className="px-3 py-3.5 text-center" onClick={e => e.stopPropagation()}>

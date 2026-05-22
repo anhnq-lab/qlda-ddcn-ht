@@ -73,7 +73,7 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
     return (
         <div className="flex flex-col h-full bg-white dark:bg-slate-900">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center sticky top-0 z-10">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-between items-center sticky top-0 z-10">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
                         {editMode === 'create' ? 'Thêm nhân sự mới' : 'Cập nhật thông tin'}

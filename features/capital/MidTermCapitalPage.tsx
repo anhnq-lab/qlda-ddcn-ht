@@ -514,7 +514,7 @@ const MidTermTab: React.FC<{plans: any[]; annualPlans: any[]; searchTerm: string
                                                 <>
                                                     <h5 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Phân bổ theo năm ({linked.length} KH)</h5>
                                                     <table className="w-full text-xs mb-3">
-                                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                                             <tr className="text-slate-500 dark:text-slate-400"><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">Năm</th><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">QĐ</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Vốn giao</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Đã GN</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Tỷ lệ</th></tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -570,7 +570,7 @@ const AnnualTab: React.FC<{plans: any[]; yearFilter: number; searchTerm: string;
         <div className="section-card">
             <div className="overflow-x-auto">
                 <table className="w-full text-xs" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                         <tr className="text-slate-500 dark:text-slate-400">
                             <th className="px-4 py-3 text-left w-8 border-b border-slate-200 dark:border-slate-700">STT</th>
                             <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">Dự án</th>
@@ -667,7 +667,7 @@ const DisbPlanTab: React.FC<{disbPlans: any[]; annualPlans: any[]; yearFilter: n
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                         <tr className="text-slate-500 dark:text-slate-400">
                             <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
                             <th className="px-3 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700">KHV</th>
@@ -752,7 +752,7 @@ const DisbProgressTab: React.FC<{disbPlans: any[]; disbursements: any[]; annualP
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                         <tr className="text-slate-500 dark:text-slate-400">
                             <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
                             <th className="px-3 py-2 text-center min-w-[50px] border-b border-slate-200 dark:border-slate-700">Loại</th>

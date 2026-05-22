@@ -145,7 +145,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/40 overflow-hidden animate-in fade-in duration-300">
+        <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900 overflow-hidden animate-in fade-in duration-300">
             {/* Header Card */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0 overflow-hidden">
                 {/* Top accent */}
@@ -164,7 +164,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                         {item.group_name}
                                     </span>
                                 )}
-                                <span className="text-[10px] font-mono text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2 py-1 rounded-md">
+                                <span className="text-[10px] font-mono text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md">
                                     Tháng {month}/{year}
                                 </span>
                             </div>
@@ -214,21 +214,21 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         {/* Description / Deliverables */}
                         {(item.deliverable || item.notes) && (
                             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-450 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                                     <ClipboardList className="w-4 h-4 text-slate-400" /> Nội dung chi tiết
                                 </h3>
                                 
                                 {item.deliverable && (
                                     <div>
                                         <p className="text-[10px] uppercase font-bold text-slate-450 dark:text-slate-500 mb-1 tracking-wider">Kết quả đầu ra cần đạt</p>
-                                        <div className="prose prose-sm max-w-none text-slate-705 dark:text-slate-350 leading-relaxed font-medium">
+                                        <div className="prose prose-sm max-w-none text-slate-705 dark:text-slate-300 leading-relaxed font-medium">
                                             <p className="whitespace-pre-wrap">{item.deliverable}</p>
                                         </div>
                                     </div>
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate-850/50 rounded-xl p-3 border border-slate-100 dark:border-slate-800">
+                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-800">
                                         <p className="text-[10px] uppercase font-bold text-slate-450 dark:text-slate-500 mb-1 tracking-wider">Ghi chú thêm</p>
                                         <p className="text-sm text-slate-650 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">{item.notes}</p>
                                     </div>
@@ -257,8 +257,8 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                     Đang tải công việc...
                                 </div>
                             ) : tasks.length === 0 ? (
-                                <div className="text-center py-8 px-4 border border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-850/50 space-y-2">
-                                    <ClipboardList className="w-8 h-8 text-slate-350 dark:text-slate-650 mx-auto" />
+                                <div className="text-center py-8 px-4 border border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-800 space-y-2">
+                                    <ClipboardList className="w-8 h-8 text-slate-350 dark:text-slate-600 mx-auto" />
                                     <p className="text-xs text-slate-550 dark:text-slate-455 font-medium">Chưa có công việc thực tế nào được liên kết.</p>
                                     <button
                                         onClick={() => setIsTaskModalOpen(true)}
@@ -270,7 +270,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                             ) : (
                                 <div className="space-y-4">
                                     {/* Summary Progress Bar */}
-                                    <div className="bg-slate-50 dark:bg-slate-850/50 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-800">
+                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-800">
                                         <div className="flex justify-between items-center text-xs">
                                             <span className="font-bold text-slate-550 dark:text-slate-400 flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
                                                 <BarChart3 className="w-3.5 h-3.5 text-slate-400" /> Tiến độ thực tế trung bình
@@ -309,7 +309,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleEditTask(task.id)}
-                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-850/30 dark:hover:bg-slate-800 rounded-xl border border-slate-100/50 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
+                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 rounded-xl border border-slate-100/50 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
                                                 >
                                                     <div className="flex items-center gap-3 min-w-0 md:w-1/2">
                                                         <div className={`p-1.5 rounded-lg shrink-0 ${statusColor}`}>
@@ -394,7 +394,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 {item.deadline_note && (
                                     <div>
                                         <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 block tracking-wider">Thời hạn báo cáo</p>
-                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-250 bg-slate-50 dark:bg-slate-850/50 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-800 inline-block">{item.deadline_note}</p>
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-800 inline-block">{item.deadline_note}</p>
                                     </div>
                                 )}
                                 {item.due_date && (
@@ -435,7 +435,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                         <div>
                                             <div className="text-sm font-bold text-slate-800 dark:text-slate-200 space-y-1.5">
                                                 {item.collaborating_dept_codes?.map(code => (
-                                                    <div key={code} className="text-xs font-bold text-slate-700 dark:text-slate-350">
+                                                    <div key={code} className="text-xs font-bold text-slate-700 dark:text-slate-300">
                                                         • {code} - {DEPARTMENT_NAMES[code as DepartmentCode] ?? code}
                                                     </div>
                                                 ))}

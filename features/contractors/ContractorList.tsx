@@ -145,7 +145,7 @@ const ContractorList: React.FC = () => {
         Survey: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
         Appraisal: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
         Supplier: 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300',
-        Other: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
+        Other: 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300',
     };
 
     return (
@@ -228,7 +228,7 @@ const ContractorList: React.FC = () => {
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                             <tr className="text-slate-500 dark:text-slate-400">
                                 <th className="px-3 py-3 text-center text-[10px] font-black uppercase tracking-widest w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
                                 <SortHeader label="Mã số thuế" field="TaxCode" />
@@ -255,7 +255,7 @@ const ContractorList: React.FC = () => {
                                 paginatedContractors.map((contractor, index) => (
                                     <tr
                                         key={contractor.ContractorID}
-                                        className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50"
+                                        className="group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700"
                                         onClick={() => openPanel({
                                             title: contractor.FullName,
                                             icon: <Building2 size={14} />,

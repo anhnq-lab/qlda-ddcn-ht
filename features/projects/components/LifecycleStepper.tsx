@@ -294,7 +294,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
 
             {/* History Panel */}
             {showHistoryPanel && stageHistory.length > 0 && (
-                <div className="animate-in slide-in-from-top-2 duration-200 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 shadow-sm">
+                <div className="animate-in slide-in-from-top-2 duration-200 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 shadow-sm">
                     <h4 className="text-[10px] font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <History className="w-3 h-3" />
                         Lịch sử chuyển giai đoạn

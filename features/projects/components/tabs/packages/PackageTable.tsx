@@ -131,7 +131,7 @@ export const PackageTable: React.FC<PackageTableProps> = ({
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                <thead className="sticky top-0 z-20 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                     <tr className="text-slate-500 dark:text-slate-400">
                         <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-1 py-3 text-center w-8" />
                         <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-10">
@@ -151,7 +151,7 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                         {visibleColumns.duration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
                         {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
                         {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
-                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800/50 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
+                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
                     </tr>
                     <tr className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400">
                         <th className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>

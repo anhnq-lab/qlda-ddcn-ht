@@ -138,7 +138,7 @@ export default function CalendarView() {
   const hasActiveFilters = filterType !== '' || filterRoom !== '';
 
   return (
-    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900/20">
+    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900">
       <PageHeader 
         title="Lịch cơ quan" 
         description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"

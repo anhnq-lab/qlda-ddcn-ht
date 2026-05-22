@@ -450,12 +450,12 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                          {[
                                                              { value: PackageStatus.Selection, label: 'Lựa chọn nhà thầu', color: 'text-blue-500 hover:bg-blue-500/5 dark:hover:bg-blue-500/10' },
                                                              { value: PackageStatus.Execution, label: 'Đang thực hiện', color: 'text-emerald-500 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10' },
-                                                             { value: PackageStatus.Completed, label: 'Kết thúc', color: 'text-gray-500 dark:text-slate-400 hover:bg-slate-500/5 dark:hover:bg-slate-500/10' }
+                                                             { value: PackageStatus.Completed, label: 'Kết thúc', color: 'text-gray-500 dark:text-slate-400 hover:bg-slate-500/5 dark:hover:bg-slate-500' }
                                                          ].map((item) => (
                                                              <button
                                                                  key={item.value}
                                                                  onClick={(e) => handleQuickStatusChange(e, pkg, item.value)}
-                                                                 className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${item.color} ${pkg.Status === item.value ? 'bg-slate-50/50 dark:bg-slate-700/30' : ''}`}
+                                                                 className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${item.color} ${pkg.Status === item.value ? 'bg-slate-50/50 dark:bg-slate-700' : ''}`}
                                                              >
                                                                  <span>{item.label}</span>
                                                                  {pkg.Status === item.value && <Check className="w-3.5 h-3.5" />}

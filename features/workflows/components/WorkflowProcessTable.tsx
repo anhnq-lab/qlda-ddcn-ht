@@ -415,7 +415,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             {/* ── TABLE BODY ── */}
             <div className="flex-1 overflow-auto custom-scrollbar print:overflow-visible">
                 <table className="w-full text-left text-[12px] border-collapse table-fixed min-w-[1000px]">
-                    <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-[5] shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50 print:bg-slate-200">
+                    <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-[5] shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50 print:bg-slate-200">
                         <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                             <th className="px-2 py-3 border-b border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
                             {isInternalWorkflow ? (

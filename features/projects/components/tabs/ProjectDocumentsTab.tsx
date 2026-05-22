@@ -256,7 +256,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     {/* Table */}
                     <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <table className="w-full text-left">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
                                 <tr>
                                     <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-10">STT</th>
                                     <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-1/3">Tài liệu</th>

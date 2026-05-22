@@ -171,7 +171,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
         <div className="p-6 space-y-6">
             {!file ? (
                 <div 
-                    className="bg-white dark:bg-slate-900/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => fileInputRef.current?.click()}
                 >
                     <input 
@@ -225,7 +225,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
                         <div className="space-y-4 relative">
                             {isExtracting && (
-                                <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-xl border border-dashed border-emerald-300">
+                                <div className="absolute inset-0 bg-white/50 dark:bg-slate-900 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-xl border border-dashed border-emerald-300">
                                     <div className="flex flex-col items-center gap-2 text-emerald-600 dark:text-emerald-400">
                                         <Loader2 size={24} className="animate-spin" />
                                         <span className="text-sm font-medium">Đang trích xuất dữ liệu từ văn bản...</span>

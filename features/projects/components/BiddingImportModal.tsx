@@ -298,7 +298,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                                 key={idx}
                                                 className={`border-t border-gray-200 dark:border-slate-700 ${selectedRows.has(idx)
                                                     ? 'bg-white dark:bg-slate-800'
-                                                    : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-850 opacity-50'
+                                                    : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-800 opacity-50'
                                                     } hover:bg-blue-50 dark:hover:bg-slate-750 transition-colors`}
                                             >
                                                 <td className="px-2 py-2 text-center">

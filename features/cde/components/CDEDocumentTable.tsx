@@ -107,7 +107,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                 ) : (
                     <table className="w-full text-left text-xs whitespace-nowrap">
                         <thead className="sticky top-0 z-10">
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                 {onToggleSelect && (
                                     <th className="px-3 py-3 w-10 text-center">
                                         <input
@@ -141,7 +141,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                     <tr
                                         key={doc.doc_id}
                                         onClick={() => onSelectDoc(doc)}
-                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700/50 ${isSelected ? 'bg-primary-50/70 dark:bg-primary-900/20' : ''} ${isChecked ? 'bg-primary-50/50 dark:bg-primary-900/15' : ''}`}
+                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700 ${isSelected ? 'bg-primary-50/70 dark:bg-primary-900/20' : ''} ${isChecked ? 'bg-primary-50/50 dark:bg-primary-900/15' : ''}`}
                                     >
                                         {onToggleSelect && (
                                             <td className="px-3 py-3.5">

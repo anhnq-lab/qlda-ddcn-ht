@@ -138,7 +138,16 @@
       "Bash(echo \"build exitcode=$?\")",
       "Bash(echo \"tsc exitcode=$?\")",
       "Bash(echo \"tsc=$?\")",
-      "Bash(echo \"build=$?\")"
+      "Bash(echo \"build=$?\")",
+      "Bash(cd D:/QuocAnh/2026/01.Project/qlda-ddcn-ht && ls *.txt *.log *.cjs '~$*' 2>/dev/null; echo \"---SCRATCH---\"; ls scratch/ 2>/dev/null; echo \"---BACKUP---\"; ls backup_untracked/ 2>/dev/null | head -5)",
+      "Bash(cd D:/QuocAnh/2026/01.Project/qlda-ddcn-ht && ls \"~\"* 2>/dev/null && echo \"---\" && ls *.docx 2>/dev/null | head -5 && echo \"---temp files inspection---\" && wc -c build_check*.txt build_output.txt tsc_errors.log tsc_check.txt user_prompt.txt 2>/dev/null && echo \"---ls cjs scripts in root---\" && ls *.cjs 2>/dev/null)",
+      "Bash(grep -E \"build_check|tsc_errors|tsc_check|user_prompt|^[^/]+\\\\.cjs$|^~\\\\\\\\$\")",
+      "Bash(node scripts/lint-migrations.mjs)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(node scripts/check-bundle-size.mjs)",
+      "Bash(node --check scripts/gen-rbac-matrix.mjs)",
+      "Bash(node scripts/fix-dark-opacity.mjs --check)",
+      "Bash(node scripts/fix-dark-opacity.mjs)"
     ]
   }
 }
