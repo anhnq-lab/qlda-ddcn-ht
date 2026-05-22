@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { User } from 'lucide-react';
+import { Avatar } from '../../../../components/ui';
 import { useAuth } from '../../../../context/AuthContext';
 import type { SystemRole } from '../../../../types/permission.types';
 import type { DashboardConfig } from '../../hooks/useDashboardConfig';
@@ -39,13 +40,11 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ config }) => {
 
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur shadow-sm ring-1 ring-white/30">
-                        {currentUser?.AvatarUrl ? (
-                            <img src={currentUser.AvatarUrl} alt="" className="w-full h-full object-cover rounded-2xl" />
-                        ) : (
-                            <User className="w-8 h-8 text-white" />
-                        )}
-                    </div>
+                    <Avatar
+                        name={currentUser?.FullName || 'User'}
+                        imageUrl={currentUser?.AvatarUrl}
+                        size="lg"
+                    />
                     <div>
                         <h1 className="text-2xl font-bold text-white drop-shadow-lg">Xin chào, {currentUser?.FullName || 'Khách'}!</h1>
                         <div className="flex items-center gap-2 mt-1">

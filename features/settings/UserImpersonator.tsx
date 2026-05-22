@@ -11,6 +11,7 @@ import { Users, UserCheck, X, Search, Shield, ChevronDown, Check, Building2, Clo
 import { supabase } from '../../lib/supabase';
 import { Employee, Role } from '../../types';
 import { useImpersonation } from '../../context/ImpersonationContext';
+import { Avatar } from '../../components/ui';
 import {
     ALL_RESOURCES,
     RESOURCE_LABELS,
@@ -161,16 +162,12 @@ const UserImpersonator: React.FC = () => {
                 <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-primary-900/30 dark:to-warning-900/30 border border-primary-400 rounded-lg p-5">
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-4">
-                            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${
-                                (impersonatedUser.Role as string) === 'contractor'
-                                    ? 'bg-gradient-to-br from-primary-500 to-primary-600'
-                                    : 'bg-gradient-to-br from-primary-400 to-warning-500'
-                            }`}>
-                                {(impersonatedUser.Role as string) === 'contractor'
-                                    ? <Building2 className="w-7 h-7" />
-                                    : (impersonatedUser.FullName?.charAt(0) || 'U')
-                                }
-                            </div>
+                            <Avatar
+                                name={impersonatedUser.FullName}
+                                imageUrl={impersonatedUser.AvatarUrl}
+                                size="custom"
+                                className="w-14 h-14 text-xl font-bold flex-shrink-0"
+                            />
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-500 text-white text-xs font-bold">
@@ -325,9 +322,12 @@ const UserImpersonator: React.FC = () => {
                                             onClick={() => handleSelectEmployee(emp)}
                                             className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors text-left border-b border-slate-50 dark:border-slate-800 last:border-b-0"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">
-                                                {emp.FullName?.charAt(0) || 'U'}
-                                            </div>
+                                            <Avatar
+                                                name={emp.FullName}
+                                                imageUrl={emp.AvatarUrl}
+                                                size="md"
+                                                className="flex-shrink-0"
+                                            />
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">{emp.FullName}</p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
@@ -352,9 +352,11 @@ const UserImpersonator: React.FC = () => {
                                             onClick={() => handleSelectContractor(ctr)}
                                             className="w-full flex items-center gap-3 px-4 py-3 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors text-left border-b border-slate-50 dark:border-slate-800 last:border-b-0"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white flex-shrink-0">
-                                                <Building2 size={18} />
-                                            </div>
+                                            <Avatar
+                                                name={ctr.display_name}
+                                                size="md"
+                                                className="flex-shrink-0"
+                                            />
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">{ctr.display_name}</p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">

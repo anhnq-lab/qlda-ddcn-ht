@@ -1,28 +1,28 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import ProjectService from '../../../../services/ProjectService';
 import { TaskService } from '../../../../services/TaskService';
 
 import { formatCurrency } from '../../../../utils/format';
-import { Disbursement, CapitalAllocation, CapitalPlan, Task } from '../../../../types';
+import { Disbursement, CapitalPlan } from '../../../../types';
 import { DisbursementPlanItem } from '../../../../services/CapitalService';
 import {
-    Coins, TrendingUp, Wallet, AlertTriangle,
-    Calendar, FileText, Landmark, DollarSign, FileDown,
-    ArrowDownUp, Receipt, RefreshCcw, RotateCcw,
-    Plus, Pencil, Trash2, CalendarRange, BookOpen,
-    CheckCircle2, Clock, Send, Edit3, ChevronDown, ChevronRight
+    Wallet, AlertTriangle,
+    Calendar, FileText,
+    RotateCcw,
+    Plus, Trash2, CalendarRange, BookOpen,
+    Edit3, ChevronDown, ChevronRight, Pencil
 } from 'lucide-react';
 import { CapitalPlanModal } from '../CapitalPlanModal';
 import { DisbursementPlanModal } from '../DisbursementPlanModal';
 import { DisbursementModal } from '../DisbursementModal';
 import { ImportDisbursementModal } from '../ImportDisbursementModal';
-import { StatCard } from '../../../../components/ui';
 import { ProjectCapitalKPIDashboard } from './ProjectCapitalKPIDashboard';
 import { EmptyState } from '../../../../components/ui/EmptyState';
+import { DisbursementHistorySection } from './capital/DisbursementHistorySection';
+import { MonthlyDisbursementSection } from './capital/MonthlyDisbursementSection';
 import {
     APPROVAL_BADGES, SOURCE_COLORS, SOURCE_LABELS as SOURCE_LABELS_MAP,
-    DISBURSEMENT_TYPE_LABELS, normalizeSource
+    normalizeSource
 } from '../../../../utils/capitalConstants';
 import {
     useProjectCapitalSummary,
@@ -31,16 +31,14 @@ import {
     useBulkSaveDisbursementPlans, useDeleteDisbursementPlan,
 } from '../../../../hooks/useCapital';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, Cell, PieChart, Pie, Legend,
-    ComposedChart, Line, Area
+    ResponsiveContainer, Cell, PieChart, Pie, Tooltip
 } from 'recharts';
 
 interface ProjectCapitalTabProps {
     projectID: string;
 }
 
-// Color constants — Gold Theme
+// Color constants â€” Gold Theme
 const COLORS = {
     tamUng: '#4a90e2',
     klht: '#357abd',
@@ -53,27 +51,25 @@ type CapitalSubTab = 'mid_term' | 'annual';
 
 // APPROVAL_BADGES imported from capitalConstants
 
-// SOURCE_COLORS, SOURCE_LABELS imported from capitalConstants
+// SOURCE_LABELS tá»« capitalConstants (dÃ¹ng .label)
 const SOURCE_LABELS: Record<string, string> = {
-    'NSTW': 'NS Trung ương',
-    'NSĐP': 'NS Địa phương',
+    'NSTW': 'NS Trung Æ°Æ¡ng',
+    'NSÄP': 'NS Äá»‹a phÆ°Æ¡ng',
     'ODA': 'ODA',
-    'Khác': 'Khác',
+    'KhÃ¡c': 'KhÃ¡c',
 };
-
-const TYPE_LABELS = DISBURSEMENT_TYPE_LABELS;
 
 type DisbursementFilter = 'all' | 'TamUng' | 'ThanhToanKLHT' | 'ThuHoiTamUng';
 
 export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID }) => {
-    // Single source of truth cho dữ liệu giải ngân dự án
+    // Single source of truth cho dá»¯ liá»‡u giáº£i ngÃ¢n dá»± Ã¡n
     const { data: capitalSummary, isLoading } = useProjectCapitalSummary(projectID);
     
-    // Gán dữ liệu tương thích với UI hiện tại
+    // GÃ¡n dá»¯ liá»‡u tÆ°Æ¡ng thÃ­ch vá»›i UI hiá»‡n táº¡i
     const capitalPlans = capitalSummary?.capitalPlans ?? [];
     const disbursementPlanData = capitalSummary?.disbursementPlans ?? [];
 
-    // Project tasks for "Việc trong tháng" column
+    // Project tasks for "Viá»‡c trong thÃ¡ng" column
     const { data: projectTasks = [] } = useQuery({
         queryKey: ['project-tasks', projectID],
         queryFn: () => TaskService.getProjectTasks(projectID),
@@ -85,9 +81,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [expandedMidTermPlan, setExpandedMidTermPlan] = useState<string | null>(null);
     const [annualPeriodFilter, setAnnualPeriodFilter] = useState<string>('all');
     const [disbYearFilter, setDisbYearFilter] = useState<number | 'all'>('all');
-    const [disbSourceFilter, setDisbSourceFilter] = useState<string>('all');
 
-    // ── CRUD State ──
+    // â”€â”€ CRUD State â”€â”€
     const [planModalOpen, setPlanModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState<CapitalPlan | null>(null);
     const [disbModalOpen, setDisbModalOpen] = useState(false);
@@ -97,7 +92,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const [modalPlanType, setModalPlanType] = useState<CapitalSubTab>('annual');
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
-    // ── Mutations ──
+    // â”€â”€ Mutations â”€â”€
     const createPlan = useCreateCapitalPlan();
     const updatePlan = useUpdateCapitalPlan();
     const deletePlan = useDeleteCapitalPlan();
@@ -107,7 +102,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     const bulkSaveDisbPlan = useBulkSaveDisbursementPlans();
     const deleteDisbPlan = useDeleteDisbursementPlan();
 
-    // ── Handlers: Capital Plans ──
+    // â”€â”€ Handlers: Capital Plans â”€â”€
     const handleSavePlan = (planData: Omit<CapitalPlan, 'PlanID'>) => {
         if (editingPlan) {
             updatePlan.mutate({ planId: editingPlan.PlanID, updates: planData, projectId: projectID }, {
@@ -125,7 +120,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         setPlanModalOpen(true);
     };
 
-    // ── Handlers: Disbursements ──
+    // â”€â”€ Handlers: Disbursements â”€â”€
     const handleSaveDisb = (disbData: Omit<Disbursement, 'DisbursementID'>) => {
         if (editingDisb) {
             updateDisb.mutate({ id: editingDisb.DisbursementID, updates: disbData, projectId: projectID }, {
@@ -143,7 +138,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         setDisbModalOpen(true);
     };
 
-    // ── Handlers: Monthly Disbursement Plans ──
+    // â”€â”€ Handlers: Monthly Disbursement Plans â”€â”€
     const handleSaveDisbPlans = (year: number, plans: { id?: string, month: number, plannedAmount: number, actualAmount: number, notes: string }[]) => {
         bulkSaveDisbPlan.mutate({ projectId: projectID, year, plans }, {
             onSuccess: () => {
@@ -158,7 +153,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         setDisbPlanModalOpen(true);
     };
 
-    // ── Handler: Delete ──
+    // â”€â”€ Handler: Delete â”€â”€
     const handleConfirmDelete = () => {
         if (!deleteConfirm) return;
         if (deleteConfirm.type === 'plan') {
@@ -176,7 +171,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         }
     };
 
-    // Safe destructure — hooks must always run regardless of data
+    // Safe destructure â€” hooks must always run regardless of data
     const allocations = capitalSummary?.capitalPlans ?? [];
     const disbursements = capitalSummary?.disbursements ?? [];
     const summary = capitalSummary?.summary ?? {
@@ -185,28 +180,18 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         completionPayment: 0, disbursementRate: 0, yearlyTarget: 0, yearlyDisbursed: 0,
     };
 
-    // ── Computed Data ──
+    // â”€â”€ Computed Data â”€â”€
+    // Disbursements khÃ´ng cÃ³ field Source trá»±c tiáº¿p â†’ chá»‰ filter theo Type vÃ  Year
     const filteredDisbursements = disbursements.filter(d => {
-        // 1. Filter by Type
         if (disbursementFilter !== 'all' && d.Type !== disbursementFilter) return false;
-        
-        // 2. Filter by Year
         if (disbYearFilter !== 'all') {
             const y = new Date(d.Date).getFullYear();
             if (y !== disbYearFilter) return false;
         }
-
-        // 3. Filter by Source
-        if (disbSourceFilter !== 'all') {
-            const plan = capitalPlans.find(p => p.PlanID === d.CapitalPlanID);
-            const source = plan?.Source || 'Khác';
-            if (source !== disbSourceFilter) return false;
-        }
-
         return true;
     });
 
-    // Monthly chart data — stacked by type
+    // Monthly chart data â€” stacked by type
     const monthlyChartData = useMemo(() => {
         const map = new Map<string, { month: string; tamUng: number; klht: number; thuHoi: number }>();
         disbursements.forEach(d => {
@@ -223,12 +208,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         return Array.from(map.values());
     }, [disbursements]);
 
-    // Donut chart — allocations by source
+    // Donut chart â€” allocations by source
     const sourceChartData = useMemo(() => {
         const map = new Map<string, number>();
         allocations.forEach(a => {
-            // Chuẩn hóa nguồn vốn theo Luật ĐTC 58
-            let sourceKey = normalizeSource(a.Source || 'NSĐP');
+            // Chuáº©n hÃ³a nguá»“n vá»‘n theo Luáº­t ÄTC 58
+            let sourceKey = normalizeSource(a.Source || 'NSÄP');
             map.set(sourceKey, (map.get(sourceKey) || 0) + a.Amount);
         });
         return Array.from(map.entries()).map(([source, value]) => ({
@@ -238,7 +223,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         }));
     }, [allocations]);
 
-    // ── Validation limits ──
+    // â”€â”€ Validation limits â”€â”€
     const totalMidTermAllocated = useMemo(() => capitalPlans.filter(p => p.PlanType === 'mid_term').reduce((s, p) => s + (p.Amount || 0), 0), [capitalPlans]);
     const getMidTermForYear = (year: number) => capitalPlans.find(p => p.PlanType === 'mid_term' && (p.PeriodStart || 0) <= year && (p.PeriodEnd || 0) >= year);
     const getAnnualAllocatedInPeriod = (periodStart: number, periodEnd: number, excludePlanId?: string) => {
@@ -247,7 +232,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     // Calculate the max allowable for the currently open modal
     const modalMaxAllowable = useMemo(() => {
         if (modalPlanType === 'mid_term') {
-            // Mid-term cannot exceed TMĐT (minus other mid-terms already allocated, excluding current edit)
+            // Mid-term cannot exceed TMÄT (minus other mid-terms already allocated, excluding current edit)
             const otherMidTerms = capitalPlans.filter(p => p.PlanType === 'mid_term' && p.PlanID !== editingPlan?.PlanID).reduce((s, p) => s + (p.Amount || 0), 0);
             return Math.max(0, summary.totalInvestment - otherMidTerms);
         } else {
@@ -265,22 +250,22 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         const result: { level: string; message: string; icon: React.ReactNode }[] = [];
         const currentMonth = new Date().getMonth() + 1;
 
-        // Cảnh báo: Tổng KH trung hạn vượt TMĐT
+        // Cáº£nh bÃ¡o: Tá»•ng KH trung háº¡n vÆ°á»£t TMÄT
         if (totalMidTermAllocated > summary.totalInvestment && summary.totalInvestment > 0) {
             result.push({
                 level: 'high',
-                message: `Tổng KH trung hạn (${formatCurrency(totalMidTermAllocated)}) vượt Tổng mức đầu tư (${formatCurrency(summary.totalInvestment)}).`,
+                message: `Tá»•ng KH trung háº¡n (${formatCurrency(totalMidTermAllocated)}) vÆ°á»£t Tá»•ng má»©c Ä‘áº§u tÆ° (${formatCurrency(summary.totalInvestment)}).`,
                 icon: <AlertTriangle className="w-4 h-4" />,
             });
         }
 
-        // Cảnh báo: annual vượt mid-term
+        // Cáº£nh bÃ¡o: annual vÆ°á»£t mid-term
         capitalPlans.filter(p => p.PlanType === 'mid_term').forEach(midPlan => {
             const annualTotal = getAnnualAllocatedInPeriod(midPlan.PeriodStart || 0, midPlan.PeriodEnd || 0);
             if (annualTotal > midPlan.Amount) {
                 result.push({
                     level: 'high',
-                    message: `KH hằng năm giai đoạn ${midPlan.PeriodStart}–${midPlan.PeriodEnd} (${formatCurrency(annualTotal)}) vượt KH trung hạn (${formatCurrency(midPlan.Amount)}).`,
+                    message: `KH háº±ng nÄƒm giai Ä‘oáº¡n ${midPlan.PeriodStart}â€“${midPlan.PeriodEnd} (${formatCurrency(annualTotal)}) vÆ°á»£t KH trung háº¡n (${formatCurrency(midPlan.Amount)}).`,
                     icon: <AlertTriangle className="w-4 h-4" />,
                 });
             }
@@ -289,39 +274,39 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         if (summary.disbursementRate < 50 && currentMonth >= 6) {
             result.push({
                 level: 'high',
-                message: `Tỷ lệ giải ngân mới đạt ${summary.disbursementRate}% — cần đẩy nhanh tiến độ hồ sơ thanh toán.`,
+                message: `Tá»· lá»‡ giáº£i ngÃ¢n má»›i Ä‘áº¡t ${summary.disbursementRate}% â€” cáº§n Ä‘áº©y nhanh tiáº¿n Ä‘á»™ há»“ sÆ¡ thanh toÃ¡n.`,
                 icon: <AlertTriangle className="w-4 h-4" />,
             });
         }
         if (summary.advanceBalance > 0) {
             result.push({
                 level: 'medium',
-                message: `Số dư tạm ứng chưa thu hồi: ${formatCurrency(summary.advanceBalance)}. Cần hoàn tất nghiệm thu để thu hồi.`,
+                message: `Sá»‘ dÆ° táº¡m á»©ng chÆ°a thu há»“i: ${formatCurrency(summary.advanceBalance)}. Cáº§n hoÃ n táº¥t nghiá»‡m thu Ä‘á»ƒ thu há»“i.`,
                 icon: <RotateCcw className="w-4 h-4" />,
             });
         }
         if (summary.yearlyTarget > 0 && summary.yearlyDisbursed < summary.yearlyTarget * 0.3 && currentMonth >= 6) {
             result.push({
                 level: 'medium',
-                message: `Giải ngân năm nay mới đạt ${Math.round((summary.yearlyDisbursed / summary.yearlyTarget) * 100)}% kế hoạch.`,
+                message: `Giáº£i ngÃ¢n nÄƒm nay má»›i Ä‘áº¡t ${Math.round((summary.yearlyDisbursed / summary.yearlyTarget) * 100)}% káº¿ hoáº¡ch.`,
                 icon: <Calendar className="w-4 h-4" />,
             });
         }
         return result;
     }, [summary, capitalPlans, totalMidTermAllocated]);
 
-    // Per-allocation disbursement rate — tính theo NĂM phát sinh
+    // Per-allocation disbursement rate â€” tÃ­nh theo NÄ‚M phÃ¡t sinh
     const allocationWithRate = useMemo(() => {
         return allocations.map(a => {
             const disbursed = disbursements
                 .filter(d => {
                     const dYear = new Date(d.Date).getFullYear();
-                    // Ưu tiên match theo AllocationID, fallback theo năm
+                    // Æ¯u tiÃªn match theo AllocationID, fallback theo nÄƒm
                     const matchPlan = d.CapitalPlanID === a.PlanID || d.AllocationID === (a as any).AllocationID;
                     const matchYear = dYear === a.Year;
                     return (matchPlan || matchYear) && d.Status === 'Approved' && d.Type !== 'ThuHoiTamUng';
                 })
-                // Tránh trùng lặp: chỉ lấy bút toán của đúng năm này
+                // TrÃ¡nh trÃ¹ng láº·p: chá»‰ láº¥y bÃºt toÃ¡n cá»§a Ä‘Ãºng nÄƒm nÃ y
                 .filter(d => new Date(d.Date).getFullYear() === a.Year)
                 .reduce((s, d) => s + d.Amount, 0);
             const recovered = disbursements
@@ -331,20 +316,21 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         });
     }, [allocations, disbursements]);
 
-    // ── Monthly Disbursement Plan Data ──
+    // â”€â”€ Monthly Disbursement Plan Data â”€â”€
     const planYears = useMemo(() => {
         const years = [...new Set(disbursementPlanData.map(d => d.Year))];
         return years.sort((a, b) => a - b);
     }, [disbursementPlanData]);
 
-    // Auto-select current year or nearest available year on first load
+    // Auto-select current year hoáº·c nÄƒm gáº§n nháº¥t khi dá»¯ liá»‡u load hoáº·c thay Ä‘á»•i
     React.useEffect(() => {
-        if (planYears.length > 0 && !planYears.includes(planYearFilter)) {
+        if (planYears.length === 0) return; // khÃ´ng cÃ³ nÄƒm nÃ o â†’ giá»¯ nguyÃªn
+        if (!planYears.includes(planYearFilter)) {
             const currentYear = new Date().getFullYear();
-            const nearest = planYears.includes(currentYear) ? currentYear : planYears[0];
+            const nearest = planYears.includes(currentYear) ? currentYear : planYears[planYears.length - 1];
             setPlanYearFilter(nearest);
         }
-    }, [planYears]);
+    }, [planYears.join(',')]); // stable dependency
 
     const filteredPlanData = useMemo(() => {
         return disbursementPlanData.filter(d => d.Year === planYearFilter);
@@ -372,20 +358,20 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     }, [filteredPlanData]);
 
     // Early returns AFTER all hooks
-    if (isLoading) return <div className="p-4 text-center text-gray-500 dark:text-slate-400">Đang tải dữ liệu vốn...</div>;
-    if (!capitalSummary) return <div className="p-4 text-center text-red-500 dark:text-red-400">Không có dữ liệu vốn</div>;
+    if (isLoading) return <div className="p-4 text-center text-gray-500 dark:text-slate-400">Äang táº£i dá»¯ liá»‡u vá»‘n...</div>;
+    if (!capitalSummary) return <div className="p-4 text-center text-red-500 dark:text-red-400">KhÃ´ng cÃ³ dá»¯ liá»‡u vá»‘n</div>;
 
     return (
         <div className="space-y-6">
-            {/* ════════════════════════════════════════════
-                SECTION E — Cảnh báo rủi ro (Moved to top)
-               ════════════════════════════════════════════ */}
+            {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                SECTION E â€” Cáº£nh bÃ¡o rá»§i ro (Moved to top)
+               â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
             {alerts.length > 0 && (
                 <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                     <div className="px-6 py-3 border-b border-border bg-yellow-500/10">
                         <h3 className="text-sm font-bold text-yellow-500 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" />
-                            Cảnh báo giải ngân
+                            Cáº£nh bÃ¡o giáº£i ngÃ¢n
                         </h3>
                     </div>
                     <div className="p-4 space-y-2">
@@ -402,14 +388,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
             )}
 
-            {/* ════════════════════════════════════════════
-                SECTION A — KPI Dashboard (6 cards)
-               ════════════════════════════════════════════ */}
+            {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                SECTION A â€” KPI Dashboard (6 cards)
+               â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
             <ProjectCapitalKPIDashboard summary={summary} allocationsCount={allocations.length} />
 
-            {/* ════════════════════════════════════════════
-                SECTION B — Kế hoạch vốn (Tab: Trung hạn / Hàng năm) + Donut
-               ════════════════════════════════════════════ */}
+            {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                SECTION B â€” Káº¿ hoáº¡ch vá»‘n (Tab: Trung háº¡n / HÃ ng nÄƒm) + Donut
+               â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Capital Plan Table with Sub-tabs */}
                 <div className="lg:col-span-2 bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
@@ -420,13 +406,13 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     onClick={() => setCapitalSubTab('mid_term')}
                                     className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${capitalSubTab === 'mid_term' ? 'bg-bg-surface text-primary-500 shadow-sm' : 'text-txt-muted hover:text-txt-primary'}`}
                                 >
-                                    <CalendarRange className="w-3.5 h-3.5" /> Trung hạn
+                                    <CalendarRange className="w-3.5 h-3.5" /> Trung háº¡n
                                 </button>
                                 <button
                                     onClick={() => setCapitalSubTab('annual')}
                                     className={`px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${capitalSubTab === 'annual' ? 'bg-bg-surface text-primary-500 shadow-sm' : 'text-txt-muted hover:text-txt-primary'}`}
                                 >
-                                    <Calendar className="w-3.5 h-3.5" /> Hàng năm
+                                    <Calendar className="w-3.5 h-3.5" /> HÃ ng nÄƒm
                                 </button>
                             </div>
 
@@ -436,9 +422,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     onChange={(e) => setAnnualPeriodFilter(e.target.value)}
                                     className="px-3 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-primary font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
                                 >
-                                    <option value="all">Tất cả giai đoạn</option>
+                                    <option value="all">Táº¥t cáº£ giai Ä‘oáº¡n</option>
                                     {capitalPlans.filter(p => p.PlanType === 'mid_term').sort((a, b) => (b.PeriodStart || 0) - (a.PeriodStart || 0)).map(p => (
-                                        <option key={p.PlanID} value={p.PlanID}>Giai đoạn {p.PeriodStart}-{p.PeriodEnd}</option>
+                                        <option key={p.PlanID} value={p.PlanID}>Giai Ä‘oáº¡n {p.PeriodStart}-{p.PeriodEnd}</option>
                                     ))}
                                 </select>
                             )}
@@ -447,11 +433,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             onClick={() => { setEditingPlan(null); setModalPlanType(capitalSubTab); setPlanModalOpen(true); }}
                             className="px-3 py-1.5 bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
                         >
-                            <Plus className="w-3.5 h-3.5" /> {capitalSubTab === 'mid_term' ? 'Nhập KH trung hạn' : 'Nhập KH hằng năm'}
+                            <Plus className="w-3.5 h-3.5" /> {capitalSubTab === 'mid_term' ? 'Nháº­p KH trung háº¡n' : 'Nháº­p KH háº±ng nÄƒm'}
                         </button>
                     </div>
 
-                    {/* SUB-TAB: TRUNG HẠN */}
+                    {/* SUB-TAB: TRUNG Háº N */}
                     {capitalSubTab === 'mid_term' && (() => {
                         const midTermPlans = capitalPlans.filter(p => p.PlanType === 'mid_term').sort((a, b) => (a.PeriodStart || a.Year) - (b.PeriodStart || b.Year));
                         return (
@@ -459,8 +445,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 {midTermPlans.length === 0 ? (
                                 <EmptyState
                                     icon={<CalendarRange className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
-                                    title="Chưa có KH vốn trung hạn"
-                                    description={'Nhấn "Nhập KH trung hạn" để tạo giai đoạn 5 năm'}
+                                    title="ChÆ°a cÃ³ KH vá»‘n trung háº¡n"
+                                    description={'Nháº¥n "Nháº­p KH trung háº¡n" Ä‘á»ƒ táº¡o giai Ä‘oáº¡n 5 nÄƒm'}
                                     className="border border-dashed border-border rounded-2xl"
                                 />
                                 ) : (
@@ -485,10 +471,10 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                             {isExpanded ? <ChevronDown className="w-4 h-4 text-primary-500" /> : <ChevronRight className="w-4 h-4 text-primary-500" />}
                                                             <div>
                                                                 <h4 className="text-sm font-black text-txt-primary">
-                                                                    Giai đoạn {plan.PeriodStart}–{plan.PeriodEnd}
+                                                                    Giai Ä‘oáº¡n {plan.PeriodStart}â€“{plan.PeriodEnd}
                                                                 </h4>
                                                                 <p className="text-[10px] text-txt-muted">
-                                                                    {plan.DecisionNumber} • {plan.DateAssigned ? new Date(plan.DateAssigned).toLocaleDateString('vi-VN') : ''} • {plan.Source}
+                                                                    {plan.DecisionNumber} â€¢ {plan.DateAssigned ? new Date(plan.DateAssigned).toLocaleDateString('vi-VN') : ''} â€¢ {plan.Source}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -509,14 +495,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setEditingPlan(plan); setModalPlanType('mid_term'); setPlanModalOpen(true); }}
                                                                     className="p-1.5 text-txt-muted hover:text-primary-500 hover:bg-bg-muted rounded-xl transition-colors"
-                                                                    title="Sửa KH trung hạn"
+                                                                    title="Sá»­a KH trung háº¡n"
                                                                 >
                                                                     <Edit3 className="w-3.5 h-3.5" />
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ type: 'plan', id: plan.PlanID }); }}
                                                                     className="p-1.5 text-txt-muted hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
-                                                                    title="Xóa KH trung hạn"
+                                                                    title="XÃ³a KH trung háº¡n"
                                                                 >
                                                                     <Trash2 className="w-3.5 h-3.5" />
                                                                 </button>
@@ -529,19 +515,19 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                     <div className="px-5 py-4 border-t border-border bg-bg-surface">
                                                         <div className="grid grid-cols-4 gap-3 mb-4">
                                                             <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl">
-                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Tổng KH trung hạn</p>
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Tá»•ng KH trung háº¡n</p>
                                                                 <p className="text-sm font-black text-blue-500 mt-1">{formatCurrency(plan.Amount)}</p>
                                                             </div>
                                                             <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-2xl">
-                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Đã giải ngân</p>
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">ÄÃ£ giáº£i ngÃ¢n</p>
                                                                 <p className="text-sm font-black text-emerald-500 mt-1">{formatCurrency(totalAnnualDisbursed)}</p>
                                                             </div>
                                                             <div className="bg-primary-500/10 border border-primary-500/20 p-3 rounded-2xl">
-                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Đã phân bổ HN</p>
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">ÄÃ£ phÃ¢n bá»• HN</p>
                                                                 <p className="text-sm font-black text-primary-500 mt-1">{formatCurrency(totalAnnualAllocated)}</p>
                                                             </div>
                                                             <div className="bg-purple-500/10 border border-purple-500/20 p-3 rounded-2xl">
-                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">Chưa phân bổ</p>
+                                                                <p className="text-[10px] text-txt-muted font-bold uppercase">ChÆ°a phÃ¢n bá»•</p>
                                                                 <p className="text-sm font-black text-purple-500 mt-1">{formatCurrency(Math.max(0, plan.Amount - totalAnnualAllocated))}</p>
                                                             </div>
                                                         </div>
@@ -554,13 +540,13 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         )}
 
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <h5 className="text-[10px] font-black text-txt-muted uppercase tracking-wider">Phân bổ theo năm ({linkedAnnual.length} KH)</h5>
+                                                            <h5 className="text-[10px] font-black text-txt-muted uppercase tracking-wider">PhÃ¢n bá»• theo nÄƒm ({linkedAnnual.length} KH)</h5>
                                                             {canAddAnnual && (
                                                                 <button
                                                                     onClick={(e) => { e.stopPropagation(); setEditingPlan(null); setModalPlanType('annual'); setPlanModalOpen(true); }}
                                                                     className="text-primary-500 hover:text-primary-600 text-[10px] font-bold flex items-center gap-1 transition-colors"
                                                                 >
-                                                                    <Plus className="w-3 h-3" /> Nhập KH hằng năm
+                                                                    <Plus className="w-3 h-3" /> Nháº­p KH háº±ng nÄƒm
                                                                 </button>
                                                             )}
                                                         </div>
@@ -568,12 +554,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                             <table className="w-full text-xs mb-4">
                                                                 <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                                                     <tr>
-                                                                        <th className="px-3 py-2 text-left text-txt-muted">Năm</th>
-                                                                        <th className="px-3 py-2 text-left text-txt-muted">QĐ giao vốn</th>
-                                                                        <th className="px-3 py-2 text-right text-txt-muted">Vốn giao</th>
-                                                                        <th className="px-3 py-2 text-right text-txt-muted">Đã GN</th>
-                                                                        <th className="px-3 py-2 text-right text-txt-muted">Tỷ lệ</th>
-                                                                        <th className="px-3 py-2 text-right text-txt-muted w-16">Thao tác</th>
+                                                                        <th className="px-3 py-2 text-left text-txt-muted">NÄƒm</th>
+                                                                        <th className="px-3 py-2 text-left text-txt-muted">QÄ giao vá»‘n</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">Vá»‘n giao</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">ÄÃ£ GN</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted">Tá»· lá»‡</th>
+                                                                        <th className="px-3 py-2 text-right text-txt-muted w-16">Thao tÃ¡c</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody className="divide-y divide-border">
@@ -582,7 +568,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                         return (
                                                                             <tr key={ap.PlanID} className="group hover:bg-bg-muted/50">
                                                                                 <td className="px-3 py-2 font-bold text-txt-primary">{ap.Year}</td>
-                                                                                <td className="px-3 py-2 text-txt-secondary">{ap.DecisionNumber || '—'}</td>
+                                                                                <td className="px-3 py-2 text-txt-secondary">{ap.DecisionNumber || 'â€”'}</td>
                                                                                 <td className="px-3 py-2 text-right font-mono font-bold text-primary-500">{formatCurrency(ap.Amount)}</td>
                                                                                 <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(ap.DisbursedAmount || 0)}</td>
                                                                                 <td className="px-3 py-2 text-right">
@@ -621,7 +607,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                                 </tbody>
                                                             </table>
                                                         ) : (
-                                                            <div className="text-center py-4 text-txt-muted text-[10px]">Chưa có KH hàng năm trong giai đoạn này</div>
+                                                            <div className="text-center py-4 text-txt-muted text-[10px]">ChÆ°a cÃ³ KH hÃ ng nÄƒm trong giai Ä‘oáº¡n nÃ y</div>
                                                         )}
 
 
@@ -636,14 +622,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-lg p-2.5">
                                     <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1.5">
                                         <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                                        <strong>Căn cứ:</strong> Luật ĐTC 58/2024/QH15 (Đ.49-55), sửa đổi bởi Luật 90/2025/QH15
+                                        <strong>CÄƒn cá»©:</strong> Luáº­t ÄTC 58/2024/QH15 (Ä.49-55), sá»­a Ä‘á»•i bá»Ÿi Luáº­t 90/2025/QH15
                                     </p>
                                 </div>
                             </div>
                         );
                     })()}
 
-                    {/* SUB-TAB: HÀNG NĂM (bảng cũ) */}
+                    {/* SUB-TAB: HÃ€NG NÄ‚M (báº£ng cÅ©) */}
                     {capitalSubTab === 'annual' && (() => {
                         let filteredAnnualPlans = [...allocationWithRate];
                         if (annualPeriodFilter !== 'all') {
@@ -652,7 +638,19 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 filteredAnnualPlans = filteredAnnualPlans.filter(a => a.Year >= (selectedMidTerm.PeriodStart || 0) && a.Year <= (selectedMidTerm.PeriodEnd || 0));
                             }
                         }
-                        
+                        if (filteredAnnualPlans.length === 0) {
+                            return (
+                                <div className="p-4">
+                                    <EmptyState
+                                        icon={<CalendarRange className="w-12 h-12 text-txt-muted" />}
+                                        title="Chưa có kế hoạch vốn hằng năm"
+                                        description='Nhấn "Nhập KH hằng năm" ở phía trên để tạo kế hoạch vốn hằng năm cho dự án'
+                                        className="border border-dashed border-border rounded-2xl py-8"
+                                    />
+                                </div>
+                            );
+                        }
+
                         const totalAnnualPlanAmount = filteredAnnualPlans.reduce((s, p) => s + p.Amount, 0);
                         const totalAnnualDisbursed = filteredAnnualPlans.reduce((s, p) => s + p.disbursed, 0);
                         const totalAnnualRate = totalAnnualPlanAmount > 0 ? (totalAnnualDisbursed / totalAnnualPlanAmount) * 100 : 0;
@@ -662,20 +660,20 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             {filteredAnnualPlans.length > 0 && (
                                 <div className="px-5 py-3 border-b border-border bg-bg-muted flex items-center justify-between">
                                     <div className="text-xs font-semibold text-txt-secondary uppercase tracking-wider">
-                                        Tổng hợp Kế hoạch Hằng năm
+                                        Tá»•ng há»£p Káº¿ hoáº¡ch Háº±ng nÄƒm
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="text-right">
-                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">Vốn giao</p>
+                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">Vá»‘n giao</p>
                                             <p className="text-xs font-black text-primary-500">{formatCurrency(totalAnnualPlanAmount)}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">Đã giải ngân</p>
+                                            <p className="text-[10px] text-txt-muted font-bold uppercase mb-0.5">ÄÃ£ giáº£i ngÃ¢n</p>
                                             <p className="text-xs font-black text-emerald-600">{formatCurrency(totalAnnualDisbursed)}</p>
                                         </div>
                                         <div className="w-32">
                                             <div className="flex justify-between text-[10px] font-bold mb-1">
-                                                <span className="text-txt-muted">Tỷ lệ</span>
+                                                <span className="text-txt-muted">Tá»· lá»‡</span>
                                                 <span className={totalAnnualRate >= 90 ? 'text-emerald-600' : totalAnnualRate >= 50 ? 'text-primary-500' : 'text-yellow-600'}>
                                                     {totalAnnualRate.toFixed(1)}%
                                                 </span>
@@ -694,19 +692,19 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <table className="w-full text-sm text-left">
                                     <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
                                         <tr>
-                                            <th className="px-4 py-2.5 text-left text-txt-muted">Năm</th>
-                                            <th className="px-4 py-2.5 text-left text-txt-muted">QĐ giao vốn</th>
-                                            <th className="px-4 py-2.5 text-right text-txt-muted">Vốn giao</th>
-                                            <th className="px-4 py-2.5 text-right text-txt-muted">Đã giải ngân</th>
-                                            <th className="px-4 py-2.5 text-left text-txt-muted">Tỷ lệ</th>
-                                            <th className="px-4 py-2.5 text-center text-txt-muted w-20">Thao tác</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">NÄƒm</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">QÄ giao vá»‘n</th>
+                                            <th className="px-4 py-2.5 text-right text-txt-muted">Vá»‘n giao</th>
+                                            <th className="px-4 py-2.5 text-right text-txt-muted">ÄÃ£ giáº£i ngÃ¢n</th>
+                                            <th className="px-4 py-2.5 text-left text-txt-muted">Tá»· lá»‡</th>
+                                            <th className="px-4 py-2.5 text-center text-txt-muted w-20">Thao tÃ¡c</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-border">
                                         {filteredAnnualPlans.sort((a, b) => a.Year - b.Year).map(a => (
                                             <tr key={a.PlanID || (a as any).AllocationID} className="hover:bg-bg-muted/50 transition-colors">
                                         <td className="px-4 py-2.5">
-                                            <span className="font-bold text-txt-primary">Năm {a.Year}</span>
+                                            <span className="font-bold text-txt-primary">NÄƒm {a.Year}</span>
                                         </td>
                                         <td className="px-4 py-2.5">
                                             <span className="text-txt-secondary font-medium text-xs">{a.DecisionNumber}</span>
@@ -745,14 +743,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                         DisbursedAmount: a.disbursed,
                                                     })}
                                                     className="p-1 hover:bg-bg-muted text-txt-muted hover:text-primary-500 rounded-xl transition-colors"
-                                                    title="Sửa"
+                                                    title="Sá»­a"
                                                 >
                                                     <Pencil className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={() => setDeleteConfirm({ type: 'plan', id: a.PlanID || (a as any).AllocationID })}
                                                     className="p-1 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
-                                                    title="Xóa"
+                                                    title="XÃ³a"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
@@ -762,7 +760,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 ))}
                                 <tr className="bg-bg-muted/50 font-bold border-t border-border">
                                     <td className="px-4 py-2.5 text-txt-primary" colSpan={2}>
-                                        Tổng cộng
+                                        Tá»•ng cá»™ng
                                     </td>
                                     <td className="px-4 py-2.5 text-right font-mono text-primary-500 text-xs">
                                         {formatCurrency(totalAnnualPlanAmount)}
@@ -785,11 +783,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             })()}
         </div>
 
-                {/* Donut Chart — Nguồn vốn */}
+                {/* Donut Chart â€” Nguá»“n vá»‘n */}
                 <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm">
                     <h3 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                         <Wallet className="w-4 h-4 text-purple-500" />
-                        Phân bổ nguồn vốn
+                        PhÃ¢n bá»• nguá»“n vá»‘n
                     </h3>
                     <div className="h-52 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -828,351 +826,37 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
             </div>
 
-            {/* ════════════════════════════════════════════
-                SECTION C — Kế hoạch giải ngân theo tháng
-               ════════════════════════════════════════════ */}
-            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-border flex flex-wrap justify-between items-center gap-3 bg-bg-muted">
-                    <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wider flex items-center gap-2">
-                        <CalendarRange className="w-4 h-4 text-violet-500" />
-                        Kế hoạch giải ngân theo tháng
-                    </h3>
-                    <div className="flex items-center gap-2">
-                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5">
-                            {planYears.map(year => (
-                                <button
-                                    key={year}
-                                    onClick={() => setPlanYearFilter(year)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${planYearFilter === year
-                                        ? 'bg-bg-surface text-txt-primary shadow-sm'
-                                        : 'text-txt-muted hover:text-txt-primary'
-                                    }`}
-                                >
-                                    {year}
-                                </button>
-                            ))}
-                        </div>
-                        {/* Mini summary badges */}
-                        <div className="hidden md:flex items-center gap-2 text-xs">
-                            <span className="px-2 py-1 rounded-full bg-violet-500/10 text-violet-500 font-bold">
-                                KH: {formatCurrency(planSummary.totalPlanned)}
-                            </span>
-                            <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 font-bold">
-                                TT: {formatCurrency(planSummary.totalActual)} ({planSummary.rate.toFixed(1)}%)
-                            </span>
-                        </div>
-                        <button
-                            onClick={() => { setDisbPlanModalOpen(true); }}
-                            className="px-3 py-1.5 bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all ml-2"
-                        >
-                            <Plus className="w-3.5 h-3.5" /> Lập KH tháng
-                        </button>
-                    </div>
-                </div>
+            {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                SECTION C â€” Káº¿ hoáº¡ch giáº£i ngÃ¢n theo thÃ¡ng
+               â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            <MonthlyDisbursementSection
+                planYearFilter={planYearFilter}
+                planYears={planYears}
+                setPlanYearFilter={setPlanYearFilter}
+                filteredPlanData={filteredPlanData}
+                planChartData={planChartData}
+                planSummary={planSummary}
+                onOpenPlanModal={() => setDisbPlanModalOpen(true)}
+                onEditPlan={(d) => { setPlanYearFilter(d.Year); setDisbPlanModalOpen(true); }}
+                onDeletePlan={(id) => setDeleteConfirm({ type: 'disbPlan', id })}
+            />
 
-                {/* Chart — Planned vs Actual */}
-                <div className="px-6 pt-4 pb-2">
-                    <div className="h-72 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <ComposedChart data={planChartData} barCategoryGap="15%">
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-border-subtle)" />
-                                <XAxis
-                                    dataKey="label"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    fontSize={10}
-                                    tick={{ fill: 'var(--txt-muted)' }}
-                                    interval={0}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    fontSize={10}
-                                    tick={{ fill: 'var(--txt-muted)' }}
-                                    tickFormatter={(v: number) => v >= 1e9 ? `${(v / 1e9).toFixed(0)} tỷ` : `${(v / 1e6).toFixed(0)} tr`}
-                                    width={55}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(139, 92, 246, 0.05)' }}
-                                    contentStyle={{ borderRadius: 12, border: '1px solid var(--border-border)', backgroundColor: 'var(--bg-surface)', fontSize: 12 }}
-                                    formatter={(value: unknown, name: unknown) => {
-                                        const labels: Record<string, string> = {
-                                            planned: 'Kế hoạch',
-                                            actual: 'Thực tế',
-                                        };
-                                        const nameStr = String(name);
-                                        return [formatCurrency(Number(value)), labels[nameStr] || nameStr];
-                                    }}
-                                    labelFormatter={(label: unknown) => `Tháng ${label}`}
-                                />
-                                <Legend
-                                    formatter={(value: string) => {
-                                        const labels: Record<string, string> = {
-                                            planned: 'Kế hoạch giải ngân',
-                                            actual: 'Giải ngân thực tế',
-                                        };
-                                        return <span className="text-xs text-txt-secondary">{labels[value] || value}</span>;
-                                    }}
-                                />
-                                <Bar dataKey="planned" fill="#8b5cf6" radius={[4, 4, 0, 0]} opacity={0.7} name="planned" />
-                                <Bar dataKey="actual" fill="#10b981" radius={[4, 4, 0, 0]} name="actual" />
-                            </ComposedChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+            {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                SECTION D â€” Lá»‹ch sá»­ giáº£i ngÃ¢n chi tiáº¿t
+               â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+            <DisbursementHistorySection
+                disbursements={disbursements}
+                disbursementFilter={disbursementFilter}
+                setDisbursementFilter={setDisbursementFilter}
+                disbYearFilter={disbYearFilter}
+                setDisbYearFilter={setDisbYearFilter}
+                onAddDisb={() => { setEditingDisb(null); setDisbModalOpen(true); }}
+                onEditDisb={handleEditDisb}
+                onDeleteDisb={(id) => setDeleteConfirm({ type: 'disb', id })}
+                onImport={() => setIsImportModalOpen(true)}
+            />
 
-                {/* Table KH tháng */}
-                {filteredPlanData.length > 0 ? (
-                    <div className="px-6 pb-6 mt-4 border-t border-border pt-4">
-                        <table className="w-full text-xs">
-                            <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
-                                <tr>
-                                    <th className="px-3 py-2 text-left text-txt-muted">Tháng</th>
-                                    <th className="px-3 py-2 text-right text-txt-muted">KH giải ngân</th>
-                                    <th className="px-3 py-2 text-right text-txt-muted">Thực tế</th>
-                                    <th className="px-3 py-2 text-right text-txt-muted">Tỷ lệ</th>
-                                    <th className="px-3 py-2 text-left text-txt-muted">Việc trong tháng</th>
-                                    <th className="px-3 py-2 text-center text-txt-muted w-16">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {[...filteredPlanData].sort((a,b)=>a.Month - b.Month).map((d) => {
-                                    const mRate = d.PlannedAmount > 0 ? (d.ActualAmount / d.PlannedAmount) * 100 : 0;
-                                    return (
-                                        <tr key={d.Id} className="hover:bg-violet-500/10 transition-colors">
-                                            <td className="px-3 py-2 font-bold text-txt-primary">Tháng {d.Month}</td>
-                                            <td className="px-3 py-2 text-right font-mono text-violet-500">{formatCurrency(d.PlannedAmount)}</td>
-                                            <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(d.ActualAmount)}</td>
-                                            <td className="px-3 py-2 text-right">
-                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                                    mRate >= 90 ? 'bg-emerald-500/10 text-emerald-500' :
-                                                    mRate >= 50 ? 'bg-primary-500/10 text-primary-500' : 'bg-yellow-500/10 text-yellow-500'
-                                                }`}>{mRate.toFixed(1)}%</span>
-                                            </td>
-                                            <td className="px-3 py-2 text-txt-muted italic max-w-xs truncate" title={d.Notes}>{d.Notes || '—'}</td>
-                                            <td className="px-3 py-2 text-center">
-                                                <div className="flex items-center justify-center gap-1">
-                                                    {!d.Id.startsWith('auto-') && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEditDisbPlan(d)}
-                                                                className="p-1 hover:bg-bg-muted text-txt-muted hover:text-violet-500 rounded-xl transition-colors"
-                                                                title="Sửa kế hoạch"
-                                                            >
-                                                                <Pencil className="w-3.5 h-3.5" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setDeleteConfirm({ type: 'disbPlan', id: d.Id })}
-                                                                className="p-1 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
-                                                                title="Xóa kế hoạch"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                {/* Tổng cộng footer */}
-                                <tr className="bg-violet-500/10 font-bold border-t border-border">
-                                    <td className="px-3 py-2 text-txt-primary">Tổng cộng</td>
-                                    <td className="px-3 py-2 text-right font-mono text-violet-500">{formatCurrency(planSummary.totalPlanned)}</td>
-                                    <td className="px-3 py-2 text-right font-mono text-emerald-500">{formatCurrency(planSummary.totalActual)}</td>
-                                    <td className="px-3 py-2 text-right">
-                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${planSummary.rate >= 90 ? 'bg-emerald-500/10 text-emerald-500' : planSummary.rate >= 50 ? 'bg-primary-500/10 text-primary-500' : 'bg-yellow-500/10 text-yellow-500'}`}>{planSummary.rate.toFixed(1)}%</span>
-                                    </td>
-                                    <td className="px-3 py-2"></td>
-                                    <td className="px-3 py-2"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <EmptyState
-                        icon={<CalendarRange className="w-12 h-12 text-txt-muted" />}
-                        title={`Chưa có kế hoạch giải ngân cho năm ${planYearFilter}`}
-                        className="mt-4 border border-dashed border-border rounded-2xl"
-                    />
-                )}
-            </div>
-
-            {/* ════════════════════════════════════════════
-                SECTION D — Lịch sử giải ngân chi tiết
-               ════════════════════════════════════════════ */}
-            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-border flex flex-wrap justify-between items-center gap-3">
-                    <h3 className="font-bold text-txt-primary flex items-center gap-2">
-                        <ArrowDownUp className="w-4 h-4 text-emerald-500" />
-                        Lịch sử giải ngân (NĐ 99/2021/NĐ-CP)
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <select
-                            value={disbYearFilter}
-                            onChange={(e) => setDisbYearFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                            className="px-3 py-1.5 text-xs font-medium bg-bg-muted border border-border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-txt-primary"
-                        >
-                            <option value="all">Tất cả năm</option>
-                            {Array.from(new Set(disbursements.map(d => new Date(d.Date).getFullYear()))).sort((a, b) => b - a).map(y => (
-                                <option key={y} value={y}>Năm {y}</option>
-                            ))}
-                        </select>
-                        
-                        <select
-                            value={disbSourceFilter}
-                            onChange={(e) => setDisbSourceFilter(e.target.value)}
-                            className="px-3 py-1.5 text-xs font-medium bg-bg-muted border border-border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-txt-primary"
-                        >
-                            <option value="all">Tất cả nguồn vốn</option>
-                            {Object.entries(SOURCE_LABELS).map(([val, label]) => (
-                                <option key={val} value={val}>{label}</option>
-                            ))}
-                        </select>
-
-                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5">
-                            {([
-                                ['all', 'Tất cả'],
-                                ['TamUng', 'Tạm ứng'],
-                                ['ThanhToanKLHT', 'TT KLHT'],
-                                ['ThuHoiTamUng', 'Thu hồi TƯ'],
-                            ] as const).map(([key, label]) => (
-                                <button
-                                    key={key}
-                                    onClick={() => setDisbursementFilter(key)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${disbursementFilter === key
-                                        ? 'bg-bg-surface text-txt-primary shadow-sm'
-                                        : 'text-txt-muted hover:text-txt-primary'
-                                        }`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                        <button
-                            onClick={() => setIsImportModalOpen(true)}
-                            className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
-                        >
-                            <ArrowDownUp className="w-3.5 h-3.5" /> Import (Kế toán)
-                        </button>
-                        <button
-                            onClick={() => { setEditingDisb(null); setDisbModalOpen(true); }}
-                            className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
-                            title="Nhập thanh toán tại tab Gói thầu → Thanh quyết toán, dữ liệu sẽ tự đồng bộ về đây"
-                        >
-                            <Plus className="w-3.5 h-3.5" /> Thêm bút toán
-                        </button>
-
-                        {/* Mẫu xuất văn bản (Moved from Section F) */}
-                        <div className="flex bg-bg-muted border border-border rounded-xl p-0.5 ml-1">
-                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Đề nghị thanh toán vốn (Mẫu 25)"><FileDown className="w-3.5 h-3.5 text-primary-500" /> M.25</button>
-                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Đề nghị rút vốn (Mẫu 26)"><FileDown className="w-3.5 h-3.5 text-blue-500" /> M.26</button>
-                             <button className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5" title="Thu hồi vốn tạm ứng (Mẫu 27)"><FileDown className="w-3.5 h-3.5 text-emerald-500" /> M.27</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-txt-muted">Ngày</th>
-                                <th className="px-4 py-3 text-left text-txt-muted">Nội dung</th>
-                                <th className="px-4 py-3 text-left text-txt-muted">HĐ số</th>
-                                <th className="px-4 py-3 text-center text-txt-muted">Loại</th>
-                                <th className="px-4 py-3 text-center text-txt-muted">Biểu mẫu</th>
-                                <th className="px-4 py-3 text-right text-txt-muted">Số tiền</th>
-                                <th className="px-4 py-3 text-right text-txt-muted">Lũy kế TT</th>
-                                <th className="px-4 py-3 text-center text-txt-muted">Trạng thái</th>
-                                <th className="px-4 py-3 text-center text-txt-muted w-20">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                            {[...filteredDisbursements].sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime()).map((d) => (
-                                <tr key={d.DisbursementID} className={`hover:bg-bg-muted/50 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-emerald-500/5' :
-                                    d.Type === 'TamUng' ? 'bg-primary-500/5' : ''
-                                    }`}>
-                                    <td className="px-4 py-3.5 text-txt-muted font-mono text-xs whitespace-nowrap">
-                                        {d.Date ? new Date(d.Date).toLocaleDateString('vi-VN') : '—'}
-                                    </td>
-                                    <td className="px-4 py-3.5">
-                                        <p className="text-txt-primary font-medium text-xs line-clamp-1">{d.Description}</p>
-                                        <p className="text-[10px] text-txt-muted mt-0.5 font-mono">{d.TreasuryCode || '—'}</p>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-xs text-txt-secondary font-medium whitespace-nowrap">
-                                        {d.ContractNumber || '—'}
-                                    </td>
-                                    <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-primary-500/10 text-primary-500' :
-                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-500/10 text-blue-500' :
-                                                d.Type === 'ThuHoiTamUng' ? 'bg-emerald-500/10 text-emerald-500' :
-                                                    'bg-bg-muted text-txt-secondary'
-                                            }`}>
-                                            {d.Type === 'TamUng' && <Receipt className="w-3 h-3" />}
-                                            {d.Type === 'ThanhToanKLHT' && <DollarSign className="w-3 h-3" />}
-                                            {d.Type === 'ThuHoiTamUng' && <RefreshCcw className="w-3 h-3" />}
-                                            {TYPE_LABELS[d.Type || ''] || 'N/A'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-center">
-                                        <span className="px-2 py-0.5 bg-bg-muted border border-border text-txt-secondary rounded text-[10px] font-mono font-bold">
-                                            {d.FormType || '—'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-right font-mono font-bold">
-                                        <span className={d.Type === 'ThuHoiTamUng' ? 'text-emerald-500' : 'text-txt-primary'}>
-                                            {d.Type === 'ThuHoiTamUng' ? '-' : ''}{formatCurrency(d.Amount)}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-right font-mono text-xs text-txt-muted">
-                                        {d.CumulativeBefore != null ? formatCurrency(d.CumulativeBefore + d.Amount) : '—'}
-                                    </td>
-                                    <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500' :
-                                            d.Status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                'bg-red-500/10 text-red-500'
-                                            }`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-emerald-500' :
-                                                d.Status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
-                                                }`} />
-                                            {d.Status === 'Approved' ? 'Đã duyệt' :
-                                                d.Status === 'Pending' ? 'Chờ duyệt' : 'Từ chối'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-center">
-                                        <div className="flex items-center justify-center gap-1">
-                                            <button
-                                                onClick={() => handleEditDisb(d)}
-                                                className="p-1.5 hover:bg-bg-muted text-txt-muted hover:text-primary-500 rounded-xl transition-colors"
-                                                title="Sửa"
-                                            >
-                                                <Pencil className="w-3.5 h-3.5" />
-                                            </button>
-                                            <button
-                                                onClick={() => setDeleteConfirm({ type: 'disb', id: d.DisbursementID })}
-                                                className="p-1.5 hover:bg-red-500/10 text-txt-muted hover:text-red-500 rounded-xl transition-colors"
-                                                title="Xóa"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            {filteredDisbursements.length === 0 && (
-                                <tr>
-                                    <td colSpan={9} className="px-6 py-8 text-center text-txt-muted text-sm">
-                                        Không có giao dịch nào cho bộ lọc này
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* ════════════════════════════════════════════
-                MODALS
-               ════════════════════════════════════════════ */}
+            {/* SECTION MODALS */}
             <CapitalPlanModal
                 isOpen={planModalOpen}
                 onClose={() => { setPlanModalOpen(false); setEditingPlan(null); }}
@@ -1226,21 +910,27 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             </h3>
                         </div>
                         <p className="text-sm text-txt-secondary mb-6">
-                            Bạn có chắc chắn muốn xóa {deleteConfirm.type === 'plan' ? 'kế hoạch vốn' : 'bút toán giải ngân'} này? Hành động không thể hoàn tác.
+                            Bạn có chắc chắn muốn xóa {
+                                deleteConfirm.type === 'plan'
+                                    ? 'kế hoạch vốn'
+                                    : deleteConfirm.type === 'disbPlan'
+                                        ? 'kế hoạch giải ngân tháng'
+                                        : 'bút toán giải ngân'
+                            } này? Hành động không thể hoàn tác.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setDeleteConfirm(null)}
                                 className="px-4 py-2 text-sm font-medium text-txt-secondary bg-bg-muted rounded-xl hover:bg-bg-muted/80 transition-colors"
                             >
-                                Hủy
+                                Há»§y
                             </button>
                             <button
                                 onClick={handleConfirmDelete}
-                                disabled={deletePlan.isPending || deleteDisb.isPending}
+                                disabled={deletePlan.isPending || deleteDisb.isPending || deleteDisbPlan.isPending}
                                 className="px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-xl hover:bg-red-600 disabled:opacity-50 transition-all"
                             >
-                                {(deletePlan.isPending || deleteDisb.isPending) ? 'Đang xóa...' : 'Xóa'}
+                                {(deletePlan.isPending || deleteDisb.isPending || deleteDisbPlan.isPending) ? 'Äang xÃ³a...' : 'XÃ³a'}
                             </button>
                         </div>
                     </div>

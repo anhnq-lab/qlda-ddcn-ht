@@ -9,6 +9,7 @@ import { Project, ProjectStage } from '@/types';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjectTasks } from '@/hooks/useWorkflowTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
+import { useEmployees } from '@/hooks/useEmployees';
 import { supabase } from '@/lib/supabase';
 
 /** Props when rendering inside a SlidePanel */
@@ -141,8 +142,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     useEffect(() => {
         if (inPanel) return; // Ignore location state changes when in panel
         const stateTab = (location.state as any)?.activeTab as TabId | undefined;
-        if (stateTab && TAB_IDS.includes(stateTab) && stateTab !== activeTab) {
-            setActiveTab(stateTab);
+        if (stateTab && TAB_IDS.includes(stateTab)) {
+            if (stateTab !== activeTab) {
+                setActiveTab(stateTab);
+            }
             // Clear location.state to avoid re-triggering on back/forward
             window.history.replaceState({}, '');
         }
@@ -220,6 +223,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     // not after it (project?.ProjectID === id — same value, no need to wait for DB round trip)
     const { data: workflowTasks = [] } = useProjectTasks(id);
     const { mutate: saveTask } = useUpdateTask();
+    const { data: employees = [] } = useEmployees();
 
     // Get bidding packages for this project
     const { data: packages = [] } = useBiddingPackages(id || '');
@@ -536,6 +540,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         groupCode={project.GroupCode}
                         isODA={project.IsODA}
                         project={project}
+                        employees={employees}
                     />
                     </React.Suspense>
                     </ErrorBoundary>

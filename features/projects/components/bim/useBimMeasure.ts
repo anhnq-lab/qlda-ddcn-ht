@@ -12,6 +12,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
+import * as OBCF from '@thatopen/components-front';
 import type { ActiveTool } from './useBimTools';
 
 export interface MeasurementRecord {
@@ -53,9 +54,6 @@ export function useBimMeasure(
         if (!components || !world) return false;
 
         try {
-            // Dynamic import to avoid side effects during module load
-            const OBCF = await import('@thatopen/components-front');
-
             const measurer = components.get(OBCF.LengthMeasurement);
             measurer.world = world;
             measurer.color = new THREE.Color('#00d4ff');

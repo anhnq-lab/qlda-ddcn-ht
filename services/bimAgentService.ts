@@ -1,5 +1,8 @@
 const BIM_API = import.meta.env.VITE_BIM_AGENT_URL || 'http://localhost:8002';
-const API_KEY = import.meta.env.VITE_BIM_AGENT_KEY || 'default-bim-secret-key-2026';
+// API key must come from env in any deployed environment. The empty fallback
+// keeps dev silent if the variable is unset (the agent server will reject the
+// call with 403 in that case — match the failure to the env, not a baked-in key).
+const API_KEY = import.meta.env.VITE_BIM_AGENT_KEY || '';
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',

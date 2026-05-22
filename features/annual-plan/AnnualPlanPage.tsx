@@ -15,6 +15,7 @@ import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
 import DataTable, { Column as ColumnDef } from '../../components/ui/DataTable';
 import { formatPeriod } from '../../utils/format';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -36,7 +37,7 @@ const AnnualPlanPage: React.FC = () => {
     }, [employeeOptions]);
 
     const [year, setYear] = useState(CURRENT_YEAR);
-    const [activeDept, setActiveDept] = useState<DepartmentCode>('HCTH');
+    const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
     const [items, setItems] = useState<AnnualPlanItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');

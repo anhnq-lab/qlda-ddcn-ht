@@ -37,20 +37,27 @@ function quaternionToYaw(q: THREE.Quaternion): number {
 }
 
 export const BimViewCube: React.FC = () => {
-    const { isDarkMode, engine: { cameraQuaternion, setView: onSetView, orbit: onOrbit } } = useBimContext();
+    const { isDarkMode, engine: { subscribeCameraQuaternion, setView: onSetView, orbit: onOrbit } } = useBimContext();
     const [hoveredFace, setHoveredFace] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const dragRef = useRef<{ startX: number; startY: number } | null>(null);
     const hasDraggedRef = useRef(false);
     const cubeRef = useRef<HTMLDivElement>(null);
+    const compassRef = useRef<SVGSVGElement>(null);
 
-    // Compute cube CSS transform from camera quaternion
-    const cubeTransform = cameraQuaternion
-        ? quaternionToCSS3D(cameraQuaternion)
-        : 'rotateX(-30deg) rotateY(45deg)';
-
-    // Compute compass rotation from camera Y axis
-    const compassRotation = cameraQuaternion ? quaternionToYaw(cameraQuaternion) : 45;
+    // Subscribe to camera quaternion changes and update DOM imperatively — avoids
+    // a React re-render of this component (and its 16+ SVG children) every frame.
+    useEffect(() => {
+        const apply = (q: THREE.Quaternion) => {
+            if (cubeRef.current) {
+                cubeRef.current.style.transform = quaternionToCSS3D(q);
+            }
+            if (compassRef.current) {
+                compassRef.current.style.transform = `rotate(${quaternionToYaw(q)}deg)`;
+            }
+        };
+        return subscribeCameraQuaternion(apply);
+    }, [subscribeCameraQuaternion]);
 
     // ── Drag to orbit ──
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -127,10 +134,11 @@ export const BimViewCube: React.FC = () => {
             >
                 {/* Compass ticks ring */}
                 <svg
+                    ref={compassRef}
                     className="absolute inset-0"
                     viewBox="0 0 110 110"
                     style={{
-                        transform: `rotate(${compassRotation}deg)`,
+                        transform: 'rotate(45deg)',
                         transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
                     }}
                 >
@@ -201,7 +209,7 @@ export const BimViewCube: React.FC = () => {
                         className="relative w-full h-full"
                         style={{
                             transformStyle: 'preserve-3d',
-                            transform: cubeTransform,
+                            transform: 'rotateX(-30deg) rotateY(45deg)',
                             transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                         }}
                     >

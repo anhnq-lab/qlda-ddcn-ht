@@ -63,9 +63,9 @@ const FIELD_LABELS: Record<string, string> = {
 };
 const METHOD_LABELS: Record<string, string> = {
     OpenBidding: 'Đấu thầu rộng rãi', LimitedBidding: 'Đấu thầu hạn chế',
-    Appointed: 'Chỉ định thầu', CompetitiveShopping: 'Chào hàng cạnh tranh',
-    DirectProcurement: 'Mua sắm trực tiếp', SelfExecution: 'Tự thực hiện',
-    CommunityParticipation: 'Cộng đồng tham gia',
+    Appointed: 'Chỉ định thầu thông thường', AppointedSimplified: 'Chỉ định thầu rút gọn',
+    CompetitiveShopping: 'Chào hàng cạnh tranh', DirectProcurement: 'Mua sắm trực tiếp', 
+    SelfExecution: 'Tự thực hiện', CommunityParticipation: 'Cộng đồng tham gia',
 };
 const PROCEDURE_LABELS: Record<string, string> = {
     OneStageOneEnvelope: '1 giai đoạn 1 túi hồ sơ', OneStageTwoEnvelope: '1 giai đoạn 2 túi hồ sơ',
@@ -379,16 +379,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             <SectionCard title="Phương thức & Hình thức" icon={Gavel} color="purple">
                                 <InfoRow label="Lĩnh vực" value={FIELD_LABELS[pkg.Field || ''] || pkg.Field || '-'} />
                                 <InfoRow label="Hình thức LCNT" value={METHOD_LABELS[pkg.SelectionMethod] || pkg.SelectionMethod || '-'} />
+                                <InfoRow label="Loại hợp đồng" value={CONTRACT_TYPE_LABELS[pkg.ContractType] || pkg.ContractType || '-'} />
+                                <InfoRow label="Đấu thầu qua mạng" value={
+                                    <span className={pkg.BidType === 'Online' ? 'text-blue-600 dark:text-blue-400' : ''}>
+                                        {pkg.BidType === 'Online' ? '🌐 Qua mạng' : '📋 Không qua mạng'}
+                                    </span>
+                                } />
                                 <InfoRow label="Phương thức" value={
-                                    (pkg.SelectionMethod === 'Appointed' || pkg.SelectionMethod === 'SelfExecution')
+                                    (pkg.SelectionMethod === 'Appointed' || pkg.SelectionMethod === 'AppointedSimplified' || pkg.SelectionMethod === 'SelfExecution')
                                         ? <span className="text-gray-400 dark:text-slate-500 italic">Không áp dụng</span>
                                         : PROCEDURE_LABELS[pkg.SelectionProcedure || ''] || pkg.SelectionProcedure || '-'
-                                } />
-                                <InfoRow label="Loại hợp đồng" value={CONTRACT_TYPE_LABELS[pkg.ContractType] || pkg.ContractType || '-'} />
-                                <InfoRow label="Hình thức đấu thầu" value={
-                                    <span className={pkg.BidType === 'Online' ? 'text-blue-600 dark:text-blue-400' : ''}>
-                                        {pkg.BidType === 'Online' ? '🌐 Qua mạng (E-Bidding)' : '📋 Trực tiếp'}
-                                    </span>
                                 } />
                                 {pkg.BiddingScope && (
                                     <InfoRow label="Phạm vi" value={
@@ -662,16 +662,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 </div>
                                                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                                     {consortiumMembers.map((m: any, idx: number) => (
-                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-green-50/30 dark:bg-green-950/10 border-green-200/50 dark:border-green-900/30' : 'bg-slate-50/50 dark:bg-slate-800/40 border-gray-150 dark:border-slate-700/60'}`}>
+                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800/40 border-gray-150 dark:border-slate-700/60'}`}>
                                                             <div className="flex items-start gap-2.5">
-                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'}`}>
-                                                                    {m.role === 'lead' ? <Crown className="w-4 h-4 text-primary-500" /> : <Building2 className="w-4 h-4" />}
+                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'}`}>
+                                                                    {m.role === 'lead' ? <Crown className="w-4 h-4 text-amber-500" /> : <Building2 className="w-4 h-4" />}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 flex-wrap">
                                                                         <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm leading-tight truncate">{m.contractor?.FullName || m.contractor_id}</p>
                                                                         {m.role === 'lead' && (
-                                                                            <span className="text-[10px] px-1.5 py-0.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 rounded font-medium">Đứng đầu</span>
+                                                                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded font-semibold flex items-center gap-0.5 border border-amber-200 dark:border-amber-800/30">👑 Nhà thầu đại diện</span>
                                                                         )}
                                                                         {m.share_percent !== undefined && m.share_percent > 0 && (
                                                                             <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded font-medium">{m.share_percent}%</span>
@@ -879,9 +879,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Liên danh nhà thầu</p>
                                         {consortiumMembers.map((m: any, idx: number) => (
                                             <div key={m.contractor_id || idx} className="py-2 border-b border-gray-100 dark:border-slate-700/60 last:border-0">
-                                                <p className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-                                                    {m.role === 'lead' ? <Crown className="w-3.5 h-3.5 text-primary-500 shrink-0" /> : <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />}
-                                                    {m.contractor?.FullName || m.contractor_id}
+                                                <p className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap text-xs">
+                                                    {m.role === 'lead' ? <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" /> : <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />}
+                                                    <span>{m.contractor?.FullName || m.contractor_id}</span>
+                                                    {m.role === 'lead' && <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">(Đại diện liên danh)</span>}
                                                     {m.share_percent !== undefined && m.share_percent > 0 && <span className="text-[10px] text-gray-500">({m.share_percent}%)</span>}
                                                 </p>
                                                 <p className="text-xs text-gray-500 dark:text-slate-500 mt-1 ml-5">MST: {m.contractor?.TaxCode || '—'}</p>

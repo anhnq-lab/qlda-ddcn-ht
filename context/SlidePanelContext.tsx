@@ -89,6 +89,8 @@ export const SlidePanelProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const lockedRef = useRef(lockedPanels);
     const closeBlockedCallbacksRef = useRef<Map<string, () => void>>(new Map());
     const [baseUrl, setBaseUrl] = useState<string>('');
+    // Params that should be preserved regardless of panel state (e.g. ?tab=)
+    const TAB_PARAMS = ['tab', 'view', 'dept', 'chart'];
 
     useEffect(() => {
         lockedRef.current = lockedPanels;
@@ -101,9 +103,18 @@ export const SlidePanelProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Track URLs — sync panel state to URL search params
     useEffect(() => {
         if (panels.length === 0) {
-            // All panels closed — remove ?panel= param, restore base URL
+            // All panels closed — restore base URL but KEEP current tab params
             if (baseUrl) {
-                window.history.replaceState(null, '', baseUrl);
+                const restoredUrl = new URL(baseUrl, window.location.origin);
+                // Merge current tab-related params so active tab is preserved
+                const currentParams = new URLSearchParams(window.location.search);
+                TAB_PARAMS.forEach(p => {
+                    const val = currentParams.get(p);
+                    if (val) restoredUrl.searchParams.set(p, val);
+                    else restoredUrl.searchParams.delete(p);
+                });
+                restoredUrl.searchParams.delete('panel');
+                window.history.replaceState(null, '', restoredUrl.pathname + restoredUrl.search);
                 setBaseUrl('');
             }
         } else {

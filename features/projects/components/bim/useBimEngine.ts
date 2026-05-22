@@ -7,6 +7,78 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import * as THREE from 'three';
+import {
+    acceleratedRaycast,
+    computeBoundsTree,
+    disposeBoundsTree,
+    MeshBVH,
+} from 'three-mesh-bvh';
+
+// ── BVH acceleration ────────────────────────────────────────────────────
+// Patch Three.js Mesh/BufferGeometry once at module load so every fragment
+// mesh added to the scene picks up BVH-accelerated raycasting automatically.
+// This makes selection / measurement / section / context-menu raycasts
+// 10–100× faster on large models (per three-mesh-bvh benchmarks).
+(THREE.BufferGeometry.prototype as any).computeBoundsTree = computeBoundsTree;
+(THREE.BufferGeometry.prototype as any).disposeBoundsTree = disposeBoundsTree;
+(THREE.Mesh.prototype as any).raycast = acceleratedRaycast;
+
+/**
+ * Build a BVH for every BufferGeometry under an Object3D — but spread the
+ * work across idle frames so the main thread never stalls. A single MeshBVH
+ * for a 200 MB IFC mesh can take 200–500 ms; running them back-to-back on
+ * `onItemSet` would freeze the page for several seconds. We collect candidate
+ * geometries first, then drain the queue one geometry per `requestIdleCallback`
+ * (or `setTimeout(0)` fallback).
+ */
+function scheduleBoundsTreeBuild(root: THREE.Object3D): void {
+    const queue: THREE.BufferGeometry[] = [];
+    root.traverse((obj: any) => {
+        if (!obj.isMesh) return;
+        const geom = obj.geometry as THREE.BufferGeometry | undefined;
+        if (!geom || !geom.attributes?.position) return;
+        if (geom.boundsTree) return;
+        queue.push(geom);
+    });
+    if (queue.length === 0) return;
+
+    const idle = (window as any).requestIdleCallback as
+        | ((cb: (deadline: { timeRemaining: () => number }) => void, opts?: { timeout: number }) => number)
+        | undefined;
+
+    let totalBuilt = 0;
+    const t0 = performance.now();
+
+    const drain = (deadline?: { timeRemaining: () => number }) => {
+        // Always build at least one per tick so progress is guaranteed even
+        // when timeRemaining() is 0 (page busy).
+        let safety = 0;
+        while (queue.length > 0 && safety < 1) {
+            const geom = queue.shift()!;
+            if (!geom.boundsTree) {
+                try {
+                    geom.boundsTree = new MeshBVH(geom, { maxLeafTris: 16 });
+                    totalBuilt++;
+                } catch (err) {
+                    console.warn('[BVH] Failed to build:', err);
+                }
+            }
+            safety++;
+            // If we have idle time, keep going within this tick.
+            if (deadline && deadline.timeRemaining() < 4) break;
+        }
+
+        if (queue.length > 0) {
+            if (idle) idle(drain, { timeout: 200 });
+            else setTimeout(() => drain(), 0);
+        } else {
+            console.log(`[BVH] Built ${totalBuilt} bounds trees in ${(performance.now() - t0).toFixed(0)}ms`);
+        }
+    };
+
+    if (idle) idle(drain, { timeout: 200 });
+    else setTimeout(() => drain(), 0);
+}
 
 // ── Sky gradient helper ─────────────────────────
 function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
@@ -53,12 +125,17 @@ export const getSafeCamera = (world: OBC.World | null | undefined): OBC.SimpleCa
     }
 };
 
+export type CameraQuaternionListener = (q: THREE.Quaternion) => void;
+
 export interface BimEngineAPI {
     componentsRef: React.MutableRefObject<OBC.Components | null>;
     worldRef: React.MutableRefObject<OBC.World | null>;
     ifcLoaderRef: React.MutableRefObject<OBC.IfcLoader | null>;
     viewerReady: boolean;
-    cameraQuaternion: THREE.Quaternion;
+    /** Read current camera quaternion imperatively without triggering React re-renders */
+    cameraQuaternionRef: React.MutableRefObject<THREE.Quaternion>;
+    /** Subscribe to camera quaternion changes (throttled per frame). Returns unsubscribe fn. */
+    subscribeCameraQuaternion: (listener: CameraQuaternionListener) => () => void;
     initError: string | null;
     // Camera actions
     setView: (view: string) => void;
@@ -77,6 +154,8 @@ export interface BimEngineAPI {
     aoEnabled: boolean;
     toggleEdgeOutline: (enabled: boolean) => void;
     toggleAO: (enabled: boolean) => void;
+    /** Request a single re-render on the next animation frame (for render-on-demand mode). */
+    requestRender: () => void;
 }
 
 export function useBimEngine(
@@ -88,10 +167,29 @@ export function useBimEngine(
     const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
 
     const [viewerReady, setViewerReady] = useState(false);
-    const [cameraQuaternion, setCameraQuaternion] = useState(() => new THREE.Quaternion());
+    const cameraQuaternionRef = useRef<THREE.Quaternion>(new THREE.Quaternion());
+    const cameraQListenersRef = useRef<Set<CameraQuaternionListener>>(new Set());
     const [initError, setInitError] = useState<string | null>(null);
     const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(false);
     const [aoEnabled, setAoEnabled] = useState(false);
+
+    const subscribeCameraQuaternion = useCallback((listener: CameraQuaternionListener) => {
+        cameraQListenersRef.current.add(listener);
+        // Push current value immediately so subscribers can initialize
+        listener(cameraQuaternionRef.current);
+        return () => {
+            cameraQListenersRef.current.delete(listener);
+        };
+    }, []);
+
+    // Render-on-demand: external callers (selection change, section change,
+    // material toggle, etc.) call requestRender() to schedule a frame. The
+    // engine's animation loop also requests on camera updates. When idle, no
+    // frames are drawn → big battery / GPU win on laptops/tablets.
+    const renderDirtyRef = useRef(true);
+    const requestRender = useCallback(() => {
+        renderDirtyRef.current = true;
+    }, []);
 
     // ── Initialize engine ───────────────────────────
     useEffect(() => {
@@ -200,9 +298,11 @@ export function useBimEngine(
                 // ── Initialize components AFTER scene+renderer+camera are all set ──
                 await components.init();
 
-                // Postproduction — disable all effects individually for performance
-                // (Keep postproduction.enabled = true so the renderer pipeline works,
-                //  but all actual effects are off — minimal overhead)
+                // Postproduction — keep the master switch ON so the renderer's internal
+                // basePass is initialized (the `enabled` setter dereferences basePass and
+                // throws "Base pass not initialized" if flipped before first render). The
+                // individual effects (outline / gloss / gamma) are all OFF by default, so
+                // the pipeline is effectively a pass-through until the user toggles one.
                 const postproduction = (world.renderer as any).postproduction;
                 if (postproduction) {
                     postproduction.enabled = true;
@@ -252,10 +352,17 @@ export function useBimEngine(
                 (window as any).world = world;
                 (window as any).fragments = fragments;
 
-                // Camera update for fragments
-                world.camera.controls.addEventListener('update', () => fragments.core.update());
+                // Camera update for fragments + mark dirty so the loop redraws
+                world.camera.controls.addEventListener('update', () => {
+                    fragments.core.update();
+                    renderDirtyRef.current = true;
+                });
+                world.camera.controls.addEventListener('rest', () => {
+                    // After motion settles, do one extra render to flush any LOD/streaming
+                    renderDirtyRef.current = true;
+                });
 
-                // Auto-add loaded models to scene
+                // Auto-add loaded models to scene + build BVH for raycast acceleration
                 fragments.list.onItemSet.add(({ value: model }: any) => {
                     try {
                         if (typeof model.useCamera === 'function') {
@@ -268,21 +375,36 @@ export function useBimEngine(
                         if (fragments.core && typeof fragments.core.update === 'function') {
                             fragments.core.update(true);
                         }
+                        // Build BVH after geometry is in place. Spread the work
+                        // across idle frames so the renderer stays responsive even
+                        // for large models. Run twice — once now and once after
+                        // streaming tiles have likely landed.
+                        if (targetObj) {
+                            scheduleBoundsTreeBuild(targetObj);
+                            setTimeout(() => scheduleBoundsTreeBuild(targetObj), 2500);
+                        }
                     } catch (e) {
                         console.error('[BimEngine] Error adding model to scene:', e);
                     }
                 });
 
-                // Remove z-fighting on materials
+                // Reduce z-fighting on coplanar surfaces. Previously polygonOffsetFactor
+                // used Math.random() per material — this gave each material a unique factor
+                // (good for separating overlapping floors) but defeats material batching and
+                // creates unique GPU pipeline state per material. A small constant gives the
+                // same visual result without breaking instancing.
                 fragments.core.models.materials.list.onItemSet.add(({ value: material }: any) => {
                     if (!('isLodMaterial' in material && material.isLodMaterial)) {
                         material.polygonOffset = true;
                         material.polygonOffsetUnits = 1;
-                        material.polygonOffsetFactor = Math.random();
+                        material.polygonOffsetFactor = 0.5;
                     }
                 });
 
-                // Setup IFC loader
+                // Setup IFC loader. For project IFCs up to ~500 MB the parser needs
+                // significantly more WASM heap than the 2 GB default — we cap at 4 GB
+                // (the practical wasm32 ceiling) which gives ~6–8× the raw IFC size to
+                // work with after geometry inflation.
                 const ifcLoader = components.get(OBC.IfcLoader);
                 await ifcLoader.setup({
                     autoSetWasm: false,
@@ -293,8 +415,10 @@ export function useBimEngine(
                         OPTIMIZE_PROFILES: true,
                         // @ts-ignore
                         USE_FAST_BOOLS: true,
-                        // Cung cấp thêm bộ nhớ RAM cho WASM (2GB = 2147483648 bytes)
-                        MEMORY_LIMIT: 2147483648
+                        // 4 GB WASM heap — required for IFCs in the 200–500 MB range.
+                        // (wasm32 hard caps at 4 GB; larger files MUST go through
+                        // the server-side converter — see ifc-converter-api.)
+                        MEMORY_LIMIT: 4294967295
                     }
                 });
                 ifcLoaderRef.current = ifcLoader;
@@ -319,13 +443,15 @@ export function useBimEngine(
                 const hoverer = components.get(OBCF.Hoverer);
                 hoverer.enabled = false;
 
-                // Track camera quaternion for ViewCube — optimized to update smoothly using requestAnimationFrame
+                // Track camera quaternion for ViewCube — pushed via ref + listener subscription
+                // (NOT React state) to avoid a top-level re-render on every camera tick.
+                // Listeners (e.g. BimViewCube) update DOM imperatively via their own RAF batching.
                 let lastQStr = '';
                 let animationFrameId: number | null = null;
                 world.camera.controls.addEventListener('update', () => {
                     if (disposed) return;
                     if (animationFrameId !== null) return;
-                    
+
                     animationFrameId = requestAnimationFrame(() => {
                         animationFrameId = null;
                         if (disposed || !world.camera?.three) return;
@@ -333,7 +459,11 @@ export function useBimEngine(
                         const qStr = `${q.x.toFixed(3)},${q.y.toFixed(3)},${q.z.toFixed(3)},${q.w.toFixed(3)}`;
                         if (qStr !== lastQStr) {
                             lastQStr = qStr;
-                            setCameraQuaternion(q.clone());
+                            cameraQuaternionRef.current.copy(q);
+                            cameraQListenersRef.current.forEach((l) => {
+                                try { l(cameraQuaternionRef.current); }
+                                catch (e) { console.warn('[BimEngine] camera quaternion listener error:', e); }
+                            });
                         }
                     });
                 });
@@ -405,10 +535,14 @@ export function useBimEngine(
                     const scene = worldRef.current.scene.three;
                     scene.traverse((object: any) => {
                         if (!object.isMesh) return;
-                        
+
                         // Only dispose meshes that belong to fragments (IFC models)
                         if (object.fragment || object.isInstancedMesh) {
                             if (object.geometry) {
+                                // Release BVH first (frees typed arrays before GC)
+                                if (typeof object.geometry.disposeBoundsTree === 'function') {
+                                    try { object.geometry.disposeBoundsTree(); } catch { /* ignore */ }
+                                }
                                 object.geometry.dispose();
                             }
                             
@@ -987,9 +1121,13 @@ export function useBimEngine(
     }, [worldRef]);
 
     // ── Postproduction toggles ────────────────────────
+    // The master `postproduction.enabled` switch must stay ON once initialized — its
+    // setter touches basePass and throws if flipped before the first render. Instead
+    // we only toggle the individual effects (outline / gloss / gamma); when all are
+    // off the pipeline is a cheap pass-through.
     const toggleEdgeOutline = useCallback((enabled: boolean) => {
         const pp = (worldRef.current?.renderer as any)?.postproduction;
-        if (pp) {
+        if (pp?.customEffects) {
             pp.customEffects.outlineEnabled = enabled;
         }
         setEdgeOutlineEnabled(enabled);
@@ -997,7 +1135,7 @@ export function useBimEngine(
 
     const toggleAO = useCallback((enabled: boolean) => {
         const pp = (worldRef.current?.renderer as any)?.postproduction;
-        if (pp) {
+        if (pp?.customEffects) {
             pp.customEffects.glossEnabled = enabled;
         }
         setAoEnabled(enabled);
@@ -1008,7 +1146,9 @@ export function useBimEngine(
         worldRef,
         ifcLoaderRef,
         viewerReady,
-        cameraQuaternion,
+        cameraQuaternionRef,
+        subscribeCameraQuaternion,
+        requestRender,
         initError,
         setView,
         fitAll,

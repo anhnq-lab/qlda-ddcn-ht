@@ -9,9 +9,12 @@ import {
     uploadIFCFile, getProjectModels,
     downloadFile, deleteModel, updateModelStatus,
     uploadFragments, uploadProperties,
+    saveProjectCoordOffset, loadProjectCoordOffset,
     type BimModel
 } from '../../../../lib/bimStorage';
 import { getSafeCamera } from './useBimEngine';
+import { stringifyOffMain } from './utils/stringifyOffMain';
+import { bimConverterService } from '../../../../services/bimConverterService';
 
 
 // ── Module-level IFC download cache ─────────────────────
@@ -77,19 +80,6 @@ async function getItemsDataInBatches(model: any, localIds: number[], batchSize =
         }
     }
     return properties;
-}
-
-function getCircularReplacer() {
-    const seen = new WeakSet();
-    return (key: string, value: any) => {
-        if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-                return '[Circular]';
-            }
-            seen.add(value);
-        }
-        return value;
-    };
 }
 
 function cleanSpatialTree(node: any): any {
@@ -217,8 +207,8 @@ async function triggerBackgroundMigration(
             spatialTree,
             properties: rawProperties
         };
-        const propertiesJson = JSON.stringify(propertiesData, getCircularReplacer());
-        
+        const propertiesJson = await stringifyOffMain(propertiesData);
+
         // 6. Upload to Supabase Storage
         console.log(`[BimUpload] [Migration] Uploading properties JSON...`);
         await uploadProperties(modelId, projectId, propertiesJson, fileName);
@@ -250,21 +240,37 @@ export function useBimUpload(
     const abortControllerRef = useRef<AbortController | null>(null);
     const [validationError, setValidationError] = useState<string | null>(null);
 
-    // Project-wide offset to coordinate models with large absolute coordinates to local origin
+    // Project-wide offset to coordinate models with large absolute coordinates to local origin.
+    // Persisted in DB (bim_project_settings.coord_offset) so all devices use the same offset;
+    // LocalStorage is kept as a same-session optimistic cache to avoid the round-trip when
+    // re-opening the same project.
     const coordinationOffsetRef = useRef<THREE.Vector3 | null>(null);
 
-    // Pre-load project offset from LocalStorage if available
     useEffect(() => {
-        const savedOffsetStr = localStorage.getItem(`bim_project_offset_${projectID}`);
-        if (savedOffsetStr) {
+        let cancelled = false;
+
+        // 1. Optimistic LocalStorage read for instant render on warm reload
+        const cachedStr = localStorage.getItem(`bim_project_offset_${projectID}`);
+        if (cachedStr) {
             try {
-                const saved = JSON.parse(savedOffsetStr);
-                coordinationOffsetRef.current = new THREE.Vector3(saved.x, saved.y, saved.z);
-                console.log(`[BIM Coordination] Pre-loaded project offset from LocalStorage: (${saved.x}, ${saved.y}, ${saved.z})`);
-            } catch (err) {
-                console.warn('Failed to parse saved project offset:', err);
+                const cached = JSON.parse(cachedStr);
+                if (typeof cached.x === 'number' && typeof cached.y === 'number' && typeof cached.z === 'number') {
+                    coordinationOffsetRef.current = new THREE.Vector3(cached.x, cached.y, cached.z);
+                }
+            } catch {
+                /* ignore parse errors */
             }
         }
+
+        // 2. Authoritative DB read overrides LocalStorage if the server has a value
+        (async () => {
+            const remote = await loadProjectCoordOffset(projectID);
+            if (cancelled || !remote) return;
+            coordinationOffsetRef.current = new THREE.Vector3(remote.x, remote.y, remote.z);
+            localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(remote));
+        })();
+
+        return () => { cancelled = true; };
     }, [projectID]);
 
     const coordinateModel = useCallback((model: any) => {
@@ -308,23 +314,15 @@ export function useBimUpload(
 
         const center = box.getCenter(new THREE.Vector3());
         
-        // If center is far from origin and we don't have a project offset yet, initialize it
+        // If center is far from origin and we don't have a project offset yet, initialize it.
+        // The offset is persisted to the DB so other devices reuse it instead of recomputing
+        // (a different first-loaded model could otherwise pick a different center → misalignment).
         if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000) && !coordinationOffsetRef.current) {
-            // First check LocalStorage to see if there is a saved offset for this project
-            const savedOffsetStr = localStorage.getItem(`bim_project_offset_${projectID}`);
-            if (savedOffsetStr) {
-                try {
-                    const saved = JSON.parse(savedOffsetStr);
-                    coordinationOffsetRef.current = new THREE.Vector3(saved.x, saved.y, saved.z);
-                    console.log(`[BIM Coordination] Restored project offset from LocalStorage: (${saved.x}, ${saved.y}, ${saved.z})`);
-                } catch {
-                    coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
-                }
-            } else {
-                coordinationOffsetRef.current = new THREE.Vector3(center.x, center.y, center.z);
-                localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify({ x: center.x, y: center.y, z: center.z }));
-                console.log(`[BIM Coordination] Set global project offset: (${center.x.toFixed(0)}, ${center.y.toFixed(0)}, ${center.z.toFixed(0)})`);
-            }
+            const offset = { x: center.x, y: center.y, z: center.z };
+            coordinationOffsetRef.current = new THREE.Vector3(offset.x, offset.y, offset.z);
+            localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(offset));
+            void saveProjectCoordOffset(projectID, offset);
+            console.log(`[BIM Coordination] Set global project offset: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
         }
 
         if (coordinationOffsetRef.current) {
@@ -367,7 +365,13 @@ export function useBimUpload(
     }, [projectID]);
 
     // ── File validation ────────────────────────
-    const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250MB
+    // Hard ceiling at 600 MB to leave headroom: the WASM heap (4 GB cap) plus the
+    // JS-side mesh data tends to peak around 6–8 × the raw IFC size on conversion,
+    // so anything beyond ~600 MB should go through the server-side converter.
+    const MAX_FILE_SIZE = 600 * 1024 * 1024; // 600MB
+    // Soft warning threshold — past this we recommend the server pipeline because
+    // single-threaded WASM struggles and the browser tab may OOM.
+    const LARGE_FILE_WARN = 200 * 1024 * 1024; // 200MB
     const validateFile = useCallback((file: File): string | null => {
         const ext = file.name.toLowerCase().split('.').pop();
         if (ext !== 'ifc') {
@@ -545,6 +549,40 @@ export function useBimUpload(
         }
         setValidationError(null);
 
+        // Large-file branch: anything above 200 MB is at the edge of what the
+        // browser WASM parser can reliably handle. If the converter API is
+        // reachable, offer to extract properties + spatial tree server-side
+        // (the fragments themselves still need to be built client-side because
+        // ThatOpen Fragments v3's Node serializer isn't 1:1 with the browser
+        // pipeline). Falls back to browser-only with an explicit warning if the
+        // server isn't reachable.
+        let useServerExtraction = false;
+        if (file.size > LARGE_FILE_WARN) {
+            const sizeMb = (file.size / 1024 / 1024).toFixed(0);
+            const serverAvailable = await bimConverterService.isAvailable();
+            if (serverAvailable) {
+                useServerExtraction = window.confirm(
+                    `File "${file.name}" có dung lượng ${sizeMb} MB.\n\n` +
+                    `Khuyến nghị: convert thuộc tính (properties + spatial tree) phía server ` +
+                    `để giảm tải cho trình duyệt. Hình học (.frag) vẫn được tạo trên trình duyệt.\n\n` +
+                    `OK = dùng server converter (nhanh hơn, ổn định hơn)\n` +
+                    `Cancel = convert toàn bộ trên trình duyệt (có thể chậm hoặc crash)`
+                );
+            } else {
+                const proceed = window.confirm(
+                    `File "${file.name}" có dung lượng ${sizeMb} MB.\n\n` +
+                    `Server converter chưa khả dụng (ifc-converter-api). ` +
+                    `Convert trên trình duyệt cần nhiều RAM — tab có thể chậm hoặc crash.\n\n` +
+                    `Vẫn tiếp tục?`
+                );
+                if (!proceed) {
+                    setValidationError(`Đã hủy upload "${file.name}".`);
+                    setTimeout(() => setValidationError(null), 6000);
+                    return;
+                }
+            }
+        }
+
         try {
             setStatus('loading');
             setStatusMessage(`Đang upload ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
@@ -611,21 +649,54 @@ export function useBimUpload(
             let updatedRecord = record;
             try {
                 setStatus('converting');
-                setStatusMessage(`Đang trích xuất thuộc tính mô hình...`);
-                
-                // Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
-                const localIds = await (model as any).getLocalIds();
-                const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
-                
-                // Extract spatial tree
-                const rawSpatialTree = await (model as any).getSpatialStructure();
-                const spatialTree = cleanSpatialTree(rawSpatialTree);
-                
-                propertiesData = {
-                    spatialTree,
-                    properties: rawProperties
-                };
-                const propertiesJson = JSON.stringify(propertiesData, getCircularReplacer());
+
+                let propertiesJson: string;
+                if (useServerExtraction) {
+                    setStatusMessage(`Đang chuyển ${file.name} sang server converter...`);
+                    const { jobId } = await bimConverterService.extractProperties(file);
+                    const finalStatus = await bimConverterService.pollUntilDone(jobId, {
+                        intervalMs: 2500,
+                        onTick: (s) => {
+                            const pct = 85 + Math.round((s.progress / 100) * 5); // 85 → 90
+                            setLoadingProgress(pct);
+                            setStatusMessage(`Server: ${s.stage} (${s.progress}%) — ${s.elementCount ?? '?'} elements`);
+                        },
+                    });
+
+                    // Pull back properties + spatial JSON
+                    const propsBuf = await bimConverterService.downloadProperties(jobId);
+                    const spatialBuf = await bimConverterService.downloadSpatial(jobId);
+                    const propsText = new TextDecoder('utf-8').decode(propsBuf);
+                    const spatialText = new TextDecoder('utf-8').decode(spatialBuf);
+                    const rawProperties = JSON.parse(propsText);
+                    const rawSpatialTree = JSON.parse(spatialText);
+
+                    propertiesData = {
+                        spatialTree: cleanSpatialTree(rawSpatialTree.properties || rawSpatialTree),
+                        properties: rawProperties,
+                    };
+                    propertiesJson = await stringifyOffMain(propertiesData);
+
+                    // Best-effort cleanup of converter temp files
+                    void bimConverterService.deleteJob(jobId);
+                    console.log(`[BimUpload] Server extraction done in job ${jobId}, ${finalStatus.elementCount} elements`);
+                } else {
+                    setStatusMessage(`Đang trích xuất thuộc tính mô hình...`);
+
+                    // Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
+                    const localIds = await (model as any).getLocalIds();
+                    const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
+
+                    // Extract spatial tree
+                    const rawSpatialTree = await (model as any).getSpatialStructure();
+                    const spatialTree = cleanSpatialTree(rawSpatialTree);
+
+                    propertiesData = {
+                        spatialTree,
+                        properties: rawProperties
+                    };
+                    propertiesJson = await stringifyOffMain(propertiesData);
+                }
                 
                 setStatusMessage(`Đang lưu trữ dữ liệu mô hình...`);
                 

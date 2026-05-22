@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mail, Phone, ClipboardList, FolderOpen } from 'lucide-react';
 import { Employee, EmployeeStatus, Role } from '../../../types';
+import { Avatar } from '../../../components/ui';
 import { WorkloadData } from '../hooks/useEmployeeList';
 
 const getRoleInfo = (role: Role) => {
@@ -46,12 +47,13 @@ const EmployeeGridView: React.FC<EmployeeGridViewProps> = ({
                         {/* Avatar overlapping */}
                         <div className="px-5 -mt-10 relative z-10">
                             <div className="relative inline-block">
-                                <img
-                                    src={emp.AvatarUrl}
-                                    alt={emp.FullName}
-                                    className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-sm"
+                                <Avatar
+                                    name={emp.FullName}
+                                    imageUrl={emp.AvatarUrl}
+                                    size="xl"
+                                    ringColor="ring-4 ring-white dark:ring-slate-800"
                                 />
-                                <div className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                                <div className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-800 ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                             </div>
                         </div>
 

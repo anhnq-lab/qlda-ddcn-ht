@@ -41,7 +41,8 @@ interface PackageTableProps {
 
 const SELECTION_METHOD_LABELS: Record<string, string> = {
     OpenBidding: 'Đấu thầu rộng rãi',
-    Appointed: 'Chỉ định thầu',
+    Appointed: 'Chỉ định thầu thông thường',
+    AppointedSimplified: 'Chỉ định thầu rút gọn',
     LimitedBidding: 'Đấu thầu hạn chế',
     CompetitiveNegotiation: 'Chào hàng cạnh tranh',
     DirectShopping: 'Mua sắm trực tiếp',

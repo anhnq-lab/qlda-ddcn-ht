@@ -2,10 +2,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, Employee, ProjectGroup, Project } from '@/types';
+import { DEPARTMENT_CODES } from '@/types/plan.types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
     FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink, ListPlus, Paperclip, Upload, X, Trash2
 } from 'lucide-react';
+
+const isDepartmentCode = (id: string | null | undefined): boolean => {
+    if (!id) return false;
+    return (DEPARTMENT_CODES as readonly string[]).includes(id.toUpperCase());
+};
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
 import { PhaseProgressCard } from '../PhaseProgressCard';
@@ -100,7 +106,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 Priority: TaskPriority.Medium,
                 StartDate: wt.start_date || wt.created_at,
                 DueDate: wt.due_date || undefined,
-                AssigneeID: wt.assignee_id || wt.metadata?.assignee_role || '',
+                AssigneeID: wt.assignee_id || '',
                 TimelineStep: wt.node_id || '',
                 StepCode: wt.node_id || '',
                 LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
@@ -114,6 +120,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 Dependencies: wt.metadata?.dependencies || [],
                 EstimatedCost: wt.metadata?.estimated_cost,
                 ActualCost: wt.metadata?.actual_cost,
+                Metadata: wt.metadata || {},
             } as Task;
         });
     }, [workflowTasks, projectID]);
@@ -311,7 +318,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     DueDate: agg.dueDate,
                     Status: agg.status,
                     Priority: TaskPriority.Medium,
-                    Description: 'Tổng hợp từ các công việc con',
+                    Description: 'Tổng hợp từ các công việc thuộc các bước',
                     AssigneeID: '',
                     TimelineStep: item.code,
                     ProjectID: projectID || 'SYNTHETIC',
@@ -487,7 +494,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             due_date: taskData.DueDate,
             actual_start_date: taskData.ActualStartDate,
             actual_end_date: taskData.ActualEndDate,
-            assignee_id: (taskData.AssigneeID && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskData.AssigneeID)) ? taskData.AssigneeID : currentUserId,
+            assignee_id: taskData.AssigneeID && !isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : (isDepartmentCode(taskData.AssigneeID) ? null : currentUserId),
             project_id: projectID,
             task_type: 'project',
             workflow_node_id: taskData.TimelineStep || taskData.StepCode || selectedStep?.code || null,
@@ -499,7 +506,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
             metadata: {
                 ui_status: taskData.Status,
-                assignee_role: taskData.AssigneeID && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskData.AssigneeID) ? taskData.AssigneeID : undefined,
+                assignee_role: taskData.AssigneeID && isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : undefined,
                 sub_tasks: taskData.SubTasks,
                 attachments: taskData.Attachments,
                 dependencies: taskData.Dependencies,

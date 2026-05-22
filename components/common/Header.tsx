@@ -7,6 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { UserProfilePanel } from '../../features/profile/UserProfilePanel';
 import { ProjectHeaderFilters } from './ProjectHeaderFilters';
+import { Avatar } from '../ui';
 
 interface HeaderProps {
     onOpenSearch: () => void;
@@ -117,19 +118,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                         onClick={() => setShowUserMenu(!showUserMenu)}
                         className="flex items-center gap-2.5 p-1.5 pr-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                     >
-                        {currentUser?.AvatarUrl ? (
-                            <img
-                                src={currentUser.AvatarUrl}
-                                alt={currentUser?.FullName || 'User'}
-                                className="w-8 h-8 rounded-full object-cover ring-2 ring-primary-100 dark:ring-primary-900/50"
-                            />
-                        ) : (
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center ring-2 ring-primary-100 dark:ring-primary-900/50 shadow-lg">
-                                <span className="text-white text-xs font-bold">
-                                    {currentUser?.FullName?.charAt(0) || 'U'}
-                                </span>
-                            </div>
-                        )}
+                        <Avatar
+                            name={currentUser?.FullName || 'User'}
+                            imageUrl={currentUser?.AvatarUrl}
+                            size="sm"
+                            ringColor="ring-primary-100 dark:ring-primary-900/50"
+                        />
                         <div className="hidden sm:block text-left max-w-[120px]">
                             <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight">
                                 {currentUser?.FullName || 'Khách'}
@@ -146,19 +140,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                         <div className="user-dropdown absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
                             <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                 <div className="flex items-center gap-3">
-                                    {currentUser?.AvatarUrl ? (
-                                        <img
-                                            src={currentUser.AvatarUrl}
-                                            alt={currentUser?.FullName || 'User'}
-                                            className="w-10 h-10 rounded-full object-cover shrink-0"
-                                        />
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shrink-0">
-                                            <span className="text-white text-sm font-bold">
-                                                {currentUser?.FullName?.charAt(0) || 'U'}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <Avatar
+                                        name={currentUser?.FullName || 'User'}
+                                        imageUrl={currentUser?.AvatarUrl}
+                                        size="md"
+                                    />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                                             {currentUser?.FullName || 'Người dùng'}

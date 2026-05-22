@@ -4,11 +4,12 @@ import { MonthlyBriefingTab } from './components/MonthlyBriefingTab';
 import { AITab } from './components/AITab';
 import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
 import { MANAGEMENT_BOARDS } from '../../types';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 import { Clock, ChevronDown, Building2, Filter, X } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'monthly' | 'ai'>('overview');
+    const [activeTab, setActiveTab] = useTabSearchParam<'overview' | 'monthly' | 'ai'>('overview', ['overview', 'monthly', 'ai'] as const, 'tab');
 
     // ── Shared Filters (dùng chung cho cả 2 tab) ──
     const currentYear = new Date().getFullYear();

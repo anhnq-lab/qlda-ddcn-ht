@@ -40,7 +40,7 @@ const EMPTY_FILTERS: CDEFilters = { status: [], discipline: [], docType: [], dat
 
 const CDEPage: React.FC = () => {
     const { currentUser, userType, contractorId } = useAuth();
-    const { scopedProjects: allProjects } = useScopedProjects();
+    const { scopedProjects: allProjects } = useScopedProjects({ pageSize: 9999 });
     const { contracts } = useContracts();
     const { biddingPackages } = useAllBiddingPackages();
 

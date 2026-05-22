@@ -66,7 +66,7 @@ const roleDefaultsCache = new Map<SystemRole, Map<string, PermissionAction[]>>()
 // ─── Provider ─────────────────────────────────────────────
 
 export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { currentUser, userType, isAuthenticated } = useAuth();
+    const { currentUser, userType, isAuthenticated, isLoading: authLoading } = useAuth();
     const { impersonatedUser, isImpersonating } = useImpersonation();
 
     // The "effective" user: impersonated user takes priority
@@ -150,6 +150,14 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
     // ── Fetch permissions from DB ──────────────────────────
     const fetchPermissions = useCallback(async () => {
+        if (authLoading) {
+            setState(prev => {
+                if (prev.loading && !prev.loaded) return prev;
+                return { ...prev, loading: true, loaded: false };
+            });
+            return;
+        }
+
         const userId = effectiveUser?.EmployeeID;
 
         // Fetch DB role defaults concurrently or fallback to cache
@@ -157,13 +165,16 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
         // Not logged in → clear state
         if (!userId || !isAuthenticated) {
-            setState({
-                permissionMap: new Map(),
-                systemRole: 'staff',
-                isGlobalScope: false,
-                loading: false,
-                loaded: true,
-                cachedForUserId: null,
+            setState(prev => {
+                if (prev.cachedForUserId === null && !prev.loading && prev.loaded) return prev;
+                return {
+                    permissionMap: new Map(),
+                    systemRole: 'staff',
+                    isGlobalScope: false,
+                    loading: false,
+                    loaded: true,
+                    cachedForUserId: null,
+                };
             });
             return;
         }
@@ -273,16 +284,18 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 cachedForUserId: userId,
             }));
         }
-    }, [effectiveUser?.EmployeeID, systemRole, isGlobalScope, isAuthenticated, fetchRoleDefaults]);
+    }, [effectiveUser?.EmployeeID, systemRole, isGlobalScope, isAuthenticated, fetchRoleDefaults, authLoading]);
 
-    // Re-fetch when effective user or impersonation changes
+    // Re-fetch when effective user, impersonation, or auth loading changes
     useEffect(() => {
         const userId = effectiveUser?.EmployeeID ?? null;
-        // Only re-fetch if user has actually changed
-        if (state.cachedForUserId !== userId) {
+        // Re-fetch if:
+        // 1. The user has actually changed
+        // 2. Auth loading has just finished, to transition out of the loading state
+        if (state.cachedForUserId !== userId || !authLoading) {
             fetchPermissions();
         }
-    }, [effectiveUser?.EmployeeID, isImpersonating]);
+    }, [effectiveUser?.EmployeeID, isImpersonating, authLoading]);
 
     // Public refresh (e.g., after admin saves permissions for themselves)
     const refreshPermissions = useCallback(async () => {

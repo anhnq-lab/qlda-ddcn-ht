@@ -37,6 +37,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
   const [unit, setUnit] = useState('Bộ');
   const [quantity, setQuantity] = useState(1);
   const [location, setLocation] = useState('');
+  const [branch, setBranch] = useState('');
   const [department, setDepartment] = useState('');
   const [custodianId, setCustodianId] = useState('');
   const [projectId, setProjectId] = useState('');
@@ -64,6 +65,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         setUnit(editAsset.unit || 'Bộ');
         setQuantity(editAsset.quantity || 1);
         setLocation(editAsset.location || '');
+        setBranch((editAsset as any).branch || '');
         setDepartment(editAsset.department || '');
         setCustodianId(editAsset.custodian_id || '');
         setProjectId(editAsset.project_id || '');
@@ -84,6 +86,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         setUnit('Bộ');
         setQuantity(1);
         setLocation('');
+        setBranch('');
         setDepartment('');
         setCustodianId('');
         setProjectId('');
@@ -131,6 +134,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         unit,
         quantity,
         location: location || null,
+        branch: branch || null,
         department: department || null,
         custodian_id: custodianId || null,
         project_id: projectId || null,
@@ -285,19 +289,46 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               <Shield className="w-4 h-4 text-primary-500" />
               Bộ phận quản lý & Bàn giao
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-                  Bộ phận/Phòng ban quản lý
+                  Chi nhánh / Văn phòng
                 </label>
-                <input
-                  type="text"
+                <select
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                >
+                  <option value="">-- Chọn chi nhánh --</option>
+                  {['Trụ sở chính', 'Can Lộc', 'Thạch Hà', 'Hương Khê', 'Cẩm xuyên', 'Đức Thọ', 'Vũ Quang'].map(b => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                  Phòng ban nội bộ
+                </label>
+                <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="Ví dụ: Phòng Tổ chức - Hành chính"
                   className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                />
+                >
+                  <option value="">-- Chọn phòng ban --</option>
+                  {[
+                    'Ban Giám đốc',
+                    'Phòng Hành chính - Tổng hợp',
+                    'Phòng Kỹ thuật - Thẩm định',
+                    'Phòng Tài chính - Kế toán',
+                    'Phòng Quản lý Dự án 1',
+                    'Phòng Quản lý Dự án 2',
+                    'Phòng Quản lý Dự án 3',
+                  ].map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -387,15 +418,22 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                   Tỷ lệ hao mòn (% / năm)
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={depreciationRate}
-                  onChange={(e) => setDepreciationRate(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    value={depreciationRate}
+                    onChange={(e) => setDepreciationRate(Number(e.target.value))}
+                    className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  />
+                  {depreciationRate > 0 && (
+                    <div className="px-3 py-2 text-sm border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 whitespace-nowrap font-semibold">
+                      {Math.round(100 / depreciationRate)} năm
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>

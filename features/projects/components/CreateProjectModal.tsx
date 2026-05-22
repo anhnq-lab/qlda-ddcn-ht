@@ -219,7 +219,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 OldInvestor: editProject.OldInvestor || '',
                 TransferDecision: editProject.TransferDecision || '',
                 CurrentStatusCode: editProject.CurrentStatusCode || null,
-                SpecialtyType: editProject.SpecialtyType || '',
+                SpecialtyType: (((editProject.SpecialtyType as any) === 'civil' || (editProject.SpecialtyType as any) === 'industrial')
+                    ? 'civil_industrial'
+                    : ((editProject.SpecialtyType as any) === 'transportation')
+                        ? 'transport_urban'
+                        : ((editProject.SpecialtyType as any) === 'agriculture')
+                            ? 'agriculture_rural'
+                            : editProject.SpecialtyType || '') as any,
                 SpecialtyDetails: editProject.SpecialtyDetails || '',
             });
         } else if (isOpen && !editProject) {

@@ -54,16 +54,30 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
     const queryClient = useQueryClient();
     const isEditing = !!existingContract;
 
+    const getOneDayAfter = (dateStr?: string | null): string => {
+        if (!dateStr) return new Date().toISOString().split('T')[0];
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
+            d.setDate(d.getDate() + 1);
+            return d.toISOString().split('T')[0];
+        } catch {
+            return new Date().toISOString().split('T')[0];
+        }
+    };
+
+    const defaultDate = getOneDayAfter(pkg.ApprovalDate_Result || pkg.DecisionDate);
+
     const [form, setForm] = useState<FormData>({
         contractId: existingContract?.ContractID || '',
         contractName: existingContract?.ContractName || pkg.PackageName || '',
-        signDate: existingContract?.SignDate || new Date().toISOString().split('T')[0],
+        signDate: existingContract?.SignDate || defaultDate,
         value: existingContract ? String(existingContract.Value) : String(pkg.WinningPrice || pkg.Price || 0),
         advanceRate: existingContract ? String(existingContract.AdvanceRate) : '15',
         warranty: existingContract ? String(existingContract.Warranty) : (pkg.Field === 'Construction' ? '24' : '12'),
         scope: existingContract?.Scope || '',
         durationMonths: existingContract?.DurationMonths ? String(existingContract.DurationMonths) : '',
-        startDate: existingContract?.StartDate || '',
+        startDate: existingContract?.StartDate || defaultDate,
         endDate: existingContract?.EndDate || '',
         paymentTerms: existingContract?.PaymentTerms || '',
     });

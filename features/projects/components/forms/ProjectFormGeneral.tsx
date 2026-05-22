@@ -78,11 +78,10 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             onChange={e => updateField('SpecialtyType', e.target.value)}
                         >
                             <option value="">-- Chọn chuyên ngành --</option>
-                            <option value="civil">Dân dụng</option>
-                            <option value="industrial">Công nghiệp</option>
-                            <option value="transportation">Giao thông</option>
-                            <option value="agriculture">Nông nghiệp & PTNT</option>
-                            <option value="technical_infrastructure">Hạ tầng kỹ thuật</option>
+                            <option value="civil_industrial">Dân dụng & Công nghiệp</option>
+                            <option value="transport_urban">Giao thông & Đô thị</option>
+                            <option value="agriculture_rural">Nông nghiệp & PTNT</option>
+                            <option value="mixed">Hỗn hợp</option>
                             <option value="other">Khác</option>
                         </select>
                         <Layers className={iconClass} />

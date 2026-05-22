@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Briefcase, FileText, CreditCard,
     Search, ChevronRight, Clock, ChevronDown,
     CheckCircle2, Circle, AlertTriangle, XCircle,
-    Building2, DollarSign, TrendingUp, BarChart3, Bell, Globe, Eye, Filter, Download, RefreshCw
+    Building2, DollarSign, TrendingUp, BarChart3, Bell, Globe, Eye, Filter, Download, RefreshCw,
+    Plus, ArrowUpDown, ArrowUp, ArrowDown, Package2
 } from 'lucide-react';
 import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
-import { exportBiddingReportBieu01A } from '../../utils/exportBiddingReport';
+// exportBiddingReportBieu01A: lazy-loaded inside the click handler to keep exceljs out of the initial bundle
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
 import { useAuth } from '../../context/AuthContext';
@@ -16,6 +17,8 @@ import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { StatCard } from '../../components/ui';
+import { useSlidePanel } from '../../context/SlidePanelContext';
+import { BiddingPackagePanel } from '../projects/components/BiddingPackagePanel';
 
 // Shared prop type for project filter
 export interface ProjectFilterProps {
@@ -49,30 +52,41 @@ const TABS: TabDef[] = [
 
 const BiddingContractPage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const initialTab = (searchParams.get('tab') as TabKey) || 'packages';
     const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
-    const [projectFilter, setProjectFilter] = useState<string>('all');
+    const [projectFilter, setProjectFilter] = useState<string>(searchParams.get('projectId') || 'all');
     const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
+    const { openPanel, closePanel } = useSlidePanel();
+    const [addPkgDropdownOpen, setAddPkgDropdownOpen] = useState(false);
+    const addPkgRef = useRef<HTMLDivElement>(null);
+
+    // Sync projectId từ URL (khi navigate từ ProjectPackagesTab)
+    useEffect(() => {
+        const urlProjectId = searchParams.get('projectId');
+        if (urlProjectId && urlProjectId !== projectFilter) {
+            setProjectFilter(urlProjectId);
+        }
+    }, [searchParams]);
 
     // Data for project filter dropdown
+    // Dùng biddingPackages trực tiếp (không filter theo scopedProjectIds)
+    // vì scopedProjectIds chỉ có 50 dự án đầu, RLS đã đảm bảo quyền truy cập
     const { biddingPackages } = useAllBiddingPackages();
-    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
-
-    const scopedPackages = useMemo(() => {
-        return biddingPackages.filter(p => scopedProjectIds.has(p.ProjectID));
-    }, [biddingPackages, scopedProjectIds]);
+    // Load ALL projects với pageSize lớn để lấy tên dự án cho mọi gói thầu
+    const { scopedProjects: projects } = useScopedProjects({ pageSize: 9999 });
 
     const availableProjects = useMemo(() => {
-        const projectIds = Array.from(new Set(scopedPackages.map(p => p.ProjectID)));
+        const projectIds = Array.from(new Set(biddingPackages.map(p => p.ProjectID)));
         return projectIds.map((id: string) => {
             const project = projects.find(p => p.ProjectID === id);
             return {
                 id,
-                name: project?.ProjectName || '—',
-                count: scopedPackages.filter(p => p.ProjectID === id).length,
+                name: project?.ProjectName || id,
+                count: biddingPackages.filter(p => p.ProjectID === id).length,
             };
         }).sort((a, b) => b.count - a.count);
-    }, [scopedPackages, projects]);
+    }, [biddingPackages, projects]);
 
     const selectedProjectName = projectFilter === 'all'
         ? 'Tất cả dự án'
@@ -87,14 +101,43 @@ const BiddingContractPage: React.FC = () => {
         }
     }, [isProjectDropdownOpen]);
 
+    // Close add-package dropdown on outside click
+    React.useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (addPkgRef.current && !addPkgRef.current.contains(e.target as Node)) {
+                setAddPkgDropdownOpen(false);
+            }
+        };
+        if (addPkgDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [addPkgDropdownOpen]);
+
     const handleTabChange = (tab: TabKey) => {
         setActiveTab(tab);
         setSearchParams({ tab }, { replace: true });
     };
 
+    /** Mở BiddingPackagePanel để thêm gói thầu cho dự án đã chọn */
+    const handleAddPackage = (projectId: string) => {
+        setAddPkgDropdownOpen(false);
+        openPanel({
+            title: 'Thêm mới gói thầu',
+            icon: <Package2 className="w-5 h-5 text-primary-500" />,
+            component: (
+                <BiddingPackagePanel
+                    projectId={projectId}
+                    onClose={() => closePanel()}
+                />
+            ),
+            width: '50vw'
+        });
+    };
+
     return (
         <div className="space-y-5 animate-in fade-in duration-500">
-            {/* Tab Navigation + Project Filter */}
+            {/* Tab Navigation + Project Filter + Add Button */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-1.5">
                 <div className="flex items-center gap-1">
                     {TABS.map((tab) => {
@@ -120,6 +163,50 @@ const BiddingContractPage: React.FC = () => {
 
                     {/* Spacer */}
                     <div className="flex-1" />
+
+                    {/* Nút Thêm gói thầu (chỉ hiện ở tab packages) */}
+                    {activeTab === 'packages' && (
+                        <div className="relative" ref={addPkgRef}>
+                            <button
+                                onClick={() => setAddPkgDropdownOpen(!addPkgDropdownOpen)}
+                                className="flex items-center gap-2 px-3.5 py-2.5 text-xs font-bold rounded-xl bg-primary-600 hover:bg-primary-700 text-white shadow-sm transition-all duration-200 cursor-pointer"
+                            >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Thêm gói thầu</span>
+                                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${addPkgDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {addPkgDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-1.5 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="px-4 py-2.5 border-b border-gray-100 dark:border-slate-700">
+                                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-slate-400">Chọn dự án để thêm gói thầu</p>
+                                    </div>
+                                    <div className="max-h-56 overflow-y-auto">
+                                        {availableProjects.length === 0 ? (
+                                            <p className="px-4 py-3 text-xs text-gray-400 dark:text-slate-400 italic">Không có dự án nào</p>
+                                        ) : availableProjects.map(proj => (
+                                            <button
+                                                key={proj.id}
+                                                onClick={() => handleAddPackage(proj.id)}
+                                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer text-left"
+                                            >
+                                                <span className="truncate max-w-[220px]">{proj.name}</span>
+                                                <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0 ml-2">{proj.count} gói</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="border-t border-gray-100 dark:border-slate-700 px-3 py-2">
+                                        <button
+                                            onClick={() => { setAddPkgDropdownOpen(false); navigate('/projects'); }}
+                                            className="w-full text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline text-left"
+                                        >
+                                            Vào danh sách dự án để chọn →
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Global Project Filter */}
                     <div className="relative" onClick={(e) => e.stopPropagation()}>
@@ -151,7 +238,7 @@ const BiddingContractPage: React.FC = () => {
                                         }`}
                                     >
                                         <span className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" />Tất cả dự án</span>
-                                        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{scopedPackages.length}</span>
+                                        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{biddingPackages.length}</span>
                                     </button>
                                     <div className="h-px bg-gray-100 dark:bg-slate-700" />
                                     {availableProjects.map(proj => (
@@ -271,9 +358,24 @@ function getVietnameseStatus(status: string): string {
 const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => {
     const navigate = useNavigate();
     const { biddingPackages, isLoading } = useAllBiddingPackages();
-    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
+    // pageSize=9999 để load đủ tất cả dự án — tránh bị cắt số trang
+    const { scopedProjects: projects } = useScopedProjects({ pageSize: 9999 });
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | PackageStatus>('all');
+    const [sortBy, setSortBy] = useState<'name' | 'price' | 'pct' | null>(null);
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+    const handleSort = (col: 'name' | 'price' | 'pct') => {
+        if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+        else { setSortBy(col); setSortDir('asc'); }
+    };
+
+    const SortIcon: React.FC<{ col: 'name' | 'price' | 'pct' }> = ({ col }) => {
+        if (sortBy !== col) return <ArrowUpDown className="w-2.5 h-2.5 opacity-30 inline ml-1" />;
+        return sortDir === 'asc'
+            ? <ArrowUp className="w-2.5 h-2.5 opacity-70 inline ml-1 text-primary-500" />
+            : <ArrowDown className="w-2.5 h-2.5 opacity-70 inline ml-1 text-primary-500" />;
+    };
 
     // === Helpers ===
     const getProjectName = (projectId: string): string => {
@@ -281,10 +383,11 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
         return project?.ProjectName || '—';
     };
 
-    // === Scope filter: only packages for scoped projects ===
-    const scopedPackages = useMemo(() => {
-        return biddingPackages.filter(p => scopedProjectIds.has(p.ProjectID));
-    }, [biddingPackages, scopedProjectIds]);
+    // === Packages — dùng trực tiếp từ getAllBiddingPackages()
+    // KHÔNG filter theo scopedProjectIds vì:
+    // 1. scopedProjectIds chỉ có 50 dự án (page 1 của paginated query)
+    // 2. Supabase RLS đã đảm bảo chỉ trả về packages user có quyền xem
+    const scopedPackages = biddingPackages;
 
 
     // === Stats ===
@@ -305,9 +408,9 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
         };
     }, [scopedPackages, projectFilter]);
 
-    // === Filtering ===
+    // === Filtering + Sorting ===
     const filteredPackages = useMemo(() => {
-        return scopedPackages.filter(p => {
+        let result = scopedPackages.filter(p => {
             const qLower = searchQuery.toLowerCase();
             const projectName = getProjectName(p.ProjectID).toLowerCase();
             const matchesSearch = !searchQuery ||
@@ -319,7 +422,18 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             const matchesProject = projectFilter === 'all' || p.ProjectID === projectFilter;
             return matchesSearch && matchesStatus && matchesProject;
         });
-    }, [scopedPackages, searchQuery, statusFilter, projectFilter, projects]);
+        if (sortBy) {
+            result = [...result].sort((a, b) => {
+                let av: number | string = 0, bv: number | string = 0;
+                if (sortBy === 'name') { av = a.PackageName; bv = b.PackageName; }
+                else if (sortBy === 'price') { av = a.Price || 0; bv = b.Price || 0; }
+                else if (sortBy === 'pct') { av = a.CompletionPct ?? -1; bv = b.CompletionPct ?? -1; }
+                if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av);
+                return sortDir === 'asc' ? (av as number) - (bv as number) : (bv as number) - (av as number);
+            });
+        }
+        return result;
+    }, [scopedPackages, searchQuery, statusFilter, projectFilter, projects, sortBy, sortDir]);
 
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
@@ -423,7 +537,10 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                             Hiển thị {filteredPackages.length} / {scopedPackages.length}
                         </span>
                         <button
-                            onClick={() => exportBiddingReportBieu01A(scopedPackages, projects)}
+                            onClick={async () => {
+                                const { exportBiddingReportBieu01A } = await import('../../utils/exportBiddingReport');
+                                exportBiddingReportBieu01A(scopedPackages, projects);
+                            }}
                             className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-600 transition-colors flex items-center gap-2 hover:shadow-lg"
                             title="Xuất báo cáo đấu thầu Biểu 01A"
                         >
@@ -441,11 +558,27 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                         <thead>
                             <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                                 <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
-                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest min-w-[220px]">Tên gói thầu</th>
+                                <th
+                                    className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest min-w-[220px] cursor-pointer select-none hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                                    onClick={() => handleSort('name')}
+                                >
+                                    Tên gói thầu<SortIcon col="name" />
+                                </th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest min-w-[160px]">Dự án</th>
-                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right whitespace-nowrap">Giá gói thầu</th>
+                                <th
+                                    className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right whitespace-nowrap cursor-pointer select-none hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                                    onClick={() => handleSort('price')}
+                                >
+                                    Giá gói thầu<SortIcon col="price" />
+                                </th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Hình thức LCNT</th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Loại HĐ</th>
+                                <th
+                                    className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center cursor-pointer select-none hover:text-primary-600 dark:hover:text-primary-400 transition-colors whitespace-nowrap"
+                                    onClick={() => handleSort('pct')}
+                                >
+                                    % TH<SortIcon col="pct" />
+                                </th>
                                 <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
                                 <th className="px-4 py-2.5 w-10"></th>
                             </tr>
@@ -514,6 +647,25 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
                                         {/* Contract Type */}
                                         <td className="px-4 py-4 text-center">
                                             <span className="text-xs text-gray-600 dark:text-slate-300">{contractTypeLabel}</span>
+                                        </td>
+
+                                        {/* % Tiến độ thực hiện */}
+                                        <td className="px-4 py-4 text-center">
+                                            {(pkg.Status === PackageStatus.Execution || pkg.Status === PackageStatus.Completed) ? (
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <span className="text-[11px] font-bold text-primary-600 dark:text-primary-400">
+                                                        {pkg.CompletionPct ?? 0}%
+                                                    </span>
+                                                    <div className="w-14 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all"
+                                                            style={{ width: `${pkg.CompletionPct ?? 0}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-gray-300 dark:text-slate-600">—</span>
+                                            )}
                                         </td>
 
                                         {/* Status — TIẾNG VIỆT */}

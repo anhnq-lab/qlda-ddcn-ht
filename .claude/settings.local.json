@@ -123,7 +123,17 @@
       "Bash(powershell -Command \"\\(Get-Content features/workflows/data/seedInternalWorkflows.ts -Raw\\) -replace 'sla: null', 'sla: '''' | Set-Content features/workflows/data/seedInternalWorkflows.ts -Encoding utf8\")",
       "Bash(node -e \"const fs=require\\('fs'\\);const c=fs.readFileSync\\('features/workflows/data/seedInternalWorkflows.ts','utf8'\\);fs.writeFileSync\\('features/workflows/data/seedInternalWorkflows.ts',c.replace\\(/sla: null/g,\\\\\"sla: ''\\\\\"\\),'utf8'\\);console.log\\('done'\\)\")",
       "Bash(Select-String -Pattern \"error TS\")",
-      "Bash(node -e \"const f=require\\('./features/workflows/data/seedInternalWorkflows.ts'\\); console.log\\('ok'\\)\")"
+      "Bash(node -e \"const f=require\\('./features/workflows/data/seedInternalWorkflows.ts'\\); console.log\\('ok'\\)\")",
+      "Bash(echo \"---EXIT=$?---\")",
+      "Bash(Select-String \"public-asset|PublicAsset|public_asset\")",
+      "Bash(find /mnt/d /mnt/c/Users -name \"*hạnh*\" -o -name \"*hanh*\" -o -name \"*Tai san*\" -o -name \"*tai san*\" 2>/dev/null | grep -i \"\\\\.xlsx\\\\|\\\\.xls\" | head -20)",
+      "PowerShell($shell = New-Object -ComObject WScript.Shell; @\\(\"Theo dọi Tài sản cố định Ban Dân dụng  - hạnh.lnk\",\"Theo dọi Tài sản cố định Ban Dân dụng  - hạnh \\(2\\).lnk\",\"Theo dọi Tài sản cố định Ban Dân dụng  - hạnh \\(3\\).lnk\",\"bao-cao-Ban-dan-dung-TSCD.lnk\"\\) | ForEach-Object { $lnk = \"$env:APPDATA\\\\Microsoft\\\\Windows\\\\Recent\\\\$_\"; if \\(Test-Path $lnk\\) { try { $sc = $shell.CreateShortcut\\($lnk\\); \"$_ -> $\\($sc.TargetPath\\)\" } catch {} } })",
+      "Bash(node scripts/inspect-assets-xls.mjs)",
+      "Bash(findstr -i \"supabase\\\\|VITE_\")",
+      "Bash(node scripts/import-assets.mjs)",
+      "Bash(echo \"exitcode=$?\")",
+      "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#\" styles/*.css)",
+      "Bash(grep -nE \"bg-\\\\[\\\\\\\\\\\\\\\\#|theme-light \\\\.bg\" styles/theme-overrides.css)"
     ]
   }
 }

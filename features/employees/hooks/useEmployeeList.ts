@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useTabSearchParam } from '../../../hooks/useTabSearchParam';
 import { useEmployees, useDepartments, useDeleteEmployee, useEmployeeStats } from '../../../hooks/useEmployees';
 import { useTasks } from '../../../hooks/useTasks';
 import { useProjects } from '../../../hooks/useProjects';
@@ -44,10 +44,11 @@ export function useEmployeeList() {
     const [filterRole, setFilterRole] = useState('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
-    // ── Tab state (URL-driven) ──
-    const [searchParams, setSearchParams] = useSearchParams();
-    const activeTab = searchParams.get('tab') || 'list';
-    const setActiveTab = (tab: string) => setSearchParams({ tab });
+    const [activeTab, setActiveTab] = useTabSearchParam<'list' | 'org-chart' | 'evaluation'>(
+        'list',
+        ['list', 'org-chart', 'evaluation'] as const,
+        'tab'
+    );
 
     // ── Data fetching ──
     const { data: employees = [], isLoading } = useEmployees();

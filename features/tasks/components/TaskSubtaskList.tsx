@@ -15,7 +15,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
     return (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Công việc con</h3>
+                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Công việc thuộc bước</h3>
                 <button
                     onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
                     className="p-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl transition-colors"
@@ -27,7 +27,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
             <div className="space-y-2">
                 {(task.SubTasks || []).length === 0 && (
                     <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
-                        <p className="text-xs text-slate-300 dark:text-slate-600 italic">Chưa có công việc con</p>
+                        <p className="text-xs text-slate-300 dark:text-slate-600 italic">Chưa có công việc thuộc bước</p>
                     </div>
                 )}
 
@@ -60,7 +60,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
                         </div>
                         <button
                             onClick={() => {
-                                if (confirm("Xóa công việc con này?")) {
+                                if (confirm("Xóa công việc thuộc bước này?")) {
                                     const updatedSubTasks = (task.SubTasks || []).filter((_, i) => i !== idx);
                                     updateTaskMutation.mutate({ ...task, SubTasks: updatedSubTasks });
                                 }
@@ -78,7 +78,7 @@ export const TaskSubtaskList: React.FC<TaskSubtaskListProps> = ({ task, updateTa
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
-                            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
+                            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc thuộc bước' : 'Thêm công việc thuộc bước'}</h3>
                             <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">✕</button>
                         </div>
                         <form onSubmit={(e) => {

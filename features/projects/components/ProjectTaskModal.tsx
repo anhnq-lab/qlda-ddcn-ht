@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjects } from '@/hooks/useProjects';
 import { useMonthlyPlanItemOptions } from '@/hooks/usePlanData';
+import { DEPARTMENT_NAMES } from '@/types/plan.types';
 
 // ── Date helpers ──
 const todayISO = () => new Date().toISOString();
@@ -239,6 +240,52 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         ? employees.filter(e => projectMemberIds.includes(e.EmployeeID))
         : employees;
 
+    const normalizeDept = (name: string | null | undefined): string => {
+        if (!name) return '';
+        return name
+            .toLowerCase()
+            .replace(/phòng\s+/g, '')
+            .replace(/phong\s+/g, '')
+            .replace(/[\s\-\–\—]/g, '')
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    };
+
+    const isEmployeeInDepartment = (emp: any, deptCode: string): boolean => {
+        if (!deptCode) return false;
+        const empDept = emp.Department || '';
+        const normEmpDept = normalizeDept(empDept);
+        
+        const normDeptCode = normalizeDept(deptCode);
+        if (normEmpDept === normDeptCode) return true;
+        
+        const deptName = (DEPARTMENT_NAMES as any)[deptCode.toUpperCase()] || '';
+        const normDeptName = normalizeDept(deptName);
+        if (normEmpDept === normDeptName) return true;
+        
+        if (deptName && (empDept.toLowerCase().includes(deptName.toLowerCase()) || deptName.toLowerCase().includes(empDept.toLowerCase()))) {
+            return true;
+        }
+        return false;
+    };
+
+    const currentStepCode = stepCode || formData.TimelineStep;
+    const parentStepTask = allTasks.find(t => 
+        t.TimelineStep === currentStepCode && 
+        (t.Metadata?.assignee_role || (t as any).metadata?.assignee_role)
+    );
+    const parentDeptCode = parentStepTask 
+        ? (parentStepTask.Metadata?.assignee_role || (parentStepTask as any).metadata?.assignee_role)
+        : null;
+
+    const filteredEmployees = parentDeptCode
+        ? availableEmployees.filter(emp => isEmployeeInDepartment(emp, parentDeptCode))
+        : [];
+
+    const dropdownEmployees = filteredEmployees.length > 0
+        ? filteredEmployees
+        : availableEmployees;
+
     const isEditMode = !!initialData?.TaskID;
     const project = projects.find(p => p.ProjectID === formData.ProjectID);
     const { openPanel } = useSlidePanel();
@@ -350,7 +397,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     };
 
     const deleteSubTask = (idx: number) => {
-        if (!confirm('Xóa công việc con này?')) return;
+        if (!confirm('Xóa công việc thuộc bước này?')) return;
         const subs = (formData.SubTasks || []).filter((_, i) => i !== idx);
         const updatedData = { ...formData, SubTasks: subs };
         setFormData(updatedData);
@@ -361,7 +408,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         { id: 'basic', label: 'Thông tin cơ bản', icon: <CheckSquare className="w-4 h-4" /> },
         { id: 'schedule', label: 'Lịch & Tiến độ', icon: <Calendar className="w-4 h-4" /> },
         ...(isEditMode ? [
-            { id: 'subtasks', label: `Công việc con (${(formData.SubTasks || []).length})`, icon: <Layers className="w-4 h-4" /> },
+            { id: 'subtasks', label: `Công việc thuộc bước (${(formData.SubTasks || []).length})`, icon: <Layers className="w-4 h-4" /> },
             { id: 'documents', label: `Tài liệu (${(formData.Attachments || []).length + templates.length})`, icon: <Paperclip className="w-4 h-4" /> },
         ] : []),
         { id: 'advanced', label: 'Nâng cao', icon: <Flag className="w-4 h-4" /> },
@@ -623,7 +670,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
                                         >
                                             <option value="">-- Chọn --</option>
-                                            {availableEmployees.map(emp => (
+                                            {dropdownEmployees.map(emp => (
                                                 <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName}</option>
                                             ))}
                                         </select>
@@ -732,7 +779,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                         {activeSection === 'subtasks' && isEditMode && (
                             <>
                                 <div className="flex justify-between items-center">
-                                    <h3 className="text-xs font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest">Công việc con</h3>
+                                    <h3 className="text-xs font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest">Công việc thuộc bước</h3>
                                     <button type="button" onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
                                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors">
                                         <Plus className="w-3.5 h-3.5" /> Thêm
@@ -754,7 +801,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     {(formData.SubTasks || []).length === 0 && (
                                         <div className="text-center py-10 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-xl">
                                             <Layers className="w-8 h-8 text-gray-200 dark:text-slate-600 mx-auto mb-2" />
-                                            <p className="text-xs text-gray-400 italic">Chưa có công việc con</p>
+                                            <p className="text-xs text-gray-400 italic">Chưa có công việc thuộc bước</p>
                                         </div>
                                     )}
                                     {(formData.SubTasks || []).map((sub, idx) => (
@@ -945,7 +992,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md overflow-hidden ring-1 ring-black/5">
                         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
-                            <h3 className="text-base font-bold text-gray-800 dark:text-slate-200">{editingSubTask ? 'Sửa công việc con' : 'Thêm công việc con'}</h3>
+                            <h3 className="text-base font-bold text-gray-800 dark:text-slate-200">{editingSubTask ? 'Sửa công việc thuộc bước' : 'Thêm công việc thuộc bước'}</h3>
                             <button type="button" onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl text-gray-400">✕</button>
                         </div>
                         <form onSubmit={(e) => {
@@ -972,7 +1019,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                 <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">Người thực hiện</label>
                                 <select defaultValue={editingSubTask?.AssigneeID || ''} name="assignee" className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30">
                                     <option value="">-- Chọn --</option>
-                                    {availableEmployees.filter(e => e.Status === 1 || e.Status === 'active' as any).map(e => (
+                                    {dropdownEmployees.filter(e => e.Status === 1 || e.Status === 'active' as any).map(e => (
                                         <option key={e.EmployeeID} value={e.EmployeeID}>{e.FullName} - {e.Department}</option>
                                     ))}
                                 </select>

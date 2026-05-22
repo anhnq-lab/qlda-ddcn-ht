@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, Search, ChevronDown, Check, X } from 'lucide-react';
 import { Employee, SelectedMember } from '../../../../types';
 import { SectionHeader, labelClass } from './FormShared';
+import { Avatar } from '../../../../components/ui';
 
 interface ProjectFormMembersProps {
     formData: Record<string, any>;
@@ -99,10 +100,11 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                         }`}
                                                     >
                                                         <div className="relative">
-                                                            <img
-                                                                src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=32`}
-                                                                alt={emp.FullName}
-                                                                className={`w-8 h-8 rounded-full object-cover shadow-sm transition-transform ${isSelected ? 'scale-95' : ''}`}
+                                                            <Avatar
+                                                                name={emp.FullName}
+                                                                imageUrl={emp.AvatarUrl}
+                                                                size="sm"
+                                                                className={`shadow-sm transition-transform ${isSelected ? 'scale-95' : ''}`}
                                                             />
                                                             {isSelected && (
                                                                 <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-white dark:border-slate-800 flex items-center justify-center">
@@ -157,10 +159,10 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                     <tr key={sm.employeeId} className="border-t border-gray-100 dark:border-slate-700/50 hover:bg-gray-50/50 dark:hover:bg-slate-50">
                                         <td className="px-4 py-2.5">
                                             <div className="flex items-center gap-2">
-                                                <img
-                                                    src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=28`}
-                                                    alt={emp.FullName}
-                                                    className="w-7 h-7 rounded-full object-cover"
+                                                <Avatar
+                                                    name={emp.FullName}
+                                                    imageUrl={emp.AvatarUrl}
+                                                    size="xs"
                                                 />
                                                 <div>
                                                     <p className="font-medium text-gray-800 dark:text-slate-100">{emp.FullName}</p>

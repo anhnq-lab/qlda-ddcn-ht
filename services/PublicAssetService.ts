@@ -24,10 +24,11 @@ export class PublicAssetService {
   // ==========================================
   // Assets
   // ==========================================
-  static async getAll(params?: { 
-    search?: string; 
-    category_id?: string; 
-    status?: string; 
+  static async getAll(params?: {
+    search?: string;
+    category_id?: string;
+    status?: string;
+    branch?: string;
     department?: string;
   }): Promise<PublicAsset[]> {
     let query = supabase
@@ -50,6 +51,10 @@ export class PublicAssetService {
 
     if (params?.status) {
       query = query.eq('status', params.status);
+    }
+
+    if (params?.branch) {
+      query = query.eq('branch', params.branch);
     }
 
     if (params?.department) {

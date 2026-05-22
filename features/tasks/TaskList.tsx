@@ -81,7 +81,7 @@ const TaskList: React.FC = () => {
 
     // Data
     const { data: tasks = [], isLoading, error: tasksError } = useAllTasks();
-    const { scopedProjects: projects, scopedProjectIds, isGlobalScope } = useScopedProjects();
+    const { scopedProjects: projects, scopedProjectIds, isGlobalScope } = useScopedProjects({ pageSize: 9999 });
     const { data: employees = [] } = useEmployees();
 
     // Mutations

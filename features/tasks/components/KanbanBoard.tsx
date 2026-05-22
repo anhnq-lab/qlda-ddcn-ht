@@ -5,6 +5,7 @@ import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-
 import { CSS } from '@dnd-kit/utilities';
 import { CheckCircle2, Play, XCircle, Target, CalendarDays, User, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
+import { Avatar } from '../../../components/ui';
 
 interface KanbanBoardProps {
     tasks: Task[];
@@ -204,10 +205,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging, onClick, getAssig
             {assignee && (
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                     <div className="flex items-center gap-1.5">
-                        <img 
-                            src={assignee.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee.FullName}&background=6366f1&color=fff&size=24`} 
-                            alt={assignee.FullName}
-                            className="w-5 h-5 rounded-full ring-2 ring-white dark:ring-slate-800"
+                        <Avatar 
+                            name={assignee.FullName}
+                            imageUrl={assignee.AvatarUrl}
+                            size="xs"
+                            className="ring-2 ring-white dark:ring-slate-800"
                         />
                         <span className="text-[10px] font-medium text-slate-600 dark:text-slate-300 truncate max-w-[100px]">{assignee.FullName}</span>
                     </div>

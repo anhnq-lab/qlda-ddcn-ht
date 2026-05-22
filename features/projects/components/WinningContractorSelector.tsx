@@ -4,7 +4,7 @@ import {
     Search, Plus, X, Crown, Users, Award, Loader2, Check,
     Building2, ChevronDown, Save, Trash2, UserPlus
 } from 'lucide-react';
-import { Contractor } from '../../../types';
+import { Contractor, PackageStatus } from '../../../types';
 import { useContractors } from '../../../hooks/useContractors';
 import { supabase } from '../../../lib/supabase';
 import { useSlidePanel } from '../../../context/SlidePanelContext';
@@ -60,7 +60,15 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
     const queryClient = useQueryClient();
     const { contractors } = useContractors();
     const { openPanel } = useSlidePanel();
-    const [members, setMembers] = useState<WinningMember[]>(() => initialMembers || []);
+    const [members, setMembers] = useState<WinningMember[]>(() => {
+        if (initialMembers && initialMembers.length > 0) {
+            return initialMembers.map(m => ({
+                ...m,
+                contractor: m.contractor || contractors.find(c => c.ContractorID === m.contractor_id)
+            }));
+        }
+        return [];
+    });
     const [searchText, setSearchText] = useState('');
     const [winningPrice, setWinningPrice] = useState<string>(() => formatNumberWithDots(initialWinningPrice));
     const [approvalDate, setApprovalDate] = useState<string>(() => initialApprovalDate || '');
@@ -90,10 +98,18 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
         },
     });
 
-    // Sync existing data when loaded (if initialMembers wasn't provided or we want to update cache)
+    // Sync existing data when loaded
     useEffect(() => {
-        // Only override state if we didn't receive initialMembers (meaning we rely entirely on the query)
-        if (!initialMembers && pkg && contractors.length > 0) {
+        if (initialMembers && initialMembers.length > 0) {
+            const mapped = initialMembers.map(m => ({
+                ...m,
+                contractor: m.contractor || contractors.find(c => c.ContractorID === m.contractor_id)
+            }));
+            setMembers(mapped);
+            setWinningPrice(formatNumberWithDots(initialWinningPrice));
+            setApprovalDate(initialApprovalDate || '');
+            setDecisionNumber(initialDecisionNumber || '');
+        } else if (!initialMembers && pkg && contractors.length > 0) {
             if (pkg.WinningConsortium && pkg.WinningConsortium.length > 0) {
                 const mappedMembers = pkg.WinningConsortium.map((m: any) => ({
                     id: m.contractor_id,
@@ -124,7 +140,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 setDecisionNumber('');
             }
         }
-    }, [pkg, contractors, initialMembers]);
+    }, [initialMembers, pkg, contractors, initialWinningPrice, initialApprovalDate, initialDecisionNumber]);
 
     // Save mutation
     const saveMutation = useMutation({
@@ -160,11 +176,15 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     }
                 }
 
+                // Auto-transition status based on presence of approval date
+                const nextStatus = approvalDateVal ? PackageStatus.Execution : PackageStatus.Selection;
+
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: leadContractor.contractor_id,
                     WinningPrice: finalWinningPrice,
                     ApprovalDate_Result: approvalDateVal || null as any,
                     DecisionNumber: decisionNumberVal || null as any,
+                    Status: nextStatus,
                     WinningConsortium: newMembers.map(m => ({
                         contractor_id: m.contractor_id,
                         role: m.role,
@@ -172,12 +192,13 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     }))
                 });
             } else {
-                // Clear winning contractor info
+                // Clear winning contractor info and revert status to Selection
                 await ProjectService.updatePackage(packageId, {
                     WinningContractorID: null as any,
                     WinningPrice: null as any,
                     ApprovalDate_Result: null as any,
                     DecisionNumber: null as any,
+                    Status: PackageStatus.Selection,
                     WinningConsortium: null
                 });
             }
@@ -362,30 +383,40 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                 <div
                     key={m.contractor_id}
                     className={`flex items-center gap-2 p-2.5 rounded-lg border ${m.role === 'lead'
-                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                        ? 'bg-amber-50/50 dark:bg-amber-950/10 border-amber-200/60 dark:border-amber-900/30 shadow-sm'
                         : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
                         }`}
                 >
                     <button
                         onClick={() => toggleRole(m.contractor_id)}
-                        title={members.length > 1 ? (m.role === 'lead' ? 'Đứng đầu liên danh' : 'Click để đặt làm đứng đầu liên danh') : 'Nhà thầu trúng thầu'}
+                        title={members.length > 1 ? (m.role === 'lead' ? 'Nhà thầu đại diện liên danh' : 'Click để đặt làm nhà thầu đại diện liên danh') : 'Nhà thầu trúng thầu'}
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${m.role === 'lead'
-                            ? 'bg-primary-100 dark:bg-primary-900/40 hover:bg-primary-200 dark:hover:bg-primary-900/60'
+                            ? 'bg-amber-100 dark:bg-amber-900/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 border border-amber-200/50 dark:border-amber-800/40'
                             : 'bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600'
                             }`}
                     >
                         {m.role === 'lead' ? (
-                            <Crown className="w-4 h-4 text-primary-600" />
+                            <Crown className="w-4 h-4 text-amber-500 animate-pulse-subtle" />
                         ) : (
                             <Building2 className="w-4 h-4 text-gray-400" />
                         )}
                     </button>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">
+                        <p className="text-xs font-semibold text-gray-800 dark:text-slate-200 truncate">
                             {m.contractor?.FullName || m.contractor_id}
                         </p>
                         <span className="text-[10px] text-gray-500 dark:text-slate-400">
-                            {members.length > 1 ? (m.role === 'lead' ? '⭐ Đứng đầu liên danh' : 'Thành viên liên danh') : 'Nhà thầu trúng thầu'}
+                            {members.length > 1 ? (
+                                m.role === 'lead' ? (
+                                    <span className="inline-flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-medium">
+                                        👑 Nhà thầu đại diện
+                                    </span>
+                                ) : (
+                                    'Thành viên liên danh'
+                                )
+                            ) : (
+                                'Nhà thầu trúng thầu'
+                            )}
                         </span>
                     </div>
                     <button
@@ -396,6 +427,19 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     </button>
                 </div>
             ))}
+
+            {/* Consortium UX Helper Hint Banner */}
+            {members.length > 0 && (
+                <div className="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-xl flex items-start gap-2.5 text-xs text-blue-700 dark:text-blue-300">
+                    <span className="shrink-0 mt-0.5 text-blue-500">💡</span>
+                    <div>
+                        <p className="font-semibold mb-0.5">Mẹo liên danh:</p>
+                        <p className="text-blue-600/90 dark:text-blue-400/90 leading-normal">
+                            Nếu gói thầu có liên danh nhà thầu, bạn chỉ cần tiếp tục tìm kiếm và chọn thêm các thành viên liên danh khác ở ô dưới. Hệ thống sẽ tự động ghép thành liên danh trúng thầu.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* Search & Add */}
             <div ref={dropdownRef} className="relative">

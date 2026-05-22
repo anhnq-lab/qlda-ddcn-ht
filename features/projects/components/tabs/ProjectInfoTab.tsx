@@ -473,8 +473,13 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                         project.SpecialtyType 
                                             ? ({
                                                 civil_industrial: 'Dân dụng & Công nghiệp',
+                                                civil: 'Dân dụng & Công nghiệp',
+                                                industrial: 'Dân dụng & Công nghiệp',
                                                 transport_urban: 'Giao thông & Đô thị',
+                                                transportation: 'Giao thông & Đô thị',
                                                 agriculture_rural: 'Nông nghiệp & PTNT',
+                                                agriculture: 'Nông nghiệp & PTNT',
+                                                technical_infrastructure: 'Hạ tầng kỹ thuật',
                                                 mixed: 'Hỗn hợp',
                                                 other: 'Khác',
                                                 '': 'Chưa phân loại'

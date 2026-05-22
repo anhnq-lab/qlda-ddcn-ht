@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Mail, Phone, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Employee } from '@/types';
+import { Avatar } from '@/components/ui';
 
 interface ProjectTeamSectionProps {
     members: Employee[];
@@ -42,10 +43,11 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                     >
                         {/* Avatar */}
                         <div className="shrink-0 relative">
-                            <img
-                                src={member.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.FullName)}&background=random`}
-                                alt={member.FullName}
-                                className="w-9 h-9 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm"
+                            <Avatar
+                                name={member.FullName}
+                                imageUrl={member.AvatarUrl}
+                                size="md"
+                                className="border-2 border-white dark:border-slate-700 shadow-sm"
                             />
                         </div>
 

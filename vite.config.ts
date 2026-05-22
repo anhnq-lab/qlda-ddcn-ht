@@ -8,6 +8,21 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5000,
       host: '0.0.0.0',
+      // Cross-origin isolation headers — required so the browser exposes
+      // SharedArrayBuffer to web-ifc's multi-threaded WASM build (web-ifc-mt.wasm).
+      // Without these, web-ifc silently falls back to single-threaded parsing
+      // which is ~3-4× slower on large IFCs (>100 MB). Match these headers in
+      // production (Vercel / nginx) too — see vercel.json.
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+      },
+    },
+    preview: {
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+      },
     },
     plugins: [react()],
     define: {

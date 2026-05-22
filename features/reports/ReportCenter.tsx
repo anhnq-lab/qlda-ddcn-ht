@@ -3,7 +3,7 @@ import {
     FileText, Download, BarChart2, PieChart, RefreshCw, Database,
     CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet, Package
 } from 'lucide-react';
-import { generateExcelReport } from '../../utils/excelReportGenerator';
+// generateExcelReport: lazy-loaded inside the export handler to keep exceljs out of the initial bundle
 import { useProjects } from '../../hooks/useProjects';
 import { usePayments } from '../../hooks/usePayments';
 import { useTasks } from '../../hooks/useTasks';
@@ -68,6 +68,7 @@ const ReportCenter: React.FC = () => {
         setExportingReport(reportType);
         setExportSuccess(null);
         try {
+            const { generateExcelReport } = await import('../../utils/excelReportGenerator');
             await generateExcelReport(reportType, reportSource);
             setExportSuccess(reportType);
             setTimeout(() => setExportSuccess(null), 4000);

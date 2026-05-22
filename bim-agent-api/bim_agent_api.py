@@ -19,7 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-API_KEY = os.getenv("BIM_AGENT_API_KEY", "default-bim-secret-key-2026")
+API_KEY = os.getenv("BIM_AGENT_API_KEY")
+if not API_KEY:
+    raise RuntimeError(
+        "BIM_AGENT_API_KEY is not set. Refusing to start with a default key — "
+        "set BIM_AGENT_API_KEY in the environment (or .env file) before launching."
+    )
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=True)
 
 async def get_api_key(api_key: str = Security(api_key_header)):

@@ -2,6 +2,7 @@ import React from 'react';
 import { Mail, Phone, ClipboardList, FolderOpen } from 'lucide-react';
 import { Employee, EmployeeStatus, Role } from '../../../types';
 import { Column } from '../../../components/ui/DataTable';
+import { Avatar } from '../../../components/ui';
 import { WorkloadData } from '../hooks/useEmployeeList';
 
 const getRoleInfo = (role: Role) => {
@@ -31,8 +32,8 @@ export function getEmployeeColumns(
             render: (_: any, emp: Employee) => (
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <img src={emp.AvatarUrl} alt={emp.FullName} className="w-10 h-10 rounded-full ring-2 ring-white shadow-sm object-cover" />
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                        <Avatar name={emp.FullName} imageUrl={emp.AvatarUrl} size="md" ringColor="ring-white dark:ring-slate-900" />
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
                     </div>
                     <div className="min-w-0">
                         <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm group-hover:text-blue-600 transition-colors truncate">{emp.FullName}</p>

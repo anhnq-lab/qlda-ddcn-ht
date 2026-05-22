@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { ChevronDown, Search, X, Check } from 'lucide-react';
+import { Avatar } from './Avatar';
 
 export interface ComboboxOption {
     value: string;
@@ -208,10 +209,12 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                                     `}
                                 >
                                     {opt.avatar && (
-                                        <img
-                                            src={opt.avatar}
-                                            alt=""
-                                            className="w-7 h-7 rounded-full object-cover ring-2 ring-white dark:ring-slate-700 shrink-0"
+                                        <Avatar
+                                            name={opt.label}
+                                            imageUrl={opt.avatar}
+                                            size="custom"
+                                            className="w-7 h-7 shrink-0"
+                                            ringColor="ring-white dark:ring-slate-700"
                                         />
                                     )}
                                     <div className="flex-1 min-w-0">

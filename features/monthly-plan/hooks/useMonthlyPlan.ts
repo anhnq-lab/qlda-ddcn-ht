@@ -3,19 +3,21 @@ import { MonthlyPlanService, MonthlyPlanItemService } from '../../../services/Pl
 import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
     DepartmentCode, DEPARTMENT_NAMES, MonthlyReportSummary,
+    DEPARTMENT_CODES,
 } from '../../../types/plan.types';
 import { useEmployees } from '../../../hooks/useEmployees';
 import { useAuth } from '../../../context/AuthContext';
+import { useTabSearchParam } from '../../../hooks/useTabSearchParam';
 
 type ViewMode = 'plan' | 'report';
 
 const CURRENT_DATE = new Date();
 
 export function useMonthlyPlan() {
-    const [viewMode, setViewMode] = useState<ViewMode>('plan');
+    const [viewMode, setViewMode] = useTabSearchParam<ViewMode>('plan', ['plan', 'report'] as const, 'view');
     const [month, setMonth] = useState(CURRENT_DATE.getMonth() + 1);
     const [year, setYear] = useState(CURRENT_DATE.getFullYear());
-    const [activeDept, setActiveDept] = useState<DepartmentCode>('HCTH');
+    const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
     
     const [currentPlan, setCurrentPlan] = useState<MonthlyPlan | null>(null);
     const [items, setItems] = useState<MonthlyPlanItem[]>([]);

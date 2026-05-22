@@ -92,6 +92,7 @@ export interface BiddingPackage {
     | 'OpenBidding'
     | 'LimitedBidding'
     | 'Appointed'
+    | 'AppointedSimplified'
     | 'CompetitiveShopping'
     | 'DirectProcurement'
     | 'SelfExecution'

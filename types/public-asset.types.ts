@@ -22,7 +22,8 @@ export interface PublicAsset {
   unit: string;
   quantity: number;
   location?: string;
-  department?: string;
+  branch?: string;      // Chi nhánh / Văn phòng (Trụ sở chính, Can Lộc, Thạch Hà...)
+  department?: string;  // Phòng ban nội bộ (Phòng Kỹ thuật, Phòng Tài chính...)
   custodian_id?: string;
   custodian?: { name: string; position?: string; email?: string }; // joined from employees
   project_id?: string;

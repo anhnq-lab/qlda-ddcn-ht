@@ -36,22 +36,41 @@ export const ContractModal: React.FC<ContractModalProps> = ({
     const { biddingPackages } = useAllBiddingPackages();
     const { contractors } = useContractors();
 
-    const buildDefaultValues = (): ContractFormInput => ({
-        projectId: existingContract?.ProjectID || '',
-        packageId: existingContract?.PackageID || initialPackageId || '',
-        contractorId: existingContract?.ContractorID || '',
-        contractId: existingContract?.ContractID || (isEditing ? '' : `HD-${Date.now()}`),
-        contractName: existingContract?.ContractName || '',
-        signDate: existingContract?.SignDate || new Date().toISOString().split('T')[0],
-        value: existingContract ? String(existingContract.Value) : '',
-        advanceRate: existingContract ? String(existingContract.AdvanceRate) : '15',
-        warranty: existingContract ? String(existingContract.Warranty) : '12',
-        scope: existingContract?.Scope || '',
-        durationMonths: existingContract?.DurationMonths ? String(existingContract.DurationMonths) : '',
-        startDate: existingContract?.StartDate || '',
-        endDate: existingContract?.EndDate || '',
-        paymentTerms: existingContract?.PaymentTerms || '',
-    });
+    const getOneDayAfter = (dateStr?: string | null): string => {
+        if (!dateStr) return new Date().toISOString().split('T')[0];
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
+            d.setDate(d.getDate() + 1);
+            return d.toISOString().split('T')[0];
+        } catch {
+            return new Date().toISOString().split('T')[0];
+        }
+    };
+
+    const buildDefaultValues = (): ContractFormInput => {
+        const pkg = initialPackageId ? biddingPackages.find(p => p.PackageID === initialPackageId) : null;
+        const defaultDate = pkg 
+            ? getOneDayAfter(pkg.ApprovalDate_Result || pkg.DecisionDate)
+            : new Date().toISOString().split('T')[0];
+
+        return {
+            projectId: existingContract?.ProjectID || '',
+            packageId: existingContract?.PackageID || initialPackageId || '',
+            contractorId: existingContract?.ContractorID || '',
+            contractId: existingContract?.ContractID || (isEditing ? '' : `HD-${Date.now()}`),
+            contractName: existingContract?.ContractName || '',
+            signDate: existingContract?.SignDate || defaultDate,
+            value: existingContract ? String(existingContract.Value) : '',
+            advanceRate: existingContract ? String(existingContract.AdvanceRate) : '15',
+            warranty: existingContract ? String(existingContract.Warranty) : '12',
+            scope: existingContract?.Scope || '',
+            durationMonths: existingContract?.DurationMonths ? String(existingContract.DurationMonths) : '',
+            startDate: existingContract?.StartDate || (existingContract ? '' : defaultDate),
+            endDate: existingContract?.EndDate || '',
+            paymentTerms: existingContract?.PaymentTerms || '',
+        };
+    };
 
     const {
         register,
@@ -91,6 +110,11 @@ export const ContractModal: React.FC<ContractModalProps> = ({
         setValue('contractName', pkg.PackageName || '');
         setValue('value', String(pkg.WinningPrice || pkg.Price || 0));
         setValue('warranty', pkg.Field === 'Construction' ? '24' : '12');
+
+        const pkgApprovalDate = pkg.ApprovalDate_Result || pkg.DecisionDate;
+        const oneDayAfter = getOneDayAfter(pkgApprovalDate);
+        setValue('signDate', oneDayAfter);
+        setValue('startDate', oneDayAfter);
     };
 
     const handlePackageChange = (pkgId: string) => {

@@ -7,7 +7,7 @@ import {
     FileText, Search, Plus, Filter,
     Building2, TrendingUp, CheckCircle2, Clock, DollarSign,
     ChevronRight, BarChart3, ArrowUpRight, ArrowDownRight, Briefcase,
-    ShieldCheck, ShieldAlert, Landmark, CalendarDays, Eye
+    ShieldCheck, ShieldAlert, Landmark, CalendarDays, Eye, Download
 } from 'lucide-react';
 import { useContracts } from '../../hooks/useContracts';
 import { useAuth } from '../../context/AuthContext';
@@ -21,15 +21,36 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { StatusBadge, ProgressBar, StatCard } from '../../components/ui';
 import { ContractModal } from './components/ContractModal';
 
+// Helper: xuất danh sách hợp đồng ra CSV đơn giản
+function exportContractsCsv(contracts: Contract[], getContractorName: (id: string) => string, getProjectName: (c: Contract) => string, getPackageName: (c: Contract) => string) {
+    const header = ['Số HĐ', 'Nhà thầu', 'Dự án', 'Gói thầu', 'Giá trị (VNĐ)', 'Ngày ký', 'Trạng thái'];
+    const rows = contracts.map(c => [
+        c.ContractID,
+        getContractorName(c.ContractorID),
+        getProjectName(c),
+        getPackageName(c),
+        c.Value,
+        c.SignDate ? new Date(c.SignDate).toLocaleDateString('vi-VN') : '',
+        c.Status === ContractStatus.Executing ? 'Đang TH' : c.Status === ContractStatus.Liquidated ? 'Thanh lý' : 'Tạm dừng'
+    ]);
+    const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `Hop_Dong_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+}
+
 const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'all' }) => {
     const navigate = useNavigate();
     const { contracts, isLoading } = useContracts();
     const { payments } = usePayments();
-    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
+    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects({ pageSize: 9999 });
     const { contractors } = useContractors();
     const { biddingPackages } = useAllBiddingPackages();
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | ContractStatus>('all');
+    const [contractTypeFilter, setContractTypeFilter] = useState<string>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // === Cross-module helpers ===
@@ -45,9 +66,24 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
         return project?.ProjectName || '—';
     };
 
+    const getPackageName = (contract: Contract): string => {
+        const pkg = biddingPackages.find(p => p.PackageID === contract.PackageID);
+        return pkg?.PackageName || contract.PackageID || '—';
+    };
+
     const getProjectId = (contract: Contract): string | null => {
         const pkg = biddingPackages.find(p => p.PackageID === contract.PackageID);
         return pkg?.ProjectID || null;
+    };
+
+    /** Navigate về ProjectDetail tab packages, tự mở gói thầu liên kết */
+    const handleContractClick = (contract: Contract) => {
+        const projectId = getProjectId(contract);
+        if (projectId) {
+            navigate(`/projects/${encodeURIComponent(projectId)}`, {
+                state: { activeTab: 'packages', openPackageId: contract.PackageID }
+            });
+        }
     };
 
     const getPaymentProgress = (contractId: string, contractValue: number) => {
@@ -116,16 +152,19 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
         return scopedContracts.filter(c => {
             const contractorName = getContractorName(c.ContractorID).toLowerCase();
             const projectName = getProjectName(c).toLowerCase();
+            const packageName = getPackageName(c).toLowerCase();
             const qLower = searchQuery.toLowerCase();
             const matchesSearch = !searchQuery ||
                 c.ContractID.toLowerCase().includes(qLower) ||
                 contractorName.includes(qLower) ||
-                projectName.includes(qLower);
+                projectName.includes(qLower) ||
+                packageName.includes(qLower);
             const matchesStatus = statusFilter === 'all' || c.Status === statusFilter;
             const matchesProject = projectFilter === 'all' || getProjectId(c) === projectFilter;
-            return matchesSearch && matchesStatus && matchesProject;
+            const matchesType = contractTypeFilter === 'all' || (c.ContractType || '') === contractTypeFilter;
+            return matchesSearch && matchesStatus && matchesProject && matchesType;
         });
-    }, [scopedContracts, searchQuery, statusFilter, projectFilter, projects]);
+    }, [scopedContracts, searchQuery, statusFilter, contractTypeFilter, projectFilter, projects]);
 
     if (isLoading) {
         return (
@@ -205,18 +244,19 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
 
             {/* === Toolbar === */}
             <div className="bg-bg-surface rounded-2xl shadow-sm border border-border p-4">
-                <div className="flex flex-col md:flex-row items-center gap-3">
-                    <div className="relative w-full md:w-80">
+                <div className="flex flex-col md:flex-row items-center gap-3 flex-wrap">
+                    <div className="relative w-full md:w-72">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Tìm mã HĐ, nhà thầu, dự án..."
+                            placeholder="Tìm mã HĐ, nhà thầu, gói thầu..."
                             className="filter-input"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
+                    {/* Filter trạng thái */}
                     <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5">
                         {[
                             { value: 'all' as const, label: 'Tất cả', count: stats.total },
@@ -239,11 +279,35 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                         ))}
                     </div>
 
+                    {/* Filter loại HĐ */}
+                    <select
+                        value={contractTypeFilter}
+                        onChange={e => setContractTypeFilter(e.target.value)}
+                        className="px-3 py-2 text-xs font-semibold border border-border rounded-xl bg-bg-surface text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                        <option value="all">Tất cả loại HĐ</option>
+                        <option value="LumpSum">Trọn gói</option>
+                        <option value="UnitPrice">Đơn giá CĐ</option>
+                        <option value="AdjustableUnitPrice">Đơn giá ĐC</option>
+                        <option value="TimeBased">Theo thời gian</option>
+                        <option value="Percentage">Theo %</option>
+                        <option value="Mixed">Hỗn hợp</option>
+                    </select>
+
                     <div className="ml-auto flex items-center gap-3">
                         <span className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden lg:inline">
                             Hiển thị {filteredContracts.length} / {stats.total}
                         </span>
-                        
+                        {/* Xuất CSV */}
+                        <button
+                            onClick={() => exportContractsCsv(filteredContracts, getContractorName, getProjectName, getPackageName)}
+                            disabled={filteredContracts.length === 0}
+                            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 rounded-xl hover:bg-emerald-500/5 disabled:opacity-50 transition-colors"
+                            title="Xuất danh sách hợp đồng ra CSV"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Xuất Excel</span>
+                        </button>
                         {userType !== 'contractor' && (
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -266,7 +330,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
                                 <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Số hợp đồng</th>
                                 <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nhà thầu</th>
-                                <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Dự án</th>
+                                <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Dự án / Gói thầu</th>
                                 <th className="px-4 py-3 text-right whitespace-nowrap border-b border-slate-200 dark:border-slate-700">Giá trị HĐ</th>
                                 <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Giải ngân</th>
                                 <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Ngày ký</th>
@@ -284,7 +348,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                     <tr
                                         key={contract.ContractID}
                                         className="group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700"
-                                        onClick={() => navigate(`/contracts/${encodeURIComponent(contract.ContractID)}`)}
+                                        onClick={() => handleContractClick(contract)}
                                     >
                                         {/* STT */}
                                         <td className="px-3 py-4 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">{rowIdx + 1}</td>
@@ -313,11 +377,16 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                             </div>
                                         </td>
 
-                                        {/* Project */}
+                                        {/* Project + Package */}
                                         <td className="px-6 py-4">
-                                            <span className="text-slate-600 dark:text-slate-300 font-medium text-[11px] max-w-[200px] truncate block leading-tight" title={projectName}>
-                                                {projectName}
-                                            </span>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-slate-600 dark:text-slate-300 font-medium text-[11px] max-w-[200px] truncate leading-tight" title={projectName}>
+                                                    {projectName}
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 dark:text-slate-500 max-w-[200px] truncate" title={getPackageName(contract)}>
+                                                    {getPackageName(contract)}
+                                                </span>
+                                            </div>
                                         </td>
 
                                         {/* Contract Value */}

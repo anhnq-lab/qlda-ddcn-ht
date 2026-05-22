@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { reportError } from '../../lib/errorReporting';
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -28,12 +29,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
         console.error('ErrorBoundary caught an error:', error, errorInfo);
-        
-        // Report to centralized service
-        import('../../lib/errorReporting').then(({ reportError }) => {
-            reportError(error, {
-                componentStack: errorInfo.componentStack
-            });
+
+        reportError(error, {
+            componentStack: errorInfo.componentStack,
         });
 
         this.props.onError?.(error, errorInfo);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FolderOpen, Calendar, AlertTriangle, Edit, Trash2, Layers, Sparkles } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
-import { EmptyState, StatusBadge } from '../../../components/ui';
+import { EmptyState, StatusBadge, Avatar } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
 import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
 interface TaskTableViewProps {
@@ -192,10 +192,11 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                             {assignee ? (
                                                 <div className="flex items-center gap-2.5">
                                                     <div className="relative">
-                                                        <img
-                                                            src={assignee.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee.FullName}&background=6366f1&color=fff&size=32`}
-                                                            alt=""
-                                                            className="w-7 h-7 rounded-full ring-2 ring-white dark:ring-slate-800 shadow-lg object-cover"
+                                                        <Avatar
+                                                            name={assignee.FullName}
+                                                            imageUrl={assignee.AvatarUrl}
+                                                            size="xs"
+                                                            className="ring-2 ring-white dark:ring-slate-800 shadow-lg"
                                                         />
                                                     </div>
                                                     <div className="min-w-0">

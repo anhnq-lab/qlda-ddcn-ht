@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { UserAccountService, UserAccount } from '../../services/UserAccountService';
+import { Avatar } from '../../components/ui';
 import { supabase } from '../../lib/supabase';
 import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS, ALL_ROLES } from '../../types/permission.types';
 
@@ -306,10 +307,10 @@ const UserAccountManager: React.FC = () => {
                                         <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3">
-                                                <img
-                                                    src={account.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(account.full_name || 'U')}&background=random&color=fff&size=32`}
-                                                    alt=""
-                                                    className="w-8 h-8 rounded-full"
+                                                <Avatar
+                                                    name={account.full_name || account.username}
+                                                    imageUrl={account.avatar_url}
+                                                    size="sm"
                                                 />
                                                 <div>
                                                     <p className="font-medium text-gray-900 dark:text-slate-100">{account.full_name || '—'}</p>
@@ -472,10 +473,11 @@ const UserAccountManager: React.FC = () => {
                     <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-xl overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
                             <div className="flex items-center gap-4">
-                                <img
-                                    src={viewingAccount.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(viewingAccount.full_name || 'U')}&background=0D8ABC&color=fff&size=64`}
-                                    alt=""
-                                    className="w-16 h-16 rounded-full border-4 border-white dark:border-slate-800 shadow-sm"
+                                <Avatar
+                                    name={viewingAccount.full_name || viewingAccount.username}
+                                    imageUrl={viewingAccount.avatar_url}
+                                    size="lg"
+                                    className="border-4 border-white dark:border-slate-800 shadow-sm"
                                 />
                                 <div>
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">

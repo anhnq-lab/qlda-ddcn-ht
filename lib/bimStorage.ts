@@ -352,6 +352,51 @@ export async function deleteModel(model: BimModel): Promise<void> {
 }
 
 /**
+ * Save the per-project coordination offset (x, y, z) that aligns survey-coordinate
+ * IFCs to the local scene origin. Shared across all clients so discipline models
+ * line up identically on every device.
+ */
+export async function saveProjectCoordOffset(
+    projectId: string,
+    offset: { x: number; y: number; z: number }
+): Promise<void> {
+    if (!supabase) return; // No-op if not configured
+    // Cast: generated types don't yet include bim_project_settings (added in
+    // migration 20260521090000). Regenerate types to drop this cast.
+    const { error } = await (supabase.from('bim_project_settings' as any) as any)
+        .upsert(
+            { project_id: projectId, coord_offset: offset },
+            { onConflict: 'project_id' }
+        );
+    if (error) {
+        // Non-fatal — log and continue (the offset will still apply for this session)
+        console.warn('[BimStorage] saveProjectCoordOffset failed:', error.message);
+    }
+}
+
+/**
+ * Load the per-project coordination offset. Returns null if no offset has been
+ * persisted yet for this project.
+ */
+export async function loadProjectCoordOffset(
+    projectId: string
+): Promise<{ x: number; y: number; z: number } | null> {
+    if (!supabase) return null;
+    const { data, error } = await (supabase.from('bim_project_settings' as any) as any)
+        .select('coord_offset')
+        .eq('project_id', projectId)
+        .maybeSingle();
+    if (error) {
+        console.warn('[BimStorage] loadProjectCoordOffset failed:', error.message);
+        return null;
+    }
+    const v = (data as any)?.coord_offset;
+    if (!v || typeof v !== 'object') return null;
+    if (typeof v.x !== 'number' || typeof v.y !== 'number' || typeof v.z !== 'number') return null;
+    return { x: v.x, y: v.y, z: v.z };
+}
+
+/**
  * Update model status and optional fields
  */
 export async function updateModelStatus(

@@ -5,7 +5,7 @@
 import React, { Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, CheckCircle2, ClipboardList, AlertTriangle, Users, ArrowRight, FolderKanban } from 'lucide-react';
-import { StatCard, EmptyState } from '../../../components/ui';
+import { StatCard, EmptyState, Avatar } from '../../../components/ui';
 import type { DashboardConfig } from '../hooks/useDashboardConfig';
 import type { useDepartmentData } from '../hooks/useDepartmentData';
 import { WelcomeHeader } from '../widgets/shared/WelcomeHeader';
@@ -110,13 +110,12 @@ export const ManagerDashboard: React.FC<Props> = ({ config, data }) => {
                             const empOverdue = empTasks.filter((t: any) => t.Status !== 'Done' && new Date(t.DueDate) < new Date()).length;
                             return (
                                 <div key={emp.employee_id} className="p-3 flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center shrink-0">
-                                        {emp.avatar_url ? (
-                                            <img src={emp.avatar_url} alt="" className="w-full h-full object-cover rounded-full" />
-                                        ) : (
-                                            <span className="text-xs font-bold text-primary-600 dark:text-primary-400">{(emp.full_name || '?')[0]}</span>
-                                        )}
-                                    </div>
+                                    <Avatar
+                                        name={emp.full_name}
+                                        imageUrl={emp.avatar_url}
+                                        size="sm"
+                                        className="shrink-0"
+                                    />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{emp.full_name}</p>
                                         <p className="text-[10px] text-gray-400 dark:text-slate-400">{emp.position}</p>

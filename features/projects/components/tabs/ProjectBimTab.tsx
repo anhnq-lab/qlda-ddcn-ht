@@ -19,6 +19,10 @@ import { BimSectionPanel } from '../bim/BimSectionPanel';
 import { BimPerformanceStats } from '../bim/BimPerformanceStats';
 import { useBimWalkthrough } from '../bim/useBimWalkthrough';
 import { BimWalkthroughHUD } from '../bim/BimWalkthroughHUD';
+import { BimSavedViewsPanel } from '../bim/BimSavedViewsPanel';
+import { BimVisualizationPanel } from '../bim/BimVisualizationPanel';
+import { BimElementSearchPanel } from '../bim/BimElementSearchPanel';
+import { BimIssuesPanel } from '../bim/BimIssuesPanel';
 import { BIMAgentChat } from '../../../bim-agent/BIMAgentChat';
 
 // ── Types ───────────────────────────────────────────
@@ -469,7 +473,13 @@ const ProjectBimTabContent: React.FC = () => {
     }, [tools.activeTool]);
 
     // ── RENDER ──────────────────────────────
-    const showLeftPanel = hasModels && !isMobile && (tools.leftPanel === 'tree' || tools.rightPanel === 'properties');
+    const leftPanelHasContent =
+        tools.leftPanel === 'tree' ||
+        tools.leftPanel === 'views' ||
+        tools.leftPanel === 'viz' ||
+        tools.leftPanel === 'search' ||
+        tools.leftPanel === 'issues';
+    const showLeftPanel = hasModels && !isMobile && (leftPanelHasContent || tools.rightPanel === 'properties');
     const showBottomPanel = false; // Tạm ẩn tính năng quản lý vận hành
 
     return (
@@ -491,14 +501,35 @@ const ProjectBimTabContent: React.FC = () => {
                 <div
                     className="flex flex-col h-full border-r border-border bg-bg-surface"
                 >
-                    {/* Top: Model Tree */}
+                    {/* Top slot: whichever side-panel is active (tree, views, viz, search, issues) */}
                     {tools.leftPanel === 'tree' && (
                         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                             <BimModelTree />
                         </div>
                     )}
-                    {/* Divider */}
-                    {tools.leftPanel === 'tree' && tools.rightPanel === 'properties' && (
+                    {tools.leftPanel === 'views' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimSavedViewsPanel onClose={() => tools.toggleLeftPanel('none')} />
+                        </div>
+                    )}
+                    {tools.leftPanel === 'viz' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimVisualizationPanel onClose={() => tools.toggleLeftPanel('none')} />
+                        </div>
+                    )}
+                    {tools.leftPanel === 'search' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimElementSearchPanel onClose={() => tools.toggleLeftPanel('none')} />
+                        </div>
+                    )}
+                    {tools.leftPanel === 'issues' && (
+                        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                            <BimIssuesPanel onClose={() => tools.toggleLeftPanel('none')} />
+                        </div>
+                    )}
+
+                    {/* Divider when both a left panel and Properties are open */}
+                    {leftPanelHasContent && tools.rightPanel === 'properties' && (
                         <div className="h-px shrink-0 bg-border" />
                     )}
                     {/* Bottom: Properties */}

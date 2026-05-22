@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { 
-    X, Loader2, Save, Calendar, FileText, Building2, AlertCircle,
-    AlertTriangle, Info, ShieldAlert, CheckCircle2, BookOpen, 
-    ChevronDown, ChevronUp 
+    X, Loader2, Save, Calendar, FileText, Building2, AlertCircle
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,13 +9,8 @@ import { BiddingPackage, PackageStatus } from '../../../types';
 import { formatCurrency } from '../../../utils/format';
 import ProjectService from '../../../services/ProjectService';
 import ContractorService from '../../../services/ContractorService';
-import { BiddingPackageFormSchema, type BiddingPackageFormValues } from '../../../schemas/biddingPackage.schema';
+import { BiddingPackageFormSchema, type BiddingPackageFormValues, parseFormattedNumber } from '../../../schemas/biddingPackage.schema';
 import { useToast } from '../../../components/ui/Toast';
-import { 
-    checkPackageCompliance, 
-    detectApplicableMethod, 
-    getMethodGuidance 
-} from '../../../utils/biddingCompliance';
 
 // ========================================
 // BIDDING PACKAGE MODAL - NĐ 214/2025 Compliance
@@ -42,7 +35,8 @@ const FIELD_OPTIONS = [
 const SELECTION_METHOD_OPTIONS = [
     { value: 'OpenBidding', label: 'Đấu thầu rộng rãi' },
     { value: 'LimitedBidding', label: 'Đấu thầu hạn chế' },
-    { value: 'Appointed', label: 'Chỉ định thầu' },
+    { value: 'Appointed', label: 'Chỉ định thầu thông thường' },
+    { value: 'AppointedSimplified', label: 'Chỉ định thầu rút gọn' },
     { value: 'CompetitiveShopping', label: 'Chào hàng cạnh tranh' },
     { value: 'DirectProcurement', label: 'Mua sắm trực tiếp' },
     { value: 'SelfExecution', label: 'Tự thực hiện' },
@@ -59,8 +53,8 @@ const SELECTION_PROCEDURE_OPTIONS = [
 ];
 
 const BID_TYPE_OPTIONS = [
-    { value: 'Online', label: 'Đấu thầu qua mạng' },
-    { value: 'Offline', label: 'Đấu thầu trực tiếp' },
+    { value: 'Online', label: 'Qua mạng' },
+    { value: 'Offline', label: 'Không qua mạng' },
 ];
 
 const CONTRACT_TYPE_OPTIONS = [
@@ -123,7 +117,8 @@ const normalizeSelectionMethod = (val?: string | null): BiddingPackageFormValues
         'đấu thầu rộng rãi': 'OpenBidding',
         'đấu thầu hạn chế': 'LimitedBidding',
         'chỉ định thầu': 'Appointed',
-        'chỉ định thầu rút gọn': 'Appointed',
+        'chỉ định thầu thông thường': 'Appointed',
+        'chỉ định thầu rút gọn': 'AppointedSimplified',
         'chào hàng cạnh tranh': 'CompetitiveShopping',
         'mua sắm trực tiếp': 'DirectProcurement',
         'tự thực hiện': 'SelfExecution',
@@ -131,6 +126,8 @@ const normalizeSelectionMethod = (val?: string | null): BiddingPackageFormValues
         'openbidding': 'OpenBidding',
         'limitedbidding': 'LimitedBidding',
         'appointed': 'Appointed',
+        'appointedsimplified': 'AppointedSimplified',
+        'simplifiedappointed': 'AppointedSimplified',
         'competitiveshopping': 'CompetitiveShopping',
         'directprocurement': 'DirectProcurement',
         'selfexecution': 'SelfExecution',
@@ -168,6 +165,7 @@ const normalizeBidType = (val?: string | null): BiddingPackageFormValues['BidTyp
         'qua mạng': 'Online',
         'đấu thầu trực tiếp': 'Offline',
         'trực tiếp': 'Offline',
+        'không qua mạng': 'Offline',
     };
     const norm = (val || '').toLowerCase().trim();
     return map[norm] || 'Online';
@@ -258,6 +256,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
         watch,
         reset,
         setError,
+        setValue,
         formState: { errors },
     } = useForm<BiddingPackageFormValues>({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -280,27 +279,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
     const watchPrice = watch('Price');
     const watchStatus = watch('Status');
     const watchWinningPrice = watch('WinningPrice');
-    const watchField = watch('Field');
     const watchSelectionMethod = watch('SelectionMethod');
-    const [showDirectAppointmentConditions, setShowDirectAppointmentConditions] = useState(false);
-
-    const complianceInfo = React.useMemo(() => {
-        const priceNum = parseFloat(watchPrice) || 0;
-        const dummyPkg: any = {
-            Field: watchField,
-            Price: priceNum,
-            SelectionMethod: watchSelectionMethod,
-        };
-        const compliance = checkPackageCompliance(dummyPkg);
-        const suggestedMethodCode = detectApplicableMethod(priceNum, watchField);
-        const suggestedMethod = getMethodGuidance(suggestedMethodCode);
-        return {
-            compliance,
-            suggestedMethodCode,
-            suggestedMethod,
-            priceNum,
-        };
-    }, [watchPrice, watchField, watchSelectionMethod]);
 
     const { data: contractors } = useQuery({
         queryKey: ['contractors'],
@@ -324,7 +303,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
             reset({
                 PackageNumber: packageToEdit.PackageNumber || '',
                 PackageName: packageToEdit.PackageName || '',
-                Price: packageToEdit.Price?.toString() || '',
+                Price: packageToEdit.Price ? new Intl.NumberFormat('vi-VN').format(Number(packageToEdit.Price)) : '',
                 Duration: packageToEdit.Duration || '',
                 Field: normalizeField(packageToEdit.Field),
                 SelectionMethod: normalizeSelectionMethod(packageToEdit.SelectionMethod),
@@ -339,7 +318,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                 BidClosingDate: packageToEdit.BidClosingDate || '',
                 BidOpeningDate: packageToEdit.BidOpeningDate || '',
                 WinningContractorID: packageToEdit.WinningContractorID || '',
-                WinningPrice: packageToEdit.WinningPrice?.toString() || '',
+                WinningPrice: packageToEdit.WinningPrice ? new Intl.NumberFormat('vi-VN').format(Number(packageToEdit.WinningPrice)) : '',
                 ApprovalDate_Result: packageToEdit.ApprovalDate_Result || '',
                 FundingSource: fs || 'Vốn ngân sách trung ương',
                 Description: packageToEdit.Description || '',
@@ -357,6 +336,16 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
         }
         setActiveTab('basic');
     }, [packageToEdit, reset]);
+
+    // Tự động điều chỉnh Hình thức đấu thầu và Phương thức lựa chọn khi đổi sang Chỉ định thầu rút gọn
+    useEffect(() => {
+        if (watchSelectionMethod === 'AppointedSimplified') {
+            setValue('BidType', 'Offline');
+            setValue('SelectionProcedure', 'Reduced');
+        } else if (watchSelectionMethod === 'Appointed') {
+            setValue('SelectionProcedure', 'Normal');
+        }
+    }, [watchSelectionMethod, setValue]);
 
     // Create mutation
     const createMutation = useMutation({
@@ -389,11 +378,26 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
             return;
         }
 
+        // Ngăn chặn chuyển trạng thái không hợp lệ khi chưa có nhà thầu trúng thầu
+        if (data.Status === PackageStatus.Execution && (!data.WinningContractorID || data.WinningContractorID.trim() === '')) {
+            setError('Status', { type: 'manual', message: 'Không thể chọn trạng thái "Đang thực hiện" khi chưa chọn nhà thầu trúng thầu' });
+            setActiveTab('basic');
+            showToast('Không thể chọn trạng thái "Đang thực hiện" khi chưa chọn nhà thầu trúng thầu', 'error');
+            return;
+        }
+
+        if (data.Status === PackageStatus.Completed && (!data.WinningContractorID || data.WinningContractorID.trim() === '')) {
+            setError('Status', { type: 'manual', message: 'Không thể chọn trạng thái "Kết thúc" khi chưa chọn nhà thầu trúng thầu' });
+            setActiveTab('basic');
+            showToast('Không thể chọn trạng thái "Kết thúc" khi chưa chọn nhà thầu trúng thầu', 'error');
+            return;
+        }
+
         const payload: Partial<BiddingPackage> = {
             ProjectID: projectId,
             PackageNumber: data.PackageNumber,
             PackageName: data.PackageName,
-            Price: parseFloat(data.Price),
+            Price: parseFormattedNumber(data.Price),
             Duration: data.Duration,
             Field: data.Field as any,
             SelectionMethod: data.SelectionMethod as any,
@@ -408,7 +412,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
             BidClosingDate: data.BidClosingDate || null,
             BidOpeningDate: data.BidOpeningDate || null,
             WinningContractorID: data.WinningContractorID || null,
-            WinningPrice: data.WinningPrice ? parseFloat(data.WinningPrice) : null,
+            WinningPrice: data.WinningPrice ? parseFormattedNumber(data.WinningPrice) : null,
             ApprovalDate_Result: data.ApprovalDate_Result || null,
             FundingSource: finalFundingSource || null,
             Description: data.Description || null,
@@ -528,12 +532,23 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     <input
                                         type="text"
                                         placeholder="0"
-                                        {...register('Price')}
+                                        {...register('Price', {
+                                            onChange: (e) => {
+                                                const rawVal = e.target.value;
+                                                const cleanDigits = rawVal.replace(/[^\d]/g, '');
+                                                if (!cleanDigits) {
+                                                    e.target.value = '';
+                                                    return;
+                                                }
+                                                const num = parseInt(cleanDigits, 10);
+                                                e.target.value = new Intl.NumberFormat('vi-VN').format(num);
+                                            }
+                                        })}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-slate-700 dark:text-slate-100 ${errors.Price ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
                                     {watchPrice && (
                                         <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                                            {formatCurrency(parseFloat(watchPrice) || 0)}
+                                            {formatCurrency(parseFormattedNumber(watchPrice) || 0)}
                                         </p>
                                     )}
                                     {errors.Price && (
@@ -660,121 +675,6 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Gợi ý phương án LCNT & Kiểm tra tuân thủ */}
-                                {complianceInfo.priceNum > 0 && (
-                                    <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3 shadow-sm">
-                                        <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2">
-                                            <ShieldAlert className="w-4 h-4 text-primary-500" />
-                                            <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
-                                                Kiểm tra tuân thủ & Gợi ý (NĐ 214/2025/NĐ-CP)
-                                            </span>
-                                        </div>
-                                        
-                                        {/* Hướng dẫn gợi ý phương án LCNT */}
-                                        <div className="flex items-start gap-2.5 p-3 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg">
-                                            <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-                                            <div className="text-xs">
-                                                <p className="font-bold text-blue-700 dark:text-blue-400">
-                                                    Gợi ý phương án LCNT phù hợp nhất: {complianceInfo.suggestedMethod.label}
-                                                </p>
-                                                <p className="text-slate-500 dark:text-slate-400 mt-0.5">
-                                                    {complianceInfo.suggestedMethod.description}
-                                                </p>
-                                                <p className="text-[10px] font-medium text-slate-400 mt-1">
-                                                    Cơ sở pháp lý: {complianceInfo.suggestedMethod.legalBasis}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Kết quả kiểm tra compliance */}
-                                        <div className="space-y-2">
-                                            {complianceInfo.compliance.errors.map((err, idx) => (
-                                                <div key={idx} className="flex items-start gap-2.5 p-3 bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 rounded-lg text-xs text-red-700 dark:text-red-400">
-                                                    <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                                    <span>{err}</span>
-                                                </div>
-                                            ))}
-                                            
-                                            {complianceInfo.compliance.suggestions.map((sug, idx) => (
-                                                <div key={idx} className="flex items-start gap-2.5 p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/40 rounded-lg text-xs text-amber-700 dark:text-amber-400">
-                                                    <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                                                    <span>{sug}</span>
-                                                </div>
-                                            ))}
-                                            
-                                            {complianceInfo.compliance.errors.length === 0 && (
-                                                <div className="flex items-start gap-2.5 p-3 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 rounded-lg text-xs text-emerald-700 dark:text-emerald-400">
-                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                                                    <span>Hình thức lựa chọn nhà thầu đã chọn tuân thủ đúng hạn mức pháp luật quy định.</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Điều kiện chỉ định thầu */}
-                                {watchSelectionMethod === 'Appointed' && (
-                                    <div className="bg-amber-50/30 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-4 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                                                    Điều kiện áp dụng Chỉ định thầu (Điều 23 Luật Đấu thầu)
-                                                </span>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowDirectAppointmentConditions(!showDirectAppointmentConditions)}
-                                                className="text-xs text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
-                                            >
-                                                {showDirectAppointmentConditions ? 'Ẩn chi tiết' : 'Xem chi tiết'}
-                                                {showDirectAppointmentConditions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                            </button>
-                                        </div>
-
-                                        <div className="text-xs text-slate-600 dark:text-slate-400">
-                                            {(() => {
-                                                const threshold = watchField === 'Consultancy' ? 800000000 : 2000000000;
-                                                const priceNum = complianceInfo.priceNum;
-                                                const isWithin = priceNum <= threshold;
-                                                return (
-                                                    <div className="flex items-start gap-2">
-                                                        <span className={`shrink-0 font-bold px-1.5 py-0.5 rounded text-[10px] ${isWithin ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400' : 'bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400'}`}>
-                                                            {isWithin ? 'ĐỦ ĐIỀU KIỆN RÚT GỌN' : 'CẦN ĐIỀU KIỆN ĐẶC THÙ'}
-                                                        </span>
-                                                        <div>
-                                                            Giá gói thầu hiện tại: <span className="font-bold">{formatCurrency(priceNum)}</span>. 
-                                                            Hạn mức chỉ định thầu rút gọn cho lĩnh vực {watchField === 'Consultancy' ? 'Tư vấn' : 'Xây lắp/Mua sắm/Hỗn hợp'} là <span className="font-bold">{formatCurrency(threshold)}</span> (NĐ 214/2025/NĐ-CP).
-                                                            {!isWithin && (
-                                                                <p className="text-red-600 dark:text-red-400 mt-1 font-medium">
-                                                                    Do vượt hạn mức thông thường, gói thầu này bắt buộc phải thuộc một trong các trường hợp chỉ định thầu đặc thù dưới đây.
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })()}
-                                        </div>
-
-                                        {showDirectAppointmentConditions && (
-                                            <div className="text-xs text-slate-600 dark:text-slate-400 border-t border-amber-100 dark:border-amber-900/40 pt-3 space-y-2 max-h-[220px] overflow-y-auto pr-2">
-                                                <p className="font-bold text-slate-700 dark:text-slate-300">Các trường hợp đặc thù được phép Chỉ định thầu (Khoản 1 Điều 23 Luật Đấu thầu 2023):</p>
-                                                <ul className="list-disc pl-4 space-y-1.5 text-[11px] leading-relaxed">
-                                                    <li><strong>Điểm a:</strong> Gói thầu cấp bách để khắc phục sự cố thiên tai, dịch bệnh, hoặc bảo đảm bí mật nhà nước.</li>
-                                                    <li><strong>Điểm b:</strong> Gói thầu cấp bách nhằm bảo vệ chủ quyền, an ninh quốc gia, hải đảo.</li>
-                                                    <li><strong>Điểm c:</strong> Gói thầu cung cấp dịch vụ tư vấn, mua sắm hàng hóa... từ nhà thầu đã thực hiện trước đó để bảo đảm tương thích công nghệ, bản quyền.</li>
-                                                    <li><strong>Điểm d:</strong> Gói thầu thiết kế kiến trúc trúng tuyển hoặc do tác giả thiết kế trúng tuyển thực hiện.</li>
-                                                    <li><strong>Điểm e:</strong> Gói thầu cung cấp dịch vụ tư vấn lập Báo cáo nghiên cứu khả thi, thiết kế xây dựng được chỉ định cho tác giả thiết kế kiến trúc trúng tuyển.</li>
-                                                    <li><strong>Điểm g:</strong> Gói thầu nghiên cứu thử nghiệm, sở hữu trí tuệ.</li>
-                                                    <li><strong>Điểm h:</strong> Gói thầu di dời hạ tầng kỹ thuật, rà phá bom mìn phục vụ giải phóng mặt bằng.</li>
-                                                    <li><strong>Điểm i:</strong> Gói thầu chỉ có duy nhất 1 nhà thầu có khả năng thực hiện do yêu cầu công nghệ đặc thù.</li>
-                                                    <li><strong>Điểm k:</strong> Gói thầu thuộc dự án quan trọng quốc gia được Thủ tướng Chính phủ quyết định.</li>
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
@@ -792,7 +692,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                                            Hình thức đấu thầu
+                                            Đấu thầu qua mạng
                                         </label>
                                         <select
                                             {...register('BidType')}
@@ -944,14 +844,25 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                                 Giá trúng thầu (VNĐ)
                                             </label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 placeholder="0"
-                                                {...register('WinningPrice')}
+                                                {...register('WinningPrice', {
+                                                    onChange: (e) => {
+                                                        const rawVal = e.target.value;
+                                                        const cleanDigits = rawVal.replace(/[^\d]/g, '');
+                                                        if (!cleanDigits) {
+                                                            e.target.value = '';
+                                                            return;
+                                                        }
+                                                        const num = parseInt(cleanDigits, 10);
+                                                        e.target.value = new Intl.NumberFormat('vi-VN').format(num);
+                                                    }
+                                                })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                             {watchWinningPrice && (
                                                 <p className="mt-1 text-xs text-green-600 font-medium">
-                                                    {formatCurrency(parseFloat(watchWinningPrice) || 0)}
+                                                    {formatCurrency(parseFormattedNumber(watchWinningPrice) || 0)}
                                                 </p>
                                             )}
                                         </div>

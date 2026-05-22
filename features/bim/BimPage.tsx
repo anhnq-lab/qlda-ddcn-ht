@@ -126,7 +126,7 @@ interface ProjectBimSummary {
 const BimPage: React.FC = () => {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
-    const { scopedProjects: projects } = useScopedProjects();
+    const { scopedProjects: projects } = useScopedProjects({ pageSize: 9999 });
     const { projectId: urlProjectId } = useParams<{ projectId?: string }>();
     const navigate = useNavigate();
 

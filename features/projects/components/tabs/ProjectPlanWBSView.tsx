@@ -201,7 +201,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                     <div className="w-8 shrink-0 px-2"></div>
                     <div className="flex-1 min-w-[200px] px-2 text-left">Công việc</div>
                     <div className="w-24 shrink-0 px-2 text-center">Tiến độ</div>
-                    <div className="w-32 shrink-0 px-2 text-left hidden sm:block">Phụ trách</div>
+                    <div className="w-48 shrink-0 px-2 text-left hidden sm:block">Phụ trách</div>
                     <div className="w-28 shrink-0 px-2 text-left hidden sm:block">Hạn / Bắt đầu</div>
                     <div className="w-20 shrink-0 px-2 text-center">Ưu tiên</div>
                     <div className="w-16 shrink-0 px-2 text-center">TL</div>
@@ -276,6 +276,8 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                             const isParentDone = parentStatus === TaskStatus.Done;
                                             const isParentActive = parentStatus === TaskStatus.InProgress || parentStatus === TaskStatus.Review;
                                             const completedCount = linkedTasks.filter(t => t.Status === TaskStatus.Done).length;
+                                            const taskWithRole = linkedTasks.find(t => t.Metadata?.assignee_role || (t as any).metadata?.assignee_role);
+                                            const displayRole = item.assigneeRole || taskWithRole?.Metadata?.assignee_role || (taskWithRole as any).metadata?.assignee_role;
 
                                             const stepBorderColor = isParentDone
                                                 ? 'border-l-emerald-500'
@@ -312,26 +314,20 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                 )}
                                                             </div>
                                                             {/* Assignee & Meta under title */}
-                                                            {item.assigneeRole && (
+                                                            {item.estimatedDays && (
                                                                 <div className="mt-1.5 flex items-center gap-2">
-                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700">
-                                                                        <Building2 className="w-3 h-3 text-warning-500" />
-                                                                        {item.assigneeRole}
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700">
+                                                                        <Timer className="w-3 h-3" />
+                                                                        {item.estimatedDays} ngày
                                                                     </span>
-                                                                    {item.estimatedDays && (
-                                                                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700">
-                                                                            <Timer className="w-3 h-3" />
-                                                                            {item.estimatedDays} ngày
-                                                                        </span>
-                                                                    )}
                                                                 </div>
                                                             )}
                                                         </div>
 
                                                         {/* Tabular Meta Container (Right Aligned) */}
-                                                        <div className="hidden lg:flex items-center gap-6 shrink-0 text-xs font-medium text-gray-500 dark:text-slate-400 mr-2">
+                                                        <div className="hidden lg:flex items-center shrink-0 text-xs font-medium text-gray-500 dark:text-slate-400 mr-2">
                                                             {/* Count Badge */}
-                                                            <div className="w-24 flex justify-center">
+                                                            <div className="w-24 shrink-0 px-2 flex justify-center">
                                                                 <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
                                                                     ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
                                                                     : completedCount === linkedTasks.length
@@ -342,16 +338,34 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                 </span>
                                                             </div>
 
-                                                            {/* Dates */}
-                                                            <div className="w-28 text-center truncate" title={agg?.startDate ? formatDateShort(agg.startDate) : 'Chưa xác định'}>
-                                                                {agg?.startDate ? formatDateShort(agg.startDate) : <span className="text-gray-400 dark:text-slate-400">--/--</span>}
+                                                            {/* Assignee / Phụ trách (Department) */}
+                                                            <div className="w-48 shrink-0 px-2 text-left">
+                                                                {displayRole ? (
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700">
+                                                                        <Building2 className="w-3 h-3 text-warning-500" />
+                                                                        {displayRole}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-[10px] text-gray-400 italic">Chưa xác định</span>
+                                                                )}
                                                             </div>
-                                                            <div className="w-28 text-center truncate" title={agg?.dueDate ? formatDateShort(agg.dueDate) : 'Chưa xác định'}>
-                                                                {agg?.dueDate ? formatDateShort(agg.dueDate) : <span className="text-gray-400 dark:text-slate-400">--/--</span>}
+
+                                                            {/* Dates (Start -> Due) */}
+                                                            <div className="w-28 shrink-0 px-2 text-left text-[10px] leading-tight whitespace-nowrap text-gray-500 dark:text-slate-400" title={agg?.startDate && agg?.dueDate ? `${formatDateShort(agg.startDate)} - ${formatDateShort(agg.dueDate)}` : 'Chưa xác định'}>
+                                                                {agg?.startDate || agg?.dueDate ? (
+                                                                    <span className="flex items-center gap-1">
+                                                                        <Calendar className="w-3 h-3 text-gray-400 shrink-0" />
+                                                                        <span>
+                                                                            {agg.startDate ? formatDateShort(agg.startDate) : '--/--'} &rarr; <strong className="text-gray-700 dark:text-slate-200">{agg.dueDate ? formatDateShort(agg.dueDate) : '--/--'}</strong>
+                                                                        </span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-gray-400 dark:text-slate-500">--/--</span>
+                                                                )}
                                                             </div>
 
                                                             {/* Status */}
-                                                            <div className="w-32 flex justify-start">
+                                                            <div className="w-32 shrink-0 px-2 flex justify-start">
                                                                 {(() => {
                                                                     const statusCfg = getStatusConfig(parentStatus);
                                                                     return linkedTasks.length > 0 ? (
@@ -374,6 +388,11 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                             <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium inline-block w-fit ml-auto ${linkedTasks.length === 0 ? 'bg-gray-100 text-gray-500' : completedCount === linkedTasks.length ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
                                                                 {completedCount}/{linkedTasks.length} việc
                                                             </span>
+                                                            {displayRole && (
+                                                                <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700 inline-block w-fit ml-auto">
+                                                                    {displayRole}
+                                                                </span>
+                                                            )}
                                                             {(agg?.startDate || agg?.dueDate) && (
                                                                 <span className="text-[10px] text-gray-500">{formatDateShort(agg.startDate)} - {formatDateShort(agg.dueDate)}</span>
                                                             )}
@@ -411,7 +430,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         <th className="w-8 p-0 border-0 h-0"></th>
                                                                         <th className="min-w-[200px] p-0 border-0 h-0"></th>
                                                                         <th className="w-24 p-0 border-0 h-0"></th>
-                                                                        <th className="w-32 hidden sm:table-cell p-0 border-0 h-0"></th>
+                                                                        <th className="w-48 hidden sm:table-cell p-0 border-0 h-0"></th>
                                                                         <th className="w-28 hidden sm:table-cell p-0 border-0 h-0"></th>
                                                                         <th className="w-20 p-0 border-0 h-0"></th>
                                                                         <th className="w-16 p-0 border-0 h-0"></th>
@@ -451,12 +470,12 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                         <button
                                                                                             onClick={(e) => onToggleMasterTask(e, t.TaskID)}
                                                                                             className="p-0.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded transition-colors"
-                                                                                            title={expandedMasterTasks[t.TaskID] ? "Thu gọn công việc con" : "Hiện công việc con"}
+                                                                                            title={expandedMasterTasks[t.TaskID] ? "Thu gọn công việc thuộc bước" : "Hiện công việc thuộc bước"}
                                                                                         >
                                                                                             {expandedMasterTasks[t.TaskID] ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> : <ChevronDown className="w-3 h-3" />}
                                                                                         </button>
                                                                                     )}
-                                                                                    <span>{t.Title.replace(/^[\d\.\s]+/, '').trim()}</span>
+                                                                                    <span>{t.Title.replace(/^[\d\.\:\s]+/, '').trim()}</span>
                                                                                     {t.IsCritical && (
                                                                                         <span className="px-1 py-0.5 bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400 text-[8px] rounded font-bold shrink-0">
                                                                                             CP
@@ -474,11 +493,11 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             </td>
 
                                                                             {/* Assignee */}
-                                                                            <td className="px-2 py-2 text-gray-500 dark:text-slate-400 max-w-[150px]">
-                                                                                {t.AssigneeID ? (
-                                                                                    <div className="flex items-center gap-1 truncate" title={employeeNameMap[t.AssigneeID] || t.AssigneeID}>
+                                                                            <td className="px-2 py-2 text-gray-500 dark:text-slate-400 max-w-[200px]">
+                                                                                {t.AssigneeID && employeeNameMap[t.AssigneeID] ? (
+                                                                                    <div className="flex items-center gap-1 truncate" title={employeeNameMap[t.AssigneeID]}>
                                                                                         <User className="w-3.5 h-3.5 shrink-0 text-gray-400" />
-                                                                                        <span className="truncate text-xs font-medium text-gray-700 dark:text-slate-300">{employeeNameMap[t.AssigneeID] || t.AssigneeID}</span>
+                                                                                        <span className="truncate text-[11px] font-medium text-gray-700 dark:text-slate-300 whitespace-nowrap">{employeeNameMap[t.AssigneeID]}</span>
                                                                                     </div>
                                                                                 ) : (
                                                                                     <span className="text-[10px] text-gray-400 italic">Chưa chỉ định</span>
@@ -591,23 +610,23 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                 <td colSpan={8} className="p-3">
                                                                                     <div className="pl-4 sm:pl-8 border-l-2 border-primary-200 dark:border-slate-600">
                                                                                         <h6 className="text-[10px] uppercase font-bold text-gray-500 dark:text-slate-400 mb-2 tracking-wider flex items-center gap-1">
-                                                                                            <ListChecks className="w-3 h-3" /> Công việc con ({t.SubTasks.length})
+                                                                                            <ListChecks className="w-3 h-3" /> Công việc thuộc các bước ({t.SubTasks.length})
                                                                                         </h6>
                                                                                         <div className="space-y-1.5">
                                                                                             {t.SubTasks.map(sub => (
                                                                                                 <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate-50 rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
                                                                                                     <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${(sub.Status as any) === 'Done' ? 'bg-emerald-500' : (sub.Status as any) === 'InProgress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
                                                                                                     <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
-                                                                                                        {sub.Title.replace(/^[\d\.\s]+/, '').trim()}
+                                                                                                        {sub.Title.replace(/^[\d\.\:\s]+/, '').trim()}
                                                                                                     </span>
                                                                                                     <div className="flex items-center gap-3 shrink-0 text-[10px]">
-                                                                                                        {sub.AssigneeID ? (
-                                                                                                            <span className="flex items-center gap-1 text-gray-500 dark:text-slate-400 max-w-[130px] truncate" title={employeeNameMap[sub.AssigneeID] || sub.AssigneeID}>
+                                                                                                        {sub.AssigneeID && employeeNameMap[sub.AssigneeID] ? (
+                                                                                                            <span className="flex items-center gap-1 text-gray-500 dark:text-slate-400 w-32 truncate text-[9px] font-medium whitespace-nowrap" title={employeeNameMap[sub.AssigneeID]}>
                                                                                                                 <User className="w-3 h-3 shrink-0 text-gray-400" />
-                                                                                                                {employeeNameMap[sub.AssigneeID] || sub.AssigneeID}
+                                                                                                                {employeeNameMap[sub.AssigneeID]}
                                                                                                             </span>
                                                                                                         ) : (
-                                                                                                            <span className="text-[10px] text-gray-400 italic">Chưa chỉ định</span>
+                                                                                                            <span className="text-[9px] text-gray-400 italic">Chưa chỉ định</span>
                                                                                                         )}
                                                                                                         {sub.DueDate && (
                                                                                                             <span className="flex items-center gap-1 text-gray-500 dark:text-slate-400 font-medium">

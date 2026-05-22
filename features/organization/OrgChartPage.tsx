@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 import {
     ReactFlow,
     Background,
@@ -18,6 +19,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useEmployees } from '../../hooks/useEmployees';
+import { Avatar } from '../../components/ui';
 import {
     Network, Users, Building2, ChevronRight,
     Landmark, Crown, UserCheck, Award,
@@ -253,8 +255,7 @@ const DEPARTMENTS = [
 const OrgChartPage: React.FC = () => {
     const navigate = useNavigate();
     const { data: employees = [] } = useEmployees();
-    const [activeTab, setActiveTab] = useState<'flow' | 'grid'>('flow');
-    const [, setSearchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useTabSearchParam<'flow' | 'grid'>('flow', ['flow', 'grid'] as const, 'chart');
 
     const deptGroups = useMemo(() => {
         const g: Record<string, typeof employees> = {};
@@ -447,10 +448,11 @@ const OrgChartPage: React.FC = () => {
                                                 onClick={() => navigate(`/employees/${emp.EmployeeID}`)}
                                                 className="px-5 py-2.5 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors group/row"
                                             >
-                                                <img
-                                                    src={emp.AvatarUrl}
-                                                    alt={emp.FullName}
-                                                    className="w-8 h-8 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm object-cover flex-shrink-0"
+                                                <Avatar
+                                                    name={emp.FullName}
+                                                    imageUrl={emp.AvatarUrl}
+                                                    size="sm"
+                                                    className="ring-2 ring-white dark:ring-slate-700 flex-shrink-0"
                                                 />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 transition-colors">
@@ -464,7 +466,12 @@ const OrgChartPage: React.FC = () => {
                                         {members.length > 6 && (
                                             <div className="px-5 py-2.5 text-center">
                                                 <button
-                                                    onClick={() => setSearchParams({ tab: 'list' })}
+                                                    onClick={() => {
+                                                    const url = new URL(window.location.href);
+                                                    url.searchParams.set('tab', 'list');
+                                                    window.history.replaceState(null, '', url.pathname + url.search);
+                                                    window.dispatchEvent(new PopStateEvent('popstate'));
+                                                }}
                                                     className="text-xs text-primary-600 dark:text-primary-400 font-semibold hover:underline cursor-pointer"
                                                 >
                                                     +{members.length - 6} người khác →

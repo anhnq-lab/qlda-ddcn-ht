@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, User, DollarSign, CalendarDays, AlertTriangle } from 'lucide-react';
 import { Task } from '../../../types';
+import { Avatar } from '../../../components/ui';
 
 interface TaskInfoPanelProps {
     task: Task;
@@ -19,10 +20,11 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
 
                 <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
                     <div className="relative">
-                        <img
-                            src={assignee?.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee?.FullName || 'U'}&background=6366f1&color=fff&size=48`}
-                            className="w-12 h-12 rounded-xl ring-2 ring-white shadow-md object-cover"
-                            alt=""
+                        <Avatar
+                            name={assignee?.FullName || 'User'}
+                            imageUrl={assignee?.AvatarUrl}
+                            size="lg"
+                            className="ring-2 ring-white shadow-md object-cover"
                         />
                         <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                     </div>

@@ -9,6 +9,7 @@ import { useBimSection, BimSectionAPI } from '../useBimSection';
 import { useBimMeasure, BimMeasureAPI } from '../useBimMeasure';
 import { useBimOperations, BimOperationsAPI } from '../useBimOperations';
 import { useBimKeyboard, BimKeyboardResult } from '../useBimKeyboard';
+import { useBimVisualization, BimVisualizationAPI } from '../useBimVisualization';
 import { extractFacilityAssetsFromIFC } from '../utils/autoExtractor';
 import * as OBCF from '@thatopen/components-front';
 
@@ -34,6 +35,7 @@ export interface BimContextValue {
     measure: BimMeasureAPI;
     operations: BimOperationsAPI;
     keyboard: BimKeyboardResult;
+    visualization: BimVisualizationAPI;
 
     opRefreshTrigger: number;
     handleExtractFromBIM: () => Promise<number>;
@@ -127,6 +129,11 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         engine.worldRef
     );
 
+    const visualization = useBimVisualization(
+        engine.worldRef,
+        () => upload.disciplineModels,
+    );
+
     const keyboard = useBimKeyboard({
         containerRef,
         worldRef: engine.worldRef,
@@ -170,6 +177,7 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         measure,
         operations,
         keyboard,
+        visualization,
         opRefreshTrigger,
         handleExtractFromBIM,
         contextMenu,
@@ -203,6 +211,46 @@ export const BimProvider: React.FC<BimProviderProps> = ({
             selection.cleanupModelCache();
         };
     }, []);
+
+    // Whenever the spatial tree updates, derive the storey → elementIds index
+    // and feed it to the visualisation hook (used by the storey-filter UI and
+    // by color-by-storey). We walk the tree and collect every leaf express ID
+    // under each IfcBuildingStorey node.
+    //
+    // Deps: registerStoreys only — depending on the whole `visualization`
+    // object causes a re-render loop because the hook returns a fresh value
+    // object every render (Set + Record identities change).
+    const registerStoreys = visualization.registerStoreys;
+    React.useEffect(() => {
+        const tree = selection.spatialTree;
+        if (!tree || tree.length === 0) {
+            registerStoreys([]);
+            return;
+        }
+        const storeys: Array<{ id: number; name: string; elementIds: number[] }> = [];
+        const collectIds = (node: any, into: number[]) => {
+            if (typeof node.id === 'number') into.push(node.id);
+            if (Array.isArray(node.children)) {
+                for (const child of node.children) collectIds(child, into);
+            }
+        };
+        const walk = (node: any) => {
+            if (node?.type === 'IfcBuildingStorey') {
+                const elementIds: number[] = [];
+                if (Array.isArray(node.children)) {
+                    for (const child of node.children) collectIds(child, elementIds);
+                }
+                storeys.push({
+                    id: node.id,
+                    name: node.name || `Storey ${node.id}`,
+                    elementIds,
+                });
+            }
+            if (Array.isArray(node.children)) node.children.forEach(walk);
+        };
+        tree.forEach(walk);
+        registerStoreys(storeys);
+    }, [selection.spatialTree, registerStoreys]);
 
     // ── Orbit Point: click on model to set orbit center ──
     React.useEffect(() => {

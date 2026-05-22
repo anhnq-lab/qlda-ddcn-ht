@@ -11,7 +11,8 @@ import {
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
     Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical,
-    Activity, ShieldAlert, Zap, Home
+    Activity, ShieldAlert, Zap, Home,
+    Bookmark, Palette, Search, ClipboardList,
 } from 'lucide-react';
 import { useBimContext } from './context/BimContext';
 
@@ -439,6 +440,18 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             {/* ── Panels ──── */}
             <ToolBtn isDark={isDarkMode} active={leftPanel === 'tree'} onClick={() => tools.toggleLeftPanel('tree')} title="Toggle Model Tree" disabled={disabled}>
                 <TreePine className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} active={leftPanel === 'search'} onClick={() => tools.toggleLeftPanel('search')} title="Tìm phần tử" disabled={disabled}>
+                <Search className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} active={leftPanel === 'views'} onClick={() => tools.toggleLeftPanel('views')} title="Góc nhìn đã lưu" disabled={disabled}>
+                <Bookmark className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} active={leftPanel === 'viz'} onClick={() => tools.toggleLeftPanel('viz')} title="Explode / Color-by / Storey" disabled={disabled}>
+                <Palette className="w-5 h-5" />
+            </ToolBtn>
+            <ToolBtn isDark={isDarkMode} active={leftPanel === 'issues'} onClick={() => tools.toggleLeftPanel('issues')} title="Issues (BCF-lite)" disabled={disabled}>
+                <ClipboardList className="w-5 h-5" />
             </ToolBtn>
             <ToolBtn isDark={isDarkMode} active={rightPanel === 'properties'} onClick={() => tools.toggleRightPanel('properties')} title="Toggle Properties" disabled={disabled}>
                 <PanelRight className="w-5 h-5" />

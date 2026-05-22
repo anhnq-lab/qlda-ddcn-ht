@@ -331,12 +331,14 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                         </span>
 
                                                         {/* Assignee */}
-                                                        {task.AssigneeID && (
-                                                            <span className="inline-flex items-center gap-1 text-[10px] text-gray-500 dark:text-slate-400">
-                                                                <User className="w-3 h-3" />
-                                                                {employeeNameMap[task.AssigneeID] || task.AssigneeID}
-                                                            </span>
-                                                        )}
+                                                        <span className="inline-flex items-center gap-1 text-[10px] text-gray-500 dark:text-slate-400">
+                                                            <User className="w-3 h-3 text-gray-400" />
+                                                            {task.AssigneeID && employeeNameMap[task.AssigneeID] ? (
+                                                                employeeNameMap[task.AssigneeID]
+                                                            ) : (
+                                                                <span className="italic text-gray-400">Chưa chỉ định</span>
+                                                            )}
+                                                        </span>
 
                                                         {/* Date */}
                                                         {task.DueDate && (

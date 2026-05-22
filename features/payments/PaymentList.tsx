@@ -24,7 +24,7 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
     const navigate = useNavigate();
     const { payments, isLoading } = usePayments();
     const { contracts } = useContracts();
-    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects();
+    const { scopedProjects: projects, scopedProjectIds } = useScopedProjects({ pageSize: 9999 });
     const { contractors } = useContractors();
     const { biddingPackages } = useAllBiddingPackages();
     const [filterStatus, setFilterStatus] = useState<'all' | PaymentStatus>('all');

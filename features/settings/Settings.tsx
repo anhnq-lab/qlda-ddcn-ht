@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 // Components (Lazy loaded)
 const UserAccountManager = React.lazy(() => import('../admin/UserAccountManager'));
@@ -36,24 +36,16 @@ const TABS: TabDef[] = [
 
 const Settings: React.FC = () => {
     const { currentUser } = useAuth();
-    const [searchParams, setSearchParams] = useSearchParams();
     
     // Safety check - should be handled by ProtectedRoute, but good to be safe
     const isAdmin = currentUser?.Role === 'Admin';
 
-    // Read tab from URL, default to 'accounts'
-    const tabFromUrl = searchParams.get('tab') as TabKey | null;
-    const [activeTab, setActiveTab] = useState<TabKey>(
-        tabFromUrl && TABS.some(t => t.key === tabFromUrl) ? tabFromUrl : 'accounts'
+    // Sync tab ↔ URL
+    const [activeTab, setActiveTab] = useTabSearchParam<TabKey>(
+        'accounts',
+        ['accounts', 'contractors', 'role-defaults', 'permissions', 'dashboard-widgets', 'audit-log', 'tools'] as const,
+        'tab'
     );
-
-    // Sync tab → URL
-    useEffect(() => {
-        const current = searchParams.get('tab');
-        if (current !== activeTab) {
-            setSearchParams({ tab: activeTab }, { replace: true });
-        }
-    }, [activeTab, searchParams, setSearchParams]);
 
     const switchTab = (key: TabKey) => {
         setActiveTab(key);

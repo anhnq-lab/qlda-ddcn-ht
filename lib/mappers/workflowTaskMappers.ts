@@ -1,5 +1,11 @@
 import { Task, TaskStatus, TaskPriority } from '../../types/task.types';
 import type { DbTask } from '../../services/TaskService';
+import { DEPARTMENT_CODES } from '../../types/plan.types';
+
+const isDepartmentCode = (id: string | null | undefined): boolean => {
+    if (!id) return false;
+    return (DEPARTMENT_CODES as readonly string[]).includes(id.toUpperCase());
+};
 
 /**
  * Maps a DbTask (unified tasks table) to the UI Task model.
@@ -51,6 +57,7 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         Status: status,
         Priority: wt.priority || metadata.priority || TaskPriority.Medium,
         ProgressPercent: wt.progress || 0,
+        Metadata: metadata,
         
         // Fields from metadata or direct columns
         DurationDays: metadata.estimatedDays || 10,
@@ -67,7 +74,7 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         ActualEndDate: metadata.actualEndDate || wt.actual_end_date || '',
         
         // Workflow/Step reference
-        TimelineStep: wt.step_code || metadata.step_code || wt.workflow_node_id || wt.node_id || '',
+        TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || metadata.step_code || '',
         StepCode: wt.step_code || metadata.step_code || wt.workflow_node_id || wt.node_id || '',
         Phase: metadata.phase || (wt as any).workflow_nodes?.metadata?.phase || '',
         LegalBasis: metadata.legalBasis || (wt as any).workflow_nodes?.metadata?.legalBasis || '',
@@ -105,7 +112,7 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         due_date: task.DueDate || null,
         actual_start_date: task.ActualStartDate || null,
         actual_end_date: task.ActualEndDate || null,
-        assignee_id: task.AssigneeID && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(task.AssigneeID)
+        assignee_id: task.AssigneeID && !isDepartmentCode(task.AssigneeID)
             ? task.AssigneeID : null,
         workflow_node_id: task.TimelineStep || task.StepCode || null,
         step_code: task.TimelineStep || task.StepCode || null,
@@ -123,7 +130,7 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
             estimated_cost: (task as any).EstimatedCost,
             actual_cost: (task as any).ActualCost,
             estimatedDays: task.DurationDays,
-            assignee_role: task.AssigneeID && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(task.AssigneeID)
+            assignee_role: task.AssigneeID && isDepartmentCode(task.AssigneeID)
                 ? task.AssigneeID : undefined,
         },
     } as any;

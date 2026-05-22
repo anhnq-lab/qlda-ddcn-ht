@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { Disbursement } from '@/types';
+import { Disbursement } from '../../../types';
 
 export interface ParsedDisbursement extends Omit<Disbursement, 'DisbursementID' | 'ProjectID' | 'CreatedAt' | 'UpdatedAt'> {
     // We omit ID fields because they will be generated or provided by context

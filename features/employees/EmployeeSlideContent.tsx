@@ -13,6 +13,7 @@ import {
     AlertTriangle, Sparkles, Edit, Trash2
 } from 'lucide-react';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Avatar } from '../../components/ui';
 
 // ═══════════════════════════════════════════════════
 // Helpers
@@ -157,12 +158,13 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                     <div className="flex items-center gap-4">
                         {/* Avatar */}
                         <div className="relative shrink-0">
-                            <img
-                                src={employee.AvatarUrl}
-                                alt={employee.FullName}
-                                className="w-16 h-16 rounded-xl object-cover border-3 border-white/20 shadow-sm"
+                            <Avatar
+                                name={employee.FullName}
+                                imageUrl={employee.AvatarUrl}
+                                size="lg"
+                                ringColor="ring-3 ring-white/20"
                             />
-                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${employee.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-800 ${employee.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                         </div>
 
                         {/* Info */}

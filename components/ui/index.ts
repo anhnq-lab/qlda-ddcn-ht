@@ -110,3 +110,7 @@ export { EmptyState as EmptyStateFull } from './EmptyState';
 export { LoadingSpinner, CardSkeleton, TableRowSkeleton } from './LoadingSpinner';
 export { ErrorBoundary } from './ErrorBoundary';
 export { ErrorMessage, EmptyState } from './ErrorMessage';
+
+// ── Avatar (new) ──────────────────────────────────────────────
+export { Avatar, getInitials } from './Avatar';
+

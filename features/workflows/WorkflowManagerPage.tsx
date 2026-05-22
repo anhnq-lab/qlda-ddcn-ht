@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { supabase } from '../../lib/supabase';
 import { GitBranch, Plus, AlertCircle, FileText, DownloadCloud, ArrowLeft, LayoutGrid, List as ListIcon, Search, Trash2, PenLine, FileSpreadsheet } from 'lucide-react';
 import { getStandardWorkflowTemplates } from './data/seedWorkflows';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 import type { Workflow, WorkflowNode, WorkflowEdge } from '../../types/workflow.types';
 import { useToast } from '../../components/ui/Toast';
@@ -23,8 +24,8 @@ const WorkflowManagerPage: React.FC = () => {
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
     
     // UI states
-    const [viewMode, setViewMode] = useState<'grid' | 'list' | 'flowchart'>('grid');
-    const [activeTab, setActiveTab] = useState<'project' | 'internal'>('project');
+    const [viewMode, setViewMode] = useTabSearchParam<'grid' | 'list' | 'flowchart'>('grid', ['grid', 'list', 'flowchart'] as const, 'view');
+    const [activeTab, setActiveTab] = useTabSearchParam<'project' | 'internal'>('project', ['project', 'internal'] as const, 'tab');
     const [searchQuery, setSearchQuery] = useState('');
     
     const { addToast } = useToast();

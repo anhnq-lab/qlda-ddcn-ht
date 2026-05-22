@@ -9,9 +9,11 @@ import { PackageStatsDashboard } from './PackageStatsDashboard';
 import { exportBiddingPackagesToExcel } from '../../../../utils/biddingExcelIO';
 import { useSlidePanel } from '../../../../context/SlidePanelContext';
 import { useToast } from '../../../../components/ui/Toast';
+import { useNavigate } from 'react-router-dom';
 import {
     Search, Plus, Download, Edit, Trash2, Package2,
-    Clock, AlertTriangle, CheckCircle2, MoreVertical, Loader2, GripVertical
+    Clock, AlertTriangle, CheckCircle2, MoreVertical, Loader2, GripVertical,
+    ChevronDown, Check, FileText
 } from 'lucide-react';
 import { supabase } from '../../../../lib/supabase';
 import { ActionMenu } from '../../../../components/common/ActionMenu';
@@ -31,6 +33,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     const queryClient = useQueryClient();
     const { openPanel, closePanel } = useSlidePanel();
     const { addToast } = useToast();
+    const navigate = useNavigate();
 
     const { data: packages, isLoading, error } = useQuery({
         queryKey: ['project-packages', projectID],
@@ -46,21 +49,25 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     const [dragOverPkgId, setDragOverPkgId] = useState<string | null>(null);
 
     // Auto-open logic
+    const autoOpenRef = useRef<string | null>(null);
     const [autoOpenProcessed, setAutoOpenProcessed] = useState<string | null>(null);
+    const [activeDropdownPkgId, setActiveDropdownPkgId] = useState<string | null>(null);
     useEffect(() => {
-        if (openPackageId && packages && packages.length > 0 && autoOpenProcessed !== openPackageId) {
+        if (openPackageId && packages && packages.length > 0 && autoOpenRef.current !== openPackageId) {
             const targetPkg = packages.find(p => p.PackageID === openPackageId);
             if (targetPkg) {
+                autoOpenRef.current = openPackageId;
                 handleView(targetPkg);
                 setAutoOpenProcessed(openPackageId);
             }
         }
-    }, [openPackageId, packages, autoOpenProcessed]);
+    }, [openPackageId, packages]);
 
     const deleteMutation = useMutation({
         mutationFn: (packageId: string) => ProjectService.deletePackage(packageId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
+            queryClient.invalidateQueries({ queryKey: ['all-packages'] });
             addToast({ title: 'Thành công', message: 'Đã xóa gói thầu', type: 'success' });
         },
         onError: (err: any) => {
@@ -85,6 +92,57 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
         },
     });
+
+    const updateQuickStatusMutation = useMutation({
+        mutationFn: async ({ packageId, status }: { packageId: string; status: PackageStatus }) => {
+            return ProjectService.updatePackage(packageId, { Status: status });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
+            queryClient.invalidateQueries({ queryKey: ['all-packages'] });
+            addToast({ title: 'Thành công', message: 'Đã cập nhật trạng thái gói thầu', type: 'success' });
+            setActiveDropdownPkgId(null);
+        },
+        onError: (err: any) => {
+            console.error('Lỗi cập nhật trạng thái nhanh:', err);
+            addToast({ title: 'Lỗi', message: 'Không thể cập nhật trạng thái', type: 'error' });
+        }
+    });
+
+    const handleQuickStatusChange = (e: React.MouseEvent, pkg: BiddingPackage, newStatus: PackageStatus) => {
+        e.stopPropagation();
+        
+        if (pkg.Status === newStatus) {
+            setActiveDropdownPkgId(null);
+            return;
+        }
+
+        // Kiểm tra điều kiện khi chuyển sang Đang thực hiện
+        if (newStatus === PackageStatus.Execution) {
+            const hasWinner = pkg.WinningContractorID || pkg.WinningContractorName;
+            const hasApprovalDate = pkg.ApprovalDate_Result;
+            
+            if (!hasWinner || !hasApprovalDate) {
+                const missingParts = [];
+                if (!hasWinner) missingParts.push('Nhà thầu trúng thầu');
+                if (!hasApprovalDate) missingParts.push('Ngày phê duyệt kết quả LCNT');
+                
+                const confirmMsg = `Gói thầu này chưa cập nhật đầy đủ thông tin: ${missingParts.join(', ')}.\nBạn có chắc chắn muốn chuyển sang trạng thái "Đang thực hiện" không?`;
+                if (!window.confirm(confirmMsg)) {
+                    setActiveDropdownPkgId(null);
+                    return;
+                }
+            }
+        }
+
+        // Xác nhận chuyển trạng thái
+        const confirmChange = window.confirm(`Xác nhận chuyển trạng thái gói thầu sang "${getStatusLabel(newStatus)}"?`);
+        if (confirmChange) {
+            updateQuickStatusMutation.mutate({ packageId: pkg.PackageID, status: newStatus });
+        } else {
+            setActiveDropdownPkgId(null);
+        }
+    };
 
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
@@ -284,9 +342,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     <th className="px-4 py-3 w-12 text-center">TT</th>
                                     <th className="px-4 py-3">Tên gói thầu</th>
                                     <th className="px-4 py-3 text-right">Giá trị (VNĐ)</th>
+                                    <th className="px-4 py-3">Hợp đồng</th>
                                     <th className="px-4 py-3">Nhà thầu trúng thầu</th>
                                     <th className="px-4 py-3 text-center">% TH</th>
-                                    <th className="px-4 py-3">Hình thức LCNT</th>
                                     <th className="px-4 py-3">Loại HĐ</th>
                                     <th className="px-4 py-3 text-center">Trạng thái</th>
                                     <th className="px-4 py-3 w-12 text-center">Thao tác</th>
@@ -321,7 +379,14 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                 </div>
                                             )}
                                         </td>
-                                        {/* Nhà thầu trúng thầu — từ join query */}
+                                        <td className="px-4 py-4">
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); navigate(`/contracts?package=${pkg.PackageID}`); }}
+                                                className="text-primary-500 hover:text-primary-600 transition-colors"
+                                            >
+                                                <FileText className="w-4 h-4" />
+                                            </button>
+                                        </td>
                                         <td className="px-4 py-4">
                                             {pkg.WinningContractorName ? (
                                                 <span className="text-xs font-medium text-txt-secondary leading-tight">
@@ -331,7 +396,6 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                 <span className="text-xs text-txt-muted italic">Chưa chọn</span>
                                             )}
                                         </td>
-                                        {/* % Tiến độ thực hiện — mini progress */}
                                         <td className="px-4 py-4 text-center">
                                             {pkg.Status === PackageStatus.Execution || pkg.Status === PackageStatus.Completed ? (
                                                 <div className="flex flex-col items-center gap-1">
@@ -350,23 +414,57 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                             )}
                                         </td>
                                         <td className="px-4 py-4 text-txt-secondary text-sm">
-                                            {(pkg.SelectionMethod as any) === 'OpenBidding' ? 'Đấu thầu rộng rãi' :
-                                                (pkg.SelectionMethod as any) === 'Appointed' ? 'Chỉ định thầu' :
-                                                    pkg.SelectionMethod || '-'}
-                                        </td>
-                                        <td className="px-4 py-4 text-txt-secondary text-sm">
                                             {(pkg.ContractType as any) === 'LumpSum' ? 'Trọn gói' :
                                                 (pkg.ContractType as any) === 'UnitPrice' ? 'Đơn giá' :
                                                     pkg.ContractType || '-'}
                                         </td>
-                                        <td className="px-4 py-4 text-center">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border ${getStatusColor(pkg.Status)}`}>
-                                                {pkg.Status === PackageStatus.Selection && <Clock className="w-3 h-3" />}
-                                                {pkg.Status === PackageStatus.Execution && <AlertTriangle className="w-3 h-3" />}
-                                                {pkg.Status === PackageStatus.Completed && <CheckCircle2 className="w-3 h-3" />}
-                                                {getStatusLabel(pkg.Status)}
-                                            </span>
-                                        </td>
+                                         <td className="px-4 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
+                                             <button
+                                                 onClick={(e) => {
+                                                     e.stopPropagation();
+                                                     setActiveDropdownPkgId(activeDropdownPkgId === pkg.PackageID ? null : pkg.PackageID);
+                                                 }}
+                                                 disabled={updateQuickStatusMutation.isPending}
+                                                 className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-all duration-200 hover:bg-opacity-80 active:scale-95 shadow-sm cursor-pointer disabled:opacity-50 ${getStatusColor(pkg.Status)}`}
+                                             >
+                                                 {pkg.Status === PackageStatus.Selection && <Clock className="w-3 h-3" />}
+                                                 {pkg.Status === PackageStatus.Execution && <AlertTriangle className="w-3 h-3" />}
+                                                 {pkg.Status === PackageStatus.Completed && <CheckCircle2 className="w-3 h-3" />}
+                                                 <span>{getStatusLabel(pkg.Status)}</span>
+                                                 <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
+                                             </button>
+
+                                             {activeDropdownPkgId === pkg.PackageID && (
+                                                 <>
+                                                     <div
+                                                         className="fixed inset-0 z-10"
+                                                         onClick={(e) => {
+                                                             e.stopPropagation();
+                                                             setActiveDropdownPkgId(null);
+                                                         }}
+                                                     />
+                                                     <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-1.5 z-20 text-left animate-in fade-in slide-in-from-top-1 duration-150">
+                                                         <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                                                             Chuyển trạng thái nhanh
+                                                         </div>
+                                                         {[
+                                                             { value: PackageStatus.Selection, label: 'Lựa chọn nhà thầu', color: 'text-blue-500 hover:bg-blue-500/5 dark:hover:bg-blue-500/10' },
+                                                             { value: PackageStatus.Execution, label: 'Đang thực hiện', color: 'text-emerald-500 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10' },
+                                                             { value: PackageStatus.Completed, label: 'Kết thúc', color: 'text-gray-500 dark:text-slate-400 hover:bg-slate-500/5 dark:hover:bg-slate-500/10' }
+                                                         ].map((item) => (
+                                                             <button
+                                                                 key={item.value}
+                                                                 onClick={(e) => handleQuickStatusChange(e, pkg, item.value)}
+                                                                 className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${item.color} ${pkg.Status === item.value ? 'bg-slate-50/50 dark:bg-slate-700/30' : ''}`}
+                                                             >
+                                                                 <span>{item.label}</span>
+                                                                 {pkg.Status === item.value && <Check className="w-3.5 h-3.5" />}
+                                                             </button>
+                                                         ))}
+                                                     </div>
+                                                 </>
+                                             )}
+                                         </td>
                                         <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
                                             <ActionMenu
                                                 items={[

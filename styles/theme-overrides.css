@@ -108,18 +108,18 @@
 .theme-light .user-dropdown .hover\:bg-red-50:hover { background-color: #fef2f2 !important; }
 .theme-light .user-dropdown .text-red-600 { color: #dc2626 !important; }
 
-/* Inline bg-[#FCF9F2] overrides */
-.theme-light [class*="bg-\\[\\#FCF9F2\\]"] { background-color: #ffffff !important; }
-.theme-light [class*="bg-\\[\\#F5EFE6\\]"] { background-color: #f1f5f9 !important; }
-.theme-light [class*="bg-\\[\\#FBF8EF\\]"] { background-color: #f8fafc !important; }
-.theme-light [class*="bg-\\[\\#F0ECE1\\]"] { background-color: #f8fafc !important; }
+/* Inline bg-[#FCF9F2] overrides — attribute selector matches literal class name */
+.theme-light [class*="bg-[#FCF9F2]"] { background-color: #ffffff !important; }
+.theme-light [class*="bg-[#F5EFE6]"] { background-color: #f1f5f9 !important; }
+.theme-light [class*="bg-[#FBF8EF]"] { background-color: #f8fafc !important; }
+.theme-light [class*="bg-[#F0ECE1]"] { background-color: #f8fafc !important; }
 
-/* Utility class targets for inline Tailwind */
-.theme-light .bg-\\[\\#FCF9F2\\] { background-color: #ffffff !important; }
-.theme-light .bg-\\[\\#F5EFE6\\] { background-color: #f1f5f9 !important; }
-.theme-light .bg-\\[\\#FBF8EF\\] { background-color: #f8fafc !important; }
-.theme-light .bg-\\[\\#F0ECE1\\] { background-color: #f8fafc !important; }
-.theme-light .border-\\[\\#ece7de\\] { border-color: #e2e8f0 !important; }
+/* Utility class targets — CSS selector escapes special chars with single backslash */
+.theme-light .bg-\[\#FCF9F2\] { background-color: #ffffff !important; }
+.theme-light .bg-\[\#F5EFE6\] { background-color: #f1f5f9 !important; }
+.theme-light .bg-\[\#FBF8EF\] { background-color: #f8fafc !important; }
+.theme-light .bg-\[\#F0ECE1\] { background-color: #f8fafc !important; }
+.theme-light .border-\[\#ece7de\] { border-color: #e2e8f0 !important; }
 
 /* thead background */
 .theme-light thead {

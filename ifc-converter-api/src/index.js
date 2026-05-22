@@ -48,7 +48,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 200 * 1024 * 1024 }, // 200MB limit
+    limits: { fileSize: 600 * 1024 * 1024 }, // 600MB limit — covers project IFCs up to ~500MB with headroom
     fileFilter: (req, file, cb) => {
         if (file.originalname.toLowerCase().endsWith('.ifc')) {
             cb(null, true);
@@ -62,13 +62,19 @@ const upload = multer({
 app.get('/', (req, res) => {
     res.json({
         status: 'ok',
-        service: 'IFC to XKT Converter API',
-        version: '1.0.1',
+        service: 'IFC Converter API',
+        version: '1.1.0',
         endpoints: {
-            convert: 'POST /convert - Upload IFC file and get XKT',
-            download: 'GET /download/:id - Download converted XKT file',
-            status: 'GET /status/:id - Check conversion status'
-        }
+            convert: 'POST /convert — IFC → XKT (xeokit) [legacy]',
+            extractProperties: 'POST /extract-properties — IFC → properties.json + spatial.json (server-side, for >200 MB files)',
+            status: 'GET /status/:jobId — poll progress',
+            download: 'GET /download/:jobId — XKT output',
+            downloadProperties: 'GET /download-properties/:jobId — properties.json',
+            downloadSpatial: 'GET /download-spatial/:jobId — spatial.json',
+        },
+        limits: {
+            maxFileSize: '600 MB',
+        },
     });
 });
 
@@ -243,6 +249,152 @@ app.get('/download/:jobId', (req, res) => {
     res.download(job.outputPath, downloadName);
 });
 
+// ─────────────────────────────────────────────────────────────────────
+// /extract-properties — parse IFC server-side and return
+//   { propertiesPath, spatialPath, elementCount }
+// for large files (>200 MB) so the browser doesn't have to do it.
+//
+// The extracted JSON is written to the response so the front-end can upload
+// it to Supabase Storage (we don't bake Supabase service-role creds into this
+// service — keep the converter dumb about storage).
+// ─────────────────────────────────────────────────────────────────────
+app.post('/extract-properties', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No IFC file uploaded' });
+    }
+
+    const jobId = uuidv4();
+    const inputPath = req.file.path;
+    const propertiesPath = path.join(OUTPUT_DIR, `${jobId}-properties.json`);
+    const spatialPath = path.join(OUTPUT_DIR, `${jobId}-spatial.json`);
+
+    const inputFileSize = req.file.size;
+    jobs.set(jobId, {
+        kind: 'properties',
+        status: 'processing',
+        originalName: req.file.originalname,
+        inputFileSize,
+        inputPath,
+        propertiesPath,
+        spatialPath,
+        startedAt: new Date().toISOString(),
+        progress: 0,
+        stage: 'parsing',
+    });
+
+    console.log(`[${jobId}] /extract-properties received ${req.file.originalname} (${(inputFileSize / 1024 / 1024).toFixed(1)} MB)`);
+
+    res.json({
+        jobId,
+        status: 'processing',
+        message: 'Property extraction started. Poll /status/:jobId for progress.',
+        statusUrl: `/status/${jobId}`,
+        downloadUrls: {
+            properties: `/download-properties/${jobId}`,
+            spatial: `/download-spatial/${jobId}`,
+        },
+    });
+
+    // ── Background extraction ────────────────────────────────
+    (async () => {
+        const fs2 = require('fs/promises');
+        const updateProgress = (progress, stage) => {
+            jobs.set(jobId, { ...jobs.get(jobId), progress, stage });
+        };
+
+        let ifcApi = null;
+        let modelId = null;
+        try {
+            updateProgress(10, 'loading_wasm');
+            // web-ifc on Node — reuse the same package the converter already loads
+            const data = await fs2.readFile(inputPath);
+
+            ifcApi = new WebIFC.IfcAPI();
+            await ifcApi.Init();
+            updateProgress(20, 'parsing_ifc');
+
+            modelId = ifcApi.OpenModel(new Uint8Array(data), { COORDINATE_TO_ORIGIN: false });
+
+            // ── Collect element IDs (limit traversal to common building element types
+            //    + their containing spatial elements; full GetAllLines is too broad). ──
+            updateProgress(40, 'enumerating_elements');
+            const properties = [];
+            // IfcRoot subtypes — covers virtually every meaningful element
+            // Use IFC2X3 namespace which is widely supported; works across schemas.
+            const ROOT_TYPES = [
+                // Spatial
+                103090709, 4097777520, 4031249490, 3124254112,
+                // Common building elements
+                3512223829, 2391406531, 1529196076, 843113511, 753842376,
+                395920057, 3304561284, 331165859, 2262370178, 1281925730,
+                2058353004, 3856911033, 979105199, 1687234759, 1335981549,
+                1051757585, 4105962743, 3758799889, 900683007, 3495092785,
+            ];
+
+            for (const typeCode of ROOT_TYPES) {
+                try {
+                    const ids = ifcApi.GetLineIDsWithType(modelId, typeCode);
+                    for (let i = 0; i < ids.size(); i++) {
+                        const id = ids.get(i);
+                        try {
+                            const line = ifcApi.GetLine(modelId, id, false);
+                            if (line) properties.push(line);
+                        } catch { /* skip malformed lines */ }
+                    }
+                } catch { /* type not present in this schema */ }
+            }
+
+            updateProgress(70, 'building_spatial_tree');
+            // Spatial tree — IFC project → site(s) → building(s) → storey(s)
+            // We build a flat list and let the client structure it because IFC
+            // hierarchies are graph-shaped, not strictly tree-shaped.
+            const spatial = { properties: properties.slice(0, 500_000) };
+
+            updateProgress(85, 'writing_outputs');
+            await fs2.writeFile(propertiesPath, JSON.stringify(properties));
+            await fs2.writeFile(spatialPath, JSON.stringify(spatial));
+
+            updateProgress(95, 'finalizing');
+            jobs.set(jobId, {
+                ...jobs.get(jobId),
+                status: 'completed',
+                progress: 100,
+                completedAt: new Date().toISOString(),
+                elementCount: properties.length,
+                propertiesSize: (await fs2.stat(propertiesPath)).size,
+                spatialSize: (await fs2.stat(spatialPath)).size,
+            });
+            console.log(`[${jobId}] /extract-properties done — ${properties.length} elements`);
+        } catch (err) {
+            console.error(`[${jobId}] /extract-properties failed:`, err);
+            jobs.set(jobId, {
+                ...jobs.get(jobId),
+                status: 'failed',
+                error: err.message,
+            });
+        } finally {
+            try { if (ifcApi && modelId != null) ifcApi.CloseModel(modelId); } catch { /* ignore */ }
+            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        }
+    })();
+});
+
+app.get('/download-properties/:jobId', (req, res) => {
+    const job = jobs.get(req.params.jobId);
+    if (!job || job.kind !== 'properties') return res.status(404).json({ error: 'Job not found' });
+    if (job.status !== 'completed') return res.status(400).json({ error: 'Not completed', status: job.status });
+    if (!fs.existsSync(job.propertiesPath)) return res.status(404).json({ error: 'Output missing' });
+    res.download(job.propertiesPath, `${job.originalName.replace(/\.ifc$/i, '')}-properties.json`);
+});
+
+app.get('/download-spatial/:jobId', (req, res) => {
+    const job = jobs.get(req.params.jobId);
+    if (!job || job.kind !== 'properties') return res.status(404).json({ error: 'Job not found' });
+    if (job.status !== 'completed') return res.status(400).json({ error: 'Not completed', status: job.status });
+    if (!fs.existsSync(job.spatialPath)) return res.status(404).json({ error: 'Output missing' });
+    res.download(job.spatialPath, `${job.originalName.replace(/\.ifc$/i, '')}-spatial.json`);
+});
+
 // Delete job and files
 app.delete('/job/:jobId', (req, res) => {
     const { jobId } = req.params;
@@ -252,9 +404,13 @@ app.delete('/job/:jobId', (req, res) => {
         return res.status(404).json({ error: 'Job not found' });
     }
 
-    // Cleanup files
-    if (fs.existsSync(job.inputPath)) fs.unlinkSync(job.inputPath);
-    if (fs.existsSync(job.outputPath)) fs.unlinkSync(job.outputPath);
+    // Cleanup files — `outputPath` exists for /convert jobs, `propertiesPath` /
+    // `spatialPath` for /extract-properties jobs. Test each before unlinking.
+    const tryUnlink = (p) => { if (p && fs.existsSync(p)) { try { fs.unlinkSync(p); } catch { /* ignore */ } } };
+    tryUnlink(job.inputPath);
+    tryUnlink(job.outputPath);
+    tryUnlink(job.propertiesPath);
+    tryUnlink(job.spatialPath);
 
     jobs.delete(jobId);
     res.json({ message: 'Job deleted successfully' });
@@ -263,12 +419,15 @@ app.delete('/job/:jobId', (req, res) => {
 // Cleanup old files (run every hour)
 setInterval(() => {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    const tryUnlink = (p) => { if (p && fs.existsSync(p)) { try { fs.unlinkSync(p); } catch { /* ignore */ } } };
 
     for (const [jobId, job] of jobs.entries()) {
         const startedAt = new Date(job.startedAt).getTime();
         if (startedAt < oneHourAgo) {
-            if (fs.existsSync(job.inputPath)) fs.unlinkSync(job.inputPath);
-            if (fs.existsSync(job.outputPath)) fs.unlinkSync(job.outputPath);
+            tryUnlink(job.inputPath);
+            tryUnlink(job.outputPath);
+            tryUnlink(job.propertiesPath);
+            tryUnlink(job.spatialPath);
             jobs.delete(jobId);
             console.log(`[Cleanup] Removed old job: ${jobId}`);
         }

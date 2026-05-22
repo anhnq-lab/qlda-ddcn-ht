@@ -13,6 +13,7 @@ import {
     AlertTriangle, Sparkles
 } from 'lucide-react';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Avatar } from '../../components/ui';
 
 // ═══════════════════════════════════════════════════
 // Helpers
@@ -164,12 +165,13 @@ const EmployeeDetail: React.FC = () => {
                     <div className="flex items-start gap-6">
                         {/* Avatar */}
                         <div className="relative shrink-0">
-                            <img
-                                src={employee.AvatarUrl}
-                                alt={employee.FullName}
-                                className="w-24 h-24 rounded-2xl object-cover border-4 border-white/20 shadow-sm"
+                            <Avatar
+                                name={employee.FullName}
+                                imageUrl={employee.AvatarUrl}
+                                size="2xl"
+                                ringColor="ring-4 ring-white/20"
                             />
-                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-3 border-white ${employee.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-3 border-white dark:border-slate-800 ${employee.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                         </div>
 
                         {/* Info */}

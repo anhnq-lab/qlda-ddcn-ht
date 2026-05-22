@@ -6,7 +6,7 @@ import {
     ArrowRight, Edit2, Trash2, RefreshCw, Download, Link2, FolderOpen,
     FolderSync, Users,
 } from 'lucide-react';
-import { exportMonthlyReport } from './exportMonthlyReport';
+// exportMonthlyReport: lazy-loaded inside the click handler to keep exceljs out of the initial bundle
 import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
     DepartmentCode, DEPARTMENT_CODES, DEPARTMENT_NAMES,
@@ -285,7 +285,10 @@ const MonthlyPlanPage: React.FC = () => {
                         <button
                             onClick={async () => {
                                 setExporting(true);
-                                try { await exportMonthlyReport(month, year); }
+                                try {
+                                    const { exportMonthlyReport } = await import('./exportMonthlyReport');
+                                    await exportMonthlyReport(month, year);
+                                }
                                 catch (e) { console.error(e); }
                                 finally { setExporting(false); }
                             }}

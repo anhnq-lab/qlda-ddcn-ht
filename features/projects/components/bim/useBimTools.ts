@@ -15,7 +15,14 @@ export type ActiveTool =
 
 export type RenderMode = 'shading' | 'wireframe' | 'xray' | 'ghosting';
 
-export type PanelView = 'properties' | 'tree' | 'none';
+export type PanelView =
+    | 'properties'
+    | 'tree'
+    | 'views'      // Saved camera views
+    | 'viz'        // Explode / color-by / storey filter
+    | 'search'     // Element search
+    | 'issues'     // BCF-lite issues
+    | 'none';
 
 export interface ClipPlaneState {
     id: string;

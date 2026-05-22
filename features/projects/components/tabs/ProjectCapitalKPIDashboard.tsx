@@ -1,7 +1,7 @@
 import React from 'react';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency } from '../../../../utils/format';
 import { Coins, Landmark, Calendar, TrendingUp, Receipt, DollarSign } from 'lucide-react';
-import { StatCard } from '@/components/ui';
+import { StatCard } from '../../../../components/ui';
 
 interface ProjectCapitalKPIDashboardProps {
     summary: {
@@ -18,7 +18,7 @@ interface ProjectCapitalKPIDashboardProps {
     allocationsCount: number;
 }
 
-const KPI_TIER_STYLES: Record<string, "blue" | "emerald" | "amber" | "violet" | "rose"> = {
+const KPI_TIER_STYLES: Record<string, 'blue' | 'emerald' | 'amber' | 'violet' | 'rose'> = {
     'bg-slate-100': 'blue',
     'bg-blue-100': 'emerald',
     'bg-primary-100': 'amber',
@@ -55,12 +55,22 @@ const KPICard: React.FC<{
 };
 
 export const ProjectCapitalKPIDashboard: React.FC<ProjectCapitalKPIDashboardProps> = ({ summary, allocationsCount }) => {
+    // Tỷ lệ giải ngân toàn dự án = đã GN / TMĐT
+    const overallRate = summary.totalInvestment > 0
+        ? Math.round((summary.totalDisbursed / summary.totalInvestment) * 100)
+        : summary.disbursementRate;
+
+    // Tỷ lệ năm nay = GN năm nay / KH năm nay
+    const yearRate = summary.yearlyTarget > 0
+        ? Math.round((summary.yearlyDisbursed / summary.yearlyTarget) * 100)
+        : 0;
+
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <KPICard
                 label="Tổng mức đầu tư"
                 value={formatCurrency(summary.totalInvestment)}
-                sub={`Đã bố trí: ${summary.totalAllocated > 0 ? Math.round((summary.totalAllocated / summary.totalInvestment) * 100) : 0}%`}
+                sub={`Đã bố trí: ${summary.totalInvestment > 0 ? Math.round((summary.totalAllocated / summary.totalInvestment) * 100) : 0}%`}
                 icon={<Coins className="w-5 h-5" />}
                 iconBg="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
             />
@@ -74,16 +84,17 @@ export const ProjectCapitalKPIDashboard: React.FC<ProjectCapitalKPIDashboardProp
             <KPICard
                 label="KH vốn năm nay"
                 value={formatCurrency(summary.yearlyTarget)}
-                sub={`Giải ngân: ${formatCurrency(summary.yearlyDisbursed)}`}
+                sub={`GN đạt: ${yearRate}% · ${formatCurrency(summary.yearlyDisbursed)}`}
                 icon={<Calendar className="w-5 h-5" />}
                 iconBg="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
             />
             <KPICard
                 label="Đã giải ngân"
                 value={formatCurrency(summary.totalDisbursed)}
+                sub={`Tỷ lệ / TMĐT: ${overallRate}%`}
                 icon={<TrendingUp className="w-5 h-5" />}
                 iconBg="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
-                progress={summary.disbursementRate}
+                progress={overallRate}
             />
             <KPICard
                 label="Tạm ứng"
@@ -93,9 +104,9 @@ export const ProjectCapitalKPIDashboard: React.FC<ProjectCapitalKPIDashboardProp
                 iconBg="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
             />
             <KPICard
-                label="TT KLHT"
+                label="Thanh toán KLHT"
                 value={formatCurrency(summary.completionPayment)}
-                sub="Thanh toán khối lượng HT"
+                sub="Thanh toán khối lượng hoàn thành"
                 icon={<DollarSign className="w-5 h-5" />}
                 iconBg="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
             />

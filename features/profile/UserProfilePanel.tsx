@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, Shield, Save, CheckCircle2, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Avatar } from '../../components/ui';
 import { EmployeeService } from '../../services/EmployeeService';
 import { UserAccountService } from '../../services/UserAccountService';
 import { useSlidePanel } from '../../context/SlidePanelContext';
@@ -120,19 +121,12 @@ export const UserProfilePanel: React.FC = () => {
                     <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-6">
                         {/* Avatar */}
                         <div className="flex items-center gap-4">
-                            {avatarUrl ? (
-                                <img
-                                    src={avatarUrl}
-                                    alt="Avatar"
-                                    className="w-16 h-16 rounded-full object-cover ring-2 ring-primary-100 dark:ring-primary-900/50"
-                                />
-                            ) : (
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center ring-2 ring-primary-100 dark:ring-primary-900/50">
-                                    <span className="text-white text-xl font-bold">
-                                        {currentUser?.FullName?.charAt(0) || 'U'}
-                                    </span>
-                                </div>
-                            )}
+                            <Avatar
+                                name={currentUser?.FullName || 'User'}
+                                imageUrl={avatarUrl}
+                                size="lg"
+                                ringColor="ring-primary-100 dark:ring-primary-900/50"
+                            />
                             <div className="flex-1">
                                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ảnh đại diện (URL)</label>
                                 <input

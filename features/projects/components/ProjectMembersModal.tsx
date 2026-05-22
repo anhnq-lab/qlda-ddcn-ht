@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, X, Phone, Trash2, Plus, Search } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
 import { Employee } from '@/types';
+import { Avatar } from '@/components/ui';
 
 interface ProjectMembersModalProps {
     isOpen: boolean;
@@ -57,7 +58,7 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
                             {activeMembers.map((member) => (
                                 <div key={member.EmployeeID} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
                                     <div className="relative">
-                                        <img src={member.AvatarUrl} alt="" className="w-10 h-10 rounded-full border border-gray-200" />
+                                        <Avatar name={member.FullName} imageUrl={member.AvatarUrl} size="md" className="border border-gray-200" />
                                         <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${member.Status === 1 ? 'bg-emerald-500' : 'bg-gray-300'}`}></span>
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -98,7 +99,7 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
                         <div className="flex-1 overflow-y-auto p-4 space-y-2">
                             {availableEmployees.map((emp) => (
                                 <div key={emp.EmployeeID} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 hover:border-blue-300 transition-all shadow-sm">
-                                    <img src={emp.AvatarUrl} alt="" className="w-8 h-8 rounded-full bg-gray-100" />
+                                    <Avatar name={emp.FullName} imageUrl={emp.AvatarUrl} size="sm" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs font-bold text-gray-800 truncate">{emp.FullName}</p>
                                         <p className="text-[10px] text-gray-500 truncate">{emp.Position}</p>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Landmark, Plus, Search, Filter, History, Trash2, Edit2, Info, 
-  Settings, CheckCircle2, AlertTriangle, RefreshCw, Layers, X 
+import {
+  Landmark, Plus, Search, Filter, History, Trash2, Edit2,
+  AlertTriangle, RefreshCw, X, DollarSign, Activity, ShieldAlert, BarChart3
 } from 'lucide-react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import DataTable from '../../components/ui/DataTable';
@@ -19,6 +19,7 @@ import {
 import { Employee, Project } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { useToast } from '../../components/ui/Toast';
+import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 type ActiveTab = 'assets' | 'reports' | 'inventory';
 
@@ -26,10 +27,11 @@ export const PublicAssetList: React.FC = () => {
   const { addToast } = useToast();
   
   // Tabs & UI state
-  const [activeTab, setActiveTab] = useState<ActiveTab>('assets');
+  const [activeTab, setActiveTab] = useTabSearchParam<ActiveTab>('assets', ['assets', 'reports', 'inventory'] as const, 'tab');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
   
   // Data State
@@ -89,30 +91,45 @@ export const PublicAssetList: React.FC = () => {
       
       const matchesCategory = selectedCategory === '' || a.category_id === selectedCategory;
       const matchesStatus = selectedStatus === '' || a.status === selectedStatus;
+      const matchesBranch = selectedBranch === '' || (a as any).branch === selectedBranch;
       const matchesDept = selectedDept === '' || a.department === selectedDept;
 
-      return matchesSearch && matchesCategory && matchesStatus && matchesDept;
+      return matchesSearch && matchesCategory && matchesStatus && matchesBranch && matchesDept;
     });
   }, [assets, searchQuery, selectedCategory, selectedStatus, selectedDept]);
+
+  // Quick liquidation dialog
+  const [isLiquidationDialogOpen, setIsLiquidationDialogOpen] = useState(false);
+  const [liquidationAsset, setLiquidationAsset] = useState<PublicAsset | null>(null);
+  const [liquidationReason, setLiquidationReason] = useState('Hết giá trị khấu hao');
+  const [isLiquidating, setIsLiquidating] = useState(false);
 
   // Statistics
   const totalStats = useMemo(() => {
     const activeAssets = assets.filter(a => a.status === 'active');
+    const pendingAssets = assets.filter(a => a.status === 'pending_liquidation');
     const totalOriginal = activeAssets.reduce((sum, a) => sum + a.original_cost, 0);
     const totalDep = activeAssets.reduce((sum, a) => sum + a.accumulated_depreciation, 0);
     const totalRemaining = activeAssets.reduce((sum, a) => sum + a.remaining_value, 0);
     return {
       count: activeAssets.length,
+      pendingCount: pendingAssets.length,
       original: totalOriginal,
       dep: totalDep,
       remaining: totalRemaining
     };
   }, [assets]);
 
-  // Departments List (unique values for filtering)
+  // Branches list (chi nhánh) for filter
+  const branches = useMemo(() => {
+    const vals = assets.map(a => (a as any).branch).filter(Boolean) as string[];
+    return Array.from(new Set(vals)).sort();
+  }, [assets]);
+
+  // Departments list (phòng ban nội bộ) for filter
   const departments = useMemo(() => {
-    const depts = assets.map(a => a.department).filter(Boolean) as string[];
-    return Array.from(new Set(depts));
+    const vals = assets.map(a => a.department).filter(Boolean) as string[];
+    return Array.from(new Set(vals)).sort();
   }, [assets]);
 
   // CRUD Actions
@@ -169,6 +186,39 @@ export const PublicAssetList: React.FC = () => {
     }
   };
 
+  // Quick liquidation: mark asset as pending_liquidation
+  const handleQuickLiquidation = (asset: PublicAsset) => {
+    setLiquidationAsset(asset);
+    setLiquidationReason('Hết giá trị khấu hao');
+    setIsLiquidationDialogOpen(true);
+  };
+
+  const handleConfirmLiquidation = async () => {
+    if (!liquidationAsset) return;
+    try {
+      setIsLiquidating(true);
+      await PublicAssetService.update(liquidationAsset.id, { status: 'pending_liquidation' });
+      await PublicAssetService.createTransaction({
+        asset_id: liquidationAsset.id,
+        transaction_date: new Date().toISOString().split('T')[0],
+        transaction_type: 'decrease',
+        reason: 'pending_liquidation',
+        description: `Đề xuất thanh lý: ${liquidationReason}`,
+        cost_change: 0,
+        depreciation_change: 0
+      });
+      addToast({ title: 'Đã đề xuất thanh lý', message: `Tài sản "${liquidationAsset.asset_name}" đã chuyển sang trạng thái chờ thanh lý.`, type: 'success' });
+      const updated = await PublicAssetService.getAll();
+      setAssets(updated);
+    } catch (err) {
+      addToast({ title: 'Lỗi', message: (err as Error).message, type: 'error' });
+    } finally {
+      setIsLiquidating(false);
+      setIsLiquidationDialogOpen(false);
+      setLiquidationAsset(null);
+    }
+  };
+
   // Open asset history transactions side panel
   const handleViewHistory = async (asset: PublicAsset) => {
     try {
@@ -218,17 +268,28 @@ export const PublicAssetList: React.FC = () => {
   // DataTable columns configuration
   const columns = [
     {
+      key: 'stt',
+      header: 'STT',
+      width: '4%',
+      align: 'center' as const,
+      render: (_: any, row: PublicAsset) => (
+        <span className="text-slate-500 dark:text-slate-400 text-xs">
+          {filteredAssets.indexOf(row) + 1}
+        </span>
+      )
+    },
+    {
       key: 'asset_code',
       header: 'Mã tài sản',
       sortable: true,
-      width: '12%',
+      width: '10%',
       render: (val: string) => <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{val}</span>
     },
     {
       key: 'asset_name',
       header: 'Tên tài sản',
       sortable: true,
-      width: '25%',
+      width: '22%',
       render: (val: string, row: PublicAsset) => (
         <div>
           <div className="font-bold text-slate-800 dark:text-slate-200">{val}</div>
@@ -237,11 +298,23 @@ export const PublicAssetList: React.FC = () => {
       )
     },
     {
+      key: 'location',
+      header: 'Người sử dụng',
+      sortable: true,
+      width: '13%',
+      render: (val: string, row: PublicAsset) => {
+        const user = row.custodian?.name || val || '—';
+        return (
+          <div className="text-sm text-slate-700 dark:text-slate-300 line-clamp-2">{user}</div>
+        );
+      }
+    },
+    {
       key: 'original_cost',
       header: 'Nguyên giá (VNĐ)',
       sortable: true,
       align: 'right' as const,
-      width: '15%',
+      width: '13%',
       render: (val: number) => <span className="font-bold text-slate-700 dark:text-slate-300">{formatCurrency(val)}</span>
     },
     {
@@ -249,7 +322,7 @@ export const PublicAssetList: React.FC = () => {
       header: 'Giá trị còn lại',
       sortable: true,
       align: 'right' as const,
-      width: '15%',
+      width: '13%',
       render: (val: number, row: PublicAsset) => (
         <div>
           <div className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(val)}</div>
@@ -258,17 +331,22 @@ export const PublicAssetList: React.FC = () => {
       )
     },
     {
-      key: 'department',
-      header: 'Bộ phận quản lý',
+      key: 'branch',
+      header: 'Chi nhánh',
       sortable: true,
-      width: '15%',
-      render: (val: string, row: PublicAsset) => (
-        <div>
-          <div className="font-medium text-slate-700 dark:text-slate-300">{val || '—'}</div>
-          {row.custodian && (
-            <div className="text-[11px] text-slate-400 dark:text-slate-500">Bàn giao: {row.custodian.name}</div>
-          )}
-        </div>
+      width: '10%',
+      render: (_: any, row: PublicAsset) => {
+        const b = (row as any).branch;
+        return <div className="font-medium text-slate-700 dark:text-slate-300 text-xs">{b || '—'}</div>;
+      }
+    },
+    {
+      key: 'department',
+      header: 'Phòng ban',
+      sortable: true,
+      width: '11%',
+      render: (val: string) => (
+        <div className="text-xs text-slate-500 dark:text-slate-400">{val || '—'}</div>
       )
     },
     {
@@ -301,24 +379,30 @@ export const PublicAssetList: React.FC = () => {
           <button
             onClick={() => handleViewHistory(row)}
             title="Lịch sử biến động"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
           >
             <History className="w-4 h-4" />
           </button>
           <button
-            onClick={() => {
-              setEditingAsset(row);
-              setIsFormOpen(true);
-            }}
+            onClick={() => { setEditingAsset(row); setIsFormOpen(true); }}
             title="Chỉnh sửa"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
+            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
+          {row.status === 'active' && (
+            <button
+              onClick={() => handleQuickLiquidation(row)}
+              title="Đề xuất thanh lý"
+              className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+            >
+              <AlertTriangle className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={() => handleDeleteAsset(row.id, row.asset_name)}
             title="Xóa tài sản"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -393,7 +477,55 @@ export const PublicAssetList: React.FC = () => {
       <div className="px-6 py-6 flex-1">
         {activeTab === 'assets' && (
           <div className="space-y-6">
-            
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary-50 dark:bg-primary-950/30 rounded-xl flex items-center justify-center shrink-0">
+                  <Landmark className="w-5 h-5 text-primary-500" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">Đang dùng</div>
+                  <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">{totalStats.count}</div>
+                  {totalStats.pendingCount > 0 && (
+                    <div className="text-[10px] text-amber-500 font-semibold flex items-center gap-0.5">
+                      <ShieldAlert className="w-3 h-3" />{totalStats.pendingCount} chờ thanh lý
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl flex items-center justify-center shrink-0">
+                  <DollarSign className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">Nguyên giá</div>
+                  <div className="text-base font-bold text-slate-800 dark:text-slate-100 truncate">{formatCurrency(totalStats.original)}</div>
+                  <div className="text-[10px] text-slate-400">Tổng tài sản đang hoạt động</div>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/30 rounded-xl flex items-center justify-center shrink-0">
+                  <Activity className="w-5 h-5 text-amber-500" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">Hao mòn lũy kế</div>
+                  <div className="text-base font-bold text-slate-800 dark:text-slate-100 truncate">{formatCurrency(totalStats.dep)}</div>
+                  <div className="text-[10px] text-slate-400">Khấu hao qua các năm</div>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-10 h-10 bg-violet-50 dark:bg-violet-950/30 rounded-xl flex items-center justify-center shrink-0">
+                  <BarChart3 className="w-5 h-5 text-violet-500" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wide">Còn lại</div>
+                  <div className="text-base font-bold text-emerald-600 dark:text-emerald-400 truncate">{formatCurrency(totalStats.remaining)}</div>
+                  <div className="text-[10px] text-slate-400">Giá trị thuần hiện tại</div>
+                </div>
+              </div>
+            </div>
+
             {/* Filter controls */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/60 p-4 shadow-sm flex flex-col md:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
@@ -433,6 +565,19 @@ export const PublicAssetList: React.FC = () => {
                     <option value="pending_liquidation">Chờ thanh lý</option>
                     <option value="liquidated">Đã thanh lý</option>
                     <option value="transferred">Đã điều chuyển</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5 border border-slate-100 dark:border-slate-700 rounded-xl px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800">
+                  <select
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="bg-transparent text-xs text-slate-600 dark:text-slate-300 focus:outline-none cursor-pointer"
+                  >
+                    <option value="">-- Tất cả chi nhánh --</option>
+                    {branches.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -481,6 +626,67 @@ export const PublicAssetList: React.FC = () => {
         employees={employees}
         projects={projects}
       />
+
+      {/* Quick Liquidation Dialog */}
+      {isLiquidationDialogOpen && liquidationAsset && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/30 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Đề xuất thanh lý tài sản</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{liquidationAsset.asset_name} ({liquidationAsset.asset_code})</p>
+              </div>
+            </div>
+
+            <div className="mb-5 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900">
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                Tài sản sẽ được chuyển sang trạng thái <strong>Chờ thanh lý</strong>. Cần có quyết định của Giám đốc Ban để hoàn thành thủ tục.
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Giá trị còn lại</label>
+                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{formatCurrency(liquidationAsset.remaining_value)}</div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Lý do đề nghị thanh lý <span className="text-red-500">*</span></label>
+                <select
+                  value={liquidationReason}
+                  onChange={e => setLiquidationReason(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                >
+                  <option>Hết giá trị khấu hao</option>
+                  <option>Hỏng hóc, không sửa chữa được</option>
+                  <option>Lạc hậu, không còn phù hợp</option>
+                  <option>Không có nhu cầu sử dụng</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setIsLiquidationDialogOpen(false); setLiquidationAsset(null); }}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmLiquidation}
+                disabled={isLiquidating}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-white font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm"
+              >
+                {isLiquidating ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <AlertTriangle className="w-4 h-4" />}
+                Xác nhận đề xuất
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Transaction History Side Panel */}
       {isHistoryOpen && historyAsset && (
