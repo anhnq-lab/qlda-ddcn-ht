@@ -102,8 +102,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 StartDate: wt.start_date || wt.created_at,
                 DueDate: wt.due_date || undefined,
                 AssigneeID: wt.assignee_id || '',
-                TimelineStep: wt.node_id || '',
-                StepCode: wt.node_id || '',
+                TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || wt.metadata?.step_code || '',
+                StepCode: wt.step_code || wt.metadata?.step_code || wt.workflow_node_id || wt.node_id || '',
                 LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
                 DurationDays: wt.metadata?.estimatedDays || 10,
                 ActualStartDate: wt.metadata?.actualStartDate || wt.started_at,
@@ -150,7 +150,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
         phases.forEach(phase => {
             const phaseTasks = mappedTasks.filter(t =>
-                phase.items.some(item => item.code === t.TimelineStep)
+                phase.items.some(item => (item.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim())
             );
             if (phaseTasks.length === 0) {
                 initial[phase.id] = false;
@@ -173,7 +173,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         });
         if (!Object.values(initial).some(v => v) && phases.length > 0) {
             const first = phases.find(p => {
-                const pt = mappedTasks.filter(t => p.items.some(i => i.code === t.TimelineStep));
+                const pt = mappedTasks.filter(t => p.items.some(i => (i.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim()));
                 return pt.length === 0 || !pt.every(t => t.Status === TaskStatus.Done);
             });
             if (first) initial[first.id] = true;
@@ -326,7 +326,12 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // 6. Compute Milestone Dates for Timeline
     const milestoneData = useMemo(() => {
         const getCompletionDate = (code: string): string | undefined => {
-            const allStepTasks = tasks.filter(t => t.TimelineStep === code || t.StepCode === code);
+            const allStepTasks = tasks.filter(t => {
+                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                const tStepCode = (t.StepCode || '').toLowerCase().trim();
+                const sCode = (code || '').toLowerCase().trim();
+                return tTimelineStep === sCode || tStepCode === sCode;
+            });
             if (allStepTasks.length === 0) return undefined;
             // ALL tasks in this step must be Done for the milestone to be considered complete
             const allDone = allStepTasks.every(t => t.Status === TaskStatus.Done);
@@ -455,7 +460,11 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     };
 
     const handleUpdateStepMeta = (stepCode: string, updates: { assigneeRole?: string }) => {
-        const masterTask = tasks.find(t => t.TimelineStep === stepCode && !(t as any).ParentID);
+        const masterTask = tasks.find(t => {
+            const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+            const sCode = (stepCode || '').toLowerCase().trim();
+            return tTimelineStep === sCode && !(t as any).ParentID;
+        });
         if (masterTask) {
              handleSaveTask({
                  ...masterTask,
@@ -858,15 +867,19 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                     <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
                                 </h4>
                                 <span className="text-[10px] text-txt-muted font-normal normal-case">
-                                    * Chỉ hiển thị các hạng mục lớn đã có công việc thành phần
+                                    * Hiển thị tiến độ theo các bước quy trình và công việc tương ứng
                                 </span>
                             </div>
                             <div className="p-4">
-                                {ganttTasks.length > 0 ? (
-                                    <ProjectGanttChart tasks={ganttTasks} />
+                                {tasks.length > 0 ? (
+                                    <ProjectGanttChart 
+                                        tasks={tasks} 
+                                        phases={DECREE_175_PHASES}
+                                        projectStartDate={project?.StartDate}
+                                    />
                                 ) : (
                                     <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
-                                        Chưa có công việc nào được cập nhật thời gian. Hãy thêm công việc bên dưới.
+                                        Chưa có công việc nào được tạo. Hãy thiết lập kế hoạch tổng thể hoặc thêm công việc.
                                     </div>
                                 )}
                             </div>

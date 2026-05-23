@@ -3,7 +3,7 @@ import {
     Shield, Check, X, Loader2, Users, Save, RefreshCw,
     AlertTriangle, ChevronRight
 } from 'lucide-react';
-import { supabase, supabaseExt } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import {
@@ -61,7 +61,7 @@ const RoleDefaultsManager: React.FC = () => {
     useEffect(() => {
         const loadFromDB = async () => {
             try {
-                const { data, error } = await supabaseExt
+                const { data, error } = await supabase
                     .from('role_permission_defaults')
                     .select('role, resource, actions');
 
@@ -165,7 +165,7 @@ const RoleDefaultsManager: React.FC = () => {
                 }))
             );
 
-            const { error } = await supabaseExt
+            const { error } = await supabase
                 .from('role_permission_defaults')
                 .upsert(rows, { onConflict: 'role,resource' });
 

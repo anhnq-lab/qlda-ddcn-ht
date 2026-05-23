@@ -52,7 +52,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
   
   const [depreciationRate, setDepreciationRate] = useState<number>(0);
   const [accumulatedDepreciation, setAccumulatedDepreciation] = useState<number>(0);
-  const [status, setStatus] = useState<'active' | 'liquidated' | 'pending_liquidation' | 'transferred'>('active');
+  const [status, setStatus] = useState<string>('active');
 
   // Load default or edit data
   useEffect(() => {
@@ -107,7 +107,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
     setCategoryId(catId);
     const cat = categories.find(c => c.id === catId);
     if (cat) {
-      setDepreciationRate(cat.depreciation_rate);
+      setDepreciationRate(cat.depreciation_rate || 0);
     }
   };
 

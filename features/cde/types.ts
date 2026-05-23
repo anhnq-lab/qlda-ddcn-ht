@@ -140,7 +140,7 @@ export interface CDEAuditEntry {
     actor_id: string;
     actor_name: string;
     details: Record<string, any>;
-    ip_address: string;
+    ip_address?: string | null;
     created_at: string;
 }
 

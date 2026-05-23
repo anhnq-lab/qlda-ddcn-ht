@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ScrollText, Filter, Search, FileText, UserCheck, Shield, FolderInput, Send, Trash2, Edit2, Eye, Download, Clock } from 'lucide-react';
-import { supabase, supabaseExt } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import type { CDEAuditEntry } from '../types';
 
 const ACTION_CONFIG: Record<string, { label: string; icon: typeof FileText; color: string }> = {
@@ -29,7 +29,7 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const { data } = await supabaseExt
+            const { data } = await supabase
                 .from('cde_audit_log')
                 .select('*')
                 .eq('project_id', projectId)

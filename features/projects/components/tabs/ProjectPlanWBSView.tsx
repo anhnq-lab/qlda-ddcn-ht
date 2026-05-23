@@ -90,6 +90,15 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     navigate,
     queryClient
 }) => {
+    const [expandedSteps, setExpandedSteps] = React.useState<Record<string, boolean>>({});
+
+    const toggleStep = (stepCode: string) => {
+        setExpandedSteps(prev => ({
+            ...prev,
+            [stepCode]: prev[stepCode] === false ? true : false
+        }));
+    };
+
     return (
         <div className="space-y-4 relative">
             {/* Header */}
@@ -265,7 +274,11 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                         <div className={`space-y-2 ${sp.fullTitle ? 'ml-3 border-l border-warning-200/40 dark:border-warning-700/30 pl-3' : ''}`}>
                                         {sp.items.map((item: any) => {
                                             const linkedTasks = filteredTasks
-                                                .filter(t => t.TimelineStep === item.code)
+                                                .filter(t => {
+                                                    const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                                                    const iCode = (item.code || '').toLowerCase().trim();
+                                                    return tTimelineStep === iCode;
+                                                })
                                                 .sort((a, b) => {
                                                     const dateA = a.StartDate ? new Date(a.StartDate).getTime() : (a.DueDate ? new Date(a.DueDate).getTime() : 0);
                                                     const dateB = b.StartDate ? new Date(b.StartDate).getTime() : (b.DueDate ? new Date(b.DueDate).getTime() : 0);
@@ -289,6 +302,19 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                 <div key={item.id} className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-3 hover:border-gray-200 dark:hover:border-slate-600 transition-colors group border-l-4 ${stepBorderColor}`}>
                                                     {/* Step Header Row */}
                                                     <div className="flex items-center gap-3">
+                                                        {/* Chevron Toggle */}
+                                                        <button
+                                                            onClick={() => toggleStep(item.code)}
+                                                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors shrink-0"
+                                                            title={expandedSteps[item.code] === false ? "Mở rộng danh sách công việc" : "Thu gọn danh sách công việc"}
+                                                        >
+                                                            {expandedSteps[item.code] === false ? (
+                                                                <ChevronRight className="w-4 h-4" />
+                                                            ) : (
+                                                                <ChevronDown className="w-4 h-4" />
+                                                            )}
+                                                        </button>
+
                                                         {/* Status Icon */}
                                                         <div className="shrink-0">
                                                             {isParentDone ? (
@@ -303,9 +329,12 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                         </div>
 
                                                         {/* Title */}
-                                                        <div className="flex-1 min-w-0 pr-4">
+                                                        <div 
+                                                            className="flex-1 min-w-0 pr-4 cursor-pointer"
+                                                            onClick={() => toggleStep(item.code)}
+                                                        >
                                                             <div className="flex items-center gap-2">
-                                                                <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900 dark:text-slate-100' : 'text-gray-700 dark:text-slate-300'}`}>
+                                                                <h5 className={`text-sm font-semibold hover:text-blue-600 dark:hover:text-blue-400 ${isParentDone ? 'text-gray-900 dark:text-slate-100' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                     {item.id}. {item.title}
                                                                 </h5>
                                                                 {/* Progress Badge inline if needed */}
@@ -422,7 +451,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                     </div>
 
                                                     {/* Task Table (Compact) */}
-                                                    {linkedTasks.length > 0 && (
+                                                    {expandedSteps[item.code] !== false && linkedTasks.length > 0 && (
                                                         <div className="mt-3 border border-gray-200 dark:border-slate-700 rounded-lg overflow-x-auto">
                                                             <table className="w-full text-xs box-border">
                                                                 <thead className="h-0">
@@ -443,15 +472,15 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         <React.Fragment key={t.TaskID}>
                                                                         <tr
                                                                             onClick={() => onEditTask(t)}
-                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-50 ${isOverdue(t) ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
+                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-50 ${isOverdue(t) && !(t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done') ? 'bg-red-50/50 dark:bg-red-900/20' : ''}`}
                                                                         >
                                                                             {/* Status Dot */}
                                                                             <td className="px-2 py-2 text-center">
                                                                                 <button
                                                                                     onClick={(e) => onQuickStatusChange(e, t)}
-                                                                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 dark:ring-offset-slate-800 ${(t.Status as any) === 'Done' ? 'bg-emerald-500 ring-emerald-200 dark:ring-emerald-700' :
-                                                                                        (t.Status as any) === 'Review' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700' :
-                                                                                            (t.Status as any) === 'InProgress' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700' :
+                                                                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 dark:ring-offset-slate-800 ${t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done' ? 'bg-emerald-500 ring-emerald-200 dark:ring-emerald-700' :
+                                                                                        t.Status === TaskStatus.Review || (t.Status as any) === 'Review' || (t.Status as any) === 'review' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700' :
+                                                                                            t.Status === TaskStatus.InProgress || (t.Status as any) === 'InProgress' || (t.Status as any) === 'in_progress' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700' :
                                                                                                 'bg-gray-200 dark:bg-slate-600 ring-gray-100 dark:ring-slate-500 hover:bg-gray-300 dark:hover:bg-slate-500'
                                                                                         }`}
                                                                                     title="Click để chuyển trạng thái"
@@ -459,10 +488,10 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             </td>
 
                                                                             {/* Title */}
-                                                                            <td className={`px-2 py-2 font-medium ${(t.Status as any) === 'Done' ? 'text-gray-400 dark:text-slate-400' :
+                                                                            <td className={`px-2 py-2 font-medium ${t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done' ? 'text-gray-400 dark:text-slate-400' :
                                                                                 isOverdue(t) ? 'text-red-700 dark:text-red-400' :
-                                                                                    (t.Status as any) === 'Review' ? 'text-primary-700 dark:text-primary-400' :
-                                                                                        (t.Status as any) === 'InProgress' ? 'text-warning-700 dark:text-warning-400' :
+                                                                                    (t.Status as any) === 'Review' || (t.Status as any) === 'review' ? 'text-primary-700 dark:text-primary-400' :
+                                                                                        (t.Status as any) === 'InProgress' || (t.Status as any) === 'in_progress' ? 'text-warning-700 dark:text-warning-400' :
                                                                                             'text-gray-700 dark:text-slate-300'
                                                                                 }`}>
                                                                                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -487,7 +516,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             {/* Progress */}
                                                                             <td className="px-2 py-2 text-center">
                                                                                 <ProgressBadge
-                                                                                    value={t.ProgressPercent || (t.Status === TaskStatus.Done ? 100 : 0)}
+                                                                                    value={t.ProgressPercent || (t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done' ? 100 : 0)}
                                                                                     size="sm"
                                                                                 />
                                                                             </td>
@@ -505,11 +534,11 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             </td>
 
                                                                             {/* Due Date + Smart Relative Time */}
-                                                                            <td className={`px-2 py-2 ${isOverdue(t) ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-slate-400'}`}>
-                                                                                {t.Status === TaskStatus.Done && t.ActualEndDate ? (
-                                                                                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium" title={`Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}`}>
+                                                                            <td className={`px-2 py-2 ${isOverdue(t) && !(t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done') ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-slate-400'}`}>
+                                                                                {t.Status === TaskStatus.Done || (t.Status as any) === 'Done' || (t.Status as any) === 'done' ? (
+                                                                                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium" title={t.ActualEndDate ? `Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}` : 'Đã hoàn thành'}>
                                                                                         <CheckCircle2 className="w-3 h-3 shrink-0" />
-                                                                                        {new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}
+                                                                                        {t.ActualEndDate ? new Date(t.ActualEndDate).toLocaleDateString('vi-VN') : (t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : 'Hoàn thành')}
                                                                                     </span>
                                                                                 ) : t.DueDate ? (
                                                                                     <span className="flex flex-col gap-0.5 text-[11px]" title={`${t.StartDate ? new Date(t.StartDate).toLocaleDateString('vi-VN') : ''} - ${new Date(t.DueDate).toLocaleDateString('vi-VN')}`}>
@@ -615,8 +644,8 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                         <div className="space-y-1.5">
                                                                                             {t.SubTasks.map(sub => (
                                                                                                 <div key={sub.SubTaskID} className="flex items-center gap-2 text-xs py-1.5 px-2 hover:bg-white dark:hover:bg-slate-50 rounded-lg border border-transparent hover:border-gray-100 dark:hover:border-slate-600 transition-colors">
-                                                                                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${(sub.Status as any) === 'Done' ? 'bg-emerald-500' : (sub.Status as any) === 'InProgress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
-                                                                                                    <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
+                                                                                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${(sub.Status as any) === 'Done' || (sub.Status as any) === 'done' ? 'bg-emerald-500' : (sub.Status as any) === 'InProgress' || (sub.Status as any) === 'in_progress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-600'}`} />
+                                                                                                    <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' || (sub.Status as any) === 'done' ? 'text-gray-400 dark:text-slate-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                                                         {sub.Title.replace(/^[\d\.\:\s]+/, '').trim()}
                                                                                                     </span>
                                                                                                     <div className="flex items-center gap-3 shrink-0 text-[10px]">

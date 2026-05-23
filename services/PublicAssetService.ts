@@ -1,5 +1,5 @@
 // Public Asset Service - Supabase Operations for Asset Management
-import { supabaseExt as supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import type { 
   PublicAsset, 
   PublicAssetCategory, 
@@ -36,7 +36,7 @@ export class PublicAssetService {
       .select(`
         *,
         category:public_asset_categories(*),
-        custodian:employees(employee_id, full_name, position),
+        custodian:employees(employee_id, full_name, position, email),
         project:projects(project_id, project_name)
       `);
 
@@ -81,7 +81,7 @@ export class PublicAssetService {
       .select(`
         *,
         category:public_asset_categories(*),
-        custodian:employees(employee_id, full_name, position),
+        custodian:employees(employee_id, full_name, position, email),
         project:projects(project_id, project_name)
       `)
       .eq('id', id)
@@ -304,9 +304,17 @@ export class PublicAssetService {
   }
 
   static async updateInventoryDetail(id: string, detail: Partial<PublicAssetInventoryDetail>): Promise<void> {
+    const { asset, ...dbDetail } = detail;
+    
+    // Map nulls to undefined to satisfy Supabase generated types (actual_quantity / book_quantity are not nullable in TS type but can be null in app logic)
+    const payload: any = { ...dbDetail };
+    if (payload.actual_quantity === null) payload.actual_quantity = undefined;
+    if (payload.book_quantity === null) payload.book_quantity = undefined;
+    if (payload.difference_quantity === null) payload.difference_quantity = undefined;
+
     const { error } = await supabase
       .from('public_asset_inventory_details')
-      .update(detail)
+      .update(payload)
       .eq('id', id);
     if (error) throw new Error(`Failed to update inventory detail: ${error.message}`);
   }
@@ -322,14 +330,15 @@ export class PublicAssetService {
     // Adjust asset quantities if there are discrepancies
     const details = await this.getInventoryDetails(inventoryId);
     for (const d of details) {
-      if (d.difference_quantity !== 0) {
+      const diff = d.difference_quantity || 0;
+      if (diff !== 0) {
         // Log transaction for quantity changes
         await this.createTransaction({
           asset_id: d.asset_id,
           transaction_date: new Date().toISOString().split('T')[0],
-          transaction_type: d.difference_quantity > 0 ? 'increase' : 'decrease',
+          transaction_type: diff > 0 ? 'increase' : 'decrease',
           reason: 'inventory_adjustment',
-          description: `Điều chỉnh số lượng qua kiểm kê (Lượt kiểm kê: ID ${inventoryId}). Thay đổi: ${d.difference_quantity}`,
+          description: `Điều chỉnh số lượng qua kiểm kê (Lượt kiểm kê: ID ${inventoryId}). Thay đổi: ${diff}`,
           cost_change: 0, // usually inventory doesn't change cost automatically unless cost evaluation is done
           depreciation_change: 0
         });
@@ -337,7 +346,7 @@ export class PublicAssetService {
         // Update the asset quantity
         await supabase
           .from('public_assets')
-          .update({ quantity: d.actual_quantity })
+          .update({ quantity: d.actual_quantity ?? 0 })
           .eq('id', d.asset_id);
       }
     }

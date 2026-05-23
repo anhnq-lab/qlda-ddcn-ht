@@ -144,10 +144,10 @@ function buildFlowElements(
     const pgds = employees.filter(e => e.Position === 'Phó Giám đốc Ban');
 
 
-    // --- PGD Selection by Name ---
-    const pgdBao  = pgds.find(p => p.FullName.includes('Bảo'))  || pgds[0];
-    const pgdNhan = pgds.find(p => p.FullName.includes('Nhân')) || pgds[1];
-    const pgdQuy  = pgds.find(p => p.FullName.includes('Quy'))  || pgds[2];
+    // --- PGD Selection dynamically ---
+    const pgdBao  = pgds[0];
+    const pgdNhan = pgds[1];
+    const pgdQuy  = pgds[2];
 
     const edgeType = 'step';
     const edgeStyle = (color: string) => ({ stroke: color, strokeWidth: 1.5 });
@@ -398,15 +398,15 @@ const OrgChartPage: React.FC = () => {
                                 // Lọc bỏ Quản trị viên
                                 members = members.filter(m => !m.Position.toLowerCase().includes('quản trị') && !m.FullName.toLowerCase().includes('quản trị'));
                                 
-                                // Sắp xếp theo thứ tự yêu cầu
-                                const bgdOrder = ['Nguyễn Quang Linh', 'Trần Ngọc Bảo', 'Nguyễn Văn Nhân', 'Ngô Đức Quy'];
+                                // Sắp xếp theo chức vụ (Giám đốc -> Phó Giám đốc -> khác)
                                 members.sort((a, b) => {
-                                    const indexA = bgdOrder.indexOf(a.FullName);
-                                    const indexB = bgdOrder.indexOf(b.FullName);
-                                    // Nếu không có trong danh sách, đẩy xuống cuối
-                                    const valA = indexA === -1 ? 999 : indexA;
-                                    const valB = indexB === -1 ? 999 : indexB;
-                                    return valA - valB;
+                                    const rank = (pos: string) => {
+                                        if (pos.includes('Giám đốc Ban') && !pos.includes('Phó')) return 1;
+                                        if (pos.includes('Phó Giám đốc Ban')) return 2;
+                                        if (pos.includes('Kế toán trưởng')) return 3;
+                                        return 4;
+                                    };
+                                    return rank(a.Position) - rank(b.Position);
                                 });
                             }
 

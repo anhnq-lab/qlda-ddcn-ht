@@ -96,19 +96,21 @@ function selectWorkflowCode(groupCode: string, project?: any): string {
  */
 export function useWorkflowPhases(groupCode: string = 'C', project?: any) {
     const workflowCode = selectWorkflowCode(groupCode, project);
+    // Normalize: hỗ trợ cả PascalCase (từ mapped Project) và snake_case (từ raw DB)
+    const projectId = project?.ProjectID || project?.project_id;
 
     // Fetch workflow + nodes directly from DB
     const { data: nodesData, isLoading } = useQuery({
-        queryKey: ['workflow-phases', workflowCode, project?.ProjectID],
+        queryKey: ['workflow-phases', workflowCode, projectId],
         queryFn: async () => {
             let targetWorkflowId: string | null = null;
 
             // 1. Try to fetch the currently active workflow instance for this project
-            if (project?.ProjectID) {
+            if (projectId) {
                 const { data: insts } = await supabase
                     .from('workflow_instances')
                     .select('workflow_id')
-                    .eq('reference_id', project.ProjectID)
+                    .eq('reference_id', projectId)
                     .order('started_at', { ascending: false })
                     .limit(1);
                 
@@ -189,10 +191,10 @@ export function useWorkflowPhases(groupCode: string = 'C', project?: any) {
             if (!phaseMap[phase][subProcess]) phaseMap[phase][subProcess] = [];
             if (!flatPhaseItems[phase]) flatPhaseItems[phase] = [];
 
-            // Extract step number from name (e.g., "1. Lập BCNCTKT..." → "1")
-            const nameMatch = node.name.match(/^(\d+)\.\s*/);
+            // Extract step number from name (e.g., "1.1. Lập BCNCTKT..." → "1.1")
+            const nameMatch = node.name.match(/^([\d\.]+?)\.?\s+/);
             const stepNum = nameMatch ? nameMatch[1] : String(flatPhaseItems[phase].length + 1);
-            const cleanTitle = nameMatch ? node.name.replace(/^\d+\.\s*/, '') : node.name;
+            const cleanTitle = nameMatch ? node.name.slice(nameMatch[0].length) : node.name;
 
             // Extract assignee_role: ưu tiên trực tiếp trên node metadata,
             // rồi mới tới sub_task đầu tiên (field assignee_role hoặc actor)

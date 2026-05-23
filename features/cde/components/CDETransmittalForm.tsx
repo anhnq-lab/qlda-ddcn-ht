@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Send, FileText, Plus, X, Users, Building2, ClipboardList, Loader2 } from 'lucide-react';
-import { supabase, supabaseExt } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import type { CDEDocument, TransmittalPurpose } from '../types';
 
@@ -48,7 +48,7 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
     const handleSend = useCallback(async () => {
         if (!form.subject || !form.to_org || selectedDocIds.length === 0) return;
         setIsPending(true);
-        const { error } = await supabaseExt.from('cde_transmittals').insert({
+        const { error } = await supabase.from('cde_transmittals').insert({
             project_id: projectId,
             transmittal_no: transmittalNo,
             subject: form.subject,

@@ -4,13 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
 // Components (Lazy loaded)
-const UserAccountManager = React.lazy(() => import('../admin/UserAccountManager'));
+const UserAccountManager = React.lazy(() => import('./components/admin/UserAccountManager'));
 const PermissionManager = React.lazy(() => import('./PermissionManager'));
 const RoleDefaultsManager = React.lazy(() => import('./RoleDefaultsManager'));
-const ContractorAccountManager = React.lazy(() => import('../admin/ContractorAccountManager'));
-const AuditLogViewer = React.lazy(() => import('../admin/AuditLogViewer'));
+const ContractorAccountManager = React.lazy(() => import('./components/admin/ContractorAccountManager'));
+const AuditLogViewer = React.lazy(() => import('./components/admin/AuditLogViewer'));
 const UserImpersonator = React.lazy(() => import('./UserImpersonator'));
-const DashboardWidgetManager = React.lazy(() => import('../admin/DashboardWidgetManager'));
+const DashboardWidgetManager = React.lazy(() => import('./components/admin/DashboardWidgetManager'));
 
 // ============================================================
 // SETTINGS — Unified Admin Control Panel

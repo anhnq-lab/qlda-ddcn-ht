@@ -1,5 +1,5 @@
 // Document Attachments Service - Supabase CRUD + Storage
-import { supabaseExt as supabase } from '../lib/supabase'; // document_attachments not yet in generated types
+import { supabase } from '../lib/supabase';
 
 // ============================================================
 // TYPES

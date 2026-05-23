@@ -21,7 +21,7 @@ import React, {
     ReactNode,
     useMemo,
 } from 'react';
-import { supabase, supabaseExt } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { useImpersonation } from './ImpersonationContext';
 import {
@@ -130,7 +130,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             return;
         }
         try {
-            const { data, error } = await supabaseExt
+            const { data, error } = await supabase
                 .from('role_permission_defaults')
                 .select('resource, actions')
                 .eq('role', role);

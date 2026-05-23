@@ -77,11 +77,26 @@ const CAPITAL_QUERY_KEYS = (projectId: string) => [
     ['all-disbursements'],
 ];
 
+/** Primary summary query key */
+const SUMMARY_KEY = (projectId: string) => ['project-capital-summary', projectId];
+
 export const useCreateCapitalPlan = () => {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (plan: Omit<CapitalPlan, 'PlanID'>) =>
             CapitalService.createCapitalPlan(plan),
+        onMutate: async (newPlan) => {
+            await qc.cancelQueries({ queryKey: SUMMARY_KEY(newPlan.ProjectID) });
+            const prev = qc.getQueryData(SUMMARY_KEY(newPlan.ProjectID));
+            qc.setQueryData(SUMMARY_KEY(newPlan.ProjectID), (old: any) => {
+                if (!old) return old;
+                return { ...old, capitalPlans: [...(old.capitalPlans ?? []), { ...newPlan, PlanID: `__opt_${Date.now()}`, DisbursedAmount: 0 }] };
+            });
+            return { prev, projectId: newPlan.ProjectID };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev !== undefined) qc.setQueryData(SUMMARY_KEY(ctx.projectId), ctx.prev);
+        },
         onSuccess: (_data, variables) => {
             CAPITAL_QUERY_KEYS(variables.ProjectID).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
@@ -104,6 +119,18 @@ export const useDeleteCapitalPlan = () => {
     return useMutation({
         mutationFn: ({ planId, projectId }: { planId: string; projectId: string }) =>
             CapitalService.deleteCapitalPlan(planId),
+        onMutate: async ({ planId, projectId }) => {
+            await qc.cancelQueries({ queryKey: SUMMARY_KEY(projectId) });
+            const prev = qc.getQueryData(SUMMARY_KEY(projectId));
+            qc.setQueryData(SUMMARY_KEY(projectId), (old: any) => {
+                if (!old) return old;
+                return { ...old, capitalPlans: (old.capitalPlans ?? []).filter((p: CapitalPlan) => p.PlanID !== planId) };
+            });
+            return { prev, projectId };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev !== undefined) qc.setQueryData(SUMMARY_KEY(ctx.projectId), ctx.prev);
+        },
         onSuccess: (_data, variables) => {
             CAPITAL_QUERY_KEYS(variables.projectId).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
@@ -119,6 +146,18 @@ export const useCreateDisbursement = () => {
     return useMutation({
         mutationFn: (d: Omit<Disbursement, 'DisbursementID'>) =>
             CapitalService.createDisbursement(d),
+        onMutate: async (newDisb) => {
+            await qc.cancelQueries({ queryKey: SUMMARY_KEY(newDisb.ProjectID) });
+            const prev = qc.getQueryData(SUMMARY_KEY(newDisb.ProjectID));
+            qc.setQueryData(SUMMARY_KEY(newDisb.ProjectID), (old: any) => {
+                if (!old) return old;
+                return { ...old, disbursements: [...(old.disbursements ?? []), { ...newDisb, DisbursementID: `__opt_${Date.now()}`, Status: newDisb.Status || 'Pending' }] };
+            });
+            return { prev, projectId: newDisb.ProjectID };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev !== undefined) qc.setQueryData(SUMMARY_KEY(ctx.projectId), ctx.prev);
+        },
         onSuccess: (_data, variables) => {
             CAPITAL_QUERY_KEYS(variables.ProjectID).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
@@ -141,6 +180,18 @@ export const useDeleteDisbursement = () => {
     return useMutation({
         mutationFn: ({ id, projectId }: { id: string; projectId: string }) =>
             CapitalService.deleteDisbursement(id),
+        onMutate: async ({ id, projectId }) => {
+            await qc.cancelQueries({ queryKey: SUMMARY_KEY(projectId) });
+            const prev = qc.getQueryData(SUMMARY_KEY(projectId));
+            qc.setQueryData(SUMMARY_KEY(projectId), (old: any) => {
+                if (!old) return old;
+                return { ...old, disbursements: (old.disbursements ?? []).filter((d: Disbursement) => d.DisbursementID !== id) };
+            });
+            return { prev, projectId };
+        },
+        onError: (_err, _vars, ctx) => {
+            if (ctx?.prev !== undefined) qc.setQueryData(SUMMARY_KEY(ctx.projectId), ctx.prev);
+        },
         onSuccess: (_data, variables) => {
             CAPITAL_QUERY_KEYS(variables.projectId).forEach(k => qc.invalidateQueries({ queryKey: k }));
         },
@@ -194,3 +245,5 @@ export const useDeleteDisbursementPlan = () => {
         },
     });
 };
+
+

@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
-    FileText, CheckCircle2, XCircle, Search, SlidersHorizontal, Plus, ChevronRight, 
+    FileText, Search, SlidersHorizontal, Plus, ChevronRight, 
     Calendar, Users, Eye, FileSignature 
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Role } from '../../types/employee.types';
-import { EvaluationService } from './services/evaluationService';
 import { 
     type EvaluationForm, 
     type EvaluationStatus, 
@@ -20,14 +18,13 @@ import {
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import EvaluationSlidePanel from './components/EvaluationSlidePanel';
 import { DEPARTMENT_CODES, DEPARTMENT_NAMES } from '../../types/plan.types';
+import { useEvaluations } from '../../hooks/useEvaluations';
 
 export const EvaluationPage: React.FC = () => {
     const { currentUser } = useAuth();
     const { openPanel, closePanel, setPanelWidth } = useSlidePanel();
     const isManager = currentUser?.Role === Role.Manager || currentUser?.Role === Role.Admin;
 
-    const [forms, setForms] = useState<EvaluationForm[]>([]);
-    const [loading, setLoading] = useState(true);
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
     const [statusFilter, setStatusFilter] = useState<EvaluationStatus | 'all'>('all');
@@ -40,37 +37,24 @@ export const EvaluationPage: React.FC = () => {
         name: DEPARTMENT_NAMES[code]
     }));
 
-    useEffect(() => {
-        loadData();
-    }, [month, year, statusFilter, deptFilter, currentUser]);
-
-    const loadData = async () => {
-        if (!currentUser) return;
-        setLoading(true);
-
-        try {
-            // Load evaluations
-            const queryParams: any = { eval_month: month, eval_year: year };
-            
-            // Managers see their department (or all if Admin), Staff see only themselves
-            if (!isManager) {
-                queryParams.employee_id = currentUser.EmployeeID;
-            } else if (currentUser.Role !== Role.Admin) {
-                queryParams.department_code = currentUser.Department;
-            } else if (deptFilter !== 'all') {
-                queryParams.department_code = deptFilter;
-            }
-
-            if (statusFilter !== 'all') queryParams.status = statusFilter;
-
-            const { data } = await EvaluationService.list(queryParams);
-            setForms(data);
-        } catch (err) {
-            console.error('Error loading evaluations:', err);
-        } finally {
-            setLoading(false);
+    // Managers see their department (or all if Admin), Staff see only themselves
+    const queryParams = useMemo(() => {
+        if (!currentUser) return null;
+        const params: any = { eval_month: month, eval_year: year };
+        
+        if (!isManager) {
+            params.employee_id = currentUser.EmployeeID;
+        } else if (currentUser.Role !== Role.Admin) {
+            params.department_code = currentUser.Department;
+        } else if (deptFilter !== 'all') {
+            params.department_code = deptFilter;
         }
-    };
+
+        if (statusFilter !== 'all') params.status = statusFilter;
+        return params;
+    }, [month, year, statusFilter, deptFilter, currentUser, isManager]);
+
+    const { data: forms = [], isLoading: loading, refetch } = useEvaluations(queryParams || {});
 
     const handleCreateNew = () => {
         setPanelWidth(window.innerWidth / 2);
@@ -79,8 +63,8 @@ export const EvaluationPage: React.FC = () => {
             component: <EvaluationSlidePanel 
                 defaultMonth={month} 
                 defaultYear={year} 
-                onSaved={(f) => {
-                    loadData(); // Reload list
+                onSaved={() => {
+                    refetch();
                 }}
                 onClose={() => closePanel()}
             />
@@ -93,8 +77,8 @@ export const EvaluationPage: React.FC = () => {
             title: `Phiếu đánh giá - ${form.employee_name}`,
             component: <EvaluationSlidePanel 
                 existingForm={form}
-                onSaved={(f) => {
-                    loadData();
+                onSaved={() => {
+                    refetch();
                 }}
                 onClose={() => closePanel()}
             />

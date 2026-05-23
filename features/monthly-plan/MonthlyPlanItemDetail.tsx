@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus, DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
 import { useSlidePanel } from "../../context/SlidePanelContext";
-import { supabaseExt as supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { StatusBadge, BadgeVariant } from '../../components/ui';
 import { Task } from '../../types';
 import { ProjectTaskModal } from '../projects/components/ProjectTaskModal';

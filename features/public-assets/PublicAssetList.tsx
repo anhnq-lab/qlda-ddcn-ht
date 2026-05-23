@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Landmark, Plus, Search, Filter, History, Trash2, Edit2,
   AlertTriangle, RefreshCw, X, DollarSign, Activity, ShieldAlert, BarChart3
@@ -8,18 +8,26 @@ import DataTable from '../../components/ui/DataTable';
 import { PublicAssetForm } from './PublicAssetForm';
 import { PublicAssetReports } from './PublicAssetReports';
 import { PublicAssetInventory } from './PublicAssetInventory';
-import { PublicAssetService } from '../../services/PublicAssetService';
-import { EmployeeService } from '../../services/EmployeeService';
-import { ProjectService } from '../../services/ProjectService';
 import { 
   PublicAsset, 
   PublicAssetCategory, 
   PublicAssetTransaction 
 } from '../../types/public-asset.types';
-import { Employee, Project } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { useToast } from '../../components/ui/Toast';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
+import {
+  usePublicAssets,
+  usePublicAssetCategories,
+  usePublicAssetTransactions,
+  useCreatePublicAsset,
+  useUpdatePublicAsset,
+  useDeletePublicAsset,
+  useLiquidatePublicAsset,
+  useTriggerDepreciation
+} from '../../hooks/usePublicAssets';
+import { useEmployees } from '../../hooks/useEmployees';
+import { useProjects } from '../../hooks/useProjects';
 
 type ActiveTab = 'assets' | 'reports' | 'inventory';
 
@@ -34,12 +42,20 @@ export const PublicAssetList: React.FC = () => {
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
   
-  // Data State
-  const [assets, setAssets] = useState<PublicAsset[]>([]);
-  const [categories, setCategories] = useState<PublicAssetCategory[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // React Query Fetch Data
+  const { data: assets = [], isLoading: isAssetsLoading } = usePublicAssets();
+  const { data: categories = [] } = usePublicAssetCategories();
+  const { data: employees = [] } = useEmployees();
+  const { projects = [], isLoading: isProjectsLoading } = useProjects();
+
+  // Mutations
+  const createMutation = useCreatePublicAsset();
+  const updateMutation = useUpdatePublicAsset();
+  const deleteMutation = useDeletePublicAsset();
+  const liquidateMutation = useLiquidatePublicAsset();
+  const triggerDepreciationMutation = useTriggerDepreciation();
+
+  const isLoading = isAssetsLoading || isProjectsLoading;
 
   // Form Modals / Panels
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -48,38 +64,7 @@ export const PublicAssetList: React.FC = () => {
   // Transaction/History log panel
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [historyAsset, setHistoryAsset] = useState<PublicAsset | null>(null);
-  const [assetHistory, setAssetHistory] = useState<PublicAssetTransaction[]>([]);
-
-  // Load resources
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const catData = await PublicAssetService.getCategories();
-      setCategories(catData);
-      
-      const empData = await EmployeeService.getAll();
-      setEmployees(empData);
-      
-      const projData = await ProjectService.getAll();
-      setProjects(projData);
-
-      const assetData = await PublicAssetService.getAll();
-      setAssets(assetData);
-    } catch (err) {
-      console.error(err);
-      addToast({
-        title: 'Lỗi tải dữ liệu',
-        message: (err as Error).message || 'Không thể kết nối đến máy chủ.',
-        type: 'error'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const { data: assetHistory = [] } = usePublicAssetTransactions(historyAsset?.id || '');
 
   // Filtered assets for DataTable
   const filteredAssets = useMemo(() => {
@@ -96,7 +81,7 @@ export const PublicAssetList: React.FC = () => {
 
       return matchesSearch && matchesCategory && matchesStatus && matchesBranch && matchesDept;
     });
-  }, [assets, searchQuery, selectedCategory, selectedStatus, selectedDept]);
+  }, [assets, searchQuery, selectedCategory, selectedStatus, selectedBranch, selectedDept]);
 
   // Quick liquidation dialog
   const [isLiquidationDialogOpen, setIsLiquidationDialogOpen] = useState(false);
@@ -136,22 +121,21 @@ export const PublicAssetList: React.FC = () => {
   const handleSaveAsset = async (payload: any) => {
     try {
       if (editingAsset) {
-        await PublicAssetService.update(editingAsset.id, payload);
+        await updateMutation.mutateAsync({ id: editingAsset.id, data: payload });
         addToast({
           title: 'Cập nhật thành công',
           message: `Đã cập nhật thông tin tài sản công ${payload.asset_name}.`,
           type: 'success'
         });
       } else {
-        await PublicAssetService.create(payload);
+        await createMutation.mutateAsync(payload);
         addToast({
           title: 'Ghi tăng thành công',
           message: `Đã ghi tăng tài sản công mới ${payload.asset_name}.`,
           type: 'success'
         });
       }
-      const updated = await PublicAssetService.getAll();
-      setAssets(updated);
+      setIsFormOpen(false);
     } catch (err) {
       console.error(err);
       addToast({
@@ -168,14 +152,12 @@ export const PublicAssetList: React.FC = () => {
       return;
     }
     try {
-      await PublicAssetService.delete(id);
+      await deleteMutation.mutateAsync(id);
       addToast({
         title: 'Đã xóa tài sản',
         message: `Đã xóa tài sản công "${name}" khỏi hệ thống.`,
         type: 'success'
       });
-      const updated = await PublicAssetService.getAll();
-      setAssets(updated);
     } catch (err) {
       console.error(err);
       addToast({
@@ -197,19 +179,8 @@ export const PublicAssetList: React.FC = () => {
     if (!liquidationAsset) return;
     try {
       setIsLiquidating(true);
-      await PublicAssetService.update(liquidationAsset.id, { status: 'pending_liquidation' });
-      await PublicAssetService.createTransaction({
-        asset_id: liquidationAsset.id,
-        transaction_date: new Date().toISOString().split('T')[0],
-        transaction_type: 'decrease',
-        reason: 'pending_liquidation',
-        description: `Đề xuất thanh lý: ${liquidationReason}`,
-        cost_change: 0,
-        depreciation_change: 0
-      });
+      await liquidateMutation.mutateAsync({ assetId: liquidationAsset.id, reason: liquidationReason });
       addToast({ title: 'Đã đề xuất thanh lý', message: `Tài sản "${liquidationAsset.asset_name}" đã chuyển sang trạng thái chờ thanh lý.`, type: 'success' });
-      const updated = await PublicAssetService.getAll();
-      setAssets(updated);
     } catch (err) {
       addToast({ title: 'Lỗi', message: (err as Error).message, type: 'error' });
     } finally {
@@ -220,20 +191,9 @@ export const PublicAssetList: React.FC = () => {
   };
 
   // Open asset history transactions side panel
-  const handleViewHistory = async (asset: PublicAsset) => {
-    try {
-      const txs = await PublicAssetService.getTransactionsByAsset(asset.id);
-      setHistoryAsset(asset);
-      setAssetHistory(txs);
-      setIsHistoryOpen(true);
-    } catch (err) {
-      console.error(err);
-      addToast({
-        title: 'Lỗi',
-        message: 'Không thể tải lịch sử biến động.',
-        type: 'error'
-      });
-    }
+  const handleViewHistory = (asset: PublicAsset) => {
+    setHistoryAsset(asset);
+    setIsHistoryOpen(true);
   };
 
   // Calculate annual depreciation trigger
@@ -244,15 +204,12 @@ export const PublicAssetList: React.FC = () => {
     }
 
     try {
-      setIsLoading(true);
-      const count = await PublicAssetService.calculateAnnualDepreciation(currentYear);
+      await triggerDepreciationMutation.mutateAsync(currentYear);
       addToast({
         title: 'Tính hao mòn hoàn tất',
-        message: `Đã hoàn thành tính hao mòn cho ${count} tài sản công đang hoạt động năm ${currentYear}.`,
+        message: `Đã hoàn thành tính hao mòn cho tài sản công đang hoạt động năm ${currentYear}.`,
         type: 'success'
       });
-      const updated = await PublicAssetService.getAll();
-      setAssets(updated);
     } catch (err) {
       console.error(err);
       addToast({
@@ -260,8 +217,6 @@ export const PublicAssetList: React.FC = () => {
         message: (err as Error).message || 'Lỗi tính hao mòn.',
         type: 'error'
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -751,14 +706,14 @@ export const PublicAssetList: React.FC = () => {
                       <div className="mt-2 grid grid-cols-2 gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800 text-[10px]">
                         <div>
                           <span className="text-slate-400 block">Biến động nguyên giá</span>
-                          <span className={`font-bold ${tx.cost_change > 0 ? 'text-emerald-600' : tx.cost_change < 0 ? 'text-red-500' : 'text-slate-500'}`}>
-                            {tx.cost_change > 0 ? '+' : ''}{formatCurrency(tx.cost_change)}
+                          <span className={`font-bold ${(tx.cost_change || 0) > 0 ? 'text-emerald-600' : (tx.cost_change || 0) < 0 ? 'text-red-500' : 'text-slate-500'}`}>
+                            {(tx.cost_change || 0) > 0 ? '+' : ''}{formatCurrency(tx.cost_change || 0)}
                           </span>
                         </div>
                         <div>
                           <span className="text-slate-400 block">Biến động hao mòn</span>
-                          <span className={`font-bold ${tx.depreciation_change > 0 ? 'text-amber-600' : 'text-slate-500'}`}>
-                            {tx.depreciation_change > 0 ? '+' : ''}{formatCurrency(tx.depreciation_change)}
+                          <span className={`font-bold ${(tx.depreciation_change || 0) > 0 ? 'text-amber-600' : 'text-slate-500'}`}>
+                            {(tx.depreciation_change || 0) > 0 ? '+' : ''}{formatCurrency(tx.depreciation_change || 0)}
                           </span>
                         </div>
                       </div>

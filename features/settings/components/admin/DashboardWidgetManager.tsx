@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, supabaseExt } from '../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 import { Save, RefreshCw, LayoutDashboard } from 'lucide-react';
-import { ALL_ROLES, ROLE_LABELS } from '../../types/permission.types';
+import { ALL_ROLES, ROLE_LABELS } from '../../../../types/permission.types';
 
 const SYSTEM_ROLES = ALL_ROLES.map(role => ({
     id: role,
     name: ROLE_LABELS[role]
 }));
-import { useToast } from '../../components/ui/Toast';
+import { useToast } from '../../../../components/ui/Toast';
 
 const AVAILABLE_WIDGETS = [
     { id: 'project_progress', name: 'Tiến độ dự án', description: 'Widget theo dõi tiến độ tổng thể các dự án' },
@@ -34,7 +34,7 @@ export const DashboardWidgetManager: React.FC = () => {
     const loadConfig = async (role: string) => {
         setIsLoading(true);
         try {
-            const { data, error } = await supabaseExt
+            const { data, error } = await supabase
                 .from('dashboard_widget_config')
                 .select('widget_id, is_active')
                 .eq('role', role);
@@ -71,7 +71,7 @@ export const DashboardWidgetManager: React.FC = () => {
                 updated_at: new Date().toISOString()
             }));
 
-            const { error } = await supabaseExt
+            const { error } = await supabase
                 .from('dashboard_widget_config')
                 .upsert(updates, { onConflict: 'role,widget_id' });
 

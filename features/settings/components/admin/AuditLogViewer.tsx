@@ -4,9 +4,9 @@ import {
     Edit3, Trash2, Plus, Eye, Clock, ChevronLeft, ChevronRight,
     Download, Building2, Briefcase, CreditCard
 } from 'lucide-react';
-import { useEmployees } from '../../hooks/useEmployees';
+import { useEmployees } from '../../../../hooks/useEmployees';
 
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 
 interface AuditLog {
     id: string;

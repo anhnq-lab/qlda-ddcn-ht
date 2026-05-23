@@ -31,7 +31,11 @@ export function useStepAggregates(filteredTasks: Task[], phases: Phase[]) {
         const allItems = phases.flatMap(p => p.items);
 
         allItems.forEach(item => {
-            const children = filteredTasks.filter(t => t.TimelineStep === item.code);
+            const children = filteredTasks.filter(t => {
+                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                const iCode = (item.code || '').toLowerCase().trim();
+                return tTimelineStep === iCode;
+            });
             if (children.length === 0) {
                 map.set(item.code, { status: TaskStatus.Todo, startDate: null, dueDate: null, childCount: 0, progress: 0 });
                 return;

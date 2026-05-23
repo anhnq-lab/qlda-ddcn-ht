@@ -102,6 +102,14 @@ const Section: React.FC<{
 };
 
 // ─── Main Panel ───────────────────────────────────────────────
+import {
+    useCreateEvaluation,
+    useUpdateSelfScores,
+    useSubmitEvaluation,
+    useApproveEvaluation,
+    useRejectEvaluation
+} from '../../../hooks/useEvaluations';
+
 interface Props {
     existingForm?: EvaluationForm|null;
     defaultMonth?: number;
@@ -126,6 +134,13 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
     const [success,setSuccess]= useState<string|null>(null);
     const [employeeTasks, setEmployeeTasks] = useState<DbTask[]>([]);
     const [loadingTasks, setLoadingTasks] = useState(false);
+
+    // React Query Mutations
+    const createMutation = useCreateEvaluation();
+    const updateSelfScoresMutation = useUpdateSelfScores();
+    const submitMutation = useSubmitEvaluation();
+    const approveMutation = useApproveEvaluation();
+    const rejectMutation = useRejectEvaluation();
 
     const initScores = useCallback(():EvalScores=>{
         if(existingForm?.self_scores && Object.keys(existingForm.self_scores).length>0)
@@ -288,72 +303,95 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
             const ck = await EvaluationService.getByEmployeePeriod({employee_id:currentUser.EmployeeID,eval_month:month,eval_year:year});
             if(ck.data){ form=ck.data; }
             else {
-                const {data,error:e} = await EvaluationService.create({
-                    employee_id:currentUser.EmployeeID, employee_name:currentUser.FullName,
-                    chuc_vu:chucVu||null, department_code:currentUser.Department,
-                    department_name:currentUser.Department, eval_month:month, eval_year:year,
-                    form_type:formType, self_scores:payload as EvalScores,
-                });
-                setSaving(false);
-                if(e||!data){setError(e??'Lỗi tạo phiếu');return;}
-                if(submit){
-                    await EvaluationService.submit(data.id);
-                    const {data:r}=await EvaluationService.getById(data.id);
-                    if(r){onSaved?.(r);setSuccess('Đã nộp phiếu!');setTimeout(()=>onClose?.(),1500);}
-                } else {
-                    const {data:r}=await EvaluationService.getById(data.id);
-                    if(r) onSaved?.(r);
-                    setSuccess('Đã lưu nháp!');
+                try {
+                    const data = await createMutation.mutateAsync({
+                        employee_id:currentUser.EmployeeID, employee_name:currentUser.FullName,
+                        chuc_vu:chucVu||null, department_code:currentUser.Department,
+                        department_name:currentUser.Department, eval_month:month, eval_year:year,
+                        form_type:formType, self_scores:payload as EvalScores,
+                    });
+                    if(!data){setError('Lỗi tạo phiếu');setSaving(false);return;}
+                    form = data;
+                } catch (e: any) {
+                    setError(e.message || 'Lỗi tạo phiếu');
+                    setSaving(false);
+                    return;
                 }
+            }
+        } else {
+            try {
+                await updateSelfScoresMutation.mutateAsync({ id: form.id, scores: payload as EvalScores, chucVu: chucVu||null });
+            } catch (e: any) {
+                setError(e.message || 'Lỗi cập nhật phiếu');
+                setSaving(false);
                 return;
             }
         }
-        await EvaluationService.updateSelfScores(form.id, payload as EvalScores, chucVu||null);
-        if(submit){
-            await EvaluationService.submit(form.id);
-            setSuccess('Đã nộp phiếu!');
-            setTimeout(()=>onClose?.(),1500);
-        } else { setSuccess('Đã lưu nháp!'); }
-        const {data:r}=await EvaluationService.getById(form.id);
-        if(r) onSaved?.(r);
+        
+        if(submit && form){
+            try {
+                await submitMutation.mutateAsync(form.id);
+                setSuccess('Đã nộp phiếu!');
+                if(form) onSaved?.(form);
+                setTimeout(()=>onClose?.(),1500);
+            } catch (e: any) {
+                setError(e.message || 'Lỗi nộp phiếu');
+            }
+        } else if (form) {
+            setSuccess('Đã lưu nháp!');
+            if(form) onSaved?.(form);
+        }
         setSaving(false);
     };
 
     const handleApprove = async () => {
         if(!currentUser || !existingForm) return;
         setSaving(true); setError(null); setSuccess(null);
-        const { error } = await EvaluationService.approve(existingForm.id, {
-            manager_scores: managerScores,
-            manager_notes: managerNotes,
-            manager_id: currentUser.EmployeeID,
-            manager_name: currentUser.FullName
-        });
-        setSaving(false);
-        if(error) { setError(error); return; }
-        setSuccess('Đã phê duyệt phiếu!');
-        const {data:r}=await EvaluationService.getById(existingForm.id);
-        if(r) onSaved?.(r);
-        setTimeout(()=>onClose?.(),1500);
+        try {
+            await approveMutation.mutateAsync({
+                id: existingForm.id,
+                data: {
+                    manager_scores: managerScores,
+                    manager_notes: managerNotes,
+                    manager_id: currentUser.EmployeeID,
+                    manager_name: currentUser.FullName
+                }
+            });
+            setSuccess('Đã phê duyệt phiếu!');
+            if (existingForm) onSaved?.(existingForm);
+            setTimeout(()=>onClose?.(),1500);
+        } catch (e: any) {
+            setError(e.message || 'Lỗi phê duyệt');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleReject = async () => {
         if(!currentUser || !existingForm) return;
         if(!managerNotes.trim()) {
             setError('Vui lòng nhập lý do từ chối (Nhận xét của quản lý)');
+            setSaving(false);
             return;
         }
         setSaving(true); setError(null); setSuccess(null);
-        const { error } = await EvaluationService.reject(existingForm.id, {
-            manager_notes: managerNotes,
-            manager_id: currentUser.EmployeeID,
-            manager_name: currentUser.FullName
-        });
-        setSaving(false);
-        if(error) { setError(error); return; }
-        setSuccess('Đã từ chối phiếu!');
-        const {data:r}=await EvaluationService.getById(existingForm.id);
-        if(r) onSaved?.(r);
-        setTimeout(()=>onClose?.(),1500);
+        try {
+            await rejectMutation.mutateAsync({
+                id: existingForm.id,
+                data: {
+                    manager_notes: managerNotes,
+                    manager_id: currentUser.EmployeeID,
+                    manager_name: currentUser.FullName
+                }
+            });
+            setSuccess('Đã từ chối phiếu!');
+            if (existingForm) onSaved?.(existingForm);
+            setTimeout(()=>onClose?.(),1500);
+        } catch (e: any) {
+            setError(e.message || 'Lỗi từ chối');
+        } finally {
+            setSaving(false);
+        }
     };
 
     return(

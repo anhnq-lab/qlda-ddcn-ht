@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { Employee } from '../types';
-import { supabase, supabaseExt } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
 import { permissionCache } from '../utils/permissionCache';
 
@@ -26,17 +26,17 @@ async function resolveEmail(identifier: string): Promise<string | null> {
     if (identifier.includes('@')) return identifier;
 
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase.rpc as any)('resolve_user_identity', {
+        const { data, error } = await supabase.rpc('resolve_user_identity', {
             p_identifier: identifier,
-        }) as { data: { email: string | null } | null; error: any };
+        });
 
         if (error) {
             console.error('[resolveEmail] RPC error:', error.message);
             return null;
         }
 
-        return data?.email || null;
+        const resolvedData = data as { email: string | null } | null;
+        return resolvedData?.email || null;
     } catch (err) {
         console.error('[resolveEmail] Exception:', err);
         return null;
@@ -52,44 +52,47 @@ async function fetchUserProfile(authUserId: string): Promise<{
     contractorId: string | null;
 }> {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase.rpc as any)('get_user_profile_by_auth_id', {
+        const { data, error } = await supabase.rpc('get_user_profile_by_auth_id', {
             p_auth_user_id: authUserId,
-        }) as { data: Record<string, any> | null; error: any };
+        });
 
-        if (error || !data || data.user_type === 'unknown') {
+        if (error || !data) {
             return { user: null, userType: 'employee', contractorId: null };
         }
 
-        if (data.user_type === 'employee') {
+        const profileData = data as Record<string, any>;
+        if (profileData.user_type === 'unknown') {
+            return { user: null, userType: 'employee', contractorId: null };
+        }
+
+        if (profileData.user_type === 'employee') {
             return {
                 user: {
-                    EmployeeID: data.employee_id,
-                    FullName: data.full_name,
-                    Role: data.role as any,
-                    Department: data.department || '',
-                    Position: data.position || '',
-                    Email: data.email || '',
-                    Phone: data.phone || '',
-                    AvatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=0D8ABC&color=fff`,
-                    JoinDate: data.join_date || '',
-                    Status: data.status as any || 'Active',
-                    Username: data.username || '',
-                    Password: '',
-                    SystemRole: data.system_role || undefined,
+                    EmployeeID: profileData.employee_id,
+                    FullName: profileData.full_name,
+                    Role: profileData.role as any,
+                    Department: profileData.department || '',
+                    Position: profileData.position || '',
+                    Email: profileData.email || '',
+                    Phone: profileData.phone || '',
+                    AvatarUrl: profileData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.full_name)}&background=0D8ABC&color=fff`,
+                    JoinDate: profileData.join_date || '',
+                    Status: profileData.status as any || 'Active',
+                    Username: profileData.username || '',
+                    SystemRole: profileData.system_role || undefined,
                 },
                 userType: 'employee',
                 contractorId: null,
             };
         }
 
-        if (data.user_type === 'contractor') {
-            const contractorName = data.full_name || 'Nhà thầu';
+        if (profileData.user_type === 'contractor') {
+            const contractorName = profileData.full_name || 'Nhà thầu';
             
             // Fetch allowed_project_ids for this contractor account
             let allowedProjectIds: string[] = [];
             try {
-                const { data: contractorData, error: contractorErr } = await supabaseExt
+                const { data: contractorData, error: contractorErr } = await supabase
                     .from('contractor_accounts')
                     .select('allowed_project_ids')
                     .eq('auth_user_id', authUserId)
@@ -107,19 +110,18 @@ async function fetchUserProfile(authUserId: string): Promise<{
                     EmployeeID: authUserId,
                     FullName: contractorName,
                     Role: 'contractor' as any,
-                    Department: data.display_name || '',
+                    Department: profileData.display_name || '',
                     Position: 'Nhà thầu',
-                    Email: data.email || '',
-                    Phone: data.phone || '',
+                    Email: profileData.email || '',
+                    Phone: profileData.phone || '',
                     AvatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(contractorName)}&background=4a90e2&color=fff`,
                     JoinDate: '',
                     Status: 'Active' as any,
-                    Username: data.username || '',
-                    Password: '',
+                    Username: profileData.username || '',
                     AllowedProjectIDs: allowedProjectIds,
                 },
                 userType: 'contractor',
-                contractorId: data.contractor_id,
+                contractorId: profileData.contractor_id,
             };
         }
 
@@ -207,7 +209,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             JoinDate: '',
             Status: 'Active' as any,
             Username: authUser.email || '',
-            Password: '',
         });
     }, []);
 
@@ -265,14 +266,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 // ╚════════════════════════════════════════════════════════════╝
                 if (import.meta.env.DEV && !existingSession) {
                     const explicitlyLoggedOut = localStorage.getItem('explicitlyLoggedOut') === 'true';
+                    const devEmail = import.meta.env.VITE_DEV_EMAIL;
+                    const devPassword = import.meta.env.VITE_DEV_PASSWORD;
                     
-                    if (!explicitlyLoggedOut && !autoLoginAttempted) {
+                    if (!explicitlyLoggedOut && !autoLoginAttempted && devEmail && devPassword) {
                         autoLoginAttempted = true;
                         console.log('[Auth] 🔧 Local Dev: Auto-logging in as Admin...');
                         console.warn('[Auth] ⚠️ DEV AUTO-LOGIN ACTIVE — this MUST NOT run in production!');
                         const demoLogin = await supabase.auth.signInWithPassword({
-                            email: import.meta.env.VITE_DEV_EMAIL ?? 'admin@bqlddcn.gov.vn',
-                            password: import.meta.env.VITE_DEV_PASSWORD ?? '@Abc123456',
+                            email: devEmail,
+                            password: devPassword,
                         });
                         
                         if (demoLogin.data?.session) {
@@ -285,6 +288,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                         } else if (demoLogin.error) {
                             console.error('[Auth] Local Dev Auto-login failed:', demoLogin.error.message);
                         }
+                    } else if (!devEmail || !devPassword) {
+                        console.log('[Auth] 🔧 Local Dev: Auto-login skipped (no VITE_DEV_EMAIL/VITE_DEV_PASSWORD in .env)');
                     }
                 }
                 
@@ -342,9 +347,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             // Identifier không khớp với username / phone nào trong hệ thống
             console.error('[Auth] Could not resolve email for:', identifier);
             // Fire-and-forget: ghi audit log đăng nhập thất bại (username không tồn tại)
-            supabaseExt.from('audit_logs').insert({
+            supabase.from('audit_logs').insert({
                 action: 'LOGIN_FAILED',
                 target_entity: 'auth',
+                target_id: 'auth',
+                changed_by: identifier,
                 details: `Identifier not found: ${identifier}`,
             }).then(() => {});
             return false;
@@ -363,9 +370,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (error || !data.user) {
             console.error('[Auth] Login failed:', error?.message);
             // Fire-and-forget: ghi audit log đăng nhập thất bại (sai mật khẩu)
-            supabaseExt.from('audit_logs').insert({
+            supabase.from('audit_logs').insert({
                 action: 'LOGIN_FAILED',
                 target_entity: 'auth',
+                target_id: 'auth',
+                changed_by: identifier,
                 details: `Wrong password for: ${identifier}`,
             }).then(() => {});
             return false;
@@ -376,7 +385,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
 
         // Fire-and-forget: ghi audit log đăng nhập thành công
-        supabaseExt.from('audit_logs').insert({
+        supabase.from('audit_logs').insert({
             action: 'LOGIN_SUCCESS',
             target_entity: 'auth',
             target_id: data.user.id,
@@ -391,9 +400,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             .eq('auth_user_id', data.user.id)
             .then(() => { });
 
-        supabaseExt
+        supabase
             .from('contractor_accounts')
-            .update({ last_login: new Date().toISOString() })
+            .update({ last_login: new Date().toISOString() } as any)
             .eq('auth_user_id', data.user.id)
             .then(() => { });
 

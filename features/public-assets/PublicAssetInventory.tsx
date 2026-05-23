@@ -87,7 +87,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
         const updated = { ...d, [field]: value };
         if (field === 'actual_quantity') {
           const qty = Number(value) || 0;
-          updated.difference_quantity = qty - d.book_quantity;
+          updated.difference_quantity = qty - (d.book_quantity || 0);
         }
         return updated;
       }
@@ -340,7 +340,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                           <input
                             type="number"
                             min="0"
-                            value={d.actual_quantity}
+                            value={d.actual_quantity ?? ''}
                             onChange={(e) => handleDetailChange(d.id, 'actual_quantity', Number(e.target.value))}
                             className="w-16 px-1.5 py-1 text-center border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-lg focus:outline-none"
                           />
@@ -350,13 +350,13 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                       </td>
 
                       <td className={`p-3 text-center font-bold
-                        ${d.difference_quantity === 0 
+                        ${(d.difference_quantity || 0) === 0 
                           ? 'text-slate-400' 
-                          : d.difference_quantity > 0 
+                          : (d.difference_quantity || 0) > 0 
                             ? 'text-emerald-600 dark:text-emerald-400' 
                             : 'text-red-500'}
                       `}>
-                        {d.difference_quantity > 0 ? `+${d.difference_quantity}` : d.difference_quantity}
+                        {(d.difference_quantity || 0) > 0 ? `+${d.difference_quantity}` : (d.difference_quantity ?? 0)}
                       </td>
 
                       <td className="p-3">

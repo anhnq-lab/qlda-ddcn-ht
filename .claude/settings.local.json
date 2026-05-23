@@ -147,7 +147,10 @@
       "Bash(node scripts/check-bundle-size.mjs)",
       "Bash(node --check scripts/gen-rbac-matrix.mjs)",
       "Bash(node scripts/fix-dark-opacity.mjs --check)",
-      "Bash(node scripts/fix-dark-opacity.mjs)"
+      "Bash(node scripts/fix-dark-opacity.mjs)",
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\\\\features\\\\projects\\\\components\\\\tabs\" -Type File)",
+      "Bash(Select-Object -First 10)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
     ]
   }
 }

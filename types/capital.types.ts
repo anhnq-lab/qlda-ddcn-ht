@@ -112,3 +112,14 @@ export interface DisbursementRow {
     form_type?: string;
     treasury_code?: string;
 }
+
+/** Disbursement plan item */
+export interface DisbursementPlanItem {
+    Id: string;
+    ProjectID: string;
+    Year: number;
+    Month: number;
+    PlannedAmount: number;
+    ActualAmount: number;
+    Notes: string;
+}

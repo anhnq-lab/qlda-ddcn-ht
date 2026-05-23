@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -59,8 +59,6 @@ export type Database = {
           event_type: Database["public"]["Enums"]["agency_event_type"]
           id: string
           location: string | null
-          report_content: string | null
-          report_files: Json | null
           room: Database["public"]["Enums"]["agency_event_room"] | null
           start_time: string
           title: string
@@ -74,8 +72,6 @@ export type Database = {
           event_type?: Database["public"]["Enums"]["agency_event_type"]
           id?: string
           location?: string | null
-          report_content?: string | null
-          report_files?: Json | null
           room?: Database["public"]["Enums"]["agency_event_room"] | null
           start_time: string
           title: string
@@ -98,7 +94,7 @@ export type Database = {
       }
       annual_plan_items: {
         Row: {
-          collaborating_ids: string[] | null
+          collaborating_dept_codes: string[] | null
           collaborating_text: string | null
           created_at: string
           created_by: string | null
@@ -113,15 +109,16 @@ export type Database = {
           notes: string | null
           plan_year: number
           project_id: string | null
-          responsible_ids: string[] | null
           responsible_text: string | null
           sort_order: number | null
+          source_task_id: string | null
+          source_type: string
           start_period: string | null
           task_name: string
           updated_at: string
         }
         Insert: {
-          collaborating_ids?: string[] | null
+          collaborating_dept_codes?: string[] | null
           collaborating_text?: string | null
           created_at?: string
           created_by?: string | null
@@ -136,15 +133,16 @@ export type Database = {
           notes?: string | null
           plan_year: number
           project_id?: string | null
-          responsible_ids?: string[] | null
           responsible_text?: string | null
           sort_order?: number | null
+          source_task_id?: string | null
+          source_type?: string
           start_period?: string | null
           task_name: string
           updated_at?: string
         }
         Update: {
-          collaborating_ids?: string[] | null
+          collaborating_dept_codes?: string[] | null
           collaborating_text?: string | null
           created_at?: string
           created_by?: string | null
@@ -159,9 +157,10 @@ export type Database = {
           notes?: string | null
           plan_year?: number
           project_id?: string | null
-          responsible_ids?: string[] | null
           responsible_text?: string | null
           sort_order?: number | null
+          source_task_id?: string | null
+          source_type?: string
           start_period?: string | null
           task_name?: string
           updated_at?: string
@@ -174,12 +173,20 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["project_id"]
           },
+          {
+            foreignKeyName: "annual_plan_items_source_task_id_fkey"
+            columns: ["source_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
         ]
       }
       audit_logs: {
         Row: {
           action: string
           changed_by: string
+          created_at: string | null
           details: string | null
           log_id: string
           target_entity: string
@@ -189,6 +196,7 @@ export type Database = {
         Insert: {
           action: string
           changed_by: string
+          created_at?: string | null
           details?: string | null
           log_id?: string
           target_entity: string
@@ -198,6 +206,7 @@ export type Database = {
         Update: {
           action?: string
           changed_by?: string
+          created_at?: string | null
           details?: string | null
           log_id?: string
           target_entity?: string
@@ -208,86 +217,158 @@ export type Database = {
       }
       bidding_packages: {
         Row: {
+          approval_date_result: string | null
           bid_closing_date: string | null
           bid_fee: number | null
+          bid_opening_date: string | null
           bid_type: string | null
+          bidders_count: number | null
+          bidding_scope: string | null
           capital_source: string | null
+          completion_pct: number | null
+          completion_updated_at: string | null
+          contract_id: string | null
           contract_type: string | null
           created_at: string
           decision_agency: string | null
           decision_date: string | null
           decision_file: string | null
           decision_number: string | null
+          description: string | null
           duration: string | null
           estimate_price: number | null
+          evaluation_bidders_count: number | null
           field: string | null
+          funding_source: string | null
+          has_option: boolean | null
           khlcnt_code: string | null
+          msc_package_link: string | null
+          msc_plan_code: string | null
+          msc_publish_status: string | null
           notification_code: string | null
           package_id: string
           package_name: string
           package_number: string
+          personnel: Json | null
+          plan_decision_date: string | null
+          plan_decision_number: string | null
+          plan_group_name: string | null
+          plan_id: string | null
           posting_date: string | null
           price: number
           project_id: string
+          selection_duration: string | null
           selection_method: string | null
+          selection_procedure: string | null
+          selection_start_date: string | null
+          sort_order: number | null
           status: string
           updated_at: string
+          winning_consortium: Json | null
           winning_contractor_id: string | null
           winning_price: number | null
         }
         Insert: {
+          approval_date_result?: string | null
           bid_closing_date?: string | null
           bid_fee?: number | null
+          bid_opening_date?: string | null
           bid_type?: string | null
+          bidders_count?: number | null
+          bidding_scope?: string | null
           capital_source?: string | null
+          completion_pct?: number | null
+          completion_updated_at?: string | null
+          contract_id?: string | null
           contract_type?: string | null
           created_at?: string
           decision_agency?: string | null
           decision_date?: string | null
           decision_file?: string | null
           decision_number?: string | null
+          description?: string | null
           duration?: string | null
           estimate_price?: number | null
+          evaluation_bidders_count?: number | null
           field?: string | null
+          funding_source?: string | null
+          has_option?: boolean | null
           khlcnt_code?: string | null
+          msc_package_link?: string | null
+          msc_plan_code?: string | null
+          msc_publish_status?: string | null
           notification_code?: string | null
           package_id: string
           package_name: string
           package_number: string
+          personnel?: Json | null
+          plan_decision_date?: string | null
+          plan_decision_number?: string | null
+          plan_group_name?: string | null
+          plan_id?: string | null
           posting_date?: string | null
           price?: number
           project_id: string
+          selection_duration?: string | null
           selection_method?: string | null
+          selection_procedure?: string | null
+          selection_start_date?: string | null
+          sort_order?: number | null
           status?: string
           updated_at?: string
+          winning_consortium?: Json | null
           winning_contractor_id?: string | null
           winning_price?: number | null
         }
         Update: {
+          approval_date_result?: string | null
           bid_closing_date?: string | null
           bid_fee?: number | null
+          bid_opening_date?: string | null
           bid_type?: string | null
+          bidders_count?: number | null
+          bidding_scope?: string | null
           capital_source?: string | null
+          completion_pct?: number | null
+          completion_updated_at?: string | null
+          contract_id?: string | null
           contract_type?: string | null
           created_at?: string
           decision_agency?: string | null
           decision_date?: string | null
           decision_file?: string | null
           decision_number?: string | null
+          description?: string | null
           duration?: string | null
           estimate_price?: number | null
+          evaluation_bidders_count?: number | null
           field?: string | null
+          funding_source?: string | null
+          has_option?: boolean | null
           khlcnt_code?: string | null
+          msc_package_link?: string | null
+          msc_plan_code?: string | null
+          msc_publish_status?: string | null
           notification_code?: string | null
           package_id?: string
           package_name?: string
           package_number?: string
+          personnel?: Json | null
+          plan_decision_date?: string | null
+          plan_decision_number?: string | null
+          plan_group_name?: string | null
+          plan_id?: string | null
           posting_date?: string | null
           price?: number
           project_id?: string
+          selection_duration?: string | null
           selection_method?: string | null
+          selection_procedure?: string | null
+          selection_start_date?: string | null
+          sort_order?: number | null
           status?: string
           updated_at?: string
+          winning_consortium?: Json | null
           winning_contractor_id?: string | null
           winning_price?: number | null
         }
@@ -298,6 +379,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "fk_bidding_packages_winning_contractor_id"
+            columns: ["winning_contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["contractor_id"]
           },
         ]
       }
@@ -565,6 +653,170 @@ export type Database = {
           },
         ]
       }
+      cde_permissions: {
+        Row: {
+          account_id: string
+          cde_role: string
+          created_at: string
+          granted_by: string | null
+          id: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          cde_role: string
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          cde_role?: string
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cde_permissions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_accounts"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "cde_permissions_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["employee_id"]
+          },
+        ]
+      }
+      cde_workflow_instances: {
+        Row: {
+          created_at: string
+          current_step_index: number
+          id: string
+          initiated_by: string | null
+          notes: string | null
+          officer_name: string | null
+          project_id: string
+          state_code: string
+          status: string
+          total_steps: number
+          updated_at: string
+          workflow_code: string
+          workflow_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_step_index?: number
+          id?: string
+          initiated_by?: string | null
+          notes?: string | null
+          officer_name?: string | null
+          project_id: string
+          state_code?: string
+          status?: string
+          total_steps?: number
+          updated_at?: string
+          workflow_code: string
+          workflow_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_step_index?: number
+          id?: string
+          initiated_by?: string | null
+          notes?: string | null
+          officer_name?: string | null
+          project_id?: string
+          state_code?: string
+          status?: string
+          total_steps?: number
+          updated_at?: string
+          workflow_code?: string
+          workflow_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cde_workflow_instances_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cde_workflow_step_records: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          conclusion: string | null
+          created_at: string
+          form_code: string | null
+          form_data: Json
+          id: string
+          instance_id: string
+          is_completed: boolean
+          node_id: string | null
+          notes: string | null
+          step_index: number
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          conclusion?: string | null
+          created_at?: string
+          form_code?: string | null
+          form_data?: Json
+          id?: string
+          instance_id: string
+          is_completed?: boolean
+          node_id?: string | null
+          notes?: string | null
+          step_index: number
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          conclusion?: string | null
+          created_at?: string
+          form_code?: string | null
+          form_data?: Json
+          id?: string
+          instance_id?: string
+          is_completed?: boolean
+          node_id?: string | null
+          notes?: string | null
+          step_index?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cde_workflow_step_records_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "cde_workflow_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cde_workflow_step_records_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       construction_works: {
         Row: {
           address: string | null
@@ -603,13 +855,60 @@ export type Database = {
           },
         ]
       }
+      contractor_accounts: {
+        Row: {
+          account_id: string
+          allowed_project_ids: string[] | null
+          auth_user_id: string | null
+          contractor_id: string | null
+          created_at: string
+          display_name: string | null
+          is_active: boolean
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          account_id?: string
+          allowed_project_ids?: string[] | null
+          auth_user_id?: string | null
+          contractor_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          is_active?: boolean
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          account_id?: string
+          allowed_project_ids?: string[] | null
+          auth_user_id?: string | null
+          contractor_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          is_active?: boolean
+          updated_at?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_accounts_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["contractor_id"]
+          },
+        ]
+      }
       contractors: {
         Row: {
           address: string | null
           cap_cert_code: string | null
+          cap_cert_link: string | null
           contact_info: string | null
           contractor_id: string
+          contractor_type: string | null
           created_at: string
+          email: string | null
           established_year: number | null
           full_name: string
           is_foreign: boolean
@@ -617,13 +916,17 @@ export type Database = {
           representative: string | null
           tax_code: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
           cap_cert_code?: string | null
+          cap_cert_link?: string | null
           contact_info?: string | null
           contractor_id: string
+          contractor_type?: string | null
           created_at?: string
+          email?: string | null
           established_year?: number | null
           full_name: string
           is_foreign?: boolean
@@ -631,13 +934,17 @@ export type Database = {
           representative?: string | null
           tax_code?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
           cap_cert_code?: string | null
+          cap_cert_link?: string | null
           contact_info?: string | null
           contractor_id?: string
+          contractor_type?: string | null
           created_at?: string
+          email?: string | null
           established_year?: number | null
           full_name?: string
           is_foreign?: boolean
@@ -645,6 +952,7 @@ export type Database = {
           representative?: string | null
           tax_code?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -855,60 +1163,99 @@ export type Database = {
       }
       documents: {
         Row: {
+          book_number: string | null
           category: number
           created_at: string
           doc_id: number
           doc_name: string
+          doc_type: string | null
+          document_book: string | null
+          document_number: string | null
+          document_symbol: string | null
+          drafter: string | null
+          drafting_department: string | null
           file_hash: string | null
           folder_id: string | null
           is_digitized: boolean | null
           is_latest: boolean | null
           iso_status: string | null
+          issue_date: string | null
+          issuing_authority: string | null
+          notes: string | null
           project_id: string | null
           reference_id: string | null
           revision: string | null
+          signer: string | null
           size: string | null
+          source: string | null
           storage_path: string
+          summary: string | null
           upload_date: string
           uploaded_by: string | null
           version: string | null
           version_group_id: string | null
         }
         Insert: {
+          book_number?: string | null
           category?: number
           created_at?: string
           doc_id?: number
           doc_name: string
+          doc_type?: string | null
+          document_book?: string | null
+          document_number?: string | null
+          document_symbol?: string | null
+          drafter?: string | null
+          drafting_department?: string | null
           file_hash?: string | null
           folder_id?: string | null
           is_digitized?: boolean | null
           is_latest?: boolean | null
           iso_status?: string | null
+          issue_date?: string | null
+          issuing_authority?: string | null
+          notes?: string | null
           project_id?: string | null
           reference_id?: string | null
           revision?: string | null
+          signer?: string | null
           size?: string | null
+          source?: string | null
           storage_path: string
+          summary?: string | null
           upload_date?: string
           uploaded_by?: string | null
           version?: string | null
           version_group_id?: string | null
         }
         Update: {
+          book_number?: string | null
           category?: number
           created_at?: string
           doc_id?: number
           doc_name?: string
+          doc_type?: string | null
+          document_book?: string | null
+          document_number?: string | null
+          document_symbol?: string | null
+          drafter?: string | null
+          drafting_department?: string | null
           file_hash?: string | null
           folder_id?: string | null
           is_digitized?: boolean | null
           is_latest?: boolean | null
           iso_status?: string | null
+          issue_date?: string | null
+          issuing_authority?: string | null
+          notes?: string | null
           project_id?: string | null
           reference_id?: string | null
           revision?: string | null
+          signer?: string | null
           size?: string | null
+          source?: string | null
           storage_path?: string
+          summary?: string | null
           upload_date?: string
           uploaded_by?: string | null
           version?: string | null
@@ -942,6 +1289,7 @@ export type Database = {
           position: string | null
           role: string
           status: number
+          system_role: string | null
           updated_at: string
         }
         Insert: {
@@ -961,6 +1309,7 @@ export type Database = {
           position?: string | null
           role?: string
           status?: number
+          system_role?: string | null
           updated_at?: string
         }
         Update: {
@@ -980,6 +1329,7 @@ export type Database = {
           position?: string | null
           role?: string
           status?: number
+          system_role?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1474,19 +1824,56 @@ export type Database = {
         }
         Relationships: []
       }
+      material_mines: {
+        Row: {
+          address: string | null
+          capacity: string | null
+          coordinates: Json | null
+          created_at: string | null
+          id: string
+          mine_type: Database["public"]["Enums"]["mine_type_enum"]
+          name: string
+          notes: string | null
+          status: Database["public"]["Enums"]["mine_status_enum"]
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          capacity?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          mine_type?: Database["public"]["Enums"]["mine_type_enum"]
+          name: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["mine_status_enum"]
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          capacity?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          mine_type?: Database["public"]["Enums"]["mine_type_enum"]
+          name?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["mine_status_enum"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       monthly_plan_items: {
         Row: {
           annual_plan_item_id: string | null
-          ban_head_id: string | null
-          ban_head_name: string | null
+          collaborating_dept_codes: string[] | null
+          collaborating_text: string | null
           completion_result: string | null
           created_at: string
           created_by: string | null
           deadline_note: string | null
           deferred_to_plan_id: string | null
           deliverable: string | null
-          dept_head_id: string | null
-          dept_head_name: string | null
           due_date: string | null
           group_name: string | null
           group_sort_order: number | null
@@ -1496,24 +1883,23 @@ export type Database = {
           notes: string | null
           project_id: string | null
           sort_order: number | null
-          staff_id: string | null
-          staff_name: string | null
+          source_subtask_id: string | null
+          source_task_id: string | null
+          source_type: string
           status: Database["public"]["Enums"]["monthly_task_status"]
           task_name: string
           updated_at: string
         }
         Insert: {
           annual_plan_item_id?: string | null
-          ban_head_id?: string | null
-          ban_head_name?: string | null
+          collaborating_dept_codes?: string[] | null
+          collaborating_text?: string | null
           completion_result?: string | null
           created_at?: string
           created_by?: string | null
           deadline_note?: string | null
           deferred_to_plan_id?: string | null
           deliverable?: string | null
-          dept_head_id?: string | null
-          dept_head_name?: string | null
           due_date?: string | null
           group_name?: string | null
           group_sort_order?: number | null
@@ -1523,24 +1909,23 @@ export type Database = {
           notes?: string | null
           project_id?: string | null
           sort_order?: number | null
-          staff_id?: string | null
-          staff_name?: string | null
+          source_subtask_id?: string | null
+          source_task_id?: string | null
+          source_type?: string
           status?: Database["public"]["Enums"]["monthly_task_status"]
           task_name: string
           updated_at?: string
         }
         Update: {
           annual_plan_item_id?: string | null
-          ban_head_id?: string | null
-          ban_head_name?: string | null
+          collaborating_dept_codes?: string[] | null
+          collaborating_text?: string | null
           completion_result?: string | null
           created_at?: string
           created_by?: string | null
           deadline_note?: string | null
           deferred_to_plan_id?: string | null
           deliverable?: string | null
-          dept_head_id?: string | null
-          dept_head_name?: string | null
           due_date?: string | null
           group_name?: string | null
           group_sort_order?: number | null
@@ -1550,8 +1935,9 @@ export type Database = {
           notes?: string | null
           project_id?: string | null
           sort_order?: number | null
-          staff_id?: string | null
-          staff_name?: string | null
+          source_subtask_id?: string | null
+          source_task_id?: string | null
+          source_type?: string
           status?: Database["public"]["Enums"]["monthly_task_status"]
           task_name?: string
           updated_at?: string
@@ -1584,6 +1970,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "monthly_plan_items_source_subtask_id_fkey"
+            columns: ["source_subtask_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_plan_items_source_task_id_fkey"
+            columns: ["source_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2018,6 +2418,8 @@ export type Database = {
           review_contractor: string | null
           sector: string | null
           site_area: number | null
+          specialty_details: string | null
+          specialty_type: string | null
           stage: string | null
           start_date: string | null
           status: number
@@ -2124,6 +2526,8 @@ export type Database = {
           review_contractor?: string | null
           sector?: string | null
           site_area?: number | null
+          specialty_details?: string | null
+          specialty_type?: string | null
           stage?: string | null
           start_date?: string | null
           status?: number
@@ -2230,6 +2634,8 @@ export type Database = {
           review_contractor?: string | null
           sector?: string | null
           site_area?: number | null
+          specialty_details?: string | null
+          specialty_type?: string | null
           stage?: string | null
           start_date?: string | null
           status?: number
@@ -2244,6 +2650,438 @@ export type Database = {
           version?: string | null
         }
         Relationships: []
+      }
+      public_asset_categories: {
+        Row: {
+          asset_type: string
+          code: string
+          created_at: string | null
+          depreciation_rate: number | null
+          id: string
+          name: string
+          parent_id: string | null
+          useful_life_years: number | null
+        }
+        Insert: {
+          asset_type: string
+          code: string
+          created_at?: string | null
+          depreciation_rate?: number | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          useful_life_years?: number | null
+        }
+        Update: {
+          asset_type?: string
+          code?: string
+          created_at?: string | null
+          depreciation_rate?: number | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          useful_life_years?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_asset_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "public_asset_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_asset_inventories: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          inventory_date: string
+          notes: string | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          inventory_date: string
+          notes?: string | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          inventory_date?: string
+          notes?: string | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      public_asset_inventory_details: {
+        Row: {
+          actual_quantity: number
+          asset_id: string
+          book_quantity: number
+          condition: string | null
+          difference_quantity: number | null
+          id: string
+          inventory_id: string
+          notes: string | null
+        }
+        Insert: {
+          actual_quantity: number
+          asset_id: string
+          book_quantity: number
+          condition?: string | null
+          difference_quantity?: number | null
+          id?: string
+          inventory_id: string
+          notes?: string | null
+        }
+        Update: {
+          actual_quantity?: number
+          asset_id?: string
+          book_quantity?: number
+          condition?: string | null
+          difference_quantity?: number | null
+          id?: string
+          inventory_id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_asset_inventory_details_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "public_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_asset_inventory_details_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "public_asset_inventories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_asset_transactions: {
+        Row: {
+          asset_id: string
+          cost_change: number | null
+          created_at: string | null
+          created_by: string | null
+          decision_date: string | null
+          decision_number: string | null
+          depreciation_change: number | null
+          description: string | null
+          id: string
+          reason: string
+          transaction_date: string
+          transaction_type: string
+        }
+        Insert: {
+          asset_id: string
+          cost_change?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          decision_date?: string | null
+          decision_number?: string | null
+          depreciation_change?: number | null
+          description?: string | null
+          id?: string
+          reason: string
+          transaction_date: string
+          transaction_type: string
+        }
+        Update: {
+          asset_id?: string
+          cost_change?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          decision_date?: string | null
+          decision_number?: string | null
+          depreciation_change?: number | null
+          description?: string | null
+          id?: string
+          reason?: string
+          transaction_date?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_asset_transactions_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "public_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_assets: {
+        Row: {
+          accumulated_depreciation: number
+          asset_code: string
+          asset_name: string
+          branch: string | null
+          category_id: string
+          created_at: string | null
+          custodian_id: string | null
+          department: string | null
+          depreciation_rate: number
+          description: string | null
+          funding_budget_cost: number | null
+          funding_other_cost: number | null
+          id: string
+          location: string | null
+          original_cost: number
+          project_id: string | null
+          purchase_date: string
+          quantity: number
+          remaining_value: number
+          status: string
+          unit: string
+          updated_at: string | null
+          use_date: string
+        }
+        Insert: {
+          accumulated_depreciation?: number
+          asset_code: string
+          asset_name: string
+          branch?: string | null
+          category_id: string
+          created_at?: string | null
+          custodian_id?: string | null
+          department?: string | null
+          depreciation_rate?: number
+          description?: string | null
+          funding_budget_cost?: number | null
+          funding_other_cost?: number | null
+          id?: string
+          location?: string | null
+          original_cost?: number
+          project_id?: string | null
+          purchase_date: string
+          quantity?: number
+          remaining_value?: number
+          status?: string
+          unit: string
+          updated_at?: string | null
+          use_date: string
+        }
+        Update: {
+          accumulated_depreciation?: number
+          asset_code?: string
+          asset_name?: string
+          branch?: string | null
+          category_id?: string
+          created_at?: string | null
+          custodian_id?: string | null
+          department?: string | null
+          depreciation_rate?: number
+          description?: string | null
+          funding_budget_cost?: number | null
+          funding_other_cost?: number | null
+          id?: string
+          location?: string | null
+          original_cost?: number
+          project_id?: string | null
+          purchase_date?: string
+          quantity?: number
+          remaining_value?: number
+          status?: string
+          unit?: string
+          updated_at?: string | null
+          use_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_assets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "public_asset_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_assets_custodian_id_fkey"
+            columns: ["custodian_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["employee_id"]
+          },
+          {
+            foreignKeyName: "public_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      regulations: {
+        Row: {
+          article_code: string
+          article_title: string
+          chapter_code: string
+          chapter_title: string
+          content: string
+          content_json: Json | null
+          created_at: string | null
+          embedding: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          article_code: string
+          article_title: string
+          chapter_code: string
+          chapter_title: string
+          content: string
+          content_json?: Json | null
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          article_code?: string
+          article_title?: string
+          chapter_code?: string
+          chapter_title?: string
+          content?: string
+          content_json?: Json | null
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      role_permission_defaults: {
+        Row: {
+          actions: Json
+          created_at: string
+          id: string
+          resource: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          created_at?: string
+          id?: string
+          resource: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          created_at?: string
+          id?: string
+          resource?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_clearance_milestones: {
+        Row: {
+          completed_date: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          project_id: string
+          status: string | null
+          step_name: string
+          step_number: number
+          updated_at: string | null
+        }
+        Insert: {
+          completed_date?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          project_id: string
+          status?: string | null
+          step_name: string
+          step_number: number
+          updated_at?: string | null
+        }
+        Update: {
+          completed_date?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string
+          status?: string | null
+          step_name?: string
+          step_number?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_clearance_milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      site_clearances: {
+        Row: {
+          cleared_area: number | null
+          compensation_budget: number | null
+          created_at: string | null
+          disbursed_compensation: number | null
+          id: string
+          project_id: string
+          resettled_households: number | null
+          status: string | null
+          total_area: number | null
+          total_households: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cleared_area?: number | null
+          compensation_budget?: number | null
+          created_at?: string | null
+          disbursed_compensation?: number | null
+          id?: string
+          project_id: string
+          resettled_households?: number | null
+          status?: string | null
+          total_area?: number | null
+          total_households?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cleared_area?: number | null
+          compensation_budget?: number | null
+          created_at?: string | null
+          disbursed_compensation?: number | null
+          id?: string
+          project_id?: string
+          resettled_households?: number | null
+          status?: string | null
+          total_area?: number | null
+          total_households?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_clearances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
       }
       stage_transitions: {
         Row: {
@@ -2410,6 +3248,7 @@ export type Database = {
           actual_start_date: string | null
           approver_id: string | null
           assignee_id: string | null
+          collaborator_ids: string[] | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -2421,11 +3260,13 @@ export type Database = {
           metadata: Json | null
           monthly_plan_item_id: string | null
           output_document: string | null
+          parent_id: string | null
           phase: string | null
           predecessor_task_id: string | null
           priority: Database["public"]["Enums"]["task_priority"]
           progress: number
           project_id: string | null
+          responsibility_level: string
           sort_order: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["task_status"]
@@ -2442,6 +3283,7 @@ export type Database = {
           actual_start_date?: string | null
           approver_id?: string | null
           assignee_id?: string | null
+          collaborator_ids?: string[] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -2453,11 +3295,13 @@ export type Database = {
           metadata?: Json | null
           monthly_plan_item_id?: string | null
           output_document?: string | null
+          parent_id?: string | null
           phase?: string | null
           predecessor_task_id?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           progress?: number
           project_id?: string | null
+          responsibility_level?: string
           sort_order?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["task_status"]
@@ -2474,6 +3318,7 @@ export type Database = {
           actual_start_date?: string | null
           approver_id?: string | null
           assignee_id?: string | null
+          collaborator_ids?: string[] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -2485,11 +3330,13 @@ export type Database = {
           metadata?: Json | null
           monthly_plan_item_id?: string | null
           output_document?: string | null
+          parent_id?: string | null
           phase?: string | null
           predecessor_task_id?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           progress?: number
           project_id?: string | null
+          responsibility_level?: string
           sort_order?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["task_status"]
@@ -2506,6 +3353,13 @@ export type Database = {
             columns: ["monthly_plan_item_id"]
             isOneToOne: false
             referencedRelation: "monthly_plan_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
           {
@@ -2989,6 +3843,10 @@ export type Database = {
           total_count: number
         }[]
       }
+      get_user_dashboard_stats: {
+        Args: { p_department: string; p_employee_id: string; p_role: string }
+        Returns: Json
+      }
       get_user_profile_by_auth_id: {
         Args: { p_auth_user_id: string }
         Returns: Json
@@ -3021,6 +3879,8 @@ export type Database = {
         | "completed"
         | "rejected"
         | "on_hold"
+      mine_status_enum: "─Éang khai th├íc" | "Quy hoß║ích" | "─É├│ng cß╗¡a"
+      mine_type_enum: "─Éß║Ñt" | "─É├í" | "C├ít" | "Sß╗Åi" | "Kh├íc"
       monthly_task_status:
         | "planned"
         | "completed"
@@ -3036,7 +3896,7 @@ export type Database = {
       plan_status: "draft" | "published" | "closed"
       task_priority: "low" | "medium" | "high" | "urgent"
       task_status: "todo" | "in_progress" | "review" | "done" | "incomplete"
-      task_type: "project" | "internal"
+      task_type: "project" | "internal" | "management"
       workflow_category:
         | "project"
         | "document"
@@ -3208,6 +4068,8 @@ export const Constants = {
         "rejected",
         "on_hold",
       ],
+      mine_status_enum: ["─Éang khai th├íc", "Quy hoß║ích", "─É├│ng cß╗¡a"],
+      mine_type_enum: ["─Éß║Ñt", "─É├í", "C├ít", "Sß╗Åi", "Kh├íc"],
       monthly_task_status: [
         "planned",
         "completed",
@@ -3225,7 +4087,7 @@ export const Constants = {
       plan_status: ["draft", "published", "closed"],
       task_priority: ["low", "medium", "high", "urgent"],
       task_status: ["todo", "in_progress", "review", "done", "incomplete"],
-      task_type: ["project", "internal"],
+      task_type: ["project", "internal", "management"],
       workflow_category: [
         "project",
         "document",

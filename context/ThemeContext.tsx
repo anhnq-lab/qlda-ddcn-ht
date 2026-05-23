@@ -96,64 +96,6 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
 };
 
 // ============================================================
-// CSS CLASS OVERRIDES per theme — vì components dùng Tailwind classes
-// (bg-white, bg-gray-50,...) thay vì CSS variables
-// ============================================================
-const CSS_OVERRIDES: Record<Theme, string> = {
-    nature: `
-/* ===== Nature Theme: trắng/xám → cát ===== */
-.theme-nature .bg-white, .theme-nature [class~="bg-white"] { background-color: #FCF9F2 !important; }
-.theme-nature .bg-gray-50, .theme-nature [class~="bg-gray-50"] { background-color: #F5EFE6 !important; }
-.theme-nature .bg-gray-100, .theme-nature [class~="bg-gray-100"] { background-color: #EDE8DF !important; }
-.theme-nature .bg-slate-50, .theme-nature [class~="bg-slate-50"] { background-color: #F5EFE6 !important; }
-.theme-nature .bg-slate-100, .theme-nature [class~="bg-slate-100"] { background-color: #EDE8DF !important; }
-.theme-nature .border-gray-100, .theme-nature .border-gray-200,
-.theme-nature .border-slate-100, .theme-nature .border-slate-200 { border-color: #ece7de !important; }
-.theme-nature input:not([type="checkbox"]):not([type="radio"]),
-.theme-nature textarea, .theme-nature select { background-color: #FCF9F2 !important; border-color: #ece7de !important; }
-.theme-nature [role="menu"], .theme-nature [role="listbox"], .theme-nature [role="dialog"] { background-color: #FCF9F2 !important; }
-.theme-nature thead tr, .theme-nature th { background-color: #E6E0D4 !important; color: #4a3426 !important; }
-.theme-nature tbody tr:hover { background-color: #F5EFE6 !important; }
-.theme-nature .text-slate-900, .theme-nature .text-gray-900 { color: #1d1c1c !important; }
-.theme-nature .text-slate-800, .theme-nature .text-gray-800 { color: #1d1c1c !important; }
-.theme-nature .text-slate-700, .theme-nature .text-gray-700 { color: #4a3426 !important; }
-.theme-nature .text-slate-600, .theme-nature .text-slate-500, .theme-nature .text-gray-500 { color: #78716c !important; }
-.theme-nature .text-slate-400, .theme-nature .text-gray-400 { color: #a8a29e !important; }
-    `,
-    light: `
-/* ===== Light Theme: cát → trắng ===== */
-.theme-light thead tr, .theme-light th { background-color: #f8fafc !important; }
-    `,
-    dark: `
-/* ===== Dark Theme: sáng/cát → slate ===== */
-.dark aside, .dark aside > div, .dark aside > div > * { background-color: #0f172a !important; border-color: #1e293b !important; }
-.dark header { background-color: rgba(15,23,42,0.97) !important; border-bottom-color: #1e293b !important; }
-.dark .bg-white, .dark [class~="bg-white"] { background-color: #1f2332 !important; }
-.dark .bg-gray-50, .dark [class~="bg-gray-50"] { background-color: #1a1e2e !important; }
-.dark .bg-gray-100, .dark [class~="bg-gray-100"] { background-color: #252a3b !important; }
-.dark .bg-slate-50, .dark [class~="bg-slate-50"] { background-color: #1a1e2e !important; }
-.dark .bg-slate-100, .dark [class~="bg-slate-100"] { background-color: #252a3b !important; }
-.dark thead tr, .dark th { background-color: #0f172a !important; color: #94a3b8 !important; }
-.dark tbody tr { background-color: #1f2332 !important; }
-.dark tbody tr:hover { background-color: #252a3b !important; }
-.dark td { color: #cbd5e1 !important; border-color: #2e3348 !important; }
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea, .dark select { background-color: #1a1e2e !important; border-color: #2e3348 !important; color: #f1f5f9 !important; }
-.dark [role="menu"], .dark [role="listbox"], .dark [role="dialog"] { background-color: #1f2332 !important; border-color: #2e3348 !important; }
-.dark .text-gray-900, .dark .text-slate-900 { color: #f1f5f9 !important; }
-.dark .text-gray-700, .dark .text-slate-700 { color: #cbd5e1 !important; }
-.dark .text-gray-600, .dark .text-slate-600 { color: #94a3b8 !important; }
-.dark .border-gray-100, .dark .border-gray-200, .dark .border-slate-100, .dark .border-slate-200 { border-color: #2e3348 !important; }
-.dark ::-webkit-scrollbar { width: 6px; height: 6px; }
-.dark ::-webkit-scrollbar-track { background: #0f172a; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    `,
-};
-
-const THEME_STYLE_ID = 'cic-theme-overrides';
-
-// ============================================================
 // DATA DENSITY — CSS variables cho table row height, padding
 // ============================================================
 const DENSITY_TOKENS: Record<DataDensity, Record<string, string>> = {
@@ -185,7 +127,7 @@ function applyDensity(density: DataDensity) {
 }
 
 // ============================================================
-// applyTheme — Inject CSS variables vào :root + CSS class overrides
+// applyTheme — Inject CSS variables vào :root
 // ============================================================
 function applyTheme(theme: Theme) {
     const root = document.documentElement;
@@ -193,27 +135,7 @@ function applyTheme(theme: Theme) {
     // 1. Xoá các theme class cũ
     root.classList.remove('dark', 'theme-light', 'theme-nature');
 
-    // 2. Xoá các style tags cũ (từ phiên bản trước dùng MutationObserver)
-    document.getElementById('cic-nature-theme-overrides')?.remove();
-    document.getElementById('cic-light-theme-overrides')?.remove();
-    document.getElementById('cic-dark-theme-overrides')?.remove();
-    document.getElementById(THEME_STYLE_ID)?.remove();
-
-    // 3. Dọn dẹp inline styles cũ (nếu có từ phiên bản MutationObserver cũ)
-    document.querySelectorAll('[data-sand-patch]').forEach(el => {
-        (el as HTMLElement).style.backgroundColor = '';
-        delete (el as HTMLElement).dataset.sandPatch;
-    });
-    document.querySelectorAll('[data-light-patch]').forEach(el => {
-        (el as HTMLElement).style.backgroundColor = '';
-        delete (el as HTMLElement).dataset.lightPatch;
-    });
-    document.querySelectorAll('[data-dark-patch]').forEach(el => {
-        (el as HTMLElement).style.backgroundColor = '';
-        delete (el as HTMLElement).dataset.darkPatch;
-    });
-
-    // 4. Đặt class mới
+    // 2. Đặt class mới
     if (theme === 'dark') {
         root.classList.add('dark');
     } else if (theme === 'light') {
@@ -222,17 +144,11 @@ function applyTheme(theme: Theme) {
         root.classList.add('theme-nature');
     }
 
-    // 5. Inject CSS variables (dùng bởi các component dùng var(--bg-surface))
+    // 3. Inject CSS variables (dùng bởi các component dùng var(--bg-surface))
     const tokens = THEME_TOKENS[theme];
     Object.entries(tokens).forEach(([key, value]) => {
         root.style.setProperty(key, value);
     });
-
-    // 6. Inject CSS class overrides (override Tailwind hardcoded classes)
-    const style = document.createElement('style');
-    style.id = THEME_STYLE_ID;
-    style.textContent = CSS_OVERRIDES[theme];
-    document.head.appendChild(style);
 }
 
 // ============================================================

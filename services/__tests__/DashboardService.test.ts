@@ -258,8 +258,8 @@ describe('DashboardService', () => {
 
             queue.push({                                                  // tasks
                 data: [
-                    { task_id: 't1', title: 'Quá hạn lâu', due_date: longAgo, project_id: 'P1' },
-                    { task_id: 't2', title: 'Quá hạn ngắn', due_date: recent, project_id: 'P1' },
+                    { id: 't1', title: 'Quá hạn lâu', due_date: longAgo, project_id: 'P1' },
+                    { id: 't2', title: 'Quá hạn ngắn', due_date: recent, project_id: 'P1' },
                 ],
                 error: null,
             });
@@ -285,7 +285,7 @@ describe('DashboardService', () => {
 
         it('caps the risk list at 8 entries', async () => {
             const tasks = Array.from({ length: 5 }, (_, i) => ({
-                task_id: `t${i}`, title: `T${i}`,
+                id: `t${i}`, title: `T${i}`,
                 due_date: new Date(Date.now() - 10 * 86400_000).toISOString(),
                 project_id: 'P1',
             }));

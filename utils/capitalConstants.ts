@@ -28,6 +28,16 @@ export const SOURCE_COLORS: Record<string, string> = {
     'Khác': '#6b7280',
 };
 
+// ─── Source Options (dùng cho dropdown trong các modal) ─────
+export const SOURCE_OPTIONS = [
+    { value: 'NSTW', label: 'Ngân sách Trung ương' },
+    { value: 'NSĐP', label: 'Ngân sách Địa phương' },
+    { value: 'ODA',  label: 'Vốn ODA / Vốn vay nước ngoài' },
+    { value: 'Khác', label: 'Nguồn khác' },
+] as const;
+
+export type SourceKey = typeof SOURCE_OPTIONS[number]['value'];
+
 // ─── Disbursement Type Labels ───────────────────────────
 export const DISBURSEMENT_TYPE_LABELS: Record<string, string> = {
     TamUng: 'Tạm ứng',

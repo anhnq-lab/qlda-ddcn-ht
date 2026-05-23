@@ -11,7 +11,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { usePermissionCheck } from '../../../hooks/usePermissionCheck';
 import { resolveSystemRole, type SystemRole } from '../../../types/permission.types';
 import type { DepartmentCode } from '../../../types/plan.types';
-import { supabaseExt as supabase } from '../../../lib/supabase'; // dashboard_widget_config not yet in generated types
+import { supabase } from '../../../lib/supabase';
 
 export type DashboardTier = 'director' | 'manager' | 'staff';
 

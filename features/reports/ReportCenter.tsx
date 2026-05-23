@@ -226,7 +226,7 @@ const ReportCenter: React.FC = () => {
                                                     className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
                                                         exportSuccess === 'appendix1'
                                                             ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
-                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
                                                     } disabled:opacity-60`}
                                                 >
                                                     {exportingReport === 'appendix1' ? (
@@ -244,7 +244,7 @@ const ReportCenter: React.FC = () => {
                                                     className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
                                                         exportSuccess === 'appendix2'
                                                             ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
-                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
                                                     } disabled:opacity-60`}
                                                 >
                                                     {exportingReport === 'appendix2' ? (

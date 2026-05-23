@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Disbursement, CapitalPlan } from '../../../types';
 import { X, Receipt, Save } from 'lucide-react';
+import { SOURCE_OPTIONS } from '../../../utils/capitalConstants';
 
 interface DisbursementModalProps {
     isOpen: boolean;
@@ -26,12 +27,6 @@ const FORM_TYPES = [
     { value: '05', label: 'Mẫu 05 — Giấy nộp trả vốn' },
 ];
 
-const SOURCE_LABELS: Record<string, string> = {
-    NganSachTrungUong: 'NSTW',
-    NganSachDiaPhuong: 'NSĐP',
-    ODA: 'ODA',
-    Khac: 'Khác',
-};
 
 export const DisbursementModal: React.FC<DisbursementModalProps> = ({
     isOpen, onClose, onSave, editing, projectID, capitalPlans = [], isSaving
@@ -92,24 +87,24 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
             <div
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-2xl mx-4 border border-gray-200 dark:border-slate-700 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto"
+                className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-2xl mx-4 border border-border animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800 z-10">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between sticky top-0 bg-bg-surface z-10">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                            <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <div className="p-2 bg-emerald-500/10 rounded-xl">
+                            <Receipt className="w-5 h-5 text-emerald-500" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                            <h2 className="text-lg font-bold text-txt-primary">
                                 {isEdit ? 'Sửa bút toán giải ngân' : 'Đề nghị thanh toán mới'}
                             </h2>
-                            <p className="text-xs text-gray-400 dark:text-slate-400">NĐ 99/2021/NĐ-CP</p>
+                            <p className="text-xs text-txt-muted">NĐ 99/2021/NĐ-CP</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                        <X className="w-5 h-5 text-gray-400" />
+                    <button onClick={onClose} className="p-1.5 hover:bg-bg-muted text-txt-muted hover:text-txt-primary rounded-xl transition-colors">
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -118,25 +113,25 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                     {/* Row 1: Ngày + Loại */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Ngày <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="date"
                                 value={date}
                                 onChange={e => setDate(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Loại thanh toán <span className="text-red-500">*</span>
                             </label>
                             <select
                                 value={type}
                                 onChange={e => setType(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all cursor-pointer"
                             >
                                 {TYPES.map(t => (
                                     <option key={t.value} value={t.value}>{t.label}</option>
@@ -147,7 +142,7 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
 
                     {/* Nội dung */}
                     <div>
-                        <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                        <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                             Nội dung
                         </label>
                         <input
@@ -155,14 +150,14 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             placeholder="VD: Thanh toán đợt 3 gói thầu XL01..."
-                            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                            className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                         />
                     </div>
 
                     {/* Row 2: HĐ số + Biểu mẫu */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Số hợp đồng
                             </label>
                             <input
@@ -170,17 +165,17 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                                 value={contractNumber}
                                 onChange={e => setContractNumber(e.target.value)}
                                 placeholder="VD: HĐ-XL01/2025"
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Biểu mẫu <span className="text-red-500">*</span>
                             </label>
                             <select
                                 value={formType}
                                 onChange={e => setFormType(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all cursor-pointer"
                             >
                                 {FORM_TYPES.map(f => (
                                     <option key={f.value} value={f.value}>{f.label}</option>
@@ -192,7 +187,7 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                     {/* Row 3: Số tiền + Mã Kho bạc */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Số tiền (VNĐ) <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -203,12 +198,12 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                                     setAmount(val);
                                 }}
                                 placeholder="Nhập số tiền..."
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm font-mono focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Mã Kho bạc
                             </label>
                             <input
@@ -216,7 +211,7 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                                 value={treasuryCode}
                                 onChange={e => setTreasuryCode(e.target.value)}
                                 placeholder="VD: KB-HCM-001"
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                             />
                         </div>
                     </div>
@@ -224,18 +219,18 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                     {/* Kế hoạch vốn liên kết */}
                     {capitalPlans.length > 0 && (
                         <div>
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">
                                 Kế hoạch vốn liên kết
                             </label>
                             <select
                                 value={capitalPlanId}
                                 onChange={e => setCapitalPlanId(e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-xl border border-border bg-bg-surface text-txt-primary text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all cursor-pointer"
                             >
                                 <option value="">— Không chọn —</option>
                                 {capitalPlans.map(p => (
                                     <option key={p.PlanID} value={p.PlanID}>
-                                        Năm {p.Year} — {SOURCE_LABELS[p.Source] || p.Source} — {new Intl.NumberFormat('vi-VN').format(p.Amount)} đ
+                                        Năm {p.Year} — {SOURCE_OPTIONS.find(s => s.value === p.Source)?.label || p.Source} — {new Intl.NumberFormat('vi-VN').format(p.Amount)} đ
                                     </option>
                                 ))}
                             </select>
@@ -243,18 +238,18 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                     )}
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-700">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-border">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                            className="px-4 py-2.5 text-sm font-medium text-txt-secondary bg-bg-muted rounded-xl hover:bg-bg-muted/80 transition-colors"
                         >
                             Hủy
                         </button>
                         <button
                             type="submit"
                             disabled={isSaving || !amount || !date}
-                            className="px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm"
+                            className="px-5 py-2.5 text-sm font-bold text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm"
                         >
                             <Save className="w-4 h-4" />
                             {isSaving ? 'Đang lưu...' : isEdit ? 'Cập nhật' : 'Tạo mới'}

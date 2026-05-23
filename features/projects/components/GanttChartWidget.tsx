@@ -22,7 +22,7 @@ const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> =
     done: { bar: 'bg-emerald-500 dark:bg-emerald-400', bg: 'bg-emerald-50/80 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-300' },
     in_progress: { bar: 'bg-blue-500 dark:bg-blue-400', bg: 'bg-blue-50/80 dark:bg-blue-950/40', text: 'text-blue-700 dark:text-blue-300' },
     review: { bar: 'bg-amber-500 dark:bg-amber-400', bg: 'bg-amber-50/80 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-300' },
-    todo: { bar: 'bg-slate-300 dark:bg-slate-500', bg: 'bg-slate-100 dark:bg-slate-900/50', text: 'text-slate-600 dark:text-slate-300' },
+    todo: { bar: 'bg-slate-300 dark:bg-slate-500', bg: 'bg-slate-100 dark:bg-slate-900', text: 'text-slate-600 dark:text-slate-300' },
     overdue: { bar: 'bg-red-500 dark:bg-red-400', bg: 'bg-red-50/80 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300' },
 };
 
@@ -172,14 +172,11 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         const result: any[] = [];
         steps.forEach(step => {
             const stepTasks = mappedTasks.filter(t => {
-                const tStepCode = (t.StepCode || '').toLowerCase().trim();
                 const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                const tStepCode = (t.StepCode || '').toLowerCase().trim();
                 const sCode = (step.code || '').toLowerCase().trim();
-                const sId = (step.id || '').toLowerCase().trim();
-                return (
-                    (sCode && (tStepCode === sCode || tTimelineStep === sCode)) ||
-                    (sId && (tStepCode === sId || tTimelineStep === sId))
-                );
+                if (!sCode) return false;
+                return tTimelineStep === sCode || tStepCode === sCode;
             });
 
             let stepStart = fallbackStart;

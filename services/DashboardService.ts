@@ -1,5 +1,4 @@
-// Dashboard Service - Supabase queries (simplified for leadership focus)
-import { supabase, supabaseExt } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { ProjectStatus, MANAGEMENT_BOARDS } from '../types';
 
 export interface DashboardOverviewMetrics {
@@ -192,7 +191,7 @@ export const DashboardService = {
         overdue: number;
         total: number;
     }> => {
-        const { data, error } = await (supabase.rpc as any)('get_task_status_counts');
+        const { data, error } = await supabase.rpc('get_task_status_counts');
 
         if (error) {
             console.error("Error fetching task completion counts:", error);
@@ -325,7 +324,7 @@ export const DashboardService = {
     /** Material Mines */
     getMaterialMines: async (): Promise<any[]> => {
         try {
-            const { data, error } = await supabaseExt
+            const { data, error } = await supabase
                 .from('material_mines')
                 .select('*')
                 .order('name', { ascending: true });

@@ -254,7 +254,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 .from('tasks')
                 .select('id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
-                .not('status', 'in', '("Done")')
+                .not('status', 'in', '(Done,done,completed)')
                 .lt('due_date', nowISO)
                 .order('due_date', { ascending: true })
                 .limit(5) as { data: any[] | null };
@@ -278,7 +278,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 .from('tasks')
                 .select('id, title, due_date, status, priority')
                 .eq('project_id', project.ProjectID)
-                .not('status', 'in', '("Done")')
+                .not('status', 'in', '(Done,done,completed)')
                 .gte('due_date', nowISO)
                 .lte('due_date', in6Months)
                 .order('due_date', { ascending: true })

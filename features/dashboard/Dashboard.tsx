@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { OverviewTab } from './components/OverviewTab';
-import { MonthlyBriefingTab } from './components/MonthlyBriefingTab';
-import { AITab } from './components/AITab';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
+
+const OverviewTab = lazy(() => import('./components/OverviewTab').then(m => ({ default: m.OverviewTab })));
+const MonthlyBriefingTab = lazy(() => import('./components/MonthlyBriefingTab').then(m => ({ default: m.MonthlyBriefingTab })));
+const AITab = lazy(() => import('./components/AITab').then(m => ({ default: m.AITab })));
 import { MANAGEMENT_BOARDS } from '../../types';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
@@ -130,21 +131,28 @@ const Dashboard: React.FC = () => {
 
             {/* ── TAB CONTENT ── */}
             <div className="pt-2">
-                {activeTab === 'overview' && (
-                    <ErrorBoundary>
-                        <OverviewTab selectedYear={selectedYear} selectedBoard={selectedBoard} />
-                    </ErrorBoundary>
-                )}
-                {activeTab === 'monthly' && (
-                    <ErrorBoundary>
-                        <MonthlyBriefingTab selectedYear={selectedYear ?? currentYear} />
-                    </ErrorBoundary>
-                )}
-                {activeTab === 'ai' && (
-                    <ErrorBoundary>
-                        <AITab />
-                    </ErrorBoundary>
-                )}
+                <Suspense fallback={
+                    <div className="flex flex-col items-center justify-center h-64 gap-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+                        <span className="text-xs text-txt-secondary font-medium">Đang tải dữ liệu phân hệ...</span>
+                    </div>
+                }>
+                    {activeTab === 'overview' && (
+                        <ErrorBoundary>
+                            <OverviewTab selectedYear={selectedYear} selectedBoard={selectedBoard} />
+                        </ErrorBoundary>
+                    )}
+                    {activeTab === 'monthly' && (
+                        <ErrorBoundary>
+                            <MonthlyBriefingTab selectedYear={selectedYear ?? currentYear} />
+                        </ErrorBoundary>
+                    )}
+                    {activeTab === 'ai' && (
+                        <ErrorBoundary>
+                            <AITab />
+                        </ErrorBoundary>
+                    )}
+                </Suspense>
             </div>
         </div>
     );

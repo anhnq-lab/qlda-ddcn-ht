@@ -752,8 +752,8 @@ CREATE TABLE IF NOT EXISTS public.iso_workflow_tasks (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- trigger_set_timestamp function (nếu chưa có)
-CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+-- set_updated_at function (nếu chưa có)
+CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
@@ -764,15 +764,15 @@ $$ LANGUAGE plpgsql;
 -- 7. Triggers cập nhật thời gian
 CREATE TRIGGER set_timestamp_iso_workflows
 BEFORE UPDATE ON public.iso_workflows
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 CREATE TRIGGER set_timestamp_iso_workflow_nodes
 BEFORE UPDATE ON public.iso_workflow_nodes
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 CREATE TRIGGER set_timestamp_iso_workflow_instances
 BEFORE UPDATE ON public.iso_workflow_instances
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 -- 8. Row Level Security (RLS) Policies căn bản
 ALTER TABLE public.iso_workflows ENABLE ROW LEVEL SECURITY;
@@ -1198,15 +1198,15 @@ CREATE TABLE IF NOT EXISTS public.workflow_tasks (
 -- 8. TRIGGER UPDATE TIME
 CREATE TRIGGER set_timestamp_workflows
 BEFORE UPDATE ON public.workflows
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 CREATE TRIGGER set_timestamp_workflow_nodes
 BEFORE UPDATE ON public.workflow_nodes
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 CREATE TRIGGER set_timestamp_workflow_instances
 BEFORE UPDATE ON public.workflow_instances
-FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 -- 9. BẬT BẢO MẬT (RLS) NHƯNG MỞ RỘNG ALL (Dành cho Dev/Admin)
 ALTER TABLE public.workflows ENABLE ROW LEVEL SECURITY;
@@ -1853,18 +1853,10 @@ CREATE POLICY "user_permissions_delete_admin"
     USING (true);
 
 -- 5. Auto-update trigger for updated_at
-CREATE OR REPLACE FUNCTION update_user_permissions_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE TRIGGER trg_user_permissions_updated_at
     BEFORE UPDATE ON user_permissions
     FOR EACH ROW
-    EXECUTE FUNCTION update_user_permissions_timestamp();
+    EXECUTE FUNCTION set_updated_at();
 
 
 -- ==========================================
@@ -3251,11 +3243,11 @@ CREATE INDEX IF NOT EXISTS idx_sub_tasks_task_id ON public.sub_tasks(task_id);
 -- Updated_at auto-update (reuse existing trigger function)
 CREATE OR REPLACE TRIGGER set_timestamp_tasks
     BEFORE UPDATE ON public.tasks
-    FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+    FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 CREATE OR REPLACE TRIGGER set_timestamp_sub_tasks
     BEFORE UPDATE ON public.sub_tasks
-    FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+    FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 -- ─── 8. RLS POLICIES ─────────────────────────────────────────
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
@@ -3377,17 +3369,9 @@ CREATE POLICY "legal_docs_admin_all" ON legal_documents
   WITH CHECK (auth.uid() IN (SELECT user_id FROM user_permissions WHERE resource = 'admin_accounts' AND can_manage = true));
 
 -- ---- Trigger: updated_at ----
-CREATE OR REPLACE FUNCTION update_legal_doc_timestamp()
-RETURNS TRIGGER LANGUAGE plpgsql AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$;
-
 DROP TRIGGER IF EXISTS trg_legal_docs_updated ON legal_documents;
 CREATE TRIGGER trg_legal_docs_updated
   BEFORE UPDATE ON legal_documents
-  FOR EACH ROW EXECUTE FUNCTION update_legal_doc_timestamp();
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 

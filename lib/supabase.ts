@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../types/database';
+import type { ExtendedDatabase as Database } from '../types/database-ext';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -44,7 +44,7 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
  * Remove after running: supabase gen types typescript --local > types/database.ts
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const supabaseExt: any = supabase;
+export const supabaseExt: SupabaseClient<Database> = supabase;
 
 /** Check if Supabase is properly configured */
 export const isSupabaseConfigured = (): boolean => {

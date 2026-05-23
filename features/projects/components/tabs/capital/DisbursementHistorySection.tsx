@@ -4,6 +4,7 @@ import { Disbursement } from '../../../../../types/capital.types';
 import { formatCurrency } from '../../../../../utils/format';
 import { DISBURSEMENT_TYPE_LABELS } from '../../../../../utils/capitalConstants';
 import { EmptyState } from '../../../../../components/ui/EmptyState';
+import { exportM25, exportM26, exportM27 } from '../../../../../utils/disbursementTemplateExport';
 
 const TYPE_LABELS = DISBURSEMENT_TYPE_LABELS;
 
@@ -19,6 +20,9 @@ interface DisbursementHistorySectionProps {
     onEditDisb: (d: Disbursement) => void;
     onDeleteDisb: (id: string) => void;
     onImport: () => void;
+    // Export context
+    projectName?: string;
+    projectCode?: string;
 }
 
 const TYPE_FILTER_OPTIONS = [
@@ -38,6 +42,8 @@ export const DisbursementHistorySection: React.FC<DisbursementHistorySectionProp
     onEditDisb,
     onDeleteDisb,
     onImport,
+    projectName = 'Dự án',
+    projectCode,
 }) => {
     // Filter: chỉ theo type và year (bỏ filter nguồn vốn vì disbursement không có source trực tiếp)
     const filtered = disbursements.filter(d => {
@@ -116,20 +122,23 @@ export const DisbursementHistorySection: React.FC<DisbursementHistorySectionProp
                     {/* Export template buttons */}
                     <div className="flex bg-bg-muted border border-border rounded-xl p-0.5 ml-1">
                         <button
+                            onClick={() => exportM25(disbursements, projectName, projectCode)}
                             className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5"
                             title="Đề nghị thanh toán vốn (Mẫu 25 - TT 08/2016/TT-BTC)"
                         >
                             <FileDown className="w-3.5 h-3.5 text-primary-500" /> M.25
                         </button>
                         <button
+                            onClick={() => exportM26(disbursements, projectName, projectCode)}
                             className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5"
-                            title="Đề nghị rút vốn (Mẫu 26)"
+                            title="Đề nghị rút vốn tạm ứng (Mẫu 26 - TT 08/2016/TT-BTC)"
                         >
                             <FileDown className="w-3.5 h-3.5 text-blue-500" /> M.26
                         </button>
                         <button
+                            onClick={() => exportM27(disbursements, projectName, projectCode)}
                             className="px-3 py-1.5 text-xs font-bold text-txt-secondary hover:bg-bg-surface rounded-lg transition-all flex items-center gap-1.5"
-                            title="Thu hồi vốn tạm ứng (Mẫu 27)"
+                            title="Thu hồi vốn tạm ứng (Mẫu 27 - TT 08/2016/TT-BTC)"
                         >
                             <FileDown className="w-3.5 h-3.5 text-emerald-500" /> M.27
                         </button>

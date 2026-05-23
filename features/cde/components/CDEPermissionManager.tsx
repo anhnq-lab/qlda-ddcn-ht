@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, Plus, Search, Building2, UserPlus, Key, Eye, Upload, CheckCircle2, Settings, Trash2, ChevronDown, ChevronRight, Users, Mail, Phone, Lock, Loader2, X } from 'lucide-react';
-import { supabase, adminUserOp, supabaseExt } from '@/lib/supabase';
+import { supabase, adminUserOp } from '@/lib/supabase';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { useAuth } from '@/context/AuthContext';
 
 interface Contractor { contractor_id: string; full_name: string; representative: string | null; contact_info: string; }
-interface ContractorAccount { id: string; contractor_id: string; username: string; display_name: string; email: string | null; phone: string | null; is_active: boolean; }
+interface ContractorAccount { account_id: string; contractor_id: string | null; username: string; display_name: string | null; email?: string | null; phone?: string | null; is_active: boolean; }
 interface Permission { id: string; project_id: string; user_id: string; user_name: string; user_role: string; can_upload: boolean; can_approve: boolean; can_delete: boolean; can_manage: boolean; }
 
 const ROLES = [
@@ -39,8 +39,8 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
     const loadData = useCallback(async () => {
         setLoading(true);
         const [permRes, accRes] = await Promise.all([
-            supabaseExt.from('cde_permissions').select('*').eq('project_id', projectId),
-            supabaseExt.from('contractor_accounts').select('*').contains('allowed_project_ids', [projectId]),
+            supabase.from('cde_permissions').select('*').eq('project_id', projectId),
+            supabase.from('contractor_accounts').select('*').contains('allowed_project_ids', [projectId]),
         ]);
         const perms = permRes.data || [];
         const accs = accRes.data || [];
@@ -80,7 +80,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
         const exists = contractors.find(c => c.contractor_id === org.contractor_id);
         if (exists) { alert('Đơn vị đã có trong dự án'); return; }
         // Add a default permission entry
-        await supabaseExt.from('cde_permissions').insert({
+        await supabase.from('cde_permissions').insert({
             project_id: projectId, user_id: org.contractor_id, user_name: org.full_name,
             user_role: 'contributor', container_access: ['WIP'], can_upload: true,
             can_approve: false, can_delete: false, can_manage: false, granted_by: 'admin',
@@ -104,8 +104,8 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
     // Remove org
     const removeOrg = async (orgId: string) => {
         if (!confirm(`Xóa đơn vị khỏi dự án? Tất cả tài khoản sẽ mất quyền truy cập.`)) return;
-        await supabaseExt.from('cde_permissions').delete().eq('project_id', projectId).like('user_id', `${orgId}%`);
-        await supabaseExt.from('contractor_accounts').update({ allowed_project_ids: [] }).eq('contractor_id', orgId);
+        await supabase.from('cde_permissions').delete().eq('project_id', projectId).like('user_id', `${orgId}%`);
+        await supabase.from('contractor_accounts').update({ allowed_project_ids: [] }).eq('contractor_id', orgId);
 
         if (currentUser) {
             await (supabase as any).from('audit_logs').insert({
@@ -129,7 +129,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             approver: { can_upload: true, can_approve: true, can_delete: false, can_manage: false, container_access: ['WIP', 'SHARED', 'PUBLISHED'] },
             admin: { can_upload: true, can_approve: true, can_delete: true, can_manage: true, container_access: ['WIP', 'SHARED', 'PUBLISHED', 'ARCHIVED'] },
         }[role] || {};
-        await supabaseExt.from('cde_permissions').update({ user_role: role, ...caps }).eq('id', permId);
+        await supabase.from('cde_permissions').update({ user_role: role, ...caps }).eq('id', permId);
 
         if (currentUser) {
             await (supabase as any).from('audit_logs').insert({
@@ -171,17 +171,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             }
 
             // Create contractor_account — store email used for auth
-            await supabaseExt.from('contractor_accounts').insert({
+            await supabase.from('contractor_accounts').insert({
                 contractor_id: contractorId, username: staffForm.username,
                 display_name: staffForm.display_name, email: email,
                 phone: staffForm.phone || null, auth_user_id: authUserId,
                 is_active: true, allowed_project_ids: [projectId],
                 current_password: staffForm.password,
-            } as any);
+            });
 
             // Add CDE permission for this person
             const org = contractors.find(c => c.contractor_id === contractorId);
-            await supabaseExt.from('cde_permissions').insert({
+            await supabase.from('cde_permissions').insert({
                 project_id: projectId, user_id: `${contractorId}/${staffForm.username}`,
                 user_name: staffForm.display_name, user_role: staffForm.role,
                 container_access: ['WIP'], can_upload: true,
@@ -308,9 +308,9 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                                     const accPerm = perms.find(p => p.user_id === `${org.id}/${acc.username}`);
                                                     const role = ROLES.find(r => r.value === (accPerm?.user_role || 'contributor'));
                                                     return (
-                                                        <div key={acc.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-xl">
+                                                        <div key={acc.account_id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-xl">
                                                             <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center text-[10px] font-black text-blue-700 dark:text-blue-300">
-                                                                {acc.display_name.charAt(0).toUpperCase()}
+                                                                {(acc.display_name || acc.username).charAt(0).toUpperCase()}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-xs font-bold text-gray-700 dark:text-slate-200">{acc.display_name}</p>
