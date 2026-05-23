@@ -218,7 +218,7 @@ export const DashboardService = {
 
         const [overdueTasks, issues] = await Promise.all([
             (supabase as any).from('tasks')
-                .select('task_id, title, due_date, project_id')
+                .select('id, title, due_date, project_id')
                 .neq('status', 'Done').lt('due_date', today)
                 .order('due_date', { ascending: true }).limit(5) as Promise<{ data: any[] | null }>,
             supabase.from('package_issues')
@@ -231,7 +231,7 @@ export const DashboardService = {
             const dueDate = new Date(t.due_date);
             const daysOverdue = Math.ceil((Date.now() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
             risks.push({
-                id: t.task_id,
+                id: t.id,
                 type: 'overdue',
                 msg: `Công việc "${t.title}" quá hạn ${daysOverdue} ngày`,
                 date: dueDate.toLocaleDateString('vi-VN'),

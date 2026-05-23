@@ -19,8 +19,18 @@ const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> =
     overdue: { bar: 'bg-red-500 dark:bg-red-400', bg: 'bg-red-50/80 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300' },
 };
 
+const getNormalizedStatus = (status: string) => {
+    const s = (status || 'todo').toLowerCase().trim();
+    if (s === 'inprogress' || s === 'in_progress' || s === 'in-progress' || s === 'đang thực hiện') return 'in_progress';
+    if (s === 'completed' || s === 'done' || s === 'đã hoàn thành') return 'done';
+    if (s === 'review' || s === 'chờ duyệt') return 'review';
+    if (s === 'overdue' || s === 'trễ hạn') return 'overdue';
+    return 'todo';
+};
+
 const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, className = 'w-3 h-3' }) => {
-    switch (status) {
+    const norm = getNormalizedStatus(status);
+    switch (norm) {
         case 'done': return <CheckCircle2 className={`${className} text-emerald-500`} />;
         case 'in_progress': return <Clock className={`${className} text-primary-500`} />;
         case 'review': return <Clock className={`${className} text-blue-500`} />;
@@ -83,12 +93,16 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
         const result: any[] = [];
         steps.forEach(step => {
             // Lọc các công việc chính thuộc bước này (không hiển thị subtasks)
-            const stepTasks = tasks.filter(
-                t => t.StepCode === step.code || 
-                     t.TimelineStep === step.code ||
-                     t.StepCode === step.id ||
-                     t.TimelineStep === step.id
-            );
+            const stepTasks = tasks.filter(t => {
+                const tStepCode = (t.StepCode || '').toLowerCase().trim();
+                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                const sCode = (step.code || '').toLowerCase().trim();
+                const sId = (step.id || '').toLowerCase().trim();
+                return (
+                    (sCode && (tStepCode === sCode || tTimelineStep === sCode)) ||
+                    (sId && (tStepCode === sId || tTimelineStep === sId))
+                );
+            });
 
             let stepStart = fallbackStart;
             let stepEnd = new Date(fallbackStart.getTime() + (step.estimatedDays || 30) * 24 * 60 * 60 * 1000);
@@ -257,7 +271,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
             }
         });
 
-        const COL_WIDTH = 48; // px per month column
+        const COL_WIDTH = 100; // px per month column
         const tWidth = timelineList.length * COL_WIDTH;
 
         return {
@@ -291,7 +305,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
         );
     }
 
-    const COL_WIDTH = 48; // px per month column
+    const COL_WIDTH = 100; // px per month column
     const todayPos = ((Date.now() - timelineStart.getTime()) / totalDuration) * 100;
 
     return (
@@ -343,7 +357,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                     {/* Grid Lines Layer (Nét liền mạch, làm mờ tối đa) */}
                     <div className="absolute inset-0 flex pointer-events-none z-10 opacity-[0.06]">
                         <div className="w-[320px] shrink-0 border-r" style={{ borderRight: '1px solid var(--border-subtle)' }} />
-                        <div className="flex-1 flex h-full">
+                        <div style={{ width: `${totalWidth}px` }} className="shrink-0 flex h-full">
                             {timeline.map((_, i) => (
                                 <div
                                     key={i}
@@ -358,7 +372,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                     {todayPos > 0 && todayPos < 100 && (
                         <div
                             className="absolute top-0 bottom-0 w-[2px] bg-red-400 dark:bg-red-500 z-20 pointer-events-none"
-                            style={{ left: `calc(320px + (100% - 320px) * ${todayPos} / 100)` }}
+                            style={{ left: `calc(320px + ${totalWidth}px * ${todayPos} / 100)` }}
                         >
                             <div className="absolute -top-0.5 -left-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
                         </div>
@@ -370,7 +384,8 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                         const totalDays = totalDuration / (1000 * 60 * 60 * 24);
                         const leftPos = (startOffset / totalDays) * 100;
                         const width = (duration / totalDays) * 100;
-                        const colors = STATUS_COLORS[task.status] || STATUS_COLORS.todo;
+                        const normStatus = getNormalizedStatus(task.status);
+                        const colors = STATUS_COLORS[normStatus] || STATUS_COLORS.todo;
 
                         const isExpanded = expandedTaskIds.has(task.id);
                         const barHeightClass = task.isStep ? 'h-5 rounded-md' : 'h-3.5 rounded-sm';
@@ -422,7 +437,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                                 </div>
 
                                 {/* Gantt Bar Column */}
-                                <div className="flex-1 relative h-6 flex items-center min-w-0">
+                                <div style={{ width: `${totalWidth}px` }} className="shrink-0 relative h-6 flex items-center min-w-0">
                                     {/* Task Bar Container */}
                                     <div
                                         className={`absolute ${barHeightClass} ${colors.bg} border border-slate-200/50 dark:border-slate-700/50 flex items-center min-w-[16px] transition-all cursor-pointer hover:opacity-90 hover:shadow-sm z-20`}
@@ -533,7 +548,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                         <div className="h-1 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
                             <div 
                                 className={`h-full rounded-full transition-all duration-300 ${
-                                    STATUS_COLORS[hoveredTask.status]?.bar || 'bg-slate-500'
+                                    STATUS_COLORS[getNormalizedStatus(hoveredTask.status)]?.bar || 'bg-slate-500'
                                 }`}
                                 style={{ width: `${hoveredTask.progress}%` }}
                             />

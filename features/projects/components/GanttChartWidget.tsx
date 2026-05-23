@@ -26,8 +26,18 @@ const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> =
     overdue: { bar: 'bg-red-500 dark:bg-red-400', bg: 'bg-red-50/80 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300' },
 };
 
+const getNormalizedStatus = (status: string) => {
+    const s = (status || 'todo').toLowerCase().trim();
+    if (s === 'inprogress' || s === 'in_progress' || s === 'in-progress' || s === 'đang thực hiện') return 'in_progress';
+    if (s === 'completed' || s === 'done' || s === 'đã hoàn thành') return 'done';
+    if (s === 'review' || s === 'chờ duyệt') return 'review';
+    if (s === 'overdue' || s === 'trễ hạn') return 'overdue';
+    return 'todo';
+};
+
 const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, className = 'w-3 h-3' }) => {
-    switch (status) {
+    const norm = getNormalizedStatus(status);
+    switch (norm) {
         case 'done': return <CheckCircle2 className={`${className} text-emerald-500`} />;
         case 'in_progress': return <Clock className={`${className} text-primary-500`} />;
         case 'review': return <Clock className={`${className} text-blue-500`} />;
@@ -78,7 +88,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
             const { data, error } = await supabase
                 .from('projects')
                 .select('*')
-                .eq('id', projectId)
+                .eq('project_id', projectId)
                 .single();
             if (error) throw error;
             return data;
@@ -161,12 +171,16 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
 
         const result: any[] = [];
         steps.forEach(step => {
-            const stepTasks = mappedTasks.filter(
-                t => t.StepCode === step.code || 
-                     t.TimelineStep === step.code ||
-                     t.StepCode === step.id ||
-                     t.TimelineStep === step.id
-            );
+            const stepTasks = mappedTasks.filter(t => {
+                const tStepCode = (t.StepCode || '').toLowerCase().trim();
+                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                const sCode = (step.code || '').toLowerCase().trim();
+                const sId = (step.id || '').toLowerCase().trim();
+                return (
+                    (sCode && (tStepCode === sCode || tTimelineStep === sCode)) ||
+                    (sId && (tStepCode === sId || tTimelineStep === sId))
+                );
+            });
 
             let stepStart = fallbackStart;
             let stepEnd = new Date(fallbackStart.getTime() + (step.estimatedDays || 30) * 24 * 60 * 60 * 1000);
@@ -560,8 +574,9 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                                 const startOffset = Math.max(0, (task.startDate.getTime() - timelineStart.getTime()) / (1000 * 60 * 60 * 24));
                                 const duration = Math.max(1, (task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24));
                                 const left = (startOffset / totalDays) * 100;
-                                const width = Math.max(2, (duration / totalDays) * 100);
-                                const colors = STATUS_COLORS[task.status] || STATUS_COLORS.todo;
+                                const width = Math.max(4, (duration / totalDays) * 100);
+                                const normStatus = getNormalizedStatus(task.status);
+                                const colors = STATUS_COLORS[normStatus] || STATUS_COLORS.todo;
 
                                 const isExpanded = expandedTaskIds.has(task.id);
                                 const hasSubtasks = task.subTasks && task.subTasks.length > 0;
@@ -621,7 +636,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                                         )}
 
                                         {/* Bar timeline area */}
-                                        <div className="flex-1 relative h-7 min-w-0 ml-1.5 flex items-center">
+                                        <div className="flex-1 relative h-7 min-w-0 flex items-center">
                                             {/* Background bar (full task span) */}
                                             <div
                                                 className={`absolute ${colors.bg} border border-slate-200/50 dark:border-slate-700/50 flex items-center min-w-[16px] transition-all cursor-pointer hover:opacity-90 hover:shadow-sm ${barHeightClass}`}
@@ -762,7 +777,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                         <div className="h-1 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
                             <div 
                                 className={`h-full rounded-full transition-all duration-300 ${
-                                    STATUS_COLORS[hoveredTask.status]?.bar || 'bg-slate-500'
+                                    STATUS_COLORS[getNormalizedStatus(hoveredTask.status)]?.bar || 'bg-slate-500'
                                 }`}
                                 style={{ width: `${hoveredTask.progress}%` }}
                             />
