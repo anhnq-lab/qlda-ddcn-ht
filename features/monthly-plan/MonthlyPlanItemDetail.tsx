@@ -4,7 +4,7 @@ import {
     Calendar, CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight,
     Plus, ExternalLink, Play, Eye, Target, CalendarDays, CheckSquare, MessageSquare, History, BarChart3, Building2, FolderOpen, ChevronRight, Circle
 } from 'lucide-react';
-import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus, DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
+import { MonthlyPlanItem, MONTHLY_STATUS_LABELS, MonthlyTaskStatus, DEPARTMENT_NAMES, DepartmentCode, SOURCE_TYPE_CONFIG } from '../../types/plan.types';
 import { useSlidePanel } from "../../context/SlidePanelContext";
 import { supabase } from '../../lib/supabase';
 import { StatusBadge, BadgeVariant } from '../../components/ui';
@@ -90,7 +90,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
         try {
             const dbTask = await TaskService.getTaskById(taskId);
             if (dbTask) {
-                const uiTask = workflowTaskToTask(dbTask, item.project_id);
+                const uiTask = workflowTaskToTask(dbTask, dbTask.project_id || item.project_id || '');
                 setSelectedTask(uiTask);
                 setIsTaskModalOpen(true);
             }
@@ -101,7 +101,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
     const handleSaveTask = async (taskData: Partial<Task>) => {
         try {
-            const dbTaskData = taskToDbTask(taskData, item.project_id);
+            const dbTaskData = taskToDbTask(taskData, (taskData as any).ProjectID || item.project_id || '');
             dbTaskData.monthly_plan_item_id = item.id;
             if (dbTaskData.metadata) {
                 dbTaskData.metadata.monthly_plan_item_id = item.id;
@@ -130,14 +130,30 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     }, [item.annual_plan_item_id]);
 
     useEffect(() => {
-        if (!item.project_id) { setProject(null); return; }
-        supabase
-            .from('projects')
-            .select('"ProjectID", "ProjectName", "ProjectCode"')
-            .eq('"ProjectID"', item.project_id)
-            .maybeSingle()
-            .then(({ data }: any) => setProject(data));
-    }, [item.project_id]);
+        // Tải thông tin dự án: ưu tiên project_id trực tiếp, fallback qua source_project_plan_item_id
+        const resolveProjectId = async () => {
+            if (item.project_id) return item.project_id;
+            if (item.source_project_plan_item_id) {
+                const { data: ppi } = await (supabase as any)
+                    .from('project_plan_items')
+                    .select('project_id')
+                    .eq('id', item.source_project_plan_item_id)
+                    .maybeSingle();
+                return ppi?.project_id || null;
+            }
+            return null;
+        };
+
+        resolveProjectId().then(projectId => {
+            if (!projectId) { setProject(null); return; }
+            (supabase as any)
+                .from('projects')
+                .select('"ProjectID", "ProjectName", "ProjectCode"')
+                .eq('"ProjectID"', projectId)
+                .maybeSingle()
+                .then(({ data }: any) => setProject(data));
+        });
+    }, [item.project_id, item.source_project_plan_item_id]);
 
     const handleDelete = () => {
         if (!confirm('Xóa nhiệm vụ này? Thao tác không thể hoàn tác.')) return;
@@ -159,9 +175,9 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold ${cfg.bg} ${cfg.color} ring-1 ${cfg.ring}`}>
                                     {cfg.icon} {MONTHLY_STATUS_LABELS[item.status]}
                                 </span>
-                                {item.group_name && (
+                                {item.source_type && item.source_type !== 'manual' && (
                                     <span className="text-[10px] font-bold text-slate-550 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2 py-1 rounded-md">
-                                        {item.group_name}
+                                        {SOURCE_TYPE_CONFIG[item.source_type]?.label ?? item.source_type}
                                     </span>
                                 )}
                                 <span className="text-[10px] font-mono text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md">
@@ -488,7 +504,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     }}
                     onSubmit={handleSaveTask}
                     initialData={selectedTask || {
-                        ProjectID: item.project_id || '',
+                        ProjectID: item.project_id || project?.ProjectID || '',
                         MonthlyPlanItemID: item.id,
                         Title: item.task_name,
                         Description: item.deliverable,

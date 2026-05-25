@@ -95,11 +95,10 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
             // Lọc các công việc chính thuộc bước này — chỉ khớp bằng step.code (UUID)
             // để đồng bộ với WBS view và useStepAggregates hook
             const stepTasks = tasks.filter(t => {
-                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
                 const tStepCode = (t.StepCode || '').toLowerCase().trim();
                 const sCode = (step.code || '').toLowerCase().trim();
                 if (!sCode) return false;
-                return tTimelineStep === sCode || tStepCode === sCode;
+                return tStepCode === sCode || t.ProjectPlanItemID === step.code || t.MonthlyPlanItemID === step.code;
             });
 
             let stepStart = fallbackStart;

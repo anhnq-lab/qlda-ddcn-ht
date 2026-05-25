@@ -12,10 +12,23 @@ import { supabase } from '@/lib/supabase';
 export interface PhaseItem {
     id: string;
     title: string;
-    code: string; // node_id (uuid)
+    /**
+     * Primary key for step matching & map lookups.
+     * - useWorkflowPhases: workflow_node_id (UUID template ref)
+     * - useProjectSteps:   monthly_plan_item.id (MPI UUID — FK target for tasks)
+     */
+    code: string;
+    /** Semantic step code (e.g. "PREP_POLICY") — for milestone detection & legacy matching */
+    stepCode?: string | null;
     assigneeRole?: string;   // e.g., "CĐT", "CĐT / HĐTĐ"
     slaFormula?: string;      // e.g., "30d", "82d"
     estimatedDays?: number;   // parsed from sla_formula
+    // Fields populated only by useProjectSteps (project_plan_items-backed steps)
+    startDate?: string | null;
+    dueDate?: string | null;
+    isScheduled?: boolean;
+    scheduledMonthlyPlanId?: string | null;
+    raci?: any[];
 }
 
 export interface SubProcessGroup {

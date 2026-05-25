@@ -18,6 +18,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import { parseSla } from '../utils/workflowUtils';
+import RaciBadges from './RaciBadges';
 
 // ─── INTERFACES ─────────────────────────────────────────────────────────
 interface ActivityNode {
@@ -26,6 +27,7 @@ interface ActivityNode {
     type: 'start' | 'end' | 'approval' | 'input' | 'automated';
     assignee_role?: string;
     sla_formula?: string;
+    raci?: any;
 }
 
 interface FlowEdge {
@@ -80,11 +82,15 @@ const CustomFlowNode = ({ data }: { data: Record<string, any> }) => {
                     <div className="font-bold text-sm leading-tight" title={data.name}>
                         {data.name}
                     </div>
-                    {data.assignee_role && (
+                    {data.raci ? (
+                        <div className="mt-2 w-full flex justify-center">
+                            <RaciBadges summary={data.raci} compact className="justify-center" />
+                        </div>
+                    ) : data.assignee_role ? (
                         <div className="text-[10px] font-semibold opacity-60 mt-1.5 px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10">
                             {data.assignee_role}
                         </div>
-                    )}
+                    ) : null}
                 </>
             )}
 
@@ -198,6 +204,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                     rawType: n.type,
                     slaText: parseSla(n.sla_formula),
                     assignee_role: n.assignee_role,
+                    raci: n.raci,
                     // onClick is safe here because it doesn't affect layout
                     onClick: onNodeClick ? () => onNodeClick(n) : undefined,
                 },

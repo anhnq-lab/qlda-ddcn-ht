@@ -22,15 +22,20 @@ import { useSlidePanel } from '@/context/SlidePanelContext';
 import { supabase } from '@/lib/supabase';
 import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
 import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
-import { useWorkflowPhases } from '../../hooks/useWorkflowPhases';
-import type { PhaseItem } from '../../hooks/useWorkflowPhases';
+import { useProjectSteps, projectStepsKey } from '../../hooks/useProjectSteps';
+import { ProjectStepsService } from '@/services/ProjectStepsService';
+import type { PhaseItem } from '../../hooks/useProjectSteps';
 import { useTaskFilters } from '../../hooks/useTaskFilters';
 import { useStepAggregates } from '../../hooks/useStepAggregates';
 import { usePlanPersist } from '../../hooks/usePlanPersist';
 import { taskKeys } from '@/hooks/useWorkflowTasks';
+import { workflowTaskToTask, taskToDbTask } from '@/lib/mappers/workflowTaskMappers';
+import { calcProgress, isTaskInStep } from '@/lib/progressCalculator';
 import { CreateMasterPlanPanel } from '../CreateMasterPlanPanel';
 import { StepDetailModal } from '../StepDetailModal';
 import { PlanDateRange } from '../PlanDateRangeModal';
+import { ProjectRaciMatrixView } from './ProjectRaciMatrixView';
+import { HorizontalMilestoneTimeline } from '../HorizontalMilestoneTimeline';
 
 
 interface ProjectPlanTabProps {
@@ -64,8 +69,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 }) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    // Dynamic phases from DB workflow templates
-    const { phases: DECREE_175_PHASES, getGroupLabel, isLoading: isLoadingPhases } = useWorkflowPhases(groupCode, project);
+
+    // Phases từ MPI steps (sau khi user đã tạo KH tổng thể)
+    const {
+        phases: DECREE_175_PHASES,
+        steps: projectSteps,
+        isLoading: isLoadingPhases,
+        invalidate: invalidateProjectSteps,
+        unscheduledCount,
+    } = useProjectSteps(projectID);
+
+    const getGroupLabel = (g?: string) => {
+        switch (g) {
+            case 'QN': return 'Quan trọng QG';
+            case 'A': return 'Nhóm A';
+            case 'B': return 'Nhóm B';
+            case 'C': return 'Nhóm C';
+            default: return 'Nhóm C';
+        }
+    };
 
     // Employee name lookup map
     const employeeNameMap = useMemo(() => {
@@ -74,49 +96,11 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         return map;
     }, [employees]);
 
-    // Helper: Map WorkflowTask to Task
+    // Map DbTask[] → Task[] sử dụng canonical mapper (single source of truth)
     const mappedTasks = useMemo<Task[]>(() => {
         return workflowTasks.map((wt: any) => {
-            // If already a Task object from useProjectTasks
-            if (wt.TaskID) return wt as Task;
-
-            const phase = wt.workflow_nodes?.metadata?.phase || wt.metadata?.phase || wt.metadata?.groupCode || 'KH';
-            let mappedStatus = TaskStatus.Todo;
-            if (wt.status === 'in_progress') mappedStatus = TaskStatus.InProgress;
-            else if (wt.status === 'completed') mappedStatus = TaskStatus.Done;
-            // Note: If overdue state exists in your legacy Tasks, map it here, otherwise keep as Todo or InProgress.
-            else if (wt.status === 'overdue') mappedStatus = TaskStatus.InProgress;
-            
-            // Restore exact UI status if saved in metadata
-            if (wt.metadata?.ui_status) {
-                mappedStatus = wt.metadata.ui_status;
-            }
-            
-            return {
-                TaskID: wt.id,
-                ProjectID: projectID || '',
-                Title: wt.name || 'Untitled Task',
-                Description: wt.comments || wt.metadata?.description || '',
-                Status: mappedStatus,
-                Priority: TaskPriority.Medium,
-                StartDate: wt.start_date || wt.created_at,
-                DueDate: wt.due_date || undefined,
-                AssigneeID: wt.assignee_id || '',
-                TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || wt.metadata?.step_code || '',
-                StepCode: wt.step_code || wt.metadata?.step_code || wt.workflow_node_id || wt.node_id || '',
-                LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
-                DurationDays: wt.metadata?.estimatedDays || 10,
-                ActualStartDate: wt.metadata?.actualStartDate || wt.started_at,
-                ActualEndDate: wt.metadata?.actualEndDate || wt.completed_at,
-                ProgressPercent: wt.progress || 0,
-                Phase: phase,
-                SubTasks: wt.metadata?.sub_tasks || [],
-                Attachments: wt.metadata?.attachments || [],
-                Dependencies: wt.metadata?.dependencies || [],
-                EstimatedCost: wt.metadata?.estimated_cost,
-                ActualCost: wt.metadata?.actual_cost,
-                Metadata: wt.metadata || {},
-            } as Task;
+            if (wt.TaskID) return wt as Task; // already mapped
+            return workflowTaskToTask(wt, projectID);
         });
     }, [workflowTasks, projectID]);
 
@@ -150,7 +134,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
         phases.forEach(phase => {
             const phaseTasks = mappedTasks.filter(t =>
-                phase.items.some(item => (item.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim())
+                phase.items.some(item => isTaskInStep(t, { id: item.code, code: item.stepCode ?? item.code }))
             );
             if (phaseTasks.length === 0) {
                 initial[phase.id] = false;
@@ -173,7 +157,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         });
         if (!Object.values(initial).some(v => v) && phases.length > 0) {
             const first = phases.find(p => {
-                const pt = mappedTasks.filter(t => p.items.some(i => (i.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim()));
+                const pt = mappedTasks.filter(t => p.items.some(i => isTaskInStep(t, { id: i.code, code: i.stepCode ?? i.code })));
                 return pt.length === 0 || !pt.every(t => t.Status === TaskStatus.Done);
             });
             if (first) initial[first.id] = true;
@@ -210,6 +194,29 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
     // Slide Panel context
     const { openPanel, closePanel } = useSlidePanel();
+
+    const handleOpenPlanPanel = () => {
+        openPanel({
+            title: 'Thiết lập kế hoạch tổng thể',
+            icon: <ListPlus className="w-5 h-5 text-emerald-500" />,
+            width: '98%',
+            component: (
+                <CreateMasterPlanPanel
+                    project={project}
+                    hasExistingTasks={DECREE_175_PHASES.some(p => p.items.length > 0)}
+                    onClose={() => closePanel()}
+                    onSuccess={() => {
+                        showToast('✅ Đã thiết lập kế hoạch tổng thể thành công', 'success');
+                        queryClient.invalidateQueries({ queryKey: taskKeys.all });
+                        queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
+                        queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
+                        if (projectID) queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
+                        closePanel();
+                    }}
+                />
+            )
+        });
+    };
 
     // Toast notifications
     const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -257,7 +264,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
             // Find the task to get step_code and title for cross-referencing
             const task = tasks.find(t => t.TaskID === taskId);
-            const stepCode = (task as any)?.StepCode || (task as any)?.step_code || task?.TimelineStep || '';
+            const stepCode = (task as any)?.StepCode || (task as any)?.step_code || '';
             const crossRef = stepCode ? findByStepCode(stepCode) : undefined;
 
             // Build enriched doc name for keyword matching in Hồ sơ tab
@@ -303,51 +310,74 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         return allItems
             .map(item => {
                 const agg = stepAggregates.get(item.code);
-                if (!agg || !agg.startDate || !agg.dueDate) return null;
+                const sDate = item.startDate || agg?.startDate;
+                const dDate = item.dueDate || agg?.dueDate;
+                if (!sDate || !dDate) return null;
 
                 return {
                     TaskID: item.code,
                     Title: `${item.id}. ${item.title}`,
                     TaskType: 'project',
-                    StartDate: agg.startDate,
-                    DueDate: agg.dueDate,
-                    Status: agg.status,
+                    StartDate: sDate,
+                    DueDate: dDate,
+                    Status: agg?.status || TaskStatus.Todo,
                     Priority: TaskPriority.Medium,
-                    Description: 'Tổng hợp từ các công việc thuộc các bước',
+                    Description: 'Kế hoạch thực hiện bước quy trình',
                     AssigneeID: '',
                     TimelineStep: item.code,
                     ProjectID: projectID || 'SYNTHETIC',
-                    ProgressPercent: agg.progress
+                    ProgressPercent: agg?.progress || 0
                 } as Task;
             })
             .filter((t): t is Task => t !== null);
-    }, [stepAggregates, projectID]);
+    }, [DECREE_175_PHASES, stepAggregates, projectID]);
 
     // 6. Compute Milestone Dates for Timeline
     const milestoneData = useMemo(() => {
-        const getCompletionDate = (code: string): string | undefined => {
+        const getMilestoneDates = (code: string) => {
             const allStepTasks = tasks.filter(t => {
-                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
                 const tStepCode = (t.StepCode || '').toLowerCase().trim();
                 const sCode = (code || '').toLowerCase().trim();
-                return tTimelineStep === sCode || tStepCode === sCode;
+                return tStepCode === sCode || t.ProjectPlanItemID === code || t.MonthlyPlanItemID === code;
             });
-            if (allStepTasks.length === 0) return undefined;
-            // ALL tasks in this step must be Done for the milestone to be considered complete
+            if (allStepTasks.length === 0) return { actual: undefined, target: undefined };
+
+            // Ngày dự kiến (DueDate lớn nhất trong các task của bước này)
+            const targetDates = allStepTasks.map(t => new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
+            const target = targetDates.length > 0 ? new Date(Math.max(...targetDates)).toISOString().split('T')[0] : undefined;
+
+            // Kiểm tra xem tất cả các task đã hoàn thành chưa
             const allDone = allStepTasks.every(t => t.Status === TaskStatus.Done);
-            if (!allDone) return undefined;
-            const dates = allStepTasks.map(t => new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
-            if (dates.length === 0) return undefined;
-            return new Date(Math.max(...dates)).toISOString().split('T')[0];
+            let actual: string | undefined = undefined;
+            if (allDone && targetDates.length > 0) {
+                // Lấy ngày hoàn thành thực tế lớn nhất, hoặc lấy target nếu không có ActualEndDate
+                const actualDates = allStepTasks.map(t => t.ActualEndDate ? new Date(t.ActualEndDate).getTime() : new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
+                actual = actualDates.length > 0 ? new Date(Math.max(...actualDates)).toISOString().split('T')[0] : undefined;
+            }
+
+            return { actual, target };
         };
 
+        const policy = getMilestoneDates('PREP_POLICY');
+        const decision = getMilestoneDates('PREP_DECISION');
+        const design = getMilestoneDates('IMPL_DESIGN');
+        const construction = getMilestoneDates('IMPL_CONSTRUCTION');
+        const acceptance = getMilestoneDates('IMPL_ACCEPTANCE');
+        const handover = getMilestoneDates('CLOSE_HANDOVER');
+
         return {
-            policyApprovalDate: getCompletionDate('PREP_POLICY'),
-            projectApprovalDate: getCompletionDate('PREP_DECISION'),
-            constructionDesignDate: getCompletionDate('IMPL_DESIGN'),
-            groundbreakingDate: getCompletionDate('IMPL_CONSTRUCTION'),
-            completionDate: getCompletionDate('IMPL_ACCEPTANCE'),
-            handoverDate: getCompletionDate('CLOSE_HANDOVER')
+            policyApprovalDate: policy.actual,
+            policyApprovalTargetDate: policy.target,
+            projectApprovalDate: decision.actual,
+            projectApprovalTargetDate: decision.target,
+            constructionDesignDate: design.actual,
+            constructionDesignTargetDate: design.target,
+            groundbreakingDate: construction.actual,
+            groundbreakingTargetDate: construction.target,
+            completionDate: acceptance.actual,
+            completionTargetDate: acceptance.target,
+            handoverDate: handover.actual,
+            handoverTargetDate: handover.target,
         };
     }, [tasks]);
 
@@ -461,9 +491,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
     const handleUpdateStepMeta = (stepCode: string, updates: { assigneeRole?: string }) => {
         const masterTask = tasks.find(t => {
-            const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+            const tStepCode = (t.StepCode || '').toLowerCase().trim();
             const sCode = (stepCode || '').toLowerCase().trim();
-            return tTimelineStep === sCode && !(t as any).ParentID;
+            return tStepCode === sCode && !(t as any).ParentID;
         });
         if (masterTask) {
              handleSaveTask({
@@ -473,55 +503,16 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         }
     };
     const handleSaveTask = async (taskData: Partial<Task>) => {
-        // ── Auto-derive status from progress ──
-        const progress = taskData.ProgressPercent ?? (taskData as any).Progress ?? 0;
-        
-        // ── Map back to DbTask schema ──
-        let mappedDbStatus = 'todo';
-        switch (taskData.Status) {
-            case TaskStatus.Todo:       mappedDbStatus = 'todo'; break;
-            case TaskStatus.InProgress: mappedDbStatus = 'in_progress'; break;
-            case TaskStatus.Review:     mappedDbStatus = 'review'; break; // Legacy
-            case TaskStatus.Done:       mappedDbStatus = 'done'; break;
-            case TaskStatus.Incomplete: mappedDbStatus = 'incomplete'; break;
-            default: mappedDbStatus = 'todo';
-        }
-
+        // Dùng canonical mapper — single source of truth cho UI→DB conversion.
+        // Khi task tạo mới từ 1 step, bổ sung monthly_plan_item_id = selectedStep.code (MPI step ID).
         const dbTaskData: any = {
-            id: taskData.TaskID && !taskData.TaskID.startsWith('NEW_') ? taskData.TaskID : undefined,
-            title: taskData.Title,
-            description: taskData.Description,
-            status: mappedDbStatus,
-            progress: progress,
-            priority: (taskData.Priority || 'medium').toLowerCase(),
-            start_date: taskData.StartDate,
-            due_date: taskData.DueDate,
-            actual_start_date: taskData.ActualStartDate,
-            actual_end_date: taskData.ActualEndDate,
-            assignee_id: taskData.AssigneeID && !isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : (isDepartmentCode(taskData.AssigneeID) ? null : currentUserId),
-            project_id: projectID,
-            task_type: 'project',
-            workflow_node_id: taskData.TimelineStep || taskData.StepCode || selectedStep?.code || null,
-            step_code: taskData.TimelineStep || taskData.StepCode || selectedStep?.code || null,
-            predecessor_task_id: taskData.PredecessorTaskID || null,
-            estimated_cost: (taskData as any).EstimatedCost || null,
-            actual_cost: (taskData as any).ActualCost || null,
-            duration_days: taskData.DurationDays || null,
+            ...taskToDbTask(taskData, projectID),
+            // Tasks tạo từ bước KH dự án → project_plan_item_id (không dùng monthly_plan_item_id)
+            project_plan_item_id: taskData.ProjectPlanItemID || selectedStep?.code || null,
             monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
-            metadata: {
-                ui_status: taskData.Status,
-                assignee_role: taskData.AssigneeID && isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : undefined,
-                sub_tasks: taskData.SubTasks,
-                attachments: taskData.Attachments,
-                dependencies: taskData.Dependencies,
-                monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
-            }
+            // predecessor_task_id không có trong taskToDbTask mapper
+            predecessor_task_id: (taskData as any).PredecessorTaskID || null,
         };
-
-        // Nếu là task mới được tạo từ nút "Thêm công việc" trong một Step
-        if (!dbTaskData.id && selectedStep) {
-            dbTaskData.task_type = 'project';
-        }
 
         try {
             const savedTask = await TaskService.saveTask(dbTaskData);
@@ -564,10 +555,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             );
             
             showToast(`✅ Đã thiết lập kế hoạch dựa trên quy trình mẫu`, 'success');
-            // We fetch tasks directly from workflow_tasks based on this new instance
             queryClient.invalidateQueries({ queryKey: taskKeys.all });
             queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
             queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
+            if (projectID) queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
         } catch (error) {
             console.error('Failed to bulk create framework tasks:', error);
             showToast('❌ Tạo kế hoạch thất bại', 'error');
@@ -663,7 +654,18 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         }
     };
 
-    // Removed Phase Bulk creation since it's now handled by Master Workflow engine
+    // ── Xóa toàn bộ KH dự án (project_plan_items) ──
+    const handleDeletePlan = async () => {
+        if (!projectID) return;
+        try {
+            await ProjectStepsService.deleteAllByProject(projectID);
+            queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
+            showToast('🗑️ Đã xóa toàn bộ kế hoạch dự án', 'info');
+        } catch (err: any) {
+            console.error('Failed to delete project plan:', err);
+            showToast(`❌ Lỗi: ${err?.message || 'Không thể xóa kế hoạch'}`, 'error');
+        }
+    };
 
     // Priority color helper
     const getPriorityColor = (priority?: string) => {
@@ -690,101 +692,108 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
 
-            {/* 1. Overall Progress & Smart Alerts */}
-            {(() => {
-                const total = tasks.length;
-                const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
-                const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
-                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            {/* 1. Overall Dashboard Header: Progress & Milestones */}
+            <div className="w-full">
+                
+                {/* Overall Progress & Horizontal Milestones (Full Width) */}
+                {(() => {
+                    const stats = calcProgress(tasks);
+                    const { total, done, inProgress, overdue: overdueCount, completionPercent: pct } = stats;
 
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const threeDays = new Date(today);
-                threeDays.setDate(threeDays.getDate() + 3);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const threeDays = new Date(today);
+                    threeDays.setDate(threeDays.getDate() + 3);
 
-                const overdue = tasks.filter(t => {
-                    if (t.Status === TaskStatus.Done) return false;
-                    if (!t.DueDate) return false;
-                    const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
-                    return d < today;
-                });
-                const upcoming = tasks.filter(t => {
-                    if (t.Status === TaskStatus.Done) return false;
-                    if (!t.DueDate) return false;
-                    const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
-                    return d >= today && d <= threeDays;
-                });
-                const todayDone = tasks.filter(t => {
-                    if (t.Status !== TaskStatus.Done) return false;
-                    if (!t.ActualEndDate) return false;
-                    const d = new Date(t.ActualEndDate); d.setHours(0, 0, 0, 0);
-                    return d.getTime() === today.getTime();
-                });
+                    const overdue = tasks.filter(t => {
+                        if (t.Status === TaskStatus.Done || !t.DueDate) return false;
+                        const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
+                        return d < today;
+                    });
+                    const upcoming = tasks.filter(t => {
+                        if (t.Status === TaskStatus.Done || !t.DueDate) return false;
+                        const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
+                        return d >= today && d <= threeDays;
+                    });
+                    const todayDone = tasks.filter(t => {
+                        if (t.Status !== TaskStatus.Done || !t.ActualEndDate) return false;
+                        const d = new Date(t.ActualEndDate); d.setHours(0, 0, 0, 0);
+                        return d.getTime() === today.getTime();
+                    });
 
-                const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success'; filterVal?: TaskFilter }[] = [];
-                if (overdue.length > 0) alerts.push({ icon: '🔴', text: `${overdue.length} công việc đã quá hạn`, type: 'danger', filterVal: 'overdue' });
-                if (upcoming.length > 0) alerts.push({ icon: '⚠️', text: `${upcoming.length} công việc sắp tới hạn`, type: 'warn', filterVal: 'this-week' });
-                if (todayDone.length > 0) alerts.push({ icon: '✅', text: `${todayDone.length} hoàn thành hôm nay`, type: 'success', filterVal: 'completed' });
+                    const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success'; filterVal?: TaskFilter }[] = [];
+                    if (overdue.length > 0) alerts.push({ icon: '🔴', text: `${overdue.length} công việc đã quá hạn`, type: 'danger', filterVal: 'overdue' });
+                    if (upcoming.length > 0) alerts.push({ icon: '⚠️', text: `${upcoming.length} công việc sắp tới hạn`, type: 'warn', filterVal: 'this-week' });
+                    if (todayDone.length > 0) alerts.push({ icon: '✅', text: `${todayDone.length} hoàn thành hôm nay`, type: 'success', filterVal: 'completed' });
 
-                const typeStyles = {
-                    danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40',
-                    warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40',
-                    success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
-                };
+                    const typeStyles = {
+                        danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40',
+                        warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40',
+                        success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
+                    };
 
-                return (
-                    <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm space-y-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <span className="text-xs font-bold text-txt-muted uppercase tracking-wide">Tiến độ tổng thể</span>
-                                {alerts.map((a, i) => (
+                    return (
+                        <div className="w-full bg-bg-surface rounded-xl border border-border p-3 px-4 shadow-sm space-y-2">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-[10px] font-bold">
+                                {/* Left side: Title and Alerts */}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-[10px] font-black text-txt-primary uppercase tracking-wide">Tiến độ tổng thể</span>
+                                    {alerts.map((a, i) => (
+                                        <button 
+                                            key={i} 
+                                            onClick={() => a.filterVal && setCurrentFilter(a.filterVal)}
+                                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-[9px] font-bold cursor-pointer transition-colors shadow-sm ${typeStyles[a.type]}`}
+                                        >
+                                            <span>{a.icon}</span>
+                                            <span>{a.text}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                {/* Right side: Filters, total and percent */}
+                                <div className="flex flex-wrap items-center gap-3 text-txt-secondary">
                                     <button 
-                                        key={i} 
-                                        onClick={() => a.filterVal && setCurrentFilter(a.filterVal)}
-                                        className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-bold cursor-pointer transition-colors shadow-sm ${typeStyles[a.type]}`}
+                                        onClick={() => setCurrentFilter('completed')}
+                                        className={`flex items-center gap-1 px-1.5 py-0.5 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-bg-muted'} text-emerald-600 dark:text-emerald-400`}
                                     >
-                                        <span>{a.icon}</span>
-                                        <span>{a.text}</span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        Hoàn thành: {done}
                                     </button>
-                                ))}
+                                    <button 
+                                        onClick={() => setCurrentFilter('in-progress')}
+                                        className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-bg-muted'} text-blue-600 dark:text-blue-400`}
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                        Đang thực hiện: {inProgress}
+                                    </button>
+                                    <button 
+                                        onClick={() => setCurrentFilter('all')}
+                                        className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors ${currentFilter === 'all' ? 'bg-bg-muted ring-1 ring-border' : 'hover:bg-bg-muted'} text-txt-muted`}
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-border" />
+                                        Chưa bắt đầu: {total - done - inProgress}
+                                    </button>
+                                    
+                                    <span className="text-gray-300 dark:text-slate-700">|</span>
+                                    
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded text-txt-primary">
+                                        Tổng cộng: {total}
+                                    </div>
+                                    
+                                    <span className="text-gray-300 dark:text-slate-700">|</span>
+                                    
+                                    <span className="text-xs font-black text-txt-primary bg-slate-50 dark:bg-slate-800 border border-border px-2 py-0.5 rounded-lg">{pct}%</span>
+                                </div>
                             </div>
-                            <span className="text-sm font-black text-txt-primary">{pct}%</span>
-                        </div>
-                        <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
-                            <div
-                                className="h-full rounded-full transition-all duration-700 ease-out"
-                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
-                            />
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold">
-                            <button 
-                                onClick={() => setCurrentFilter('completed')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-bg-muted'} text-emerald-600 dark:text-emerald-400`}
-                            >
-                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                Hoàn thành: {done}
-                            </button>
-                            <button 
-                                onClick={() => setCurrentFilter('in-progress')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-bg-muted'} text-blue-600 dark:text-blue-400`}
-                            >
-                                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                                Đang thực hiện: {inProgress}
-                            </button>
-                            <button 
-                                onClick={() => setCurrentFilter('all')}
-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-bg-muted ring-1 ring-border' : 'hover:bg-bg-muted'} text-txt-muted`}
-                            >
-                                <span className="w-2 h-2 rounded-full bg-border" />
-                                Chưa bắt đầu: {total - done - inProgress}
-                            </button>
-                            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-txt-secondary">
-                                Tổng cộng: {total}
+                            
+                            <div className="pt-1 pb-1">
+                                <HorizontalMilestoneTimeline progressPercent={pct} milestoneData={milestoneData} />
                             </div>
                         </div>
-                    </div>
-                );
-            })()}
+                    );
+                })()}
+
+            </div>
 
             {/* 2. Filter Bar */}
             <TaskFilterBar
@@ -792,187 +801,110 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 currentView={currentView}
                 onFilterChange={setCurrentFilter}
                 onViewChange={setCurrentView}
-                onAddTask={() => handleAddTask()}
+                onAdjustPlan={handleOpenPlanPanel}
                 onSearch={setSearchQuery}
                 searchQuery={searchQuery}
                 taskCounts={taskCounts}
                 currentUserId={currentUserId}
             />
 
-            {/* 3. Main Layout: Content + Sidebar */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Left: Main Content (3 cols) */}
-                <div className="lg:col-span-3 space-y-4">
-                    {currentView === 'wbs' && (
-                        <ProjectPlanWBSView
-                            phases={DECREE_175_PHASES}
-                            tasks={tasks}
-                            filteredTasks={filteredTasks}
-                            projectID={projectID ?? ''}
-                            groupCode={groupCode}
-                            getGroupLabel={getGroupLabel}
-                            expandedPhases={expandedPhases}
-                            stepAggregates={stepAggregates}
-                            bulkCreatingAll={bulkCreatingAll}
-                            isDeletingAll={isDeletingAll}
-                            deleteConfirmStep={deleteConfirmStep}
-                            employeeNameMap={employeeNameMap}
-                            uploadingTaskId={uploadingTaskId}
-                            attachmentCounts={attachmentCounts}
-                            deletingTaskId={deletingTaskId}
-                            onTogglePhase={togglePhase}
-                            onSetExpandedPhases={setExpandedPhases}
-                            onDeleteAllTasks={handleDeleteAllTasks}
-                            onOpenPlanModal={(trigger, title, desc) => {
-                                openPanel({
-                                    title: 'Thiết lập kế hoạch tổng thể',
-                                    icon: <ListPlus className="w-5 h-5 text-emerald-500" />,
-                                    component: (
-                                        <CreateMasterPlanPanel
-                                            project={project}
-                                            hasExistingTasks={tasks.length > 0}
-                                            onClose={() => closePanel()}
-                                            onSuccess={() => {
-                                                showToast('✅ Đã thiết lập kế hoạch tổng thể thành công', 'success');
-                                                queryClient.invalidateQueries({ queryKey: taskKeys.all });
-                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
-                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
-                                            }}
-                                        />
-                                    )
-                                });
-                            }}
-                            onAddTask={(stepName, stepCode) => {
-                                setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
-                                setEditingTask({} as Task);
-                                setIsTaskModalOpen(true);
-                            }}
-                            onEditTask={handleEditTask}
-                            onQuickStatusChange={handleQuickStatusChange}
-                            onDeleteTask={handleDeleteTask}
-                            onSetPendingUploadTaskId={setPendingUploadTaskId}
-                            onStepClick={handleStepClick}
-                            expandedMasterTasks={expandedMasterTasks}
-                            onToggleMasterTask={toggleMasterTask}
-                            fileInputRef={fileInputRef}
-                            navigate={navigate}
-                            queryClient={queryClient}
-                        />
-                    )}
+            {/* 3. Main Layout: Full Width Content */}
+            <div className="w-full space-y-4">
+                {currentView === 'wbs' && (
+                    <ProjectPlanWBSView
+                        phases={DECREE_175_PHASES}
+                        tasks={tasks}
+                        filteredTasks={filteredTasks}
+                        projectID={projectID ?? ''}
+                        groupCode={groupCode}
+                        getGroupLabel={getGroupLabel}
+                        expandedPhases={expandedPhases}
+                        stepAggregates={stepAggregates}
+                        bulkCreatingAll={bulkCreatingAll}
+                        isDeletingAll={isDeletingAll}
+                        deleteConfirmStep={deleteConfirmStep}
+                        employeeNameMap={employeeNameMap}
+                        uploadingTaskId={uploadingTaskId}
+                        attachmentCounts={attachmentCounts}
+                        deletingTaskId={deletingTaskId}
+                        onTogglePhase={togglePhase}
+                        onSetExpandedPhases={setExpandedPhases}
+                        onDeleteAllTasks={handleDeleteAllTasks}
+                        onDeletePlan={handleDeletePlan}
+                        onOpenPlanModal={(trigger, title, desc) => {
+                            handleOpenPlanPanel();
+                        }}
+                        onAddTask={(stepName, stepCode) => {
+                            setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
+                            setEditingTask({} as Task);
+                            setIsTaskModalOpen(true);
+                        }}
+                        onEditTask={handleEditTask}
+                        onQuickStatusChange={handleQuickStatusChange}
+                        onDeleteTask={handleDeleteTask}
+                        onSetPendingUploadTaskId={setPendingUploadTaskId}
+                        onStepClick={handleStepClick}
+                        expandedMasterTasks={expandedMasterTasks}
+                        onToggleMasterTask={toggleMasterTask}
+                        fileInputRef={fileInputRef}
+                        navigate={navigate}
+                        queryClient={queryClient}
+                    />
+                )}
 
-                    {currentView === 'gantt' && (
-                        <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-                            <div className="px-4 py-3 border-b border-border bg-bg-muted flex justify-between items-center">
-                                <h4 className="font-bold text-txt-primary text-xs uppercase flex items-center gap-2">
-                                    <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
-                                </h4>
-                                <span className="text-[10px] text-txt-muted font-normal normal-case">
-                                    * Hiển thị tiến độ theo các bước quy trình và công việc tương ứng
-                                </span>
-                            </div>
-                            <div className="p-4">
-                                {tasks.length > 0 ? (
-                                    <ProjectGanttChart 
-                                        tasks={tasks} 
-                                        phases={DECREE_175_PHASES}
-                                        projectStartDate={project?.StartDate}
-                                    />
-                                ) : (
-                                    <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
-                                        Chưa có công việc nào được tạo. Hãy thiết lập kế hoạch tổng thể hoặc thêm công việc.
-                                    </div>
-                                )}
-                            </div>
+                {currentView === 'gantt' && (
+                    <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+                        <div className="px-4 py-3 border-b border-border bg-bg-muted flex justify-between items-center">
+                            <h4 className="font-bold text-txt-primary text-xs uppercase flex items-center gap-2">
+                                <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
+                            </h4>
+                            <span className="text-[10px] text-txt-muted font-normal normal-case">
+                                * Hiển thị tiến độ theo các bước quy trình và công việc tương ứng
+                            </span>
                         </div>
-                    )}
-
-                    {currentView === 'kanban' && (
-                        <KanbanBoardView
-                            tasks={filteredTasks}
-                            onTaskClick={handleEditTask}
-                            onStatusChange={handleStatusChange}
-                            onAddTask={(status) => {
-                                setSelectedStep(null);
-                                setEditingTask({ Status: status } as Task);
-                                setIsTaskModalOpen(true);
-                            }}
-                        />
-                    )}
-
-                    {currentView === 'resource' && (
-                        <ResourceAllocationView
-                            tasks={filteredTasks}
-                            employees={employees}
-                            onTaskClick={handleEditTask}
-                        />
-                    )}
-                </div>
-
-                {/* Right: Sidebar (1 col) */}
-                <div className="lg:col-span-1">
-                    <div className="sticky top-4 space-y-4">
-
-                        {/* Project Health Score */}
-                        {(() => {
-                            const total = tasks.length;
-                            if (total === 0) return null;
-
-                            const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
-                            const today = new Date(); today.setHours(0, 0, 0, 0);
-                            const overdue = tasks.filter(t => {
-                                if (t.Status === TaskStatus.Done || !t.DueDate) return false;
-                                const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
-                                return d < today;
-                            }).length;
-                            const assigned = tasks.filter(t => t.AssigneeID || (t.Assignees && t.Assignees.length > 0)).length;
-
-                            // Score calculation (0-100)
-                            const completionScore = (done / total) * 30;
-                            const onTimeScore = ((total - overdue) / total) * 30;
-                            const assignedScore = (assigned / total) * 20;
-                            const hasProgress = tasks.filter(t => (t.ProgressPercent || 0) > 0 || t.Status === TaskStatus.Done).length;
-                            const progressScore = (hasProgress / total) * 20;
-                            const score = Math.round(completionScore + onTimeScore + assignedScore + progressScore);
-
-                            const getScoreInfo = (s: number) => {
-                                if (s >= 80) return { emoji: '🟢', label: 'Tốt', color: 'text-emerald-600', bg: 'bg-emerald-500' };
-                                if (s >= 60) return { emoji: '🟡', label: 'Trung bình', color: 'text-primary-600', bg: 'bg-primary-500' };
-                                if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-warning-600', bg: 'bg-warning-500' };
-                                return { emoji: '🔴', label: 'Rủi ro cao', color: 'text-red-600', bg: 'bg-red-500' };
-                            };
-                            const info = getScoreInfo(score);
-
-                            return (
-                                <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm">
-                                    <h4 className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3">
-                                        Sức khỏe dự án
-                                    </h4>
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <span className="text-3xl">{info.emoji}</span>
-                                        <div>
-                                            <span className={`text-2xl font-black ${info.color}`}>{score}</span>
-                                            <span className="text-sm text-txt-muted">/100</span>
-                                            <p className={`text-xs font-semibold ${info.color}`}>{info.label}</p>
-                                        </div>
-                                    </div>
-                                    {/* Score bar */}
-                                    <div className="h-2 bg-bg-muted rounded-full overflow-hidden mb-3">
-                                        <div className={`h-full ${info.bg} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
-                                    </div>
-                                    {/* Breakdown */}
-                                    <div className="space-y-1.5 text-[10px] text-txt-secondary">
-                                        <div className="flex justify-between"><span>Hoàn thành ({done}/{total})</span><span className="font-bold">{Math.round(completionScore)}/30</span></div>
-                                        <div className="flex justify-between"><span>Đúng hạn ({total - overdue}/{total})</span><span className="font-bold">{Math.round(onTimeScore)}/30</span></div>
-                                        <div className="flex justify-between"><span>Có tiến độ</span><span className="font-bold">{Math.round(progressScore)}/20</span></div>
-                                        <div className="flex justify-between"><span>Đã phân công</span><span className="font-bold">{Math.round(assignedScore)}/20</span></div>
-                                    </div>
+                        <div className="p-4">
+                            {DECREE_175_PHASES.some(p => p.items.length > 0) || tasks.length > 0 ? (
+                                <ProjectGanttChart
+                                    tasks={tasks}
+                                    phases={DECREE_175_PHASES}
+                                    projectStartDate={project?.StartDate}
+                                />
+                            ) : (
+                                <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
+                                    Chưa có kế hoạch tổng thể. Hãy tạo kế hoạch dự án trước.
                                 </div>
-                            );
-                        })()}
-
-                        <MilestoneTimeline milestoneData={milestoneData} />
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {currentView === 'kanban' && (
+                    <KanbanBoardView
+                        tasks={filteredTasks}
+                        onTaskClick={handleEditTask}
+                        onStatusChange={handleStatusChange}
+                        onAddTask={(status) => {
+                            setSelectedStep(null);
+                            setEditingTask({ Status: status } as Task);
+                            setIsTaskModalOpen(true);
+                        }}
+                    />
+                )}
+
+                {currentView === 'resource' && (
+                    <ResourceAllocationView
+                        tasks={filteredTasks}
+                        employees={employees}
+                        onTaskClick={handleEditTask}
+                    />
+                )}
+
+                {currentView === 'raci' && (
+                    <ProjectRaciMatrixView
+                        steps={projectSteps}
+                        onRefresh={invalidateProjectSteps}
+                    />
+                )}
             </div>
 
             <ProjectTaskModal

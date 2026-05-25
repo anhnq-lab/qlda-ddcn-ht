@@ -1,18 +1,23 @@
+/**
+ * useStepAggregates — Tính status, date range, tiến độ cho từng bước.
+ *
+ * Sau refactor 24/05/2026:
+ *   - Dùng isTaskInStep() từ lib/progressCalculator — ưu tiên FK match (MonthlyPlanItemID)
+ *     trước, fallback sang stepCode (semantic string)
+ *   - Dùng calcStepAggregate() thay inline logic — single source of truth
+ */
 import { useMemo } from 'react';
 import { Task, TaskStatus } from '@/types';
+import { calcStepAggregate, isTaskInStep } from '@/lib/progressCalculator';
+import type { StepLikeAggregate } from '@/lib/progressCalculator';
 
-export interface StepAggregate {
-    status: TaskStatus;
-    startDate: string | null;
-    dueDate: string | null;
-    childCount: number;
-    progress: number;
-}
+export type StepAggregate = StepLikeAggregate;
 
 interface PhaseItem {
     id: string;
-    code: string;
+    code: string;       // MPI step ID (useProjectSteps) hoặc workflow_node_id (useWorkflowPhases)
     title: string;
+    stepCode?: string | null;  // Semantic step_code — dùng làm fallback trong isTaskInStep
 }
 
 interface Phase {
@@ -22,8 +27,12 @@ interface Phase {
 }
 
 /**
- * Hook tách logic tính toán step aggregates từ ProjectPlanTab.
- * Tính status, date range, progress trung bình cho mỗi bước.
+ * Tính aggregate cho tất cả steps trong tất cả phases.
+ * Trả về Map<stepCode, StepAggregate> — key = item.code.
+ *
+ * Matching priority (theo isTaskInStep):
+ *  1. task.MonthlyPlanItemID === item.code (FK — chính xác, tasks mới)
+ *  2. compareStepCode(task.StepCode, item.stepCode) (semantic — tasks cũ / legacy)
  */
 export function useStepAggregates(filteredTasks: Task[], phases: Phase[]) {
     return useMemo(() => {
@@ -31,35 +40,29 @@ export function useStepAggregates(filteredTasks: Task[], phases: Phase[]) {
         const allItems = phases.flatMap(p => p.items);
 
         allItems.forEach(item => {
-            const children = filteredTasks.filter(t => {
-                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
-                const iCode = (item.code || '').toLowerCase().trim();
-                return tTimelineStep === iCode;
-            });
+            // item.stepCode is set by useProjectSteps (semantic string).
+            // When item.stepCode is absent (useWorkflowPhases, template-based), fall back to
+            // item.code itself as the legacy TimelineStep/StepCode match target so that
+            // the old workflow_node_id comparison still works during the Phase 4 transition.
+            const stepDef = {
+                id: item.code,
+                code: item.stepCode ?? item.code,
+            };
+            const children = filteredTasks.filter(t => isTaskInStep(t, stepDef));
+
             if (children.length === 0) {
-                map.set(item.code, { status: TaskStatus.Todo, startDate: null, dueDate: null, childCount: 0, progress: 0 });
+                map.set(item.code, {
+                    status: TaskStatus.Todo,
+                    startDate: null,
+                    dueDate: null,
+                    childCount: 0,
+                    progress: 0,
+                    completionPercent: 0,
+                });
                 return;
             }
 
-            const allDone = children.every(t => t.Status === TaskStatus.Done);
-            const anyActive = children.some(t =>
-                t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Done || t.Status === TaskStatus.Review
-            );
-
-            let status = TaskStatus.Todo;
-            if (allDone) status = TaskStatus.Done;
-            else if (anyActive) status = TaskStatus.InProgress;
-
-            const startDates = children.map(t => new Date(t.StartDate || t.DueDate).getTime()).filter(t => !isNaN(t));
-            const dueDates = children.map(t => new Date(t.DueDate).getTime()).filter(t => !isNaN(t));
-
-            const minStart = startDates.length > 0 ? new Date(Math.min(...startDates)).toISOString() : null;
-            const maxDue = dueDates.length > 0 ? new Date(Math.max(...dueDates)).toISOString() : null;
-
-            const totalProgress = children.reduce((sum, t) => sum + (t.ProgressPercent || (t.Status === TaskStatus.Done ? 100 : 0)), 0);
-            const avgProgress = Math.round(totalProgress / children.length);
-
-            map.set(item.code, { status, startDate: minStart, dueDate: maxDue, childCount: children.length, progress: avgProgress });
+            map.set(item.code, calcStepAggregate(children));
         });
 
         return map;

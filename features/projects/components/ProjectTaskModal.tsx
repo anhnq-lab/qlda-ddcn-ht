@@ -158,12 +158,12 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         return false;
     };
 
-    const currentStepCode = stepCode || formData.TimelineStep;
-    const parentStepTask = allTasks.find(t => 
-        t.TimelineStep === currentStepCode && 
+    const currentStepCode = stepCode || formData.StepCode;
+    const parentStepTask = allTasks.find(t =>
+        t.StepCode === currentStepCode &&
         (t.Metadata?.assignee_role || (t as any)?.metadata?.assignee_role)
     );
-    const parentDeptCode = parentStepTask 
+    const parentDeptCode = parentStepTask
         ? (parentStepTask.Metadata?.assignee_role || (parentStepTask as any)?.metadata?.assignee_role)
         : null;
 
@@ -179,8 +179,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const project = projects.find(p => p.ProjectID === formData.ProjectID);
     const { openPanel } = useSlidePanel();
 
-// Fetch workflow step info for TimelineStep
-    const timelineStep = formData.TimelineStep;
+    // Step info for template export
+    const timelineStep = formData.StepCode;
 
     useEffect(() => {
         if (isOpen) {
@@ -201,7 +201,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await onSubmit({ ...formData, TimelineStep: stepCode || formData.TimelineStep });
+            await onSubmit({ ...formData, StepCode: stepCode || formData.StepCode });
             if (isEditMode) {
                 // Stay open in edit mode, show save feedback
                 setSaveSuccess(true);
@@ -222,9 +222,9 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const priorityCfg = getPriorityConfig(formData.Priority as TaskPriority);
     const progress = formData.ProgressPercent || (formData.Status === TaskStatus.Done ? 100 : 0);
     const isOverdue = formData.Status !== TaskStatus.Done && formData.DueDate && new Date(formData.DueDate) < new Date();
-    const stepLabel = getTimelineStepLabel(formData.TimelineStep);
-    const phaseColor = getPhaseColor(formData.TimelineStep);
-    const templates = isEditMode ? getTaskTemplates(formData.TimelineStep, formData.Title) : [];
+    const stepLabel = getTimelineStepLabel(formData.StepCode);
+    const phaseColor = getPhaseColor(formData.StepCode);
+    const templates = isEditMode ? getTaskTemplates(formData.StepCode, formData.Title) : [];
     const assignee = employees.find(e => e.EmployeeID === formData.AssigneeID);
 
     // ── File upload ──
@@ -365,7 +365,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <button key="back" type="button" onClick={() => {
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.Todo, ProgressPercent: 0, ActualStartDate: '', ActualEndDate: '' };
                                                 setFormData(updates);
-                                                onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
+                                                onSubmit({ ...updates, StepCode: stepCode || updates.StepCode });
                                             }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
                                                 ← Chưa bắt đầu
                                             </button>
@@ -376,7 +376,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <button key="back" type="button" onClick={() => {
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.InProgress, ProgressPercent: 90, ActualEndDate: '' };
                                                 setFormData(updates);
-                                                onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
+                                                onSubmit({ ...updates, StepCode: stepCode || updates.StepCode });
                                             }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 rounded-lg transition-all">
                                                 ← Trả lại
                                             </button>
@@ -390,7 +390,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <button key="start" type="button" onClick={() => {
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.InProgress, ProgressPercent: 25, ActualStartDate: todayISO() };
                                                 setFormData(updates);
-                                                onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
+                                                onSubmit({ ...updates, StepCode: stepCode || updates.StepCode });
                                             }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-primary-500 hover:bg-primary-600 rounded-lg shadow-sm shadow-primary-500/25 transition-all active:scale-[0.97]">
                                                 Bắt đầu thực hiện →
                                             </button>
@@ -401,7 +401,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <button key="report" type="button" onClick={() => {
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.Review, ProgressPercent: 100 };
                                                 setFormData(updates);
-                                                onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
+                                                onSubmit({ ...updates, StepCode: stepCode || updates.StepCode });
                                             }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-warning-500 hover:bg-warning-600 rounded-lg shadow-sm shadow-warning-500/25 transition-all active:scale-[0.97] animate-pulse">
                                                 📋 Báo cáo hoàn thành →
                                             </button>
@@ -413,7 +413,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 const updates: Partial<Task> = { ...formData, Status: TaskStatus.Done, ProgressPercent: 100, ActualEndDate: todayISO() };
                                                 if (!formData.ActualStartDate) updates.ActualStartDate = todayISO();
                                                 setFormData(updates);
-                                                onSubmit({ ...updates, TimelineStep: stepCode || updates.TimelineStep });
+                                                onSubmit({ ...updates, StepCode: stepCode || updates.StepCode });
                                             }} className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg shadow-sm shadow-emerald-500/25 transition-all active:scale-[0.97]">
                                                 ✅ Duyệt hoàn thành
                                             </button>
@@ -936,8 +936,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                     templatePath={activeExportTemplate.templatePath}
                     templateLabel={activeExportTemplate.name}
                     project={project || null}
-                    stepTitle={formData.TimelineStep ? getTimelineStepLabel(formData.TimelineStep) : undefined}
-                    stepCode={formData.TimelineStep}
+                    stepTitle={formData.StepCode ? getTimelineStepLabel(formData.StepCode) : undefined}
+                    stepCode={formData.StepCode}
                 />
             )}
         </>

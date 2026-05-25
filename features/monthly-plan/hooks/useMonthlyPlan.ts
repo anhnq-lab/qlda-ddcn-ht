@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { supabase } from '../../../lib/supabase';
 import { MonthlyPlanService, MonthlyPlanItemService } from '../../../services/PlanService';
+import { ProjectStepsService } from '../../../services/ProjectStepsService';
+import type { ProjectStep } from '../../../services/ProjectStepsService';
 import {
     MonthlyPlan, MonthlyPlanItem, MonthlyTaskStatus,
     DepartmentCode, DEPARTMENT_NAMES, MonthlyReportSummary,
@@ -18,16 +21,21 @@ export function useMonthlyPlan() {
     const [month, setMonth] = useState(CURRENT_DATE.getMonth() + 1);
     const [year, setYear] = useState(CURRENT_DATE.getFullYear());
     const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
-    
+
     const [currentPlan, setCurrentPlan] = useState<MonthlyPlan | null>(null);
     const [items, setItems] = useState<MonthlyPlanItem[]>([]);
     const [summaries, setSummaries] = useState<MonthlyReportSummary[]>([]);
-    
+
     const [loading, setLoading] = useState(false);
     const [exporting, setExporting] = useState(false);
     const [seedLoading, setSeedLoading] = useState(false);
-    const [seedProjectLoading, setSeedProjectLoading] = useState(false);
     const [seedResult, setSeedResult] = useState<{ count: number; source: string; show: boolean } | null>(null);
+
+    // ── Step Picker (Sinh KH tháng từ các bước dự án) ──────────────
+    const [stepPickerOpen, setStepPickerOpen] = useState(false);
+    const [stepPickerSteps, setStepPickerSteps] = useState<ProjectStep[]>([]);
+    const [stepPickerLoading, setStepPickerLoading] = useState(false);
+    const [scheduleLoading, setScheduleLoading] = useState(false);
 
     const { data: employees = [] } = useEmployees();
     const { currentUser } = useAuth();
@@ -86,37 +94,57 @@ export function useMonthlyPlan() {
         }
     };
 
-    const handleSeedFromProject = async () => {
+    /**
+     * "Sinh từ dự án" — mở Step Picker để user chọn bước muốn đưa vào KH tháng.
+     * Load tất cả project_steps của các dự án phù hợp với phòng/tháng.
+     */
+    const handleOpenStepPicker = async () => {
         if (!currentPlan) return;
-        if (deptEmployeeIds.length === 0) {
-            alert(`Không tìm thấy nhân viên thuộc phòng ${activeDept}. Vui lòng kiểm tra cấu hình phòng ban.`);
-            return;
-        }
-        if (!confirm(
-            `Sinh nhiệm vụ từ công việc dự án đang chạy cho tháng ${month}/${year}?\n` +
-            `Tiêu chí: công việc có hạn trong tháng AND giao cho nhân viên thuộc phòng ${activeDept}.\n\n` +
-            `(Không tạo trùng nếu đã sinh rồi.)`
-        )) return;
+        setStepPickerLoading(true);
+        setStepPickerOpen(true);
+        try {
+            // Lấy tất cả project_steps chưa lên KH của phòng hiện tại
+            const { data: stepsRaw, error } = await (supabase as any)
+                .from('monthly_plan_items')
+                .select('*')
+                .eq('schedule_state', 'project_step')
+                .or(
+                    deptEmployeeIds.length > 0
+                        ? `assignee_role.eq.${activeDept},assignee_role.is.null`
+                        : 'assignee_role.is.null'
+                )
+                .order('step_order', { ascending: true });
 
-        setSeedProjectLoading(true);
+            if (error) throw error;
+            setStepPickerSteps((stepsRaw || []) as ProjectStep[]);
+        } catch (e) {
+            console.error(e);
+            alert('Không thể tải danh sách bước dự án. Vui lòng thử lại.');
+            setStepPickerOpen(false);
+        } finally {
+            setStepPickerLoading(false);
+        }
+    };
+
+    /**
+     * Đưa các steps đã chọn vào KH tháng hiện tại.
+     * Gọi sau khi user xác nhận trong StepPickerModal.
+     */
+    const handleScheduleSteps = async (selectedStepIds: string[]) => {
+        if (!currentPlan || selectedStepIds.length === 0) return;
+        setScheduleLoading(true);
         setSeedResult(null);
         try {
-            const result = await MonthlyPlanItemService.seedFromProjectTasks(
-                currentPlan.id,
-                month,
-                year,
-                activeDept,
-                deptEmployeeIds,
-                currentUser?.EmployeeID
-            );
-            setSeedResult({ count: result.inserted.length, source: 'dự án', show: true });
+            const result = await ProjectStepsService.scheduleToMonth(selectedStepIds, currentPlan.id);
+            setSeedResult({ count: result.scheduled, source: 'dự án', show: true });
             setTimeout(() => setSeedResult(null), 4000);
+            setStepPickerOpen(false);
             await loadPlan();
         } catch (e) {
             console.error(e);
-            alert('Có lỗi khi sinh từ dự án. Vui lòng thử lại.');
+            alert('Có lỗi khi đưa bước vào KH tháng. Vui lòng thử lại.');
         } finally {
-            setSeedProjectLoading(false);
+            setScheduleLoading(false);
         }
     };
 
@@ -133,8 +161,8 @@ export function useMonthlyPlan() {
 
     const sortedItems = useMemo(() => {
         return [...items].sort((a, b) => {
-            const gA = a.group_name || 'Công việc khác';
-            const gB = b.group_name || 'Công việc khác';
+            const gA = a.source_type || 'manual';
+            const gB = b.source_type || 'manual';
             if (gA !== gB) return gA.localeCompare(gB);
             return (a.task_name || '').localeCompare(b.task_name || '');
         });
@@ -144,13 +172,20 @@ export function useMonthlyPlan() {
         state: {
             viewMode, month, year, activeDept, currentPlan,
             items, summaries, loading, exporting,
-            seedLoading, seedProjectLoading, seedResult,
-            sortedItems
+            seedLoading, seedResult,
+            sortedItems,
+            // Step picker
+            stepPickerOpen, stepPickerSteps, stepPickerLoading, scheduleLoading,
         },
         actions: {
             setViewMode, setMonth, setYear, setActiveDept,
             setExporting, loadPlan,
-            handleSeedFromAnnual, handleSeedFromProject,
+            handleSeedFromAnnual,
+            // Step picker actions
+            handleOpenStepPicker,
+            handleScheduleSteps,
+            closeStepPicker: () => setStepPickerOpen(false),
+            // Legacy delete
             handleStatusChange, handleDelete
         }
     };

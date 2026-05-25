@@ -89,6 +89,7 @@ export const generateProjectTasks = (projectID: string, group: ProjectGroup, sta
         return {
             TaskID: `TASK-${projectID}-${stepCode}-${Math.floor(Math.random() * 1000)}`,
             ProjectID: projectID,
+            TaskType: 'project' as const,
             Title: title,
             Description: `Tự động tạo theo quy trình nhóm ${group}. Phụ trách bởi ${DEPARTMENTS[deptKey]}.`,
             Status: TaskStatus.Todo,
@@ -96,7 +97,7 @@ export const generateProjectTasks = (projectID: string, group: ProjectGroup, sta
             StartDate: start.toISOString(),
             DueDate: end.toISOString(),
             AssigneeID: DEPARTMENTS[deptKey], // Placeholder for Dept Name
-            TimelineStep: stepCode,
+            StepCode: stepCode,
             LegalBasis: legal,
             DurationDays: dur,
         } as Task;

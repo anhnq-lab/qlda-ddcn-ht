@@ -49,7 +49,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
 
     // Filter tasks for this step
     const linkedTasks = useMemo(() =>
-        tasks.filter(t => t.TimelineStep === item.code)
+        tasks.filter(t => t.ProjectPlanItemID === item.code || t.MonthlyPlanItemID === item.code || t.StepCode === item.code)
             .sort((a, b) => {
                 const dateA = a.StartDate ? new Date(a.StartDate).getTime() : (a.DueDate ? new Date(a.DueDate).getTime() : 0);
                 const dateB = b.StartDate ? new Date(b.StartDate).getTime() : (b.DueDate ? new Date(b.DueDate).getTime() : 0);
@@ -183,13 +183,13 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                 Thời gian
                             </div>
                             <div className="text-sm font-semibold text-blue-800 dark:text-blue-300">
-                                {stepAgg?.startDate
-                                    ? formatDate(stepAgg.startDate, { day: '2-digit', month: '2-digit' })
-                                    : '--/--'}
+                                {item.startDate
+                                    ? formatDate(item.startDate, { day: '2-digit', month: '2-digit' })
+                                    : (stepAgg?.startDate ? formatDate(stepAgg.startDate, { day: '2-digit', month: '2-digit' }) : '--/--')}
                                 {' → '}
-                                {stepAgg?.dueDate
-                                    ? formatDate(stepAgg.dueDate, { day: '2-digit', month: '2-digit' })
-                                    : '--/--'}
+                                {item.dueDate
+                                    ? formatDate(item.dueDate, { day: '2-digit', month: '2-digit' })
+                                    : (stepAgg?.dueDate ? formatDate(stepAgg.dueDate, { day: '2-digit', month: '2-digit' }) : '--/--')}
                             </div>
                         </div>
 

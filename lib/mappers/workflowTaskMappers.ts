@@ -60,24 +60,25 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         Metadata: metadata,
         
         // Fields from metadata or direct columns
-        DurationDays: metadata.estimatedDays || 10,
-        SubTasks: metadata.sub_tasks || [],
+        DurationDays: wt.duration_days || metadata.estimatedDays || 10,
+        SubTasks: [],  // ← Subtask đã bỏ sau refactor 24/05/2026
         Attachments: metadata.attachments || [],
         Dependencies: metadata.dependencies || [],
         EstimatedCost: Number(metadata.estimated_cost) || 0,
         ActualCost: Number(metadata.actual_cost) || 0,
-        MonthlyPlanItemID: wt.monthly_plan_item_id || metadata.monthly_plan_item_id || undefined,
+        MonthlyPlanItemID: wt.monthly_plan_item_id || undefined,
+        ProjectPlanItemID: wt.project_plan_step_id || wt.project_plan_item_id || undefined,
         ResponsibilityLevel: wt.responsibility_level || 'individual',
-        
+
         // Actual dates
         ActualStartDate: metadata.actualStartDate || wt.actual_start_date || '',
         ActualEndDate: metadata.actualEndDate || wt.actual_end_date || '',
-        
-        // Workflow/Step reference
-        TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || metadata.step_code || '',
-        StepCode: wt.step_code || metadata.step_code || wt.workflow_node_id || wt.node_id || '',
-        Phase: metadata.phase || (wt as any).workflow_nodes?.metadata?.phase || '',
-        LegalBasis: metadata.legalBasis || (wt as any).workflow_nodes?.metadata?.legalBasis || '',
+
+        // Step reference — dùng MonthlyPlanItemID (FK) để match step trong UI
+        // StepCode = step_code (string ngắn, semantic — legacy fallback)
+        StepCode: wt.step_code || metadata.step_code || '',
+        Phase: wt.phase || metadata.phase || (wt as any).workflow_nodes?.metadata?.phase || '',
+        LegalBasis: wt.legal_basis || metadata.legalBasis || (wt as any).workflow_nodes?.metadata?.legalBasis || '',
         IsCritical: metadata.isCritical || false,
     };
 };
@@ -114,22 +115,22 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         actual_end_date: task.ActualEndDate || null,
         assignee_id: task.AssigneeID && !isDepartmentCode(task.AssigneeID)
             ? task.AssigneeID : null,
-        workflow_node_id: task.TimelineStep || task.StepCode || null,
-        step_code: task.TimelineStep || task.StepCode || null,
+        step_code: task.StepCode || null,
         task_type: (cleanProjectId ? 'project' : 'internal') as any,
         monthly_plan_item_id: task.MonthlyPlanItemID || null,
+        project_plan_step_id: task.ProjectPlanItemID || null,
+        project_plan_item_id: task.ProjectPlanItemID || null,
         responsibility_level: task.ResponsibilityLevel || 'individual',
+        phase: (task as any).Phase || null,
+        legal_basis: (task as any).LegalBasis || null,
+        duration_days: task.DurationDays || null,
         metadata: {
             ui_status: task.Status,
-            step_code: task.TimelineStep || task.StepCode,
             priority: task.Priority,
-            description: task.Description,
-            sub_tasks: task.SubTasks,
             attachments: task.Attachments,
             dependencies: task.Dependencies,
             estimated_cost: (task as any).EstimatedCost,
             actual_cost: (task as any).ActualCost,
-            estimatedDays: task.DurationDays,
             assignee_role: task.AssigneeID && isDepartmentCode(task.AssigneeID)
                 ? task.AssigneeID : undefined,
         },

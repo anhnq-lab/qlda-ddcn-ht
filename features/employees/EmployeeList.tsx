@@ -13,6 +13,7 @@ import { getEmployeeColumns } from './components/EmployeeColumns';
 
 const OrgChartPage = lazy(() => import('../organization/OrgChartPage'));
 const EvaluationPage = lazy(() => import('../evaluation/EvaluationPage'));
+const AnnualEvaluationTab = lazy(() => import('../evaluation/components/AnnualEvaluationTab'));
 
 const SuspenseFallback = () => (
     <div className="flex items-center justify-center py-20">
@@ -66,6 +67,10 @@ const EmployeeList: React.FC = () => {
                     <ClipboardCheck className="w-4 h-4" />
                     Đánh giá xếp loại
                 </button>
+                <button onClick={() => setActiveTab('annual-evaluation')} className={tabClass('annual-evaluation')}>
+                    <Sparkles className="w-4 h-4" />
+                    Đánh giá cuối năm
+                </button>
             </div>
 
             {activeTab === 'org-chart' ? (
@@ -76,6 +81,12 @@ const EmployeeList: React.FC = () => {
                 <Suspense fallback={<SuspenseFallback />}>
                     <div className="-mt-6">
                         <EvaluationPage />
+                    </div>
+                </Suspense>
+            ) : activeTab === 'annual-evaluation' ? (
+                <Suspense fallback={<SuspenseFallback />}>
+                    <div className="-mt-6">
+                        <AnnualEvaluationTab />
                     </div>
                 </Suspense>
             ) : (

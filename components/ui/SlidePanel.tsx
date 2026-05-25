@@ -154,7 +154,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
             maxWidth: '100%',
         }
         : {
-            width: isTopPanel ? widthValue : `calc(50% - ${stackOffset}px)`,
+            width: widthValue,
             maxWidth: `calc(100% - ${stackOffset}px)`,
         };
 
@@ -169,7 +169,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
                 animate={{ opacity: isExiting ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
                 className={`absolute inset-0 transition-colors duration-200 ${isTopPanel
-                    ? 'bg-slate-900/20 dark:bg-slate-900/80 cursor-pointer'
+                    ? 'bg-black/2 dark:bg-black/10 cursor-pointer'
                     : 'bg-transparent pointer-events-none'
                     }`}
                 onClick={isTopPanel ? onClose : undefined}
@@ -527,7 +527,7 @@ export const SlidePanelContainer: React.FC<SlidePanelContainerProps> = ({ isSide
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isAllExiting ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
-                className={`absolute inset-0 bg-slate-900/20 dark:bg-slate-950 backdrop-blur-sm transition-colors duration-200`}
+                className={`absolute inset-0 bg-black/5 dark:bg-black/20 backdrop-blur-xs transition-colors duration-200`}
                 onClick={() => guardedClose()}
                 aria-hidden="true"
             />

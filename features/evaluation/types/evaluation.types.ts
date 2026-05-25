@@ -209,3 +209,32 @@ export const CLASSIFICATION_CONFIG = {
 };
 export function calcSelfTotal(f: EvaluationForm) { return getFormTotal(f,'self'); }
 export function calcManagerTotal(f: EvaluationForm) { const t=getFormTotal(f,'manager'); return t===-1?0:t; }
+
+// ─── Year-end Disbursement Performance Types ───────────────────
+export interface EmployeeDisbursementPerformance {
+    employee_id: string;
+    full_name: string;
+    department: string;
+    position: string;
+    role: string;
+    total_projects: number;
+    total_planned: number;
+    total_planned_adjusted: number;
+    total_disbursed: number;
+    raw_disbursement_rate: number;
+    adjusted_disbursement_rate: number;
+}
+
+export interface ProjectDisbursementDetail {
+    proj_id: string;
+    proj_name: string;
+    planned_amount: number;
+    planned_amount_adjusted: number;
+    actual_disbursed: number;
+    raw_rate: number;
+    adjusted_rate: number;
+    cleared_area: number;
+    total_area: number;
+    member_role: string;
+}
+

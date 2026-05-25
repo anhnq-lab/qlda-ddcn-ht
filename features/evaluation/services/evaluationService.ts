@@ -1,5 +1,5 @@
 import { supabase } from '../../../lib/supabase';
-import type { EvaluationForm, EvalScores, EvaluationStatus, FormType } from '../types/evaluation.types';
+import type { EvaluationForm, EvalScores, EvaluationStatus, FormType, EmployeeDisbursementPerformance, ProjectDisbursementDetail } from '../types/evaluation.types';
 import { DEFAULT_STAFF_SCORES, DEFAULT_LEADER_SCORES } from '../types/evaluation.types';
 
 // evaluation_forms chưa có trong generated Supabase types — dùng cast any
@@ -158,5 +158,25 @@ export const EvaluationService = {
             .eq('id', id)
             .eq('status', 'submitted');
         return { error: error?.message ?? null };
+    },
+
+    async getAllEmployeesDisbursementPerformance(year: number): Promise<{ data: EmployeeDisbursementPerformance[]; error: string | null }> {
+        const { data, error } = await sb
+            .rpc('get_all_employees_disbursement_adjusted', {
+                p_year: year
+            });
+        if (error) return { data: [], error: error.message };
+        return { data: (data ?? []) as EmployeeDisbursementPerformance[], error: null };
+    },
+
+    async getEmployeeProjectsDisbursementDetail(employeeId: string, year: number, isManager: boolean): Promise<{ data: ProjectDisbursementDetail[]; error: string | null }> {
+        const { data, error } = await sb
+            .rpc('get_employee_projects_disbursement_detail', {
+                p_employee_id: employeeId,
+                p_year: year,
+                p_is_manager: isManager
+            });
+        if (error) return { data: [], error: error.message };
+        return { data: (data ?? []) as ProjectDisbursementDetail[], error: null };
     },
 };

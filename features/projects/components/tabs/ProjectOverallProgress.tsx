@@ -1,16 +1,14 @@
 import React from 'react';
-import { Task, TaskStatus } from '@/types';
+import { Task } from '@/types';
+import { calcProgress } from '@/lib/progressCalculator';
 
 interface ProjectOverallProgressProps {
     tasks: Task[];
 }
 
 export const ProjectOverallProgress: React.FC<ProjectOverallProgressProps> = ({ tasks }) => {
-    const total = tasks.length;
-    const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
-    const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
-    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-    
+    const { total, done, inProgress, completionPercent: pct } = calcProgress(tasks);
+
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
             <div className="flex items-center justify-between mb-2">

@@ -73,6 +73,9 @@ export interface AnnualPlanItem {
     // Link dự án (nullable)
     project_id?: string;
 
+    // Link bước dự án cụ thể (nullable) — FK → project_plan_items.id
+    project_step_id?: string;
+
     // Nguồn gốc (nếu xuất từ KHTHDA)
     source_task_id?: string;
     source_type?: 'manual' | 'from_project_task';
@@ -111,6 +114,53 @@ export interface MonthlyPlan {
 
 export type MonthlyPlanInput = Omit<MonthlyPlan, 'id' | 'created_at' | 'updated_at' | 'items'>;
 
+// ─── Bước trong Kế hoạch dự án ───────────────────────────────
+
+export type ProjectPlanStatus = 'planned' | 'completed' | 'incomplete' | 'partial' | 'deferred';
+
+export interface ProjectPlanItem {
+    id: string;
+    project_id: string;
+
+    // Nguồn gốc workflow (optional)
+    workflow_id?: string;
+    workflow_node_id?: string;
+
+    // Phân loại & thứ tự
+    step_code?: string;
+    step_order: number;
+    phase?: 'preparation' | 'execution' | 'completion';
+
+    // Nội dung bước
+    task_name: string;
+    deliverable?: string;
+    legal_basis?: string;
+    output_document?: string;
+    assignee_role?: string;
+    collaborating_dept_codes?: DepartmentCode[];
+    collaborating_text?: string;
+
+    // Tiến độ
+    start_date?: string;
+    due_date?: string;
+    duration_days?: number;
+
+    // Trạng thái
+    status: ProjectPlanStatus;
+    completion_result?: string;
+    incomplete_reason?: string;
+    notes?: string;
+
+    sort_order: number;
+    created_by?: string;
+    created_at?: string;
+    updated_at?: string;
+
+    // Computed khi join với monthly_plan_items
+    is_scheduled?: boolean;
+    scheduled_monthly_plan_id?: string | null;
+}
+
 // ─── Nhiệm vụ trong KH tháng ──────────────────────────────────
 
 export interface MonthlyPlanItem {
@@ -119,15 +169,13 @@ export interface MonthlyPlanItem {
 
     // Links
     annual_plan_item_id?: string;
-    project_id?: string;
+    project_id?: string;            // Tự liên kết với dự án (user-facing, không phải project step)
 
     // Nguồn gốc (source tracking)
     source_task_id?: string;      // Task cấp phòng từ KHTHDA
     source_subtask_id?: string;   // Sub-task cấp cá nhân từ KHTHDA
-    source_type?: 'manual' | 'from_annual' | 'from_project_task' | 'from_subtask';
-
-    group_name?: string;
-    group_sort_order?: number;
+    source_project_plan_item_id?: string; // Bước từ KH dự án → FK project_plan_items.id
+    source_type?: 'manual' | 'from_annual' | 'from_project_task' | 'from_subtask' | 'project_step';
 
     task_name: string;
     deliverable?: string;
@@ -169,16 +217,16 @@ export function getStaffDisplay(item: MonthlyPlanItem): string {
 
 // Helper: source badge
 export const SOURCE_TYPE_CONFIG = {
-    manual:            { label: 'Thủ công', color: 'text-slate-500', bg: 'bg-slate-100',   icon: '✍️' },
-    from_annual:       { label: 'KH Khung',   color: 'text-blue-600',  bg: 'bg-blue-50',    icon: '📂' },
-    from_project_task: { label: 'Dự án',      color: 'text-violet-600',bg: 'bg-violet-50', icon: '📁' },
-    from_subtask:      { label: 'Dự án',      color: 'text-violet-600',bg: 'bg-violet-50', icon: '📁' },
+    manual:            { label: 'Thủ công',   color: 'text-slate-500',  bg: 'bg-slate-100',  icon: '✍️' },
+    from_annual:       { label: 'KH Khung',   color: 'text-blue-600',   bg: 'bg-blue-50',    icon: '📂' },
+    from_project_task: { label: 'Dự án',      color: 'text-violet-600', bg: 'bg-violet-50',  icon: '📁' },
+    from_subtask:      { label: 'Dự án',      color: 'text-violet-600', bg: 'bg-violet-50',  icon: '📁' },
+    project_step:      { label: 'Bước DA',    color: 'text-emerald-600',bg: 'bg-emerald-50', icon: '🗂️' },
 } as const;
 
-// Nhóm tasks theo group_name trong 1 tháng/phòng
+// Nhóm tasks theo phase trong 1 tháng/phòng
 export interface MonthlyPlanGroup {
-    group_name: string;
-    group_sort_order: number;
+    phase: string;
     items: MonthlyPlanItem[];
 }
 

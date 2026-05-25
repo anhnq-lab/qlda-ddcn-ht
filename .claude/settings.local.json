@@ -150,7 +150,8 @@
       "Bash(node scripts/fix-dark-opacity.mjs)",
       "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\\\\features\\\\projects\\\\components\\\\tabs\" -Type File)",
       "Bash(Select-Object -First 10)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000)"
     ]
   }
 }

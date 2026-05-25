@@ -11,7 +11,6 @@ import ComboboxSelect from '../../components/ui/ComboboxSelect';
 import Select from '../../components/ui/Select';
 import {
     useAnnualPlanItems,
-    useGroupSuggestions,
     useEmployeeOptions,
     useProjectOptions,
 } from '../../hooks/usePlanData';
@@ -41,16 +40,13 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
     // Data hooks
     const { options: annualOptions, items: annualItems, loading: annualLoading } =
         useAnnualPlanItems(year, departmentCode);
-    const groups = useGroupSuggestions(year);
     const { options: employeeOptions, loading: empLoading } = useEmployeeOptions();
     const { options: projectOptions, loading: projLoading } = useProjectOptions(projectSearch);
 
-    const groupOptions = groups.map(g => ({ value: g, label: g }));    const buildDefaultValues = useCallback((): MonthlyPlanItemFormInput => ({
+    const buildDefaultValues = useCallback((): MonthlyPlanItemFormInput => ({
         monthly_plan_id: monthlyPlanId,
         task_name: '',
         deliverable: '',
-        group_name: '',
-        group_sort_order: 0,
         deadline_note: `Tháng ${month}`,
         status: 'planned',
         completion_result: '',
@@ -77,7 +73,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
     const watchedCollaboratingDeptCodes = watch('collaborating_dept_codes') ?? [];
     const watchedAnnualItemId = watch('annual_plan_item_id');
     const watchedProjectId = watch('project_id');
-    const watchedGroupName = watch('group_name') ?? '';
     const watchedTaskName = watch('task_name') ?? '';
 
     // Danh sách phòng ban phối hợp (bỏ phòng đang active)
@@ -102,8 +97,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 monthly_plan_id: item.monthly_plan_id,
                 annual_plan_item_id: item.annual_plan_item_id,
                 project_id: item.project_id,
-                group_name: item.group_name ?? '',
-                group_sort_order: item.group_sort_order ?? 0,
                 task_name: item.task_name,
                 deliverable: item.deliverable ?? '',
                 deadline_note: item.deadline_note ?? `Tháng ${month}`,
@@ -126,7 +119,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                 defaults.annual_plan_item_id = initialAnnualPlanItem.id;
                 defaults.task_name = initialAnnualPlanItem.task_name;
                 defaults.deliverable = initialAnnualPlanItem.deliverable ?? '';
-                defaults.group_name = initialAnnualPlanItem.group_name ?? '';
                 defaults.project_id = initialAnnualPlanItem.project_id ?? undefined;
                 defaults.collaborating_dept_codes = initialAnnualPlanItem.collaborating_dept_codes ?? [];
                 defaults.collaborating_text = initialAnnualPlanItem.collaborating_text ?? '';
@@ -141,7 +133,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
             setValue('annual_plan_item_id', value);
             if (!watchedTaskName) setValue('task_name', found.task_name);
             if (!watch('deliverable') && found.deliverable) setValue('deliverable', found.deliverable);
-            if (!watchedGroupName && found.group_name) setValue('group_name', found.group_name);
         } else {
             setValue('annual_plan_item_id', value);
         }
@@ -301,18 +292,6 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                         })}
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="field-label">Nhóm công việc</label>
-                                    <ComboboxSelect
-                                        options={groupOptions}
-                                        value={watchedGroupName}
-                                        onChange={(val) => setValue('group_name', val)}
-                                        placeholder="Chọn hoặc nhập nhóm mới..."
-                                        allowCustom
-                                        clearable={false}
-                                    />
-                                </div>
-
                                 <div>
                                     <label className="field-label">
                                         Nội dung nhiệm vụ <span className="text-red-500">*</span>

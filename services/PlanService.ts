@@ -141,8 +141,6 @@ export const AnnualPlanService = {
                 plan_year: year,
                 department_code: deptCode,
                 department_name: deptName,
-                group_name: t.phase ?? 'Công việc dự án',
-                group_sort_order: 0,
                 task_name: t.title,
                 deliverable: t.description ?? null,
                 start_period: t.start_date ? `Tháng ${new Date(t.start_date).getMonth() + 1}` : null,
@@ -223,7 +221,6 @@ export const MonthlyPlanService = {
             .from('monthly_plan_items')
             .select('*, annual_plan_item:annual_plan_items(*)')
             .eq('monthly_plan_id', id)
-            .order('group_sort_order')
             .order('sort_order');
         if (itemsErr) throw itemsErr;
 
@@ -280,10 +277,10 @@ export const MonthlyPlanItemService = {
             .not('annual_plan_item_id', 'is', null);
         const existingIds = new Set((existing ?? []).map((e: any) => e.annual_plan_item_id));
 
-        // 3. Lọc và map items cần sinh
-        const toInsert: MonthlyPlanItemInput[] = (annualItems ?? [])
+        // 3. Lọc items theo tần suất và tháng hiện tại
+        const filteredIds: string[] = (annualItems ?? [])
             .filter((item: any) => {
-                // Bỏ qua nếu đã được seed rồi
+                // Bỏ qua nếu đã được seed rồi (tránh trùng khi bấm nhiều lần)
                 if (existingIds.has(item.id)) return false;
 
                 // Luôn thêm task hàng tháng và hàng ngày
@@ -302,153 +299,126 @@ export const MonthlyPlanItemService = {
                 // as_needed: không tự sinh, người dùng thêm thủ công
                 return false;
             })
-            .map((item: any, idx: number) => ({
-                monthly_plan_id: monthlyPlanId,
-                annual_plan_item_id: item.id,
-                project_id: item.project_id ?? null,
-                group_name: item.group_name ?? null,
-                group_sort_order: item.group_sort_order ?? 0,
-                task_name: item.task_name,
-                deliverable: item.deliverable ?? null,
-                deadline_note: `Tháng ${month}`,
-                collaborating_dept_codes: item.collaborating_dept_codes ?? [],
-                collaborating_text: item.collaborating_text ?? null,
-                status: 'planned' as MonthlyTaskStatus,
-                sort_order: idx,
-            }));
+            .map((item: any) => item.id);
 
-        if (toInsert.length === 0) return [];
+        if (filteredIds.length === 0) return [];
 
-        const { data, error: insertErr } = await supabase
+        // 4. Gọi RPC seed_monthly_from_annual — xử lý cả 2 trường hợp:
+        //    - annual_item có project_step_id → INSERT MPI với source_project_plan_item_id
+        //    - annual_item không có project_step_id → INSERT MPI bình thường (source_type='from_annual')
+        const { error: rpcErr } = await supabase.rpc('seed_monthly_from_annual', {
+            p_annual_item_ids: filteredIds,
+            p_monthly_plan_id: monthlyPlanId,
+            p_created_by: null,
+        });
+        if (rpcErr) throw rpcErr;
+
+        // 5. Trả về các items vừa sinh (để caller hiển thị toast)
+        const { data: newItems } = await supabase
             .from('monthly_plan_items')
-            .insert(toInsert)
-            .select();
-        if (insertErr) throw insertErr;
-        return data as MonthlyPlanItem[];
+            .select('*')
+            .eq('monthly_plan_id', monthlyPlanId)
+            .in('annual_plan_item_id', filteredIds);
+        return (newItems ?? []) as MonthlyPlanItem[];
     },
 
     /**
-     * Sinh nhiệm vụ KH tháng từ sub-tasks (cấp cá nhân) của KHTHDA dự án.
-     * Tiêu chí: due_date trong tháng AND assignee thuộc phòng đang lập KH.
-     * Hỗ trợ nhiều người thực hiện (staff_ids[]).
-     * Không tạo trùng nếu đã seed rồi (kiểm tra source_subtask_id).
+     * Sinh KH tháng từ "bước dự án" — sử dụng bảng project_plan_items.
+     *
+     * Logic:
+     *   1. Tìm tasks có project_plan_item_id (tức task thuộc bước KH dự án),
+     *      có hạn trong tháng AND giao cho phòng đang lập KH.
+     *   2. Lấy các project_plan_items tương ứng chưa có trong KH tháng này.
+     *   3. Gọi RPC schedule_project_steps_to_month → INSERT MPI với source_project_plan_item_id.
      */
     async seedFromProjectTasks(
         monthlyPlanId: string,
         month: number,
         year: number,
         deptCode: string,
-        deptEmployeeIds: string[],  // Danh sách EmployeeID thuộc phòng này
-        createdBy?: string
+        deptEmployeeIds: string[],
+        _createdBy?: string
     ): Promise<{ inserted: MonthlyPlanItem[]; skipped: number }> {
-        // Khoảng ngày của tháng
         const startOfMonth = `${year}-${String(month).padStart(2, '0')}-01`;
-        const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0]; // Ngày cuối tháng
+        const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
-        // 1. Lấy tất cả tasks dự án có due_date trong tháng
-        let query = supabase
-            .from('tasks')
-            .select('id, parent_id, title, description, project_id, assignee_id, due_date, start_date, phase, step_code, metadata, status, actual_end_date')
-            .eq('task_type', 'project')
-            .gte('due_date', startOfMonth)
-            .lte('due_date', endOfMonth);
-
-        const { data: subtasksRaw, error } = await query.order('due_date');
-        if (error) throw error;
-        if (!subtasksRaw || subtasksRaw.length === 0) return { inserted: [], skipped: 0 };
-
-        // Helper so khớp phòng ban thông minh
         const isDeptMatch = (assigneeRole: string | undefined | null): boolean => {
             if (!assigneeRole) return false;
             const roleLower = assigneeRole.toLowerCase();
             const codeLower = deptCode.toLowerCase();
-            
             if (roleLower.includes(codeLower)) return true;
-            
             const deptName = DEPARTMENT_NAMES[deptCode as DepartmentCode] || '';
-            const deptNameLower = deptName.toLowerCase();
-            const cleanDeptName = deptNameLower.replace('phòng ', '').trim();
+            const cleanDeptName = deptName.toLowerCase().replace('phòng ', '').trim();
             if (cleanDeptName && roleLower.includes(cleanDeptName)) return true;
-            
             if (codeLower === 'hcth' && (roleLower.includes('hành chính') || roleLower.includes('tổng hợp'))) return true;
-            if (codeLower === 'khtv' && (roleLower.includes('kế hoạch') || roleLower.includes('tài vụ') || roleLower.includes('tài chính'))) return true;
-            if (codeLower === 'qlda' && (roleLower.includes('quản lý dự án') || roleLower.includes('chuyên viên qlda'))) return true;
-            if (codeLower === 'dtdn' && (roleLower.includes('đấu thầu') || roleLower.includes('đề án'))) return true;
-            
+            if (codeLower === 'khdt' && (roleLower.includes('kế hoạch') || roleLower.includes('đấu thầu'))) return true;
+            if (codeLower === 'kttd' && (roleLower.includes('kỹ thuật') || roleLower.includes('thẩm định'))) return true;
+            if (codeLower === 'tckt' && (roleLower.includes('tài chính') || roleLower.includes('kế toán'))) return true;
+            if (codeLower.startsWith('qlda') && roleLower.includes('quản lý dự án')) return true;
             return false;
         };
 
-        const startOfMonthDate = new Date(year, month - 1, 1);
-        const subtasks = (subtasksRaw as any[]).filter(t => {
-            if (t.status === 'done') {
-                if (t.actual_end_date) {
-                    const actualEnd = new Date(t.actual_end_date);
-                    if (actualEnd < startOfMonthDate) return false; // Completed before this month
-                }
-            }
-            // Lọc theo phòng ban:
-            // 1. Giao cho nhân viên phòng ban
-            const isAssignedToDeptEmployee = t.assignee_id && deptEmployeeIds.includes(t.assignee_id);
-            // 2. Hoặc metadata.assignee_role khớp với phòng ban
-            const isAssignedToDeptRole = isDeptMatch(t.metadata?.assignee_role);
+        // 1. Tìm tasks thuộc bước KH dự án, có hạn trong tháng
+        const { data: tasksRaw, error } = await supabase
+            .from('tasks')
+            .select('id, project_plan_item_id, assignee_id, metadata, due_date, status, actual_end_date')
+            .eq('task_type', 'project')
+            .not('project_plan_item_id', 'is', null)
+            .gte('due_date', startOfMonth)
+            .lte('due_date', endOfMonth);
+        if (error) throw error;
 
-            return isAssignedToDeptEmployee || isAssignedToDeptRole;
+        const startOfMonthDate = new Date(year, month - 1, 1);
+        const matchingTasks = (tasksRaw || []).filter((t: any) => {
+            if (t.status === 'done' && t.actual_end_date) {
+                if (new Date(t.actual_end_date) < startOfMonthDate) return false;
+            }
+            const byEmployee = t.assignee_id && deptEmployeeIds.includes(t.assignee_id);
+            const byRole = isDeptMatch(t.metadata?.assignee_role);
+            return byEmployee || byRole;
         });
 
-        if (subtasks.length === 0) return { inserted: [], skipped: 0 };
+        if (matchingTasks.length === 0) return { inserted: [], skipped: 0 };
 
-        // 2. Kiểm tra đã seed rồi chưa
-        const taskIds = (subtasks as any[]).map(t => t.id);
-        const { data: existing } = await supabase
+        // 2. Lấy project_plan_items chưa được đưa vào KH tháng này
+        const allStepIds = Array.from(new Set(matchingTasks.map((t: any) => t.project_plan_item_id)));
+
+        // Loại bỏ các step đã có trong monthly plan này rồi
+        const { data: alreadyScheduled } = await supabase
             .from('monthly_plan_items')
-            .select('source_task_id, source_subtask_id')
-            .eq('monthly_plan_id', monthlyPlanId)
-            .or(`source_subtask_id.in.(${taskIds.join(',')}),source_task_id.in.(${taskIds.join(',')})`);
-        
-        const existingSubtaskIds = new Set((existing ?? []).map((e: any) => e.source_subtask_id).filter(Boolean));
-        const existingTaskIds = new Set((existing ?? []).map((e: any) => e.source_task_id).filter(Boolean));
+            .select('source_project_plan_item_id')
+            .in('source_project_plan_item_id', allStepIds)
+            .eq('monthly_plan_id', monthlyPlanId);
 
-        // 3. Map và insert những task/subtask chưa được sinh kế hoạch tháng
-        const toInsert = (subtasks as any[])
-            .filter(t => {
-                const isSubtask = !!t.parent_id;
-                if (isSubtask) {
-                    return !existingSubtaskIds.has(t.id);
-                } else {
-                    return !existingTaskIds.has(t.id);
-                }
-            })
-            .map((t, idx) => {
-                const isSubtask = !!t.parent_id;
-                return {
-                    monthly_plan_id: monthlyPlanId,
-                    project_id: t.project_id ?? null,
-                    group_name: t.phase ?? t.step_code ?? 'Công việc dự án',
-                    group_sort_order: 0,
-                    task_name: t.title,
-                    deliverable: t.description ?? null,
-                    due_date: t.due_date,
-                    deadline_note: t.due_date ? `${new Date(t.due_date).getDate()}/${month}` : `Tháng ${month}`,
-                    source_task_id: t.parent_id || t.id,
-                    source_subtask_id: isSubtask ? t.id : null,
-                    source_type: (isSubtask ? 'from_subtask' : 'from_project_task') as any,
-                    status: 'planned' as MonthlyTaskStatus,
-                    sort_order: idx,
-                    created_by: createdBy ?? null,
-                };
-            });
+        const scheduledSet = new Set(
+            (alreadyScheduled || []).map((r: any) => r.source_project_plan_item_id)
+        );
+        const eligibleStepIds = allStepIds.filter(id => !scheduledSet.has(id));
 
-        if (toInsert.length === 0) return { inserted: [], skipped: subtasks.length };
+        if (eligibleStepIds.length === 0) {
+            return { inserted: [], skipped: allStepIds.length };
+        }
 
-        const { data: inserted, error: insertErr } = await supabase
+        // 3. Gọi RPC để gán atomic
+        const { data: rpcResult, error: rpcErr } = await supabase.rpc('schedule_project_steps_to_month', {
+            p_step_ids: eligibleStepIds,
+            p_monthly_plan_id: monthlyPlanId,
+        });
+        if (rpcErr) throw rpcErr;
+
+        const result = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
+        const scheduledCount = result?.scheduled_count || 0;
+
+        // 4. Fetch lại các MPI vừa tạo
+        const { data: inserted } = await supabase
             .from('monthly_plan_items')
-            .insert(toInsert)
-            .select();
-        if (insertErr) throw insertErr;
+            .select('*')
+            .in('source_project_plan_item_id', eligibleStepIds)
+            .eq('monthly_plan_id', monthlyPlanId);
 
         return {
             inserted: (inserted ?? []) as MonthlyPlanItem[],
-            skipped: subtasks.length - toInsert.length,
+            skipped: allStepIds.length - scheduledCount,
         };
     },
 

@@ -36,8 +36,8 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
             const meta = (node.metadata as any) || {};
             setPhase(meta.phase || 'preparation');
             setDescription(meta.description || '');
-            setLegalBasis(meta.legal_basis || '');
-            setOutput(meta.output || '');
+            setLegalBasis(node.legal_basis || meta.legal_basis || '');
+            setOutput(node.output_document || meta.output || '');
         }
     }, [node]);
 
@@ -46,23 +46,25 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const updatedData = {
-                name,
-                type,
-                assignee_role: assigneeRole,
-                sla_formula: slaValue ? `${slaValue}${slaUnit}` : null,
-                metadata: {
-                    ...(node.metadata as any || {}),
-                    description,
-                    legal_basis: legalBasis,
-                    output,
-                    phase
-                }
-            };
-            await onSave(node.id, updatedData);
-            onClose();
+             const updatedData = {
+                 name,
+                 type,
+                 assignee_role: assigneeRole,
+                 sla_formula: slaValue ? `${slaValue}${slaUnit}` : null,
+                 legal_basis: legalBasis || null,
+                 output_document: output || null,
+                 metadata: {
+                     ...(node.metadata as any || {}),
+                     description,
+                     legal_basis: legalBasis,
+                     output: output,
+                     phase
+                 }
+             };
+             await onSave(node.id, updatedData);
+             onClose();
         } finally {
-            setIsSaving(false);
+             setIsSaving(false);
         }
     };
 

@@ -12,8 +12,6 @@ export interface DbTask {
   id: string;
   task_type: TaskType;
   project_id: string | null;
-  workflow_id: string | null;
-  workflow_node_id: string | null;
   title: string;
   description: string | null;
   status: DbTaskStatus;
@@ -37,6 +35,8 @@ export interface DbTask {
   predecessor_task_id: string | null;
   metadata: Record<string, any>;
   monthly_plan_item_id: string | null;
+  project_plan_item_id: string | null;
+  project_plan_step_id?: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;

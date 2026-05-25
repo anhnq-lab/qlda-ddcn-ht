@@ -174,7 +174,7 @@ async function writeAllDepts(
         // Group tasks
         const groups = new Map<string, MonthlyPlanItem[]>();
         for (const item of items) {
-            const g = item.group_name ?? '';
+            const g = item.source_type === 'project_step' ? 'Kế hoạch dự án' : (item.source_type === 'from_annual' ? 'KH Khung năm' : 'Công việc khác');
             if (!groups.has(g)) groups.set(g, []);
             groups.get(g)!.push(item);
         }

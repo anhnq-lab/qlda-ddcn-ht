@@ -5,13 +5,16 @@ import { DbTask, DbSubTask, isDepartmentCode } from './helpers';
 
 // ── READ ─────────────────────────────────────────────────────────────
 
-/** Lấy tất cả tasks (scoped theo project IDs nếu có) */
+/** Lấy tất cả tasks (scoped theo project IDs nếu có)
+ *  Sau refactor (24/05/2026): không còn filter ẩn theo monthly_plan_item_id.
+ *  Mọi task project đều có MPI gán (đảm bảo bởi migration + trigger).
+ *  Subtask (parent_id != null) đã bị flatten — query chỉ lấy task gốc cho an toàn. */
 export const getAllTasks = async (projectIds?: string[]): Promise<DbTask[]> => {
   try {
     let query = supabase
       .from('tasks')
       .select('*, projects(project_name)')
-      .is('parent_id', null)
+      .is('parent_id', null)  // an toàn — sau migration parent_id luôn null cho task project
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });
 
@@ -22,46 +25,23 @@ export const getAllTasks = async (projectIds?: string[]): Promise<DbTask[]> => {
     const { data, error } = await query;
     if (error) throw toServiceError(error, 'Không thể tải danh sách công việc');
 
-    // Lọc bỏ các bước dự án lớn (task_type = project nhưng chưa sinh kế hoạch tháng)
-    const filtered = (data || []).filter((r: any) =>
-      r.task_type === 'internal' || (r.task_type === 'project' && !!r.monthly_plan_item_id)
-    );
-    return filtered as unknown as DbTask[];
+    return (data || []) as unknown as DbTask[];
   } catch (err) {
     throw toServiceError(err, 'Không thể tải danh sách công việc');
   }
 };
 
-/** Lấy tasks theo dự án */
+/** Lấy tasks theo dự án (flat — subtask đã bỏ sau refactor 24/05/2026) */
 export const getProjectTasks = async (projectId: string): Promise<DbTask[]> => {
   const { data, error } = await supabase
     .from('tasks')
     .select('*')
     .eq('project_id', projectId)
+    .is('parent_id', null)
     .order('sort_order', { ascending: true });
 
   if (error) throw toServiceError(error, 'Không thể tải công việc dự án');
-
-  const masterTasks = (data || []).filter((r: any) => !r.parent_id);
-  const subTasks = (data || []).filter((r: any) => r.parent_id);
-
-  return masterTasks.map((row: any) => {
-    const rowSubs = subTasks
-      .filter((s: any) => s.parent_id === row.id)
-      .map((s: any) => ({
-        SubTaskID: s.id,
-        Title: s.title,
-        AssigneeID: s.assignee_id || s.metadata?.assignee_role,
-        StartDate: s.start_date || row.start_date,
-        DueDate: s.due_date || row.due_date,
-        Status: s.status === 'done' ? 'Done' : s.status === 'in_progress' ? 'InProgress' : 'Todo',
-      }));
-
-    const metadata = row.metadata || {};
-    metadata.sub_tasks = rowSubs;
-
-    return { ...row, metadata } as unknown as DbTask;
-  });
+  return (data || []) as unknown as DbTask[];
 };
 
 /** Lấy tasks nội bộ (không thuộc dự án nào) */
@@ -98,7 +78,7 @@ export const getTasksByEmployeeAndMonth = async (
   return (data || []) as unknown as DbTask[];
 };
 
-/** Lấy 1 task theo ID */
+/** Lấy 1 task theo ID (flat) */
 export const getTaskById = async (taskId: string): Promise<DbTask | null> => {
   const { data, error } = await supabase
     .from('tasks')
@@ -108,40 +88,7 @@ export const getTaskById = async (taskId: string): Promise<DbTask | null> => {
 
   if (error) throw error;
   if (!data) return null;
-
-  const { data: subData } = await (supabase as any)
-    .from('tasks')
-    .select('*')
-    .eq('parent_id', taskId)
-    .order('created_at', { ascending: true });
-
-  const row = data as any;
-  const metadata = row.metadata || {};
-
-  if (subData && subData.length > 0) {
-    metadata.sub_tasks = subData.map((s: any) => ({
-      SubTaskID: s.id,
-      Title: s.title,
-      AssigneeID: s.assignee_id || s.metadata?.assignee_role,
-      StartDate: s.start_date || row.start_date,
-      DueDate: s.due_date || row.due_date,
-      Status: s.status === 'done' ? 'Done' : s.status === 'in_progress' ? 'InProgress' : 'Todo',
-    }));
-  }
-
-  return { ...row, metadata } as unknown as DbTask;
-};
-
-/** Lấy sub-tasks của 1 task */
-export const getSubTasks = async (taskId: string): Promise<DbSubTask[]> => {
-  const { data, error } = await (supabase as any)
-    .from('tasks')
-    .select('*')
-    .eq('parent_id', taskId)
-    .order('sort_order', { ascending: true });
-
-  if (error) throw error;
-  return (data || []) as unknown as DbSubTask[];
+  return data as unknown as DbTask;
 };
 
 /** Đếm tasks theo project (cho Dashboard) — song song, không N+1 */
@@ -197,7 +144,7 @@ export const createTask = async (task: Partial<DbTask>): Promise<DbTask> => {
   return data as unknown as DbTask;
 };
 
-/** Cập nhật task (cùng đồng bộ subtasks nếu metadata.sub_tasks được truyền) */
+/** Cập nhật task (flat — không còn xử lý sub_tasks) */
 export const updateTask = async (taskId: string, updates: Partial<DbTask>): Promise<DbTask> => {
   const payload: any = { ...updates, updated_at: new Date().toISOString() };
   delete payload.id;
@@ -213,17 +160,10 @@ export const updateTask = async (taskId: string, updates: Partial<DbTask>): Prom
     }
   }
 
-  let subTasks: any[] | null = null;
+  // Strip sub_tasks nếu vô tình truyền (backward-compat, không còn dùng)
   if (payload.metadata && payload.metadata.sub_tasks !== undefined) {
-    subTasks = payload.metadata.sub_tasks;
     delete payload.metadata.sub_tasks;
   }
-
-  const { data: currentTask } = await (supabase as any)
-    .from('tasks')
-    .select('project_id, task_type')
-    .eq('id', taskId)
-    .maybeSingle();
 
   const { data, error } = await supabase
     .from('tasks')
@@ -233,48 +173,7 @@ export const updateTask = async (taskId: string, updates: Partial<DbTask>): Prom
     .single();
 
   if (error) throw toServiceError(error, 'Không thể cập nhật công việc');
-
-  // Sync sub-tasks (treated as full tasks with parent_id)
-  if (subTasks !== null) {
-    const { data: existingSubs } = await (supabase as any).from('tasks').select('id').eq('parent_id', taskId);
-    const existingIds = (existingSubs || []).map((s: any) => s.id);
-
-    const newIds: string[] = [];
-    const subsToUpsert = subTasks.map((st) => {
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(st.SubTaskID);
-      const subId = isUUID ? st.SubTaskID : crypto.randomUUID();
-      newIds.push(subId);
-
-      const isDept = isDepartmentCode(st.AssigneeID);
-
-      return {
-        id: subId,
-        parent_id: taskId,
-        project_id: currentTask?.project_id,
-        task_type: currentTask?.task_type || 'project',
-        title: st.Title,
-        status: st.Status === 'Done' ? 'done' : st.Status === 'InProgress' ? 'in_progress' : 'todo',
-        due_date: st.DueDate || null,
-        assignee_id: st.AssigneeID && !isDept ? st.AssigneeID : null,
-        metadata: isDept ? { assignee_role: st.AssigneeID } : {},
-      };
-    });
-
-    if (subsToUpsert.length > 0) {
-      await supabase.from('tasks').upsert(subsToUpsert as any);
-    }
-
-    const toDelete = existingIds.filter((id: any) => !newIds.includes(id));
-    if (toDelete.length > 0) {
-      await supabase.from('tasks').delete().in('id', toDelete);
-    }
-  }
-
-  const row = data as any;
-  const metadata = row.metadata || {};
-  if (subTasks !== null) metadata.sub_tasks = subTasks;
-
-  return { ...row, metadata } as unknown as DbTask;
+  return data as unknown as DbTask;
 };
 
 /** Upsert task (tạo hoặc cập nhật) */
@@ -288,10 +187,12 @@ export const deleteTask = async (taskId: string): Promise<void> => {
   if (error) throw toServiceError(error, 'Không thể xóa công việc');
 };
 
-/** Xóa tất cả tasks của dự án (kèm dọn monthly_plan_items) */
+/** Xóa tất cả tasks + steps của dự án */
 export const deleteProjectTasks = async (projectId: string): Promise<number> => {
+  // Trigger BEFORE DELETE trên monthly_plan_items sẽ cascade xóa tasks
   await (supabase as any).from('monthly_plan_items').delete().eq('project_id', projectId);
 
+  // Xóa luôn tasks không link MPI (safeguard)
   const { data, error } = await supabase
     .from('tasks')
     .delete()
@@ -302,46 +203,23 @@ export const deleteProjectTasks = async (projectId: string): Promise<number> => 
   return data?.length || 0;
 };
 
-// ── SUB-TASKS (legacy DbSubTask shape) ───────────────────────────────
+// ── SUB-TASKS (deprecated — bỏ sau refactor 24/05/2026) ──────────────
+// Giữ no-op để backward-compat trong 1 phiên bản; sẽ xóa hẳn ở refactor sau.
 
-/** Upsert sub-task */
+/** @deprecated subtask đã bị loại bỏ. Hàm này no-op để tránh phá build. */
 export const saveSubTask = async (
-  subTask: Partial<DbSubTask> & { task_id: string }
+  _subTask: Partial<DbSubTask> & { task_id: string }
 ): Promise<DbSubTask> => {
-  const payload = {
-    parent_id: subTask.task_id,
-    title: subTask.title,
-    status: subTask.status === 'done' ? 'done' : subTask.status === 'in_progress' ? 'in_progress' : 'todo',
-    assignee_id: subTask.assignee_id,
-    due_date: subTask.due_date,
-    sort_order: subTask.sort_order,
-    task_type: 'project',
-    updated_at: new Date().toISOString(),
-  };
-
-  const isUpdate = !!subTask.id;
-  const query = isUpdate
-    ? (supabase as any).from('tasks').update(payload).eq('id', subTask.id)
-    : (supabase as any).from('tasks').insert({ ...payload, created_at: new Date().toISOString() });
-
-  const { data, error } = await query.select().single();
-  if (error) throw error;
-
-  return {
-    id: data.id,
-    task_id: data.parent_id,
-    title: data.title,
-    status: data.status,
-    assignee_id: data.assignee_id,
-    due_date: data.due_date,
-    sort_order: data.sort_order,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-  } as unknown as DbSubTask;
+  console.warn('[DEPRECATED] saveSubTask: subtask concept đã bị loại bỏ. Dùng saveTask thay thế.');
+  throw new Error('Sub-task không còn được hỗ trợ. Vui lòng tạo task cá nhân trực tiếp.');
 };
 
-/** Xóa sub-task */
-export const deleteSubTask = async (subTaskId: string): Promise<void> => {
-  const { error } = await (supabase as any).from('tasks').delete().eq('id', subTaskId);
-  if (error) throw error;
+/** @deprecated subtask đã bị loại bỏ. */
+export const deleteSubTask = async (_subTaskId: string): Promise<void> => {
+  console.warn('[DEPRECATED] deleteSubTask: subtask concept đã bị loại bỏ.');
+};
+
+/** @deprecated subtask đã bị loại bỏ → return rỗng. */
+export const getSubTasks = async (_taskId: string): Promise<DbSubTask[]> => {
+  return [];
 };

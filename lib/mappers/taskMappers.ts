@@ -12,8 +12,7 @@ export const dbToTask = (row: DbTask): Task => ({
     TaskType: row.task_type as TaskType,
     ProjectID: row.project_id || '',
     MonthlyPlanItemID: row.monthly_plan_item_id || row.metadata?.monthly_plan_item_id || undefined,
-    WorkflowID: row.workflow_id || undefined,
-    WorkflowNodeID: row.workflow_node_id || undefined,
+    ProjectPlanItemID: row.project_plan_step_id || row.project_plan_item_id || undefined,
     AssigneeID: row.assignee_id || row.metadata?.assignee_role || '',
     CollaboratorIDs: row.collaborator_ids || [],
     ApproverID: row.approver_id || undefined,
@@ -28,7 +27,6 @@ export const dbToTask = (row: DbTask): Task => ({
     ActualEndDate: row.actual_end_date || undefined,
     Phase: row.phase || undefined,
     StepCode: row.step_code || undefined,
-    TimelineStep: row.workflow_node_id || row.step_code || undefined,
     SortOrder: row.sort_order,
     EstimatedCost: row.estimated_cost ? Number(row.estimated_cost) : undefined,
     ActualCost: row.actual_cost ? Number(row.actual_cost) : undefined,
@@ -52,8 +50,6 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.Description !== undefined) row.description = task.Description || null;
     if (task.TaskType) row.task_type = task.TaskType;
     if (task.ProjectID !== undefined) row.project_id = task.ProjectID || null;
-    if (task.WorkflowID !== undefined) row.workflow_id = task.WorkflowID || null;
-    if (task.WorkflowNodeID !== undefined) row.workflow_node_id = task.WorkflowNodeID || null;
     if (task.Status) row.status = task.Status;
     if (task.Priority) row.priority = task.Priority;
     if (task.ProgressPercent !== undefined) row.progress = task.ProgressPercent;
@@ -74,6 +70,10 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.OutputDocument !== undefined) row.output_document = task.OutputDocument || null;
     if (task.PredecessorTaskID !== undefined) row.predecessor_task_id = task.PredecessorTaskID || null;
     if (task.MonthlyPlanItemID !== undefined) row.monthly_plan_item_id = task.MonthlyPlanItemID || null;
+    if (task.ProjectPlanItemID !== undefined) {
+        row.project_plan_step_id = task.ProjectPlanItemID || null;
+        row.project_plan_item_id = task.ProjectPlanItemID || null;
+    }
     
     // Build metadata
     row.metadata = {

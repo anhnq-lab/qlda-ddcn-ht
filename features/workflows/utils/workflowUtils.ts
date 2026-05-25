@@ -9,9 +9,9 @@ import { supabase } from '../../../lib/supabase';
 export function parseSla(formula?: string | null): string | null {
     if (!formula) return null;
     const val = formula.match(/^(\d+)/)?.[0] || '';
-    if (formula.endsWith('wd')) return `${val} ngày làm việc`;
-    if (formula.endsWith('h')) return `${val} giờ`;
-    return `${val} ngày`;
+    if (formula.endsWith('wd')) return `${val} nlv`;
+    if (formula.endsWith('h')) return `${val}h`;
+    return `${val}n`;
 }
 
 // ─── Legal Reference Resolver ──────────────────────────────────

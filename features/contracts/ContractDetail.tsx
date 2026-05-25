@@ -68,7 +68,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
     const milestones = useMemo(() => {
         if (!projectTasks.length) return [];
         return projectTasks
-            .filter(t => t.TimelineStep === 'IMPL_BIDDING' || t.TimelineStep === 'IMPL_CONSTRUCTION' || t.TimelineStep === 'COMPLETION')
+            .filter(t => t.StepCode === 'IMPL_BIDDING' || t.StepCode === 'IMPL_CONSTRUCTION' || t.StepCode === 'COMPLETION')
             .slice(0, 8)
             .map((t, idx) => ({
                 id: idx + 1,

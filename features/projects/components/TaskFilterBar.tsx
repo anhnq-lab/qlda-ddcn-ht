@@ -1,11 +1,11 @@
 import React from 'react';
 import {
     Filter, User, Clock, AlertTriangle, CheckCircle2,
-    Calendar, Route, Plus, Search, X, LayoutGrid, List, BarChart3
+    Calendar, Route, Plus, Search, X, LayoutGrid, List, BarChart3, Users, SlidersHorizontal
 } from 'lucide-react';
 import { TaskStatus } from '@/types';
 
-export type TaskViewMode = 'wbs' | 'gantt' | 'kanban' | 'resource';
+export type TaskViewMode = 'wbs' | 'gantt' | 'kanban' | 'resource' | 'raci';
 export type TaskFilter = 'all' | 'my-tasks' | 'overdue' | 'this-week' | 'critical' | 'in-progress' | 'completed';
 
 interface TaskFilterBarProps {
@@ -13,7 +13,7 @@ interface TaskFilterBarProps {
     currentView: TaskViewMode;
     onFilterChange: (filter: TaskFilter) => void;
     onViewChange: (view: TaskViewMode) => void;
-    onAddTask: () => void;
+    onAdjustPlan: () => void;
     onSearch?: (query: string) => void;
     searchQuery?: string;
     taskCounts?: {
@@ -33,7 +33,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     currentView,
     onFilterChange,
     onViewChange,
-    onAddTask,
+    onAdjustPlan,
     onSearch,
     searchQuery = '',
     taskCounts,
@@ -54,6 +54,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
         { id: 'gantt', label: 'Gantt', icon: BarChart3 },
         { id: 'kanban', label: 'Kanban', icon: LayoutGrid },
         { id: 'resource', label: 'Nguồn lực', icon: User },
+        { id: 'raci', label: 'Ma trận RACI', icon: Users },
     ];
 
     const getFilterCount = (filter: TaskFilter): number | undefined => {
@@ -85,73 +86,39 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
-            {/* Top Row: Search + Add Button */}
-            <div className="flex items-center gap-4">
-                {/* Search */}
-                {onSearch && (
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm công việc..."
-                            value={searchQuery}
-                            onChange={(e) => onSearch(e.target.value)}
-                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
-                        />
-                        {searchQuery && (
-                            <button
-                                onClick={() => onSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        )}
-                    </div>
-                )}
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-2.5 flex flex-wrap items-center justify-between gap-3">
+            {/* Left Row: Filters */}
+            <div className="flex items-center gap-2 flex-wrap">
+                {filters.map(filter => {
+                    const isActive = currentFilter === filter.id;
+                    const count = getFilterCount(filter.id);
+                    const Icon = filter.icon;
 
-                {/* Add Task Button */}
-                <button
-                    onClick={onAddTask}
-                    className="flex items-center gap-2 px-4 py-2 gradient-btn text-white text-sm font-bold rounded-lg transition-colors shadow-sm shrink-0"
-                >
-                    <Plus className="w-4 h-4" />
-                    Thêm công việc
-                </button>
+                    return (
+                        <button
+                            key={filter.id}
+                            onClick={() => onFilterChange(filter.id)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${getFilterStyle(filter, isActive)}`}
+                        >
+                            <Icon className="w-3.5 h-3.5" />
+                            {filter.label}
+                            {count !== undefined && count > 0 && (
+                                <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${isActive
+                                    ? 'bg-white/50 dark:bg-white/10'
+                                    : filter.color === 'red' && count > 0
+                                        ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400'
+                                        : 'bg-gray-100 dark:bg-slate-600'
+                                    }`}>
+                                    {count}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
-            {/* Bottom Row: Filters + View Toggle */}
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-                {/* Filter Pills */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    {filters.map(filter => {
-                        const isActive = currentFilter === filter.id;
-                        const count = getFilterCount(filter.id);
-                        const Icon = filter.icon;
-
-                        return (
-                            <button
-                                key={filter.id}
-                                onClick={() => onFilterChange(filter.id)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${getFilterStyle(filter, isActive)}`}
-                            >
-                                <Icon className="w-3.5 h-3.5" />
-                                {filter.label}
-                                {count !== undefined && count > 0 && (
-                                    <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${isActive
-                                        ? 'bg-white/50 dark:bg-white/10'
-                                        : filter.color === 'red' && count > 0
-                                            ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400'
-                                            : 'bg-gray-100 dark:bg-slate-600'
-                                        }`}>
-                                        {count}
-                                    </span>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
-
+            {/* Right Row: View Toggle + Adjust Button */}
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-1 sm:flex-initial">
                 {/* View Toggle */}
                 <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
                     {views.map(view => {
@@ -174,6 +141,15 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         );
                     })}
                 </div>
+
+                {/* Adjust Plan Button */}
+                <button
+                    onClick={onAdjustPlan}
+                    className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg transition-all border shadow-sm text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700 dark:hover:bg-emerald-900/50 shrink-0 cursor-pointer ml-auto sm:ml-0"
+                >
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                    Điều chỉnh kế hoạch
+                </button>
             </div>
         </div>
     );

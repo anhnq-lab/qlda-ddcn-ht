@@ -1,36 +1,23 @@
 import React from 'react';
 import { Task, TaskStatus } from '@/types';
+import { calcProgress } from '@/lib/progressCalculator';
 
 interface ProjectHealthScoreProps {
     tasks: Task[];
 }
 
 export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks }) => {
-    const total = tasks.length;
+    const { total, done, overdue: overdueCount } = calcProgress(tasks);
     if (total === 0) return null;
 
-    const done = tasks.filter((t) => t.Status === TaskStatus.Done).length;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Check Overdue
-    const overdue = tasks.filter((t) => {
-        if (t.Status === TaskStatus.Done || !t.DueDate) return false;
-        const d = new Date(t.DueDate);
-        d.setHours(0, 0, 0, 0);
-        return d < today;
-    }).length;
-    
-    // Check Assignment
-    const assigned = tasks.filter((t) => t.AssigneeID || (t.Assignees && t.Assignees.length > 0)).length;
+    const assigned = tasks.filter(t => t.AssigneeID || (t as any).Assignees?.length > 0).length;
+    const hasProgress = tasks.filter(t => (t.ProgressPercent || 0) > 0 || t.Status === TaskStatus.Done).length;
 
     // Score calculation (0-100)
     const completionScore = (done / total) * 30;
-    const onTimeScore = ((total - overdue) / total) * 30;
+    const onTimeScore = ((total - overdueCount) / total) * 30;
     const assignedScore = (assigned / total) * 20;
-    const hasProgress = tasks.filter((t) => (t.ProgressPercent || 0) > 0 || t.Status === TaskStatus.Done).length;
     const progressScore = (hasProgress / total) * 20;
-    
     const score = Math.round(completionScore + onTimeScore + assignedScore + progressScore);
 
     const getScoreInfo = (s: number) => {
@@ -39,7 +26,7 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
         if (s >= 40) return { emoji: '🟠', label: 'Cần cải thiện', color: 'text-warning-600 dark:text-warning-400', bg: 'bg-warning-500' };
         return { emoji: '🔴', label: 'Rủi ro cao', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500' };
     };
-    
+
     const info = getScoreInfo(score);
 
     return (
@@ -57,10 +44,7 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
             </div>
             {/* Score bar */}
             <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
-                <div
-                    className={`h-full ${info.bg} rounded-full transition-all duration-500`}
-                    style={{ width: `${score}%` }}
-                />
+                <div className={`h-full ${info.bg} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
             </div>
             {/* Breakdown */}
             <div className="space-y-1.5 text-[10px] text-gray-500 dark:text-slate-400">
@@ -69,7 +53,7 @@ export const ProjectHealthScore: React.FC<ProjectHealthScoreProps> = ({ tasks })
                     <span className="font-bold">{Math.round(completionScore)}/30</span>
                 </div>
                 <div className="flex justify-between">
-                    <span>Đúng hạn ({total - overdue}/{total})</span>
+                    <span>Đúng hạn ({total - overdueCount}/{total})</span>
                     <span className="font-bold">{Math.round(onTimeScore)}/30</span>
                 </div>
                 <div className="flex justify-between">

@@ -131,8 +131,8 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const nextStatus = getNextStatus(task.Status);
     const prevStatus = getPrevStatus(task.Status);
     const progress = task.ProgressPercent || (task.Status === TaskStatus.Done ? 100 : 0);
-    const stepLabel = getTimelineStepLabel(task.TimelineStep);
-    const phaseColor = getPhaseColor(task.TimelineStep);
+    const stepLabel = getTimelineStepLabel(task.StepCode);
+    const phaseColor = getPhaseColor(task.StepCode);
     const isOverdue = Boolean(task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date());
 
     const handleStatusChange = (s: TaskStatus) => {
@@ -175,7 +175,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
 
 
-    const templates = getTaskTemplates(task.TimelineStep, task.Title);
+    const templates = getTaskTemplates(task.StepCode, task.Title);
 
     return (
         <div className={isPanel ? "animate-in fade-in duration-300" : "bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 min-h-screen animate-in fade-in duration-300"}>
@@ -445,8 +445,8 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                     templatePath={activeExportTemplate.templatePath}
                     templateLabel={activeExportTemplate.name}
                     project={project || null}
-                    stepTitle={task.TimelineStep ? getTimelineStepLabel(task.TimelineStep) : undefined}
-                    stepCode={task.TimelineStep}
+                    stepTitle={task.StepCode ? getTimelineStepLabel(task.StepCode) : undefined}
+                    stepCode={task.StepCode}
                 />
             )}
 

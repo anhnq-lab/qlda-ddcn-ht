@@ -8,8 +8,10 @@ import {
     Clock, AlertTriangle, Circle, Maximize2, Minimize2 
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
-import { Task, TaskStatus, TaskPriority } from '@/types';
-import { useWorkflowPhases } from '@/features/projects/hooks/useWorkflowPhases';
+import { Task, TaskStatus } from '@/types';
+import { useProjectSteps } from '@/features/projects/hooks/useProjectSteps';
+import { workflowTaskToTask } from '@/lib/mappers/workflowTaskMappers';
+import { isTaskInStep } from '@/lib/progressCalculator';
 import { useEmployees } from '@/hooks/useEmployees';
 
 interface GanttChartWidgetProps {
@@ -96,8 +98,8 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         enabled: !!projectId,
     });
 
-    const groupCode = project?.group_code || 'C';
-    const { phases, isLoading: isLoadingPhases } = useWorkflowPhases(groupCode, project);
+    // Dùng useProjectSteps để lấy phases từ MPI (không phải workflow template)
+    const { phases, isLoading: isLoadingPhases } = useProjectSteps(projectId);
 
     const { data: rawTasks = [], isLoading: isLoadingTasks } = useQuery({
         queryKey: ['gantt-tasks', projectId],
@@ -109,46 +111,12 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
         staleTime: 5 * 60 * 1000,
     });
 
-    // Map rawTasks thành Task[] chuẩn
+    // Map rawTasks → Task[] dùng canonical mapper
     const mappedTasks = useMemo<Task[]>(() => {
         if (!rawTasks) return [];
-        return rawTasks.map((wt: any) => {
-            const phase = wt.workflow_nodes?.metadata?.phase || wt.metadata?.phase || wt.metadata?.groupCode || 'KH';
-            let mappedStatus = TaskStatus.Todo;
-            if (wt.status === 'in_progress') mappedStatus = TaskStatus.InProgress;
-            else if (wt.status === 'completed' || wt.status === 'done') mappedStatus = TaskStatus.Done;
-            else if (wt.status === 'overdue') mappedStatus = TaskStatus.InProgress;
-            
-            if (wt.metadata?.ui_status) {
-                mappedStatus = wt.metadata.ui_status;
-            }
-            
-            return {
-                TaskID: wt.id,
-                ProjectID: projectId || '',
-                Title: wt.name || wt.title || 'Untitled Task',
-                Description: wt.comments || wt.metadata?.description || '',
-                Status: mappedStatus,
-                Priority: wt.priority || TaskPriority.Medium,
-                StartDate: wt.start_date || wt.created_at,
-                DueDate: wt.due_date || undefined,
-                AssigneeID: wt.assignee_id || '',
-                TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || wt.metadata?.step_code || '',
-                StepCode: wt.step_code || wt.metadata?.step_code || wt.workflow_node_id || wt.node_id || '',
-                LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
-                DurationDays: wt.metadata?.estimatedDays || 10,
-                ActualStartDate: wt.metadata?.actualStartDate || wt.started_at,
-                ActualEndDate: wt.metadata?.actualEndDate || wt.completed_at,
-                ProgressPercent: wt.progress || 0,
-                Phase: phase,
-                SubTasks: wt.metadata?.sub_tasks || [],
-                Attachments: wt.metadata?.attachments || [],
-                Dependencies: wt.metadata?.dependencies || [],
-                EstimatedCost: wt.metadata?.estimated_cost,
-                ActualCost: wt.metadata?.actual_cost,
-                Metadata: wt.metadata || {},
-            } as Task;
-        });
+        return rawTasks.map((wt: any) =>
+            wt.TaskID ? wt as Task : workflowTaskToTask(wt, projectId)
+        );
     }, [rawTasks, projectId]);
 
     // Dựng cây các bước lớn và công việc con
@@ -171,13 +139,10 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
 
         const result: any[] = [];
         steps.forEach(step => {
-            const stepTasks = mappedTasks.filter(t => {
-                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
-                const tStepCode = (t.StepCode || '').toLowerCase().trim();
-                const sCode = (step.code || '').toLowerCase().trim();
-                if (!sCode) return false;
-                return tTimelineStep === sCode || tStepCode === sCode;
-            });
+            // Dùng isTaskInStep — ưu tiên FK (MonthlyPlanItemID) rồi fallback semantic stepCode
+            const stepTasks = mappedTasks.filter(t =>
+                isTaskInStep(t, { id: step.code, code: step.stepCode ?? step.code })
+            );
 
             let stepStart = fallbackStart;
             let stepEnd = new Date(fallbackStart.getTime() + (step.estimatedDays || 30) * 24 * 60 * 60 * 1000);

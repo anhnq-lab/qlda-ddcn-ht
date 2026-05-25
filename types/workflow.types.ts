@@ -63,6 +63,8 @@ export interface WorkflowNode {
     is_deleted: boolean;
     created_at: string;
     updated_at: string;
+    legal_basis?: string | null;
+    output_document?: string | null;
 }
 
 export interface WorkflowEdge {

@@ -13,6 +13,8 @@ import WorkflowProcessTable from './components/WorkflowProcessTable';
 import InternalWorkflowViewerPanel from './components/InternalWorkflowViewerPanel';
 import { WorkflowStepDetailPanel } from './components/WorkflowStepDetailPanel';
 
+import { useWorkflowRaci } from './hooks/useWorkflowRaci';
+
 const WorkflowManagerPage: React.FC = () => {
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +24,9 @@ const WorkflowManagerPage: React.FC = () => {
     const [workflowNodes, setWorkflowNodes] = useState<WorkflowNode[]>([]);
     const [workflowEdges, setWorkflowEdges] = useState<WorkflowEdge[]>([]);
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+    // Fetch RACI data for the flowchart viewer when a workflow is selected
+    const { raciMap } = useWorkflowRaci(selectedWorkflow?.id || null);
     
     // UI states
     const [viewMode, setViewMode] = useTabSearchParam<'grid' | 'list' | 'flowchart'>('grid', ['grid', 'list', 'flowchart'] as const, 'view');
@@ -39,9 +44,10 @@ const WorkflowManagerPage: React.FC = () => {
             type: n.type as any, 
             assignee_role: n.assignee_role || undefined, 
             sla_formula: n.sla_formula || undefined, 
-            metadata: n.metadata 
+            metadata: n.metadata,
+            raci: raciMap?.get(n.id) || undefined
         })), 
-        [workflowNodes]
+        [workflowNodes, raciMap]
     );
 
     const processedEdges = useMemo(() => 
@@ -134,6 +140,7 @@ const WorkflowManagerPage: React.FC = () => {
         let createdPanelId: string;
         createdPanelId = openPanel({
             title: 'Tạo Quy Trình Mới',
+            width: '95%',
             icon: <Plus size={16} className="text-primary-500" />,
             component: <WorkflowBuilderPanel 
                            workflowId="" 
@@ -171,6 +178,7 @@ const WorkflowManagerPage: React.FC = () => {
         let panelId: string;
         panelId = openPanel({
             title: wf.name,
+            width: '95%',
             icon: <FileText size={16} className="text-primary-500" />,
             url: `/quy-trinh/${wf.id}`,
             component: <WorkflowProcessTable 
@@ -189,6 +197,7 @@ const WorkflowManagerPage: React.FC = () => {
                                let editPanelId: string;
                                editPanelId = openPanel({
                                    title: 'Chỉnh sửa: ' + wf.name,
+                                   width: '95%',
                                    icon: <PenLine size={16} className="text-primary-500" />,
                                    component: <WorkflowBuilderPanel 
                                                   workflowId={wf.id} 

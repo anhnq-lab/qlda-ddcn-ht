@@ -48,11 +48,10 @@ export interface Task {
     
     // Monthly plan item link (công việc con của KH tháng)
     MonthlyPlanItemID?: string;
-    
-    // Workflow reference (null if created manually)
-    WorkflowID?: string;
-    WorkflowNodeID?: string;
-    
+
+    // Project plan item link (công việc thuộc bước trong KH dự án)
+    ProjectPlanItemID?: string;
+
     // Core fields
     AssigneeID: string;
     CollaboratorIDs?: string[];
@@ -73,7 +72,6 @@ export interface Task {
     // Phase/Step (for project plan tab)
     Phase?: string;
     StepCode?: string;
-    TimelineStep?: string;     // alias for StepCode (backward compat)
     SortOrder?: number;
     
     // Cost

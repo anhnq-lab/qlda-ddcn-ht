@@ -135,7 +135,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
             DueDate: dueDate ? new Date(dueDate).toISOString() : '',
             AssigneeID: assigneeId,
             ProgressPercent: progress,
-            TimelineStep: stepCode,
+            StepCode: stepCode,
             LegalBasis: legalBasis,
             DurationDays: durationDays || undefined,
         };

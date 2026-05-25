@@ -4,14 +4,75 @@ import {
     Upload, Paperclip, ExternalLink, Trash2, Play, 
     CheckCircle2, ListChecks, Users, Layers, Circle, 
     Calendar, Flag, User, AlertCircle, X, ListPlus, FileText,
-    Building2, Timer, Eye
+    Building2, Timer, Eye, Info
 } from 'lucide-react';
 import { ProgressBadge } from '../ProgressSlider';
 import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
 import { PhaseProgressCard } from '../PhaseProgressCard';
 import { Task, TaskStatus } from '@/types';
+import { isTaskInStep } from '@/lib/progressCalculator';
 import { getPriorityColor, isOverdue, getStatusConfig, formatDateShort } from '../../utils/taskHelpers';
 import type { PhaseItem } from '../../hooks/useWorkflowPhases';
+import { RaciBadges } from '@/features/workflows/components/RaciBadges';
+
+const buildRaciSummary = (raciList: any[] | undefined) => {
+    const summary: any = { R: [], A: [], C: [], I: [] };
+    if (!raciList) return summary;
+    raciList.forEach(r => {
+        if (r.raci_type && summary[r.raci_type]) {
+            summary[r.raci_type].push(r.stakeholder_code);
+        }
+    });
+    return summary;
+};
+
+const RaciHoverBadge: React.FC<{ raciList: any[] | undefined }> = ({ raciList }) => {
+    const [showAll, setShowAll] = React.useState(false);
+    const summary = React.useMemo(() => buildRaciSummary(raciList), [raciList]);
+    const rCodes = summary.R || [];
+
+    return (
+        <div 
+            className="relative"
+            onMouseEnter={() => setShowAll(true)}
+            onMouseLeave={() => setShowAll(false)}
+        >
+            {/* Chỉ hiển thị R */}
+            {rCodes.length > 0 ? (
+                <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded font-semibold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 cursor-help transition-all hover:bg-blue-100 dark:hover:bg-blue-900/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    R: {rCodes.join(', ')}
+                </span>
+            ) : (
+                <span className="text-[10px] text-gray-400 dark:text-slate-500 italic cursor-help">—</span>
+            )}
+
+            {/* Khi hover hiện cả 4 cột RACI */}
+            {showAll && raciList && raciList.length > 0 && (
+                <div className="absolute left-0 bottom-full mb-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-xl rounded-xl p-3 z-[110] w-64 space-y-2 animate-in fade-in slide-in-from-bottom-1 duration-150">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-gray-100 dark:border-slate-700 pb-1.5 mb-1.5">
+                        Phân công trách nhiệm (RACI)
+                    </div>
+                    {(['R', 'A', 'C', 'I'] as const).map(type => {
+                        const codes = summary[type] || [];
+                        const colors = type === 'R' ? 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20' 
+                                     : type === 'A' ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20' 
+                                     : type === 'C' ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20' 
+                                     : 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800';
+                        return (
+                            <div key={type} className="text-[10.5px] flex items-center justify-between py-0.5">
+                                <span className={`px-1.5 py-0.5 rounded font-bold text-[9.5px] ${colors}`}>{type}</span>
+                                <span className="text-gray-700 dark:text-slate-300 font-semibold text-right truncate max-w-[180px]">
+                                    {codes.length > 0 ? codes.join(', ') : '—'}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
 
 // Helpers imported from shared utils/taskHelpers.ts
 
@@ -41,6 +102,7 @@ interface ProjectPlanWBSViewProps {
     onTogglePhase: (id: string) => void;
     onSetExpandedPhases: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
     onDeleteAllTasks: () => void;
+    onDeletePlan?: () => Promise<void>;
     onOpenPlanModal: (trigger: any, title: string, desc: string) => void;
     onAddTask: (stepName?: string, stepCode?: string) => void;
     onEditTask: (task: Task) => void;
@@ -77,6 +139,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     onTogglePhase,
     onSetExpandedPhases,
     onDeleteAllTasks,
+    onDeletePlan,
     onOpenPlanModal,
     onAddTask,
     onEditTask,
@@ -91,6 +154,22 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     queryClient
 }) => {
     const [expandedSteps, setExpandedSteps] = React.useState<Record<string, boolean>>({});
+    const [isDeletingPlan, setIsDeletingPlan] = React.useState(false);
+    const [deletePlanConfirm, setDeletePlanConfirm] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!deletePlanConfirm) return;
+        const t = setTimeout(() => setDeletePlanConfirm(false), 3000);
+        return () => clearTimeout(t);
+    }, [deletePlanConfirm]);
+
+    const handleDeletePlanClick = async () => {
+        if (!onDeletePlan) return;
+        if (!deletePlanConfirm) { setDeletePlanConfirm(true); return; }
+        setDeletePlanConfirm(false);
+        setIsDeletingPlan(true);
+        try { await onDeletePlan(); } finally { setIsDeletingPlan(false); }
+    };
 
     const toggleStep = (stepCode: string) => {
         setExpandedSteps(prev => ({
@@ -101,30 +180,34 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
     return (
         <div className="space-y-4 relative">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-sm">
-                <div>
-                    <h3 className="text-primary-900 dark:text-slate-100 font-bold flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-primary-600 dark:text-slate-300" />
+            {/* Header - py-2 px-3 giúp gọn gàng trên 1 hàng */}
+            <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 py-2 px-3 rounded-xl flex justify-between items-center shadow-sm text-xs">
+                <div className="flex items-center gap-2">
+                    <h3 className="text-primary-900 dark:text-slate-100 font-bold flex items-center gap-1.5 text-xs sm:text-sm">
+                        <FileText className="w-4 h-4 text-primary-600 dark:text-slate-300 shrink-0" />
                         Kế hoạch thực hiện dự án
                     </h3>
-                    <p className="text-xs text-primary-700/80 dark:text-slate-400 mt-1">
-                        <LegalReferenceLink text="Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng." />
-                    </p>
+                    {/* Chú thích pháp lý ẩn dưới icon Info để sạch giao diện */}
+                    <div className="relative group cursor-help text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 shrink-0">
+                        <Info className="w-3.5 h-3.5" />
+                        <div className="absolute left-0 top-full mt-1.5 hidden group-hover:block bg-slate-900 text-white text-[10px] rounded p-2 shadow-lg z-50 w-64 pointer-events-none normal-case font-normal leading-tight">
+                            <LegalReferenceLink text="Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng." />
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                     <button
                         onClick={() => navigate('/quy-trinh')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shadow-sm text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-700 dark:hover:bg-cyan-900/50"
+                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all shadow-sm text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-700 dark:hover:bg-cyan-900/50"
                         title="Xem chi tiết các quy trình mẫu"
                     >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Xem quy trình gốc</span>
+                        <ExternalLink className="w-3 h-3" />
+                        <span>Quy trình gốc</span>
                     </button>
                     <button
                         onClick={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm text-gray-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-800 border-gray-200 dark:bg-slate-800 dark:text-gray-300 dark:border-slate-700 dark:hover:bg-slate-700"
-                        title="Tải lại dữ liệu từ máy chủ (Xóa Cache)"
+                        className="flex items-center justify-center w-7 h-7 text-xs font-bold rounded-lg border transition-all shadow-sm text-gray-600 bg-white dark:bg-slate-800 hover:bg-slate-50 border-gray-200 dark:text-gray-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                        title="Tải lại dữ liệu (Xóa Cache)"
                     >
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -156,6 +239,35 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                             </>
                         )}
                     </button>
+                    {/* Xóa toàn bộ KH dự án Button — xóa tất cả bước trong project_plan_items */}
+                    {onDeletePlan && phases.length > 0 && (
+                        <button
+                            onClick={handleDeletePlanClick}
+                            disabled={isDeletingPlan}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm ${
+                                isDeletingPlan
+                                    ? 'text-gray-400 bg-slate-50 dark:bg-slate-800 border-gray-200 cursor-wait'
+                                    : deletePlanConfirm
+                                        ? 'text-white bg-red-600 border-red-700 animate-pulse hover:bg-red-700'
+                                        : 'text-orange-600 bg-orange-50 hover:bg-orange-100 border-orange-200 dark:border-orange-800 dark:bg-orange-900/30 hover:border-orange-300'
+                            }`}
+                            title={deletePlanConfirm ? 'Bấm lần nữa để xác nhận xóa toàn bộ kế hoạch dự án!' : 'Xóa toàn bộ kế hoạch dự án (các bước quy trình)'}
+                        >
+                            {isDeletingPlan ? (
+                                <div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                            ) : deletePlanConfirm ? (
+                                <>
+                                    <AlertCircle className="w-3.5 h-3.5" />
+                                    Xác nhận
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">Xóa KH dự án</span>
+                                </>
+                            )}
+                        </button>
+                    )}
                     {/* Xóa tất cả công việc Button */}
                     {tasks.length > 0 && (
                         <button
@@ -206,16 +318,12 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
             {/* Global Task Header - sticky for better UX */}
             {tasks.length > 0 && (
-                <div className="hidden sm:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-800" style={{ paddingLeft: '76px', paddingRight: '13px' }}>
-                    <div className="w-8 shrink-0 px-2"></div>
-                    <div className="flex-1 min-w-[200px] px-2 text-left">Công việc</div>
-                    <div className="w-24 shrink-0 px-2 text-center">Tiến độ</div>
-                    <div className="w-48 shrink-0 px-2 text-left hidden sm:block">Phụ trách</div>
-                    <div className="w-28 shrink-0 px-2 text-left hidden sm:block">Hạn / Bắt đầu</div>
-                    <div className="w-20 shrink-0 px-2 text-center">Ưu tiên</div>
-                    <div className="w-16 shrink-0 px-2 text-center">TL</div>
-                    <div className="w-8 shrink-0 px-2"></div>
-                    <div className="w-8 shrink-0 px-2"></div>
+                <div className="hidden lg:flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 py-1.5 shadow-sm sticky top-0 z-10 w-full backdrop-blur-sm bg-white/90 dark:bg-slate-800" style={{ paddingLeft: '76px', paddingRight: '80px' }}>
+                    <div className="flex-1 min-w-0 px-2 text-left">Công việc</div>
+                    <div className="w-20 shrink-0 px-2 text-center">Công việc con</div>
+                    <div className="w-36 shrink-0 px-2 text-left">Vai trò phụ trách</div>
+                    <div className="w-44 shrink-0 px-2 text-left">Thời hạn thực hiện</div>
+                    <div className="w-32 shrink-0 px-2 text-left">Trạng thái</div>
                 </div>
             )}
 
@@ -232,7 +340,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                         />
 
                         {/* Expanded Items */}
-                        {expandedPhases[phase.id] && tasks.length === 0 && (
+                        {expandedPhases[phase.id] && phase.items.length === 0 && (
                             <div className="mt-2 ml-4 p-5 bg-gradient-to-br from-primary-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-100/50 dark:border-slate-700/50 text-center shadow-sm">
                                 <div className="w-12 h-12 bg-primary-100 dark:bg-slate-700 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                                     <Layers className="w-6 h-6" />
@@ -245,7 +353,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                 </p>
                             </div>
                         )}
-                        {expandedPhases[phase.id] && tasks.length > 0 && (
+                        {expandedPhases[phase.id] && phase.items.length > 0 && (
                             <div className="mt-2 ml-4 border-l-2 border-gray-200 dark:border-slate-700 pl-4 space-y-3">
                                 {(phase.subProcesses || [{ id: '0', title: '', fullTitle: '', items: phase.items }]).map((sp: any) => (
                                     <div key={sp.id}>
@@ -273,12 +381,13 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                         {expandedPhases[`sp_${sp.id}`] !== false && (
                                         <div className={`space-y-2 ${sp.fullTitle ? 'ml-3 border-l border-warning-200/40 dark:border-warning-700/30 pl-3' : ''}`}>
                                         {sp.items.map((item: any) => {
+                                            // Use isTaskInStep for FK-first matching:
+                                            //   1st: task.ProjectPlanItemID === item.code (project_plan_item FK)
+                                            //   2nd: task.MonthlyPlanItemID === item.code (legacy)
+                                            //   3rd: compareStepCode(task.StepCode, item.stepCode)
+                                            const stepDef = { id: item.code, code: item.stepCode ?? item.code };
                                             const linkedTasks = filteredTasks
-                                                .filter(t => {
-                                                    const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
-                                                    const iCode = (item.code || '').toLowerCase().trim();
-                                                    return tTimelineStep === iCode;
-                                                })
+                                                .filter(t => isTaskInStep(t, stepDef))
                                                 .sort((a, b) => {
                                                     const dateA = a.StartDate ? new Date(a.StartDate).getTime() : (a.DueDate ? new Date(a.DueDate).getTime() : 0);
                                                     const dateB = b.StartDate ? new Date(b.StartDate).getTime() : (b.DueDate ? new Date(b.DueDate).getTime() : 0);
@@ -328,120 +437,111 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                             )}
                                                         </div>
 
-                                                        {/* Title */}
+                                                        {/* Clickable Area: Title & Meta Columns -> click to view step detail */}
                                                         <div 
-                                                            className="flex-1 min-w-0 pr-4 cursor-pointer"
-                                                            onClick={() => toggleStep(item.code)}
+                                                            className="flex-1 flex items-center justify-between min-w-0 cursor-pointer"
+                                                            onClick={() => onStepClick && onStepClick(item, agg)}
+                                                            title="Bấm để xem chi tiết bước quy trình"
                                                         >
-                                                            <div className="flex items-center gap-2">
-                                                                <h5 className={`text-sm font-semibold hover:text-blue-600 dark:hover:text-blue-400 ${isParentDone ? 'text-gray-900 dark:text-slate-100' : 'text-gray-700 dark:text-slate-300'}`}>
-                                                                    {item.id}. {item.title}
-                                                                </h5>
-                                                                {/* Progress Badge inline if needed */}
-                                                                {agg && agg.progress > 0 && (
-                                                                    <ProgressBadge value={agg.progress} size="sm" />
-                                                                )}
+                                                            {/* Title */}
+                                                            <div className="flex-1 min-w-0 pr-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <h5 className={`text-sm font-semibold hover:text-blue-600 dark:hover:text-blue-400 text-left ${isParentDone ? 'text-gray-900 dark:text-slate-100' : 'text-gray-700 dark:text-slate-300'}`}>
+                                                                        {item.title}
+                                                                    </h5>
+                                                                    {/* Progress Badge inline if needed */}
+                                                                    {agg && agg.progress > 0 && (
+                                                                        <ProgressBadge value={agg.progress} size="sm" />
+                                                                    )}
+                                                                </div>
                                                             </div>
-                                                            {/* Assignee & Meta under title */}
-                                                            {item.estimatedDays && (
-                                                                <div className="mt-1.5 flex items-center gap-2">
-                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700">
-                                                                        <Timer className="w-3 h-3" />
-                                                                        {item.estimatedDays} ngày
+
+                                                            {/* Tabular Meta Container (Right Aligned) */}
+                                                            <div className="hidden lg:flex items-center shrink-0 text-xs font-medium text-gray-500 dark:text-slate-400 mr-2">
+                                                                {/* Count Badge */}
+                                                                <div className="w-20 shrink-0 px-2 flex justify-center">
+                                                                    <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
+                                                                        ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
+                                                                        : completedCount === linkedTasks.length
+                                                                            ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
+                                                                            : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
+                                                                        }`}>
+                                                                        {completedCount}/{linkedTasks.length} việc
                                                                     </span>
                                                                 </div>
-                                                            )}
-                                                        </div>
 
-                                                        {/* Tabular Meta Container (Right Aligned) */}
-                                                        <div className="hidden lg:flex items-center shrink-0 text-xs font-medium text-gray-500 dark:text-slate-400 mr-2">
-                                                            {/* Count Badge */}
-                                                            <div className="w-24 shrink-0 px-2 flex justify-center">
-                                                                <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
-                                                                    ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
-                                                                    : completedCount === linkedTasks.length
-                                                                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                                                                        : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
-                                                                    }`}>
-                                                                    {completedCount}/{linkedTasks.length} việc
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Assignee / Phụ trách (Department) */}
-                                                            <div className="w-48 shrink-0 px-2 text-left">
-                                                                {displayRole ? (
-                                                                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700">
-                                                                        <Building2 className="w-3 h-3 text-warning-500" />
-                                                                        {displayRole}
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-[10px] text-gray-400 italic">Chưa xác định</span>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Dates (Start -> Due) */}
-                                                            <div className="w-28 shrink-0 px-2 text-left text-[10px] leading-tight whitespace-nowrap text-gray-500 dark:text-slate-400" title={agg?.startDate && agg?.dueDate ? `${formatDateShort(agg.startDate)} - ${formatDateShort(agg.dueDate)}` : 'Chưa xác định'}>
-                                                                {agg?.startDate || agg?.dueDate ? (
-                                                                    <span className="flex items-center gap-1">
-                                                                        <Calendar className="w-3 h-3 text-gray-400 shrink-0" />
-                                                                        <span>
-                                                                            {agg.startDate ? formatDateShort(agg.startDate) : '--/--'} &rarr; <strong className="text-gray-700 dark:text-slate-200">{agg.dueDate ? formatDateShort(agg.dueDate) : '--/--'}</strong>
-                                                                        </span>
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-gray-400 dark:text-slate-500">--/--</span>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Status */}
-                                                            <div className="w-32 shrink-0 px-2 flex justify-start">
-                                                                {(() => {
-                                                                    const statusCfg = getStatusConfig(parentStatus);
-                                                                    return linkedTasks.length > 0 ? (
-                                                                        <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded ${statusCfg.bg} ${statusCfg.color} border ${statusCfg.border}`}>
-                                                                            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
-                                                                            {statusCfg.label}
+                                                                {/* Assignee / Phụ trách (Department) / RACI */}
+                                                                <div className="w-36 shrink-0 px-2 text-left flex items-center">
+                                                                    {item.raci && item.raci.length > 0 ? (
+                                                                        <RaciHoverBadge raciList={item.raci} />
+                                                                    ) : displayRole ? (
+                                                                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700">
+                                                                            <Building2 className="w-3 h-3 text-warning-500" />
+                                                                            {displayRole}
                                                                         </span>
                                                                     ) : (
-                                                                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700">
-                                                                            <Circle className="w-2.5 h-2.5" />
-                                                                            Chưa tạo việc
-                                                                        </span>
-                                                                    );
-                                                                })()}
-                                                            </div>
-                                                        </div>
+                                                                        <span className="text-[10px] text-gray-400 italic">Chưa xác định</span>
+                                                                    )}
+                                                                </div>
 
-                                                        {/* Mobile Meta Backup */}
-                                                        <div className="lg:hidden flex flex-col gap-1 shrink-0 text-right mr-2">
-                                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium inline-block w-fit ml-auto ${linkedTasks.length === 0 ? 'bg-gray-100 text-gray-500' : completedCount === linkedTasks.length ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
-                                                                {completedCount}/{linkedTasks.length} việc
-                                                            </span>
-                                                            {displayRole && (
-                                                                <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700 inline-block w-fit ml-auto">
-                                                                    {displayRole}
+                                                                {/* Dates (Start -> Due) */}
+                                                                <div className="w-44 shrink-0 px-2 text-left text-[10px] leading-tight whitespace-nowrap text-gray-500 dark:text-slate-400" title={item.startDate && item.dueDate ? `${formatDateShort(item.startDate)} - ${formatDateShort(item.dueDate)}` : 'Chưa xác định'}>
+                                                                    {item.startDate || item.dueDate ? (
+                                                                        <span className="flex items-center gap-1">
+                                                                            <Calendar className="w-3 h-3 text-gray-400 shrink-0" />
+                                                                            <span>
+                                                                                {item.startDate ? formatDateShort(item.startDate) : '--/--'} &rarr; <strong className="text-gray-700 dark:text-slate-200">{item.dueDate ? formatDateShort(item.dueDate) : '--/--'}</strong>
+                                                                                {item.estimatedDays && (
+                                                                                    <span className="text-[9px] font-bold text-primary-500 dark:text-primary-400 ml-1">
+                                                                                        ({item.estimatedDays}n)
+                                                                                    </span>
+                                                                                )}
+                                                                            </span>
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-gray-400 dark:text-slate-500">--/--</span>
+                                                                    )}
+                                                                </div>
+
+                                                                {/* Status */}
+                                                                <div className="w-32 shrink-0 px-2 flex justify-start">
+                                                                    {(() => {
+                                                                        const statusCfg = getStatusConfig(parentStatus);
+                                                                        return (
+                                                                            <span className={`inline-flex items-center gap-1 text-[9.5px] px-1.5 py-0.5 rounded font-bold ${statusCfg.bg} ${statusCfg.color} border ${statusCfg.border}`}>
+                                                                                <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
+                                                                                {statusCfg.label}
+                                                                            </span>
+                                                                        );
+                                                                    })()}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Mobile Meta Backup */}
+                                                            <div className="lg:hidden flex flex-col gap-1 shrink-0 text-right mr-2">
+                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium inline-block w-fit ml-auto ${linkedTasks.length === 0 ? 'bg-gray-100 text-gray-500' : completedCount === linkedTasks.length ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                                    {completedCount}/{linkedTasks.length} việc
                                                                 </span>
-                                                            )}
-                                                            {(agg?.startDate || agg?.dueDate) && (
-                                                                <span className="text-[10px] text-gray-500">{formatDateShort(agg.startDate)} - {formatDateShort(agg.dueDate)}</span>
-                                                            )}
+                                                                {displayRole && (
+                                                                    <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-700 inline-block w-fit ml-auto">
+                                                                        {displayRole}
+                                                                    </span>
+                                                                )}
+                                                                {(item.startDate || item.dueDate || agg?.startDate || agg?.dueDate) && (
+                                                                    <span className="text-[10px] text-gray-500">
+                                                                        {item.startDate ? formatDateShort(item.startDate) : (agg?.startDate ? formatDateShort(agg.startDate) : '--/--')} - {item.dueDate ? formatDateShort(item.dueDate) : (agg?.dueDate ? formatDateShort(agg.dueDate) : '--/--')}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </div>
 
                                                         {/* Action Buttons */}
-                                                        <div className="flex items-center gap-1.5 shrink-0">
-                                                            {onStepClick && (
-                                                                <button
-                                                                    onClick={() => onStepClick(item, agg)}
-                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 rounded border border-gray-200 dark:border-slate-600 flex items-center gap-1"
-                                                                    title="Xem chi tiết kế hoạch"
-                                                                >
-                                                                    <Eye className="w-3 h-3" />
-                                                                    <span className="hidden sm:inline">Chi tiết</span>
-                                                                </button>
-                                                            )}
-
+                                                        <div className="flex items-center gap-1.5 shrink-0 z-20">
                                                             <button
-                                                                onClick={() => onAddTask(item.title, item.code)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onAddTask(item.title, item.code);
+                                                                }}
                                                                 className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded border border-blue-200 dark:border-blue-800 flex items-center gap-1"
                                                             >
                                                                 <Plus className="w-3 h-3" />
@@ -459,7 +559,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         <th className="w-8 p-0 border-0 h-0"></th>
                                                                         <th className="min-w-[200px] p-0 border-0 h-0"></th>
                                                                         <th className="w-24 p-0 border-0 h-0"></th>
-                                                                        <th className="w-48 hidden sm:table-cell p-0 border-0 h-0"></th>
+                                                                        <th className="w-32 hidden sm:table-cell p-0 border-0 h-0"></th>
                                                                         <th className="w-28 hidden sm:table-cell p-0 border-0 h-0"></th>
                                                                         <th className="w-20 p-0 border-0 h-0"></th>
                                                                         <th className="w-16 p-0 border-0 h-0"></th>
@@ -678,12 +778,6 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                         </div>
                                                     )}
 
-                                                    {/* Empty state */}
-                                                    {linkedTasks.length === 0 && (
-                                                        <p className="text-xs text-gray-400 dark:text-slate-400 mt-2 italic">
-                                                            Chưa có công việc. Bấm 'Tạo KH tổng thể' hoặc 'Thêm' để tạo công việc mới.
-                                                        </p>
-                                                    )}
                                                 </div>
                                             );
                                         })}
@@ -695,6 +789,32 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                         )}
                     </div>
                 ))}
+
+                {/* Empty state: no master plan created yet */}
+                {phases.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 px-6 bg-gradient-to-br from-primary-50/50 to-white dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-primary-200 dark:border-slate-600">
+                        <div className="w-16 h-16 bg-primary-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
+                            <ListPlus className="w-8 h-8 text-primary-500 dark:text-primary-400" />
+                        </div>
+                        <h3 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-1">
+                            Chưa có kế hoạch tổng thể
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 text-center max-w-sm mb-6">
+                            Bấm vào <strong>"Tạo KH tổng thể"</strong> ở trên để tự động phân bổ các giai đoạn, quy trình và công việc theo Nghị định 175/NĐ-CP.
+                        </p>
+                        <button
+                            onClick={() => onOpenPlanModal(
+                                { type: 'all' },
+                                'Tạo kế hoạch tổng thể',
+                                'Hệ thống sẽ tự động phân bổ công việc cho tất cả giai đoạn theo tỷ lệ thời gian'
+                            )}
+                            className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-md hover:shadow-lg"
+                        >
+                            <ListPlus className="w-4 h-4" />
+                            Tạo kế hoạch tổng thể ngay
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
