@@ -20,6 +20,11 @@ export const dbToEmployee = (row: any): Employee => ({
     JobContent: row.job_content || undefined,
     CompletionCriteria: row.completion_criteria || undefined,
     SystemRole: row.system_role || undefined,
+    DateOfBirth: row.date_of_birth || undefined,
+    PermanentAddress: row.permanent_address || undefined,
+    Specialty: row.specialty || undefined,
+    PoliticalTheory: row.political_theory || undefined,
+    TenureInfo: row.tenure_info || undefined,
 });
 
 export const employeeToDb = (emp: Partial<Employee>) => ({
@@ -37,5 +42,10 @@ export const employeeToDb = (emp: Partial<Employee>) => ({
     ...(emp.JobContent !== undefined && { job_content: emp.JobContent }),
     ...(emp.CompletionCriteria !== undefined && { completion_criteria: emp.CompletionCriteria }),
     ...(emp.SystemRole !== undefined && { system_role: emp.SystemRole }),
+    ...(emp.DateOfBirth !== undefined && { date_of_birth: emp.DateOfBirth ? emp.DateOfBirth : null }),
+    ...(emp.PermanentAddress !== undefined && { permanent_address: emp.PermanentAddress }),
+    ...(emp.Specialty !== undefined && { specialty: emp.Specialty }),
+    ...(emp.PoliticalTheory !== undefined && { political_theory: emp.PoliticalTheory }),
+    ...(emp.TenureInfo !== undefined && { tenure_info: emp.TenureInfo }),
 });
 

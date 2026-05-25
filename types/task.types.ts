@@ -1,5 +1,45 @@
 // Task management types — Unified schema (UUID PK)
 
+// ─── Task Category (13 phân loại cố định cho báo cáo tháng) ──────────
+export const TASK_CATEGORIES = [
+    'dieu_hanh', 'tham_dinh', 'thi_cong', 'quyet_toan', 'thanh_toan',
+    'gpmb', 'dau_thau', 'dieu_chinh', 'gop_y', 'bao_cao',
+    'kiem_tra', 'ban_giao', 'khac'
+] as const;
+export type TaskCategory = typeof TASK_CATEGORIES[number];
+
+export const TASK_CATEGORY_LABELS: Record<TaskCategory, string> = {
+    dieu_hanh: 'Điều hành',
+    tham_dinh: 'Thẩm định/Phê duyệt',
+    thi_cong: 'Thi công/Giám sát',
+    quyet_toan: 'Quy���t toán',
+    thanh_toan: 'Thanh toán',
+    gpmb: 'GPMB',
+    dau_thau: 'Đấu thầu',
+    dieu_chinh: 'Điều chỉnh',
+    gop_y: 'Góp ý/Văn bản',
+    bao_cao: 'Báo cáo',
+    kiem_tra: 'Kiểm tra/QLCL',
+    ban_giao: 'Bàn giao/Nghiệm thu',
+    khac: 'Khác',
+};
+
+export const TASK_CATEGORY_COLORS: Record<TaskCategory, { bg: string; text: string; border: string }> = {
+    dieu_hanh: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
+    tham_dinh: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+    thi_cong: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+    quyet_toan: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+    thanh_toan: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
+    gpmb: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+    dau_thau: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+    dieu_chinh: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
+    gop_y: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+    bao_cao: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+    kiem_tra: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
+    ban_giao: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
+    khac: { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-200' },
+};
+
 // Status & Priority enums (matching DB enums)
 export enum TaskStatus {
     Todo = 'todo',          // Công việc mới
@@ -88,9 +128,15 @@ export interface Task {
     Dependencies?: TaskDependency[];
     Attachments?: TaskAttachment[];
     
+    // Report fields (báo cáo tháng)
+    Category?: TaskCategory;
+    CompletionResult?: string;
+    IncompleteReason?: string;
+    Notes?: string;
+
     // Metadata (JSONB catch-all)
     Metadata?: Record<string, any>;
-    
+
     // Flags
     IsCritical?: boolean;
     

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { ProjectStatus, MANAGEMENT_BOARDS } from '../types';
+import { TaskCategory, TASK_CATEGORIES, TASK_CATEGORY_LABELS } from '../types/task.types';
 
 export interface DashboardOverviewMetrics {
     totalProjects: number;
@@ -21,6 +22,35 @@ export interface MonthlyBriefingStats {
     keyAchievements: { id: string; content: string }[];
     roadblocks: { id: string; content: string; severity: 'high' | 'medium' | 'low' }[];
     upcomingPlans: { id: string; content: string }[];
+}
+
+export interface TaskBriefingItem {
+    title: string;
+    project_name?: string;
+    assignee_name: string;
+    completion_result?: string;
+    incomplete_reason?: string;
+    status: string;
+    progress: number;
+    notes?: string;
+}
+
+export interface TaskBriefingCategoryGroup {
+    category: TaskCategory;
+    category_label: string;
+    total: number;
+    completed: number;
+    items: TaskBriefingItem[];
+}
+
+export interface TaskBriefingSummary {
+    department_name: string;
+    total_tasks: number;
+    completed: number;
+    in_progress: number;
+    incomplete: number;
+    completion_rate: number;
+    by_category: TaskBriefingCategoryGroup[];
 }
 
 export interface DashboardProjectRow {
@@ -319,6 +349,92 @@ export const DashboardService = {
             roadblocks,
             upcomingPlans,
         };
+    },
+
+    /** Task Briefing Summary — tổng hợp công việc theo phòng ban cho báo cáo giao ban */
+    getTaskBriefingSummary: async (month: number, year: number): Promise<TaskBriefingSummary[]> => {
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+        const lastDay = new Date(year, month, 0).getDate();
+        const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+        const [tasksRes, employeesRes] = await Promise.all([
+            (supabase as any)
+                .from('tasks')
+                .select('id, title, status, progress, category, completion_result, incomplete_reason, notes, assignee_id, project_id, projects(project_name)')
+                .is('parent_id', null)
+                .gte('due_date', startDate)
+                .lte('due_date', endDate)
+                .order('category', { ascending: true })
+                .order('sort_order', { ascending: true }),
+            supabase.from('employees').select('employee_id, full_name, department, position'),
+        ]);
+
+        if (tasksRes.error) {
+            console.error('[TaskBriefing] tasks query failed:', tasksRes.error.message || tasksRes.error);
+            return [];
+        }
+
+        const empMap = new Map<string, { full_name: string; department: string | null; position: string | null }>();
+        for (const e of (employeesRes.data || [])) {
+            empMap.set(e.employee_id, e);
+        }
+
+        const tasks = tasksRes.data || [];
+        const deptMap = new Map<string, TaskBriefingSummary>();
+
+        for (const t of tasks) {
+            const emp = empMap.get(t.assignee_id);
+            const dept = emp?.department || 'Chưa xác định';
+            if (!deptMap.has(dept)) {
+                deptMap.set(dept, {
+                    department_name: dept,
+                    total_tasks: 0,
+                    completed: 0,
+                    in_progress: 0,
+                    incomplete: 0,
+                    completion_rate: 0,
+                    by_category: [],
+                });
+            }
+            const summary = deptMap.get(dept)!;
+            summary.total_tasks++;
+            if (t.status === 'done') summary.completed++;
+            else if (t.status === 'in_progress') summary.in_progress++;
+            else if (t.status === 'incomplete') summary.incomplete++;
+
+            const cat = (t.category as TaskCategory) || 'khac';
+            let catGroup = summary.by_category.find(c => c.category === cat);
+            if (!catGroup) {
+                catGroup = {
+                    category: cat,
+                    category_label: TASK_CATEGORY_LABELS[cat] || 'Khác',
+                    total: 0,
+                    completed: 0,
+                    items: [],
+                };
+                summary.by_category.push(catGroup);
+            }
+            catGroup.total++;
+            if (t.status === 'done') catGroup.completed++;
+            catGroup.items.push({
+                title: t.title,
+                project_name: t.projects?.project_name || undefined,
+                assignee_name: emp?.full_name || '',
+                completion_result: t.completion_result || undefined,
+                incomplete_reason: t.incomplete_reason || undefined,
+                status: t.status,
+                progress: t.progress || 0,
+                notes: t.notes || undefined,
+            });
+        }
+
+        for (const summary of deptMap.values()) {
+            summary.completion_rate = summary.total_tasks > 0
+                ? Math.round((summary.completed / summary.total_tasks) * 1000) / 10
+                : 0;
+        }
+
+        return Array.from(deptMap.values());
     },
 
     /** Material Mines */

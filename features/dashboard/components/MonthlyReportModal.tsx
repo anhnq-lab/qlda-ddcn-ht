@@ -26,7 +26,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
         setPhase('generating');
         setError('');
         try {
-            const [overviewRes, projectsRes, disbursedYearRes] = await Promise.allSettled([
+            const [overviewRes, projectsRes, disbursedYearRes, taskBriefingRes] = await Promise.allSettled([
                 DashboardService.getOverviewMetrics(year),
                 ProjectService.getAll(),
                 supabase.from('disbursements')
@@ -34,11 +34,13 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                     .gte('date', `${year}-01-01`)
                     .lte('date', `${year}-12-31`)
                     .then(r => (r.data || []).reduce((s: number, d: { amount: unknown }) => s + Number(d.amount), 0)),
+                DashboardService.getTaskBriefingSummary(month, year),
             ]);
 
             const overview = overviewRes.status === 'fulfilled' ? overviewRes.value : null;
             const projects = projectsRes.status === 'fulfilled' ? projectsRes.value : [];
             const disbursedYear = disbursedYearRes.status === 'fulfilled' ? disbursedYearRes.value : 0;
+            const taskBriefing = taskBriefingRes.status === 'fulfilled' ? taskBriefingRes.value : [];
 
             // Compact report data — keep payload small to avoid edge function timeout
             const reportData = {
@@ -71,6 +73,22 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                 ketQuaNoiBat: stats.keyAchievements.map(a => a.content),
                 tonTaiVuongMac: stats.roadblocks.map(r => r.content),
                 keHoachThangToi: stats.upcomingPlans.map(p => p.content),
+                congViecPhongBan: taskBriefing.map(dept => ({
+                    phong: dept.department_name,
+                    tongCV: dept.total_tasks,
+                    hoanThanh: dept.completed,
+                    dangLam: dept.in_progress,
+                    chuaHT: dept.incomplete,
+                    tyLe: `${dept.completion_rate}%`,
+                    noiBat: dept.by_category
+                        .filter(c => c.completed > 0)
+                        .slice(0, 3)
+                        .map(c => `${c.category_label}: ${c.completed}/${c.total} HT`),
+                    vuongMac: dept.by_category
+                        .flatMap(c => c.items.filter(i => i.status === 'incomplete'))
+                        .slice(0, 3)
+                        .map(i => i.title + (i.incomplete_reason ? ` (${i.incomplete_reason})` : '')),
+                })),
             };
 
             const prompt = buildMonthlyBriefingPrompt(month, year);

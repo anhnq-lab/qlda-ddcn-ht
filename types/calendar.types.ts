@@ -12,6 +12,7 @@ export interface AgencyEvent {
   room: AgencyEventRoom | null;
   start_time: string;
   end_time: string;
+  leader_id: string | null;
   location: string | null;
   report_content: string | null;
   report_files: any[] | null;
@@ -30,6 +31,7 @@ export interface AgencyEventAttendee {
 // Custom type for frontend that includes attendees details
 export interface AgencyEventWithAttendees extends AgencyEvent {
   attendees: Employee[];
+  leader?: Employee | null;
 }
 
 export interface CreateAgencyEventDTO {
@@ -39,6 +41,7 @@ export interface CreateAgencyEventDTO {
   room?: AgencyEventRoom | null;
   start_time: string; // ISO String
   end_time: string; // ISO String
+  leader_id?: string | null;
   location?: string | null;
   report_content?: string | null;
   report_files?: any[] | null;

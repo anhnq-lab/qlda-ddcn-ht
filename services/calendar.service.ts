@@ -7,6 +7,7 @@ const ATTENDEE_TABLE = 'agency_event_attendees';
 
 const ATTENDEE_SELECT = `
   *,
+  leader:employees(*),
   attendees:agency_event_attendees(
     user_id,
     employee:employees(*)
@@ -16,6 +17,7 @@ const ATTENDEE_SELECT = `
 function mapEventRow(event: any): AgencyEventWithAttendees {
   return {
     ...event,
+    leader: event.leader ? dbToEmployee(event.leader) : null,
     attendees: (event.attendees || [])
       .map((a: any) => a.employee ? dbToEmployee(a.employee) : null)
       .filter(Boolean),

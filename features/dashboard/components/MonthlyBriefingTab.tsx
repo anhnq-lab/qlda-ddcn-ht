@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
     Calendar, TrendingUp, CheckCircle2, AlertTriangle,
-    CalendarDays, Target, FileText, AlertCircle, Sparkles, Building2, Download, ChevronDown
+    CalendarDays, Target, FileText, AlertCircle, Sparkles, Building2, Download, ChevronDown,
+    ChevronRight, Layers, Users
 } from 'lucide-react';
 import { formatCurrency } from '../../../utils/format';
-import { DashboardService } from '../../../services/DashboardService';
+import { DashboardService, TaskBriefingSummary } from '../../../services/DashboardService';
+import { TASK_CATEGORY_COLORS, type TaskCategory } from '../../../types/task.types';
 import { MonthlyReportModal } from './MonthlyReportModal';
 import { StatCard } from '../../../components/common/StatCard';
+import { exportDepartmentTaskReport, exportConsolidatedBriefingReport } from '../../tasks/exportTaskMonthlyReport';
 
 export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selectedYear }) => {
     const today = new Date();
@@ -20,6 +23,24 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
         staleTime: 5 * 60 * 1000,
         retry: 1,
     });
+
+    const { data: taskBriefing = [] } = useQuery({
+        queryKey: ['dashboard', 'taskBriefing', selectedMonth, selectedYear],
+        queryFn: () => DashboardService.getTaskBriefingSummary(selectedMonth, selectedYear),
+        staleTime: 5 * 60 * 1000,
+        retry: 1,
+    });
+
+    const [selectedDept, setSelectedDept] = useState<string>('all');
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
+    const toggleCategory = (key: string) => {
+        setExpandedCategories(prev => {
+            const next = new Set(prev);
+            if (next.has(key)) next.delete(key); else next.add(key);
+            return next;
+        });
+    };
 
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -120,6 +141,177 @@ export const MonthlyBriefingTab: React.FC<{ selectedYear: number }> = ({ selecte
                     color="warning"
                 />
             </div>
+
+            {/* ── TỔNG HỢP CÔNG VIỆC CÁC PHÒNG BAN ── */}
+            {taskBriefing.length > 0 && (() => {
+                const deptNames = taskBriefing.map(d => d.department_name);
+                const filteredDepts = selectedDept === 'all' ? taskBriefing : taskBriefing.filter(d => d.department_name === selectedDept);
+                const totalAll = taskBriefing.reduce((s, d) => s + d.total_tasks, 0);
+                const completedAll = taskBriefing.reduce((s, d) => s + d.completed, 0);
+                const rateAll = totalAll > 0 ? Math.round((completedAll / totalAll) * 1000) / 10 : 0;
+
+                return (
+                    <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                        <div className="p-5 border-b border-border">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg"><Users className="w-5 h-5" /></div>
+                                    <h3 className="text-lg font-black text-txt-primary uppercase tracking-tight">TỔNG HỢP CÔNG VIỆC CÁC PHÒNG BAN</h3>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className="font-bold text-emerald-600">{completedAll}/{totalAll}</span>
+                                    <span className="text-txt-muted">hoàn thành</span>
+                                    <span className={`font-black text-sm px-2 py-0.5 rounded-lg ${rateAll >= 80 ? 'bg-emerald-100 text-emerald-700' : rateAll >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                                        {rateAll}%
+                                    </span>
+                                    <button
+                                        onClick={() => exportConsolidatedBriefingReport(selectedMonth, selectedYear)}
+                                        className="ml-2 btn btn-outline text-xs px-2.5 py-1 flex items-center gap-1 border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
+                                    >
+                                        <Download className="w-3.5 h-3.5" /> Xuất Excel tổng hợp
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Department tabs */}
+                            <div className="flex flex-wrap gap-1.5 mt-4">
+                                <button
+                                    onClick={() => setSelectedDept('all')}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedDept === 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300'}`}
+                                >
+                                    Tất cả
+                                </button>
+                                {deptNames.map(name => (
+                                    <button
+                                        key={name}
+                                        onClick={() => setSelectedDept(name)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedDept === name ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300'}`}
+                                    >
+                                        {name.replace('Phòng ', '')}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Summary table per department */}
+                        {selectedDept === 'all' && (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead className="bg-slate-50 dark:bg-slate-800">
+                                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                            <th className="px-4 py-3 text-left">Phòng ban</th>
+                                            <th className="px-3 py-3 text-center">Tổng CV</th>
+                                            <th className="px-3 py-3 text-center">Hoàn thành</th>
+                                            <th className="px-3 py-3 text-center">Đang làm</th>
+                                            <th className="px-3 py-3 text-center">Chưa HT</th>
+                                            <th className="px-3 py-3 text-center">Tỷ lệ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                                        {taskBriefing.map(dept => (
+                                            <tr key={dept.department_name} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer" onClick={() => setSelectedDept(dept.department_name)}>
+                                                <td className="px-4 py-3 font-bold text-slate-800 dark:text-slate-200">{dept.department_name}</td>
+                                                <td className="px-3 py-3 text-center font-bold">{dept.total_tasks}</td>
+                                                <td className="px-3 py-3 text-center text-emerald-600 font-bold">{dept.completed}</td>
+                                                <td className="px-3 py-3 text-center text-blue-600 font-bold">{dept.in_progress}</td>
+                                                <td className="px-3 py-3 text-center text-rose-600 font-bold">{dept.incomplete}</td>
+                                                <td className="px-3 py-3 text-center">
+                                                    <span className={`inline-flex px-2 py-0.5 rounded-lg text-xs font-black ${dept.completion_rate >= 80 ? 'bg-emerald-100 text-emerald-700' : dept.completion_rate >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                                                        {dept.completion_rate}%
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        {/* Detail view per department */}
+                        {filteredDepts.filter(() => selectedDept !== 'all').map(dept => (
+                            <div key={dept.department_name} className="p-5 space-y-3">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h4 className="font-bold text-slate-800 dark:text-slate-200">{dept.department_name}</h4>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-slate-500">
+                                            <span className="font-bold text-emerald-600">{dept.completed}</span>/{dept.total_tasks} hoàn thành ({dept.completion_rate}%)
+                                        </span>
+                                        <button
+                                            onClick={() => exportDepartmentTaskReport(selectedMonth, selectedYear, dept.department_name)}
+                                            className="btn btn-outline text-xs px-2 py-1 flex items-center gap-1 border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100"
+                                        >
+                                            <Download className="w-3.5 h-3.5" /> Xuất Excel phòng
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {dept.by_category.map((catGroup, catIdx) => {
+                                    const catKey = `${dept.department_name}-${catGroup.category}`;
+                                    const isExpanded = expandedCategories.has(catKey);
+                                    const catColors = TASK_CATEGORY_COLORS[catGroup.category as TaskCategory];
+
+                                    return (
+                                        <div key={catGroup.category} className="border border-slate-100 dark:border-slate-700 rounded-xl overflow-hidden">
+                                            <button
+                                                onClick={() => toggleCategory(catKey)}
+                                                className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                                    <span className={`text-xs font-bold uppercase tracking-wider ${catColors?.text || 'text-slate-600'}`}>
+                                                        {String.fromCharCode(73 + catIdx)}. {catGroup.category_label}
+                                                    </span>
+                                                </div>
+                                                <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${catGroup.completed === catGroup.total ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                                                    {catGroup.completed}/{catGroup.total}
+                                                </span>
+                                            </button>
+
+                                            {isExpanded && (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-xs">
+                                                        <thead className="bg-white dark:bg-slate-800">
+                                                            <tr className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                                                <th className="px-3 py-2 text-center w-8">STT</th>
+                                                                <th className="px-3 py-2 text-left">Nội dung</th>
+                                                                <th className="px-3 py-2 text-left hidden md:table-cell">Dự án</th>
+                                                                <th className="px-3 py-2 text-left">Kết quả</th>
+                                                                <th className="px-3 py-2 text-left hidden sm:table-cell">Cán bộ PT</th>
+                                                                <th className="px-3 py-2 text-center w-12">%</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                                                            {catGroup.items.map((item, i) => (
+                                                                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                                                    <td className="px-3 py-2 text-center text-slate-400">{i + 1}</td>
+                                                                    <td className="px-3 py-2 font-medium text-slate-700 dark:text-slate-300 max-w-[200px] truncate" title={item.title}>{item.title}</td>
+                                                                    <td className="px-3 py-2 text-slate-500 hidden md:table-cell max-w-[150px] truncate">{item.project_name || '—'}</td>
+                                                                    <td className="px-3 py-2 max-w-[200px] truncate" title={item.completion_result || item.incomplete_reason || ''}>
+                                                                        {item.status === 'done' && <span className="text-emerald-600">{item.completion_result || 'Hoàn thành'}</span>}
+                                                                        {item.status === 'incomplete' && <span className="text-rose-600">{item.incomplete_reason || 'Chưa HT'}</span>}
+                                                                        {item.status === 'in_progress' && <span className="text-blue-600">{item.completion_result || 'Đang thực hiện'}</span>}
+                                                                        {!['done', 'incomplete', 'in_progress'].includes(item.status) && <span className="text-slate-400">—</span>}
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-slate-500 hidden sm:table-cell">{item.assignee_name}</td>
+                                                                    <td className="px-3 py-2 text-center">
+                                                                        <span className={`font-bold ${item.progress >= 100 ? 'text-emerald-600' : item.progress >= 50 ? 'text-blue-600' : 'text-slate-400'}`}>
+                                                                            {item.progress}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                );
+            })()}
 
             {/* ── Layout 2 Cột: Kết quả vs Tồn tại ── */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

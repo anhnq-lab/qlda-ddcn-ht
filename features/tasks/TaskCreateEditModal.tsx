@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus, TaskPriority, Employee } from '../../types';
+import { TASK_CATEGORIES, TASK_CATEGORY_LABELS, type TaskCategory } from '../../types/task.types';
 import { useMonthlyPlanItemOptions } from '../../hooks/usePlanData';
 import {
     X, CheckCircle2, Clock, AlertCircle, XCircle,
@@ -90,9 +91,6 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
         e.preventDefault();
         onSubmit(formData);
     };
-
-    const needsResultNote =
-        formData.Status === TaskStatus.Done || formData.Status === TaskStatus.Incomplete;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -239,29 +237,70 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Ghi chú kết quả — bắt buộc khi Hoàn thành / Chưa hoàn thành */}
-                    {needsResultNote && (
-                        <div className={`p-4 rounded-xl border ${formData.Status === TaskStatus.Done
-                            ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800'
-                            : 'bg-rose-50 border-rose-200 dark:bg-rose-900/20 dark:border-rose-800'}`}>
+                    {/* Phân loại công việc */}
+                    <div>
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            Phân loại
+                        </label>
+                        <select
+                            value={formData.Category || ''}
+                            onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                        >
+                            <option value="">-- Chọn phân loại --</option>
+                            {TASK_CATEGORIES.map(cat => (
+                                <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Kết quả thực hiện — hiện khi done hoặc in_progress */}
+                    {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress) && (
+                        <div className="p-4 rounded-xl border bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800">
                             <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                                Ghi chú kết quả <span className="text-red-500">*</span>
+                                Kết quả thực hiện {formData.Status === TaskStatus.Done && <span className="text-red-500">*</span>}
+                            </label>
+                            <textarea
+                                required={formData.Status === TaskStatus.Done}
+                                rows={2}
+                                value={formData.CompletionResult || ''}
+                                onChange={e => setFormData({ ...formData, CompletionResult: e.target.value })}
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                                placeholder="Mô tả kết quả đã đạt được: VD Đã phê duyệt tại QĐ số..."
+                            />
+                        </div>
+                    )}
+
+                    {/* Lý do chưa hoàn thành — hiện khi incomplete */}
+                    {formData.Status === TaskStatus.Incomplete && (
+                        <div className="p-4 rounded-xl border bg-rose-50 border-rose-200 dark:bg-rose-900/20 dark:border-rose-800">
+                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                                Lý do chưa hoàn thành <span className="text-red-500">*</span>
                             </label>
                             <textarea
                                 required
                                 rows={2}
-                                value={formData.Metadata?.resultNote || ''}
-                                onChange={e => setFormData({
-                                    ...formData,
-                                    Metadata: { ...formData.Metadata, resultNote: e.target.value }
-                                })}
+                                value={formData.IncompleteReason || ''}
+                                onChange={e => setFormData({ ...formData, IncompleteReason: e.target.value })}
                                 className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
-                                placeholder={formData.Status === TaskStatus.Done
-                                    ? 'Mô tả kết quả đã đạt được...'
-                                    : 'Lý do chưa hoàn thành, vướng mắc...'}
+                                placeholder="Lý do chưa hoàn thành, vướng mắc cần giải quyết..."
                             />
                         </div>
                     )}
+
+                    {/* Ghi chú */}
+                    <div>
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            Ghi chú
+                        </label>
+                        <textarea
+                            rows={2}
+                            value={formData.Notes || ''}
+                            onChange={e => setFormData({ ...formData, Notes: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all resize-none"
+                            placeholder="Ghi chú bổ sung (tùy chọn)..."
+                        />
+                    </div>
 
                     {/* Dự án + Kế hoạch tháng */}
                     <div className="grid grid-cols-2 gap-4 pt-1 border-t border-slate-100 dark:border-slate-700">

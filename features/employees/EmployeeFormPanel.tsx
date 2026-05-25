@@ -8,7 +8,7 @@ import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useToast } from '../../components/ui/Toast';
 import { EmployeeStatus, Role } from '../../types';
 import { SectionHeader } from '../../components/ui';
-import { User, Building2, ChevronDown, Briefcase, Mail, Phone, Lock, Hash, Shield, Calendar, Save, X } from 'lucide-react';
+import { User, Building2, ChevronDown, Briefcase, Mail, Phone, Lock, Hash, Shield, Calendar, Save, X, Sparkles } from 'lucide-react';
 
 export interface EmployeeFormPanelProps {
     editMode: 'create' | 'edit';
@@ -39,7 +39,12 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
             Password: '',
             Role: Role.Staff,
             Status: EmployeeStatus.Active,
-            JoinDate: new Date().toISOString().split('T')[0]
+            JoinDate: new Date().toISOString().split('T')[0],
+            DateOfBirth: '',
+            PermanentAddress: '',
+            Specialty: '',
+            PoliticalTheory: '',
+            TenureInfo: ''
         }
     });
 
@@ -233,6 +238,67 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                             </div>
                             {form.formState.errors.Role && <p className="text-red-500 text-xs mt-1">{form.formState.errors.Role.message}</p>}
+                        </div>
+                    </div>
+                </div>
+
+                <hr className="border-slate-100 dark:border-slate-800" />
+
+                {/* Section: Lý lịch & Trình độ */}
+                <div>
+                    <SectionHeader title="Lý lịch & Trình độ" icon={<Sparkles className="w-4 h-4" />} size="sm" />
+                    <div className="grid grid-cols-2 gap-5 mt-4">
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ngày sinh</label>
+                            <input
+                                type="date"
+                                {...form.register('DateOfBirth')}
+                                className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.DateOfBirth ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                            />
+                            {form.formState.errors.DateOfBirth && <p className="text-red-500 text-xs mt-1">{form.formState.errors.DateOfBirth.message}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Lý luận chính trị</label>
+                            <div className="relative">
+                                <select
+                                    {...form.register('PoliticalTheory')}
+                                    className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.PoliticalTheory ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                >
+                                    <option value="">Không</option>
+                                    <option value="Sơ cấp">Sơ cấp</option>
+                                    <option value="Trung cấp">Trung cấp</option>
+                                    <option value="Cao cấp">Cao cấp</option>
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                            </div>
+                            {form.formState.errors.PoliticalTheory && <p className="text-red-500 text-xs mt-1">{form.formState.errors.PoliticalTheory.message}</p>}
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Chuyên môn / Học vị</label>
+                            <input
+                                type="text"
+                                {...form.register('Specialty')}
+                                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
+                                placeholder="Ví dụ: Kỹ sư xây dựng, Thạc sỹ QLDA..."
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Nơi thường trú</label>
+                            <input
+                                type="text"
+                                {...form.register('PermanentAddress')}
+                                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
+                                placeholder="Nhập địa chỉ đăng ký thường trú..."
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Thời gian công tác</label>
+                            <textarea
+                                {...form.register('TenureInfo')}
+                                rows={2}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
+                                placeholder="Quá trình công tác / Thời gian giữ chức vụ..."
+                            />
                         </div>
                     </div>
                 </div>

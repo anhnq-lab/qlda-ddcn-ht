@@ -11,6 +11,14 @@ const getStatusConfig = (s: TaskStatus) => {
     }
 };
 
+export interface TaskProgressUpdateResult {
+    progress: number;
+    note: string;
+    newStatus?: TaskStatus;
+    completionResult?: string;
+    incompleteReason?: string;
+}
+
 interface TaskProgressUpdateModalProps {
     task: Task;
     targetStatus: TaskStatus | null;
@@ -64,13 +72,19 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                             <MessageSquare className="w-4 h-4 text-emerald-500" />
-                            Kết quả / Ghi chú
+                            {targetStatus === TaskStatus.Done ? 'Kết quả thực hiện' :
+                             targetStatus === TaskStatus.Incomplete ? 'Lý do chưa hoàn thành' :
+                             'Kết quả / Ghi chú'}
                         </label>
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                             rows={3}
-                            placeholder="Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc..."
+                            placeholder={targetStatus === TaskStatus.Done
+                                ? 'Mô tả kết quả đã đạt được: VD Đã phê duyệt tại QĐ số...'
+                                : targetStatus === TaskStatus.Incomplete
+                                ? 'Lý do chưa hoàn thành, vướng mắc cần giải quyết...'
+                                : 'Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc...'}
                             className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
                             required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete}
                         />

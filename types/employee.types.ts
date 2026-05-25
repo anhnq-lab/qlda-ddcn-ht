@@ -36,6 +36,11 @@ export interface Employee {
     JobContent?: string;
     CompletionCriteria?: string;
     SystemRole?: string; // Tùy chọn, ghi đè vai trò mặc định
+    DateOfBirth?: string;
+    PermanentAddress?: string;
+    Specialty?: string;
+    PoliticalTheory?: string;
+    TenureInfo?: string;
 }
 
 // 9.1 Audit Logs (Lưu vết hệ thống)

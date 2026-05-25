@@ -3,7 +3,12 @@
  */
 import { z } from 'zod';
 
-import { TaskStatus, TaskPriority, type TaskType } from '../types/task.types';
+import { TaskStatus, TaskPriority, type TaskType, TASK_CATEGORIES } from '../types/task.types';
+
+// ─── Task Category ────────────────────────────────────
+export const TaskCategorySchema = z.enum(TASK_CATEGORIES, {
+    error: 'Phân loại công việc không hợp lệ',
+});
 
 // ─── Task Type ─────────────────────────────────────────
 export const TaskTypeSchema = z.enum(['project', 'management', 'internal'], {
@@ -71,6 +76,11 @@ export const TaskCreateSchema = z.object({
     WorkflowNodeID: z.string().optional(),
     CollaboratorIDs: z.array(z.string().uuid()).optional(),
     ApproverID: z.string().uuid().optional(),
+
+    Category: TaskCategorySchema.optional(),
+    CompletionResult: z.string().max(2000, 'Kết quả thực hiện không quá 2000 ký tự').optional(),
+    IncompleteReason: z.string().max(2000, 'Lý do chưa hoàn thành không quá 2000 ký tự').optional(),
+    Notes: z.string().max(2000, 'Ghi chú không quá 2000 ký tự').optional(),
 });
 
 export const TaskUpdateSchema = TaskCreateSchema.partial().extend({

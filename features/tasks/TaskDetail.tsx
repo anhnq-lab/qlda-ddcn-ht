@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, TaskAttachment } from '../../types';
+import { TASK_CATEGORY_LABELS, TASK_CATEGORY_COLORS, type TaskCategory } from '../../types/task.types';
 import { useTask, useUpdateTask, useAllTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useEmployees } from '../../hooks/useEmployees';
@@ -141,13 +142,22 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
     const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus) => {
         if (!task) return;
-        
+
         const finalStatus = newStatus || task.Status;
-        updateTaskMutation.mutate({
+        const taskUpdate: Partial<Task> = {
             ...task,
             Status: finalStatus,
-            ProgressPercent: finalStatus === 'done' ? 100 : 0
-        });
+            ProgressPercent: finalStatus === 'done' ? 100 : 0,
+        };
+
+        if (finalStatus === 'done' || finalStatus === 'in_progress') {
+            taskUpdate.CompletionResult = note || task.CompletionResult;
+        }
+        if (finalStatus === 'incomplete') {
+            taskUpdate.IncompleteReason = note || task.IncompleteReason;
+        }
+
+        updateTaskMutation.mutate(taskUpdate);
 
         // Tự động ghi nhận báo cáo vào Monthly Plan nếu có liên kết
         if (task.MonthlyPlanItemID && note) {
@@ -221,6 +231,15 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                         {priorityCfg.label}
                                     </span>
                                     <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md">{task.TaskID}</span>
+                                    {task.Category && (() => {
+                                        const cat = task.Category as TaskCategory;
+                                        const colors = TASK_CATEGORY_COLORS[cat];
+                                        return (
+                                            <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${colors?.bg || 'bg-slate-50'} ${colors?.text || 'text-slate-600'} ring-1 ring-black/5`}>
+                                                {TASK_CATEGORY_LABELS[cat] || cat}
+                                            </span>
+                                        );
+                                    })()}
                                     {task.IsCritical && (
                                         <span className="text-[10px] font-black text-red-600 bg-red-50 ring-1 ring-red-200 px-2 py-1 rounded-md flex items-center gap-1">
                                             <Zap className="w-3 h-3" /> ĐƯỜNG GĂNG
@@ -328,6 +347,33 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 <p className="whitespace-pre-wrap">{task.Description || "Chưa có mô tả chi tiết."}</p>
                             </div>
                         </div>
+
+                        {/* Kết quả & Vướng mắc */}
+                        {(task.CompletionResult || task.IncompleteReason || task.Notes) && (
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4" /> Kết quả báo cáo
+                                </h3>
+                                {task.CompletionResult && (
+                                    <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                                        <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-1">Kết quả thực hiện</p>
+                                        <p className="text-sm text-emerald-800 dark:text-emerald-300 whitespace-pre-wrap">{task.CompletionResult}</p>
+                                    </div>
+                                )}
+                                {task.IncompleteReason && (
+                                    <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800">
+                                        <p className="text-[10px] font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider mb-1">Lý do chưa hoàn thành</p>
+                                        <p className="text-sm text-rose-800 dark:text-rose-300 whitespace-pre-wrap">{task.IncompleteReason}</p>
+                                    </div>
+                                )}
+                                {task.Notes && (
+                                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700">
+                                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Ghi chú</p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.Notes}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Regulatory */}
                         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">

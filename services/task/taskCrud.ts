@@ -78,6 +78,28 @@ export const getTasksByEmployeeAndMonth = async (
   return (data || []) as unknown as DbTask[];
 };
 
+/** Lấy tasks theo phòng ban và tháng (cho báo cáo giao ban) */
+export const getTasksByDepartmentAndMonth = async (
+  month: number,
+  year: number,
+  _departmentName?: string
+): Promise<DbTask[]> => {
+  const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+  const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*, projects(project_name)')
+    .is('parent_id', null)
+    .gte('due_date', startDate)
+    .lte('due_date', endDate)
+    .order('category', { ascending: true })
+    .order('sort_order', { ascending: true });
+
+  if (error) throw toServiceError(error, 'Không thể tải công việc theo phòng ban');
+  return (data || []) as unknown as DbTask[];
+};
+
 /** Lấy 1 task theo ID (flat) */
 export const getTaskById = async (taskId: string): Promise<DbTask | null> => {
   const { data, error } = await supabase

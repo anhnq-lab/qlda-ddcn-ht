@@ -311,15 +311,24 @@ Trả về nội dung theo đúng cấu trúc Markdown sau (KHÔNG thêm mục n
 
 [Tổng số hợp đồng đang thực hiện, tổng giá trị. Nêu hợp đồng sắp hết hạn (nếu có). Đánh giá chung về tình hình nhà thầu.]
 
-## V. TỒN TẠI, VƯỚNG MẮC
+## V. KẾT QUẢ CÔNG VIỆC CÁC PHÒNG BAN
 
-[Liệt kê các khó khăn chính: giải phóng mặt bằng, thủ tục pháp lý, nhà thầu chậm tiến độ, thiếu vốn... Mỗi vướng mắc 1 gạch đầu dòng. Nếu không có vấn đề nổi bật, ghi "Các dự án triển khai cơ bản đúng kế hoạch, không có vướng mắc lớn."]
+[Nếu có dữ liệu congViecPhongBan, tổng hợp kết quả công việc theo từng phòng ban:
+- Nêu tổng số CV, số HT, tỷ lệ % cho mỗi phòng
+- Liệt kê 2-3 kết quả nổi bật (từ mảng noiBat)
+- Liệt kê công việc vướng mắc/chưa HT (từ mảng vuongMac) nếu có
+- Đánh giá chung về tiến độ thực hiện công việc toàn Ban
+Nếu không có dữ liệu, ghi "[Chưa có dữ liệu công việc tháng này]"]
 
-## VI. KIẾN NGHỊ, ĐỀ XUẤT
+## VI. TỒN TẠI, VƯỚNG MẮC
+
+[Liệt kê các khó khăn chính: giải phóng mặt bằng, thủ tục pháp lý, nhà thầu chậm tiến độ, thiếu vốn, công việc chưa hoàn thành... Mỗi vướng mắc 1 gạch đầu dòng. Nếu không có vấn đề nổi bật, ghi "Các dự án triển khai cơ bản đúng kế hoạch, không có vướng mắc lớn."]
+
+## VII. KIẾN NGHỊ, ĐỀ XUẤT
 
 [Đề xuất cụ thể để giải quyết tồn tại: đẩy nhanh GPMB, tăng cường kiểm tra giám sát, điều chỉnh kế hoạch vốn... Mỗi kiến nghị 1 gạch đầu dòng, viết theo văn phong hành chính.]
 
-## VII. KẾ HOẠCH THÁNG ${nextMonth}/${nextYear}
+## VIII. KẾ HOẠCH THÁNG ${nextMonth}/${nextYear}
 
 [Liệt kê 4-6 nhiệm vụ trọng tâm cần thực hiện trong tháng tới. Mỗi nhiệm vụ 1 gạch đầu dòng, có mục tiêu cụ thể.]
 

@@ -3,6 +3,7 @@ import { FolderOpen, Calendar, AlertTriangle, Edit, Trash2, Layers, Sparkles } f
 import PermissionGate from '../../../components/PermissionGate';
 import { EmptyState, StatusBadge, Avatar } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
+import { TASK_CATEGORY_LABELS, TASK_CATEGORY_COLORS, type TaskCategory } from '../../../types/task.types';
 import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
 interface TaskTableViewProps {
     paginatedTasks: Task[];
@@ -77,6 +78,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                             <th onClick={() => handleSort('Title')} className="group/th px-3 py-3 text-left w-[25%] min-w-[160px] max-w-[200px] cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
                                 <span className="flex items-center gap-1">Công việc <SortIcon field="Title" /></span>
                             </th>
+                            <th className="px-3 py-3 text-left hidden xl:table-cell w-[10%] min-w-[100px] border-b border-slate-200 dark:border-slate-700">Phân loại</th>
                             <th className="px-3 py-3 text-left hidden md:table-cell w-[10%] min-w-[90px] border-b border-slate-200 dark:border-slate-700">Phòng ban</th>
                             <th onClick={() => handleSort('ProgressPercent')} className="group/th px-3 py-3 text-center w-16 cursor-pointer select-none hover:text-blue-600 transition-colors border-b border-slate-200 dark:border-slate-700">
                                 <span className="flex items-center justify-center gap-1">Tiến độ <SortIcon field="ProgressPercent" /></span>
@@ -99,7 +101,7 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                             <React.Fragment key={projectId}>
                                 {/* ── Project Group Separator ── */}
                                 <tr className="bg-slate-50/80 dark:bg-slate-800 border-t-2 border-slate-200 dark:border-slate-700">
-                                    <td colSpan={11} className="px-4 py-2.5">
+                                    <td colSpan={12} className="px-4 py-2.5">
                                         <div className="flex items-center gap-3">
                                             <div className="p-1.5 rounded-lg shadow-sm bg-primary-100 dark:bg-primary-500/20" >
                                                 <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
@@ -158,6 +160,21 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                             </div>
                                             {task.Description && (
                                                 <p className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-1 pr-4 truncate">{task.Description}</p>
+                                            )}
+                                        </td>
+
+                                        {/* Category */}
+                                        <td className="px-3 py-3.5 hidden xl:table-cell">
+                                            {task.Category ? (() => {
+                                                const cat = task.Category as TaskCategory;
+                                                const colors = TASK_CATEGORY_COLORS[cat];
+                                                return (
+                                                    <span className={`inline-flex items-center text-[10px] font-medium px-2 py-1 rounded-lg ${colors?.bg || 'bg-slate-50'} ${colors?.text || 'text-slate-600'} ring-1 ${colors?.border ? `ring-${colors.border.replace('border-', '')}` : 'ring-slate-200'}`}>
+                                                        {TASK_CATEGORY_LABELS[cat] || cat}
+                                                    </span>
+                                                );
+                                            })() : (
+                                                <span className="text-[10px] text-slate-300 dark:text-slate-600">—</span>
                                             )}
                                         </td>
 

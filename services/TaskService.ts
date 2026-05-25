@@ -29,6 +29,7 @@ export const TaskService = {
   getProjectTasks: crud.getProjectTasks,
   getInternalTasks: crud.getInternalTasks,
   getTasksByEmployeeAndMonth: crud.getTasksByEmployeeAndMonth,
+  getTasksByDepartmentAndMonth: crud.getTasksByDepartmentAndMonth,
   getTaskById: crud.getTaskById,
   getSubTasks: crud.getSubTasks,
   countByProject: crud.countByProject,

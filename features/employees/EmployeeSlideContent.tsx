@@ -265,6 +265,57 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                     </div>
                 </div>
 
+                {/* ── Additional HR Info Row ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Background & Education */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                            <Sparkles className="w-3 h-3" /> Lý lịch & Trình độ
+                        </h3>
+                        <div className="space-y-2.5">
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Ngày sinh:</div>
+                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                    {employee.DateOfBirth ? new Date(employee.DateOfBirth).toLocaleDateString('vi-VN') : '—'}
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Chuyên môn:</div>
+                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                    {employee.Specialty || '—'}
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">LL chính trị:</div>
+                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                    {employee.PoliticalTheory || '—'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Residence & Tenure */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                            <Briefcase className="w-3 h-3" /> Cư trú & Công tác
+                        </h3>
+                        <div className="space-y-2.5">
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Thường trú:</div>
+                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-normal">
+                                    {employee.PermanentAddress || '—'}
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Thời gian công tác:</div>
+                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-normal whitespace-pre-line">
+                                    {employee.TenureInfo || '—'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* ── Cross-Module Summary Strip ── */}
                 <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg px-3 py-2">

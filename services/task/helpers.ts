@@ -33,6 +33,10 @@ export interface DbTask {
   legal_basis: string | null;
   output_document: string | null;
   predecessor_task_id: string | null;
+  category: string | null;
+  completion_result: string | null;
+  incomplete_reason: string | null;
+  notes: string | null;
   metadata: Record<string, any>;
   monthly_plan_item_id: string | null;
   project_plan_item_id: string | null;

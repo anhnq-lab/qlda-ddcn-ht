@@ -1,7 +1,7 @@
 /**
  * Task Mappers — DB <-> UI mapping for unified tasks table (UUID PK)
  */
-import { Task, TaskStatus, TaskPriority, TaskType } from '../../types/task.types';
+import { Task, TaskStatus, TaskPriority, TaskType, TaskCategory } from '../../types/task.types';
 import type { DbTask } from '../../services/TaskService';
 
 /** Map DB row → UI Task model */
@@ -33,6 +33,10 @@ export const dbToTask = (row: DbTask): Task => ({
     LegalBasis: row.legal_basis || undefined,
     OutputDocument: row.output_document || undefined,
     PredecessorTaskID: row.predecessor_task_id || undefined,
+    Category: (row.category as TaskCategory) || undefined,
+    CompletionResult: row.completion_result || undefined,
+    IncompleteReason: row.incomplete_reason || undefined,
+    Notes: row.notes || undefined,
     SubTasks: row.metadata?.sub_tasks || [],
     Attachments: row.metadata?.attachments || [],
     Dependencies: row.metadata?.dependencies || [],
@@ -69,6 +73,10 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.LegalBasis !== undefined) row.legal_basis = task.LegalBasis || null;
     if (task.OutputDocument !== undefined) row.output_document = task.OutputDocument || null;
     if (task.PredecessorTaskID !== undefined) row.predecessor_task_id = task.PredecessorTaskID || null;
+    if (task.Category !== undefined) row.category = task.Category || null;
+    if (task.CompletionResult !== undefined) row.completion_result = task.CompletionResult || null;
+    if (task.IncompleteReason !== undefined) row.incomplete_reason = task.IncompleteReason || null;
+    if (task.Notes !== undefined) row.notes = task.Notes || null;
     if (task.MonthlyPlanItemID !== undefined) row.monthly_plan_item_id = task.MonthlyPlanItemID || null;
     if (task.ProjectPlanItemID !== undefined) {
         row.project_plan_step_id = task.ProjectPlanItemID || null;

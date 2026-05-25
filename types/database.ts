@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -58,6 +58,7 @@ export type Database = {
           end_time: string
           event_type: Database["public"]["Enums"]["agency_event_type"]
           id: string
+          leader_id: string | null
           location: string | null
           room: Database["public"]["Enums"]["agency_event_room"] | null
           start_time: string
@@ -71,6 +72,7 @@ export type Database = {
           end_time: string
           event_type?: Database["public"]["Enums"]["agency_event_type"]
           id?: string
+          leader_id?: string | null
           location?: string | null
           room?: Database["public"]["Enums"]["agency_event_room"] | null
           start_time: string
@@ -84,6 +86,7 @@ export type Database = {
           end_time?: string
           event_type?: Database["public"]["Enums"]["agency_event_type"]
           id?: string
+          leader_id?: string | null
           location?: string | null
           room?: Database["public"]["Enums"]["agency_event_room"] | null
           start_time?: string
@@ -1291,6 +1294,11 @@ export type Database = {
           status: number
           system_role: string | null
           updated_at: string
+          date_of_birth: string | null
+          permanent_address: string | null
+          specialty: string | null
+          political_theory: string | null
+          tenure_info: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -1311,6 +1319,11 @@ export type Database = {
           status?: number
           system_role?: string | null
           updated_at?: string
+          date_of_birth?: string | null
+          permanent_address?: string | null
+          specialty?: string | null
+          political_theory?: string | null
+          tenure_info?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -1331,6 +1344,11 @@ export type Database = {
           status?: number
           system_role?: string | null
           updated_at?: string
+          date_of_birth?: string | null
+          permanent_address?: string | null
+          specialty?: string | null
+          political_theory?: string | null
+          tenure_info?: string | null
         }
         Relationships: []
       }

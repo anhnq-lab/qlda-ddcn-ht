@@ -23,6 +23,7 @@ const eventSchema = z.object({
   room: z.enum(ROOM_TYPES).optional().nullable(),
   start_time: z.string().min(1, 'Vui lòng chọn thời gian bắt đầu'),
   end_time: z.string().min(1, 'Vui lòng chọn thời gian kết thúc'),
+  leader_id: z.string().optional().nullable(),
   location: z.string().optional(),
   attendee_ids: z.array(z.string()).optional(),
 }).refine(data => new Date(data.start_time) < new Date(data.end_time), {
@@ -52,13 +53,14 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
     label: `${emp.FullName}${emp.Department ? ` — ${emp.Department}` : ''}`,
   }));
 
-  const { control, register, handleSubmit, formState: { errors }, reset, watch } = useForm<EventFormValues>({
+  const { control, register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
       title: '',
       description: '',
       event_type: 'meeting',
       room: null,
+      leader_id: null,
       location: '',
       attendee_ids: [],
     },
@@ -69,12 +71,12 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
   const startTime = watch('start_time');
   const endTime = watch('end_time');
 
-  const showRoom = eventType === 'meeting';
-  const showLocation = eventType === 'business_trip';
+  const [locationMode, setLocationMode] = useState<'room' | 'custom'>('room');
 
   // Check room conflicts whenever room/time changes
   useEffect(() => {
-    if (!showRoom || !room || !startTime || !endTime) {
+    const isRoomSelected = locationMode === 'room' && !!room;
+    if (!isRoomSelected || !startTime || !endTime) {
       setRoomConflicts([]);
       setIsCheckingConflict(false);
       return;
@@ -88,17 +90,25 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
     const timeout = setTimeout(async () => {
       try {
         const conflicts = await calendarService.checkRoomConflicts(
-          room, startTime, endTime, event?.id,
+          room!, startTime, endTime, event?.id,
         );
         setRoomConflicts(conflicts.map((c: any) => ({ id: c.id, title: c.title })));
       } catch {
-        // silent fail — conflict check is non-blocking
+        // silent fail
       } finally {
         setIsCheckingConflict(false);
       }
     }, 400);
     return () => clearTimeout(timeout);
-  }, [room, startTime, endTime, showRoom, event?.id]);
+  }, [room, startTime, endTime, locationMode, event?.id]);
+
+  // Set locationMode to custom if event_type is business_trip
+  useEffect(() => {
+    if (eventType === 'business_trip') {
+      setLocationMode('custom');
+      setValue('room', null);
+    }
+  }, [eventType, setValue]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -106,6 +116,8 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
     setIsCheckingConflict(false);
 
     if (event) {
+      const isCustom = !event.room && !!event.location;
+      setLocationMode(isCustom ? 'custom' : 'room');
       reset({
         title: event.title,
         description: event.description || '',
@@ -114,9 +126,11 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
         location: event.location || '',
         start_time: new Date(event.start_time).toISOString().slice(0, 16),
         end_time: new Date(event.end_time).toISOString().slice(0, 16),
+        leader_id: event.leader_id || null,
         attendee_ids: event.attendees?.map(a => a.EmployeeID) || [],
       });
     } else if (selectedDate) {
+      setLocationMode('room');
       const start = new Date(selectedDate);
       start.setHours(8, 0, 0, 0);
       const end = new Date(start);
@@ -129,9 +143,11 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
         location: '',
         start_time: start.toISOString().slice(0, 16),
         end_time: end.toISOString().slice(0, 16),
+        leader_id: null,
         attendee_ids: [],
       });
     } else {
+      setLocationMode('room');
       const now = new Date();
       now.setMinutes(0, 0, 0);
       const later = new Date(now);
@@ -144,17 +160,23 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
         location: '',
         start_time: now.toISOString().slice(0, 16),
         end_time: later.toISOString().slice(0, 16),
+        leader_id: null,
         attendee_ids: [],
       });
     }
   }, [isOpen, event, selectedDate, reset]);
 
   const onSubmit = async (data: EventFormValues) => {
+    if (locationMode === 'custom' && !data.location?.trim()) {
+      showToast('Vui lòng nhập địa điểm khác', 'error');
+      return;
+    }
+
     try {
       const payload = {
         ...data,
-        room: showRoom ? (data.room ?? null) : null,
-        location: showLocation ? (data.location || '') : undefined,
+        room: locationMode === 'room' ? data.room : null,
+        location: locationMode === 'custom' ? data.location : (data.room || ''),
       };
 
       if (event) {
@@ -193,7 +215,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
           placeholder="VD: Họp giao ban tuần..."
         />
 
-        <div className={`grid gap-4 ${showRoom ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="event_type"
             control={control}
@@ -213,40 +235,51 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
             )}
           />
 
-          {showRoom && (
-            <Controller
-              name="room"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <Select
-                    label="Phòng họp"
-                    options={[
-                      { value: 'Phòng họp 1', label: 'Phòng họp 1' },
-                      { value: 'Phòng họp 2', label: 'Phòng họp 2' },
-                      { value: 'Phòng họp 3', label: 'Phòng họp 3' },
-                    ]}
-                    value={field.value || ''}
-                    onChange={val => field.onChange(val || null)}
-                    error={errors.room?.message}
-                    clearable
-                    placeholder="-- Không chọn --"
-                  />
-                  {roomConflicts.length > 0 && (
-                    <div className="mt-1.5 flex items-start gap-1.5 text-xs text-warning-600 dark:text-warning-400">
-                      <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                      <span>
-                        Phòng đã có lịch trùng:{' '}
-                        <span className="font-semibold">
-                          {roomConflicts.map(c => c.title).join(', ')}
-                        </span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
+          <div className="flex flex-col gap-2">
+            <Select
+              label="Địa điểm"
+              options={[
+                { value: 'Phòng họp 1', label: 'Phòng họp 1' },
+                { value: 'Phòng họp 2', label: 'Phòng họp 2' },
+                { value: 'Phòng họp 3', label: 'Phòng họp 3' },
+                { value: 'custom', label: 'Địa điểm khác...' },
+              ]}
+              value={locationMode === 'custom' ? 'custom' : (room || '')}
+              onChange={(val: any) => {
+                if (val === 'custom') {
+                  setLocationMode('custom');
+                  setValue('room', null);
+                  setValue('location', '');
+                } else {
+                  setLocationMode('room');
+                  setValue('room', (val || null) as any);
+                  setValue('location', typeof val === 'string' ? val : '');
+                }
+              }}
+              error={errors.room?.message}
+              clearable
+              placeholder="-- Chọn địa điểm --"
             />
-          )}
+            {locationMode === 'custom' && (
+              <Input
+                {...register('location')}
+                error={errors.location?.message}
+                placeholder="Nhập địa điểm khác (VD: UBND tỉnh, Hà Nội...)"
+                required
+              />
+            )}
+            {locationMode === 'room' && roomConflicts.length > 0 && (
+              <div className="mt-0.5 flex items-start gap-1.5 text-xs text-warning-600 dark:text-warning-400">
+                <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                <span>
+                  Phòng đã có lịch trùng:{' '}
+                  <span className="font-semibold">
+                    {roomConflicts.map(c => c.title).join(', ')}
+                  </span>
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -266,15 +299,6 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
           />
         </div>
 
-        {showLocation && (
-          <Input
-            label="Địa điểm công tác"
-            {...register('location')}
-            error={errors.location?.message}
-            placeholder="VD: Hà Nội, Đà Nẵng..."
-          />
-        )}
-
         <div>
           <label className="block text-sm font-semibold text-txt-secondary mb-1">
             Nội dung / Ghi chú
@@ -286,6 +310,22 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({ isOpen, onClose,
             placeholder="Nội dung buổi họp, mục đích công tác..."
           />
         </div>
+
+        <Controller
+          name="leader_id"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Người chủ trì"
+              options={employeeOptions as any[]}
+              value={field.value || ''}
+              onChange={val => field.onChange(val || null)}
+              searchable
+              clearable
+              placeholder="Chọn người chủ trì..."
+            />
+          )}
+        />
 
         <Controller
           name="attendee_ids"

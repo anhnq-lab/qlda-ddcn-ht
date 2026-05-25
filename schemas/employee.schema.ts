@@ -53,6 +53,11 @@ export const EmployeeCreateSchema = z.object({
     AllowedProjectIDs: z.array(z.string().uuid()).optional(),
     JobContent: z.string().optional(),
     CompletionCriteria: z.string().optional(),
+    DateOfBirth: z.string().optional().or(z.literal('')),
+    PermanentAddress: z.string().optional(),
+    Specialty: z.string().optional(),
+    PoliticalTheory: z.string().optional(),
+    TenureInfo: z.string().optional(),
 });
 
 export const EmployeeUpdateSchema = EmployeeCreateSchema.partial().extend({
