@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PermissionGate from '../../components/PermissionGate';
 import { useAllTasks, useUpdateTask, useDeleteTask, useSaveTask } from '../../hooks/useWorkflowTasks';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
@@ -53,15 +53,29 @@ const getProgressGradient = (percent: number) => {
 // Main Component
 // ═══════════════════════════════════════════════════
 
-const TaskList: React.FC = () => {
+interface TaskListProps {
+    month?: string;
+    year?: string;
+}
+
+const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externalYear }) => {
     const navigate = useNavigate();
     const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
     
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams] = useSearchParams();
+    const urlTaskId = searchParams.get('taskId');
+    
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterProject, setFilterProject] = useState<string>('All');
-    const [filterMonth, setFilterMonth] = useState<string>('All');
+    
+    const [localMonth, setLocalMonth] = useState<string>('All');
+    const [localYear, setLocalYear] = useState<string>('All');
+    const filterMonth = externalMonth !== undefined ? externalMonth : localMonth;
+    const filterYear = externalYear !== undefined ? externalYear : localYear;
+    const setFilterMonth = externalMonth !== undefined ? () => {} : setLocalMonth;
+    const setFilterYear = externalYear !== undefined ? () => {} : setLocalYear;
+
     const [filterDepartment, setFilterDepartment] = useState<string>('All');
     const [filterOverdue, setFilterOverdue] = useState(false);
     const [filterPersonal, setFilterPersonal] = useState(false);
@@ -101,8 +115,6 @@ const TaskList: React.FC = () => {
         const isInternal = task.TaskType === 'internal' || !task.ProjectID;
         if (!isInternal && !isGlobalScope && !scopedProjectIds.has(task.ProjectID)) return false;
         
-        const matchSearch = task.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            task.Description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = filterStatus === 'All' || task.Status === filterStatus;
         const matchProject = filterProject === 'All' || task.ProjectID === filterProject;
         
@@ -113,6 +125,12 @@ const TaskList: React.FC = () => {
         const matchMonth = filterMonth === 'All' || (
             (task.DueDate && new Date(task.DueDate).getMonth() + 1 === parseInt(filterMonth)) ||
             (task.StartDate && new Date(task.StartDate).getMonth() + 1 === parseInt(filterMonth))
+        );
+
+        // Year filter (checks both StartDate and DueDate)
+        const matchYear = filterYear === 'All' || (
+            (task.DueDate && new Date(task.DueDate).getFullYear() === parseInt(filterYear)) ||
+            (task.StartDate && new Date(task.StartDate).getFullYear() === parseInt(filterYear))
         );
 
         // Department filter
@@ -130,8 +148,18 @@ const TaskList: React.FC = () => {
         // Task type filter
         const matchTaskType = filterTaskType === 'All' || task.TaskType === filterTaskType;
 
-        return matchSearch && matchStatus && matchProject && matchMonth && matchDepartment && matchOverdue && matchPersonal && matchTaskType;
-    }), [tasks, searchTerm, filterStatus, filterProject, filterMonth, filterDepartment, filterOverdue, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
+        return matchStatus && matchProject && matchMonth && matchYear && matchDepartment && matchOverdue && matchPersonal && matchTaskType;
+    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
+
+    // Tự động mở slide panel khi có taskId trên URL
+    useEffect(() => {
+        if (urlTaskId && tasks.length > 0) {
+            const task = tasks.find(t => t.TaskID === urlTaskId);
+            if (task) {
+                openTaskPanel(task);
+            }
+        }
+    }, [urlTaskId, tasks]);
 
     // ── Sort ──
     const sortedTasks = useMemo(() => {
@@ -357,13 +385,20 @@ const TaskList: React.FC = () => {
         closePanel();
     };
 
-    const hasActiveFilters = filterStatus !== 'All' || filterProject !== 'All' || filterMonth !== 'All' || filterDepartment !== 'All' || filterTaskType !== 'All' || searchTerm !== '' || filterOverdue || filterPersonal;
+    const hasActiveFilters = filterStatus !== 'All' || 
+        filterProject !== 'All' || 
+        (externalMonth === undefined && filterMonth !== 'All') || 
+        (externalYear === undefined && filterYear !== 'All') ||
+        filterDepartment !== 'All' || 
+        filterTaskType !== 'All' || 
+        filterOverdue || 
+        filterPersonal;
 
     // ═══════════════════════════════════════════════════
     // Render
     // ═══════════════════════════════════════════════════
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="flex flex-col h-full bg-transparent px-0 pt-1 pb-4 space-y-2 animate-in fade-in duration-500">
 
             {/* ══════════ STATS DASHBOARD ══════════ */}
             <TaskStatsRow 
@@ -378,8 +413,6 @@ const TaskList: React.FC = () => {
 
             {/* ══════════ TOOLBAR ══════════ */}
             <TaskFilterBar 
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
                 filterProject={filterProject}
                 setFilterProject={setFilterProject}
                 filterMonth={filterMonth}
@@ -400,6 +433,7 @@ const TaskList: React.FC = () => {
                 viewMode={viewMode}
                 setViewMode={setViewMode}
                 openCreateModal={openCreateModal}
+                hideMonthFilter={externalMonth !== undefined}
             />
 
             {/* ══════════ BATCH BAR ══════════ */}
@@ -438,7 +472,7 @@ const TaskList: React.FC = () => {
 
             {/* ══════════ TASK LIST ══════════ */}
             {isLoading ? (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="overflow-hidden">
                     <div className="h-10 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-slate-100 dark:border-slate-700 last:border-0">
@@ -475,7 +509,7 @@ const TaskList: React.FC = () => {
 
                 {/* ══════════ PAGINATION ══════════ */}
                 {sortedTasks.length > pageSize && (
-                    <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div className="flex items-center justify-between py-3 border-t border-slate-200 dark:border-slate-750 mt-4">
                         <div className="flex items-center gap-3">
                             <span className="text-xs text-slate-500 dark:text-slate-400">
                                 Hiển thị {page * pageSize + 1}–{Math.min((page + 1) * pageSize, sortedTasks.length)} / {sortedTasks.length}

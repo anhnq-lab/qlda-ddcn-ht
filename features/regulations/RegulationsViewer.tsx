@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     FileCheck2,
     HelpCircle,
@@ -21,10 +22,13 @@ import {
 } from 'lucide-react';
 
 const RegulationsViewer: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const selectedDocumentId = searchParams.get('docId');
+    const urlChapterId = searchParams.get('chapterId');
+    const articleIdParam = searchParams.get('articleId');
+
     const [regulationsData, setRegulationsData] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
-    const [selectedChapterId, setSelectedChapterId] = useState<string>("CH1");
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
     const [savedArticles, setSavedArticles] = useState<string[]>([]);
@@ -52,6 +56,27 @@ const RegulationsViewer: React.FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (!isLoading && regulationsData.length > 0 && selectedDocumentId) {
+            if (articleIdParam) {
+                const doc = regulationsData.find(d => d.id === selectedDocumentId);
+                const parentChap = doc?.chapters.find((c: any) => c.articles.some((a: any) => a.id === articleIdParam));
+                
+                if (parentChap) {
+                    if (urlChapterId !== parentChap.id) {
+                        setSearchParams({ docId: selectedDocumentId, chapterId: parentChap.id, articleId: articleIdParam });
+                        return;
+                    }
+                    
+                    const timer = setTimeout(() => {
+                        handleScrollToArticle(articleIdParam);
+                    }, 500);
+                    return () => clearTimeout(timer);
+                }
+            }
+        }
+    }, [articleIdParam, selectedDocumentId, urlChapterId, regulationsData, isLoading, setSearchParams]);
+
     const handleSaveEdit = (articleId: string) => {
         const newEdits = { ...editedArticles, [articleId]: { title: editTitle, content: editContent } };
         setEditedArticles(newEdits);
@@ -67,8 +92,14 @@ const RegulationsViewer: React.FC = () => {
     };
     // -----------------------------
 
-    const selectedDocument = useMemo(() => regulationsData.find(d => d.id === selectedDocumentId) || null, [selectedDocumentId]);
+    const selectedDocument = useMemo(() => regulationsData.find(d => d.id === selectedDocumentId) || null, [selectedDocumentId, regulationsData]);
     const currentChapters = selectedDocument?.chapters || [];
+
+    const selectedChapterId = useMemo(() => {
+        if (urlChapterId) return urlChapterId;
+        if (currentChapters.length > 0) return currentChapters[0].id;
+        return "CH1";
+    }, [urlChapterId, currentChapters]);
 
     // Enhance filtering with raw text fallback
     const filteredChapters = useMemo(() => {
@@ -167,10 +198,8 @@ const RegulationsViewer: React.FC = () => {
                         <div 
                             key={doc.id}
                             onClick={() => { 
-                                setSelectedDocumentId(doc.id); 
-                                if (doc.chapters.length > 0) {
-                                    setSelectedChapterId(doc.chapters[0].id);
-                                }
+                                const firstChapterId = doc.chapters.length > 0 ? doc.chapters[0].id : "CH1";
+                                setSearchParams({ docId: doc.id, chapterId: firstChapterId });
                                 setSearchQuery(""); 
                             }}
                             className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all flex flex-col group"
@@ -210,7 +239,7 @@ const RegulationsViewer: React.FC = () => {
                 <div className="p-5 section-card-header z-10 shrink-0">
                     <div className="mb-4">
                         <button 
-                            onClick={() => { setSelectedDocumentId(null); setSearchQuery(""); }}
+                            onClick={() => { setSearchParams({}); setSearchQuery(""); }}
                             className="flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
                         >
                             <ArrowLeft className="w-3.5 h-3.5" /> Quay lại danh sách
@@ -236,7 +265,7 @@ const RegulationsViewer: React.FC = () => {
                     {filteredChapters.map((chapter: any) => (
                         <button
                             key={chapter.id}
-                            onClick={() => setSelectedChapterId(chapter.id)}
+                            onClick={() => setSearchParams({ docId: selectedDocumentId || "", chapterId: chapter.id })}
                             className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${(displayChapter?.id === chapter.id)
                                 ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 shadow-sm'
                                 : 'hover:bg-gray-100 dark:hover:bg-slate-800 border border-transparent'
@@ -488,13 +517,9 @@ const RegulationsViewer: React.FC = () => {
                                 <button
                                     key={id}
                                     onClick={() => {
-                                        // If article is not in current chapter, switch chapter then scroll
                                         const parentChap = currentChapters.find((c: any) => c.articles.some((a: any) => a.id === id));
-                                        if (parentChap && selectedChapterId !== parentChap.id) {
-                                            setSelectedChapterId(parentChap.id);
-                                            setTimeout(() => handleScrollToArticle(id), 100);
-                                        } else {
-                                            handleScrollToArticle(id);
+                                        if (parentChap) {
+                                            setSearchParams({ docId: selectedDocumentId || "", chapterId: parentChap.id, articleId: id });
                                         }
                                     }}
                                     className="w-full text-left p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 shadow-sm transition-all flex items-center gap-2 group"
@@ -525,7 +550,7 @@ const RegulationsViewer: React.FC = () => {
                                 <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600 group-hover:bg-blue-500 dark:group-hover:bg-blue-400 transition-colors z-10 ring-4 ring-slate-50 dark:ring-slate-900" />
                                 
                                 <button 
-                                    onClick={() => handleScrollToArticle(article.id)}
+                                    onClick={() => setSearchParams({ docId: selectedDocumentId || "", chapterId: selectedChapterId, articleId: article.id })}
                                     className="text-left w-full focus:outline-none"
                                 >
                                     <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">

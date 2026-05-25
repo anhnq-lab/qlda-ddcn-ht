@@ -87,6 +87,7 @@ import { ProjectMemberService } from '../../services/ProjectMemberService';
 import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SortOption } from './hooks/useProjectFilters';
 import { useProjectFilterContext } from '../../context/ProjectFilterContext';
 import { useToast } from '../../components/ui/Toast';
+import { ProjectFilters } from '../../components/common/ProjectFilters';
 
 const ProjectList: React.FC = () => {
     const navigate = useNavigate();
@@ -167,73 +168,67 @@ const ProjectList: React.FC = () => {
                 {/* MAIN LIST AREA — full width now that sidebar is removed */}
                 <div className="flex-1 w-full space-y-4">
 
-                    {/* Toolbar */}
-                    <div className="bg-bg-surface p-2 pr-4 rounded-2xl border border-border shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="relative w-full md:flex-1">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-txt-muted w-4 h-4" />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm dự án, mã, chủ đầu tư..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-transparent border-none rounded-2xl focus:ring-0 text-sm font-medium text-txt-primary placeholder:text-txt-muted"
-                                aria-label="Tìm kiếm dự án"
-                            />
+                    {/* Toolbar & Filters Container */}
+                    <div className="bg-bg-surface p-2.5 pr-4 pl-4 rounded-2xl border border-border shadow-sm flex flex-col lg:flex-row justify-between items-center gap-4">
+                        {/* Filters on the left */}
+                        <div className="flex flex-wrap items-center gap-2 flex-1 w-full lg:w-auto">
+                            <ProjectFilters />
                         </div>
 
-                        <div className="flex items-center gap-3 shrink-0 px-2 pb-2 md:pb-0">
+                        {/* Actions on the right */}
+                        <div className="flex items-center gap-3 shrink-0 w-full lg:w-auto justify-between lg:justify-end">
                             {/* Result count */}
-                            <span className="text-xs text-txt-muted font-medium whitespace-nowrap hidden sm:inline">
+                            <span className="text-xs text-txt-muted font-medium whitespace-nowrap">
                                 {total} dự án
                             </span>
 
-                            <div className="h-8 w-px bg-border-subtle hidden md:block"></div>
+                            <div className="h-6 w-px bg-border hidden lg:block"></div>
 
-                            <div className="flex bg-bg-muted p-1 rounded-lg">
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
-                                    aria-label="Hiển thị dạng lưới"
-                                >
-                                    <LayoutGrid className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
-                                    aria-label="Hiển thị dạng danh sách"
-                                >
-                                    <ListIcon className="w-4 h-4" />
-                                </button>
+                            <div className="flex items-center gap-3">
+                                <div className="flex bg-bg-muted p-0.5 rounded-lg border border-border/50">
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
+                                        aria-label="Hiển thị dạng lưới"
+                                    >
+                                        <LayoutGrid className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
+                                        aria-label="Hiển thị dạng danh sách"
+                                    >
+                                        <ListIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Sort Dropdown */}
+                                <div className="flex items-center gap-1 bg-bg-muted/50 px-2 py-1.5 rounded-lg border border-border/50">
+                                    <ArrowUpDown className="w-3.5 h-3.5 text-txt-muted" />
+                                    <select
+                                        value={sortBy}
+                                        onChange={e => setSortBy(e.target.value as SortOption)}
+                                        className="text-xs font-semibold bg-transparent border-none outline-none text-txt-secondary cursor-pointer"
+                                        aria-label="Sắp xếp dự án"
+                                    >
+                                        <option value="name">Tên A→Z</option>
+                                        <option value="budget">Ngân sách ↓</option>
+                                        <option value="progress">Tiến độ ↓</option>
+                                        <option value="created">Mới nhất</option>
+                                    </select>
+                                </div>
+
+                                <PermissionGate resource="projects" action="create">
+                                    <button
+                                        onClick={handleCreateProject}
+                                        className="btn btn-primary shrink-0 py-1.5 text-xs h-8 flex items-center justify-center gap-1"
+                                        title="Thêm mới dự án"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Thêm mới</span>
+                                    </button>
+                                </PermissionGate>
                             </div>
-
-                            {/* Sort Dropdown */}
-                            <div className="flex items-center gap-1.5">
-                                <ArrowUpDown className="w-3.5 h-3.5 text-txt-muted" />
-                                <select
-                                    value={sortBy}
-                                    onChange={e => setSortBy(e.target.value as SortOption)}
-                                    className="text-xs font-semibold bg-transparent border-none outline-none text-txt-secondary cursor-pointer pr-4"
-                                    aria-label="Sắp xếp dự án"
-                                >
-                                    <option value="name">Tên A→Z</option>
-                                    <option value="budget">Ngân sách ↓</option>
-                                    <option value="progress">Tiến độ ↓</option>
-                                    <option value="created">Mới nhất</option>
-                                </select>
-                            </div>
-
-                            <div className="h-6 w-px bg-border mx-2 hidden sm:block"></div>
-
-                            <PermissionGate resource="projects" action="create">
-                                <button
-                                    onClick={handleCreateProject}
-                                    className="btn btn-primary shrink-0"
-                                    title="Thêm mới dự án"
-                                >
-                                    <Plus className="w-5 h-5" />
-                                    <span>Thêm mới</span>
-                                </button>
-                            </PermissionGate>
                         </div>
                     </div>
 

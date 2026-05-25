@@ -139,57 +139,33 @@ export default function CalendarView() {
 
   return (
     <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900">
-      <PageHeader 
-        title="Lịch cơ quan" 
-        description="Quản lý lịch họp, sự kiện, đi công tác của cơ quan"
-        actions={
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 bg-bg-muted border border-border p-1 rounded-lg">
+      {displayMode === 'lobby' ? (
+        <div className="flex-1 w-full flex flex-col px-6 py-4">
+          {/* Lobby Display Mini Controller */}
+          <div className="bg-bg-surface p-2 px-4 rounded-2xl border border-border shadow-sm flex justify-between items-center mb-4">
+            <span className="text-sm font-bold text-txt-primary flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Lịch cơ quan (Tivi sảnh)
+            </span>
+            <div className="flex items-center bg-bg-muted border border-border p-0.5 rounded-lg gap-0.5">
               <button
                 onClick={() => setDisplayMode('manage')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                  displayMode === 'manage' 
-                    ? 'bg-bg-surface text-txt-primary border border-border shadow-sm' 
-                    : 'text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 border border-transparent'
-                }`}
+                className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 cursor-pointer"
               >
-                <CalendarIcon className="w-4.5 h-4.5" />
                 Quản lý
               </button>
               <button
                 onClick={() => setDisplayMode('lobby')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                  displayMode === 'lobby' 
-                    ? 'bg-bg-surface text-txt-primary border border-border shadow-sm' 
-                    : 'text-txt-muted hover:text-txt-primary hover:bg-bg-subtle/50 border border-transparent'
-                }`}
+                className="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 bg-bg-surface text-txt-primary border border-border/50 shadow-sm cursor-pointer"
               >
-                <Monitor className="w-4.5 h-4.5" />
                 Tivi Sảnh
               </button>
             </div>
-            
-            {displayMode === 'manage' && (
-              <Button 
-                onClick={() => { setSelectedEvent(null); setSelectedSlot(undefined); setIsFormOpen(true); }}
-                leftIcon={<Plus className="w-4 h-4 shrink-0" />}
-                className="whitespace-nowrap"
-              >
-                Đăng ký lịch
-              </Button>
-            )}
           </div>
-        }
-      />
-
-      {/* Filter Toolbar is now inside CustomToolbar */}
-
-      {displayMode === 'lobby' ? (
-        <div className="flex-1 w-full min-h-[800px] px-6 py-6">
           <LobbyDisplay events={events} />
         </div>
       ) : (
-        <div className="px-6 py-6 flex-1 w-full flex flex-col">
+        <div className="px-6 py-4 flex-1 w-full flex flex-col">
           {isLoading ? (
             <div className="flex justify-center items-center flex-1 min-h-[600px]">
               <LoadingSpinner size="lg" />
@@ -223,6 +199,9 @@ export default function CalendarView() {
                       filterRoom={filterRoom}
                       setFilterRoom={setFilterRoom}
                       clearFilters={clearFilters}
+                      displayMode={displayMode}
+                      setDisplayMode={setDisplayMode}
+                      onRegisterClick={() => { setSelectedEvent(null); setSelectedSlot(undefined); setIsFormOpen(true); }}
                     />
                   )
                 }}

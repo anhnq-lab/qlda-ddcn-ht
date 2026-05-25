@@ -41,18 +41,19 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                    <SkeletonStatCard key={i} className={i === 0 ? 'col-span-2 lg:col-span-1' : ''} />
+                    <SkeletonStatCard key={i} compact className={i === 0 ? 'col-span-2 lg:col-span-1' : ''} />
                 ))}
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             {/* Total */}
             <StatCard
+                compact
                 className="col-span-2 lg:col-span-1"
                 label="Tổng công việc"
                 value={stats.total}
@@ -64,6 +65,7 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
             {/* In Progress */}
             <StatCard
+                compact
                 label="Đang thực hiện"
                 value={stats.inProgress}
                 icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
@@ -73,6 +75,7 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
             {/* Done */}
             <StatCard
+                compact
                 label="Hoàn thành"
                 value={stats.done}
                 icon={<CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
@@ -82,6 +85,7 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
             {/* Chưa hoàn thành */}
             <StatCard
+                compact
                 label="Chưa hoàn thành"
                 value={stats.incomplete}
                 icon={<XCircle className="w-5 h-5 flex-shrink-0" />}
@@ -91,6 +95,7 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
             {/* Overdue */}
             <StatCard
+                compact
                 label={
                     <div className="flex items-center gap-1.5">
                         Quá hạn

@@ -183,7 +183,19 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({
 // SKELETON STAT CARD
 // ========================================
 
-export const SkeletonStatCard: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const SkeletonStatCard: React.FC<{ className?: string; compact?: boolean }> = ({ className = '', compact = false }) => {
+    if (compact) {
+        return (
+            <div className={`bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-3.5 h-[98px] ${className}`}>
+                <div className="flex justify-between items-start mb-2">
+                    <Skeleton variant="rounded" width={32} height={32} />
+                    <Skeleton variant="rounded" width={40} height={16} />
+                </div>
+                <Skeleton variant="text" width="40%" height={20} className="mb-1" />
+                <Skeleton variant="text" width="60%" height={8} />
+            </div>
+        );
+    }
     return (
         <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 p-6 h-36 ${className}`}>
             <div className="flex justify-between items-start mb-4">

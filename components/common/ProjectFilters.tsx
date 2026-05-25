@@ -7,7 +7,6 @@
  * Layout:  [Giai đoạn ▾] [Trạng thái ▾] [Nhóm ▾] [Phòng QLDA ▾] [✕ Xóa lọc]
  */
 import React, { useRef, useState, useEffect } from 'react';
-import { useMatch } from 'react-router-dom';
 import { ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { useProjectFilterContextSafe } from '../../context/ProjectFilterContext';
 import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SPECIALTY_OPTIONS } from '../../features/projects/hooks/useProjectFilters';
@@ -109,12 +108,10 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
 // ─────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────
-export const ProjectHeaderFilters: React.FC = () => {
-    // Chỉ render khi đang ở /projects (list), không ở /projects/:id
-    const isProjectList = useMatch('/projects');
+export const ProjectFilters: React.FC = () => {
     const filters = useProjectFilterContextSafe();
 
-    if (!isProjectList || !filters) return null;
+    if (!filters) return null;
 
     const {
         selectedStatus, setSelectedStatus,

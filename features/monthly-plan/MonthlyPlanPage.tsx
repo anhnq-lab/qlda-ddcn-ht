@@ -20,10 +20,6 @@ import { useSlidePanel } from "../../context/SlidePanelContext";
 import DataTable, { Column } from '../../components/ui/DataTable';
 import { StatusBadge, BadgeVariant } from '../../components/ui';
 
-const CURRENT_DATE = new Date();
-const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-
 const STATUS_CONFIG: Record<MonthlyTaskStatus, { icon: React.ReactNode; variant: BadgeVariant }> = {
     planned:    { icon: <Clock className="w-3.5 h-3.5" />,         variant: 'neutral' },
     completed:  { icon: <CheckCircle2 className="w-3.5 h-3.5" />,  variant: 'success' },
@@ -32,10 +28,18 @@ const STATUS_CONFIG: Record<MonthlyTaskStatus, { icon: React.ReactNode; variant:
     deferred:   { icon: <ArrowRight className="w-3.5 h-3.5" />,    variant: 'info' },
 };
 
+const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+
 type ViewMode = 'plan' | 'report';
 
-const MonthlyPlanPage: React.FC = () => {
-    const { state, actions } = useMonthlyPlan();
+interface MonthlyPlanPageProps {
+    month?: number;
+    year?: number;
+}
+
+const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth, year: externalYear }) => {
+    const { state, actions } = useMonthlyPlan(externalMonth, externalYear);
     const { openPanel, closePanel } = useSlidePanel();
 
     const {
@@ -62,18 +66,22 @@ const MonthlyPlanPage: React.FC = () => {
         {
             key: 'stt',
             header: 'STT',
-            width: '60px',
+            width: '50px',
+            minWidth: '50px',
+            maxWidth: '50px',
             align: 'center',
-            render: (_, __, idx) => <span className="text-xs text-slate-400 font-medium">{idx + 1}</span>
+            className: 'w-[50px] min-w-[50px] max-w-[50px]',
+            render: (_, __, idx) => <span className="tabular-nums text-xs text-slate-500">{idx + 1}</span>
         },
         {
             key: 'task_name',
             header: 'Nội dung công việc',
-            flex: 1,
+            width: '100%',
+            minWidth: '280px',
             render: (_, item) => (
                 <div className="flex flex-col gap-1 py-1">
-                    <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{item.task_name}</span>
-                    {item.deliverable && <span className="text-xs text-slate-500 dark:text-slate-400">{item.deliverable}</span>}
+                    <span className="text-sm font-medium text-slate-850 dark:text-slate-200 leading-snug">{item.task_name}</span>
+                    {item.deliverable && <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.deliverable}</span>}
                     {viewMode === 'report' && item.status === 'incomplete' && item.incomplete_reason && (
                         <p className="text-xs text-red-600 dark:text-red-400 mt-1 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded inline-block">
                             Lý do: {item.incomplete_reason}
@@ -106,13 +114,19 @@ const MonthlyPlanPage: React.FC = () => {
             key: 'deadline',
             header: 'Thời gian HT',
             width: '120px',
+            minWidth: '120px',
+            maxWidth: '120px',
             align: 'center',
-            render: (_, item) => <span className="text-xs text-slate-500">{item.deadline_note ?? '—'}</span>
+            className: 'w-[120px] min-w-[120px] max-w-[120px]',
+            render: (_, item) => <span className="text-xs text-slate-650 dark:text-slate-400">{item.deadline_note ?? '—'}</span>
         },
         {
             key: 'collaborating',
             header: 'Đơn vị phối hợp',
             width: '180px',
+            minWidth: '180px',
+            maxWidth: '180px',
+            className: 'w-[180px] min-w-[180px] max-w-[180px]',
             render: (_, item) => {
                 const codes = item.collaborating_dept_codes ?? [];
                 const text = item.collaborating_text;
@@ -120,7 +134,7 @@ const MonthlyPlanPage: React.FC = () => {
                 return (
                     <div className="flex flex-col gap-0.5 text-xs text-slate-700 dark:text-slate-300">
                         {codes.length > 0 && (
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">
+                            <span className="font-bold text-slate-750 dark:text-slate-200">
                                 {codes.join(', ')}
                             </span>
                         )}
@@ -137,7 +151,10 @@ const MonthlyPlanPage: React.FC = () => {
             key: 'status',
             header: 'Trạng thái',
             width: '140px',
+            minWidth: '140px',
+            maxWidth: '140px',
             align: 'center',
+            className: 'w-[140px] min-w-[140px] max-w-[140px]',
             render: (_, item) => {
                 const cfg = STATUS_CONFIG[item.status];
                 if (viewMode === 'report') {
@@ -145,7 +162,7 @@ const MonthlyPlanPage: React.FC = () => {
                         <select
                             value={item.status}
                             onChange={e => handleStatusChange(item, e.target.value as MonthlyTaskStatus)}
-                            className="text-xs px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer w-full"
+                            className="text-xs px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/30 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer w-full"
                             onClick={e => e.stopPropagation()}
                         >
                             {Object.entries(MONTHLY_STATUS_LABELS).map(([v, l]) => (
@@ -169,13 +186,16 @@ const MonthlyPlanPage: React.FC = () => {
             key: 'actions',
             header: '',
             width: '80px',
+            minWidth: '80px',
+            maxWidth: '80px',
             align: 'center',
+            className: 'w-[80px] min-w-[80px] max-w-[80px]',
             render: (_, item) => (
                 <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                    <button onClick={() => openFormPanel(item)} className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                    <button onClick={() => openFormPanel(item)} className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 rounded-lg transition-colors">
                         <Edit2 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4" />
                     </button>
                 </div>
@@ -235,193 +255,147 @@ const MonthlyPlanPage: React.FC = () => {
 
     return (
         <>
-        <div className="flex flex-col h-full gap-4 bg-transparent p-4">
-            {/* ══════════ KHỐI 1: HEADER & TOOLBAR ══════════ */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm shrink-0">
-                {/* Dòng 1: Tiêu đề & Hành động */}
-                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    {/* Header Left */}
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
-                            <CalendarDays className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                                {viewMode === 'plan' ? 'Kế hoạch tháng' : 'Báo cáo tháng'}
-                            </h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Tháng {month}/{year} · {DEPARTMENT_NAMES[activeDept]}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Toolbar Right */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* Toast kết quả seed */}
-                        {seedResult?.show && (
-                            <span className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium animate-in fade-in duration-300 ${
-                                seedResult.count > 0
-                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                    : 'bg-warning-50 text-warning-700 border border-warning-200'
-                            }`}>
-                                {seedResult.count > 0
-                                    ? `✓ Đã sinh ${seedResult.count} nhiệm vụ`
-                                    : `⚠ Không có nhiệm vụ mới`}
-                            </span>
-                        )}
-
-                        {/* Toggle Plan/Report (Segmented control) */}
-                        <div className="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-1">
-                            {(['plan', 'report'] as ViewMode[]).map(mode => (
-                                <button
-                                    key={mode}
-                                    onClick={() => setViewMode(mode)}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                                        viewMode === mode 
-                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
-                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                                    }`}
-                                >
-                                    {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
-
-                        {/* Export Excel */}
-                        <button
-                            onClick={async () => {
-                                setExporting(true);
-                                try {
-                                    const { exportMonthlyReport } = await import('./exportMonthlyReport');
-                                    await exportMonthlyReport(month, year);
-                                }
-                                catch (e) { console.error(e); }
-                                finally { setExporting(false); }
-                            }}
-                            disabled={exporting}
-                            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 hover:text-emerald-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
-                        >
-                            <Download className="w-4 h-4" />
-                            <span className="hidden sm:inline">{exporting ? 'Đang xuất...' : 'Xuất Excel'}</span>
-                        </button>
-
-                        {viewMode === 'plan' && (
-                            <>
-                                {/* Sinh từ Dự án — mở Step Picker để chọn bước */}
-                                <button
-                                    onClick={handleOpenStepPicker}
-                                    disabled={stepPickerLoading || loading}
-                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-violet-200 dark:border-violet-800 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/30 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
-                                    title="Chọn bước dự án để đưa vào KH tháng"
-                                >
-                                    <FolderSync className={`w-4 h-4 ${stepPickerLoading ? 'animate-spin' : ''}`} />
-                                    <span className="hidden sm:inline">{stepPickerLoading ? 'Đang tải...' : 'Sinh từ dự án'}</span>
-                                </button>
-                                {/* Sinh từ KH khung */}
-                                <button
-                                    onClick={handleSeedFromAnnual}
-                                    disabled={seedLoading || loading}
-                                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 transition-colors"
-                                    title="Sinh từ KH khung"
-                                >
-                                    <RefreshCw className={`w-4 h-4 ${seedLoading ? 'animate-spin' : ''}`} />
-                                    <span className="hidden sm:inline">{seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}</span>
-                                </button>
-                                {/* Thêm nhiệm vụ */}
-                                <button
-                                    onClick={() => openFormPanel(null)}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 shadow-sm transition-colors"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    <span>Thêm nhiệm vụ</span>
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Dòng 2: Bộ lọc (Tháng, Năm, Phòng ban) */}
-                <div className="px-6 py-3 bg-slate-50/50 dark:bg-slate-800 flex flex-wrap lg:flex-nowrap items-center gap-4">
-                    {/* Time Filters */}
-                    <div className="flex items-center gap-2 pr-4 border-r border-slate-200 dark:border-slate-700 shrink-0">
-                        <select
-                            value={month}
-                            onChange={e => setMonth(Number(e.target.value))}
-                            className="text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:border-slate-300 transition-colors"
-                        >
-                            {MONTH_NAMES.slice(1).map((name, i) => (
-                                <option key={i + 1} value={i + 1}>{name}</option>
-                            ))}
-                        </select>
-                        <select
-                            value={year}
-                            onChange={e => setYear(Number(e.target.value))}
-                            className="text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:border-slate-300 transition-colors"
-                        >
-                            {[year - 1, year, year + 1].map(y => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Tab phòng ban (Pills) */}
-                    <div className="flex gap-1.5 overflow-x-auto custom-scrollbar flex-1 pb-1 lg:pb-0">
-                        {DEPARTMENT_CODES.map(code => (
+        <div className="flex flex-col h-full bg-transparent">
+            {/* ── Thanh công cụ 1 hàng tối giản ── */}
+            <div className="px-0 py-2.5 bg-transparent border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                {/* Trái: Segmented control Plan/Report + Dropdown chọn phòng ban */}
+                <div className="flex items-center gap-2 flex-wrap flex-1">
+                    {/* Segmented control */}
+                    <div className="flex bg-slate-150 dark:bg-slate-900 rounded-lg p-0.5 shadow-sm border border-slate-200/50 dark:border-slate-800 shrink-0">
+                        {(['plan', 'report'] as ViewMode[]).map(mode => (
                             <button
-                                key={code}
-                                onClick={() => setActiveDept(code)}
-                                className={`flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${
-                                    activeDept === code 
-                                        ? 'bg-slate-800 border-slate-800 text-white dark:bg-slate-200 dark:border-slate-200 dark:text-slate-800 shadow-sm' 
-                                        : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
+                                    viewMode === mode 
+                                        ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-305'
                                 }`}
                             >
-                                {code}
+                                {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
                             </button>
                         ))}
                     </div>
+
+                    {/* Bộ lọc phòng ban Dropdown */}
+                    <div className="relative">
+                        <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                        <select
+                            value={activeDept}
+                            onChange={e => setActiveDept(e.target.value as DepartmentCode)}
+                            className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                        >
+                            {DEPARTMENT_CODES.map(code => (
+                                <option key={code} value={code}>{code}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+                    </div>
+                </div>
+
+                {/* Phải: Toast seed kết quả + Các nút hành động */}
+                <div className="flex items-center gap-2 shrink-0">
+                    {/* Toast kết quả seed */}
+                    {seedResult?.show && (
+                        <span className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg font-bold animate-in fade-in duration-300 ${
+                            seedResult.count > 0
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-500/20'
+                                : 'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-300 border border-warning-100 dark:border-warning-500/20'
+                        }`}>
+                            {seedResult.count > 0
+                                ? `✓ Đã sinh ${seedResult.count} nhiệm vụ`
+                                : `⚠ Không có nhiệm vụ mới`}
+                        </span>
+                    )}
+
+                    {/* Xuất Excel */}
+                    <button
+                        onClick={async () => {
+                            setExporting(true);
+                            try {
+                                const { exportMonthlyReport } = await import('./exportMonthlyReport');
+                                await exportMonthlyReport(month, year);
+                            }
+                            catch (e) { console.error(e); }
+                            finally { setExporting(false); }
+                        }}
+                        disabled={exporting}
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 hover:text-emerald-700 text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                        title="Xuất Excel"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">{exporting ? 'Đang xuất...' : 'Xuất Excel'}</span>
+                    </button>
+
+                    {viewMode === 'plan' && (
+                        <>
+                            {/* Sinh từ dự án */}
+                            <button
+                                onClick={handleOpenStepPicker}
+                                disabled={stepPickerLoading || loading}
+                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-violet-200 dark:border-violet-850 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 text-slate-655 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                                title="Sinh từ Dự án"
+                            >
+                                <FolderSync className={`w-3.5 h-3.5 ${stepPickerLoading ? 'animate-spin' : ''}`} />
+                                <span className="hidden sm:inline">{stepPickerLoading ? 'Đang tải...' : 'Sinh từ dự án'}</span>
+                            </button>
+
+                            {/* Sinh từ KH khung */}
+                            <button
+                                onClick={handleSeedFromAnnual}
+                                disabled={seedLoading || loading}
+                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                                title="Sinh từ KH khung"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 ${seedLoading ? 'animate-spin' : ''}`} />
+                                <span className="hidden sm:inline">{seedLoading ? 'Đang sinh...' : 'Sinh từ KH khung'}</span>
+                            </button>
+
+                            {/* Thêm nhiệm vụ */}
+                            <button
+                                onClick={() => openFormPanel(null)}
+                                className="flex items-center gap-1.5 px-3 py-1 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 shadow-sm transition-colors"
+                            >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Thêm nhiệm vụ</span>
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
-            {/* ══════════ KHỐI 2: STATS / THỐNG KÊ (Khối nổi độc lập) ══════════ */}
+            {/* ── Thống kê tiến độ tinh gọn ── */}
             {viewMode === 'plan' && items.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm shrink-0 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{stats.total}</span>
-                            </div>
-                            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Tổng NV</span>
-                        </div>
-                        <div className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
-                        <div className="flex flex-wrap gap-4">
-                            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-500">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                Hoàn thành: <span className="font-bold">{stats.completed}</span>
-                            </span>
-                            <span className="flex items-center gap-1.5 text-sm font-medium text-red-500 dark:text-red-400">
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                Chưa HT: <span className="font-bold">{stats.incomplete}</span>
-                            </span>
-                            <span className="flex items-center gap-1.5 text-sm font-medium text-slate-400 dark:text-slate-500">
-                                <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                                Chưa báo cáo: <span className="font-bold">{stats.planned}</span>
-                            </span>
-                        </div>
+                <div className="px-4 py-2 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 mt-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-semibold text-slate-550 dark:text-slate-400">
+                            Tổng NV: <strong className="text-slate-800 dark:text-white font-black">{stats.total}</strong>
+                        </span>
+                        <span className="text-slate-200 dark:text-slate-700">|</span>
+                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Hoàn thành: <strong>{stats.completed}</strong>
+                        </span>
+                        <span className="flex items-center gap-1 text-red-550 dark:text-red-450 font-medium">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            Chưa HT: <strong className="text-red-650 dark:text-red-400">{stats.incomplete}</strong>
+                        </span>
+                        <span className="flex items-center gap-1 text-slate-450 dark:text-slate-500">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-350 dark:bg-slate-600"></span>
+                            Chưa báo cáo: <strong>{stats.planned}</strong>
+                        </span>
                     </div>
                     
                     {stats.total > 0 && (
-                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800 w-full md:w-auto">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tiến độ</span>
-                            <div className="flex-1 md:w-48 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-150 dark:border-slate-700/80 w-full sm:w-auto self-stretch sm:self-auto shadow-sm">
+                            <span className="font-medium text-slate-550 dark:text-slate-400">Tiến độ</span>
+                            <div className="flex-1 sm:w-28 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                                     style={{ width: `${Math.round((stats.completed / stats.total) * 100)}%` }}
                                 />
                             </div>
-                            <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 w-8 text-right">
+                            <span className="font-black text-emerald-650 dark:text-emerald-400 w-8 text-right shrink-0">
                                 {Math.round((stats.completed / stats.total) * 100)}%
                             </span>
                         </div>
@@ -429,38 +403,38 @@ const MonthlyPlanPage: React.FC = () => {
                 </div>
             )}
 
-            {/* ══════════ KHỐI 3: CONTENT / BẢNG ══════════ */}
-            <div className="flex-1 min-h-0 flex flex-col gap-4">
+            {/* ── Nội dung ── */}
+            <div className="flex-1 min-h-0 py-3 flex flex-col">
                 {viewMode === 'report' ? (
                     <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
-                            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">
+                        <div className="px-4 py-2.5 border-b border-slate-150 dark:border-slate-750 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
+                            <h3 className="text-xs font-bold text-slate-750 dark:text-slate-200 uppercase tracking-wider">
                                 Tổng hợp kết quả {MONTH_NAMES[month]}/{year} — Toàn Ban
                             </h3>
                         </div>
                         <div className="flex-1 overflow-auto custom-scrollbar">
                             <table className="w-full text-sm">
-                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/80 backdrop-blur text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm">
+                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 backdrop-blur text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm">
                                     <tr className="text-slate-500 dark:text-slate-400">
-                                        <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">Phòng/Ban</th>
-                                        <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tổng</th>
-                                        <th className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-500 border-b border-slate-200 dark:border-slate-700">Hoàn thành</th>
-                                        <th className="px-4 py-3 text-center text-warning-500 dark:text-warning-400 border-b border-slate-200 dark:border-slate-700">Một phần</th>
-                                        <th className="px-4 py-3 text-center text-red-500 dark:text-red-400 border-b border-slate-200 dark:border-slate-700">Chưa HT</th>
-                                        <th className="px-4 py-3 text-center text-blue-500 dark:text-blue-400 border-b border-slate-200 dark:border-slate-700">Chuyển tháng</th>
-                                        <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ HT</th>
+                                        <th className="px-4 py-2.5 text-left border-b border-slate-200 dark:border-slate-700">Phòng/Ban</th>
+                                        <th className="px-4 py-2.5 text-center border-b border-slate-200 dark:border-slate-700">Tổng</th>
+                                        <th className="px-4 py-2.5 text-center text-emerald-600 dark:text-emerald-500 border-b border-slate-200 dark:border-slate-700">Hoàn thành</th>
+                                        <th className="px-4 py-2.5 text-center text-warning-550 dark:text-warning-400 border-b border-slate-200 dark:border-slate-700">Một phần</th>
+                                        <th className="px-4 py-2.5 text-center text-red-550 dark:text-red-400 border-b border-slate-200 dark:border-slate-700">Chưa HT</th>
+                                        <th className="px-4 py-2.5 text-center text-blue-550 dark:text-blue-450 border-b border-slate-200 dark:border-slate-700">Chuyển tháng</th>
+                                        <th className="px-4 py-2.5 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ HT</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                                     {summaries.map(s => (
-                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                                            <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-200">{s.department_name}</td>
-                                            <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{s.total_tasks}</td>
-                                            <td className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50/30 dark:bg-emerald-900/10">{s.completed}</td>
-                                            <td className="px-4 py-3 text-center text-warning-500 dark:text-warning-400">{s.partial}</td>
-                                            <td className="px-4 py-3 text-center text-red-500 dark:text-red-400 bg-red-50/30 dark:bg-red-900/10">{s.incomplete}</td>
-                                            <td className="px-4 py-3 text-center text-blue-500 dark:text-blue-400">{s.deferred}</td>
-                                            <td className="px-4 py-3 text-center">
+                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-xs">
+                                            <td className="px-4 py-2.5 font-bold text-slate-700 dark:text-slate-200">{s.department_name}</td>
+                                            <td className="px-4 py-2.5 text-center text-slate-500 dark:text-slate-400">{s.total_tasks}</td>
+                                            <td className="px-4 py-2.5 text-center text-emerald-600 dark:text-emerald-450 font-bold bg-emerald-500/5 dark:bg-emerald-500/10">{s.completed}</td>
+                                            <td className="px-4 py-2.5 text-center text-warning-600 dark:text-warning-400 font-medium">{s.partial}</td>
+                                            <td className="px-4 py-2.5 text-center text-red-600 dark:text-red-450 font-medium bg-red-500/5 dark:bg-red-500/10">{s.incomplete}</td>
+                                            <td className="px-4 py-2.5 text-center text-blue-600 dark:text-blue-450">{s.deferred}</td>
+                                            <td className="px-4 py-2.5 text-center">
                                                 <StatusBadge
                                                     variant={s.completion_rate >= 80 ? 'success' : s.completion_rate >= 50 ? 'warning' : 'danger'}
                                                     label={`${s.completion_rate}%`}
@@ -469,9 +443,11 @@ const MonthlyPlanPage: React.FC = () => {
                                         </tr>
                                     ))}
                                     {summaries.length === 0 && (
-                                        <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-sm italic">
-                                            Chưa có dữ liệu báo cáo
-                                        </td></tr>
+                                        <tr>
+                                            <td colSpan={7} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-xs italic">
+                                                Chưa có dữ liệu báo cáo
+                                            </td>
+                                        </tr>
                                     )}
                                 </tbody>
                             </table>
@@ -483,16 +459,16 @@ const MonthlyPlanPage: React.FC = () => {
                             <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">Đang tải...</div>
                         ) : items.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-slate-500">
-                                <CalendarDays className="w-12 h-12 opacity-30" />
-                                <p className="text-sm">Chưa có nhiệm vụ nào trong tháng này</p>
-                                <div className="flex flex-wrap gap-3 text-sm justify-center mt-2">
-                                    <button onClick={handleOpenStepPicker} className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors">
-                                        <FolderSync className="w-4 h-4" /> Sinh từ dự án
+                                <CalendarDays className="w-10 h-10 opacity-30" />
+                                <p className="text-xs">Chưa có nhiệm vụ nào trong tháng này</p>
+                                <div className="flex flex-wrap gap-2 text-xs justify-center mt-2">
+                                    <button onClick={handleOpenStepPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors font-bold">
+                                        <FolderSync className="w-3.5 h-3.5" /> Sinh từ dự án
                                     </button>
-                                    <button onClick={handleSeedFromAnnual} className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                                    <button onClick={handleSeedFromAnnual} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-700 text-slate-655 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors font-bold">
                                         Sinh từ KH khung
                                     </button>
-                                    <button onClick={() => openFormPanel(null)} className="flex items-center gap-1.5 px-4 py-2 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors">
+                                    <button onClick={() => openFormPanel(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/30 text-primary-650 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors font-bold">
                                         Thêm thủ công
                                     </button>
                                 </div>
@@ -503,7 +479,7 @@ const MonthlyPlanPage: React.FC = () => {
                                 columns={columns}
                                 keyExtractor={item => item.id}
                                 stickyHeader
-                                maxHeight="100%"
+                                maxHeight="calc(100vh - 260px)"
                                 onRowClick={openDetailPanel}
                                 groupBy={(item) => item.source_type === 'project_step' ? 'Kế hoạch dự án' : item.source_type === 'from_annual' ? 'KH Khung năm' : 'Công việc khác'}
                                 defaultExpandedGroups={true}
@@ -519,13 +495,13 @@ const MonthlyPlanPage: React.FC = () => {
                                                     <div className="flex items-center gap-2">
                                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                                                         <FolderOpen className="w-4 h-4 text-primary-500" />
-                                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{groupName}</span>
-                                                        <span className="text-[10px] font-bold bg-slate-200/50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-250">{groupName}</span>
+                                                        <span className="text-[10px] font-bold bg-slate-250 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
                                                             {groupItems.length}
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center gap-2 pr-2">
-                                                        <div className="flex items-center gap-1 text-[11px] font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md">
+                                                        <div className="flex items-center gap-1 text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-500/20">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                                             {groupItems.filter(i => i.status === 'completed').length} HT
                                                         </div>
@@ -558,5 +534,3 @@ const MonthlyPlanPage: React.FC = () => {
 };
 
 export default MonthlyPlanPage;
-
-

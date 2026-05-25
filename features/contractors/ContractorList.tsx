@@ -17,7 +17,6 @@ const ContractorList: React.FC = () => {
     const queryClient = useQueryClient();
     const { openPanel } = useSlidePanel();
     const { contractors, isLoading, error: loadError } = useContractors();
-    const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState<ContractorType | ''>('');
     const [saving, setSaving] = useState(false);
     const [sortKey, setSortKey] = useState<'FullName' | 'TaxCode' | 'ContractorType' | 'Representative' | ''>('');
@@ -37,16 +36,11 @@ const ContractorList: React.FC = () => {
         return acc;
     }, {} as Record<string, number>);
 
-    // Filter — search + type
+    // Filter — search removed, only type
     const filteredContractors = useMemo(() => {
         let result = contractors.filter(c => {
             if (typeFilter && c.ContractorType !== typeFilter) return false;
-            if (!searchTerm) return true;
-            const term = searchTerm.toLowerCase();
-            return c.FullName.toLowerCase().includes(term) ||
-                (c.TaxCode || '').toLowerCase().includes(term) ||
-                (c.Address || '').toLowerCase().includes(term) ||
-                (c.Representative || '').toLowerCase().includes(term);
+            return true;
         });
 
         // Sort
@@ -59,7 +53,7 @@ const ContractorList: React.FC = () => {
         }
 
         return result;
-    }, [contractors, searchTerm, typeFilter, sortKey, sortDir]);
+    }, [contractors, typeFilter, sortKey, sortDir]);
 
     // Pagination
     const totalPages = Math.max(1, Math.ceil(filteredContractors.length / ITEMS_PER_PAGE));
@@ -178,17 +172,7 @@ const ContractorList: React.FC = () => {
             )}
 
             {/* Toolbar */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="relative max-w-sm flex-1">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Tìm theo tên, mã số thuế, địa chỉ..."
-                            className="filter-input"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
                     <div className="flex items-center gap-2">
                         <div className="relative">
                             <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />

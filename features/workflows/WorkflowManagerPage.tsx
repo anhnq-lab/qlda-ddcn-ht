@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { GitBranch, Plus, AlertCircle, FileText, DownloadCloud, ArrowLeft, LayoutGrid, List as ListIcon, Search, Trash2, PenLine, FileSpreadsheet } from 'lucide-react';
 import { getStandardWorkflowTemplates } from './data/seedWorkflows';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
+import { useSearchParams } from 'react-router-dom';
 
 import type { Workflow, WorkflowNode, WorkflowEdge } from '../../types/workflow.types';
 import { useToast } from '../../components/ui/Toast';
@@ -16,6 +17,9 @@ import { WorkflowStepDetailPanel } from './components/WorkflowStepDetailPanel';
 import { useWorkflowRaci } from './hooks/useWorkflowRaci';
 
 const WorkflowManagerPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const workflowIdParam = searchParams.get('workflowId');
+
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSeeding, setIsSeeding] = useState(false);
@@ -218,6 +222,19 @@ const WorkflowManagerPage: React.FC = () => {
                        />
         });
     };
+
+    // Deep linking logic for workflowId
+    useEffect(() => {
+        if (!isLoading && workflows.length > 0 && workflowIdParam) {
+            const wf = workflows.find(w => w.id === workflowIdParam);
+            if (wf) {
+                const timer = setTimeout(() => {
+                    handleViewWorkflowOverview(wf);
+                }, 100);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [workflowIdParam, workflows, isLoading]);
 
     const openNodeDetails = (nodeId: string, nodeName: string, staticNode?: any) => {
         openPanel({

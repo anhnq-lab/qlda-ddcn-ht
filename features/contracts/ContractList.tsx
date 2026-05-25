@@ -48,7 +48,6 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
     const { scopedProjects: projects, scopedProjectIds } = useScopedProjects({ pageSize: 9999 });
     const { contractors } = useContractors();
     const { biddingPackages } = useAllBiddingPackages();
-    const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | ContractStatus>('all');
     const [contractTypeFilter, setContractTypeFilter] = useState<string>('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,21 +149,12 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
     // === Filtering ===
     const filteredContracts = useMemo(() => {
         return scopedContracts.filter(c => {
-            const contractorName = getContractorName(c.ContractorID).toLowerCase();
-            const projectName = getProjectName(c).toLowerCase();
-            const packageName = getPackageName(c).toLowerCase();
-            const qLower = searchQuery.toLowerCase();
-            const matchesSearch = !searchQuery ||
-                c.ContractID.toLowerCase().includes(qLower) ||
-                contractorName.includes(qLower) ||
-                projectName.includes(qLower) ||
-                packageName.includes(qLower);
             const matchesStatus = statusFilter === 'all' || c.Status === statusFilter;
             const matchesProject = projectFilter === 'all' || getProjectId(c) === projectFilter;
             const matchesType = contractTypeFilter === 'all' || (c.ContractType || '') === contractTypeFilter;
-            return matchesSearch && matchesStatus && matchesProject && matchesType;
+            return matchesStatus && matchesProject && matchesType;
         });
-    }, [scopedContracts, searchQuery, statusFilter, contractTypeFilter, projectFilter, projects]);
+    }, [scopedContracts, statusFilter, contractTypeFilter, projectFilter, projects]);
 
     if (isLoading) {
         return (
@@ -245,16 +235,6 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             {/* === Toolbar === */}
             <div className="bg-bg-surface rounded-2xl shadow-sm border border-border p-4">
                 <div className="flex flex-col md:flex-row items-center gap-3 flex-wrap">
-                    <div className="relative w-full md:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Tìm mã HĐ, nhà thầu, gói thầu..."
-                            className="filter-input"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
 
                     {/* Filter trạng thái */}
                     <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5">

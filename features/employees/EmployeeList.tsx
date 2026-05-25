@@ -23,7 +23,6 @@ const SuspenseFallback = () => (
 
 const EmployeeList: React.FC = () => {
     const {
-        searchTerm, setSearchTerm,
         selectedDept, setSelectedDept,
         filterRole, setFilterRole,
         viewMode, setViewMode,
@@ -105,24 +104,8 @@ const EmployeeList: React.FC = () => {
                         {/* ══════════ TOOLBAR ══════════ */}
                         <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
                             <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                                {/* Left: Search + Filters */}
+                                {/* Left: Filters (Search removed) */}
                                 <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
-                                    <div className="relative flex-1 min-w-[240px] max-w-[360px]">
-                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                                        <input
-                                            type="text"
-                                            placeholder="Tìm kiếm nhân sự..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
-                                        />
-                                        {searchTerm && (
-                                            <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                                <X className="w-3.5 h-3.5" />
-                                            </button>
-                                        )}
-                                    </div>
-
                                     <div className="relative">
                                         <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
                                         <select
@@ -155,7 +138,7 @@ const EmployeeList: React.FC = () => {
 
                                     {hasActiveFilters && (
                                         <button
-                                            onClick={() => { setSearchTerm(''); setSelectedDept('All'); setFilterRole('All'); }}
+                                            onClick={() => { setSelectedDept('All'); setFilterRole('All'); }}
                                             className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
                                         >
                                             Xóa bộ lọc

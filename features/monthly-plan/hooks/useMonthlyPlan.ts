@@ -16,10 +16,16 @@ type ViewMode = 'plan' | 'report';
 
 const CURRENT_DATE = new Date();
 
-export function useMonthlyPlan() {
+export function useMonthlyPlan(externalMonth?: number, externalYear?: number) {
     const [viewMode, setViewMode] = useTabSearchParam<ViewMode>('plan', ['plan', 'report'] as const, 'view');
-    const [month, setMonth] = useState(CURRENT_DATE.getMonth() + 1);
-    const [year, setYear] = useState(CURRENT_DATE.getFullYear());
+    const [localMonth, setLocalMonth] = useState(CURRENT_DATE.getMonth() + 1);
+    const [localYear, setLocalYear] = useState(CURRENT_DATE.getFullYear());
+
+    const month = externalMonth !== undefined ? externalMonth : localMonth;
+    const year = externalYear !== undefined ? externalYear : localYear;
+
+    const setMonth = externalMonth !== undefined ? () => {} : setLocalMonth;
+    const setYear = externalYear !== undefined ? () => {} : setLocalYear;
     const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
 
     const [currentPlan, setCurrentPlan] = useState<MonthlyPlan | null>(null);

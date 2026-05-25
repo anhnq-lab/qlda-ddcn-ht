@@ -75,10 +75,12 @@ interface StatCardProps {
      */
     loading?: boolean;
     /**
-     * Arbitrary ReactNode rendered at the very bottom of the card (e.g. a badge,
-     * a mini chart, or a "View details" link).
      */
     footer?: React.ReactNode;
+    /**
+     * Compact mode to reduce padding and font sizes for dense layouts.
+     */
+    compact?: boolean;
     /** Extra Tailwind classes applied to the card's root element. */
     className?: string;
     /**
@@ -150,30 +152,6 @@ const BORDER_TOP_MAP: Record<StatCardColor, string> = {
 
 /**
  * StatCard — Reusable KPI tile for CIC ERP QLDA dashboards.
- *
- * Renders a compact statistics card with four layout rows:
- * 1. **Label row** — primary title (upper-left) + optional trend badge (upper-right).
- * 2. **Value row** — large stat value (lower-left) + coloured icon pill (lower-right).
- *    Optional `targetValue` is appended as `"/ targetValue"`.
- * 3. **Detail row** — either an inline progress bar (`progressLabel` + `progressPercentage`)
- *    or a short `sublabel` text. Mutually exclusive.
- * 4. **Footer slot** — optional `footer` ReactNode pushed to the bottom.
- *
- * The top border stripe colour and icon container background are controlled by
- * the `color` prop via `BORDER_TOP_MAP` and `COLOR_MAP` respectively.
- *
- * @example
- * ```tsx
- * <StatCard
- *   label="Tổng dự án"
- *   value={42}
- *   icon={<FolderOpen size={20} />}
- *   color="primary"
- *   trend="up"
- *   trendPercentage={12}
- *   trendLabel="so với tháng trước"
- * />
- * ```
  */
 export const StatCard: React.FC<StatCardProps> = ({
     label,
@@ -191,18 +169,34 @@ export const StatCard: React.FC<StatCardProps> = ({
     footer,
     className = '',
     onClick,
+    compact = false,
 }) => {
     const iconCls = COLOR_MAP[color] || COLOR_MAP.blue;
     const bgCls = BG_MAP[color] || BG_MAP.blue;
     const borderTopCls = BORDER_TOP_MAP[color] || BORDER_TOP_MAP.blue;
 
+    const wrapperPaddingAndGap = compact 
+        ? 'p-3 pt-2.5 pb-3 rounded-xl gap-1 border-t-2' 
+        : 'p-5 rounded-2xl gap-2 border-t-[3px]';
+
+    const labelSize = compact 
+        ? 'text-[10px] min-h-[12px]' 
+        : 'text-[11px] min-h-[14px]';
+
+    const valueSize = compact 
+        ? 'text-lg font-extrabold' 
+        : 'text-2xl font-black';
+
+    const iconWrapperCls = compact 
+        ? 'p-1.5 rounded-lg [&_svg]:w-3.5 [&_svg]:h-3.5' 
+        : 'p-2 rounded-xl [&_svg]:w-5 [&_svg]:h-5';
+
     return (
         <div
             className={`
-                relative overflow-hidden flex flex-col gap-2 p-5 rounded-2xl
-                bg-bg-surface border border-border
+                relative overflow-hidden flex flex-col bg-bg-surface border border-border
                 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] 
-                h-full transition-all duration-200 border-t-[3px] ${borderTopCls}
+                h-full transition-all duration-200 ${wrapperPaddingAndGap} ${borderTopCls}
                 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] 
                 hover:-translate-y-0.5
                 ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''}
@@ -215,7 +209,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         >
             {/* Row 1: Label + Trend */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center text-[11px] font-black text-txt-secondary tracking-wider uppercase leading-none min-h-[14px]">
+                <div className={`flex items-center font-black text-txt-secondary tracking-wider uppercase leading-none ${labelSize}`}>
                     {label}
                 </div>
                 {(trendPercentage !== undefined || trend) && (
@@ -230,45 +224,57 @@ export const StatCard: React.FC<StatCardProps> = ({
             </div>
 
             {/* Row 2: Value + Icon inline */}
-            <div className="flex items-center justify-between gap-2 mt-1">
+            <div className="flex items-center justify-between gap-2 mt-0.5">
                 <div className="flex items-baseline flex-wrap gap-x-1.5 gap-y-0.5 min-w-0">
-                    <div className="text-2xl font-black text-txt-primary tracking-tight leading-none">
-                        {loading ? <div className="h-7 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" /> : value}
+                    <div className={`text-txt-primary tracking-tight leading-none ${valueSize}`}>
+                        {loading ? <div className={`${compact ? 'h-5 w-16' : 'h-7 w-20'} bg-slate-200 dark:bg-slate-800 rounded animate-pulse`} /> : value}
                     </div>
                     {targetValue && !loading && (
-                        <span className="text-xs font-medium text-txt-muted truncate mt-1 lg:mt-0">
+                        <span className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-txt-muted truncate mt-1 lg:mt-0`}>
                             / {targetValue}
                         </span>
                     )}
+                    {compact && progressPercentage !== undefined && !loading && (
+                        <span className="text-[10px] font-bold text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/30 px-1 rounded-md">
+                            {progressPercentage}%
+                        </span>
+                    )}
                 </div>
-                <div className={`shrink-0 p-2 rounded-xl ${iconCls}`}>
+                <div className={`shrink-0 ${iconWrapperCls} ${iconCls}`}>
                     {icon}
                 </div>
             </div>
 
             {/* Row 3: Sublabel (Legacy pattern) or Progress bar (Dashboard pattern) */}
-            {progressPercentage !== undefined && progressLabel ? (
+            {progressPercentage !== undefined && progressLabel && !compact ? (
                 <div className="mt-1">
-                    <div className="flex justify-between items-center mb-1">
-                        <span className="text-[9px] font-bold text-txt-muted uppercase tracking-wider">{progressLabel}</span>
-                        <span className={`text-[10px] font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
+                    <div className="flex justify-between items-center mb-0.5">
+                        <span className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-bold text-txt-muted uppercase tracking-wider`}>{progressLabel}</span>
+                        <span className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className={`${compact ? 'h-1' : 'h-1.5'} w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden`}>
                         <div className={`h-full ${bgCls} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${Math.min(100, Math.max(0, progressPercentage))}%` }}></div>
                     </div>
                 </div>
             ) : sublabel ? (
-                <div className="text-[10px] font-medium text-txt-muted leading-none mt-1">
+                <div className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-medium text-txt-muted leading-none mt-1`}>
                     {sublabel}
                 </div>
             ) : (
-                <div className="h-px" /> /* Spacer if no extra bottom text */
+                null
             )}
 
             {/* Row 4: Footer element */}
             {footer && (
                 <div className="mt-auto pt-1">
                     {footer}
+                </div>
+            )}
+
+            {/* Bottom Progress Bar for Compact mode */}
+            {compact && progressPercentage !== undefined && (
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-200/50 dark:bg-slate-800 overflow-hidden">
+                    <div className={`h-full ${bgCls} transition-all duration-1000 ease-out`} style={{ width: `${Math.min(100, Math.max(0, progressPercentage))}%` }}></div>
                 </div>
             )}
         </div>

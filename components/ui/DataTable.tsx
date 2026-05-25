@@ -21,6 +21,8 @@ export interface Column<T> {
     width?: string;
     /** Minimum column width CSS value. */
     minWidth?: string;
+    /** Maximum column width CSS value. */
+    maxWidth?: string;
     /** Horizontal cell alignment. Defaults to `"left"`. */
     align?: 'left' | 'center' | 'right';
     /** Whether this column participates in client-side sorting. */
@@ -322,6 +324,11 @@ function DataTable<T extends Record<string, any>>({
                     return (
                         <td
                             key={String(col.key)}
+                            style={{ 
+                                width: col.width, 
+                                minWidth: col.minWidth,
+                                maxWidth: col.maxWidth 
+                            }}
                             className={`
                                 ${tdPad}
                                 text-sm text-slate-700 dark:text-slate-300
@@ -381,7 +388,11 @@ function DataTable<T extends Record<string, any>>({
                                     <th
                                         key={String(col.key) + idx}
                                         onClick={() => sortable && col.sortable && handleSort(String(col.key))}
-                                        style={{ width: col.width, minWidth: col.minWidth }}
+                                        style={{ 
+                                            width: col.width, 
+                                            minWidth: col.minWidth,
+                                            maxWidth: col.maxWidth 
+                                        }}
                                         className={`
                                             ${thPad}
                                             border-b border-slate-200 dark:border-slate-700

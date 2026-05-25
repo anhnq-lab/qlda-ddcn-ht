@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Plus, Search, ChevronDown, ChevronRight, Edit2, Trash2,
-    BookOpen, Filter, Download, Upload, Calendar, Users, Building2, X
+    BookOpen, Filter, Download, Upload, Calendar, Users, Building2, X, Layers
 } from 'lucide-react';
 import { AnnualPlanService, MonthlyPlanService } from '../../services/PlanService';
 import {
@@ -27,7 +27,11 @@ const FREQ_BADGE: Record<PlanFrequency, { label: string; color: string }> = {
     as_needed: { label: 'Phát sinh',    color: 'bg-slate-100 text-slate-600' },
 };
 
-const AnnualPlanPage: React.FC = () => {
+interface AnnualPlanPageProps {
+    year?: number;
+}
+
+const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) => {
     const { openPanel, closePanel } = useSlidePanel();
     const { options: employeeOptions } = useEmployeeOptions();
     const empMap = useMemo(() => {
@@ -36,7 +40,9 @@ const AnnualPlanPage: React.FC = () => {
         return m;
     }, [employeeOptions]);
 
-    const [year, setYear] = useState(CURRENT_YEAR);
+    const [localYear, setLocalYear] = useState(CURRENT_YEAR);
+    const year = externalYear !== undefined ? externalYear : localYear;
+    const setYear = externalYear !== undefined ? () => {} : setLocalYear;
     const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
     const [items, setItems] = useState<AnnualPlanItem[]>([]);
     const [loading, setLoading] = useState(false);
@@ -192,13 +198,18 @@ const AnnualPlanPage: React.FC = () => {
         {
             key: 'stt',
             header: 'STT',
-            width: '3rem',
+            width: '50px',
+            minWidth: '50px',
+            maxWidth: '50px',
             align: 'center',
+            className: 'w-[50px] min-w-[50px] max-w-[50px]',
             render: (_, __, idx) => <span className="tabular-nums text-xs text-slate-500">{idx + 1}</span>
         },
         {
             key: 'task_name',
             header: 'Nội dung nhiệm vụ',
+            width: '105%',
+            minWidth: '280px',
             render: (_, item) => (
                 <div className="flex flex-col">
                     <span className="font-medium text-slate-800 dark:text-slate-200 leading-snug">{item.task_name}</span>
@@ -213,28 +224,40 @@ const AnnualPlanPage: React.FC = () => {
         {
             key: 'deliverable',
             header: 'Sản phẩm đầu ra',
-            width: '12rem',
+            width: '180px',
+            minWidth: '180px',
+            maxWidth: '180px',
+            className: 'w-[180px] min-w-[180px]',
             render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.deliverable ?? '—'}</span>
         },
         {
             key: 'start_period',
             header: 'Bắt đầu',
-            width: '6.5rem',
+            width: '90px',
+            minWidth: '90px',
+            maxWidth: '90px',
             align: 'center',
+            className: 'w-[90px] min-w-[90px] max-w-[90px]',
             render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.start_period)}</span>
         },
         {
             key: 'end_period',
             header: 'Kết thúc',
-            width: '6.5rem',
+            width: '90px',
+            minWidth: '90px',
+            maxWidth: '90px',
             align: 'center',
+            className: 'w-[90px] min-w-[90px] max-w-[90px]',
             render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.end_period)}</span>
         },
         {
             key: 'frequency',
             header: 'Tần suất',
-            width: '7rem',
+            width: '100px',
+            minWidth: '100px',
+            maxWidth: '100px',
             align: 'center',
+            className: 'w-[100px] min-w-[100px] max-w-[100px]',
             render: (_, item) => {
                 const badge = item.frequency ? FREQ_BADGE[item.frequency] : null;
                 if (!badge) return <span className="text-xs text-slate-400">—</span>;
@@ -248,7 +271,10 @@ const AnnualPlanPage: React.FC = () => {
         {
             key: 'collaborating',
             header: 'Phòng phối hợp',
-            width: '12rem',
+            width: '160px',
+            minWidth: '160px',
+            maxWidth: '160px',
+            className: 'w-[160px] min-w-[160px]',
             render: (_, item) => {
                 if (item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) {
                     return (
@@ -267,14 +293,20 @@ const AnnualPlanPage: React.FC = () => {
         {
             key: 'notes',
             header: 'Ghi chú',
-            width: '12rem',
+            width: '180px',
+            minWidth: '180px',
+            maxWidth: '180px',
+            className: 'w-[180px] min-w-[180px]',
             render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.notes ?? '—'}</span>
         },
         {
             key: 'actions',
             header: '',
-            width: '4rem',
+            width: '70px',
+            minWidth: '70px',
+            maxWidth: '70px',
             align: 'right',
+            className: 'w-[70px] min-w-[70px] max-w-[70px]',
             render: (_, item) => (
                 <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                     <button
@@ -296,78 +328,71 @@ const AnnualPlanPage: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-transparent">
-            {/* ── Header ── */}
-            <div className="bg-transparent border-b border-slate-100 dark:border-slate-800 px-6 py-4">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center">
-                            <BookOpen className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Kế hoạch khung năm</h1>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">Chương trình công tác thường xuyên của các phòng</p>
-                        </div>
+            {/* ── Thanh công cụ 1 hàng tối giản ── */}
+            <div className="px-0 py-2.5 bg-transparent border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                {/* Trái: Tìm kiếm + Dropdown phòng ban */}
+                <div className="flex items-center gap-2 flex-wrap flex-1">
+                    {/* Tìm kiếm */}
+                    <div className="relative w-full max-w-[200px]">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                        <input
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            placeholder="Tìm nhiệm vụ..."
+                            className="w-full pl-8 pr-3 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all placeholder-slate-400 dark:placeholder-slate-500"
+                        />
                     </div>
-                    <div className="flex items-center gap-2">
-                        {/* Chọn năm */}
+
+                    {/* Bộ lọc phòng ban Dropdown */}
+                    <div className="relative">
+                        <Layers className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                        <select
+                            value={activeDept}
+                            onChange={e => setActiveDept(e.target.value as DepartmentCode)}
+                            className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                        >
+                            {DEPARTMENT_CODES.map(code => (
+                                <option key={code} value={code}>{code}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+                    </div>
+                </div>
+
+                {/* Phải: Thống kê nhiệm vụ phòng + Chọn năm + Nút Thêm */}
+                <div className="flex items-center gap-3 shrink-0">
+                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-semibold text-slate-750 dark:text-slate-350">{DEPARTMENT_NAMES[activeDept]}</span>
+                        <span>·</span>
+                        <span className="font-bold text-primary-600 dark:text-primary-400">{items.length} nhiệm vụ</span>
+                    </div>
+
+                    {/* Chọn năm */}
+                    {!externalYear && (
                         <select
                             value={year}
                             onChange={e => setYear(Number(e.target.value))}
-                            className="text-sm border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
                         >
                             {[CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1].map(y => (
                                 <option key={y} value={y}>Năm {y}</option>
                             ))}
                         </select>
-                        <button
-                            onClick={() => openFormPanel(null)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Thêm nhiệm vụ
-                        </button>
-                    </div>
-                </div>
+                    )}
 
-                {/* Tab phòng */}
-                <div className="flex gap-1 overflow-x-auto pb-1">
-                    {DEPARTMENT_CODES.map(code => (
-                        <button
-                            key={code}
-                            onClick={() => setActiveDept(code)}
-                            className={`flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                                activeDept === code
-                                    ? 'bg-primary-600 text-white shadow-sm'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            {code}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* ── Thanh công cụ ── */}
-            <div className="px-6 py-3 bg-transparent border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
-                    <input
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                        placeholder="Tìm kiếm nhiệm vụ..."
-                        className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder-slate-400 dark:placeholder-slate-500"
-                    />
-                </div>
-                <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-                    <Building2 className="w-4 h-4" />
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{DEPARTMENT_NAMES[activeDept]}</span>
-                    <span>·</span>
-                    <span>{items.length} nhiệm vụ</span>
+                    <button
+                        onClick={() => openFormPanel(null)}
+                        className="flex items-center gap-1.5 px-3 py-1 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+                    >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Thêm nhiệm vụ</span>
+                    </button>
                 </div>
             </div>
 
             {/* ── Nội dung ── */}
-            <div className="flex-1 px-6 py-4 flex flex-col min-h-0">
+            <div className="flex-1 px-0 py-4 flex flex-col min-h-0">
                 {loading ? (
                     <div className="flex items-center justify-center h-40 text-slate-400 dark:text-slate-500 text-sm">
                         Đang tải...

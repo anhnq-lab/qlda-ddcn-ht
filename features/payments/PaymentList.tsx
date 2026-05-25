@@ -10,7 +10,7 @@ import { useContractors } from '../../hooks/useContractors';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
 import {
-    CreditCard, Download, Search, Plus,
+    CreditCard, Download, Plus,
     DollarSign, Clock, CheckCircle2, FileText,
     Building2, ChevronRight, Filter,
     BarChart3, Wallet, CalendarDays, TrendingUp,
@@ -29,7 +29,6 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
     const { biddingPackages } = useAllBiddingPackages();
     const [filterStatus, setFilterStatus] = useState<'all' | PaymentStatus>('all');
     const [filterType, setFilterType] = useState<'all' | PaymentType>('all');
-    const [searchQuery, setSearchQuery] = useState('');
 
     // === Cross-module helpers ===
     const getContractorName = (contractId: string): string => {
@@ -110,19 +109,12 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
     // === Filtering ===
     const filteredPayments = useMemo(() => {
         return scopedPayments.filter(p => {
-            const qLower = searchQuery.toLowerCase();
-            const contractorName = getContractorName(p.ContractID).toLowerCase();
-            const matchesSearch = !searchQuery ||
-                p.ContractID.toLowerCase().includes(qLower) ||
-                p.TreasuryRef.toLowerCase().includes(qLower) ||
-                contractorName.includes(qLower) ||
-                String(p.PaymentID).includes(qLower);
             const matchesStatus = filterStatus === 'all' || p.Status === filterStatus;
             const matchesType = filterType === 'all' || p.Type === filterType;
             const matchesProject = projectFilter === 'all' || getProjectId(p.ContractID) === projectFilter;
-            return matchesSearch && matchesStatus && matchesType && matchesProject;
+            return matchesStatus && matchesType && matchesProject;
         });
-    }, [scopedPayments, searchQuery, filterStatus, filterType, projectFilter, contracts]);
+    }, [scopedPayments, filterStatus, filterType, projectFilter, contracts]);
 
     const handleNavigateToSource = (contractId: string) => {
         const projectId = getProjectId(contractId);
@@ -226,17 +218,6 @@ const PaymentList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'al
                 {/* === Toolbar === */}
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4">
                     <div className="flex flex-col md:flex-row items-center gap-3">
-                        <div className="relative w-full md:w-80">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Tìm mã TT, mã HĐ, nhà thầu, Kho bạc..."
-                                className="filter-input"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-
                         {/* Status segmented control */}
                         <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5">
                             {[

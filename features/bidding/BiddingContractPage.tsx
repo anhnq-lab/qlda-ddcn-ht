@@ -360,7 +360,6 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
     const { biddingPackages, isLoading } = useAllBiddingPackages();
     // pageSize=9999 để load đủ tất cả dự án — tránh bị cắt số trang
     const { scopedProjects: projects } = useScopedProjects({ pageSize: 9999 });
-    const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | PackageStatus>('all');
     const [sortBy, setSortBy] = useState<'name' | 'price' | 'pct' | null>(null);
     const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -411,16 +410,9 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
     // === Filtering + Sorting ===
     const filteredPackages = useMemo(() => {
         let result = scopedPackages.filter(p => {
-            const qLower = searchQuery.toLowerCase();
-            const projectName = getProjectName(p.ProjectID).toLowerCase();
-            const matchesSearch = !searchQuery ||
-                p.PackageName.toLowerCase().includes(qLower) ||
-                p.PackageNumber.toLowerCase().includes(qLower) ||
-                projectName.includes(qLower) ||
-                (p.NotificationCode?.toLowerCase().includes(qLower));
             const matchesStatus = statusFilter === 'all' || p.Status === statusFilter;
             const matchesProject = projectFilter === 'all' || p.ProjectID === projectFilter;
-            return matchesSearch && matchesStatus && matchesProject;
+            return matchesStatus && matchesProject;
         });
         if (sortBy) {
             result = [...result].sort((a, b) => {
@@ -433,7 +425,7 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             });
         }
         return result;
-    }, [scopedPackages, searchQuery, statusFilter, projectFilter, projects, sortBy, sortDir]);
+    }, [scopedPackages, statusFilter, projectFilter, projects, sortBy, sortDir]);
 
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
@@ -495,17 +487,6 @@ const BiddingPackagesTab: React.FC<ProjectFilterProps> = ({ projectFilter }) => 
             {/* === Toolbar === */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
                 <div className="flex flex-col md:flex-row items-center gap-3">
-                    {/* Search */}
-                    <div className="relative w-full md:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Tìm tên gói thầu, mã TBMT..."
-                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 dark:text-slate-200 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-gray-400 dark:placeholder:text-slate-500"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
 
 
                     {/* Status Filter */}
