@@ -13,6 +13,7 @@ import AnnualPlanItemDetail from './AnnualPlanItemDetail';
 import MonthlyPlanItemModal from '../monthly-plan/MonthlyPlanItemModal';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { useEmployeeOptions } from '../../hooks/usePlanData';
+import { useAuth } from '../../context/AuthContext';
 import DataTable, { Column as ColumnDef } from '../../components/ui/DataTable';
 import { formatPeriod } from '../../utils/format';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
@@ -29,11 +30,15 @@ const FREQ_BADGE: Record<PlanFrequency, { label: string; color: string }> = {
 
 interface AnnualPlanPageProps {
     year?: number;
+    hideDeptSelector?: boolean;
+    departmentCode?: DepartmentCode | 'All';
 }
 
-const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) => {
+const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hideDeptSelector, departmentCode: externalDepartment }) => {
     const { openPanel, closePanel } = useSlidePanel();
     const { options: employeeOptions } = useEmployeeOptions();
+    const { currentUser } = useAuth();
+
     const empMap = useMemo(() => {
         const m: Record<string, string> = {};
         for (const o of employeeOptions) m[String(o.value)] = o.label;
@@ -43,11 +48,73 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
     const [localYear, setLocalYear] = useState(CURRENT_YEAR);
     const year = externalYear !== undefined ? externalYear : localYear;
     const setYear = externalYear !== undefined ? () => {} : setLocalYear;
-    const [activeDept, setActiveDept] = useTabSearchParam<DepartmentCode>('HCTH', DEPARTMENT_CODES, 'dept');
+    const [activeDeptState, setActiveDept] = useTabSearchParam<DepartmentCode | 'All'>('HCTH', [...DEPARTMENT_CODES, 'All'] as const, 'dept');
+    const activeDept = externalDepartment !== undefined ? externalDepartment : activeDeptState;
     const [items, setItems] = useState<AnnualPlanItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+    const isLeadership = useMemo(() => {
+        const pos = currentUser?.Position?.toLowerCase() || '';
+        return pos.includes('giám đốc') || currentUser?.Role === 'Admin';
+    }, [currentUser]);
+
+    const isDeptHead = useMemo(() => {
+        if (activeDept === 'All') return false;
+        return currentUser?.Role === 'Manager' && currentUser?.Department === DEPARTMENT_NAMES[activeDept as DepartmentCode];
+    }, [currentUser, activeDept]);
+
+    const canSubmit = isDeptHead || currentUser?.Role === 'Admin';
+
+    const planStatus = useMemo(() => {
+        return items.length > 0 ? items[0].approval_status || 'draft' : 'draft';
+    }, [items]);
+
+    const rejectedReason = useMemo(() => {
+        return items.length > 0 ? items[0].rejected_reason : null;
+    }, [items]);
+
+    const handleSubmitPlan = async () => {
+        if (activeDept === 'All') return;
+        if (!confirm(`Bạn có chắc chắn muốn gửi duyệt kế hoạch năm ${year} của phòng ${DEPARTMENT_NAMES[activeDept as DepartmentCode]}?`)) return;
+        try {
+            await AnnualPlanService.submitForApproval(year, activeDept as DepartmentCode, currentUser?.EmployeeID || '');
+            alert('Đã gửi duyệt kế hoạch thành công.');
+            loadItems();
+        } catch (e: any) {
+            alert(`Lỗi: ${e.message || 'Không thể gửi duyệt'}`);
+        }
+    };
+
+    const handleApprovePlan = async () => {
+        if (activeDept === 'All') return;
+        if (!confirm(`Phê duyệt kế hoạch năm ${year} của phòng ${DEPARTMENT_NAMES[activeDept as DepartmentCode]}?`)) return;
+        try {
+            await AnnualPlanService.approve(year, activeDept as DepartmentCode, currentUser?.EmployeeID || '');
+            alert('Đã phê duyệt kế hoạch thành công.');
+            loadItems();
+        } catch (e: any) {
+            alert(`Lỗi: ${e.message || 'Không thể phê duyệt'}`);
+        }
+    };
+
+    const handleRejectPlan = async () => {
+        if (activeDept === 'All') return;
+        const reason = prompt('Nhập lý do từ chối phê duyệt:');
+        if (reason === null) return;
+        if (!reason.trim()) {
+            alert('Vui lòng nhập lý do từ chối.');
+            return;
+        }
+        try {
+            await AnnualPlanService.reject(year, activeDept as DepartmentCode, currentUser?.EmployeeID || '', reason.trim());
+            alert('Đã từ chối phê duyệt kế hoạch.');
+            loadItems();
+        } catch (e: any) {
+            alert(`Lỗi: ${e.message || 'Không thể thực hiện'}`);
+        }
+    };
     
     // Month selection state for creating monthly tasks
     const [monthSelectOpen, setMonthSelectOpen] = useState(false);
@@ -115,8 +182,8 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
             component: (
                 <AnnualPlanItemModal
                     year={year}
-                    departmentCode={activeDept}
-                    departmentName={DEPARTMENT_NAMES[activeDept]}
+                    departmentCode={activeDept as DepartmentCode}
+                    departmentName={activeDept === 'All' ? 'Tất cả phòng ban' : DEPARTMENT_NAMES[activeDept as DepartmentCode]}
                     item={item}
                     onSaved={() => { closePanel(); loadItems(); }}
                     onClose={closePanel}
@@ -159,8 +226,8 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
             const monthlyPlan = await MonthlyPlanService.getOrCreate(
                 targetMonth,
                 year,
-                activeDept,
-                DEPARTMENT_NAMES[activeDept]
+                activeDept as DepartmentCode,
+                activeDept === 'All' ? 'Tất cả phòng ban' : DEPARTMENT_NAMES[activeDept as DepartmentCode]
             );
             
             setMonthSelectOpen(false);
@@ -174,7 +241,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
                             monthlyPlanId={monthlyPlan.id}
                             month={targetMonth}
                             year={year}
-                            departmentCode={activeDept}
+                            departmentCode={activeDept as DepartmentCode}
                             item={null}
                             initialAnnualPlanItem={selectedAnnualItem}
                             onSaved={() => {
@@ -307,24 +374,41 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
             maxWidth: '70px',
             align: 'right',
             className: 'w-[70px] min-w-[70px] max-w-[70px]',
-            render: (_, item) => (
-                <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                    <button
-                        onClick={() => openFormPanel(item)}
-                        className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors"
-                    >
-                        <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                </div>
-            )
+            render: (_, item) => {
+                const canEditItem = planStatus === 'draft' || planStatus === 'rejected' || currentUser?.Role === 'Admin';
+                if (!canEditItem) return null;
+                return (
+                    <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={() => openFormPanel(item)}
+                            className="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => handleDelete(item.id)}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    </div>
+                );
+            }
         }
-    ], [empMap]);
+    ], [empMap, planStatus, currentUser]);
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'submitted':
+                return <span className="px-2.5 py-1 text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 rounded-full border border-amber-200 dark:border-amber-900/50">Chờ phê duyệt</span>;
+            case 'approved':
+                return <span className="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400 rounded-full border border-emerald-200 dark:border-emerald-900/50">Đã phê duyệt</span>;
+            case 'rejected':
+                return <span className="px-2.5 py-1 text-[10px] font-bold bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400 rounded-full border border-red-200 dark:border-red-900/50">Bị từ chối</span>;
+            default:
+                return <span className="px-2.5 py-1 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">Bản nháp</span>;
+        }
+    };
 
     return (
         <div className="flex flex-col h-full bg-transparent">
@@ -344,29 +428,34 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
                     </div>
 
                     {/* Bộ lọc phòng ban Dropdown */}
-                    <div className="relative">
-                        <Layers className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                        <select
-                            value={activeDept}
-                            onChange={e => setActiveDept(e.target.value as DepartmentCode)}
-                            className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
-                        >
-                            {DEPARTMENT_CODES.map(code => (
-                                <option key={code} value={code}>{code}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                    </div>
+                    {!hideDeptSelector && (
+                        <div className="relative">
+                            <Layers className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                            <select
+                                value={activeDept}
+                                onChange={e => setActiveDept(e.target.value as DepartmentCode)}
+                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                            >
+                                {DEPARTMENT_CODES.map(code => (
+                                    <option key={code} value={code}>{code}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+                        </div>
+                    )}
                 </div>
 
                 {/* Phải: Thống kê nhiệm vụ phòng + Chọn năm + Nút Thêm */}
                 <div className="flex items-center gap-3 shrink-0">
                     <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
                         <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="font-semibold text-slate-750 dark:text-slate-350">{DEPARTMENT_NAMES[activeDept]}</span>
+                        <span className="font-semibold text-slate-750 dark:text-slate-350">{activeDept === 'All' ? 'Tất cả phòng ban' : DEPARTMENT_NAMES[activeDept as DepartmentCode]}</span>
                         <span>·</span>
                         <span className="font-bold text-primary-600 dark:text-primary-400">{items.length} nhiệm vụ</span>
                     </div>
+
+                    {/* Status Badge */}
+                    {items.length > 0 && getStatusBadge(planStatus)}
 
                     {/* Chọn năm */}
                     {!externalYear && (
@@ -381,15 +470,57 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear }) =
                         </select>
                     )}
 
-                    <button
-                        onClick={() => openFormPanel(null)}
-                        className="flex items-center gap-1.5 px-3 py-1 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
-                    >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Thêm nhiệm vụ</span>
-                    </button>
+                    {activeDept !== 'All' && (
+                        <>
+                            {/* Action buttons based on status & role */}
+                            {items.length > 0 && (planStatus === 'draft' || planStatus === 'rejected') && canSubmit && (
+                                <button
+                                    onClick={handleSubmitPlan}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors shadow-sm cursor-pointer"
+                                >
+                                    Gửi duyệt KH
+                                </button>
+                            )}
+
+                            {planStatus === 'submitted' && isLeadership && (
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={handleApprovePlan}
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm cursor-pointer"
+                                    >
+                                        Duyệt KH
+                                    </button>
+                                    <button
+                                        onClick={handleRejectPlan}
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-red-650 hover:bg-red-750 text-white text-xs font-bold rounded-lg transition-colors shadow-sm cursor-pointer"
+                                    >
+                                        Từ chối
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Thêm nhiệm vụ only allowed in draft or rejected, or for admin */}
+                            {((planStatus === 'draft' || planStatus === 'rejected') || currentUser?.Role === 'Admin') && (
+                                <button
+                                    onClick={() => openFormPanel(null)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors shadow-sm cursor-pointer"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>Thêm nhiệm vụ</span>
+                                </button>
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
+
+            {/* Rejection Banner */}
+            {planStatus === 'rejected' && rejectedReason && (
+                <div className="mt-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-xl text-xs text-red-700 dark:text-red-400 flex flex-col gap-1 shadow-sm shrink-0">
+                    <span className="font-bold">Lý do từ chối phê duyệt:</span>
+                    <span>{rejectedReason}</span>
+                </div>
+            )}
 
             {/* ── Nội dung ── */}
             <div className="flex-1 px-0 py-4 flex flex-col min-h-0">

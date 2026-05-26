@@ -138,24 +138,25 @@ export function useDepartmentData(config: DashboardConfig) {
         queryKey: ['dashboard-monthly-plan', config.departmentCode, currentMonth, currentYear],
         queryFn: async () => {
             if (!config.departmentCode) return [];
-            // Get monthly plan for this department
-            const { data: plan } = await supabase
-                .from('monthly_plans')
-                .select('id')
-                .eq('department_code', config.departmentCode)
-                .eq('plan_month', currentMonth)
-                .eq('plan_year', currentYear)
-                .single();
-
-            if (!plan) return [];
+            const startDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
+            const endDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
 
             const { data: items } = await supabase
-                .from('monthly_plan_items')
-                .select('id, task_name, status, staff_id, staff_name, due_date')
-                .eq('monthly_plan_id', plan.id)
+                .from('tasks')
+                .select('id, title, status, assignee_id, due_date, employees(full_name)')
+                .eq('department_code', config.departmentCode)
+                .gte('due_date', startDate)
+                .lte('due_date', endDate)
                 .order('sort_order');
 
-            return items || [];
+            return (items || []).map((t: any) => ({
+                id: t.id,
+                task_name: t.title,
+                status: t.status === 'done' ? 'completed' : (t.status === 'in_progress' ? 'partial' : (t.status === 'incomplete' ? 'incomplete' : 'planned')),
+                staff_id: t.assignee_id,
+                staff_name: t.employees?.full_name || '',
+                due_date: t.due_date
+            }));
         },
         enabled: !!config.departmentCode,
         staleTime: STALE_5M,

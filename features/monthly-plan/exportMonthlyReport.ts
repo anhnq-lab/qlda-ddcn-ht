@@ -1,7 +1,6 @@
 import ExcelJS from 'exceljs';
-import { MonthlyPlanService, MonthlyPlanItemService } from '../../services/PlanService';
+import { supabase } from '../../lib/supabase';
 import { DEPARTMENT_CODES, DEPARTMENT_NAMES, MONTHLY_STATUS_LABELS } from '../../types/plan.types';
-import type { MonthlyPlanItem } from '../../types/plan.types';
 
 // ─── Palette ────────────────────────────────────────────────────
 const COLOR = {
@@ -128,6 +127,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
     a.download = `BC_T${month}-KH_T${nextMonth}_${year}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
+    a.remove();
 }
 
 // ─── Write all departments for a given mode ─────────────────────
@@ -142,7 +142,7 @@ async function writeAllDepts(
         const deptName = DEPARTMENT_NAMES[deptCode];
 
         // Roman numeral for department index
-        const romanIdx = ['I','II','III','IV','V','VI','VII'][di];
+        const romanIdx = ['I','II','III','IV','V','VI','VII','VIII'][di];
 
         // Dept header row
         const deptRow = ws.addRow([romanIdx, deptName]);
@@ -150,17 +150,25 @@ async function writeAllDepts(
         deptRow.height = 18;
         applyRow(deptRow, { fillColor: COLOR.deptFill, bold: true });
 
-        // Fetch plan + items
-        let items: MonthlyPlanItem[] = [];
+        // Fetch tasks directly from monthly_report_view
+        let items: any[] = [];
         try {
-            const plan = await MonthlyPlanService.getOrCreate(month, year, deptCode, deptName);
-            const detail = await MonthlyPlanService.getWithItems(plan.id);
-            items = detail.items ?? [];
+            const { data, error } = await (supabase as any)
+                .from('monthly_report_view')
+                .select('*')
+                .eq('department_code', deptCode)
+                .eq('report_month', month)
+                .eq('report_year', year);
+            
+            if (error) throw error;
+            items = data || [];
+
             if (mode === 'plan') {
-                items = items.filter(i => i.status === 'planned' || i.status === 'deferred');
+                // For plan mode, filter tasks that are todo/in-progress
+                items = items.filter(i => i.status === 'todo' || i.status === 'in_progress');
             }
-        } catch {
-            // skip if no plan
+        } catch (err) {
+            console.error('Error fetching tasks for department in excel export:', err);
         }
 
         if (items.length === 0) {
@@ -172,7 +180,7 @@ async function writeAllDepts(
         }
 
         // Group tasks
-        const groups = new Map<string, MonthlyPlanItem[]>();
+        const groups = new Map<string, any[]>();
         for (const item of items) {
             const g = item.source_type === 'project_step' ? 'Kế hoạch dự án' : (item.source_type === 'from_annual' ? 'KH Khung năm' : 'Công việc khác');
             if (!groups.has(g)) groups.set(g, []);
@@ -181,7 +189,6 @@ async function writeAllDepts(
 
         let taskCounter = 1;
         for (const [groupName, groupItems] of groups.entries()) {
-            // Group header row (if group name exists)
             if (groupName) {
                 const groupRow = ws.addRow([null, groupName]);
                 ws.mergeCells(`B${groupRow.number}:H${groupRow.number}`);
@@ -191,8 +198,9 @@ async function writeAllDepts(
 
             for (const item of groupItems) {
                 const resultText = mode === 'report'
-                    ? (item.completion_result || MONTHLY_STATUS_LABELS[item.status])
+                    ? (item.completion_result || (MONTHLY_STATUS_LABELS as any)[item.status] || item.status)
                     : '';
+                
                 const collaboratingTextParts = [
                     item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0
                         ? item.collaborating_dept_codes.join(', ')
@@ -202,9 +210,9 @@ async function writeAllDepts(
 
                 const taskRow = ws.addRow([
                     taskCounter++,
-                    item.task_name,
-                    item.deliverable ?? '',
-                    item.deadline_note ?? `Tháng ${month}`,
+                    item.title,
+                    item.description ?? '',
+                    item.due_date ? new Date(item.due_date).toLocaleDateString('vi-VN') : `Tháng ${month}`,
                     collaboratingTextParts,
                     resultText,
                     item.incomplete_reason ?? '',

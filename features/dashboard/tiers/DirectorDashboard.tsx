@@ -53,15 +53,46 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
         queryKey: ['dashboard', 'dept-kpi-summary'],
         queryFn: async () => {
             const m = new Date().getMonth() + 1;
+            const startDate = `${currentYear}-${String(m).padStart(2, '0')}-01`;
+            const endDate = new Date(currentYear, m, 0).toISOString().split('T')[0];
+
+            // Tải tất cả tasks trong tháng này
+            const { data: tasks } = await supabase
+                .from('tasks')
+                .select('id, status, department_code')
+                .gte('due_date', startDate)
+                .lte('due_date', endDate)
+                .not('department_code', 'is', null);
+
+            // Group by department_code
+            const deptGroups: Record<string, { total: number; completed: number }> = {};
+            (tasks || []).forEach((t: any) => {
+                const dept = t.department_code;
+                if (!deptGroups[dept]) {
+                    deptGroups[dept] = { total: 0, completed: 0 };
+                }
+                deptGroups[dept].total++;
+                if (t.status === 'done') {
+                    deptGroups[dept].completed++;
+                }
+            });
+
+            // Tải danh sách phòng ban từ monthly_plans
             const { data: plans } = await supabase
                 .from('monthly_plans')
-                .select('id, department_code, department_name, monthly_plan_items(id, status)')
-                .eq('plan_month', m).eq('plan_year', currentYear);
+                .select('department_code, department_name')
+                .eq('plan_month', m)
+                .eq('plan_year', currentYear);
+
             return (plans || []).map((p: any) => {
-                const items = p.monthly_plan_items || [];
-                const total = items.length;
-                const completed = items.filter((i: any) => i.status === 'completed').length;
-                return { code: p.department_code, name: p.department_name || DEPARTMENT_NAMES[p.department_code as DepartmentCode] || p.department_code, total, completed, rate: total > 0 ? Math.round((completed / total) * 100) : 0 };
+                const g = deptGroups[p.department_code] || { total: 0, completed: 0 };
+                return {
+                    code: p.department_code,
+                    name: p.department_name || DEPARTMENT_NAMES[p.department_code as DepartmentCode] || p.department_code,
+                    total: g.total,
+                    completed: g.completed,
+                    rate: g.total > 0 ? Math.round((g.completed / g.total) * 100) : 0
+                };
             });
         },
         staleTime: STALE_5M,

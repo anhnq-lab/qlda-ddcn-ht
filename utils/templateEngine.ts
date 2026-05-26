@@ -18,8 +18,8 @@ import { saveAs } from 'file-saver';
 import {
     p, pMulti, headerCell, dataCell, THIN_BORDER, PORTRAIT_A4, LANDSCAPE_A4,
     buildDocumentHeader, buildTitleBlock, buildSignatureBlock, buildSignatureBlockTable,
-    layoutCell, formatDateVN, formatCurrencyVN, pEmpty, pBody, pHeading,
-    buildPageFooter,
+    layoutCell, formatDateVN, formatDateShort, formatCurrencyVN, pEmpty, pBody, pHeading,
+    buildPageFooter, RunOpts,
 } from './docxHelpers';
 import { ExportDataContext, TemplateConfig, autoFillFields } from './templateRegistry';
 
@@ -530,10 +530,10 @@ export async function exportTemplateAsDocx(
         };
 
         const F = 'Times New Roman';
-        const S = 28; // 14pt body
-        const Ss = 26; // 13pt small
+        const S = 26; // 13pt body
+        const Ss = 24; // 12pt header
 
-        const tenCoQuan16 = fd16('tenCoQuan', 'investorName') || 'BAN QLDA ĐTXD CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC';
+        const tenCoQuan16 = fd16('tenCoQuan', 'investorName') || 'BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÔNG TRÌNH DÂN DỤNG VÀ CÔNG NGHIỆP';
         const soVanBan16  = fd16('documentNumber') || '         /TB-BQLDA';
         const docDate16   = fd16('documentDate') || '';
         const location16  = fd16('locationName') || 'Hà Tĩnh';
@@ -544,29 +544,40 @@ export async function exportTemplateAsDocx(
         const diaChiCDT16 = fd16('investorAddress') || '………………………………………………………………';
         const phuTrach16  = fd16('contactPerson') || '………………………………………………………';
         const sdt16       = fd16('contactPhone') || '……………………………………………';
-        const quyMo16     = fd16('projectScope') || '………………………………………………………………';
-        const thietKe16   = fd16('designerName') || '………………………………………………………………';
-        const dcThietKe16 = fd16('designerAddress') || '………………………………………………………………';
         const giamSat16   = fd16('supervisorName') || '………………………………………………………………';
-        const dcGiamSat16 = fd16('supervisorAddress') || '………………………………………………………………';
         const thiCong16   = fd16('contractorName') || '………………………………………………………………';
-        const ngayKC16    = fd16('startDate') ? formatDateVN(fd16('startDate')) : '…………………………………';
-        const ngayHT16    = fd16('expectedEndDate') ? formatDateVN(fd16('expectedEndDate')) : '…………………………………';
+        const ngayKC16    = fd16('startDate') ? formatDateShort(fd16('startDate')) : '…………………………………';
+        const ngayHT16    = fd16('expectedEndDate') ? formatDateShort(fd16('expectedEndDate')) : '…………………………………';
         const chucDanh16  = fd16('signerTitle') || 'KT. GIÁM ĐỐC\nPHÓ GIÁM ĐỐC';
         const nguoiKy16   = fd16('signerName') || '';
-        const kinhGui16   = fd16('kinhGui', 'recipientAuthority') || '- Sở Xây dựng;\n- Ủy ban nhân dân xã (phường) nơi xây dựng công trình.';
+        const kinhGui16   = fd16('kinhGui', 'recipientAuthority') || 'Sở Xây dựng Hà Tĩnh';
 
-        // ── Helpers for bold-label paragraphs ──
-        const pItem = (label: string, value: string) => pMulti([
-            { text: label, bold: true, size: S, font: F },
-            { text: value, size: S, font: F },
-        ], { indent: 12.7, after: 120 });
+        // Helper to format organization name in Title Case for body
+        let bodyOrgName = tenCoQuan16;
+        if (tenCoQuan16.toUpperCase() === tenCoQuan16) {
+            bodyOrgName = tenCoQuan16.toLowerCase()
+                .replace(/\b(ban quản lý dự án|ban qlda)\b/g, 'Ban Quản lý dự án')
+                .replace(/\b(đầu tư xây dựng)\b/g, 'đầu tư xây dựng')
+                .replace(/\bhà tĩnh\b/g, 'Hà Tĩnh')
+                .replace(/\bcông trình\b/g, 'công trình')
+                .replace(/\bdân dụng\b/g, 'dân dụng')
+                .replace(/\bvà công nghiệp\b/g, 'và công nghiệp');
+            bodyOrgName = bodyOrgName.charAt(0).toUpperCase() + bodyOrgName.slice(1);
+        }
 
-        const pSub = (text: string) => new Paragraph({
+        // ── Spacing helpers matching exactly 22pt line spacing, 6pt spacing before/after, 1.3cm indentation ──
+        const pMainItem = (runs: RunOpts[], before = 120, after = 120) => pMulti(runs, {
+            indent: 13,
+            before,
+            after,
+            lineSpacing: 440
+        });
+
+        const pSubItem = (text: string, before = 120, after = 120) => new Paragraph({
             children: [new TextRun({ text, size: S, font: F })],
             alignment: AlignmentType.JUSTIFIED,
-            indent: { left: convertMillimetersToTwip(12.7) },
-            spacing: { after: 80, line: 360 },
+            indent: { left: convertMillimetersToTwip(13) },
+            spacing: { before, after, line: 440 },
         });
 
         const c16: (Paragraph | Table)[] = [];
@@ -576,12 +587,12 @@ export async function exportTemplateAsDocx(
         const leftH16: Paragraph[] = [
             new Paragraph({ children: [new TextRun({ text: 'UBND TỈNH HÀ TĨNH', size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
             new Paragraph({ children: [new TextRun({ text: tenCoQuan16.toUpperCase(), bold: true, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
-            new Paragraph({ children: [new TextRun({ text: '-------', size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
-            new Paragraph({ children: [new TextRun({ text: `Số: ${soVanBan16}`, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
+            new Paragraph({ children: [new TextRun({ text: '────────', size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: `Số: ${soVanBan16}`, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
         ];
         const rightH16: Paragraph[] = [
             new Paragraph({ children: [new TextRun({ text: 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold: true, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
-            new Paragraph({ children: [new TextRun({ text: 'Độc lập - Tự do - Hạnh phúc', bold: true, underline: { type: UnderlineType.SINGLE }, size: Ss, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
+            new Paragraph({ children: [new TextRun({ text: 'Độc lập - Tự do - Hạnh phúc', bold: true, underline: { type: UnderlineType.SINGLE }, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 } }),
             new Paragraph({ children: [], spacing: { after: 0, line: 240 } }),
             new Paragraph({ children: [new TextRun({ text: `${location16}, ${dateStr16}`, italics: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 0 } }),
         ];
@@ -594,61 +605,109 @@ export async function exportTemplateAsDocx(
 
         // ── TITLE ──
         c16.push(new Paragraph({ children: [new TextRun({ text: 'THÔNG BÁO', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 60, before: 0 } }));
-        c16.push(new Paragraph({ children: [new TextRun({ text: 'KHỞI CÔNG XÂY DỰNG HẠNG MỤC CÔNG TRÌNH, CÔNG TRÌNH XÂY DỰNG', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 240 } }));
+        c16.push(new Paragraph({ children: [new TextRun({ text: 'Khởi công xây dựng công trình', bold: true, size: S, font: F })], alignment: AlignmentType.CENTER, spacing: { after: 240 } }));
 
         // ── KÍNH GỬI ──
         const kgLines = kinhGui16.split('\n');
         c16.push(pMulti([
             { text: 'Kính gửi: ', bold: true, italics: true, size: S, font: F },
             { text: kgLines[0] || '', italics: true, size: S, font: F },
-        ], { after: 0 }));
+        ], { after: 0, lineSpacing: 440 }));
         for (let i = 1; i < kgLines.length; i++) {
-            c16.push(new Paragraph({ children: [new TextRun({ text: kgLines[i], italics: true, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 0, line: 360 } }));
+            c16.push(new Paragraph({ children: [new TextRun({ text: kgLines[i], italics: true, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 0, line: 440 } }));
         }
         c16.push(pEmpty(120));
 
         // ── INTRO ──
-        c16.push(pBody(`${tenCoQuan16} (Ban QLDA) báo cáo về việc khởi công xây dựng hạng mục công trình, công trình xây dựng như sau:`));
+        c16.push(new Paragraph({
+            children: [new TextRun({ text: `${bodyOrgName} thông báo khởi công xây dựng công trình với các nội dung sau:`, size: S, font: F })],
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { firstLine: convertMillimetersToTwip(13) },
+            spacing: { before: 120, after: 120, line: 440 }
+        }));
 
-        // ── MỤC 1–4 ──
-        c16.push(pItem('1. Tên công trình xây dựng: ', tenDuAn16));
-        c16.push(pItem('2. Địa điểm xây dựng: ', diaDiem16));
+        // ── MỤC 1–3 ──
+        c16.push(pMainItem([
+            { text: '1. Tên công trình: ', bold: true, size: S, font: F },
+            { text: tenDuAn16, size: S, font: F }
+        ]));
+        c16.push(pMainItem([
+            { text: '2. Địa điểm xây dựng: ', bold: true, size: S, font: F },
+            { text: diaDiem16, size: S, font: F }
+        ]));
+        c16.push(pMainItem([
+            { text: '3. Chủ đầu tư: ', bold: true, size: S, font: F },
+            { text: chuDauTu16, size: S, font: F }
+        ]));
 
-        c16.push(pMulti([
-            { text: '3. Tên và địa chỉ liên lạc của Chủ đầu tư: ', bold: true, size: S, font: F },
-            { text: chuDauTu16 + '.', size: S, font: F },
-        ], { indent: 12.7, after: 60 }));
-        c16.push(pSub(`Địa chỉ: ${diaChiCDT16}`));
+        // ── MỤC 4: NHÀ THẦU THI CÔNG XÂY DỰNG ──
+        c16.push(pMainItem([{ text: '4. Nhà thầu thi công xây dựng:', bold: true, size: S, font: F }], 120, 80));
+        
+        // Find construction packages
+        const constructionPkgs = (context.packages || []).filter(p => {
+            const fieldStr = p.Field || '';
+            const nameStr = p.PackageName || '';
+            return fieldStr === 'Construction' || 
+                nameStr.toLowerCase().includes('thi công') || 
+                nameStr.toLowerCase().includes('xây lắp');
+        });
 
-        c16.push(pMulti([
-            { text: '4. Tên và số điện thoại liên lạc của cá nhân phụ trách trực tiếp: ', bold: true, size: S, font: F },
-        ], { indent: 12.7, after: 0 }));
-        c16.push(pSub(`Ông/Bà: ${phuTrach16}         Số điện thoại: ${sdt16}`));
-
-        // ── MỤC 5: QUY MÔ ──
-        c16.push(pMulti([
-            { text: '5. Quy mô hạng mục công trình, công trình xây dựng: ', bold: true, size: S, font: F },
-        ], { indent: 12.7, after: 0 }));
-        const quyMoLines = quyMo16.split('\n').filter(l => l.trim());
-        if (quyMoLines.length === 0) {
-            c16.push(pSub('………………………………………………………………………………………………………………'));
+        if (constructionPkgs.length > 0) {
+            for (const p of constructionPkgs) {
+                const contractor = p.WinningContractorName || p.WinningContractorID || '…………………………………………';
+                const pkgNum = p.PackageNumber || p.PackageName?.match(/(?:gói thầu số\s*)([0-9a-zA-Z\.\-\/]+)/i)?.[1] || '';
+                const contractStr = pkgNum 
+                    ? ` (Hợp đồng thi công xây dựng gói thầu ${pkgNum} thuộc dự án ${tenDuAn16})` 
+                    : ` (Hợp đồng thi công xây dựng thuộc dự án ${tenDuAn16})`;
+                c16.push(pSubItem(`- ${contractor}${contractStr}`));
+            }
         } else {
-            for (const line of quyMoLines) c16.push(pSub(line));
+            const fallbackContractor = thiCong16 || '…………………………………………';
+            c16.push(pSubItem(`- ${fallbackContractor} (Hợp đồng thi công xây dựng thuộc dự án ${tenDuAn16})`));
         }
 
-        // ── MỤC 6: DANH SÁCH NHÀ THẦU ──
-        c16.push(pMulti([{ text: '6. Danh sách các nhà thầu: ', bold: true, size: S, font: F }], { indent: 12.7, after: 80 }));
-        c16.push(pSub(`- Nhà thầu Tư vấn thiết kế: ${thietKe16}.`));
-        c16.push(new Paragraph({ children: [new TextRun({ text: `  Địa chỉ: ${dcThietKe16}`, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 80, line: 360 }, alignment: AlignmentType.JUSTIFIED }));
-        c16.push(pSub(`- Nhà thầu Tư vấn giám sát: ${giamSat16}.`));
-        c16.push(new Paragraph({ children: [new TextRun({ text: `  Địa chỉ: ${dcGiamSat16}`, size: S, font: F })], indent: { left: convertMillimetersToTwip(25) }, spacing: { after: 80, line: 360 }, alignment: AlignmentType.JUSTIFIED }));
-        c16.push(pSub(`- Nhà thầu thi công xây dựng: ${thiCong16}.`));
+        // ── MỤC 5: TƯ VẤN GIÁM SÁT THI CÔNG XÂY DỰNG ──
+        c16.push(pMainItem([{ text: '5. Tư vấn giám sát thi công xây dựng:', bold: true, size: S, font: F }], 120, 80));
 
-        // ── MỤC 7: NGÀY THÁNG ──
-        c16.push(pMulti([{ text: '7. Ngày khởi công và ngày hoàn thành (dự kiến):', bold: true, size: S, font: F }], { indent: 12.7, after: 80 }));
-        c16.push(pSub(`- Ngày khởi công: ${ngayKC16};`));
-        c16.push(pSub(`- Ngày dự kiến hoàn thành: ${ngayHT16}.`));
-        c16.push(pEmpty(200));
+        // Find supervision packages
+        const supervisionPkgs = (context.packages || []).filter(p => {
+            const nameStr = p.PackageName || '';
+            return nameStr.toLowerCase().includes('giám sát');
+        });
+
+        if (supervisionPkgs.length > 0) {
+            for (const p of supervisionPkgs) {
+                const contractor = p.WinningContractorName || p.WinningContractorID || '…………………………………………';
+                const pkgNum = p.PackageNumber || p.PackageName?.match(/(?:gói thầu số\s*)([0-9a-zA-Z\.\-\/]+)/i)?.[1] || '';
+                const contractStr = pkgNum 
+                    ? ` (Hợp đồng tư vấn giám sát gói thầu ${pkgNum} thuộc dự án ${tenDuAn16})` 
+                    : ` (Hợp đồng tư vấn giám sát thuộc dự án ${tenDuAn16})`;
+                c16.push(pSubItem(`- ${contractor}${contractStr}`));
+            }
+        } else {
+            const fallbackSupervisor = giamSat16 || '…………………………………………';
+            c16.push(pSubItem(`- ${fallbackSupervisor} (Hợp đồng tư vấn giám sát thuộc dự án ${tenDuAn16})`));
+        }
+
+        // ── MỤC 6–7: NGÀY THÁNG ──
+        c16.push(pMainItem([
+            { text: '6. Ngày khởi công: ', bold: true, size: S, font: F },
+            { text: ngayKC16 + '.', size: S, font: F }
+        ]));
+        c16.push(pMainItem([
+            { text: '7. Ngày hoàn thành dự kiến: ', bold: true, size: S, font: F },
+            { text: ngayHT16 + '.', size: S, font: F }
+        ]));
+
+        c16.push(pEmpty(120));
+
+        // ── OUTRO ──
+        c16.push(new Paragraph({
+            children: [new TextRun({ text: `${bodyOrgName} thông báo tới quý cơ quan được biết và phối hợp./.`, size: S, font: F })],
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { firstLine: convertMillimetersToTwip(13) },
+            spacing: { before: 120, after: 200, line: 440 }
+        }));
 
         // ── SIGNATURE ──
         const titleLines16 = chucDanh16.split('\n').map(l => l.trim()).filter(Boolean);
@@ -664,8 +723,9 @@ export async function exportTemplateAsDocx(
         const sigLeft16: Paragraph[] = [
             new Paragraph({ children: [new TextRun({ text: 'Nơi nhận:', bold: true, italics: true, size: 22, font: F })], spacing: { after: 40 } }),
             new Paragraph({ children: [new TextRun({ text: '- Như trên;', size: 22, font: F })], spacing: { after: 20 } }),
-            new Paragraph({ children: [new TextRun({ text: '- Giám đốc Ban (để báo cáo);', size: 22, font: F })], spacing: { after: 20 } }),
-            new Paragraph({ children: [new TextRun({ text: '- Lưu: VT, QLDA.', size: 22, font: F })], spacing: { after: 0 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Ban Giám đốc (để b/c);', size: 22, font: F })], spacing: { after: 20 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Phòng QLDA;', size: 22, font: F })], spacing: { after: 20 } }),
+            new Paragraph({ children: [new TextRun({ text: '- Lưu: VT, KS(Bảo).', size: 22, font: F })], spacing: { after: 0 } }),
         ];
         c16.push(new Table({
             rows: [new TableRow({ children: [layoutCell(sigLeft16, 4200), layoutCell(sigRight16, 5600)] })],
@@ -675,7 +735,7 @@ export async function exportTemplateAsDocx(
 
         // ── BUILD & SAVE ──
         const doc16 = new Document({
-            styles: { default: { document: { run: { font: F, size: S }, paragraph: { spacing: { line: 360 } } } } },
+            styles: { default: { document: { run: { font: F, size: S }, paragraph: { spacing: { line: 440 } } } } },
             sections: [{ properties: { ...PORTRAIT_A4 }, footers: { default: buildPageFooter() }, children: c16 }],
         });
         const blob16 = await Packer.toBlob(doc16);

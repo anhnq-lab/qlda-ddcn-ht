@@ -12,7 +12,7 @@ export const TASK_CATEGORY_LABELS: Record<TaskCategory, string> = {
     dieu_hanh: 'Điều hành',
     tham_dinh: 'Thẩm định/Phê duyệt',
     thi_cong: 'Thi công/Giám sát',
-    quyet_toan: 'Quy���t toán',
+    quyet_toan: 'Quyết toán',
     thanh_toan: 'Thanh toán',
     gpmb: 'GPMB',
     dau_thau: 'Đấu thầu',
@@ -132,16 +132,25 @@ export interface Task {
     Category?: TaskCategory;
     CompletionResult?: string;
     IncompleteReason?: string;
+    IncompleteReasonType?: 'objective' | 'subjective';
     Notes?: string;
+
+    // Self-proposal fields (Điều 9.3)
+    IsSelfProposed?: boolean;
+    ProposalStatus?: 'pending' | 'approved' | 'rejected';
+    ProposalApprovedBy?: string;
+    ProposalApprovedAt?: string;
 
     // Metadata (JSONB catch-all)
     Metadata?: Record<string, any>;
 
     // Flags
     IsCritical?: boolean;
+    DepartmentCode?: string;
     
     // Audit
     CreatedDate?: string;
+    UpdatedAt?: string;
     Progress?: number;         // alias for ProgressPercent (backward compat)
     BoardColumn?: string;
     Slack?: number;

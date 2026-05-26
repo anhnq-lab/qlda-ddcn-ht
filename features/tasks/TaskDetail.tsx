@@ -10,6 +10,7 @@ import { getTaskTemplates, getFileTypeColor, TaskTemplate } from '../../utils/ta
 import { getTemplateConfig } from '../../utils/templateRegistry';
 import { TemplateExportModal } from '../../components/common/TemplateExportModal';
 import { supabase as _supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 const supabase = _supabase as any;
 import { TaskInfoPanel } from './components/TaskInfoPanel';
 import { TaskSubtaskList } from './components/TaskSubtaskList';
@@ -69,10 +70,12 @@ interface TaskDetailProps {
     onClose?: () => void;
 }
 
-const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, onClose }) => {
+const TaskDetail: React.FC<TaskDetailProps> = (props) => {
+    const { taskId: propTaskId, isPanel, onClose } = props;
     const { id: paramId } = useParams<{ id: string }>();
     const id = propTaskId || paramId;
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
 
     const { data: task, isLoading } = useTask(id);
     const { data: allTasks = [] } = useAllTasks();
@@ -136,11 +139,35 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
     const phaseColor = getPhaseColor(task.StepCode);
     const isOverdue = Boolean(task.Status !== TaskStatus.Done && task.DueDate && new Date(task.DueDate) < new Date());
 
+    const isAssigneeDeptHead = currentUser?.Role === 'Manager' && currentUser?.Department === assignee?.Department;
+    const isAdmin = currentUser?.Role === 'Admin';
+    const canApproveProposal = isAssigneeDeptHead || isAdmin;
+
+    const handleApproveProposal = () => {
+        if (!confirm('Phê duyệt đề xuất công việc này?')) return;
+        updateTaskMutation.mutate({
+            ...task,
+            ProposalStatus: 'approved',
+            ProposalApprovedBy: currentUser?.EmployeeID,
+            ProposalApprovedAt: new Date().toISOString()
+        });
+    };
+
+    const handleRejectProposal = () => {
+        if (!confirm('Từ chối đề xuất công việc này?')) return;
+        updateTaskMutation.mutate({
+            ...task,
+            ProposalStatus: 'rejected',
+            ProposalApprovedBy: currentUser?.EmployeeID,
+            ProposalApprovedAt: new Date().toISOString()
+        });
+    };
+
     const handleStatusChange = (s: TaskStatus) => {
         setProgressModalTarget(s);
     };
 
-    const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus) => {
+    const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective') => {
         if (!task) return;
 
         const finalStatus = newStatus || task.Status;
@@ -155,6 +182,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
         }
         if (finalStatus === 'incomplete') {
             taskUpdate.IncompleteReason = note || task.IncompleteReason;
+            taskUpdate.IncompleteReasonType = incompleteReasonType || task.IncompleteReasonType;
         }
 
         updateTaskMutation.mutate(taskUpdate);
@@ -269,39 +297,68 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
 
                             {/* Right: Actions */}
                             <div className="flex gap-2 shrink-0 items-start flex-wrap">
-                                {prevStatus && (
-                                    <button
-                                        onClick={() => handleStatusChange(prevStatus)}
-                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
-                                    >
-                                        ← {getStatusConfig(prevStatus).label}
-                                    </button>
-                                )}
+                                {task.IsSelfProposed && task.ProposalStatus === 'pending' ? (
+                                    canApproveProposal ? (
+                                        <div className="flex items-center gap-1.5">
+                                            <button
+                                                onClick={handleApproveProposal}
+                                                className="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-600/25 hover:from-emerald-600 hover:to-emerald-700 transition-all cursor-pointer"
+                                            >
+                                                Phê duyệt đề xuất
+                                            </button>
+                                            <button
+                                                onClick={handleRejectProposal}
+                                                className="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-red-500 to-red-650 hover:from-red-650 hover:to-red-700 transition-all cursor-pointer"
+                                            >
+                                                Từ chối đề xuất
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span className="px-3 py-2 bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 text-xs font-bold rounded-xl border border-amber-200 dark:border-amber-900/50">
+                                            Chờ Trưởng phòng duyệt đề xuất
+                                        </span>
+                                    )
+                                ) : task.IsSelfProposed && task.ProposalStatus === 'rejected' ? (
+                                    <span className="px-3 py-2 bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 text-xs font-bold rounded-xl border border-red-200 dark:border-red-900/50">
+                                        Đề xuất bị từ chối
+                                    </span>
+                                ) : (
+                                    <>
+                                        {prevStatus && (
+                                            <button
+                                                onClick={() => handleStatusChange(prevStatus)}
+                                                className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98] cursor-pointer"
+                                            >
+                                                ← {getStatusConfig(prevStatus).label}
+                                            </button>
+                                        )}
 
-                                {/* Nút Hoàn thành / Tiếp theo */}
-                                {nextStatus && (
-                                    <button
-                                        onClick={() => handleStatusChange(nextStatus)}
-                                        className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all shadow-sm active:scale-[0.98] flex items-center gap-2 ${
-                                            nextStatus === TaskStatus.Done
-                                                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-600/25'
-                                                : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-blue-600/25'
-                                        }`}
-                                    >
-                                        {getStatusConfig(nextStatus).icon}
-                                        {getStatusConfig(nextStatus).label} →
-                                    </button>
-                                )}
+                                        {/* Nút Hoàn thành / Tiếp theo */}
+                                        {nextStatus && (
+                                            <button
+                                                onClick={() => handleStatusChange(nextStatus)}
+                                                className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all shadow-sm active:scale-[0.98] flex items-center gap-2 cursor-pointer ${
+                                                    nextStatus === TaskStatus.Done
+                                                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-600/25'
+                                                        : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-blue-600/25'
+                                                }`}
+                                            >
+                                                {getStatusConfig(nextStatus).icon}
+                                                {getStatusConfig(nextStatus).label} →
+                                            </button>
+                                        )}
 
-                                {/* Nút Chưa hoàn thành — hiển thị khi đang thực hiện */}
-                                {task.Status === TaskStatus.InProgress && (
-                                    <button
-                                        onClick={() => handleStatusChange(TaskStatus.Incomplete)}
-                                        className="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-600/25 transition-all active:scale-[0.98] flex items-center gap-2"
-                                    >
-                                        <Eye className="w-4 h-4" />
-                                        Chưa hoàn thành
-                                    </button>
+                                        {/* Nút Chưa hoàn thành — hiển thị khi đang thực hiện */}
+                                        {task.Status === TaskStatus.InProgress && (
+                                            <button
+                                                onClick={() => handleStatusChange(TaskStatus.Incomplete)}
+                                                className="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-600/25 transition-all active:scale-[0.98] flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                                Chưa hoàn thành
+                                            </button>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -314,12 +371,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ taskId: propTaskId, isPanel, on
                                 </span>
                                 <div className="flex items-center gap-3">
                                     <span className={`text-sm font-black ${progress >= 100 ? 'text-emerald-600' : progress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>{progress}%</span>
-                                    <button 
-                                        onClick={() => setProgressModalTarget('progress')}
-                                        className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-1 rounded transition-colors"
-                                    >
-                                        Cập nhật
-                                    </button>
+                                    {(!task.IsSelfProposed || task.ProposalStatus === 'approved') && (
+                                        <button 
+                                            onClick={() => setProgressModalTarget('progress')}
+                                            className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-1 rounded transition-colors cursor-pointer"
+                                        >
+                                            Cập nhật
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                             <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">

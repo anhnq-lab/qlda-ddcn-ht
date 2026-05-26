@@ -36,20 +36,25 @@ type ViewMode = 'plan' | 'report';
 interface MonthlyPlanPageProps {
     month?: number;
     year?: number;
+    hideModeSelector?: boolean;
+    leftElement?: React.ReactNode;
+    department?: DepartmentCode;
 }
 
-const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth, year: externalYear }) => {
-    const { state, actions } = useMonthlyPlan(externalMonth, externalYear);
+const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth, year: externalYear, hideModeSelector, leftElement, department: externalDepartment }) => {
+    const { state, actions } = useMonthlyPlan(externalMonth, externalYear, externalDepartment);
     const { openPanel, closePanel } = useSlidePanel();
 
     const {
-        viewMode, month, year, activeDept, currentPlan,
+        viewMode: stateViewMode, month, year, activeDept, currentPlan,
         items, summaries, loading, exporting,
         seedLoading, seedResult,
         sortedItems,
         // Step picker (sinh KH tháng từ các bước dự án)
         stepPickerOpen, stepPickerSteps, stepPickerLoading, scheduleLoading,
     } = state;
+
+    const viewMode = hideModeSelector ? 'plan' : stateViewMode;
 
     const {
         setViewMode, setMonth, setYear, setActiveDept,
@@ -103,7 +108,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                         )}
                         {!item.source_type && !item.annual_plan_item_id && item.project_id && (
                             <span className="text-[10px] text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-1.5 py-0.5 rounded flex items-center gap-0.5 font-medium border border-violet-100 dark:border-violet-500/20">
-                                <FolderOpen className="w-2.5 h-2.5" />Dự án
+                                {item.project_name || 'Dự án'}
                             </span>
                         )}
                     </div>
@@ -260,37 +265,42 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
             <div className="px-0 py-2.5 bg-transparent border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 {/* Trái: Segmented control Plan/Report + Dropdown chọn phòng ban */}
                 <div className="flex items-center gap-2 flex-wrap flex-1">
+                    {leftElement}
                     {/* Segmented control */}
-                    <div className="flex bg-slate-150 dark:bg-slate-900 rounded-lg p-0.5 shadow-sm border border-slate-200/50 dark:border-slate-800 shrink-0">
-                        {(['plan', 'report'] as ViewMode[]).map(mode => (
-                            <button
-                                key={mode}
-                                onClick={() => setViewMode(mode)}
-                                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                                    viewMode === mode 
-                                        ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-305'
-                                }`}
-                            >
-                                {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
-                            </button>
-                        ))}
-                    </div>
+                    {!hideModeSelector && (
+                        <div className="flex bg-slate-150 dark:bg-slate-900 rounded-lg p-0.5 shadow-sm border border-slate-200/50 dark:border-slate-800 shrink-0">
+                            {(['plan', 'report'] as ViewMode[]).map(mode => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setViewMode(mode)}
+                                    className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
+                                        viewMode === mode 
+                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-305'
+                                    }`}
+                                >
+                                    {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Bộ lọc phòng ban Dropdown */}
-                    <div className="relative">
-                        <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                        <select
-                            value={activeDept}
-                            onChange={e => setActiveDept(e.target.value as DepartmentCode)}
-                            className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
-                        >
-                            {DEPARTMENT_CODES.map(code => (
-                                <option key={code} value={code}>{code}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                    </div>
+                    {!hideModeSelector && (
+                        <div className="relative">
+                            <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                            <select
+                                value={activeDept}
+                                onChange={e => setActiveDept(e.target.value as DepartmentCode)}
+                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                            >
+                                {DEPARTMENT_CODES.map(code => (
+                                    <option key={code} value={code}>{code}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+                        </div>
+                    )}
                 </div>
 
                 {/* Phải: Toast seed kết quả + Các nút hành động */}

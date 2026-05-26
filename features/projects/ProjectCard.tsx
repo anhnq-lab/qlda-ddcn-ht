@@ -47,6 +47,7 @@ const LazyImage: React.FC<{ src: string; alt: string; className?: string }> = ({
                 src={error ? DEFAULT_IMAGE : src}
                 alt={alt}
                 loading="lazy"
+                crossOrigin="anonymous"
                 onLoad={handleLoad}
                 onError={handleError}
                 className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}

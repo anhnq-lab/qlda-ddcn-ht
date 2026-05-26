@@ -1,0 +1,137 @@
+# Docker Compose triển khai Supabase Self-Hosted trên FPT Cloud
+# Đáp ứng tiêu chuẩn bảo mật cấu hình an toàn (Điều 2.2.6) & mã hóa giao tiếp (Điều 2.2.16.2.3)
+version: '3.8'
+
+services:
+  # ── CƠ SỞ DỮ LIỆU POSTGRESQL ───────────────────────────────────────────────
+  # Được cài đặt trên máy chủ DB VM riêng biệt hoặc cô lập bằng Docker Network
+  db:
+    image: supabase/postgres:15.1.1.78
+    container_name: supabase-db
+    restart: always
+    ports:
+      - "5432:5432" # Chỉ mở trong mạng nội bộ VPC (Private Subnet)
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      # Cấu hình pgAudit & pg_cron cho giám sát nhật ký (Điều 2.2.9) và tính toàn vẹn (Điều 2.2.5.4)
+      PGOPTIONS: "-c shared_preload_libraries=pg_stat_statements,pg_cron,pgaudit -c cron.database_name=postgres -c pgaudit.log=write,ddl"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - supabase-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ── API GATEWAY (KONG) ─────────────────────────────────────────────────────
+  # Hoạt động như Load Balancer, SSL Termination và Reverse Proxy
+  kong:
+    image: kong:2.8.1
+    container_name: supabase-kong
+    restart: always
+    ports:
+      - "8000:8000" # HTTP (Sử dụng nội bộ hoặc trỏ từ Load Balancer)
+      - "8443:8443" # HTTPS (Sử dụng chứng chỉ SSL mã hóa đầu cuối)
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      # Enforce TLS 1.3 và thuật toán mã hóa mạnh (Điều 2.2.16.2.2)
+      KONG_SSL_CIPHER_SUITE: "modern"
+      KONG_SSL_PROTOCOLS: "TLSv1.3"
+    volumes:
+      - ./kong.yml:/var/lib/kong/kong.yml:ro
+    networks:
+      - supabase-network
+    depends_on:
+      - rest
+      - auth
+      - storage
+
+  # ── SUPABASE AUTH SERVICE (GOTRUE) ─────────────────────────────────────────
+  # Quản lý định danh, MFA (Điều 2.2.7) và cấu hình khóa phiên/lockout
+  auth:
+    image: supabase/gotrue:v2.143.0
+    container_name: supabase-auth
+    restart: always
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres?sslmode=disable
+      
+      # Cấu hình an toàn đăng nhập
+      GOTRUE_JWT_EXP: 900 # 15 phút tự động hết hạn JWT (Điều 3.6.2.1.8)
+      GOTRUE_SECURITY_UPDATE_PASSWORD_REQUIRE_REAUTHENTICATION: "true"
+      GOTRUE_MFA_ENABLED: "true" # Kích hoạt MFA (Điều 3.7.2.8.3)
+      GOTRUE_MFA_MAX_FACTORS_PER_USER: 5
+      
+      # Khóa tài khoản khi đăng nhập sai (Điều 3.6.2.1.9)
+      GOTRUE_SECURITY_BRUTE_FORCE_DETECTION: "true"
+      GOTRUE_SECURITY_MAX_LOGIN_ATTEMPTS: 5
+      GOTRUE_SECURITY_LOCKOUT_DURATION: 43200 # 12 giờ (43200s)
+      
+      # Cấu hình gửi mail OTP qua SMTP bảo mật của nhà nước
+      GOTRUE_SMTP_HOST: ${SMTP_HOST}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT}
+      GOTRUE_SMTP_USER: ${SMTP_USER}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS}
+      GOTRUE_SMTP_SENDER_NAME: "Hệ thống QLDA - Ban DDCN HT"
+    networks:
+      - supabase-network
+    depends_on:
+      - db
+
+  # ── POSTGREST ──────────────────────────────────────────────────────────────
+  # Chuyển đổi Database Schema thành RESTful API tự động
+  rest:
+    image: postgrest/postgrest:v10.1.1.20221215
+    container_name: supabase-rest
+    restart: always
+    environment:
+      PGRST_DB_URI: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMA: public, storage
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_JWD_CLAIMS: "true"
+    networks:
+      - supabase-network
+    depends_on:
+      - db
+
+  # ── STORAGE SERVICE ────────────────────────────────────────────────────────
+  # Quản lý tải lên tài liệu và kết nối FPT Object Storage (Điều 2.2.16.3)
+  storage:
+    image: supabase/storage-api:v0.40.4
+    container_name: supabase-storage
+    restart: always
+    environment:
+      PORT: 5000
+      FILE_SIZE_LIMIT: 52428800 # 50MB
+      STORAGE_BACKEND: s3
+      
+      # Kết nối S3 API của FPT Object Storage
+      AWS_ACCESS_KEY_ID: ${FPT_STORAGE_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${FPT_STORAGE_SECRET_KEY}
+      AWS_DEFAULT_REGION: ${FPT_STORAGE_REGION} # Ví dụ: hn-1 (Hà Nội) hoặc sg-1 (TP.HCM)
+      AWS_S3_ENDPOINT: ${FPT_STORAGE_ENDPOINT}  # Ví dụ: https://storage.fptcloud.com
+      AWS_S3_FORCE_PATH_STYLE: "true"
+      
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - supabase-network
+    depends_on:
+      - db
+
+networks:
+  supabase-network:
+    name: supabase_private_network
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local

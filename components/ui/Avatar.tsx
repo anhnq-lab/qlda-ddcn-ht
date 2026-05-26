@@ -71,6 +71,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         <img
             src={imageUrl}
             alt={name}
+            crossOrigin="anonymous"
             onError={() => setImgFailed(true)}
             className={`rounded-full object-cover shadow-sm ${ringStyle} ${sizeClasses[size]} ${className}`}
         />

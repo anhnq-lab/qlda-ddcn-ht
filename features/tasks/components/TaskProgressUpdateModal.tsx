@@ -17,13 +17,14 @@ export interface TaskProgressUpdateResult {
     newStatus?: TaskStatus;
     completionResult?: string;
     incompleteReason?: string;
+    incompleteReasonType?: 'objective' | 'subjective';
 }
 
 interface TaskProgressUpdateModalProps {
     task: Task;
     targetStatus: TaskStatus | null;
     onClose: () => void;
-    onSubmit: (progress: number, note: string, newStatus?: TaskStatus) => void;
+    onSubmit: (progress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective') => void;
     isSaving?: boolean;
 }
 
@@ -33,17 +34,27 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
         targetStatus === TaskStatus.Done ? 100 : (task.ProgressPercent || 0)
     );
     const [note, setNote] = useState<string>('');
+    const [incompleteReasonType, setIncompleteReasonType] = useState<'objective' | 'subjective' | ''>('');
 
     const targetStatusCfg = targetStatus ? getStatusConfig(targetStatus) : null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(progress, note, targetStatus || undefined);
+        if (targetStatus === TaskStatus.Incomplete && !incompleteReasonType) {
+            alert('Vui lòng chọn phân loại lý do chưa hoàn thành (Khách quan hoặc Chủ quan)');
+            return;
+        }
+        onSubmit(
+            progress,
+            note,
+            targetStatus || undefined,
+            targetStatus === TaskStatus.Incomplete ? (incompleteReasonType as 'objective' | 'subjective') : undefined
+        );
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
                 <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                     <div>
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
@@ -51,7 +62,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                         </h2>
                         <p className="text-sm text-slate-500 mt-1 line-clamp-1">{task.Title}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-850 rounded-full transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -69,11 +80,46 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
 
                     {/* Removed progress slider as requested by user */}
 
+                    {/* Phân loại lý do nếu chọn Chưa hoàn thành */}
+                    {targetStatus === TaskStatus.Incomplete && (
+                        <div className="space-y-2 bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-150 dark:border-slate-800">
+                            <label className="text-xs font-black uppercase tracking-wider text-slate-550 dark:text-slate-400 block mb-1">
+                                Phân loại lý do <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex gap-4">
+                                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-350 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="incompleteReasonType"
+                                        value="objective"
+                                        checked={incompleteReasonType === 'objective'}
+                                        onChange={() => setIncompleteReasonType('objective')}
+                                        className="text-blue-600 focus:ring-blue-500/20"
+                                        required
+                                    />
+                                    Khách quan (Objective)
+                                </label>
+                                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-350 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="incompleteReasonType"
+                                        value="subjective"
+                                        checked={incompleteReasonType === 'subjective'}
+                                        onChange={() => setIncompleteReasonType('subjective')}
+                                        className="text-blue-600 focus:ring-blue-500/20"
+                                        required
+                                    />
+                                    Chủ quan (Subjective)
+                                </label>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                             <MessageSquare className="w-4 h-4 text-emerald-500" />
                             {targetStatus === TaskStatus.Done ? 'Kết quả thực hiện' :
-                             targetStatus === TaskStatus.Incomplete ? 'Lý do chưa hoàn thành' :
+                             targetStatus === TaskStatus.Incomplete ? 'Giải trình chi tiết' :
                              'Kết quả / Ghi chú'}
                         </label>
                         <textarea
@@ -81,9 +127,9 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                             onChange={(e) => setNote(e.target.value)}
                             rows={3}
                             placeholder={targetStatus === TaskStatus.Done
-                                ? 'Mô tả kết quả đã đạt được: VD Đã phê duyệt tại QĐ số...'
+                                ? 'Mô tả cụ thể kết quả đã đạt được (định lượng, số quyết định...)'
                                 : targetStatus === TaskStatus.Incomplete
-                                ? 'Lý do chưa hoàn thành, vướng mắc cần giải quyết...'
+                                ? 'Giải trình chi tiết lý do chưa hoàn thành, các vướng mắc...'
                                 : 'Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc...'}
                             className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
                             required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete}

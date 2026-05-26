@@ -80,7 +80,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                         if (canViewImage) {
                             return (
                                 <div className="bg-white dark:bg-slate-800 w-full h-full rounded-sm shadow-sm overflow-hidden flex items-center justify-center p-4 bg-gray-100">
-                                    <img src={viewUrl} className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
+                                    <img src={viewUrl} crossOrigin="anonymous" className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
                                 </div>
                             );
                         }

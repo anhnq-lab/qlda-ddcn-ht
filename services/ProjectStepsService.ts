@@ -163,16 +163,32 @@ export const ProjectStepsService = {
             .select('*')
             .in('step_id', stepIds);
 
-        // Lấy danh sách step IDs đã lên KH tháng
+        // Lấy danh sách step IDs đã lên KH tháng (đã tạo task)
         const { data: scheduled } = await supabase
-            .from('monthly_plan_items')
-            .select('source_project_plan_item_id, monthly_plan_id')
-            .in('source_project_plan_item_id', stepIds);
+            .from('tasks')
+            .select('project_plan_step_id, due_date, department_code')
+            .in('project_plan_step_id', stepIds)
+            .not('project_plan_step_id', 'is', null);
 
-        const scheduledMap = new Map<string, string>();
+        const planKeyMap = new Map<string, string>(); // 'month-year-dept' -> planId
+        if (scheduled && scheduled.length > 0) {
+            const { data: plans } = await supabase
+                .from('monthly_plans')
+                .select('id, plan_month, plan_year, department_code');
+            for (const p of (plans || [])) {
+                planKeyMap.set(`${p.plan_month}-${p.plan_year}-${p.department_code}`, p.id);
+            }
+        }
+
+        const scheduledMap = new Map<string, string | null>();
         for (const row of (scheduled || [])) {
-            if (row.source_project_plan_item_id) {
-                scheduledMap.set(row.source_project_plan_item_id, row.monthly_plan_id);
+            if (row.project_plan_step_id && row.due_date) {
+                const date = new Date(row.due_date);
+                const m = date.getMonth() + 1;
+                const y = date.getFullYear();
+                const key = `${m}-${y}-${row.department_code}`;
+                const planId = planKeyMap.get(key) || null;
+                scheduledMap.set(row.project_plan_step_id, planId);
             }
         }
 
@@ -215,17 +231,32 @@ export const ProjectStepsService = {
             .eq('step_id', stepId);
 
         // Tính is_scheduled
-        const { data: mpi } = await supabase
-            .from('monthly_plan_items')
-            .select('source_project_plan_item_id, monthly_plan_id')
-            .eq('source_project_plan_item_id', stepId)
+        const { data: taskRow } = await supabase
+            .from('tasks')
+            .select('due_date, department_code')
+            .eq('project_plan_step_id', stepId)
             .maybeSingle();
+
+        let planId = null;
+        if (taskRow) {
+            const date = new Date(taskRow.due_date);
+            const m = date.getMonth() + 1;
+            const y = date.getFullYear();
+            const { data: plan } = await supabase
+                .from('monthly_plans')
+                .select('id')
+                .eq('plan_month', m)
+                .eq('plan_year', y)
+                .eq('department_code', taskRow.department_code)
+                .maybeSingle();
+            planId = plan?.id ?? null;
+        }
 
         return {
             ...step,
             task_name: step.step_name,
-            is_scheduled: !!mpi,
-            scheduled_monthly_plan_id: mpi?.monthly_plan_id ?? null,
+            is_scheduled: !!taskRow,
+            scheduled_monthly_plan_id: planId,
             tasks: (tasks || []) as DbTask[],
             raci: raciData || [],
         };
@@ -285,11 +316,26 @@ export const ProjectStepsService = {
         if (error) throw toServiceError(error, 'Không thể cập nhật bước');
 
         // Lấy is_scheduled
-        const { data: mpi } = await supabase
-            .from('monthly_plan_items')
-            .select('source_project_plan_item_id, monthly_plan_id')
-            .eq('source_project_plan_item_id', id)
+        const { data: taskRow } = await supabase
+            .from('tasks')
+            .select('due_date, department_code')
+            .eq('project_plan_step_id', id)
             .maybeSingle();
+
+        let planId = null;
+        if (taskRow) {
+            const date = new Date(taskRow.due_date);
+            const m = date.getMonth() + 1;
+            const y = date.getFullYear();
+            const { data: plan } = await supabase
+                .from('monthly_plans')
+                .select('id')
+                .eq('plan_month', m)
+                .eq('plan_year', y)
+                .eq('department_code', taskRow.department_code)
+                .maybeSingle();
+            planId = plan?.id ?? null;
+        }
 
         const { data: raciData } = await supabase
             .from('project_plan_raci')
@@ -299,8 +345,8 @@ export const ProjectStepsService = {
         return {
             ...data,
             task_name: data.step_name,
-            is_scheduled: !!mpi,
-            scheduled_monthly_plan_id: mpi?.monthly_plan_id ?? null,
+            is_scheduled: !!taskRow,
+            scheduled_monthly_plan_id: planId,
             raci: raciData || [],
         } as ProjectStep;
     },
@@ -495,26 +541,44 @@ export const ProjectStepsService = {
         if (fetchErr) throw toServiceError(fetchErr, 'Không thể tải thông tin bước dự án');
         if (!steps || steps.length === 0) return { scheduled: 0, skipped: 0 };
 
-        // 2. Kiểm tra xem những step nào đã được schedule rồi (tránh duplicate)
-        const { data: existingMpis } = await supabase
-            .from('monthly_plan_items')
-            .select('source_project_plan_item_id')
-            .in('source_project_plan_item_id', stepIds);
+        // 2. Lấy thông tin monthly plan header để biết tháng/năm/phòng ban
+        const { data: plan, error: planErr } = await supabase
+            .from('monthly_plans')
+            .select('plan_month, plan_year, department_code')
+            .eq('id', monthlyPlanId)
+            .single();
+        if (planErr) throw toServiceError(planErr, 'Không thể tải thông tin kế hoạch tháng');
 
-        const scheduledIds = new Set(existingMpis?.map((m: any) => m.source_project_plan_item_id) || []);
+        const startOfMonth = `${plan.plan_year}-${String(plan.plan_month).padStart(2, '0')}-01`;
+        const endOfMonth = new Date(plan.plan_year, plan.plan_month, 0).toISOString().split('T')[0];
+
+        // 3. Kiểm tra xem những step nào đã được schedule trong tháng này rồi (tránh duplicate)
+        const { data: existingTasks } = await supabase
+            .from('tasks')
+            .select('project_plan_step_id')
+            .in('project_plan_step_id', stepIds)
+            .gte('due_date', startOfMonth)
+            .lte('due_date', endOfMonth)
+            .not('project_plan_step_id', 'is', null);
+
+        const scheduledIds = new Set(existingTasks?.map((t: any) => t.project_plan_step_id) || []);
 
         const toInsert = steps
             .filter((step: any) => !scheduledIds.has(step.id))
             .map((step: any) => ({
                 id: generateUUID(),
-                monthly_plan_id: monthlyPlanId,
                 project_id: step.project_id,
-                source_project_plan_item_id: step.id,
-                source_type: 'project_step',
-                task_name: step.step_name,
-                deliverable: step.output_document || null,
-                notes: step.notes || null,
-                status: 'planned', // default
+                project_plan_step_id: step.id,
+                department_code: plan.department_code,
+                source_type: 'from_project_step',
+                title: step.step_name,
+                description: step.deliverable || '',
+                status: 'todo',
+                priority: 'medium',
+                progress: 0,
+                due_date: step.due_date || endOfMonth,
+                start_date: step.start_date || startOfMonth,
+                assignee_id: null,
             }));
 
         if (toInsert.length === 0) {
@@ -522,7 +586,7 @@ export const ProjectStepsService = {
         }
 
         const { error: insErr } = await supabase
-            .from('monthly_plan_items')
+            .from('tasks')
             .insert(toInsert);
 
         if (insErr) throw toServiceError(insErr, 'Không thể đưa bước vào kế hoạch tháng');
@@ -535,15 +599,15 @@ export const ProjectStepsService = {
 
     /**
      * Gỡ steps khỏi KH tháng.
-     * Xóa các dòng trong monthly_plan_items tham chiếu tới steps này.
+     * Xóa các dòng trong tasks tham chiếu tới steps này.
      */
     async unscheduleFromMonth(stepIds: string[]): Promise<number> {
         if (stepIds.length === 0) return 0;
 
         const { data, error } = await supabase
-            .from('monthly_plan_items')
+            .from('tasks')
             .delete()
-            .in('source_project_plan_item_id', stepIds)
+            .in('project_plan_step_id', stepIds)
             .select('id');
 
         if (error) throw toServiceError(error, 'Không thể gỡ bước khỏi kế hoạch tháng');

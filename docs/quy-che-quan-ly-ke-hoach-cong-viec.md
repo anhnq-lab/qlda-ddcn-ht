@@ -292,7 +292,7 @@ Danh mục này có thể được điều chỉnh, bổ sung theo Quyết đị
 | A3 | Tỷ lệ đúng hạn = CV hoàn thành đúng/trước deadline / Tổng CV HT | 10 | Tự động |
 | **B** | **Kết quả giải ngân** | **40** | Dữ liệu tài chính |
 | B1 | Tỷ lệ giải ngân KH vốn = GN lũy kế thực tế / KH vốn năm × 100 | 25 | Phòng KH-TĐ tổng hợp |
-| B2 | Đạt mục tiêu giải ngân theo giao của UBND tỉnh, Bộ KH&ĐT | 15 | Văn bản giao KH vốn |
+| B2 | Đạt mục tiêu giải ngân theo giao của UBND tỉnh, Bộ Tài chính | 15 | Văn bản giao KH vốn |
 | **C** | **Tiêu chí chung** | **20** | Đánh giá tổng hợp |
 | C1 | Tuân thủ quy chế: cập nhật đúng hạn, đầy đủ trên phần mềm | 10 | Phần mềm QLDA |
 | C2 | Tính chủ động, đổi mới, sáng tạo trong thực hiện nhiệm vụ | 10 | Đánh giá của LĐ Ban |
@@ -318,7 +318,7 @@ Danh mục này có thể được điều chỉnh, bổ sung theo Quyết đị
         - 60% – <80%: 15 điểm;
         - 40% – <60%: 10 điểm;
         - < 40%: 5 điểm.
-    b) Tiêu chí B2 — Đạt mục tiêu UBND tỉnh/Bộ KH&ĐT giao:
+    b) Tiêu chí B2 — Đạt mục tiêu UBND tỉnh/Bộ Tài chính giao:
         - Đạt hoặc vượt mục tiêu: 15 điểm;
         - Đạt 80% – <100% mục tiêu: 10 điểm;
         - Đạt 60% – <80% mục tiêu: 7 điểm;

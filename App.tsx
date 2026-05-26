@@ -72,6 +72,7 @@ const Settings = lazyWithRetry(() => import('./features/settings/Settings'));
 const WorkflowManagerPage = lazyWithRetry(() => import('./features/workflows/WorkflowManagerPage'));
 const WorkPlanPage = lazyWithRetry(() => import('./features/work-plan/WorkPlanPage'));
 const PublicAssetList = lazyWithRetry(() => import('./features/public-assets/PublicAssetList'));
+const NotificationPage = lazyWithRetry(() => import('./components/notifications/NotificationPage'));
 import ProtectedRoute from './components/ProtectedRoute';
 import { ProjectFilterProvider } from './context/ProjectFilterContext';
 
@@ -244,6 +245,13 @@ const App: React.FC = () => {
 
                                         {/* Evaluation Module */}
                                         <Route path="evaluation" element={<Navigate to="/employees?tab=evaluation" replace />} />
+
+                                        {/* Notifications Center */}
+                                        <Route path="notifications" element={
+                                            <React.Suspense fallback={<PageLoadingFallback />}>
+                                                <NotificationPage />
+                                            </React.Suspense>
+                                        } />
 
                                         {/* Settings (Admin Only) */}
                                         <Route path="settings" element={

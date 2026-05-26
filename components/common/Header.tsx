@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Search, LogOut, Menu, ChevronDown, Sun, Moon, Leaf, User } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
-import { NotificationCenter } from './NotificationCenter';
+import { NotificationBell } from '../notifications/NotificationBell';
 import { useTheme } from '../../context/ThemeContext';
 import { useSlidePanel } from '../../context/SlidePanelContext';
 import { UserProfilePanel } from '../../features/profile/UserProfilePanel';
@@ -17,10 +17,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
     const { currentUser, logout } = useAuth();
     const { theme, setTheme } = useTheme();
     const { openPanel } = useSlidePanel();
-    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const notifRef = useRef<HTMLDivElement>(null);
 
     // Keyboard shortcut for search
     useEffect(() => {
@@ -39,9 +37,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setShowUserMenu(false);
-            }
-            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
-                setIsNotificationOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -66,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                     </div>
                     <button
                         onClick={onOpenSearch}
-                        className="block w-full pl-10 pr-3 py-2 text-left border border-border rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 text-sm text-slate-500 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all cursor-pointer group shadow-lg"
+                        className="block w-full pl-10 pr-3 py-2 text-left border border-border rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-white dark:bg-slate-850 dark:hover:bg-slate-700 text-sm text-slate-500 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all cursor-pointer group shadow-lg"
                     >
                         Tìm kiếm dự án, dữ liệu...
                         <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-400 dark:text-slate-300 rounded border border-border">
@@ -89,24 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
             <div className="flex items-center justify-end gap-2 sm:gap-3 flex-shrink-0">
 
                 {/* Notifications */}
-                <div className="relative" ref={notifRef}>
-                    <button
-                        onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                        aria-label="Thông báo"
-                        className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors cursor-pointer"
-                    >
-                        <Bell size={20} />
-                        <span className="absolute top-1.5 right-1.5 min-w-[8px] h-[8px] flex items-center justify-center px-1 text-[10px] bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-                    </button>
-                    {isNotificationOpen && (
-                        <div className="absolute top-full right-0 mt-2 z-50">
-                            <NotificationCenter
-                                isOpen={isNotificationOpen}
-                                onClose={() => setIsNotificationOpen(false)}
-                            />
-                        </div>
-                    )}
-                </div>
+                <NotificationBell />
 
                 <div className="h-6 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
 

@@ -58,7 +58,7 @@ async function getWeeklyActivities() {
                 .limit(10),
             // Tasks completed this week
             supabase.from('tasks')
-                .select('task_id, title, status, project_id')
+                .select('id, title, status, project_id')
                 .eq('status', 'done' as any)
                 .gte('updated_at', since)
                 .order('updated_at', { ascending: false })

@@ -15,7 +15,7 @@ import { Select } from '@/components/ui/Select';
 
 import { useEvents, useUpdateEvent } from '@/hooks/useCalendar';
 import { AgencyEventWithAttendees, AgencyEventType, AgencyEventRoom } from '@/types/calendar.types';
-import { EventFormModal } from './components/EventFormModal';
+import { EventFormPanel } from './components/EventFormPanel';
 import { EventSlidePanel } from './components/EventSlidePanel';
 import { LobbyDisplay } from './components/LobbyDisplay';
 import { CustomToolbar } from './components/CustomToolbar';
@@ -53,22 +53,32 @@ export default function CalendarView() {
 
   const { mutate: updateEvent } = useUpdateEvent();
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<AgencyEventWithAttendees | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<Date | undefined>(undefined);
   const { openPanel, closePanel } = useSlidePanel();
 
+  const openFormPanel = (event: AgencyEventWithAttendees | null, date?: Date) => {
+    openPanel({
+      id: 'event-form',
+      title: event ? 'Cập nhật lịch' : 'Đăng ký lịch mới',
+      icon: <CalendarIcon size={16} />,
+      width: '50vw',
+      component: () => (
+        <EventFormPanel
+          event={event}
+          selectedDate={date}
+          onClose={() => closePanel('event-form')}
+        />
+      ),
+    });
+  };
+
   const handleSelectSlot = (slotInfo: { start: Date, end: Date }) => {
-    setSelectedSlot(slotInfo.start);
-    setSelectedEvent(null);
-    setIsFormOpen(true);
+    openFormPanel(null, slotInfo.start);
   };
 
   const handleSelectEvent = (event: any) => {
     // find the exact event from our data to get full info
     const fullEvent = events.find(e => e.id === event.id);
     if (fullEvent) {
-      setSelectedEvent(fullEvent);
       openPanel({
         id: 'event-detail',
         title: 'Chi tiết lịch',
@@ -78,21 +88,14 @@ export default function CalendarView() {
           <EventSlidePanel
             event={fullEvent}
             onEdit={(e) => {
-              setSelectedEvent(e);
               closePanel('event-detail');
-              setIsFormOpen(true);
+              openFormPanel(e);
             }}
             onClose={() => closePanel('event-detail')}
           />
         ),
       });
     }
-  };
-
-  const handleEditEvent = (event: AgencyEventWithAttendees) => {
-    setSelectedEvent(event);
-    closePanel('event-detail');
-    setIsFormOpen(true);
   };
 
   const handleEventDrop = ({ event, start, end }: any) => {
@@ -201,7 +204,7 @@ export default function CalendarView() {
                       clearFilters={clearFilters}
                       displayMode={displayMode}
                       setDisplayMode={setDisplayMode}
-                      onRegisterClick={() => { setSelectedEvent(null); setSelectedSlot(undefined); setIsFormOpen(true); }}
+                      onRegisterClick={() => openFormPanel(null)}
                     />
                   )
                 }}
@@ -225,13 +228,7 @@ export default function CalendarView() {
         </div>
       )}
 
-      {/* Modals & Panels */}
-      <EventFormModal 
-        isOpen={isFormOpen} 
-        onClose={() => setIsFormOpen(false)} 
-        event={selectedEvent}
-        selectedDate={selectedSlot}
-      />
+
     </div>
   );
 }

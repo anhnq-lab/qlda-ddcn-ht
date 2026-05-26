@@ -8,6 +8,7 @@ import { Task, TaskStatus, TaskPriority } from '../../types';
 import { workflowTaskToTask } from '../../lib/dbMappers';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
 import { getStatusInfo, getPriorityInfo } from './TaskCreateEditModal';
+import { DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
 import { ProjectTaskModal } from '../../components/common/ProjectTaskModal';
 import ProjectDetail from '../projects/ProjectDetail';
 import { useSlidePanel } from '../../context/SlidePanelContext';
@@ -49,6 +50,22 @@ const getProgressGradient = (percent: number) => {
     return 'from-slate-200 to-slate-200';
 };
 
+const getStartOfWeek = (date: Date): Date => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+    const monday = new Date(d.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+};
+
+const isUpdatedThisWeek = (updatedAtStr?: string) => {
+    if (!updatedAtStr) return false;
+    const updateDate = new Date(updatedAtStr);
+    const startOfWeek = getStartOfWeek(new Date());
+    return updateDate >= startOfWeek;
+};
+
 // ═══════════════════════════════════════════════════
 // Main Component
 // ═══════════════════════════════════════════════════
@@ -56,9 +73,10 @@ const getProgressGradient = (percent: number) => {
 interface TaskListProps {
     month?: string;
     year?: string;
+    department?: string;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externalYear }) => {
+const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externalYear, department: externalDepartment }) => {
     const navigate = useNavigate();
     const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
@@ -76,9 +94,15 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     const setFilterMonth = externalMonth !== undefined ? () => {} : setLocalMonth;
     const setFilterYear = externalYear !== undefined ? () => {} : setLocalYear;
 
-    const [filterDepartment, setFilterDepartment] = useState<string>('All');
+    const [localDepartment, setLocalDepartment] = useState<string>('All');
+    const filterDepartment = externalDepartment !== undefined 
+        ? (DEPARTMENT_NAMES[externalDepartment as DepartmentCode] || externalDepartment)
+        : localDepartment;
+    const setFilterDepartment = externalDepartment !== undefined ? () => {} : setLocalDepartment;
     const [filterOverdue, setFilterOverdue] = useState(false);
+    const [filterNotUpdatedThisWeek, setFilterNotUpdatedThisWeek] = useState(false);
     const [filterPersonal, setFilterPersonal] = useState(false);
+    const [filterPendingProposal, setFilterPendingProposal] = useState(false);
     const [filterTaskType, setFilterTaskType] = useState<string>('All');
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
 
@@ -135,6 +159,12 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
 
         // Department filter
         const matchDepartment = filterDepartment === 'All' || (() => {
+            if (task.DepartmentCode) {
+                const taskDeptName = DEPARTMENT_NAMES[task.DepartmentCode as DepartmentCode];
+                if (taskDeptName === filterDepartment || task.DepartmentCode === filterDepartment) {
+                    return true;
+                }
+            }
             const assignee = employees.find(e => e.EmployeeID === task.AssigneeID);
             return assignee?.Department === filterDepartment;
         })();
@@ -145,11 +175,24 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             !!task.DueDate &&
             new Date(task.DueDate) < new Date()
         );
+
+        // Not updated this week: chưa xong + chưa cập nhật trong tuần
+        const matchNotUpdatedThisWeek = !filterNotUpdatedThisWeek || (
+            task.Status !== TaskStatus.Done &&
+            (!task.UpdatedAt || !isUpdatedThisWeek(task.UpdatedAt))
+        );
+        
+        // Pending proposal filter (Điều 9.3)
+        const matchPendingProposal = !filterPendingProposal || (
+            task.IsSelfProposed === true &&
+            task.ProposalStatus === 'pending'
+        );
+
         // Task type filter
         const matchTaskType = filterTaskType === 'All' || task.TaskType === filterTaskType;
 
-        return matchStatus && matchProject && matchMonth && matchYear && matchDepartment && matchOverdue && matchPersonal && matchTaskType;
-    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
+        return matchStatus && matchProject && matchMonth && matchYear && matchDepartment && matchOverdue && matchNotUpdatedThisWeek && matchPersonal && matchTaskType && matchPendingProposal;
+    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterNotUpdatedThisWeek, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
 
     // Tự động mở slide panel khi có taskId trên URL
     useEffect(() => {
@@ -348,6 +391,18 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     };
 
     const handleSave = async (taskData: Partial<Task>) => {
+        // Resolve department code
+        let deptCode: string | undefined = taskData.DepartmentCode;
+        if (!deptCode && filterDepartment && filterDepartment !== 'All') {
+            const foundCode = Object.keys(DEPARTMENT_NAMES).find(
+                key => DEPARTMENT_NAMES[key as DepartmentCode] === filterDepartment || key === filterDepartment
+            );
+            if (foundCode) deptCode = foundCode;
+        }
+        if (!deptCode) {
+            deptCode = currentUser?.Department;
+        }
+
         // Re-map UI Task structure to DbTask payload for the service
         const workflowPayload: any = {
             id: taskData.TaskID?.startsWith('NEW_') ? undefined : taskData.TaskID,
@@ -355,6 +410,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             title: taskData.Title,
             progress: taskData.ProgressPercent,
             assignee_id: taskData.AssigneeID,
+            department_code: deptCode || null,
             due_date: taskData.DueDate,
             project_id: taskData.ProjectID,
             actual_start_date: taskData.ActualStartDate,
@@ -392,7 +448,9 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
         filterDepartment !== 'All' || 
         filterTaskType !== 'All' || 
         filterOverdue || 
-        filterPersonal;
+        filterNotUpdatedThisWeek ||
+        filterPersonal ||
+        filterPendingProposal;
 
     // ═══════════════════════════════════════════════════
     // Render
@@ -423,8 +481,12 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                 setFilterStatus={setFilterStatus}
                 filterOverdue={filterOverdue}
                 setFilterOverdue={setFilterOverdue}
+                filterNotUpdatedThisWeek={filterNotUpdatedThisWeek}
+                setFilterNotUpdatedThisWeek={setFilterNotUpdatedThisWeek}
                 filterPersonal={filterPersonal}
                 setFilterPersonal={setFilterPersonal}
+                filterPendingProposal={filterPendingProposal}
+                setFilterPendingProposal={setFilterPendingProposal}
                 filterTaskType={filterTaskType}
                 setFilterTaskType={setFilterTaskType}
                 hasActiveFilters={hasActiveFilters}
@@ -434,6 +496,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                 setViewMode={setViewMode}
                 openCreateModal={openCreateModal}
                 hideMonthFilter={externalMonth !== undefined}
+                hideDepartmentFilter={externalDepartment !== undefined}
             />
 
             {/* ══════════ BATCH BAR ══════════ */}

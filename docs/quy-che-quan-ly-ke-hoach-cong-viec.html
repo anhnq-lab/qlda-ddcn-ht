@@ -1,0 +1,3624 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy chế Quản lý Kế hoạch Công việc - Ban QLDA Hà Tĩnh</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* DESIGN SYSTEM - CUSTOM VANILLA CSS */
+        :root {
+            --primary-hsl: 221, 83%, 53%; /* #2563eb */
+            --primary: hsl(var(--primary-hsl));
+            --primary-light: hsl(221, 96%, 95%);
+            --primary-dark: hsl(221, 83%, 40%);
+            
+            --secondary-hsl: 262, 83%, 58%; /* #7c3aed */
+            --secondary: hsl(var(--secondary-hsl));
+            --secondary-light: hsl(262, 96%, 95%);
+            
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --success-dark: #047857;
+            
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --warning-dark: #b45309;
+            
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --danger-dark: #b91c1c;
+            
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #475569;
+            --text-light: #64748b;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+            
+            --radius-sm: 6px;
+            --radius: 12px;
+            --radius-lg: 20px;
+            
+            --font-heading: 'Outfit', 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --glass: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --blur: 16px;
+            
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --primary-hsl: 217, 91%, 60%;
+            --primary: hsl(var(--primary-hsl));
+            --primary-light: rgba(59, 130, 246, 0.15);
+            --primary-dark: hsl(217, 91%, 75%);
+            
+            --secondary-hsl: 250, 91%, 65%;
+            --secondary: hsl(var(--secondary-hsl));
+            --secondary-light: rgba(124, 58, 237, 0.15);
+            
+            --success: #34d399;
+            --success-light: rgba(52, 211, 153, 0.1);
+            --success-dark: #059669;
+            
+            --warning: #fbbf24;
+            --warning-light: rgba(251, 191, 36, 0.1);
+            --warning-dark: #d97706;
+            
+            --danger: #f87171;
+            --danger-light: rgba(248, 113, 113, 0.1);
+            --danger-dark: #dc2626;
+            
+            --bg: #0b0f19;
+            --surface: #111827;
+            --border: #1f2937;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-light: #6b7280;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+            
+            --glass: rgba(17, 24, 39, 0.8);
+            --glass-border: rgba(31, 41, 55, 0.6);
+        }
+
+        /* GENERAL STYLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        button {
+            font-family: var(--font-body);
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: var(--transition);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* CONTAINERS */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* DECORATIONS */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-primary { background: var(--primary-light); color: var(--primary); }
+        .badge-success { background: var(--success-light); color: var(--success-dark); }
+        .badge-warning { background: var(--warning-light); color: var(--warning-dark); }
+        .badge-danger { background: var(--danger-light); color: var(--danger-dark); }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* HEADER SECTION */
+        header {
+            position: relative;
+            background: linear-gradient(135deg, hsl(221, 80%, 20%) 0%, hsl(221, 80%, 10%) 100%);
+            color: #ffffff;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid var(--primary);
+            overflow: hidden;
+        }
+
+        header h1, header h2 {
+            color: #ffffff;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .header-top-left {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            padding-right: 1rem;
+        }
+
+        .header-top-right {
+            text-align: center;
+            padding-left: 1rem;
+        }
+
+        .header-main {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-main h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header-main p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        /* CONTROLS (Theme & Search) */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .theme-toggle-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* METRIC CARDS OVERVIEW */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .metric-icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: var(--radius);
+            background: var(--primary-light);
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .metric-card:hover .metric-icon-wrapper {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .metric-info h4 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-info p {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* TABS NAVIGATION */
+        .tabs-wrapper {
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            margin-bottom: 2.5rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none; /* Safari & Chrome */
+        }
+
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .tab-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn.active svg {
+            color: #ffffff;
+        }
+
+        /* TAB PANELS */
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CHAPTER & SECTION STYLING */
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chapter-title {
+            text-align: center;
+            margin: 3rem 0 1.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .chapter-title span {
+            display: block;
+            font-size: 1.75rem;
+            color: var(--text);
+            margin-top: 0.25rem;
+        }
+
+        /* OFFICIAL DOCUMENT LAYOUT (Tab 1 - Decision) */
+        .doc-page {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            padding: 4rem;
+            margin: 0 auto 3rem auto;
+            max-width: 900px;
+            border: 1px solid var(--border);
+            position: relative;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.15rem;
+            line-height: 1.5;
+        }
+
+        [data-theme="dark"] .doc-page {
+            /* Keep paper-like appearance for the official document visual in dark mode but slightly dimmed */
+            background: #fcfcfc;
+            color: #111111;
+        }
+
+        .doc-grid-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .doc-header-left {
+            border-right: 1px solid transparent;
+        }
+
+        .doc-org {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .doc-no {
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
+        }
+
+        .doc-national {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .doc-motto {
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: underline;
+        }
+
+        .doc-date {
+            font-style: italic;
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
+        }
+
+        .doc-title {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .doc-title h3 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            color: #000000;
+        }
+
+        .doc-title h4 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .doc-preamble {
+            margin-bottom: 2rem;
+            text-align: justify;
+        }
+
+        .doc-preamble p {
+            margin-bottom: 0.75rem;
+            text-indent: 1.5rem;
+        }
+
+        .doc-decision-title {
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .doc-article {
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .doc-article-title {
+            font-weight: bold;
+        }
+
+        .doc-sign-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-top: 3rem;
+        }
+
+        .doc-recipients {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .doc-recipients-title {
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .doc-signature {
+            text-align: center;
+        }
+
+        .doc-signature-role {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .doc-signature-note {
+            font-style: italic;
+            color: #555;
+            margin: 1.5rem 0 3.5rem 0;
+        }
+
+        .doc-signature-name {
+            font-weight: bold;
+        }
+
+        /* ARTICLE CARDS & ACCORDIONS (Tab 2) */
+        .article-card {
+            background: var(--surface);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .article-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            gap: 1rem;
+        }
+
+        .article-num {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.15rem;
+            background: var(--primary-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .article-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            flex-grow: 1;
+            margin-top: 0.15rem;
+        }
+
+        .article-body {
+            color: var(--text-muted);
+            font-size: 0.975rem;
+        }
+
+        .article-body p {
+            margin-bottom: 0.75rem;
+        }
+
+        .article-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* APPLICABILITY LIST (Department Cards) */
+        .dep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .dep-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .dep-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .dep-badge {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            flex-shrink: 0;
+        }
+
+        .dep-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .dep-info p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* 13 CATEGORIES GRID (Tab 3) */
+        .categories-filter-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition-slow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .category-card:hover::before {
+            width: 8px;
+            background: var(--secondary);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(var(--primary-hsl), 0.3);
+        }
+
+        .category-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .category-id-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--bg);
+            color: var(--text-muted);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .category-icon {
+            color: var(--primary);
+            width: 2.25rem;
+            height: 2.25rem;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .category-card:hover .category-icon {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .category-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .category-example {
+            font-size: 0.85rem;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            color: var(--text-light);
+            border-left: 2px solid var(--border);
+        }
+
+        .category-example strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* TIMELINE LAYOUT (Tab 4) */
+        .timeline-container {
+            position: relative;
+            padding-left: 2.5rem;
+            margin: 2rem 0 3.5rem 1rem;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-step {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .timeline-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -2.5rem;
+            top: 0.25rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 3px solid var(--primary);
+            z-index: 2;
+            box-shadow: 0 0 0 4px var(--bg);
+            transition: var(--transition);
+        }
+
+        .timeline-step:hover .timeline-dot {
+            background: var(--primary);
+            transform: scale(1.2);
+            box-shadow: 0 0 0 6px var(--primary-light);
+        }
+
+        .timeline-dot.critical {
+            border-color: var(--danger);
+        }
+
+        .timeline-step:hover .timeline-dot.critical {
+            background: var(--danger);
+            box-shadow: 0 0 0 6px var(--danger-light);
+        }
+
+        .timeline-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .timeline-step:hover .timeline-content {
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .timeline-time-badge {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-time-badge.critical {
+            background: var(--danger);
+        }
+
+        .timeline-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .timeline-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .timeline-sub-list {
+            margin-top: 0.75rem;
+            padding-left: 1.25rem;
+            font-size: 0.9rem;
+        }
+
+        /* COMPARE DATES BLOCK */
+        .rules-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .rules-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rule-wrong {
+            background: var(--danger-light);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .rule-wrong h4 {
+            color: var(--danger-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rule-right {
+            background: var(--success-light);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .rule-right h4 {
+            color: var(--success-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* EVALUATION & CHARTS (Tab 5) */
+        .eval-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .eval-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CHART CONTAINER & SVG STYLES */
+        .chart-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            height: fit-content;
+        }
+
+        .chart-toggle-buttons {
+            display: flex;
+            background: var(--bg);
+            padding: 0.25rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .chart-toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.77rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .chart-toggle-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .svg-chart-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 1.5rem;
+        }
+
+        .svg-chart {
+            transform: rotate(-90deg);
+        }
+
+        .chart-bg-circle {
+            fill: none;
+            stroke: var(--border);
+            stroke-width: 22;
+        }
+
+        .chart-segment {
+            fill: none;
+            stroke-width: 22;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease-in-out;
+        }
+
+        .chart-segment-1 { stroke: var(--primary); }
+        .chart-segment-2 { stroke: var(--secondary); }
+        .chart-segment-3 { stroke: var(--success); }
+
+        .chart-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .chart-center-val {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .chart-center-lbl {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 0.15rem;
+        }
+
+        .chart-legend {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .legend-label-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-item-1 .legend-color-dot { background: var(--primary); }
+        .legend-item-2 .legend-color-dot { background: var(--secondary); }
+        .legend-item-3 .legend-color-dot { background: var(--success); }
+
+        .legend-pct {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* TABULAR DATA */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            background: var(--surface);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.925rem;
+        }
+
+        th {
+            background: var(--bg);
+            padding: 1rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--primary-light);
+            color: var(--text);
+        }
+
+        /* INNER SUB-TABS */
+        .sub-tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .sub-tab-btn {
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+
+        .sub-tab-btn.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .sub-tab-panel {
+            display: none;
+        }
+
+        .sub-tab-panel.active {
+            display: block;
+        }
+
+        /* INTERACTIVE EVALUATION CALCULATOR */
+        .calculator-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: 2.5rem;
+            border-top: 4px solid var(--secondary);
+        }
+
+        .calc-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .calc-header h3 {
+            font-size: 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calc-selectors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .calc-selectors {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .select-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .calc-select {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .calc-select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px var(--secondary-light);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            background: var(--bg);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--secondary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .calc-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .calc-row {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .calc-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .calc-row-title {
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calc-row-weight {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background: var(--surface);
+            padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .calc-slider {
+            flex-grow: 1;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            accent-color: var(--secondary);
+            cursor: pointer;
+        }
+
+        .slider-val {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 3.5rem;
+            text-align: right;
+            color: var(--secondary);
+        }
+
+        .calc-dropdown-input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            outline: none;
+            font-weight: 600;
+        }
+
+        .calc-result-panel {
+            background: linear-gradient(135deg, hsl(262, 80%, 20%) 0%, hsl(262, 80%, 10%) 100%);
+            color: #ffffff;
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: fit-content;
+        }
+
+        .calc-result-panel::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%);
+            top: -50px;
+            right: -50px;
+            pointer-events: none;
+        }
+
+        .dial-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin-bottom: 1.5rem;
+        }
+
+        .dial-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 12;
+        }
+
+        .dial-value-stroke {
+            fill: none;
+            stroke: var(--secondary);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .dial-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .dial-score {
+            font-family: var(--font-heading);
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .dial-max {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        .calc-grade-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.25rem;
+        }
+
+        .calc-grade-val {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 800;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: inline-block;
+        }
+
+        .grade-xs { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
+        .grade-tot { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
+        .grade-ht { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        .grade-kht { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.3); }
+
+        .calc-conditions-list {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: left;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            width: 100%;
+        }
+
+        .calc-conditions-list h5 {
+            color: #ffffff;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .calc-conditions-list ul {
+            padding-left: 1rem;
+            margin-bottom: 0;
+        }
+
+        .calc-conditions-list li {
+            margin-bottom: 0.35rem;
+        }
+
+        /* GRADING SCALE GRID */
+        .grading-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .grade-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .grade-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .grade-card-xs::before { background: var(--success); }
+        .grade-card-tot::before { background: #3b82f6; }
+        .grade-card-ht::before { background: var(--warning); }
+        .grade-card-kht::before { background: var(--danger); }
+
+        .grade-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .grade-card-score {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .grade-card-xs .grade-card-score { color: var(--success); }
+        .grade-card-tot .grade-card-score { color: #3b82f6; }
+        .grade-card-ht .grade-card-score { color: var(--warning-dark); }
+        .grade-card-kht .grade-card-score { color: var(--danger); }
+
+        .grade-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* RESPONSIBILITY GRID (Tab 6) */
+        .resp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .resp-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .resp-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .resp-role-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: var(--radius);
+            background: var(--primary-light);
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+        }
+
+        .resp-card:hover .resp-role-badge {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .resp-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .resp-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .resp-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: 0.925rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .resp-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0.1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 4rem;
+        }
+
+        /* DYNAMIC ACCORDION FOR ENTIRE TEXT OR SEARCH HIGHLIGHT */
+        .highlight {
+            background-color: rgba(251, 191, 36, 0.3);
+            border-bottom: 2px solid var(--warning);
+            font-weight: 600;
+            padding: 0 2px;
+        }
+
+        /* DYNAMIC SCROLL ANIMATIONS AND MISC */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="header-top-left">
+                    <strong>UBND TỈNH HÀ TĨNH</strong><br>
+                    <span style="font-size: 0.75rem; opacity: 0.9;">BAN QLDA ĐTXD CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC</span>
+                </div>
+                <div class="header-top-right">
+                    <strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+                    <span style="font-size: 0.75rem; opacity: 0.9; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</span>
+                </div>
+            </div>
+            <div class="header-main">
+                <span class="badge" style="background: rgba(255, 255, 255, 0.15); color: #ffffff; margin-bottom: 1rem;">Tài liệu nội bộ chính thức</span>
+                <h1>QUY CHẾ QUẢN LÝ KẾ HOẠCH CÔNG VIỆC</h1>
+                <h2>TRÊN PHẦN MỀM QUẢN LÝ DỰ ÁN</h2>
+                <p>Ban hành kèm theo Quyết định số ……/QĐ-BQLDA ngày 26 tháng 05 năm 2026 của Giám đốc Ban</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- CONTROLS & UTILITIES -->
+        <div class="controls-bar">
+            <!-- Search across articles -->
+            <div class="search-container">
+                <input type="text" class="search-input" id="global-search" placeholder="Tìm kiếm nhanh điều khoản, phân loại, tiêu chí..." oninput="performGlobalSearch()">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
+            <!-- Light/Dark Mode Switcher -->
+            <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()">
+                <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                </svg>
+                <span id="theme-text">Giao diện: Tối</span>
+            </button>
+        </div>
+
+        <!-- QUICK HIGHLIGHT METRIC CARDS -->
+        <div class="metrics-grid">
+            <div class="metric-card" onclick="switchTab('categories')">
+                <div class="metric-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                </div>
+                <div class="metric-info">
+                    <h4>Nghiệp vụ Phân loại</h4>
+                    <p>13 Nhóm Cố Định</p>
+                </div>
+            </div>
+
+            <div class="metric-card" onclick="switchTab('workflows')">
+                <div class="metric-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="metric-info">
+                    <h4>Báo Cáo Hàng Tháng</h4>
+                    <p>Hạn Ngày 25 & Cuối Tháng</p>
+                </div>
+            </div>
+
+            <div class="metric-card" onclick="switchTab('evaluation')">
+                <div class="metric-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                </div>
+                <div class="metric-info">
+                    <h4>Khung Tiêu Chí Mới</h4>
+                    <p>Thang 100 Điểm</p>
+                </div>
+            </div>
+
+            <div class="metric-card" onclick="switchTab('decisions')">
+                <div class="metric-icon-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <div class="metric-info">
+                    <h4>Ngày Hiệu Lực</h4>
+                    <p>Từ Ngày 01 / 06 / 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS NAV -->
+        <div class="tabs-wrapper">
+            <nav class="tabs-nav" id="main-tabs">
+                <button class="tab-btn active" onclick="switchTab('decisions')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                    Quyết định ban hành
+                </button>
+                <button class="tab-btn" onclick="switchTab('general')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Quy định chung
+                </button>
+                <button class="tab-btn" onclick="switchTab('categories')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Phân loại công việc
+                </button>
+                <button class="tab-btn" onclick="switchTab('workflows')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    Quy trình & Hạn chót
+                </button>
+                <button class="tab-btn" onclick="switchTab('evaluation')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    Đánh giá & Xếp loại
+                </button>
+                <button class="tab-btn" onclick="switchTab('responsibility')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Trách nhiệm & Sự cố
+                </button>
+            </nav>
+        </div>
+
+        <!-- TAB CONTENT: DECISIONS -->
+        <div id="decisions-panel" class="tab-panel active search-target">
+            <div class="doc-page">
+                <div class="doc-grid-header">
+                    <div class="doc-header-left">
+                        <span class="doc-org">UBND TỈNH HÀ TĨNH</span><br>
+                        <span class="doc-org" style="font-size: 0.95rem;">BAN QLDA ĐTXD CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC</span>
+                        <div class="doc-no">Số: ……/QĐ-BQLDA</div>
+                    </div>
+                    <div class="doc-header-right">
+                        <span class="doc-national">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span><br>
+                        <span class="doc-motto">Độc lập - Tự do - Hạnh phúc</span>
+                        <div class="doc-date">Hà Tĩnh, ngày 26 tháng 5 năm 2026</div>
+                    </div>
+                </div>
+
+                <div class="doc-title">
+                    <h3>QUYẾT ĐỊNH</h3>
+                    <h4>Về việc ban hành Quy chế quản lý kế hoạch công việc trên phần mềm quản lý dự án</h4>
+                </div>
+
+                <div class="doc-preamble">
+                    <p style="font-weight: bold; text-align: center; text-indent: 0; margin-bottom: 1.5rem;">GIÁM ĐỐC BAN QLDA ĐTXD CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC</p>
+                    <p><em>Căn cứ</em> Luật Cán bộ, công chức ngày 13/11/2008 (sửa đổi, bổ sung năm 2019);</p>
+                    <p><em>Căn cứ</em> Luật Đầu tư công số 58/2024/QH15 ngày 29/11/2024;</p>
+                    <p><em>Căn cứ</em> Nghị định số 30/2020/NĐ-CP ngày 05/3/2020 của Chính phủ về công tác văn thư;</p>
+                    <p><em>Căn cứ</em> Quyết định thành lập Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh;</p>
+                    <p><em>Căn cứ</em> Quy chế tổ chức và hoạt động của Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh;</p>
+                    <p><em>Xét đề nghị</em> của Trưởng phòng Hành chính - Tổng hợp,</p>
+                </div>
+
+                <div class="doc-decision-title">QUYẾT ĐỊNH:</div>
+
+                <div class="doc-article">
+                    <p><span class="doc-article-title">Điều 1.</span> Ban hành kèm theo Quyết định này "Quy chế quản lý kế hoạch công việc trên phần mềm quản lý dự án" của Ban Quản lý Dự án Đầu tư Xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh.</p>
+                </div>
+
+                <div class="doc-article">
+                    <p><span class="doc-article-title">Điều 2.</span> Quyết định này có hiệu lực kể từ ngày 01 tháng 6 năm 2026.</p>
+                </div>
+
+                <div class="doc-article">
+                    <p><span class="doc-article-title">Điều 3.</span> Trưởng các phòng, Chánh Văn phòng và toàn thể cán bộ, viên chức, người lao động thuộc Ban chịu trách nhiệm thi hành Quyết định này./.</p>
+                </div>
+
+                <div class="doc-sign-grid">
+                    <div class="doc-recipients">
+                        <span class="doc-recipients-title">Nơi nhận:</span><br>
+                        - Như Điều 3;<br>
+                        - Lãnh đạo Ban (để chỉ đạo);<br>
+                        - Lưu: VT, HC-TH.
+                    </div>
+                    <div class="doc-signature">
+                        <span class="doc-signature-role">GIÁM ĐỐC</span><br>
+                        <span class="doc-signature-note">(Chữ ký, đóng dấu)</span><br><br><br>
+                        <span class="doc-signature-name">……………………………</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: GENERAL RULES (Chương I) -->
+        <div id="general-panel" class="tab-panel search-target">
+            <div class="chapter-title">Chương I <span>Quy định chung</span></div>
+
+            <!-- Điều 1 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 1</span>
+                    <h3 class="article-title">Phạm vi điều chỉnh</h3>
+                </div>
+                <div class="article-body">
+                    <p>Quy chế này quy định nguyên tắc, quy trình, trách nhiệm trong việc lập, giao, thực hiện, theo dõi, đánh giá và báo cáo kế hoạch công việc <strong>hàng năm và hàng tháng</strong> của các phòng, đơn vị trực thuộc Ban Quản lý Dự án Đầu tư Xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh (sau đây gọi tắt là <strong>Ban</strong>) trên phần mềm quản lý dự án.</p>
+                </div>
+            </div>
+
+            <!-- Điều 2 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 2</span>
+                    <h3 class="article-title">Đối tượng áp dụng</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. Các phòng chuyên môn, nghiệp vụ thuộc Ban:</p>
+                    
+                    <!-- Visual list of departments -->
+                    <div class="dep-grid">
+                        <div class="dep-card">
+                            <div class="dep-badge">HC-TH</div>
+                            <div class="dep-info">
+                                <h4>Phòng Hành chính - Tổng hợp</h4>
+                                <p>Tham mưu hành chính, nhân sự, tổng hợp báo cáo giao ban.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">KTTD</div>
+                            <div class="dep-info">
+                                <h4>Phòng Kế hoạch - Thẩm định</h4>
+                                <p>Thẩm định kỹ thuật, phê duyệt hồ sơ thiết kế, dự toán.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">KH-ĐT</div>
+                            <div class="dep-info">
+                                <h4>Phòng Kế hoạch - Đấu thầu</h4>
+                                <p>Quản lý đấu thầu, lập HSMT, lựa chọn nhà thầu.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">PTDV</div>
+                            <div class="dep-info">
+                                <h4>Phòng Phát triển dịch vụ</h4>
+                                <p>Định hướng và triển khai các dịch vụ tư vấn phát sinh.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">QLDA1</div>
+                            <div class="dep-info">
+                                <h4>Phòng Quản lý dự án 1</h4>
+                                <p>Trực tiếp giám sát, quản lý thi công các dự án nhóm 1.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">QLDA2</div>
+                            <div class="dep-info">
+                                <h4>Phòng Quản lý dự án 2</h4>
+                                <p>Trực tiếp giám sát, quản lý thi công các dự án nhóm 2.</p>
+                            </div>
+                        </div>
+                        <div class="dep-card">
+                            <div class="dep-badge">QLDA3</div>
+                            <div class="dep-info">
+                                <h4>Phòng Quản lý dự án 3</h4>
+                                <p>Trực tiếp giám sát, quản lý thi công các dự án nhóm 3.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 1rem;">2. Lãnh đạo Ban, Trưởng/Phó trưởng các phòng, toàn thể viên chức và người lao động đang công tác tại Ban.</p>
+                </div>
+            </div>
+
+            <!-- Điều 3 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 3</span>
+                    <h3 class="article-title">Nguyên tắc quản lý</h3>
+                </div>
+                <div class="article-body">
+                    <ol>
+                        <li><strong>Tập trung, thống nhất</strong>: Toàn bộ kế hoạch công việc hàng tháng phải được nhập vào phần mềm; không sử dụng song song các file Excel rời rạc làm báo cáo chính thức kể từ tháng 6/2026.</li>
+                        <li><strong>Minh bạch, công khai</strong>: Mọi công việc đều có người phụ trách rõ ràng, có hạn chót, có phân loại, có trạng thái cập nhật theo thời gian thực.</li>
+                        <li><strong>Trách nhiệm cá nhân</strong>: Cán bộ được giao việc chịu trách nhiệm về tiến độ, chất lượng và kết quả công việc được giao.</li>
+                        <li><strong>Kết hợp giao việc và tự đề xuất</strong>: Trưởng phòng giao việc trọng tâm; cán bộ chủ động bổ sung công việc phát sinh.</li>
+                        <li><strong>Phục vụ báo cáo</strong>: Dữ liệu trên phần mềm là nguồn duy nhất để tổng hợp Báo cáo giao ban tháng của Ban.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Điều 4 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 4</span>
+                    <h3 class="article-title">Giải thích từ ngữ</h3>
+                </div>
+                <div class="article-body">
+                    <ul style="list-style-type: square;">
+                        <li><strong>Công việc (Task)</strong>: Một đầu việc cụ thể được giao hoặc đăng ký, có tên, người phụ trách, hạn chót, trạng thái.</li>
+                        <li><strong>Phân loại công việc (Category)</strong>: 13 nhóm cố định để gom công việc theo nghiệp vụ, phục vụ tổng hợp báo cáo (xem Chi tiết tại Chương II).</li>
+                        <li><strong>Kế hoạch năm (Annual Plan)</strong>: Tập hợp các nhiệm vụ, đầu việc trọng tâm dự kiến triển khai trong năm của một phòng, được Lãnh đạo Ban phê duyệt và làm cơ sở phân công công việc tháng.</li>
+                        <li><strong>Kế hoạch tháng (Monthly Plan)</strong>: Tập hợp các công việc cụ thể dự kiến triển khai trong tháng của một phòng, được xây dựng trên cơ sở Kế hoạch năm và các yêu cầu phát sinh.</li>
+                        <li><strong>Báo cáo giao ban</strong>: Văn bản tổng hợp kết quả thực hiện công việc của các phòng trong tháng, do hệ thống tự sinh hoặc do AI hỗ trợ soạn thảo.</li>
+                        <li><strong>Trạng thái công việc</strong>: Một trong các giá trị: Chưa bắt đầu (todo), Đang thực hiện (in_progress), Hoàn thành (done), Chưa hoàn thành (incomplete).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: CATEGORIES (Chương II) -->
+        <div id="categories-panel" class="tab-panel search-target">
+            <div class="chapter-title">Chương II <span>Phân loại công việc</span></div>
+
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 5</span>
+                    <h3 class="article-title">Mục đích phân loại</h3>
+                </div>
+                <div class="article-body">
+                    <p>Phân loại công việc nhằm chuẩn hóa nội dung, thuận tiện tổng hợp, so sánh giữa các phòng và đánh giá toàn diện kết quả hoạt động của Ban.</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.75rem; height:1.75rem; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Điều 6. Danh mục 13 phân loại công việc
+                </h2>
+            </div>
+            
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Mọi công việc khi nhập trên phần mềm bắt buộc phải chọn 01 trong 13 phân loại cố định sau. Sử dụng bộ lọc nhanh dưới đây để tìm nhóm phân loại tương ứng:</p>
+
+            <!-- Quick filter for categories -->
+            <div class="categories-filter-bar">
+                <span style="font-weight: 700; font-size: 0.9rem; text-transform: uppercase; color: var(--text-light);">Lọc nhanh danh mục:</span>
+                <input type="text" id="category-filter-input" class="search-input" style="max-width: 350px; padding: 0.5rem 1rem 0.5rem 2.25rem; font-size: 0.85rem;" placeholder="Nhập tên mã hoặc từ khóa ví dụ..." oninput="filterCategories()">
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="categories-grid" id="categories-grid-container">
+                <!-- 1. dieu_hanh -->
+                <div class="category-card" data-category="dieu_hanh dieu hanh chi dao phan cong hop giao ban don doc">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: dieu_hanh</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">1. Điều hành</div>
+                    <div class="category-desc">Công tác lãnh đạo, phân công nhiệm vụ, tổ chức các cuộc họp, đôn đốc tiến độ.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Chủ trì cuộc họp giao ban, phân công nhiệm vụ tuần, xử lý đề xuất khẩn cấp của các phòng...
+                    </div>
+                </div>
+
+                <!-- 2. tham_dinh -->
+                <div class="category-card" data-category="tham_dinh tham dinh phe duyet hsmt kqlcnt tkbvtc bcnckt du toan">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: tham_dinh</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">2. Thẩm định / Phê duyệt</div>
+                    <div class="category-desc">Thẩm định hồ sơ mời thầu, kết quả lựa chọn nhà thầu, thiết kế bản vẽ thi công, dự toán...</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Thẩm định báo cáo nghiên cứu khả thi dự án A, phê duyệt hồ sơ thiết kế bản vẽ thi công...
+                    </div>
+                </div>
+
+                <!-- 3. thi_cong -->
+                <div class="category-card" data-category="thi_cong thi cong giam sat trien khai hien truong tvgs">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: thi_cong</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">3. Thi công / Giám sát</div>
+                    <div class="category-desc">Công tác trực tiếp triển khai ngoài hiện trường, kiểm tra giám sát thi công của các nhà thầu.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Giám sát đổ bê tông sàn tầng 2, kiểm tra tiến độ thi công thực tế tại hiện trường dự án X...
+                    </div>
+                </div>
+
+                <!-- 4. quyet_toan -->
+                <div class="category-card" data-category="quyet_toan quyet toan ab hoan thanh">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: quyet_toan</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 11h.01M12 7h.01M9 10h.01M15 11h.01M12 14h.01M15 17h.01M15 14h.01M12 17h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">4. Quyết toán</div>
+                    <div class="category-desc">Kiểm tra hồ sơ và hoàn thành các thủ tục quyết toán A-B, quyết toán dự án hoàn thành.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Thẩm tra khối lượng quyết toán hợp đồng xây lắp A-B, lập báo cáo quyết toán dự án hoàn thành...
+                    </div>
+                </div>
+
+                <!-- 5. thanh_toan -->
+                <div class="category-card" data-category="thanh_toan thanh toan ho so giai ngan">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: thanh_toan</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">5. Thanh toán</div>
+                    <div class="category-desc">Thực hiện kiểm tra, trình duyệt hồ sơ thanh toán khối lượng hoàn thành, giải ngân nguồn vốn.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Lập tờ trình thanh toán kỳ 3 cho nhà thầu xây lắp, trình Kho bạc Nhà nước giải ngân vốn...
+                    </div>
+                </div>
+
+                <!-- 6. gpmb -->
+                <div class="category-card" data-category="gpmb giai phong mat bang boi thuong di doi tai dinh cu">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: gpmb</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">6. Giải phóng mặt bằng</div>
+                    <div class="category-desc">Điều phối công tác bồi thường, hỗ trợ tái định cư và di dời hạ tầng để bàn giao mặt bằng.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Họp dân thống nhất phương án áp giá đền bù, bàn giao mốc giải phóng mặt bằng thực địa...
+                    </div>
+                </div>
+
+                <!-- 7. dau_thau -->
+                <div class="category-card" data-category="dau_thau dau thau khlcnt hsmt danh gia hsdt kqlcnt">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: dau_thau</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">7. Đấu thầu</div>
+                    <div class="category-desc">Lập và trình duyệt kế hoạch lựa chọn nhà thầu, hồ sơ mời thầu, đánh giá hồ sơ dự thầu...</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Soạn thảo hồ sơ yêu cầu chỉ định thầu tư vấn giám sát, đánh giá đề xuất tài chính gói thầu X...
+                    </div>
+                </div>
+
+                <!-- 8. dieu_chinh -->
+                <div class="category-card" data-category="dieu_chinh dieu chinh tk du toan hop dong gia gia han tmdt">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: dieu_chinh</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17.5M9 11v3m0 0v3m0-3h3m2-3h3m0 0v3m0-3h-3"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">8. Điều chỉnh</div>
+                    <div class="category-desc">Thực hiện các thủ tục điều chỉnh thiết kế, dự toán, giá trị hợp đồng hoặc gia hạn tiến độ thực hiện.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Soạn thảo phụ lục điều chỉnh tăng quy mô đầu tư dự án B, xin gia hạn thời gian thực hiện hợp đồng...
+                    </div>
+                </div>
+
+                <!-- 9. gop_y -->
+                <div class="category-card" data-category="gop_y gop y van ban du thao tt nd soan thao tham muu">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: gop_y</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">9. Góp ý / Văn bản</div>
+                    <div class="category-desc">Góp ý các dự thảo, thông tư, nghị định, hoặc soạn thảo văn bản tham mưu chỉ đạo hành chính.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Lập văn bản trả lời kiến nghị của nhà đầu tư, đóng góp ý kiến đối với dự thảo quy chuẩn xây dựng mới...
+                    </div>
+                </div>
+
+                <!-- 10. bao_cao -->
+                <div class="category-card" data-category="bao_cao bao cao tien do thang gsdt">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: bao_cao</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">10. Báo cáo</div>
+                    <div class="category-desc">Lập báo cáo định kỳ tuần, tháng, quý, báo cáo tiến độ đột xuất hoặc báo cáo giám sát đầu tư.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Lập báo cáo tiến độ tuần dự án trọng điểm, tổng hợp báo cáo giám sát đánh giá đầu tư quý I...
+                    </div>
+                </div>
+
+                <!-- 11. kiem_tra -->
+                <div class="category-card" data-category="kiem_tra kiem tra qlcl hien truong ho so khac phuc bao hanh">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: kiem_tra</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">11. Kiểm tra / QLCL</div>
+                    <div class="category-desc">Công tác kiểm tra chất lượng vật liệu đầu vào, hồ sơ QLCL và kiểm tra khắc phục lỗi bảo hành.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Kiểm tra hồ sơ nguồn gốc cốt thép tại công trường, đôn đốc nhà thầu khắc phục hiện tượng thấm dột...
+                    </div>
+                </div>
+
+                <!-- 12. ban_giao -->
+                <div class="category-card" data-category="ban_giao ban giao nghiem thu ctsd pccc sxd">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: ban_giao</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 001.414 0l2.414-2.414a1 1 0 01.707-.293H20"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">12. Bàn giao / Nghiệm thu</div>
+                    <div class="category-desc">Nghiệm thu các mốc công việc quan trọng, nghiệm thu PCCC hoặc bàn giao công trình đưa vào sử dụng.</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Phối hợp nghiệm thu tĩnh hệ thống cơ điện tòa nhà A, làm thủ tục xin ý kiến Sở Xây dựng bàn giao đưa vào sử dụng...
+                    </div>
+                </div>
+
+                <!-- 13. khac -->
+                <div class="category-card" data-category="khac dang doan the luu kho moi truong">
+                    <div class="category-card-header">
+                        <span class="category-id-badge">Mã: khac</span>
+                        <div class="category-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="category-title">13. Khác</div>
+                    <div class="category-desc">Các nhiệm vụ về công tác Đảng, đoàn thể, lưu kho, quản lý tài sản, cải thiện môi trường làm việc...</div>
+                    <div class="category-example">
+                        <strong>Ví dụ thực tế:</strong>
+                        Tập hợp hồ sơ lưu trữ lưu kho văn phòng, chuẩn bị kế hoạch sinh hoạt chi bộ định kỳ...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: WORKFLOWS & DEADLINES (Chương III) -->
+        <div id="workflows-panel" class="tab-panel search-target">
+            <div class="chapter-title">Chương III <span>Quy trình quản lý kế hoạch công việc</span></div>
+
+            <!-- Điều 7 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 7</span>
+                    <h3 class="article-title">Lập kế hoạch công việc năm</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. <strong>Thời gian lập kế hoạch năm</strong>: Trước ngày <strong>15 tháng 11 hàng năm</strong>, các phòng hoàn thành xây dựng Kế hoạch công việc năm tiếp theo và trình Lãnh đạo Ban phê duyệt; chậm nhất trước ngày <strong>01 tháng 12</strong> phải có Kế hoạch năm đã được phê duyệt để làm cơ sở xây dựng kế hoạch tháng từ tháng 1 năm sau.</p>
+                    <p>2. <strong>Nội dung Kế hoạch năm</strong> của từng phòng bao gồm:</p>
+                    <ul style="list-style-type: circle; margin-top: 0.5rem;">
+                        <li>Danh mục các nhiệm vụ trọng tâm, thường xuyên trong năm, được phân loại theo 13 nhóm quy định tại Điều 6;</li>
+                        <li>Kế hoạch tiến độ các dự án do phòng phụ trách theo từng quý/tháng;</li>
+                        <li>Các nhiệm vụ đột xuất, chuyên đề được giao từ cấp trên;</li>
+                        <li>Chỉ tiêu phấn đấu: số lượng công việc dự kiến hoàn thành, tỷ lệ hoàn thành mục tiêu.</li>
+                    </ul>
+                    
+                    <!-- Timeline Lập kế hoạch năm -->
+                    <h4 style="margin: 1.5rem 0 1rem 0; color: var(--primary);">Timeline Lập kế hoạch năm (Quy trình chi tiết):</h4>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <div class="glass-panel" style="flex: 1; min-width: 200px;">
+                            <span class="badge badge-primary">Bước 1: Trước 05/11</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Cán bộ đề xuất</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Cá nhân tự lập danh mục công việc năm thuộc nhiệm vụ mình phụ trách, gửi Trưởng phòng.</p>
+                        </div>
+                        <div class="glass-panel" style="flex: 1; min-width: 200px;">
+                            <span class="badge badge-primary">Bước 2: Trước 15/11</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Trưởng phòng tổng hợp</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Trưởng phòng rà soát, hoàn chỉnh Kế hoạch năm của phòng trình Lãnh đạo Ban.</p>
+                        </div>
+                        <div class="glass-panel" style="flex: 1; min-width: 200px;">
+                            <span class="badge badge-success">Bước 3: Trước 01/12</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Lãnh đạo Ban duyệt</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Lãnh đạo phê duyệt và giao chỉ tiêu, định hướng ưu tiên năm cho từng phòng.</p>
+                        </div>
+                        <div class="glass-panel" style="flex: 1; min-width: 200px;">
+                            <span class="badge badge-warning">Bước 4: Sau phê duyệt</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Đưa lên phần mềm</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Trưởng phòng/cán bộ được ủy quyền nhập toàn bộ danh mục công việc năm lên phần mềm, thiết lập hạn chót theo quý/tháng tương ứng làm cơ sở cho kế hoạch tháng.</p>
+                        </div>
+                    </div>
+
+                    <p>5. <strong>Điều chỉnh Kế hoạch năm</strong>: Trong trường hợp phát sinh nhiệm vụ mới hoặc thay đổi ưu tiên do yêu cầu khách quan, Trưởng phòng báo cáo Lãnh đạo Ban và điều chỉnh Kế hoạch năm trên phần mềm; việc điều chỉnh phải được ghi nhận lý do rõ ràng.</p>
+                </div>
+            </div>
+
+            <!-- Điều 8 & Rule về kỳ báo cáo -->
+            <div class="article-card" style="border-left-color: var(--warning);">
+                <div class="article-header">
+                    <span class="article-num" style="background: var(--warning-light); color: var(--warning-dark);">Điều 8</span>
+                    <h3 class="article-title">Lập kế hoạch công việc tháng & Quy định chốt Deadline</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. <strong>Thời gian lập kế hoạch</strong>: Chậm nhất trong <strong>ngày làm việc đầu tiên của tháng</strong>, ngay sau buổi họp giao ban chào cờ đầu tháng của Ban, Trưởng phòng tổ chức rà soát, lập kế hoạch công việc tháng cho phòng và phân công đến từng cán bộ trên phần mềm trên cơ sở kết luận của Lãnh đạo Ban tại buổi giao ban.</p>
+                    <p>2. <strong>Nguồn công việc đầu vào</strong>: Kế hoạch công việc năm đã phê duyệt; Tiến độ dự án thực tế; Văn bản chỉ đạo mới; Các công việc đột xuất phát sinh.</p>
+                    <p>3. <strong>Yêu cầu khi tạo công việc</strong>: Phải đầy đủ: Tên công việc, Phân loại (Category), Người phụ trách (Assignee), Hạn hoàn thành (Due Date), Mức độ ưu tiên, Dự án liên quan và Kết quả dự kiến (Description).</p>
+                    
+                    <div class="glass-panel" style="border-left: 4px solid var(--danger); margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--danger-dark); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.5rem; height:1.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            QUY TẮC BẮT BUỘC VỀ DEADLINE (Due Date) & GHI NHẬN KỲ BÁO CÁO:
+                        </h4>
+                        <p style="font-weight: 600;">Hệ thống phần mềm tổng hợp báo cáo tháng dựa trên trường Hạn hoàn thành (Due Date). Vì vậy:</p>
+                        <p style="margin-top: 0.5rem;">a) <strong>Hạn hoàn thành phải nằm trong tháng báo cáo</strong>: Mỗi công việc chỉ xuất hiện trong báo cáo của tháng mà nó có hạn hoàn thành. Nếu muốn công việc được ghi nhận vào tháng 6, hạn hoàn thành phải đặt từ ngày 01/6 đến 30/6.</p>
+                        <p style="margin-top: 0.5rem;">b) <strong>Công việc kéo dài nhiều tháng — tạo mới từng tháng</strong>: Đối với các đầu việc mang tính thường xuyên, kéo dài qua nhiều tháng (giám sát thi công, theo dõi GPMB, kiểm tra định kỳ...), <strong>không</strong> sử dụng chung một công việc cho nhiều tháng báo cáo. Thay vào đó, mỗi tháng tạo một công việc mới.</p>
+                    </div>
+
+                    <!-- Visual Comparison for Multi-month Tasks -->
+                    <h4 style="margin: 1.5rem 0 0.5rem 0; font-size: 0.95rem; text-transform: uppercase;">Cách khai báo công việc kéo dài nhiều tháng:</h4>
+                    <div class="rules-comparison">
+                        <div class="rule-wrong">
+                            <h4>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.25rem; height:1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                KHAI BÁO SAI (BỊ PHẠT)
+                            </h4>
+                            <p style="font-weight: bold; font-size: 0.85rem;">Tên công việc:</p>
+                            <p style="font-size: 0.85rem; font-style: italic; margin-bottom: 0.5rem;">"Giám sát thi công xây dựng công trình tòa nhà A"</p>
+                            <p style="font-weight: bold; font-size: 0.85rem;">Hạn hoàn thành (Due Date):</p>
+                            <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--danger-dark); font-weight: 700;">30/12/2026 (Để chạy suốt 6 tháng)</p>
+                            <p style="font-size: 0.8rem; opacity: 0.9;"><strong>Hậu quả:</strong> Các báo cáo tháng 6, 7, 8, 9, 10, 11 sẽ không thể hiện công việc này (tính vào tỷ lệ hoàn thành = 0). Đến tháng 12 mới xuất hiện đầu việc này trên báo cáo.</p>
+                        </div>
+                        <div class="rule-right">
+                            <h4>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.25rem; height:1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                KHAI BÁO ĐÚNG TIÊU CHUẨN
+                            </h4>
+                            <p style="font-weight: bold; font-size: 0.85rem;">Tách nhỏ và khai báo từng tháng:</p>
+                            <ul style="font-size: 0.85rem; padding-left: 1rem; margin-bottom: 0;">
+                                <li><strong>Tháng 6:</strong> "Giám sát thi công phần móng khối A - Tháng 6/2026"<br><span style="color:var(--success-dark); font-weight:700;">Hạn: 30/06/2026</span></li>
+                                <li><strong>Tháng 7:</strong> "Giám sát thi công phần thô sàn tầng 1 - Tháng 7/2026"<br><span style="color:var(--success-dark); font-weight:700;">Hạn: 31/07/2026</span></li>
+                            </ul>
+                            <p style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;"><strong>Lợi ích:</strong> Mỗi tháng báo cáo phản ánh đúng khối lượng thực hiện trong kỳ, Trưởng phòng & Lãnh đạo Ban nhìn thấy tiến độ thực tế theo thời gian thực.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Điều 9 & 10 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 9 & 10</span>
+                    <h3 class="article-title">Giao việc, tiếp nhận và Cập nhật tiến độ</h3>
+                </div>
+                <div class="article-body">
+                    <h4 style="margin-bottom: 0.5rem;">Quy tắc giao việc & tiếp nhận (Điều 9):</h4>
+                    <p>1. Sau khi tạo công việc, hệ thống tự động gửi thông báo đến cán bộ được giao.</p>
+                    <p>2. Cán bộ được giao có trách nhiệm xem xét, xác nhận tiếp nhận việc trên hệ thống trong vòng <strong>24 giờ</strong>. Trường hợp có vướng mắc về phạm vi, thời hạn phải báo cáo Trưởng phòng để điều chỉnh.</p>
+                    <p>3. Cán bộ chủ động đăng ký bổ sung công việc phát sinh thuộc phạm vi nhiệm vụ trên phần mềm và báo cáo Trưởng phòng phê duyệt.</p>
+                    
+                    <h4 style="margin: 1.5rem 0 0.5rem 0;">Cập nhật tiến độ công việc (Điều 10):</h4>
+                    <p>1. <strong>Tần suất cập nhật</strong>: Cán bộ phụ trách phải cập nhật tiến độ công việc <strong>ít nhất 01 lần/tuần</strong> vào các ngày làm việc cuối tuần.</p>
+                    <p>2. <strong>Nội dung cập nhật</strong>: Trạng thái (todo/in_progress/done/incomplete), tỷ lệ % hoàn thành (Progress), kết quả thực hiện cụ thể (Completion Result) khi Done, lý do chưa hoàn thành (Incomplete Reason) khi Incomplete, và Ghi chú bổ sung (Notes).</p>
+                    <p>3. <strong>Yêu cầu chất lượng cập nhật</strong>: Nội dung kết quả thực hiện phải cụ thể, định lượng (ví dụ: *"Đã trình QĐ phê duyệt số 123/QĐ-UBND ngày 15/5/2026"*). Tuyệt đối không ghi chung chung kiểu "Đã làm", "Đang triển khai".</p>
+                </div>
+            </div>
+
+            <!-- Điều 11 - Timeline Báo cáo tháng -->
+            <div class="section-header">
+                <h2>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.75rem; height:1.75rem; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Điều 11. Chu trình rà soát và tổng hợp báo cáo giao ban hàng tháng
+                </h2>
+            </div>
+            
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Chu trình chốt số liệu nghiêm ngặt hàng tháng phục vụ cuộc họp giao ban chào cờ đầu tháng mới:</p>
+
+            <div class="timeline-container">
+                <!-- Bước 1 -->
+                <div class="timeline-step">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-time-badge">Trước 16h00 ngày 25 hàng tháng</span>
+                        <h3>Bước 1: Chốt kết quả công việc cá nhân</h3>
+                        <p class="timeline-text">Cán bộ phụ trách hoàn tất cập nhật kết quả thực hiện và trạng thái cuối cùng đối với các công việc dự kiến hoàn thành trong tháng. Báo cáo các công việc có nguy cơ trễ hạn cho Trưởng phòng.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 2 -->
+                <div class="timeline-step">
+                    <div class="timeline-dot critical"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-time-badge critical">Trước 16h00 ngày làm việc cuối tháng</span>
+                        <h3>Bước 2: Trưởng phòng rà soát & Duyệt báo cáo phòng</h3>
+                        <p class="timeline-text">Trưởng phòng rà soát toàn bộ công việc tháng của phòng, đảm bảo: Mọi công việc đều có trạng thái cuối cùng (Hoàn thành / Chưa hoàn thành / Đang thực hiện chuyển sang tháng sau); Công việc Chưa hoàn thành đều có lý do rõ ràng và phương án xử lý; Công việc Hoàn thành đều có kết quả cụ thể, định lượng. Duyệt báo cáo phòng trên phần mềm và xuất Excel gửi Văn phòng Ban.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 3 -->
+                <div class="timeline-step">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-time-badge">Trước 08h00 ngày làm việc đầu tiên tháng mới</span>
+                        <h3>Bước 3: Văn phòng tổng hợp & Dự thảo bằng AI</h3>
+                        <p class="timeline-text">Văn phòng Ban tổng hợp dữ liệu từ phần mềm, sử dụng tính năng AI hỗ trợ soạn thảo dự thảo Báo cáo giao ban tháng của Ban, trình Lãnh đạo Ban duyệt trước giờ chào cờ.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 4 -->
+                <div class="timeline-step">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-time-badge">Sáng ngày làm việc đầu tiên tháng mới</span>
+                        <h3>Bước 4: Họp giao ban chào cờ toàn Ban</h3>
+                        <p class="timeline-text">Tổ chức họp giao ban ngay sau nghi thức chào cờ đầu tháng. Văn phòng Ban trình bày Báo cáo giao ban; Lãnh đạo Ban kết luận, định hướng chỉ đạo nhiệm vụ tháng mới cho các phòng.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 1rem; font-style: italic; color: var(--text-muted);">* Lưu ý (Khoản 5): Trường hợp ngày làm việc cuối cùng của tháng rơi vào ngày nghỉ, việc duyệt báo cáo phòng được hoàn tất vào ngày làm việc liền kề trước đó; Văn phòng Ban căn cứ tình hình thực tế chủ động tổng hợp sớm để đảm bảo tiến độ giao ban.</p>
+        </div>
+
+        <!-- TAB CONTENT: EVALUATION (Chương V) -->
+        <div id="evaluation-panel" class="tab-panel search-target">
+            <div class="chapter-title">Chương V <span>Báo cáo và đánh giá xếp loại chất lượng</span></div>
+
+            <!-- Điều 16 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 16</span>
+                    <h3 class="article-title">Báo cáo định kỳ</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. <strong>Báo cáo phòng tháng</strong>: Mỗi phòng có 01 báo cáo trên phần mềm, xuất ra Excel theo mẫu chuẩn, gồm tổng hợp số liệu công việc theo phân loại và chi tiết từng công việc (nội dung, dự án liên quan, kết quả thực hiện, cán bộ phụ trách, trạng thái, % hoàn thành, ghi chú).</p>
+                    <p>2. <strong>Báo cáo giao ban Ban</strong>: Văn phòng Ban tổng hợp từ dữ liệu các phòng, gồm: Bảng tổng hợp các phòng (tổng CV, hoàn thành, đang làm, chưa HT, tỷ lệ); Chi tiết từng phòng theo phân loại; Phần văn bản hành chính do AI hỗ trợ soạn thảo (tổng quan tình hình, tình hình giải ngân, tiến độ thực hiện dự án, kết quả công việc các phòng, tồn tại/vướng mắc, kiến nghị/đề xuất, kế hoạch tháng tới).</p>
+                </div>
+            </div>
+
+            <!-- Điều 17: Thang điểm -->
+            <div class="section-header">
+                <h2>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.75rem; height:1.75rem; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
+                    Điều 17. Cơ cấu điểm và Tiêu chí đánh giá
+                </h2>
+            </div>
+
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Khung đánh giá xếp loại theo Nghị định quy định đối với đơn vị sự nghiệp công lập và viên chức. Thang điểm áp dụng là 100 điểm.</p>
+
+            <!-- Chart and Table layout -->
+            <div class="eval-layout">
+                <!-- SVG Circle Donut Chart Card -->
+                <div class="chart-card">
+                    <div class="chart-toggle-buttons">
+                        <button class="chart-toggle-btn active" onclick="updateChart('dep-disb')">Phòng (Giải ngân)</button>
+                        <button class="chart-toggle-btn" onclick="updateChart('dep-non-disb')">Phòng (Khác)</button>
+                        <button class="chart-toggle-btn" onclick="updateChart('indiv-disb')">Cá nhân (G.Ngân)</button>
+                        <button class="chart-toggle-btn" onclick="updateChart('indiv-non-disb')">Cá nhân (Khác)</button>
+                    </div>
+
+                    <div class="svg-chart-container">
+                        <svg class="svg-chart" width="220" height="220" viewBox="0 0 220 220">
+                            <!-- Background track -->
+                            <circle class="chart-bg-circle" cx="110" cy="110" r="85"></circle>
+                            <!-- Segment A -->
+                            <circle class="chart-segment chart-segment-1" id="seg-1" cx="110" cy="110" r="85"></circle>
+                            <!-- Segment B -->
+                            <circle class="chart-segment chart-segment-2" id="seg-2" cx="110" cy="110" r="85"></circle>
+                            <!-- Segment C -->
+                            <circle class="chart-segment chart-segment-3" id="seg-3" cx="110" cy="110" r="85"></circle>
+                        </svg>
+                        <div class="chart-center-text">
+                            <div class="chart-center-val" id="chart-center-title">100đ</div>
+                            <div class="chart-center-lbl">Tổng điểm tối đa</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-legend">
+                        <div class="legend-item legend-item-1">
+                            <div class="legend-label-group">
+                                <div class="legend-color-dot"></div>
+                                <span id="lbl-seg-1">Hoàn thành công việc (A)</span>
+                            </div>
+                            <span class="legend-pct" id="val-seg-1">40%</span>
+                        </div>
+                        <div class="legend-item legend-item-2" id="legend-row-2">
+                            <div class="legend-label-group">
+                                <div class="legend-color-dot"></div>
+                                <span id="lbl-seg-2">Kết quả giải ngân (B)</span>
+                            </div>
+                            <span class="legend-pct" id="val-seg-2">40%</span>
+                        </div>
+                        <div class="legend-item legend-item-3">
+                            <div class="legend-label-group">
+                                <div class="legend-color-dot"></div>
+                                <span id="lbl-seg-3">Tiêu chí chung (C)</span>
+                            </div>
+                            <span class="legend-pct" id="val-seg-3">20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables info with inner sub-tabs -->
+                <div>
+                    <div class="sub-tabs-nav">
+                        <button class="sub-tab-btn active" id="sub-tab-btn-dep" onclick="switchSubTab('dep')">Bảng điểm Phòng Ban</button>
+                        <button class="sub-tab-btn" id="sub-tab-btn-indiv" onclick="switchSubTab('indiv')">Bảng điểm Cá Nhân</button>
+                    </div>
+
+                    <!-- SUB TAB: DEPARTMENT TABLE -->
+                    <div class="sub-tab-panel active" id="sub-tab-panel-dep">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%;">Nhóm</th>
+                                        <th style="width: 50%;">Tiêu chí</th>
+                                        <th style="width: 15%; text-align: center;">Điểm tối đa</th>
+                                        <th style="width: 25%;">Nguồn dữ liệu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="4" style="font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border);">A</td>
+                                        <td><strong>Kết quả hoàn thành công việc</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">40</td>
+                                        <td>Phần mềm QLDA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A1. Tỷ lệ hoàn thành (CV Done / Tổng CV tháng × 100)</td>
+                                        <td style="text-align: center;">20</td>
+                                        <td>Tự động từ PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A2. Chất lượng kết quả thực hiện (chi tiết, định lượng)</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Đánh giá của LĐ Ban</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A3. Tỷ lệ đúng hạn (CV xong đúng hạn / Tổng CV HT)</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Tự động từ PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" style="font-weight: 700; color: var(--secondary); border-bottom: 1px solid var(--border);">B</td>
+                                        <td><strong>Kết quả giải ngân</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">40</td>
+                                        <td>Dữ liệu tài chính</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B1. Tỷ lệ giải ngân KH vốn lũy kế thực tế / KH năm</td>
+                                        <td style="text-align: center;">25</td>
+                                        <td>P. KH-TĐ tổng hợp</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B2. Đạt mục tiêu giải ngân theo giao của UBND tỉnh, Bộ TC</td>
+                                        <td style="text-align: center;">15</td>
+                                        <td>Văn bản giao vốn</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" style="font-weight: 700; color: var(--success); border-bottom: none;">C</td>
+                                        <td><strong>Tiêu chí chung</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">20</td>
+                                        <td>Đánh giá tổng hợp</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C1. Tuân thủ quy chế: cập nhật đúng hạn, đầy đủ</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Phần mềm QLDA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C2. Tính chủ động, đổi mới, sáng tạo trong nhiệm vụ</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Đánh giá của LĐ Ban</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SUB TAB: INDIVIDUAL TABLE -->
+                    <div class="sub-tab-panel" id="sub-tab-panel-indiv">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%;">Nhóm</th>
+                                        <th style="width: 50%;">Tiêu chí</th>
+                                        <th style="width: 15%; text-align: center;">Điểm tối đa</th>
+                                        <th style="width: 25%;">Đánh giá bởi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="4" style="font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border);">A</td>
+                                        <td><strong>Kết quả hoàn thành công việc cá nhân</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">40</td>
+                                        <td>Phần mềm QLDA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A1. Tỷ lệ hoàn thành = CV Done / Tổng CV được giao</td>
+                                        <td style="text-align: center;">20</td>
+                                        <td>Tự động từ PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A2. Chất lượng kết quả thực hiện (cụ thể, đúng nghiệp vụ)</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Trưởng phòng chấm</td>
+                                    </tr>
+                                    <tr>
+                                        <td>A3. Tỷ lệ đúng hạn (CV HT đúng deadline / Tổng CV HT)</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Tự động từ PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" style="font-weight: 700; color: var(--secondary); border-bottom: 1px solid var(--border);">B</td>
+                                        <td><strong>Đóng góp giải ngân</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">30</td>
+                                        <td>Trưởng phòng duyệt</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B1. Giải ngân dự án trực tiếp phụ trách (tỷ lệ GN/KH vốn)</td>
+                                        <td style="text-align: center;">20</td>
+                                        <td>Số liệu phòng KH-TĐ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>B2. Đóng góp gián tiếp (lập hồ sơ thanh toán, thẩm định...)</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Trưởng phòng đánh giá</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="4" style="font-weight: 700; color: var(--success); border-bottom: none;">C</td>
+                                        <td><strong>Tiêu chí chung (phẩm chất, kỷ luật, thái độ)</strong></td>
+                                        <td style="text-align: center; font-weight: 700;">30</td>
+                                        <td>Trưởng phòng đánh giá</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C1. Phẩm chất đạo đức nghề nghiệp, ý thức tổ chức kỷ luật</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Đánh giá tổng hợp</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C2. Tuân thủ quy chế: cập nhật phần mềm đúng hạn, trung thực</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Phần mềm ghi nhận</td>
+                                    </tr>
+                                    <tr>
+                                        <td>C3. Tinh thần chủ động, đổi mới, sáng tạo; dám nghĩ dám làm</td>
+                                        <td style="text-align: center;">10</td>
+                                        <td>Trưởng phòng đánh giá</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cách chấm điểm chi tiết (Khoản 3, 4, 5, 6, 7) -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Chi tiết chấm</span>
+                    <h3 class="article-title">Nguyên tắc tính điểm & Quy đổi chi tiết (Khoản 3, 4, 5, 6, 7)</h3>
+                </div>
+                <div class="article-body">
+                    <p><strong>3. Cách chấm điểm nhóm A (phòng ban):</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li><strong>Tiêu chí A1 — Tỷ lệ hoàn thành:</strong> Đạt ≥ 95%: 20đ; 80% – &lt;95%: 16đ; 60% – &lt;80%: 12đ; 40% – &lt;60%: 8đ; &lt; 40%: 4đ.</li>
+                        <li><strong>Tiêu chí A2 — Chất lượng kết quả:</strong> Lãnh đạo Ban chấm dựa trên: mức độ cụ thể, định lượng của phần "Kết quả thực hiện" trên phần mềm; tính chính xác, đồng bộ của dữ liệu; mức độ đáp ứng yêu cầu nghiệp vụ.</li>
+                        <li><strong>Tiêu chí A3 — Đúng hạn:</strong> Đạt ≥ 90%: 10đ; 70% – &lt;90%: 7đ; 50% – &lt;70%: 5đ; &lt; 50%: 3đ.</li>
+                    </ul>
+                    
+                    <p style="margin-top: 0.75rem;"><strong>4. Cách chấm điểm nhóm B (phòng ban):</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li><strong>Tiêu chí B1 — Tỷ lệ giải ngân:</strong> Lũy kế giải ngân đạt ≥95% KH: 25đ; 80% – &lt;95%: 20đ; 60% – &lt;80%: 15đ; 40% – &lt;60%: 10đ; &lt; 40%: 5đ.</li>
+                        <li><strong>Tiêu chí B2 — Đạt mục tiêu giao:</strong> Đạt hoặc vượt: 15đ; đạt 80% – &lt;100% mục tiêu: 10đ; 60% – &lt;80% mục tiêu: 7đ; &lt; 60% mục tiêu: 3đ.</li>
+                    </ul>
+
+                    <p style="margin-top: 0.75rem;"><strong>5. Quy đổi đối với phòng không trực tiếp quản lý giải ngân (HC-TH, KH-ĐT):</strong></p>
+                    <p>Nhóm B được quy đổi sang nhóm A (+25 điểm: A1: +15, A2: +10) và nhóm C (+15 điểm: C1: +8, C2: +7). Tổng điểm tối đa vẫn là 100 điểm.</p>
+
+                    <p style="margin-top: 0.75rem;"><strong>6. Cách chấm điểm nhóm B đối với cá nhân:</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li><strong>Tiêu chí B1 — Giải ngân dự án phụ trách trực tiếp:</strong> Thang điểm tương tự phòng ban (quy đổi theo tỷ lệ 20đ); cá nhân phụ trách nhiều dự án thì tính bình quân gia quyền theo kế hoạch vốn từng dự án.</li>
+                        <li><strong>Tiêu chí B2 — Đóng góp gián tiếp:</strong> Trưởng phòng chấm dựa trên số lượng và chất lượng hồ sơ thanh toán/thẩm định/phê duyệt hoàn thành phục vụ giải ngân vốn trong kỳ.</li>
+                        <li><strong>Trường hợp quy đổi cá nhân không trực tiếp giải ngân:</strong> Nhóm B (30 điểm) được quy đổi sang nhóm A (+15 điểm) và nhóm C (+15 điểm) chia đều vào các tiêu chí.</li>
+                    </ul>
+
+                    <p style="margin-top: 0.75rem;"><strong>7. Thẩm quyền chấm điểm:</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li>Nhóm A (tiêu chí tự động): Phần mềm tự tính toán, Lãnh đạo Ban phê duyệt.</li>
+                        <li>Nhóm B (giải ngân): Phòng Kế hoạch - Thẩm định tổng hợp số liệu thực tế, Lãnh đạo Ban phê duyệt.</li>
+                        <li>Nhóm C (tiêu chí chung): Trưởng phòng chấm cho cá nhân; Lãnh đạo Ban chấm cho phòng ban và Trưởng phòng.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Điều 18: Xếp loại -->
+            <div class="section-header" style="margin-top: 3rem;">
+                <h2>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.75rem; height:1.75rem; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Điều 18. Mức xếp loại chất lượng
+                </h2>
+            </div>
+
+            <div class="grading-cards-grid">
+                <!-- Xuất sắc -->
+                <div class="grade-card grade-card-xs">
+                    <h4>Hoàn thành xuất sắc</h4>
+                    <div class="grade-card-score">≥ 90 điểm</div>
+                    <p class="grade-card-desc"><strong>Phòng ban:</strong> Hoàn thành 100% công việc đúng hạn; ≥30% việc vượt yêu cầu; giải ngân đạt ≥95% KH.<br><strong>Cá nhân:</strong> Hoàn thành 100% việc đúng hạn, chất lượng tốt; có sáng kiến, đổi mới.</p>
+                </div>
+                <!-- Tốt -->
+                <div class="grade-card grade-card-tot">
+                    <h4>Hoàn thành tốt</h4>
+                    <div class="grade-card-score">70 – &lt;90 điểm</div>
+                    <p class="grade-card-desc"><strong>Phòng ban:</strong> Hoàn thành ≥90% việc đúng hạn; giải ngân đạt ≥80% KH.<br><strong>Cá nhân:</strong> Hoàn thành ≥90% việc được giao; không có công việc bị đánh giá kém chất lượng.</p>
+                </div>
+                <!-- Hoàn thành -->
+                <div class="grade-card grade-card-ht">
+                    <h4>Hoàn thành nhiệm vụ</h4>
+                    <div class="grade-card-score">50 – &lt;70 điểm</div>
+                    <p class="grade-card-desc"><strong>Phòng ban:</strong> Hoàn thành ≥70% việc; việc trễ hạn không quá 20% tổng số.<br><strong>Cá nhân:</strong> Hoàn thành ≥70% việc được giao; không vi phạm kỷ luật cơ quan.</p>
+                </div>
+                <!-- Không hoàn thành -->
+                <div class="grade-card grade-card-kht">
+                    <h4>Không hoàn thành</h4>
+                    <div class="grade-card-score">&lt; 50 điểm</div>
+                    <p class="grade-card-desc">Hoặc hoàn thành &lt;70% công việc, hoặc giải ngân &lt;40% KH vốn giao, hoặc bị kỷ luật hành chính/chuyên môn.</p>
+                </div>
+            </div>
+
+            <!-- Điều 18 detailed rules -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 18</span>
+                    <h3 class="article-title">Quy tắc giới hạn & Các trường hợp đặc biệt (Khoản 3, 4, 5)</h3>
+                </div>
+                <div class="article-body">
+                    <p>3. <strong>Tỷ lệ giới hạn Xuất sắc:</strong> Số cá nhân xếp loại "Hoàn thành xuất sắc nhiệm vụ" không vượt quá <strong>20%</strong> tổng số cá nhân được xếp loại "Hoàn thành tốt nhiệm vụ" trong đơn vị. Trường hợp phòng có thành tích đặc biệt nổi trội, Giám đốc Ban xem xét nâng tỷ lệ nhưng không vượt quá 25%.</p>
+                    <p>4. <strong>Mức xếp loại của Trưởng phòng</strong> không được cao hơn mức xếp loại chất lượng của phòng ban phụ trách.</p>
+                    <p>5. <strong>Trường hợp đặc biệt xếp loại cuối năm:</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li>a) Viên chức có thời gian làm việc trong năm chưa đủ 06 tháng: không thực hiện xếp loại chất lượng năm, trừ trường hợp nghỉ thai sản, nghỉ ốm theo chế độ BHXH.</li>
+                        <li>b) Viên chức chuyển công tác: đơn vị cũ gửi kết quả đánh giá các kỳ đã hoàn thành cho đơn vị mới làm căn cứ tổng hợp xếp loại cuối năm.</li>
+                        <li>c) Viên chức bị kỷ luật Đảng hoặc kỷ luật hành chính do suy thoái, vi phạm đạo đức nghề nghiệp: xếp loại "Không hoàn thành nhiệm vụ" ở năm phát sinh hành vi vi phạm.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Điều 19: Chu kỳ và quy trình cuối năm -->
+            <div class="section-header" style="margin-top: 3rem;">
+                <h2>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.75rem; height:1.75rem; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Điều 19. Chu kỳ đánh giá và sử dụng kết quả
+                </h2>
+            </div>
+
+            <div class="article-card">
+                <div class="article-body">
+                    <p>1. <strong>Chu kỳ đánh giá:</strong></p>
+                    <ul style="padding-left: 1.25rem;">
+                        <li><strong>Hàng tháng (theo dõi):</strong> Phần mềm tự động tính điểm nhóm A cho từng phòng và cá nhân. Trưởng phòng rà soát và xác nhận kết quả trước khi giao ban.</li>
+                        <li><strong>Hàng quý (đánh giá):</strong> Lãnh đạo Ban tổ chức đánh giá toàn diện (A + B + C) cho từng phòng; Trưởng phòng đánh giá toàn diện cho từng cá nhân. Kết quả công khai trong Ban.</li>
+                        <li><strong>Cuối năm (xếp loại):</strong> Hoàn thành trước ngày <strong>15 tháng 12 hàng năm</strong>. Điểm xếp loại năm = Bình quân điểm 12 kỳ tháng kết hợp điểm đánh giá nhóm B, C.</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;">2. <strong>Trình tự xếp loại cuối năm:</strong></p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <span class="badge badge-primary">Bước 1</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Tự đánh giá</p>
+                            <p style="font-size: 0.77rem; color: var(--text-muted);">Cá nhân tự đánh giá, đề xuất mức xếp loại theo mẫu phiếu phụ lục gửi Trưởng phòng.</p>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <span class="badge badge-primary">Bước 2</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Họp phòng ban</p>
+                            <p style="font-size: 0.77rem; color: var(--text-muted);">Trưởng phòng tổ chức cuộc họp nhận xét, góp ý tại phòng ban, lập biên bản.</p>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <span class="badge badge-primary">Bước 3</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Đề xuất xếp loại</p>
+                            <p style="font-size: 0.77rem; color: var(--text-muted);">Trưởng phòng chấm điểm, đề xuất mức xếp loại cho từng cá nhân gửi Lãnh đạo Ban.</p>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <span class="badge badge-success">Bước 4</span>
+                            <p style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Quyết định & Công khai</p>
+                            <p style="font-size: 0.77rem; color: var(--text-muted);">Lãnh đạo Ban xem xét, quyết định công nhận kết quả xếp loại và thông báo bằng văn bản.</p>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 1rem;">3. <strong>Sử dụng kết quả đánh giá xếp loại:</strong></p>
+                    <ul style="padding-left: 1.25rem;">
+                        <li><strong>Hàng tháng:</strong> Là căn cứ để Lãnh đạo Ban, Trưởng phòng điều chỉnh phân công công việc, đôn đốc hoặc hỗ trợ khi cần thiết.</li>
+                        <li><strong>Hàng quý:</strong> Làm cơ sở chi trả thu nhập tăng thêm, khen thưởng quý theo Quy chế chi tiêu nội bộ của Ban.</li>
+                        <li><strong>Cuối năm:</strong> Làm cơ sở bình xét các danh hiệu thi đua, khen thưởng; đánh giá xếp loại đảng viên; quy hoạch, bổ nhiệm, điều động cán bộ; xem xét bố trí lại hoặc cho thôi việc nếu xếp loại "Không hoàn thành nhiệm vụ" 02 năm liên tiếp.</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;">4. <strong>Khiếu nại kết quả đánh giá:</strong></p>
+                    <p>Cán bộ không đồng ý với kết quả xếp loại có quyền kiến nghị bằng văn bản gửi Trưởng phòng trong vòng 05 ngày làm việc. Nếu không đồng ý với giải quyết của Trưởng phòng, tiếp tục kiến nghị gửi Lãnh đạo Ban xem xét, quyết định cuối cùng trong vòng 10 ngày làm việc.</p>
+                </div>
+            </div>
+
+
+            <!-- INTERACTIVE SCORE CALCULATOR -->
+            <div class="calculator-card">
+                <div class="calc-header">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:1.5rem; height:1.5rem; color:var(--secondary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 11h.01M12 7h.01M9 10h.01M15 11h.01M12 14h.01M15 17h.01M15 14h.01M12 17h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Công cụ mô phỏng & Tính điểm tự động
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">Nhập các chỉ số thực hiện thực tế của phòng hoặc cá nhân để ước lượng kết quả xếp loại thi đua.</p>
+                </div>
+
+                <div class="calc-selectors">
+                    <div class="select-group">
+                        <label for="calc-type">Đối tượng đánh giá:</label>
+                        <select id="calc-type" class="calc-select" onchange="initCalculatorFields()">
+                            <option value="department">Phòng ban chuyên môn</option>
+                            <option value="individual">Cá nhân (Cán bộ/Viên chức)</option>
+                        </select>
+                    </div>
+                    <div class="select-group" style="justify-content: flex-end;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="calc-non-disb" onchange="initCalculatorFields()">
+                            <label for="calc-non-disb">Đơn vị/Cá nhân không trực tiếp giải ngân vốn</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-layout">
+                    <!-- Sliders & Inputs -->
+                    <div class="calc-inputs" id="calc-inputs-container">
+                        <!-- Will be dynamically populated via JS -->
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div class="calc-result-panel">
+                        <div class="calc-grade-title">Tổng Điểm Đánh Giá</div>
+                        
+                        <div class="dial-container">
+                            <svg width="150" height="150" viewBox="0 0 150 150">
+                                <circle class="dial-bg" cx="75" cy="75" r="60"></circle>
+                                <circle class="dial-value-stroke" id="dial-indicator" cx="75" cy="75" r="60" stroke-dasharray="377" stroke-dashoffset="377"></circle>
+                            </svg>
+                            <div class="dial-text">
+                                <div class="dial-score" id="dial-score-val">0</div>
+                                <div class="dial-max">/ 100 điểm</div>
+                            </div>
+                        </div>
+
+                        <div class="calc-grade-title">Xếp Loại Ước Tính</div>
+                        <div class="calc-grade-val" id="calc-grade-badge">Chưa xác định</div>
+
+                        <!-- Special conditions checklist -->
+                        <div class="calc-conditions-list">
+                            <h5>Điều kiện ràng buộc thi đua:</h5>
+                            <ul id="calc-checklists">
+                                <li>Nhập điểm để xem chi tiết</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: RESPONSIBILITY & ERRORS (Chương IV, VI, VII) -->
+        <div id="responsibility-panel" class="tab-panel search-target">
+            <div class="chapter-title">Chương IV <span>Trách nhiệm của các chủ thể</span></div>
+
+            <div class="resp-grid">
+                <!-- Lãnh đạo Ban -->
+                <div class="resp-card">
+                    <div class="resp-role-badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:2rem; height:2rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3>Lãnh đạo Ban</h3>
+                    <ul class="resp-list">
+                        <li>Chỉ đạo, kiểm tra việc thực hiện Quy chế trong toàn đơn vị Ban QLDA.</li>
+                        <li>Xem xét và phê duyệt Kế hoạch công việc năm của từng phòng ban.</li>
+                        <li>Sử dụng dữ liệu trên phần mềm kế hoạch làm căn cứ chính đánh giá thi đua tháng, quý, năm.</li>
+                        <li>Phê duyệt Báo cáo giao ban tháng do Văn phòng Ban tổng hợp, chỉnh sửa bằng AI.</li>
+                    </ul>
+                </div>
+
+                <!-- Trưởng phòng -->
+                <div class="resp-card">
+                    <div class="resp-role-badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:2rem; height:2rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3>Trưởng phòng</h3>
+                    <ul class="resp-list">
+                        <li>Chủ trì lập kế hoạch công việc năm và phân công chi tiết kế hoạch tháng trên phần mềm.</li>
+                        <li>Giao nhiệm vụ, đặt hạn hoàn thành, gán đúng 13 mã phân loại công việc cho từng cán bộ.</li>
+                        <li>Theo dõi, đôn đốc cán bộ cập nhật tiến độ; trực tiếp giải quyết vướng mắc phát sinh.</li>
+                        <li>Duyệt báo cáo phòng chốt ngày cuối tháng và chịu trách nhiệm về tính chính xác của dữ liệu phòng.</li>
+                    </ul>
+                </div>
+
+                <!-- Cán bộ, viên chức -->
+                <div class="resp-card">
+                    <div class="resp-role-badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:2rem; height:2rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <h3>Cán bộ, viên chức</h3>
+                    <ul class="resp-list">
+                        <li>Đề xuất danh mục công việc năm; chủ động cập nhật tiến độ công việc tối thiểu 1 lần/tuần.</li>
+                        <li>Xác nhận tiếp nhận việc được giao trên hệ thống trong vòng 24 giờ.</li>
+                        <li>Đăng ký bổ sung kịp thời các công việc đột xuất phát sinh trong tháng.</li>
+                        <li>Tuyệt đối không tự ý xóa công việc khi đã được phân công chính thức.</li>
+                    </ul>
+                </div>
+
+                <!-- Văn phòng Ban -->
+                <div class="resp-card">
+                    <div class="resp-role-badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:2rem; height:2rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h3>Văn phòng Ban</h3>
+                    <ul class="resp-list">
+                        <li>Quản trị tài khoản, phân quyền sử dụng phần mềm kế hoạch cho toàn Ban.</li>
+                        <li>Đảm bảo hỗ trợ kỹ thuật, hướng dẫn giải quyết sự cố trong vòng 1 ngày làm việc.</li>
+                        <li>Tổng hợp dữ liệu số liệu từ phần mềm lập Báo cáo giao ban Ban trước 8h00 ngày giao ban.</li>
+                        <li>Lưu trữ Báo cáo giao ban tháng bản giấy và file điện tử theo quy định văn thư hiện hành.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CHƯƠNG VI: XỬ LÝ VƯỚNG MẮC -->
+            <div class="chapter-title">Chương vi <span>Xử lý vướng mắc & sự cố kỹ thuật</span></div>
+
+            <!-- Điều 20 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 20</span>
+                    <h3 class="article-title">Xử lý công việc chưa hoàn thành</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. Công việc trễ hạn/Chưa hoàn thành bắt buộc phải nêu rõ nguyên nhân khách quan/chủ quan và trách nhiệm của cá nhân liên quan.</p>
+                    <p>2. Trưởng phòng xem xét quyết định gia hạn chuyển tiếp công việc sang tháng sau hoặc hủy bỏ công việc và phải ghi rõ lý do phê chuẩn trên phần mềm.</p>
+                    <p>3. Đối với công việc phối hợp liên phòng ban gặp vướng mắc, Trưởng phòng chủ trì họp bàn giải quyết; trường hợp vượt quá thẩm quyền thì kịp thời báo cáo Lãnh đạo Ban chỉ đạo xử lý.</p>
+                </div>
+            </div>
+
+            <!-- Điều 21 -->
+            <div class="article-card" style="border-left-color: var(--danger);">
+                <div class="article-header">
+                    <span class="article-num" style="background: var(--danger-light); color: var(--danger-dark);">Điều 21</span>
+                    <h3 class="article-title">Sự cố hệ thống phần mềm</h3>
+                </div>
+                <div class="article-body">
+                    <p>1. Khi phần mềm gặp sự cố gián đoạn kết nối hoặc lỗi chức năng, cán bộ phải thông báo ngay cho Văn phòng Ban để phối hợp xử lý.</p>
+                    <p>2. Văn phòng Ban phối hợp với nhà cung cấp phần mềm khắc phục. <strong>Trong trường hợp sự cố kéo dài quá 04 giờ</strong>, các phòng chuyển sang ghi nhận và báo cáo kế hoạch công việc bằng file Excel mẫu chuẩn. Khi hệ thống khôi phục, thực hiện đồng bộ lại toàn bộ dữ liệu Excel lên phần mềm.</p>
+                </div>
+            </div>
+
+            <!-- Điều 22 -->
+            <div class="article-card">
+                <div class="article-header">
+                    <span class="article-num">Điều 22</span>
+                    <h3 class="article-title">Khiếu nại, kiến nghị đánh giá thi đua</h3>
+                </div>
+                <div class="article-body">
+                    <p>Cán bộ, viên chức có quyền gửi kiến nghị bằng văn bản đến Trưởng phòng nếu thấy việc phân công hoặc đánh giá kết quả công việc chưa thỏa đáng. Trường hợp không đồng ý với phương án giải quyết của Trưởng phòng, có quyền gửi báo cáo Lãnh đạo Ban xem xét, quyết định cuối cùng.</p>
+                </div>
+            </div>
+
+            <!-- CHƯƠNG VII: ĐIỀU KHOẢN THI HÀNH -->
+            <div class="chapter-title">Chương VII <span>Điều khoản thi hành</span></div>
+
+            <!-- Điều 23 & 24 -->
+            <div class="article-card" style="border-left-color: var(--success);">
+                <div class="article-header">
+                    <span class="article-num" style="background: var(--success-light); color: var(--success-dark);">Điều 23 & 24</span>
+                    <h3 class="article-title">Hiệu lực thi hành & Tổ chức thực hiện</h3>
+                </div>
+                <div class="article-body">
+                    <p><strong>Điều 23. Hiệu lực thi hành:</strong> Quy chế này chính thức có hiệu lực thi hành kể từ ngày <strong>01 tháng 06 năm 2026</strong>. Mọi sửa đổi, bổ sung quy chế do Giám đốc Ban quyết định trên cơ sở đề xuất tổng hợp của Văn phòng Ban.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Điều 24. Tổ chức thực hiện:</strong></p>
+                    <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+                        <li>Trưởng các phòng có trách nhiệm phổ biến triệt để quy chế này đến từng cán bộ thuộc quyền quản lý và tổ chức thực hiện nghiêm túc.</li>
+                        <li>Văn phòng Ban chịu trách nhiệm thường trực theo dõi, kiểm tra việc tuân thủ quy chế và định kỳ 06 tháng/lần lập báo cáo tổng hợp gửi Giám đốc Ban./.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>© 2026 Ban QLDA ĐTXD Công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh</p>
+            <p style="margin-top: 0.25rem; opacity: 0.7; font-size: 0.75rem;">Hệ thống tài liệu điện tử nội bộ chính thức - Phiên bản số hóa trực quan cao cấp</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // THEME MANAGEMENT
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonUI(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButtonUI(newTheme);
+        }
+
+        function updateThemeButtonUI(theme) {
+            const themeText = document.getElementById('theme-text');
+            const button = document.getElementById('theme-toggle');
+            if (theme === 'dark') {
+                themeText.textContent = "Giao diện: Tối";
+                button.style.borderColor = "var(--primary)";
+            } else {
+                themeText.textContent = "Giao diện: Sáng";
+                button.style.borderColor = "var(--border)";
+            }
+        }
+
+        // TABS SWITCHING
+        function switchTab(tabId) {
+            // Remove active classes from all tabs and panels
+            const tabs = document.querySelectorAll('#main-tabs .tab-btn');
+            const panels = document.querySelectorAll('.tab-panel');
+            
+            tabs.forEach(tab => {
+                const btnTabId = tab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (btnTabId === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            panels.forEach(panel => {
+                if (panel.id === `${tabId}-panel`) {
+                    panel.classList.add('active');
+                } else {
+                    panel.classList.remove('active');
+                }
+            });
+
+            // Trigger animations or adjustments based on tab
+            if (tabId === 'evaluation') {
+                // Redraw chart
+                setTimeout(() => {
+                    const activeChartToggle = document.querySelector('.chart-toggle-btn.active');
+                    if (activeChartToggle) {
+                        const chartType = activeChartToggle.getAttribute('onclick').match(/'([^']+)'/)[1];
+                        updateChart(chartType);
+                    }
+                }, 100);
+            }
+
+            // Scroll to control bar so user has full view
+            window.scrollTo({
+                top: document.querySelector('.metrics-grid').offsetTop - 20,
+                behavior: 'smooth'
+            });
+        }
+
+        // SUB TABS FOR TABLES
+        function switchSubTab(subTabId) {
+            const btnDep = document.getElementById('sub-tab-btn-dep');
+            const btnIndiv = document.getElementById('sub-tab-btn-indiv');
+            const panelDep = document.getElementById('sub-tab-panel-dep');
+            const panelIndiv = document.getElementById('sub-tab-panel-indiv');
+
+            if (subTabId === 'dep') {
+                btnDep.classList.add('active');
+                btnIndiv.classList.remove('active');
+                panelDep.classList.add('active');
+                panelIndiv.classList.remove('active');
+            } else {
+                btnDep.classList.remove('active');
+                btnIndiv.classList.add('active');
+                panelDep.classList.remove('active');
+                panelIndiv.classList.add('active');
+            }
+        }
+
+        // DYNAMIC DONUT CHART DATA & ANIMATION
+        const chartData = {
+            'dep-disb': {
+                title: 'Phòng Ban',
+                subtitle: 'Có giải ngân',
+                segments: [40, 40, 20], // A: 40%, B: 40%, C: 20%
+                labels: ['Hoàn thành công việc (A)', 'Kết quả giải ngân (B)', 'Tiêu chí chung (C)'],
+                showB: true
+            },
+            'dep-non-disb': {
+                title: 'Phòng Ban',
+                subtitle: 'Không giải ngân',
+                segments: [65, 0, 35], // A: 65%, B: 0%, C: 35%
+                labels: ['Hoàn thành công việc (A)', 'Kết quả giải ngân (B)', 'Tiêu chí chung (C)'],
+                showB: false
+            },
+            'indiv-disb': {
+                title: 'Cá Nhân',
+                subtitle: 'Trực tiếp dự án',
+                segments: [40, 30, 30], // A: 40%, B: 30%, C: 30%
+                labels: ['Kết quả công việc (A)', 'Đóng góp giải ngân (B)', 'Tiêu chí chung (C)'],
+                showB: true
+            },
+            'indiv-non-disb': {
+                title: 'Cá Nhân',
+                subtitle: 'Không trực tiếp',
+                segments: [55, 0, 45], // A: 55%, B: 0%, C: 45%
+                labels: ['Kết quả công việc (A)', 'Đóng góp giải ngân (B)', 'Tiêu chí chung (C)'],
+                showB: false
+            }
+        };
+
+        function updateChart(chartKey) {
+            // Update toggle active class
+            const buttons = document.querySelectorAll('.chart-toggle-btn');
+            buttons.forEach(btn => {
+                const btnKey = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (btnKey === chartKey) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            const data = chartData[chartKey];
+            
+            // Set text values
+            document.getElementById('chart-center-title').innerHTML = data.subtitle;
+            document.getElementById('chart-center-title').style.fontSize = '0.95rem';
+
+            // Update Labels in legend
+            document.getElementById('lbl-seg-1').textContent = data.labels[0];
+            document.getElementById('lbl-seg-2').textContent = data.labels[1];
+            document.getElementById('lbl-seg-3').textContent = data.labels[2];
+
+            document.getElementById('val-seg-1').textContent = data.segments[0] + '%';
+            document.getElementById('val-seg-2').textContent = data.segments[1] + '%';
+            document.getElementById('val-seg-3').textContent = data.segments[3] || (data.segments[2] + '%');
+
+            const legendRow2 = document.getElementById('legend-row-2');
+            if (data.showB) {
+                legendRow2.style.display = 'flex';
+            } else {
+                legendRow2.style.display = 'none';
+            }
+
+            // Animate SVG arcs
+            // Radius of circle = 85. Circumference = 2 * PI * r = 2 * 3.14159 * 85 = 534.07
+            const totalLength = 534.07;
+            const seg1 = document.getElementById('seg-1');
+            const seg2 = document.getElementById('seg-2');
+            const seg3 = document.getElementById('seg-3');
+
+            const pctA = data.segments[0];
+            const pctB = data.segments[1];
+            const pctC = data.segments[2];
+
+            // Seg 1 (Primary - blue)
+            const lenA = (pctA / 100) * totalLength;
+            seg1.style.strokeDasharray = `${lenA} ${totalLength - lenA}`;
+            seg1.style.strokeDashoffset = 0;
+
+            if (data.showB) {
+                // Seg 2 (Secondary - purple)
+                const lenB = (pctB / 100) * totalLength;
+                seg2.style.strokeDasharray = `${lenB} ${totalLength - lenB}`;
+                // Offset begins at length of A
+                seg2.style.strokeDashoffset = -lenA;
+                seg2.style.display = 'block';
+
+                // Seg 3 (Success - green)
+                const lenC = (pctC / 100) * totalLength;
+                seg3.style.strokeDasharray = `${lenC} ${totalLength - lenC}`;
+                // Offset begins at A + B
+                seg3.style.strokeDashoffset = -(lenA + lenB);
+            } else {
+                seg2.style.display = 'none';
+                
+                // Seg 3 (Success - green)
+                const lenC = (pctC / 100) * totalLength;
+                seg3.style.strokeDasharray = `${lenC} ${totalLength - lenC}`;
+                seg3.style.strokeDashoffset = -lenA;
+            }
+        }
+
+        // CATEGORY FILTER
+        function filterCategories() {
+            const query = document.getElementById('category-filter-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.category-card');
+            
+            cards.forEach(card => {
+                const text = card.getAttribute('data-category').toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'flex';
+                    card.style.opacity = '1';
+                } else {
+                    card.style.display = 'none';
+                    card.style.opacity = '0';
+                }
+            });
+        }
+
+        // GLOBAL SEARCH SYSTEM (HIGHLIGHT TEXT)
+        let originalContent = {};
+        function saveOriginalState() {
+            const targets = document.querySelectorAll('.search-target');
+            targets.forEach((el, index) => {
+                originalContent[index] = el.innerHTML;
+            });
+        }
+
+        function performGlobalSearch() {
+            const query = document.getElementById('global-search').value.trim();
+            const targets = document.querySelectorAll('.search-target');
+            
+            // First restore original state if query is small
+            if (query.length < 2) {
+                targets.forEach((el, index) => {
+                    if (originalContent[index]) {
+                        el.innerHTML = originalContent[index];
+                    }
+                });
+                // Re-initialize dynamic bindings that might have been blown away by rewriting innerHTML
+                initTheme();
+                initCalculatorFields();
+                return;
+            }
+
+            targets.forEach((el, index) => {
+                if (!originalContent[index]) return;
+                
+                // Temp restore to clean search
+                let html = originalContent[index];
+                
+                // Avoid replacing HTML tags by finding text nodes (simple regex replacement on textual parts)
+                const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+                
+                // Safe text highlight replacement
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                
+                highlightNode(div, regex);
+                el.innerHTML = div.innerHTML;
+            });
+
+            // Rebind calculator inputs as innerHTML rewrite destroys event listeners
+            initCalculatorFields();
+        }
+
+        function highlightNode(node, regex) {
+            if (node.nodeType === 3) { // Text node
+                const match = node.nodeValue.match(regex);
+                if (match) {
+                    const span = document.createElement('span');
+                    span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                    node.parentNode.replaceChild(span, node);
+                }
+            } else if (node.nodeType === 1 && node.childNodes && !/(style|script|svg)/i.test(node.tagName)) {
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    highlightNode(node.childNodes[i], regex);
+                }
+            }
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+
+        // INTERACTIVE EVALUATION CALCULATOR LOGIC
+        const calcConfig = {
+            department: {
+                disb: [
+                    { id: 'a1', label: 'Tỷ lệ hoàn thành công việc (A1)', desc: 'Công việc Done / Tổng số công việc trong tháng', type: 'slider', min: 0, max: 100, default: 95, unit: '%' },
+                    { id: 'a2', label: 'Chất lượng kết quả thực hiện (A2)', desc: 'Tính định lượng và chất lượng báo cáo', type: 'select', options: [
+                        { text: 'Xuất sắc, định lượng cao (10 điểm)', val: 10 },
+                        { text: 'Tốt, đầy đủ tiến độ (8 điểm)', val: 8 },
+                        { text: 'Đạt yêu cầu (6 điểm)', val: 6 },
+                        { text: 'Yếu kém, chung chung (2 điểm)', val: 2 }
+                    ]},
+                    { id: 'a3', label: 'Tỷ lệ công việc hoàn thành đúng hạn (A3)', desc: 'Đầu việc hoàn thành đúng/trước deadline', type: 'slider', min: 0, max: 100, default: 90, unit: '%' },
+                    { id: 'b1', label: 'Tỷ lệ giải ngân lũy kế năm (B1)', desc: 'Lũy kế giải ngân / KH vốn được giao đầu năm', type: 'slider', min: 0, max: 100, default: 85, unit: '%' },
+                    { id: 'b2', label: 'Mức độ đạt mục tiêu UBND tỉnh giao (B2)', desc: 'Đạt so với mốc tiến độ UBND tỉnh yêu cầu', type: 'select', options: [
+                        { text: 'Đạt hoặc vượt mục tiêu (15 điểm)', val: 15 },
+                        { text: 'Đạt từ 80% đến dưới 100% mục tiêu (10 điểm)', val: 10 },
+                        { text: 'Đạt từ 60% đến dưới 80% mục tiêu (7 điểm)', val: 7 },
+                        { text: 'Dưới 60% mục tiêu (3 điểm)', val: 3 }
+                    ]},
+                    { id: 'c1', label: 'Tuân thủ quy chế phần mềm (C1)', desc: 'Cập nhật đúng hạn, đủ hồ sơ trên hệ thống', type: 'slider', min: 0, max: 10, default: 10, unit: ' điểm' },
+                    { id: 'c2', label: 'Tính chủ động, đổi mới, sáng kiến (C2)', desc: 'Ý tưởng đột phá trong triển khai nghiệp vụ', type: 'slider', min: 0, max: 10, default: 8, unit: ' điểm' }
+                ],
+                nonDisb: [
+                    { id: 'a1', label: 'Tỷ lệ hoàn thành công việc (A1 - Quy đổi)', desc: 'Hoàn thành nhiệm vụ tháng (Trọng số lớn hơn)', type: 'slider', min: 0, max: 100, default: 95, unit: '%' },
+                    { id: 'a2', label: 'Chất lượng kết quả thực hiện (A2 - Quy đổi)', desc: 'Mức độ chất lượng của đầu việc hoàn thành', type: 'select', options: [
+                        { text: 'Xuất sắc, định lượng cao (20 điểm)', val: 20 },
+                        { text: 'Tốt, đầy đủ tiến độ (16 điểm)', val: 16 },
+                        { text: 'Đạt yêu cầu (12 điểm)', val: 12 },
+                        { text: 'Yếu kém, chung chung (4 điểm)', val: 4 }
+                    ]},
+                    { id: 'a3', label: 'Tỷ lệ công việc hoàn thành đúng hạn (A3)', desc: 'Đầu việc hoàn thành đúng/trước deadline', type: 'slider', min: 0, max: 100, default: 90, unit: '%' },
+                    { id: 'c1', label: 'Tuân thủ quy chế phần mềm (C1 - Quy đổi)', desc: 'Cập nhật đúng hạn, đủ hồ sơ trên hệ thống', type: 'slider', min: 0, max: 18, default: 18, unit: ' điểm' },
+                    { id: 'c2', label: 'Tính chủ động, đổi mới (C2 - Quy đổi)', desc: 'Ý tưởng đột phá trong triển khai nghiệp vụ', type: 'slider', min: 0, max: 17, default: 15, unit: ' điểm' }
+                ]
+            },
+            individual: {
+                disb: [
+                    { id: 'a1', label: 'Tỷ lệ hoàn thành công việc cá nhân (A1)', desc: 'Công việc được giao hoàn thành / tổng giao', type: 'slider', min: 0, max: 100, default: 95, unit: '%' },
+                    { id: 'a2', label: 'Chất lượng kết quả công việc cá nhân (A2)', desc: 'Độ chính xác và tính nghiệp vụ công việc', type: 'select', options: [
+                        { text: 'Xuất sắc, vượt tiến độ chất lượng (10 điểm)', val: 10 },
+                        { text: 'Tốt, đạt yêu cầu nghiệp vụ (8 điểm)', val: 8 },
+                        { text: 'Đạt yêu cầu (6 điểm)', val: 6 },
+                        { text: 'Yếu kém, phải sửa lại nhiều lần (2 điểm)', val: 2 }
+                    ]},
+                    { id: 'a3', label: 'Tỷ lệ công việc cá nhân đúng hạn (A3)', desc: 'Số việc xong đúng deadline / tổng việc xong', type: 'slider', min: 0, max: 100, default: 90, unit: '%' },
+                    { id: 'b1', label: 'Giải ngân dự án trực tiếp phụ trách (B1)', desc: 'Tỷ lệ giải ngân của dự án được phân công trực tiếp', type: 'slider', min: 0, max: 100, default: 80, unit: '%' },
+                    { id: 'b2', label: 'Đóng góp gián tiếp phục vụ giải ngân (B2)', desc: 'Chất lượng lập hồ sơ thanh toán, thẩm định...', type: 'select', options: [
+                        { text: 'Xuất sắc, đẩy nhanh tiến độ (10 điểm)', val: 10 },
+                        { text: 'Tốt, xử lý hồ sơ đúng tiến độ (8 điểm)', val: 8 },
+                        { text: 'Đạt yêu cầu hồ sơ (6 điểm)', val: 6 },
+                        { text: 'Hồ sơ chậm trễ hoặc sai sót (2 điểm)', val: 2 }
+                    ]},
+                    { id: 'c1', label: 'Phẩm chất đạo đức & Ý thức tổ chức kỷ luật (C1)', desc: 'Chấp hành nội quy cơ quan, đoàn kết nội bộ', type: 'slider', min: 0, max: 10, default: 10, unit: ' điểm' },
+                    { id: 'c2', label: 'Tuân thủ cập nhật phần mềm (C2)', desc: 'Chủ động khai báo, cập nhật tiến độ tuần đúng hạn', type: 'slider', min: 0, max: 10, default: 10, unit: ' điểm' },
+                    { id: 'c3', label: 'Tinh thần chủ động, sáng tạo (C3)', desc: 'Đề xuất cải tiến quy trình công việc', type: 'slider', min: 0, max: 10, default: 8, unit: ' điểm' }
+                ],
+                nonDisb: [
+                    { id: 'a1', label: 'Tỷ lệ hoàn thành công việc cá nhân (A1 - Quy đổi)', desc: 'Công việc hoàn thành / tổng công việc', type: 'slider', min: 0, max: 100, default: 95, unit: '%' },
+                    { id: 'a2', label: 'Chất lượng kết quả thực hiện (A2 - Quy đổi)', desc: 'Mức độ chất lượng của đầu việc hoàn thành', type: 'select', options: [
+                        { text: 'Xuất sắc, vượt tiến độ chất lượng (15 điểm)', val: 15 },
+                        { text: 'Tốt, đạt yêu cầu nghiệp vụ (12 điểm)', val: 12 },
+                        { text: 'Đạt yêu cầu (9 điểm)', val: 9 },
+                        { text: 'Chậm trễ hoặc sai sót nhiều (3 điểm)', val: 3 }
+                    ]},
+                    { id: 'a3', label: 'Tỷ lệ công việc cá nhân đúng hạn (A3)', desc: 'Số việc xong đúng deadline / tổng việc xong', type: 'slider', min: 0, max: 100, default: 90, unit: '%' },
+                    { id: 'c1', label: 'Phẩm chất đạo đức & Ý thức kỷ luật (C1 - Quy đổi)', desc: 'Chấp hành nội quy cơ quan (Trọng số 15đ)', type: 'slider', min: 0, max: 15, default: 15, unit: ' điểm' },
+                    { id: 'c2', label: 'Tuân thủ cập nhật phần mềm (C2 - Quy đổi)', desc: 'Cập nhật đúng hạn, trung thực (Trọng số 15đ)', type: 'slider', min: 0, max: 15, default: 15, unit: ' điểm' },
+                    { id: 'c3', label: 'Tinh thần chủ động, đổi mới (C3 - Quy đổi)', desc: 'Ý tưởng đột phá trong triển khai nghiệp vụ (15đ)', type: 'slider', min: 0, max: 15, default: 12, unit: ' điểm' }
+                ]
+            }
+        };
+
+        function initCalculatorFields() {
+            const calcType = document.getElementById('calc-type').value;
+            const isNonDisb = document.getElementById('calc-non-disb').checked;
+            const container = document.getElementById('calc-inputs-container');
+            
+            const mode = isNonDisb ? 'nonDisb' : 'disb';
+            const fields = calcConfig[calcType][mode];
+            
+            if (!container) return; // Guard for search rewrites
+            container.innerHTML = '';
+            
+            fields.forEach(field => {
+                const row = document.createElement('div');
+                row.className = 'calc-row';
+                
+                let inputHtml = '';
+                if (field.type === 'slider') {
+                    inputHtml = `
+                        <div class="slider-container">
+                            <input type="range" class="calc-slider" id="input-${field.id}" min="${field.min}" max="${field.max}" value="${field.default}" oninput="updateSliderDisplay('${field.id}', '${field.unit}')">
+                            <span class="slider-val" id="val-display-${field.id}">${field.default}${field.unit}</span>
+                        </div>
+                    `;
+                } else if (field.type === 'select') {
+                    let optionsHtml = '';
+                    field.options.forEach(opt => {
+                        optionsHtml += `<option value="${opt.val}">${opt.text}</option>`;
+                    });
+                    inputHtml = `
+                        <select class="calc-dropdown-input" id="input-${field.id}" onchange="calculateScore()">
+                            ${optionsHtml}
+                        </select>
+                    `;
+                }
+                
+                row.innerHTML = `
+                    <div class="calc-row-header">
+                        <span class="calc-row-title">${field.label}</span>
+                        <span class="calc-row-weight" id="weight-${field.id}">${field.type === 'slider' ? 'Max: ' + field.max + field.unit : 'Chọn mức'}</span>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">${field.desc}</p>
+                    ${inputHtml}
+                `;
+                
+                container.appendChild(row);
+            });
+            
+            calculateScore();
+        }
+
+        function updateSliderDisplay(id, unit) {
+            const slider = document.getElementById(`input-${id}`);
+            const display = document.getElementById(`val-display-${id}`);
+            if (slider && display) {
+                display.textContent = slider.value + unit;
+            }
+            calculateScore();
+        }
+
+        function calculateScore() {
+            const calcType = document.getElementById('calc-type').value;
+            const isNonDisb = document.getElementById('calc-non-disb').checked;
+            
+            let total = 0;
+            let checklist = [];
+
+            // Read raw values
+            const getVal = (id) => {
+                const el = document.getElementById(`input-${id}`);
+                return el ? parseFloat(el.value) : 0;
+            };
+
+            const a1 = getVal('a1'); // Completed tasks %
+            const a2 = getVal('a2'); // Quality score
+            const a3 = getVal('a3'); // On time tasks %
+
+            if (calcType === 'department') {
+                if (!isNonDisb) {
+                    // Department Disbursable
+                    // Group A: A1 (max 20), A2 (max 10), A3 (max 10). Total 40.
+                    let ptsA1 = 0;
+                    if (a1 >= 95) ptsA1 = 20;
+                    else if (a1 >= 80) ptsA1 = 16;
+                    else if (a1 >= 60) ptsA1 = 12;
+                    else if (a1 >= 40) ptsA1 = 8;
+                    else ptsA1 = 4;
+
+                    let ptsA3 = 0;
+                    if (a3 >= 90) ptsA3 = 10;
+                    else if (a3 >= 70) ptsA3 = 7;
+                    else if (a3 >= 50) ptsA3 = 5;
+                    else ptsA3 = 3;
+
+                    const ptsA = ptsA1 + a2 + ptsA3;
+
+                    // Group B: B1 (max 25), B2 (max 15). Total 40.
+                    const b1 = getVal('b1');
+                    const b2 = getVal('b2');
+
+                    let ptsB1 = 0;
+                    if (b1 >= 95) ptsB1 = 25;
+                    else if (b1 >= 80) ptsB1 = 20;
+                    else if (b1 >= 60) ptsB1 = 15;
+                    else if (b1 >= 40) ptsB1 = 10;
+                    else ptsB1 = 5;
+
+                    const ptsB = ptsB1 + b2;
+
+                    // Group C: C1 (max 10), C2 (max 10). Total 20.
+                    const c1 = getVal('c1');
+                    const c2 = getVal('c2');
+                    const ptsC = c1 + c2;
+
+                    total = ptsA + ptsB + ptsC;
+
+                    // Checklist logic
+                    if (a3 < 100) checklist.push("❌ Thiếu điều kiện: Hoàn thành 100% công việc đúng hạn (Đạt " + a3 + "%) để xét Xuất sắc.");
+                    if (b1 < 95) checklist.push("❌ Thiếu điều kiện: Giải ngân vốn đạt từ 95% trở lên (Đạt " + b1 + "%) để xét Xuất sắc.");
+                    if (a3 >= 90 && b1 >= 80) checklist.push("✓ Đạt điều kiện tối thiểu xếp loại Tốt (CV đúng hạn ≥ 90%, giải ngân ≥ 80%).");
+                } else {
+                    // Department Non-disbursable
+                    // Group A: A1 (max 35), A2 (max 20), A3 (max 10). Total 65.
+                    let ptsA1 = 0;
+                    if (a1 >= 95) ptsA1 = 35;
+                    else if (a1 >= 80) ptsA1 = 28;
+                    else if (a1 >= 60) ptsA1 = 21;
+                    else if (a1 >= 40) ptsA1 = 14;
+                    else ptsA1 = 7;
+
+                    let ptsA3 = 0;
+                    if (a3 >= 90) ptsA3 = 10;
+                    else if (a3 >= 70) ptsA3 = 7;
+                    else if (a3 >= 50) ptsA3 = 5;
+                    else ptsA3 = 3;
+
+                    const ptsA = ptsA1 + a2 + ptsA3;
+
+                    // Group C: C1 (max 18), C2 (max 17). Total 35.
+                    const c1 = getVal('c1');
+                    const c2 = getVal('c2');
+                    const ptsC = c1 + c2;
+
+                    total = ptsA + ptsC;
+
+                    if (a3 < 100) checklist.push("❌ Thiếu điều kiện: Hoàn thành 100% công việc đúng hạn để xét Xuất sắc.");
+                    if (a3 >= 90) checklist.push("✓ Đạt điều kiện tối thiểu xếp loại Tốt (CV đúng hạn ≥ 90%).");
+                }
+            } else {
+                // Individual
+                if (!isNonDisb) {
+                    // Individual Disbursable
+                    // Group A (max 40): A1 (max 20), A2 (max 10), A3 (max 10)
+                    let ptsA1 = 0;
+                    if (a1 >= 95) ptsA1 = 20;
+                    else if (a1 >= 80) ptsA1 = 16;
+                    else if (a1 >= 60) ptsA1 = 12;
+                    else if (a1 >= 40) ptsA1 = 8;
+                    else ptsA1 = 4;
+
+                    let ptsA3 = 0;
+                    if (a3 >= 90) ptsA3 = 10;
+                    else if (a3 >= 70) ptsA3 = 7;
+                    else if (a3 >= 50) ptsA3 = 5;
+                    else ptsA3 = 3;
+
+                    const ptsA = ptsA1 + a2 + ptsA3;
+
+                    // Group B (max 30): B1 (max 20), B2 (max 10)
+                    const b1 = getVal('b1');
+                    const b2 = getVal('b2');
+
+                    let ptsB1 = 0;
+                    if (b1 >= 95) ptsB1 = 20;
+                    else if (b1 >= 80) ptsB1 = 16;
+                    else if (b1 >= 60) ptsB1 = 12;
+                    else if (b1 >= 40) ptsB1 = 8;
+                    else ptsB1 = 4;
+
+                    const ptsB = ptsB1 + b2;
+
+                    // Group C (max 30): C1 (max 10), C2 (max 10), C3 (max 10)
+                    const c1 = getVal('c1');
+                    const c2 = getVal('c2');
+                    const c3 = getVal('c3');
+                    const ptsC = c1 + c2 + c3;
+
+                    total = ptsA + ptsB + ptsC;
+
+                    if (a3 < 100) checklist.push("❌ Thiếu điều kiện: Hoàn thành 100% công việc đúng hạn để xét Xuất sắc.");
+                    if (a3 >= 90) checklist.push("✓ Đạt điều kiện tối thiểu xếp loại Tốt (CV đúng hạn ≥ 90%).");
+                } else {
+                    // Individual Non-disbursable
+                    // Group A (max 55): A1 (max 30), A2 (max 15), A3 (max 10)
+                    let ptsA1 = 0;
+                    if (a1 >= 95) ptsA1 = 30;
+                    else if (a1 >= 80) ptsA1 = 24;
+                    else if (a1 >= 60) ptsA1 = 18;
+                    else if (a1 >= 40) ptsA1 = 12;
+                    else ptsA1 = 6;
+
+                    let ptsA3 = 0;
+                    if (a3 >= 90) ptsA3 = 10;
+                    else if (a3 >= 70) ptsA3 = 7;
+                    else if (a3 >= 50) ptsA3 = 5;
+                    else ptsA3 = 3;
+
+                    const ptsA = ptsA1 + a2 + ptsA3;
+
+                    // Group C (max 45): C1 (max 15), C2 (max 15), C3 (max 15)
+                    const c1 = getVal('c1');
+                    const c2 = getVal('c2');
+                    const c3 = getVal('c3');
+                    const ptsC = c1 + c2 + c3;
+
+                    total = ptsA + ptsC;
+
+                    if (a3 < 100) checklist.push("❌ Thiếu điều kiện: Hoàn thành 100% công việc đúng hạn để xét Xuất sắc.");
+                    if (a3 >= 90) checklist.push("✓ Đạt điều kiện tối thiểu xếp loại Tốt (CV đúng hạn ≥ 90%).");
+                }
+            }
+
+            // Cap total to 100 just in case
+            total = Math.min(100, Math.max(0, Math.round(total * 100) / 100));
+
+            // Determine Grade name and color class
+            let gradeName = "";
+            let gradeClass = "";
+            if (total >= 90) {
+                gradeName = "Xuất Sắc Nhiệm Vụ";
+                gradeClass = "grade-xs";
+            } else if (total >= 70) {
+                gradeName = "Hoàn Thành Tốt";
+                gradeClass = "grade-tot";
+            } else if (total >= 50) {
+                gradeName = "Hoàn Thành Nhiệm Vụ";
+                gradeClass = "grade-ht";
+            } else {
+                gradeName = "Không Hoàn Thành";
+                gradeClass = "grade-kht";
+            }
+
+            // Update UI
+            const scoreDisplay = document.getElementById('dial-score-val');
+            if (scoreDisplay) scoreDisplay.textContent = total;
+            
+            const badge = document.getElementById('calc-grade-badge');
+            if (badge) {
+                badge.textContent = gradeName;
+                badge.className = `calc-grade-val ${gradeClass}`;
+            }
+
+            // Animate Dial SVG
+            // Radius of dial circle = 60. Circumference = 2 * PI * r = 377
+            const dialStroke = document.getElementById('dial-indicator');
+            if (dialStroke) {
+                const circumference = 377;
+                const offset = circumference - (total / 100) * circumference;
+                dialStroke.style.strokeDashoffset = offset;
+
+                // Set color of dial stroke
+                let strokeColor = "var(--success)";
+                if (total < 50) strokeColor = "var(--danger)";
+                else if (total < 70) strokeColor = "var(--warning)";
+                else if (total < 90) strokeColor = "#3b82f6";
+                dialStroke.style.stroke = strokeColor;
+            }
+
+            // Build checklist
+            const checkContainer = document.getElementById('calc-checklists');
+            if (checkContainer) {
+                checkContainer.innerHTML = '';
+                if (checklist.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = "✓ Tất cả tiêu chuẩn đồng bộ xuất sắc.";
+                    checkContainer.appendChild(li);
+                } else {
+                    checklist.forEach(cond => {
+                        const li = document.createElement('li');
+                        li.textContent = cond;
+                        checkContainer.appendChild(li);
+                    });
+                }
+            }
+        }
+
+        // INITIALIZE ON LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateChart('dep-disb');
+            initCalculatorFields();
+            saveOriginalState();
+        });
+    </script>
+</body>
+</html>

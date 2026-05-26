@@ -16,6 +16,7 @@ export interface AgencyEvent {
   location: string | null;
   report_content: string | null;
   report_files: any[] | null;
+  vehicle: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -45,6 +46,7 @@ export interface CreateAgencyEventDTO {
   location?: string | null;
   report_content?: string | null;
   report_files?: any[] | null;
+  vehicle?: string | null;
   attendee_ids?: string[]; // Array of employee_id
 }
 

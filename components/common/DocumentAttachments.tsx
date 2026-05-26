@@ -144,67 +144,132 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
             {isLoading ? (
                 <div className="text-xs text-gray-400 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Đang tải...</div>
             ) : documents.length > 0 ? (
-                <div className="space-y-1.5">
-                    {documents.map(doc => {
-                        const { icon: Icon, color } = iconClass(doc.fileType);
-                        const isImage = doc.fileType.startsWith('image/');
+                <div className="space-y-4">
+                    {/* Non-image files */}
+                    {documents.filter(doc => !doc.fileType.startsWith('image/')).length > 0 && (
+                        <div className="space-y-1.5">
+                            {documents
+                                .filter(doc => !doc.fileType.startsWith('image/'))
+                                .map(doc => {
+                                    const { icon: Icon, color } = iconClass(doc.fileType);
+                                    const content = (
+                                        <>
+                                            {/* Icon */}
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color} group-hover:scale-105 transition-transform`}>
+                                                <Icon className="w-4 h-4" />
+                                            </div>
 
-                        return (
-                            <div
-                                key={doc.id}
-                                className="flex items-center gap-2.5 p-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 group transition-colors"
-                            >
-                                {/* Icon */}
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-                                    <Icon className="w-4 h-4" />
-                                </div>
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0 text-left">
+                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    {doc.fileName}
+                                                </p>
+                                                <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-400">
+                                                    {doc.description && <span className="text-blue-500 dark:text-blue-400">{doc.description}</span>}
+                                                    <span>{DocumentService.formatSize(doc.fileSize)}</span>
+                                                    <span>• {formatDate(doc.createdAt)}</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate">{doc.fileName}</p>
-                                    <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-400">
-                                        {doc.description && <span className="text-blue-500 dark:text-blue-400">{doc.description}</span>}
-                                        <span>{DocumentService.formatSize(doc.fileSize)}</span>
-                                        <span>• {formatDate(doc.createdAt)}</span>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {isImage && doc.publicUrl && (
-                                        <button
-                                            onClick={() => setPreviewUrl(doc.publicUrl!)}
-                                            className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
-                                            title="Xem trước"
+                                    return (
+                                        <div
+                                            key={doc.id}
+                                            className="flex items-center gap-2.5 p-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 group transition-colors"
                                         >
-                                            <Eye className="w-3.5 h-3.5" />
-                                        </button>
-                                    )}
-                                    {doc.publicUrl && (
-                                        <a
-                                            href={doc.publicUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="p-1 text-gray-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 rounded transition-colors"
-                                            title="Tải về"
+                                            {doc.publicUrl ? (
+                                                <a
+                                                    href={doc.publicUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                                                    title="Mở file"
+                                                >
+                                                    {content}
+                                                </a>
+                                            ) : (
+                                                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                    {content}
+                                                </div>
+                                            )}
+
+                                            {/* Actions */}
+                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {doc.publicUrl && (
+                                                    <a
+                                                        href={doc.publicUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-1 text-gray-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 rounded transition-colors"
+                                                        title="Tải về"
+                                                    >
+                                                        <Download className="w-3.5 h-3.5" />
+                                                    </a>
+                                                )}
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm(`Xóa tài liệu "${doc.fileName}"?`))
+                                                            deleteMutation.mutate({ id: doc.id, path: doc.storagePath });
+                                                    }}
+                                                    className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                                                    title="Xóa"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    )}
+
+                    {/* Image files grid */}
+                    {documents.filter(doc => doc.fileType.startsWith('image/')).length > 0 && (
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Hình ảnh hiện trường / đính kèm</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                {documents
+                                    .filter(doc => doc.fileType.startsWith('image/'))
+                                    .map(doc => (
+                                        <div
+                                            key={doc.id}
+                                            className="relative aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 group hover:border-blue-500 transition-colors"
                                         >
-                                            <Download className="w-3.5 h-3.5" />
-                                        </a>
-                                    )}
-                                    <button
-                                        onClick={() => {
-                                            if (confirm(`Xóa tài liệu "${doc.fileName}"?`))
-                                                deleteMutation.mutate({ id: doc.id, path: doc.storagePath });
-                                        }}
-                                        className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
-                                        title="Xóa"
-                                    >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                </div>
+                                            {/* Image element */}
+                                            {doc.publicUrl && (
+                                                <img
+                                                    src={doc.publicUrl}
+                                                    alt={doc.fileName}
+                                                    crossOrigin="anonymous"
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 cursor-zoom-in"
+                                                    onClick={() => setPreviewUrl(doc.publicUrl!)}
+                                                />
+                                            )}
+
+                                            {/* Hover info / Delete button */}
+                                            <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm(`Xóa hình ảnh "${doc.fileName}"?`))
+                                                            deleteMutation.mutate({ id: doc.id, path: doc.storagePath });
+                                                    }}
+                                                    className="p-1.5 bg-black/60 hover:bg-red-600 text-white rounded-lg transition-colors cursor-pointer"
+                                                    title="Xóa"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+
+                                            {/* Bottom banner for image details */}
+                                            <div className="absolute bottom-0 left-0 right-0 bg-black/55 px-2 py-1 text-[10px] text-white truncate pointer-events-none">
+                                                {doc.description || doc.fileName}
+                                            </div>
+                                        </div>
+                                    ))}
                             </div>
-                        );
-                    })}
+                        </div>
+                    )}
                 </div>
             ) : null}
 
@@ -218,7 +283,7 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                         >
                             <X className="w-4 h-4" />
                         </button>
-                        <img src={previewUrl} alt="Preview" className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" />
+                        <img src={previewUrl} alt="Preview" crossOrigin="anonymous" className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" />
                     </div>
                 </div>
             )}

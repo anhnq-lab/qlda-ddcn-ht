@@ -1,11 +1,10 @@
 // Project-related types — Luật Đầu tư công 58/2024/QH15
 
-/** Phòng Quản Lý Dự Án (1–3) + Phòng Phát triển dịch vụ */
+/** Phòng Quản Lý Dự Án (1–3) */
 export const MANAGEMENT_BOARDS = [
     { value: 1, label: 'Phòng QLDA 1', color: 'bg-blue-500',    hex: '#3B82F6' },
     { value: 2, label: 'Phòng QLDA 2', color: 'bg-emerald-500', hex: '#10B981' },
     { value: 3, label: 'Phòng QLDA 3', color: 'bg-violet-500',  hex: '#8B5CF6' },
-    { value: 4, label: 'Phòng Phát triển dịch vụ', color: 'bg-amber-500', hex: '#F59E0B' },
 ] as const;
 
 // 3.1. Bảng dữ liệu: Projects (Dự án Đầu tư)

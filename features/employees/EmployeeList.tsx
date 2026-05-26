@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useMemo } from 'react';
 import {
     Search, UserPlus, Building2, Shield, X, ChevronDown,
-    Users, Briefcase, ClipboardCheck, Sparkles,
+    Users, Briefcase, ClipboardCheck, Sparkles, Award
 } from 'lucide-react';
 import { Role } from '../../types';
 import DataTable from '../../components/ui/DataTable';
@@ -14,6 +14,7 @@ import { getEmployeeColumns } from './components/EmployeeColumns';
 const OrgChartPage = lazy(() => import('../organization/OrgChartPage'));
 const EvaluationPage = lazy(() => import('../evaluation/EvaluationPage'));
 const AnnualEvaluationTab = lazy(() => import('../evaluation/components/AnnualEvaluationTab'));
+const RegulationScoringTab = lazy(() => import('../regulation-scoring/RegulationScoringTab'));
 
 const SuspenseFallback = () => (
     <div className="flex items-center justify-center py-20">
@@ -37,6 +38,9 @@ const EmployeeList: React.FC = () => {
         handleCreate,
         openEmployeePanel,
     } = useEmployeeList();
+
+    const currentMonth = useMemo(() => new Date().getMonth() + 1, []);
+    const currentYear = useMemo(() => new Date().getFullYear(), []);
 
     const columns = useMemo(
         () => getEmployeeColumns(employeeWorkload),
@@ -66,6 +70,10 @@ const EmployeeList: React.FC = () => {
                     <ClipboardCheck className="w-4 h-4" />
                     Đánh giá xếp loại
                 </button>
+                <button onClick={() => setActiveTab('regulation-scoring')} className={tabClass('regulation-scoring')}>
+                    <Award className="w-4 h-4" />
+                    Đánh giá Quy chế KHCV
+                </button>
                 <button onClick={() => setActiveTab('annual-evaluation')} className={tabClass('annual-evaluation')}>
                     <Sparkles className="w-4 h-4" />
                     Đánh giá cuối năm
@@ -80,6 +88,12 @@ const EmployeeList: React.FC = () => {
                 <Suspense fallback={<SuspenseFallback />}>
                     <div className="-mt-6">
                         <EvaluationPage />
+                    </div>
+                </Suspense>
+            ) : activeTab === 'regulation-scoring' ? (
+                <Suspense fallback={<SuspenseFallback />}>
+                    <div className="-mt-6">
+                        <RegulationScoringTab month={currentMonth} year={currentYear} />
                     </div>
                 </Suspense>
             ) : activeTab === 'annual-evaluation' ? (

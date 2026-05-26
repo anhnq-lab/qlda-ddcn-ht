@@ -15,6 +15,7 @@ export { CapitalService } from './CapitalService';
 export { NationalGatewayService } from './NationalGatewayService';
 export { SiteClearanceService } from './SiteClearanceService';
 export { PublicAssetService } from './PublicAssetService';
+export { NotificationService } from './NotificationService';
 
 // AI Services
 export {

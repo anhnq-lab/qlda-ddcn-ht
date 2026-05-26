@@ -80,6 +80,21 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         Phase: wt.phase || metadata.phase || (wt as any).workflow_nodes?.metadata?.phase || '',
         LegalBasis: wt.legal_basis || metadata.legalBasis || (wt as any).workflow_nodes?.metadata?.legalBasis || '',
         IsCritical: metadata.isCritical || false,
+
+        // Report fields (báo cáo tháng)
+        Category: wt.category || undefined,
+        CompletionResult: wt.completion_result || '',
+        IncompleteReason: wt.incomplete_reason || '',
+        IncompleteReasonType: wt.incomplete_reason_type || undefined,
+        Notes: wt.notes || '',
+
+        // Self-proposal fields (Điều 9.3)
+        IsSelfProposed: wt.is_self_proposed || false,
+        ProposalStatus: wt.proposal_status || undefined,
+        ProposalApprovedBy: wt.proposal_approved_by || '',
+        ProposalApprovedAt: wt.proposal_approved_at || '',
+        UpdatedAt: wt.updated_at || '',
+        DepartmentCode: wt.department_code || '',
     };
 };
 
@@ -115,6 +130,7 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         actual_end_date: task.ActualEndDate || null,
         assignee_id: task.AssigneeID && !isDepartmentCode(task.AssigneeID)
             ? task.AssigneeID : null,
+        department_code: task.DepartmentCode || null,
         step_code: task.StepCode || null,
         task_type: (cleanProjectId ? 'project' : 'internal') as any,
         monthly_plan_item_id: task.MonthlyPlanItemID || null,
@@ -124,6 +140,15 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
         phase: (task as any).Phase || null,
         legal_basis: (task as any).LegalBasis || null,
         duration_days: task.DurationDays || null,
+        category: task.Category || null,
+        completion_result: task.CompletionResult || null,
+        incomplete_reason: task.IncompleteReason || null,
+        incomplete_reason_type: task.IncompleteReasonType || null,
+        notes: task.Notes || null,
+        is_self_proposed: task.IsSelfProposed || false,
+        proposal_status: task.ProposalStatus || null,
+        proposal_approved_by: task.ProposalApprovedBy || null,
+        proposal_approved_at: task.ProposalApprovedAt || null,
         metadata: {
             ui_status: task.Status,
             priority: task.Priority,

@@ -3,6 +3,7 @@
 // chưa có trong generated types — sẽ tự resolve sau khi run `supabase gen types`
 import { supabase as _supabase } from '../lib/supabase';
 const supabase = _supabase as any;
+import { NotificationService } from './NotificationService';
 import type {
     AnnualPlanItem,
     AnnualPlanItemInput,
@@ -34,13 +35,19 @@ export const AnnualPlanService = {
         return data as AnnualPlanItem[];
     },
 
-    // Lấy KH khung của 1 phòng trong 1 năm
-    async getByDepartment(year: number, deptCode: DepartmentCode): Promise<AnnualPlanItem[]> {
-        const { data, error } = await supabase
+    // Lấy KH khung của 1 phòng hoặc tất cả trong 1 năm
+    async getByDepartment(year: number, deptCode: DepartmentCode | 'All'): Promise<AnnualPlanItem[]> {
+        let query = supabase
             .from('annual_plan_items')
             .select('*')
-            .eq('plan_year', year)
-            .eq('department_code', deptCode)
+            .eq('plan_year', year);
+
+        if (deptCode !== 'All') {
+            query = query.eq('department_code', deptCode);
+        }
+
+        const { data, error } = await query
+            .order('department_code')
             .order('group_sort_order')
             .order('sort_order');
         if (error) throw error;
@@ -86,6 +93,122 @@ export const AnnualPlanService = {
             .delete()
             .eq('id', id);
         if (error) throw error;
+    },
+
+    // Submit for approval (Điều 7)
+    async submitForApproval(year: number, deptCode: DepartmentCode, employeeId: string): Promise<void> {
+        const { error } = await supabase
+            .from('annual_plan_items')
+            .update({
+                approval_status: 'submitted',
+                submitted_by: employeeId,
+                submitted_at: new Date().toISOString()
+            })
+            .eq('plan_year', year)
+            .eq('department_code', deptCode)
+            .in('approval_status', ['draft', 'rejected', 'submitted']); // allow re-submit
+        
+        if (error) throw error;
+
+        // Trigger notifications to leadership
+        try {
+            const { data: leaders } = await supabase
+                .from('employees')
+                .select('employee_id')
+                .or('role.eq.director,role.eq.deputy_director,position.ilike.%Giám đốc%');
+
+            if (leaders && leaders.length > 0) {
+                for (const leader of leaders) {
+                    await NotificationService.notifyApprovalNeeded(
+                        'annual_plan', 
+                        deptCode, 
+                        `Kế hoạch năm ${year} phòng ${deptCode} chờ duyệt`, 
+                        leader.employee_id
+                    );
+                }
+            }
+        } catch (notifErr) {
+            console.error('Failed to trigger annual plan submission notifications:', notifErr);
+        }
+    },
+
+    // Approve annual plan (Điều 7)
+    async approve(year: number, deptCode: DepartmentCode, approverId: string): Promise<void> {
+        const { error } = await supabase
+            .from('annual_plan_items')
+            .update({
+                approval_status: 'approved',
+                approved_by: approverId,
+                approved_at: new Date().toISOString()
+            })
+            .eq('plan_year', year)
+            .eq('department_code', deptCode)
+            .eq('approval_status', 'submitted');
+        
+        if (error) throw error;
+
+        // Trigger notifications to department heads
+        try {
+            const { data: managers } = await supabase
+                .from('employees')
+                .select('employee_id')
+                .eq('department', deptCode)
+                .or('role.eq.department_head,role.eq.manager,position.ilike.%Trưởng phòng%');
+
+            if (managers && managers.length > 0) {
+                for (const mgr of managers) {
+                    await NotificationService.createNotification(
+                        mgr.employee_id,
+                        `Kế hoạch năm ${year} của phòng đã được phê duyệt`,
+                        `Phê duyệt bởi Lãnh đạo`,
+                        'success',
+                        `/work-plan?tab=annual&dept=${deptCode}`
+                    );
+                }
+            }
+        } catch (notifErr) {
+            console.error('Failed to trigger annual plan approval notifications:', notifErr);
+        }
+    },
+
+    // Reject annual plan (Điều 7)
+    async reject(year: number, deptCode: DepartmentCode, approverId: string, reason: string): Promise<void> {
+        const { error } = await supabase
+            .from('annual_plan_items')
+            .update({
+                approval_status: 'rejected',
+                approved_by: approverId,
+                approved_at: new Date().toISOString(),
+                rejected_reason: reason
+            })
+            .eq('plan_year', year)
+            .eq('department_code', deptCode)
+            .eq('approval_status', 'submitted');
+        
+        if (error) throw error;
+
+        // Trigger notifications to department heads
+        try {
+            const { data: managers } = await supabase
+                .from('employees')
+                .select('employee_id')
+                .eq('department', deptCode)
+                .or('role.eq.department_head,role.eq.manager,position.ilike.%Trưởng phòng%');
+
+            if (managers && managers.length > 0) {
+                for (const mgr of managers) {
+                    await NotificationService.createNotification(
+                        mgr.employee_id,
+                        `Kế hoạch năm ${year} của phòng bị từ chối phê duyệt`,
+                        `Lý do: ${reason}`,
+                        'warning',
+                        `/work-plan?tab=annual&dept=${deptCode}`
+                    );
+                }
+            }
+        } catch (notifErr) {
+            console.error('Failed to trigger annual plan rejection notifications:', notifErr);
+        }
     },
 
     // Bulk insert (dùng khi import từ Excel)
@@ -258,8 +381,19 @@ export const MonthlyPlanItemService = {
         monthlyPlanId: string,
         month: number,
         year: number,
-        deptCode: DepartmentCode
-    ): Promise<MonthlyPlanItem[]> {
+        deptCode: DepartmentCode,
+        createdBy?: string
+    ): Promise<any[]> {
+        return this.seedTasksFromAnnualPlan(month, year, deptCode, createdBy);
+    },
+
+    // Mới: seed from annual plan → tạo Tasks trực tiếp cho Báo cáo tháng
+    async seedTasksFromAnnualPlan(
+        month: number,
+        year: number,
+        deptCode: DepartmentCode,
+        createdBy?: string
+    ): Promise<any[]> {
         // 1. Lấy tất cả nhiệm vụ KH khung của phòng trong năm
         const { data: annualItems, error } = await supabase
             .from('annual_plan_items')
@@ -268,77 +402,73 @@ export const MonthlyPlanItemService = {
             .eq('department_code', deptCode);
         if (error) throw error;
 
-        // 2. Lấy danh sách annual_plan_item_id đã tồn tại trong monthly_plan này
-        //    để tránh tạo bản ghi trùng khi bấm "Sinh từ KH khung" nhiều lần
-        const { data: existing } = await supabase
-            .from('monthly_plan_items')
+        // 2. Lấy danh sách tasks đã seed từ annual_plan_item_id trong tháng/năm này
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
+        const { data: existingTasks } = await supabase
+            .from('tasks')
             .select('annual_plan_item_id')
-            .eq('monthly_plan_id', monthlyPlanId)
+            .eq('department_code', deptCode)
+            .gte('due_date', startDate)
+            .lte('due_date', endDate)
             .not('annual_plan_item_id', 'is', null);
-        const existingIds = new Set((existing ?? []).map((e: any) => e.annual_plan_item_id));
+
+        const existingIds = new Set(
+            (existingTasks ?? []).map((t: any) => t.annual_plan_item_id).filter(Boolean)
+        );
 
         // 3. Lọc items theo tần suất và tháng hiện tại
-        const filteredIds: string[] = (annualItems ?? [])
-            .filter((item: any) => {
-                // Bỏ qua nếu đã được seed rồi (tránh trùng khi bấm nhiều lần)
-                if (existingIds.has(item.id)) return false;
-
-                // Luôn thêm task hàng tháng và hàng ngày
-                if (item.frequency === 'monthly' || item.frequency === 'daily') return true;
-
-                // Task hàng quý: chỉ sinh vào đầu quý (tháng 1, 4, 7, 10)
-                if (item.frequency === 'quarterly') {
-                    return isInPeriodQuarterly(item.start_period, item.end_period, month);
-                }
-
-                // Task một lần: kiểm tra khoảng thời gian; nếu không parse được → include
-                if (item.frequency === 'one_time') {
-                    return isInPeriodOneTime(item.start_period, item.end_period, month);
-                }
-
-                // as_needed: không tự sinh, người dùng thêm thủ công
-                return false;
-            })
-            .map((item: any) => item.id);
-
-        if (filteredIds.length === 0) return [];
-
-        // 4. Gọi RPC seed_monthly_from_annual — xử lý cả 2 trường hợp:
-        //    - annual_item có project_step_id → INSERT MPI với source_project_plan_item_id
-        //    - annual_item không có project_step_id → INSERT MPI bình thường (source_type='from_annual')
-        const { error: rpcErr } = await supabase.rpc('seed_monthly_from_annual', {
-            p_annual_item_ids: filteredIds,
-            p_monthly_plan_id: monthlyPlanId,
-            p_created_by: null,
+        const itemsToSeed = (annualItems ?? []).filter((item: any) => {
+            if (existingIds.has(item.id)) return false;
+            if (item.frequency === 'monthly' || item.frequency === 'daily') return true;
+            if (item.frequency === 'quarterly') {
+                return isInPeriodQuarterly(item.start_period, item.end_period, month);
+            }
+            if (item.frequency === 'one_time') {
+                return isInPeriodOneTime(item.start_period, item.end_period, month);
+            }
+            return false;
         });
-        if (rpcErr) throw rpcErr;
 
-        // 5. Trả về các items vừa sinh (để caller hiển thị toast)
-        const { data: newItems } = await supabase
-            .from('monthly_plan_items')
-            .select('*')
-            .eq('monthly_plan_id', monthlyPlanId)
-            .in('annual_plan_item_id', filteredIds);
-        return (newItems ?? []) as MonthlyPlanItem[];
+        if (itemsToSeed.length === 0) return [];
+
+        // 4. Tạo tasks trực tiếp
+        const tasksToInsert = itemsToSeed.map((item: any) => ({
+            title: item.task_name,
+            description: item.deliverable || '',
+            task_type: item.project_id ? 'project' : 'internal',
+            status: 'todo',
+            priority: 'medium',
+            progress: 0,
+            due_date: endDate,
+            start_date: startDate,
+            assignee_id: null,
+            department_code: deptCode,
+            annual_plan_item_id: item.id,
+            project_id: item.project_id || null,
+            category: resolveTaskCategory(item.task_name, deptCode),
+            source_type: 'from_annual',
+            created_by: createdBy || null,
+        }));
+
+        const { data: inserted, error: insertErr } = await supabase
+            .from('tasks')
+            .insert(tasksToInsert)
+            .select();
+
+        if (insertErr) throw insertErr;
+        return inserted || [];
     },
 
-    /**
-     * Sinh KH tháng từ "bước dự án" — sử dụng bảng project_plan_items.
-     *
-     * Logic:
-     *   1. Tìm tasks có project_plan_item_id (tức task thuộc bước KH dự án),
-     *      có hạn trong tháng AND giao cho phòng đang lập KH.
-     *   2. Lấy các project_plan_items tương ứng chưa có trong KH tháng này.
-     *   3. Gọi RPC schedule_project_steps_to_month → INSERT MPI với source_project_plan_item_id.
-     */
-    async seedFromProjectTasks(
-        monthlyPlanId: string,
+    // Mới: seed from project steps (bước dự án) → tạo Tasks trực tiếp
+    async seedTasksFromProjectSteps(
         month: number,
         year: number,
         deptCode: string,
         deptEmployeeIds: string[],
-        _createdBy?: string
-    ): Promise<{ inserted: MonthlyPlanItem[]; skipped: number }> {
+        createdBy?: string
+    ): Promise<{ inserted: any[]; skipped: number }> {
         const startOfMonth = `${year}-${String(month).padStart(2, '0')}-01`;
         const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
@@ -350,75 +480,98 @@ export const MonthlyPlanItemService = {
             const deptName = DEPARTMENT_NAMES[deptCode as DepartmentCode] || '';
             const cleanDeptName = deptName.toLowerCase().replace('phòng ', '').trim();
             if (cleanDeptName && roleLower.includes(cleanDeptName)) return true;
-            if (codeLower === 'hcth' && (roleLower.includes('hành chính') || roleLower.includes('tổng hợp'))) return true;
-            if (codeLower === 'khdt' && (roleLower.includes('kế hoạch') || roleLower.includes('đấu thầu'))) return true;
-            if (codeLower === 'kttd' && (roleLower.includes('kỹ thuật') || roleLower.includes('thẩm định'))) return true;
-            if (codeLower === 'tckt' && (roleLower.includes('tài chính') || roleLower.includes('kế toán'))) return true;
-            if (codeLower.startsWith('qlda') && roleLower.includes('quản lý dự án')) return true;
             return false;
         };
 
-        // 1. Tìm tasks thuộc bước KH dự án, có hạn trong tháng
-        const { data: tasksRaw, error } = await supabase
-            .from('tasks')
-            .select('id, project_plan_item_id, assignee_id, metadata, due_date, status, actual_end_date')
-            .eq('task_type', 'project')
-            .not('project_plan_item_id', 'is', null)
+        // 1. Lấy tất cả project steps (project_plan_steps) có due_date trong tháng
+        const { data: steps, error } = await supabase
+            .from('project_plan_steps')
+            .select('*')
             .gte('due_date', startOfMonth)
             .lte('due_date', endOfMonth);
         if (error) throw error;
 
-        const startOfMonthDate = new Date(year, month - 1, 1);
-        const matchingTasks = (tasksRaw || []).filter((t: any) => {
-            if (t.status === 'done' && t.actual_end_date) {
-                if (new Date(t.actual_end_date) < startOfMonthDate) return false;
-            }
-            const byEmployee = t.assignee_id && deptEmployeeIds.includes(t.assignee_id);
-            const byRole = isDeptMatch(t.metadata?.assignee_role);
-            return byEmployee || byRole;
-        });
-
-        if (matchingTasks.length === 0) return { inserted: [], skipped: 0 };
-
-        // 2. Lấy project_plan_items chưa được đưa vào KH tháng này
-        const allStepIds = Array.from(new Set(matchingTasks.map((t: any) => t.project_plan_item_id)));
-
-        // Loại bỏ các step đã có trong monthly plan này rồi
-        const { data: alreadyScheduled } = await supabase
-            .from('monthly_plan_items')
-            .select('source_project_plan_item_id')
-            .in('source_project_plan_item_id', allStepIds)
-            .eq('monthly_plan_id', monthlyPlanId);
-
-        const scheduledSet = new Set(
-            (alreadyScheduled || []).map((r: any) => r.source_project_plan_item_id)
-        );
-        const eligibleStepIds = allStepIds.filter(id => !scheduledSet.has(id));
-
-        if (eligibleStepIds.length === 0) {
-            return { inserted: [], skipped: allStepIds.length };
+        if (!steps || steps.length === 0) {
+            return { inserted: [], skipped: 0 };
         }
 
-        // 3. Gọi RPC để gán atomic
-        const { data: rpcResult, error: rpcErr } = await supabase.rpc('schedule_project_steps_to_month', {
-            p_step_ids: eligibleStepIds,
-            p_monthly_plan_id: monthlyPlanId,
-        });
-        if (rpcErr) throw rpcErr;
+        const stepIds = steps.map((s: any) => s.id);
 
-        const result = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
-        const scheduledCount = result?.scheduled_count || 0;
-
-        // 4. Fetch lại các MPI vừa tạo
-        const { data: inserted } = await supabase
-            .from('monthly_plan_items')
+        // Lấy RACI cho các steps này
+        const { data: racis } = await supabase
+            .from('project_plan_raci')
             .select('*')
-            .in('source_project_plan_item_id', eligibleStepIds)
-            .eq('monthly_plan_id', monthlyPlanId);
+            .in('step_id', stepIds);
+
+        // Lọc các steps giao cho phòng này
+        const matchingSteps = steps.filter((s: any) => {
+            if (isDeptMatch(s.assignee_role)) return true;
+            const stepRacis = (racis || []).filter((r: any) => r.step_id === s.id);
+            const hasRaciMatch = stepRacis.some((r: any) => {
+                if (r.assigned_employee_id && deptEmployeeIds.includes(r.assigned_employee_id)) return true;
+                if (r.assigned_department_id === deptCode) return true;
+                if (isDeptMatch(r.stakeholder_code)) return true;
+                return false;
+            });
+            return hasRaciMatch;
+        });
+
+        if (matchingSteps.length === 0) {
+            return { inserted: [], skipped: 0 };
+        }
+
+        // 2. Kiểm tra các tasks đã seed từ project_plan_step_id trong tháng
+        const matchingStepIds = matchingSteps.map((s: any) => s.id);
+        const { data: existingTasks } = await supabase
+            .from('tasks')
+            .select('project_plan_step_id')
+            .in('project_plan_step_id', matchingStepIds)
+            .gte('due_date', startOfMonth)
+            .lte('due_date', endOfMonth)
+            .not('project_plan_step_id', 'is', null);
+
+        const existingStepIds = new Set((existingTasks ?? []).map((t: any) => t.project_plan_step_id).filter(Boolean));
+
+        const stepsToSeed = matchingSteps.filter((s: any) => !existingStepIds.has(s.id));
+
+        if (stepsToSeed.length === 0) {
+            return { inserted: [], skipped: matchingSteps.length };
+        }
+
+        // 3. Tạo tasks
+        const tasksToInsert = stepsToSeed.map((s: any) => {
+            const stepRacis = (racis || []).filter((r: any) => r.step_id === s.id && r.raci_type === 'R');
+            const assignedEmpId = stepRacis.find((r: any) => r.assigned_employee_id)?.assigned_employee_id || null;
+
+            return {
+                title: s.step_name,
+                description: s.deliverable || '',
+                task_type: 'project',
+                project_id: s.project_id,
+                project_plan_step_id: s.id,
+                status: 'todo',
+                priority: 'medium',
+                progress: 0,
+                due_date: s.due_date,
+                start_date: s.start_date || startOfMonth,
+                assignee_id: assignedEmpId,
+                department_code: deptCode,
+                category: resolveTaskCategory(s.step_name, deptCode),
+                source_type: 'from_project_step',
+                created_by: createdBy || null,
+            };
+        });
+
+        const { data: inserted, error: insertErr } = await supabase
+            .from('tasks')
+            .insert(tasksToInsert)
+            .select();
+
+        if (insertErr) throw insertErr;
 
         return {
-            inserted: (inserted ?? []) as MonthlyPlanItem[],
-            skipped: allStepIds.length - scheduledCount,
+            inserted: inserted || [],
+            skipped: matchingSteps.length - stepsToSeed.length
         };
     },
 
@@ -502,14 +655,23 @@ export const MonthlyPlanItemService = {
 
         const summaries: MonthlyReportSummary[] = [];
         for (const plan of (plans ?? [])) {
+            const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+            const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
             const { data: items } = await supabase
-                .from('monthly_plan_items')
+                .from('tasks')
                 .select('status')
-                .eq('monthly_plan_id', plan.id);
+                .eq('department_code', plan.department_code)
+                .gte('due_date', startDate)
+                .lte('due_date', endDate);
 
             const counts = { completed: 0, incomplete: 0, partial: 0, deferred: 0, planned: 0 };
             (items ?? []).forEach((i: any) => {
-                if (i.status in counts) counts[i.status as keyof typeof counts]++;
+                let mStatus: keyof typeof counts = 'planned';
+                if (i.status === 'done') mStatus = 'completed';
+                else if (i.status === 'in_progress') mStatus = 'partial';
+                else if (i.status === 'incomplete') mStatus = 'incomplete';
+                if (mStatus in counts) counts[mStatus]++;
             });
 
             const total = (items ?? []).length;
@@ -626,4 +788,32 @@ function isInPeriodOneTime(startPeriod?: string | null, endPeriod?: string | nul
 /** @deprecated Dùng isInPeriodOneTime hoặc isInPeriodQuarterly thay thế */
 function isInPeriod(startPeriod?: string, endPeriod?: string, month?: number): boolean {
     return isInPeriodOneTime(startPeriod, endPeriod, month);
+}
+
+/** Resolve task category based on keywords in title and fallback department */
+function resolveTaskCategory(title: string, deptCode: string): string {
+    const titleLower = (title || '').toLowerCase();
+    
+    // Keyword matches
+    if (titleLower.includes('giám sát') || titleLower.includes('thi công') || titleLower.includes('hiện trường')) return 'thi_cong';
+    if (titleLower.includes('thẩm định') || titleLower.includes('phê duyệt') || titleLower.includes('thẩm tra')) return 'tham_dinh';
+    if (titleLower.includes('quyết toán') || titleLower.includes('hoàn công') || titleLower.includes('tất toán')) return 'quyet_toan';
+    if (titleLower.includes('thanh toán') || titleLower.includes('giải ngân') || titleLower.includes('tạm ứng')) return 'thanh_toan';
+    if (titleLower.includes('giải phóng mặt bằng') || titleLower.includes('gpmb') || titleLower.includes('bồi thường')) return 'gpmb';
+    if (titleLower.includes('đấu thầu') || titleLower.includes('hồ sơ mời thầu') || titleLower.includes('hồ sơ dự thầu')) return 'dau_thau';
+    if (titleLower.includes('điều chỉnh') || titleLower.includes('phát sinh') || titleLower.includes('bổ sung')) return 'dieu_chinh';
+    if (titleLower.includes('góp ý') || titleLower.includes('văn bản') || titleLower.includes('công văn')) return 'gop_y';
+    if (titleLower.includes('báo cáo') || titleLower.includes('tổng hợp')) return 'bao_cao';
+    if (titleLower.includes('kiểm tra') || titleLower.includes('chất lượng') || titleLower.includes('nghiệm thu kỹ thuật')) return 'kiem_tra';
+    if (titleLower.includes('bàn giao') || titleLower.includes('nghiệm thu bàn giao') || titleLower.includes('đưa vào sử dụng')) return 'ban_giao';
+    if (titleLower.includes('điều hành') || titleLower.includes('chỉ đạo')) return 'dieu_hanh';
+
+    // Department fallbacks
+    if (deptCode === 'KTTD') return 'tham_dinh';
+    if (deptCode === 'KHDT') return 'dau_thau';
+    if (deptCode === 'QLDA1' || deptCode === 'QLDA2' || deptCode === 'QLDA3') return 'thi_cong';
+    if (deptCode === 'TCKT') return 'thanh_toan';
+    if (deptCode === 'HCTH') return 'dieu_hanh';
+
+    return 'khac';
 }

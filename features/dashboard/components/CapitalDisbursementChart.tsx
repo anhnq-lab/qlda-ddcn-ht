@@ -15,7 +15,7 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
 
     const gridStroke = isDark ? '#334155' : (isNature ? '#ece7de' : '#E5E7EB');
     const labelFill = isDark ? '#94A3B8' : (isNature ? '#78716c' : '#6B7280');
-    const plannedColor = isDark ? '#475569' : (isNature ? '#EDE8DF' : '#E5E7EB');
+    const plannedColor = isDark ? '#475569' : (isNature ? '#C5B9A5' : '#94A3B8');
     const actualColor = '#00668c'; // Màu primary của dự án
     const tooltipCursor = isDark ? '#252a3b' : (isNature ? '#EDE8DF' : '#F3F4F6');
 

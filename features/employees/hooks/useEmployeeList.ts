@@ -44,9 +44,9 @@ export function useEmployeeList() {
     const [filterRole, setFilterRole] = useState('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
-    const [activeTab, setActiveTab] = useTabSearchParam<'list' | 'org-chart' | 'evaluation' | 'annual-evaluation'>(
+    const [activeTab, setActiveTab] = useTabSearchParam<'list' | 'org-chart' | 'evaluation' | 'annual-evaluation' | 'regulation-scoring'>(
         'list',
-        ['list', 'org-chart', 'evaluation', 'annual-evaluation'] as const,
+        ['list', 'org-chart', 'evaluation', 'annual-evaluation', 'regulation-scoring'] as const,
         'tab'
     );
 

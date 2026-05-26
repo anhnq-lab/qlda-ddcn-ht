@@ -60,10 +60,10 @@ const Dashboard: React.FC = () => {
                         <select
                             value={selectedBoard}
                             onChange={e => setSelectedBoard(e.target.value)}
-                            aria-label="Lọc theo ban quản lý"
+                            aria-label="Lọc theo phòng quản lý"
                             className="appearance-none pl-9 pr-8 py-2 filter-primary min-w-[140px]"
                         >
-                            <option value="all">Tất cả ban</option>
+                            <option value="all">Tất cả phòng</option>
                             {MANAGEMENT_BOARDS.map(b => (
                                 <option key={b.value} value={b.value}>{b.label}</option>
                             ))}
@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
                     <span className="text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full border border-primary-200 dark:border-primary-800 flex items-center gap-1.5">
                         <Filter className="w-3 h-3" />
                         {selectedYear && selectedYear !== currentYear && `Năm ${selectedYear}`}
-                        {selectedBoard !== 'all' && ` • Ban QLDA ${selectedBoard}`}
+                        {selectedBoard !== 'all' && ` • ${MANAGEMENT_BOARDS.find(b => b.value.toString() === selectedBoard)?.label || `Phòng QLDA ${selectedBoard}`}`}
                     </span>
                 </div>
             )}
@@ -142,9 +142,9 @@ const Dashboard: React.FC = () => {
                             <OverviewTab selectedYear={selectedYear} selectedBoard={selectedBoard} />
                         </ErrorBoundary>
                     )}
-                    {activeTab === 'monthly' && (
+                     {activeTab === 'monthly' && (
                         <ErrorBoundary>
-                            <MonthlyBriefingTab selectedYear={selectedYear ?? currentYear} />
+                            <MonthlyBriefingTab selectedYear={selectedYear ?? currentYear} selectedBoard={selectedBoard} />
                         </ErrorBoundary>
                     )}
                     {activeTab === 'ai' && (

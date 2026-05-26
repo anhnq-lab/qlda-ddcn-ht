@@ -80,12 +80,26 @@ const AnnualPlanItemDetail: React.FC<Props> = ({ item, year, onEdit, onDelete, o
     useEffect(() => {
         setLoadingLinks(true);
         supabase
-            .from('monthly_plan_items')
-            .select('id, task_name, status, deadline_note, monthly_plan:monthly_plans(plan_month, plan_year, department_code)')
+            .from('tasks')
+            .select('id, title, status, due_date, department_code, metadata')
             .eq('annual_plan_item_id', item.id)
             .order('created_at', { ascending: false })
             .then(({ data }: any) => {
-                setMonthlyLinks((data as any[]) ?? []);
+                const mapped = (data || []).map((t: any) => {
+                    const d = new Date(t.due_date);
+                    return {
+                        id: t.id,
+                        task_name: t.title,
+                        status: t.status === 'done' ? 'completed' : (t.status === 'in_progress' ? 'partial' : (t.status === 'incomplete' ? 'incomplete' : 'planned')),
+                        deadline_note: t.metadata?.deadline_note || `Tháng ${d.getMonth() + 1}`,
+                        monthly_plan: {
+                            plan_month: d.getMonth() + 1,
+                            plan_year: d.getFullYear(),
+                            department_code: t.department_code
+                        }
+                    };
+                });
+                setMonthlyLinks(mapped);
                 setLoadingLinks(false);
             });
     }, [item.id]);

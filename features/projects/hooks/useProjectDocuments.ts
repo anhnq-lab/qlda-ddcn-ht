@@ -40,6 +40,7 @@ const mapDbRow = (row: any, projectID: string): Document & Record<string, any> =
     drafting_department: row.drafting_department || '',
     document_symbol: row.document_symbol || '',
     drafter: row.drafter || '',
+    legal_status: row.legal_status || 'active',
 });
 
 /**

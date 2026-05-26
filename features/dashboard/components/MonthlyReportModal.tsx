@@ -22,75 +22,159 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
     const [isEditing, setIsEditing] = useState(false);
     const [error, setError] = useState('');
 
+    const fetchReportData = useCallback(async () => {
+        const [overviewRes, projectsRes, disbursedYearRes, taskBriefingRes] = await Promise.allSettled([
+            DashboardService.getOverviewMetrics(year),
+            ProjectService.getAll(),
+            (supabase as any).from('disbursements')
+                .select('amount')
+                .gte('date', `${year}-01-01`)
+                .lte('date', `${year}-12-31`)
+                .then((r: any) => (r.data || []).reduce((s: number, d: { amount: unknown }) => s + Number(d.amount), 0)),
+            DashboardService.getTaskBriefingSummary(month, year),
+        ]);
+
+        const overview = overviewRes.status === 'fulfilled' ? overviewRes.value : null;
+        const projects = projectsRes.status === 'fulfilled' ? projectsRes.value : [];
+        const disbursedYear = disbursedYearRes.status === 'fulfilled' ? disbursedYearRes.value : 0;
+        const taskBriefing = taskBriefingRes.status === 'fulfilled' ? taskBriefingRes.value : [];
+
+        return {
+            thangBaoCao: `Tháng ${month}/${year}`,
+            giaiNganThang: {
+                thucHienTyDong: Math.round(stats.disbursedThisMonth / 1e9 * 10) / 10,
+                keHoachTyDong: Math.round(stats.disbursedTarget / 1e9 * 10) / 10,
+                tyLePhanTram: stats.disbursedTarget > 0
+                    ? Math.round((stats.disbursedThisMonth / stats.disbursedTarget) * 100) : 0,
+            },
+            giaiNganLuyKe: {
+                thucHienTyDong: Math.round(disbursedYear / 1e9 * 10) / 10,
+                keHoachNamTyDong: Math.round((overview?.yearlyPlanned || 0) / 1e9 * 10) / 10,
+                tyLePhanTram: overview?.yearlyDisbursementRate || 0,
+            },
+            tongQuanDuAn: {
+                tongSo: overview?.totalProjects || projects.length,
+                tongVonTyDong: Math.round((overview?.totalInvestment || 0) / 1e9 * 10) / 10,
+                duAnMoiTrongThang: stats.newProjectsStarted,
+                duAnHoanThanh: stats.projectsCompleted,
+            },
+            duAn: projects.slice(0, 8).map(p => ({
+                ten: p.ProjectName,
+                tieuDo: p.Progress,
+                giaiNgan: p.PaymentProgress,
+                vonTyDong: Math.round(Number(p.TotalInvestment) / 1e9 * 10) / 10,
+                trangThai: p.Status === 2 ? 'Đang thi công' : p.Status === 3 ? 'Hoàn thành' : 'Chuẩn bị ĐT',
+            })),
+            ketQuaNoiBat: stats.keyAchievements.map(a => a.content),
+            tonTaiVuongMac: stats.roadblocks.map(r => r.content),
+            keHoachThangToi: stats.upcomingPlans.map(p => p.content),
+            congViecPhongBan: taskBriefing.map(dept => ({
+                phong: dept.department_name,
+                tongCV: dept.total_tasks,
+                hoanThanh: dept.completed,
+                dangLam: dept.in_progress,
+                chuaHT: dept.incomplete,
+                tyLe: `${dept.completion_rate}%`,
+                noiBat: dept.by_category
+                    .filter(c => c.completed > 0)
+                    .slice(0, 3)
+                    .map(c => `${c.category_label}: ${c.completed}/${c.total} HT`),
+                vuongMac: dept.by_category
+                    .flatMap(c => c.items.filter(i => i.status === 'incomplete'))
+                    .slice(0, 3)
+                    .map(i => i.title + (i.incomplete_reason ? ` (${i.incomplete_reason})` : '')),
+            })),
+        };
+    }, [month, year, stats]);
+
+    const buildDirectReportContent = useCallback((data: any): string => {
+        let text = '';
+        
+        text += `I. KẾT QUẢ THỰC HIỆN CHỈ TIÊU KINH TẾ - KỸ THUẬT\n\n`;
+        text += `1. Tình hình giải ngân vốn đầu tư công:\n`;
+        text += `- Thực hiện giải ngân trong tháng: ${data.giaiNganThang.thucHienTyDong} tỷ đồng / Kế hoạch tháng: ${data.giaiNganThang.keHoachTyDong} tỷ đồng (đạt ${data.giaiNganThang.tyLePhanTram}%).\n`;
+        text += `- Lũy kế giải ngân năm: ${data.giaiNganLuyKe.thucHienTyDong} tỷ đồng / Kế hoạch năm: ${data.giaiNganLuyKe.keHoachNamTyDong} tỷ đồng (đạt ${data.giaiNganLuyKe.tyLePhanTram}%).\n\n`;
+        
+        text += `2. Tổng quan tình hình dự án:\n`;
+        text += `- Tổng số dự án đang quản lý: ${data.tongQuanDuAn.tongSo} dự án, với tổng mức đầu tư ${data.tongQuanDuAn.tongVonTyDong} tỷ đồng.\n`;
+        text += `- Số dự án khởi công mới trong tháng: ${data.tongQuanDuAn.duAnMoiTrongThang} dự án.\n`;
+        text += `- Số dự án hoàn thành trong tháng: ${data.tongQuanDuAn.duAnHoanThanh} dự án.\n`;
+        text += `- Số lượng văn bản, hồ sơ pháp lý được phê duyệt: ${stats.docsApproved} văn bản.\n\n`;
+
+        text += `II. TIẾN ĐỘ THỰC HIỆN CÁC DỰ ÁN TRỌNG ĐIỂM\n\n`;
+        if (data.duAn && data.duAn.length > 0) {
+            data.duAn.forEach((p: any, idx: number) => {
+                text += `${idx + 1}. Dự án: ${p.ten}\n`;
+                text += `- Trạng thái: ${p.trangThai}\n`;
+                text += `- Tiến độ thực hiện: đạt ${p.tieuDo}%.\n`;
+                text += `- Tỷ lệ giải ngân: đạt ${p.giaiNgan}%.\n`;
+                text += `- Tổng mức đầu tư: ${p.vonTyDong} tỷ đồng.\n\n`;
+            });
+        } else {
+            text += `Không có dự án trọng điểm nào được ghi nhận trong kỳ báo cáo.\n\n`;
+        }
+
+        text += `III. KẾT QUẢ NỔI BẬT TRONG THÁNG\n\n`;
+        if (data.ketQuaNoiBat && data.ketQuaNoiBat.length > 0) {
+            data.ketQuaNoiBat.forEach((item: string) => {
+                text += `- ${item}\n`;
+            });
+        } else {
+            text += `- Hoàn thành tốt các chỉ tiêu nhiệm vụ được giao trong tháng.\n`;
+        }
+        text += `\n`;
+
+        text += `IV. TỒN TẠI, VƯỚNG MẮC VÀ NGUYÊN NHÂN\n\n`;
+        if (data.tonTaiVuongMac && data.tonTaiVuongMac.length > 0) {
+            data.tonTaiVuongMac.forEach((item: string) => {
+                text += `- Vấn đề: ${item}\n`;
+            });
+        } else {
+            text += `- Không ghi nhận tồn tại, vướng mắc lớn ảnh hưởng đến tiến độ dự án.\n`;
+        }
+        text += `\n`;
+
+        text += `V. TÌNH HÌNH THỰC HIỆN CÔNG VIỆC CỦA CÁC PHÒNG BAN\n\n`;
+        if (data.congViecPhongBan && data.congViecPhongBan.length > 0) {
+            data.congViecPhongBan.forEach((dept: any, idx: number) => {
+                text += `${idx + 1}. ${dept.phong}:\n`;
+                text += `- Tổng số công việc được giao: ${dept.tongCV} công việc.\n`;
+                text += `- Kết quả thực hiện: Hoàn thành ${dept.hoanThanh} công việc, Đang triển khai ${dept.dangLam} công việc, Chưa hoàn thành ${dept.chuaHT} công việc. Tỷ lệ hoàn thành đạt ${dept.tyLe}.\n`;
+                if (dept.noiBat && dept.noiBat.length > 0) {
+                    text += `- Kết quả nổi bật:\n`;
+                    dept.noiBat.forEach((nb: string) => {
+                        text += `  + ${nb}\n`;
+                    });
+                }
+                if (dept.vuongMac && dept.vuongMac.length > 0) {
+                    text += `- Vướng mắc, tồn tại cần lưu ý:\n`;
+                    dept.vuongMac.forEach((vm: string) => {
+                        text += `  + ${vm}\n`;
+                    });
+                }
+                text += `\n`;
+            });
+        } else {
+            text += `Không có dữ liệu công việc của các phòng ban trong kỳ báo cáo.\n\n`;
+        }
+
+        text += `VI. KẾ HOẠCH VÀ NHIỆM VỤ TRỌNG TÂM THÁNG TỚI\n\n`;
+        if (data.keHoachThangToi && data.keHoachThangToi.length > 0) {
+            data.keHoachThangToi.forEach((item: string) => {
+                text += `- ${item}\n`;
+            });
+        } else {
+            text += `- Tiếp tục đôn đốc thực hiện và giải ngân theo đúng tiến độ các công việc được giao.\n`;
+        }
+
+        return text;
+    }, [stats.docsApproved]);
+
     const generateReport = useCallback(async () => {
         setPhase('generating');
         setError('');
         try {
-            const [overviewRes, projectsRes, disbursedYearRes, taskBriefingRes] = await Promise.allSettled([
-                DashboardService.getOverviewMetrics(year),
-                ProjectService.getAll(),
-                supabase.from('disbursements')
-                    .select('amount')
-                    .gte('date', `${year}-01-01`)
-                    .lte('date', `${year}-12-31`)
-                    .then(r => (r.data || []).reduce((s: number, d: { amount: unknown }) => s + Number(d.amount), 0)),
-                DashboardService.getTaskBriefingSummary(month, year),
-            ]);
-
-            const overview = overviewRes.status === 'fulfilled' ? overviewRes.value : null;
-            const projects = projectsRes.status === 'fulfilled' ? projectsRes.value : [];
-            const disbursedYear = disbursedYearRes.status === 'fulfilled' ? disbursedYearRes.value : 0;
-            const taskBriefing = taskBriefingRes.status === 'fulfilled' ? taskBriefingRes.value : [];
-
-            // Compact report data — keep payload small to avoid edge function timeout
-            const reportData = {
-                thangBaoCao: `Tháng ${month}/${year}`,
-                giaiNganThang: {
-                    thucHienTyDong: Math.round(stats.disbursedThisMonth / 1e9 * 10) / 10,
-                    keHoachTyDong: Math.round(stats.disbursedTarget / 1e9 * 10) / 10,
-                    tyLePhanTram: stats.disbursedTarget > 0
-                        ? Math.round((stats.disbursedThisMonth / stats.disbursedTarget) * 100) : 0,
-                },
-                giaiNganLuyKe: {
-                    thucHienTyDong: Math.round(disbursedYear / 1e9 * 10) / 10,
-                    keHoachNamTyDong: Math.round((overview?.yearlyPlanned || 0) / 1e9 * 10) / 10,
-                    tyLePhanTram: overview?.yearlyDisbursementRate || 0,
-                },
-                tongQuanDuAn: {
-                    tongSo: overview?.totalProjects || projects.length,
-                    tongVonTyDong: Math.round((overview?.totalInvestment || 0) / 1e9 * 10) / 10,
-                    duAnMoiTrongThang: stats.newProjectsStarted,
-                    duAnHoanThanh: stats.projectsCompleted,
-                },
-                // Top 8 projects by investment — keep compact
-                duAn: projects.slice(0, 8).map(p => ({
-                    ten: p.ProjectName,
-                    tieuDo: p.Progress,
-                    giaiNgan: p.PaymentProgress,
-                    vonTyDong: Math.round(Number(p.TotalInvestment) / 1e9 * 10) / 10,
-                    trangThai: p.Status === 2 ? 'Đang thi công' : p.Status === 3 ? 'Hoàn thành' : 'Chuẩn bị ĐT',
-                })),
-                ketQuaNoiBat: stats.keyAchievements.map(a => a.content),
-                tonTaiVuongMac: stats.roadblocks.map(r => r.content),
-                keHoachThangToi: stats.upcomingPlans.map(p => p.content),
-                congViecPhongBan: taskBriefing.map(dept => ({
-                    phong: dept.department_name,
-                    tongCV: dept.total_tasks,
-                    hoanThanh: dept.completed,
-                    dangLam: dept.in_progress,
-                    chuaHT: dept.incomplete,
-                    tyLe: `${dept.completion_rate}%`,
-                    noiBat: dept.by_category
-                        .filter(c => c.completed > 0)
-                        .slice(0, 3)
-                        .map(c => `${c.category_label}: ${c.completed}/${c.total} HT`),
-                    vuongMac: dept.by_category
-                        .flatMap(c => c.items.filter(i => i.status === 'incomplete'))
-                        .slice(0, 3)
-                        .map(i => i.title + (i.incomplete_reason ? ` (${i.incomplete_reason})` : '')),
-                })),
-            };
-
+            const reportData = await fetchReportData();
             const prompt = buildMonthlyBriefingPrompt(month, year);
             // 45-second timeout to prevent hanging
             const generated = await Promise.race([
@@ -102,10 +186,25 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
             setContent(generated);
             setPhase('done');
         } catch (err) {
-            setError('Không thể tạo báo cáo. Vui lòng thử lại.');
+            setError('Không thể tạo báo cáo với AI. Vui lòng thử lại.');
             setPhase('idle');
         }
-    }, [month, year, stats]);
+    }, [month, year, fetchReportData]);
+
+    const generateReportDirectly = useCallback(async () => {
+        setPhase('generating');
+        setError('');
+        try {
+            const reportData = await fetchReportData();
+            const directContent = buildDirectReportContent(reportData);
+            setContent(directContent);
+            setPhase('done');
+        } catch (err) {
+            console.error(err);
+            setError('Không thể tạo báo cáo trực tiếp. Vui lòng thử lại.');
+            setPhase('idle');
+        }
+    }, [fetchReportData, buildDirectReportContent]);
 
     const exportDocx = async () => {
         if (!content) return;
@@ -177,20 +276,29 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             </div>
                             <div className="text-center max-w-sm">
                                 <h3 className="text-base font-black text-gray-700 dark:text-slate-200 mb-2">
-                                    AI Soạn Báo cáo Giao ban
+                                    Soạn Báo cáo Giao ban
                                 </h3>
                                 <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">
-                                    AI sẽ tổng hợp dữ liệu thực tế từ hệ thống và soạn thảo báo cáo
-                                    đúng chuẩn văn bản hành chính nhà nước, sẵn sàng xuất DOCX.
+                                    Tổng hợp dữ liệu thực tế từ hệ thống để lập báo cáo giao ban
+                                    đúng chuẩn văn bản hành chính nhà nước. Bạn có thể chọn soạn bằng trí tuệ nhân tạo (AI) hoặc xuất trực tiếp dữ liệu thô.
                                 </p>
                             </div>
-                            <button
-                                onClick={generateReport}
-                                className="btn btn-primary flex items-center gap-2 px-7 py-2.5 text-sm"
-                            >
-                                <Sparkles className="w-4 h-4" />
-                                Tạo báo cáo với AI
-                            </button>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={generateReport}
+                                    className="btn btn-primary flex items-center gap-2 px-7 py-2.5 text-sm"
+                                >
+                                    <Sparkles className="w-4 h-4" />
+                                    Tạo báo cáo với AI
+                                </button>
+                                <button
+                                    onClick={generateReportDirectly}
+                                    className="btn btn-outline flex items-center gap-2 px-7 py-2.5 text-sm border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 bg-white dark:bg-slate-800"
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    Xuất báo cáo trực tiếp
+                                </button>
+                            </div>
                         </div>
                     )}
 

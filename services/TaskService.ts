@@ -31,7 +31,6 @@ export const TaskService = {
   getTasksByEmployeeAndMonth: crud.getTasksByEmployeeAndMonth,
   getTasksByDepartmentAndMonth: crud.getTasksByDepartmentAndMonth,
   getTaskById: crud.getTaskById,
-  getSubTasks: crud.getSubTasks,
   countByProject: crud.countByProject,
 
   // ── Write ───────────────────────────────────────────────
@@ -40,8 +39,10 @@ export const TaskService = {
   saveTask: crud.saveTask,
   deleteTask: crud.deleteTask,
   deleteProjectTasks: crud.deleteProjectTasks,
-  saveSubTask: crud.saveSubTask,
-  deleteSubTask: crud.deleteSubTask,
+  proposeTask: crud.proposeTask,
+  approveProposal: crud.approveProposal,
+  rejectProposal: crud.rejectProposal,
+  deferToNextMonth: crud.deferToNextMonth,
 
   // ── Collaboration ───────────────────────────────────────
   getTaskComments: collab.getTaskComments,

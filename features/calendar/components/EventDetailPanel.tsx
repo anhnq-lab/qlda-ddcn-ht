@@ -45,7 +45,7 @@ const getRoomName = (room: string) => {
 };
 
 export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onClose, event, onEdit }) => {
-  const { currentUser: user } = useAuth();
+  const { currentUser: user, supabaseUser } = useAuth();
   const deleteMutation = useDeleteEvent();
   const { showToast } = useToast();
 
@@ -53,7 +53,7 @@ export const EventDetailPanel: React.FC<EventDetailPanelProps> = ({ isOpen, onCl
 
   // RLS check for Edit/Delete UI buttons
   // Only Admin or the creator can edit/delete
-  const canEditOrDelete = (user as any)?.user_metadata?.role === 'Admin' || (user as any)?.id === event.created_by;
+  const canEditOrDelete = user?.Role === 'Admin' || user?.SystemRole === 'super_admin' || supabaseUser?.id === event.created_by;
 
   const handleDelete = async () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa sự kiện này?')) {

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Link2, Briefcase, Users, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import { MonthlyPlanItemService } from '../../services/PlanService';
+import { supabase } from '../../lib/supabase';
 import {
     MonthlyPlanItem, MonthlyPlanItemInput,
     DepartmentCode, MonthlyTaskStatus, MONTHLY_STATUS_LABELS, DEPARTMENT_NAMES,
@@ -149,11 +150,41 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
         setSaving(true);
         setServerError('');
         try {
-            const payload = data as unknown as MonthlyPlanItemInput;
+            const taskStatus = data.status === 'completed' ? 'done' : (data.status === 'partial' ? 'in_progress' : (data.status === 'incomplete' ? 'incomplete' : 'todo'));
+            const taskPayload = {
+                title: data.task_name,
+                description: data.deliverable || '',
+                task_type: (data as any).task_type || 'internal',
+                status: taskStatus,
+                due_date: data.due_date || new Date(year, month, 0).toISOString().split('T')[0],
+                start_date: `${year}-${String(month).padStart(2, '0')}-01`,
+                project_id: data.project_id || null,
+                department_code: departmentCode,
+                annual_plan_item_id: data.annual_plan_item_id || null,
+                project_plan_step_id: data.source_project_plan_item_id || null,
+                source_type: data.source_type || 'manual',
+                notes: data.notes || '',
+                completion_result: data.completion_result || '',
+                incomplete_reason: data.incomplete_reason || '',
+                sort_order: Number(data.sort_order) || 0,
+                collaborator_ids: data.collaborating_dept_codes || [],
+                metadata: {
+                    collaborating_text: data.collaborating_text || '',
+                    deadline_note: data.deadline_note || '',
+                }
+            };
+
             if (item) {
-                await MonthlyPlanItemService.update(item.id, payload);
+                const { error } = await supabase
+                    .from('tasks')
+                    .update(taskPayload as any)
+                    .eq('id', item.id);
+                if (error) throw error;
             } else {
-                await MonthlyPlanItemService.create(payload);
+                const { error } = await supabase
+                    .from('tasks')
+                    .insert(taskPayload as any);
+                if (error) throw error;
             }
             onSaved();
         } catch (e: any) {

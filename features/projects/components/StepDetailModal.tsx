@@ -290,27 +290,29 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                             }`}
                                         >
                                             <div className="flex items-start gap-3">
-                                                {/* Status Dot */}
+                                                {/* Status Icon */}
                                                 <button
                                                     onClick={(e) => onQuickStatusChange(e, task)}
-                                                    className={`mt-0.5 w-5 h-5 rounded-full shrink-0 transition-transform hover:scale-125 ring-2 ring-offset-1 dark:ring-offset-slate-800 ${
-                                                        task.Status === TaskStatus.Done
-                                                            ? 'bg-emerald-500 ring-emerald-200 dark:ring-emerald-700'
-                                                            : task.Status === TaskStatus.Review
-                                                                ? 'bg-purple-500 ring-purple-200 dark:ring-purple-700'
-                                                                : task.Status === TaskStatus.InProgress
-                                                                    ? 'bg-blue-500 ring-blue-200 dark:ring-blue-700'
-                                                                    : 'bg-gray-200 dark:bg-slate-600 ring-gray-100 dark:ring-slate-500'
-                                                    }`}
+                                                    className="mt-0.5 focus:outline-none shrink-0 transition-all duration-200 hover:scale-115"
                                                     title="Click để chuyển trạng thái"
-                                                />
+                                                >
+                                                    {(() => {
+                                                        const isReview = task.Status === TaskStatus.Review || (task.Status as any) === 'Review' || (task.Status as any) === 'review';
+                                                        const isInProgress = task.Status === TaskStatus.InProgress || (task.Status as any) === 'InProgress' || (task.Status as any) === 'in_progress';
+                                                        
+                                                        if (task.Status === TaskStatus.Done) return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+                                                        if (isReview) return <AlertCircle className="w-4 h-4 text-primary-500" />;
+                                                        if (isInProgress) return <Clock className="w-4 h-4 text-blue-500 animate-pulse" />;
+                                                        return <Circle className="w-4 h-4 text-gray-300 dark:text-slate-600 hover:text-gray-400 dark:hover:text-slate-450" />;
+                                                    })()}
+                                                </button>
 
                                                 {/* Content */}
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 flex-wrap">
                                                         <span className={`text-sm font-medium ${
                                                             task.Status === TaskStatus.Done
-                                                                ? 'text-gray-400 dark:text-slate-400 line-through'
+                                                                ? 'text-gray-400 dark:text-slate-400'
                                                                 : overdueFlag
                                                                     ? 'text-red-700 dark:text-red-400'
                                                                     : 'text-gray-800 dark:text-slate-200'

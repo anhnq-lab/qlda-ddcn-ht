@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Task, TaskStatus, TaskPriority, Employee } from '../../types';
 import { TASK_CATEGORIES, TASK_CATEGORY_LABELS, type TaskCategory } from '../../types/task.types';
-import { useMonthlyPlanItemOptions } from '../../hooks/usePlanData';
+import { useAuth } from '../../context/AuthContext';
 import {
-    X, CheckCircle2, Clock, AlertCircle, XCircle,
+    X, CheckCircle2, Clock, AlertCircle, XCircle, AlertTriangle,
 } from 'lucide-react';
 
 // ── Helpers ──
@@ -53,7 +53,6 @@ interface TaskCreateEditModalProps {
     isEditMode: boolean;
     projects: Project[];
     employees: Employee[];
-    presetMonthlyPlanItemId?: string;
 }
 
 export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
@@ -64,13 +63,9 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
     isEditMode,
     projects,
     employees,
-    presetMonthlyPlanItemId,
 }) => {
+    const { currentUser } = useAuth();
     const [formData, setFormData] = useState<Partial<Task>>(initialData);
-
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    const { options: planItemOptions } = useMonthlyPlanItemOptions(currentMonth, currentYear);
 
     useEffect(() => {
         if (isOpen) {
@@ -78,18 +73,39 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                 Status: TaskStatus.Todo,
                 Priority: TaskPriority.Medium,
                 ...initialData,
-                ...(presetMonthlyPlanItemId && !initialData.MonthlyPlanItemID
-                    ? { MonthlyPlanItemID: presetMonthlyPlanItemId }
-                    : {}),
             });
         }
-    }, [isOpen, initialData, presetMonthlyPlanItemId]);
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
+    const isMultiMonth = useMemo(() => {
+        if (!formData.StartDate || !formData.DueDate) return false;
+        const start = new Date(formData.StartDate);
+        const end = new Date(formData.DueDate);
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+        const yearDiff = end.getFullYear() - start.getFullYear();
+        const monthDiff = end.getMonth() - start.getMonth();
+        return (yearDiff * 12 + monthDiff) > 0;
+    }, [formData.StartDate, formData.DueDate]);
+
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+        
+        const finalData = { ...formData };
+        
+        if (!isEditMode) {
+            const userRole = (currentUser?.Role as string) || 'User';
+            const isDirector = userRole === 'Director' || userRole === 'DeputyDirector' || userRole === 'Admin';
+            const isDeptHead = userRole === 'DepartmentHead';
+            
+            if (!isDirector && !isDeptHead) {
+                finalData.IsSelfProposed = true;
+                finalData.ProposalStatus = 'pending';
+            }
+        }
+        
+        onSubmit(finalData);
     };
 
     return (
@@ -209,6 +225,16 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         </div>
                     </div>
 
+                    {/* Multi-month Warning */}
+                    {isMultiMonth && (
+                        <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-250 dark:border-amber-900 rounded-xl flex items-start gap-2 text-amber-800 dark:text-amber-300 text-xs leading-relaxed animate-in fade-in duration-200">
+                            <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+                            <div>
+                                <span className="font-bold">Cảnh báo:</span> Theo Quy chế KHCV (Điều 8.5), công việc không nên kéo dài nhiều tháng. Vui lòng chia nhỏ thành các công việc theo từng tháng tương ứng.
+                            </div>
+                        </div>
+                    )}
+
                     {/* Trạng thái + Ưu tiên */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -237,21 +263,37 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Phân loại công việc */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
-                            Phân loại
-                        </label>
-                        <select
-                            value={formData.Category || ''}
-                            onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-                        >
-                            <option value="">-- Chọn phân loại --</option>
-                            {TASK_CATEGORIES.map(cat => (
-                                <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
-                            ))}
-                        </select>
+                    {/* Phân loại công việc & Cấp thực hiện (Điều 17) */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Phân loại <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                required
+                                value={formData.Category || ''}
+                                onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="">-- Chọn phân loại --</option>
+                                {TASK_CATEGORIES.map(cat => (
+                                    <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                                Cấp thực hiện
+                            </label>
+                            <select
+                                value={formData.ResponsibilityLevel || 'individual'}
+                                onChange={e => setFormData({ ...formData, ResponsibilityLevel: e.target.value as any })}
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                            >
+                                <option value="individual">Cá nhân</option>
+                                <option value="team">Tập thể phòng</option>
+                            </select>
+                        </div>
                     </div>
 
                     {/* Kết quả thực hiện — hiện khi done hoặc in_progress */}
@@ -302,8 +344,8 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         />
                     </div>
 
-                    {/* Dự án + Kế hoạch tháng */}
-                    <div className="grid grid-cols-2 gap-4 pt-1 border-t border-slate-100 dark:border-slate-700">
+                    {/* Dự án */}
+                    <div className="pt-1 border-t border-slate-100 dark:border-slate-700">
                         <div>
                             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider mt-3">Dự án liên kết</label>
                             <select
@@ -316,19 +358,6 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                                     <option key={p.ProjectID} value={p.ProjectID}>
                                         {p.ProjectName.length > 28 ? p.ProjectName.substring(0, 28) + '...' : p.ProjectName}
                                     </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider mt-3">Kế hoạch tháng</label>
-                            <select
-                                value={formData.MonthlyPlanItemID || ''}
-                                onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
-                            >
-                                <option value="">-- Liên kết KH tháng (tùy chọn) --</option>
-                                {planItemOptions.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </select>
                         </div>

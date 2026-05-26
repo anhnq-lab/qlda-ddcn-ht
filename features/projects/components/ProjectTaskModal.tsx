@@ -18,7 +18,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjects } from '@/hooks/useProjects';
-import { useMonthlyPlanItemOptions } from '@/hooks/usePlanData';
 import { DEPARTMENT_NAMES } from '@/types/plan.types';
 import {
     todayISO,
@@ -55,7 +54,6 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const { projects = [] } = useProjects();
     const [planMonth, setPlanMonth] = useState(new Date().getMonth() + 1);
     const [planYear, setPlanYear] = useState(new Date().getFullYear());
-    const { options: planItemOptions } = useMonthlyPlanItemOptions(planMonth, planYear);
     const updateTaskMutation = useUpdateTask();
 
     const [formData, setFormData] = useState<Partial<Task>>({
@@ -75,27 +73,6 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         }
     }, [formData.DueDate]);
 
-    // Đồng bộ tháng/năm từ Kế hoạch tháng liên kết sẵn
-    useEffect(() => {
-        const fetchPlanDate = async () => {
-            const planItemId = initialData?.MonthlyPlanItemID || formData.MonthlyPlanItemID;
-            if (planItemId) {
-                const { data } = await supabase
-                    .from('monthly_plan_items')
-                    .select('monthly_plans(plan_month, plan_year)')
-                    .eq('id', planItemId)
-                    .maybeSingle();
-                const plan = (data as any)?.monthly_plans;
-                if (plan) {
-                    setPlanMonth(plan.plan_month);
-                    setPlanYear(plan.plan_year);
-                }
-            }
-        };
-        if (isOpen) {
-            fetchPlanDate().catch(console.error);
-        }
-    }, [initialData?.MonthlyPlanItemID, formData.MonthlyPlanItemID, isOpen]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [activeSection, setActiveSection] = useState<string>('basic');
@@ -531,21 +508,6 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-gray-400" /> Kế hoạch tháng
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 text-sm"
-                                            value={formData.MonthlyPlanItemID || ''}
-                                            onChange={e => setFormData({ ...formData, MonthlyPlanItemID: e.target.value })}
-                                        >
-                                            <option value="">-- Thuộc KH Tháng (Tùy chọn) --</option>
-                                            {planItemOptions.map(opt => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-4">
@@ -702,7 +664,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 {(sub.Status as any) === 'Done' || sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
                                             </div>
                                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                                <p className={`text-xs font-semibold ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-slate-300'}`}>{sub.Title}</p>
+                                                <p className={`text-xs font-semibold ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'text-gray-400' : 'text-gray-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                     <span className="text-[10px] text-gray-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md ring-1 ring-gray-100 dark:ring-slate-600 flex items-center gap-1">
                                                         <User className="w-3 h-3" />

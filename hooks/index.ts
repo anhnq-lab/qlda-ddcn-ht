@@ -8,3 +8,4 @@ export { useBiddingPackages } from './useBiddingPackages';
 export { useAllBiddingPackages } from './useAllBiddingPackages';
 export { usePayments, useCreatePayment, useUpdatePayment, useDeletePayment } from './usePayments';
 export { useErrorToast } from './useErrorToast';
+export { useNotifications, useUnreadNotificationsCount, useMarkNotificationAsRead, useMarkAllNotificationsAsRead, useCreateNotification } from './useNotifications';

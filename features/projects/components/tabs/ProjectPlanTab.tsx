@@ -690,7 +690,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
 
     return (
-        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
+        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-3.5 py-2">
 
             {/* 1. Overall Dashboard Header: Progress & Milestones */}
             <div className="w-full">

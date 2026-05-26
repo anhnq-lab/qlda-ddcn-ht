@@ -86,6 +86,15 @@ export interface AnnualPlanItem {
     notes?: string;
     sort_order?: number;
 
+    // Approval Workflow columns (Điều 7)
+    approval_status?: 'draft' | 'submitted' | 'approved' | 'rejected';
+    submitted_by?: string;
+    submitted_at?: string;
+    approved_by?: string;
+    approved_at?: string;
+    rejected_reason?: string;
+    adjustment_reason?: string;
+
     created_by?: string;
     created_at?: string;
     updated_at?: string;
@@ -170,6 +179,7 @@ export interface MonthlyPlanItem {
     // Links
     annual_plan_item_id?: string;
     project_id?: string;            // Tự liên kết với dự án (user-facing, không phải project step)
+    project_name?: string;
 
     // Nguồn gốc (source tracking)
     source_task_id?: string;      // Task cấp phòng từ KHTHDA

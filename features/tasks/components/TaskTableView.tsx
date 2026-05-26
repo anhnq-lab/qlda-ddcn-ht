@@ -4,6 +4,7 @@ import PermissionGate from '../../../components/PermissionGate';
 import { EmptyState, StatusBadge, Avatar } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
 import { TASK_CATEGORY_LABELS, TASK_CATEGORY_COLORS, type TaskCategory } from '../../../types/task.types';
+import { DEPARTMENT_NAMES, DepartmentCode } from '../../../types/plan.types';
 import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
 interface TaskTableViewProps {
     paginatedTasks: Task[];
@@ -183,6 +184,13 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                                 <span className="inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-500/20">
                                                     <Layers className="w-2.5 shrink-0 h-2.5" />
                                                     <span className="line-clamp-1">{assignee.Department.replace('Phòng ', '')}</span>
+                                                </span>
+                                            ) : task.DepartmentCode ? (
+                                                <span className="inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400 ring-1 ring-slate-200 dark:ring-slate-500/20">
+                                                    <Layers className="w-2.5 shrink-0 h-2.5" />
+                                                    <span className="line-clamp-1">
+                                                        {(DEPARTMENT_NAMES[task.DepartmentCode as DepartmentCode] || task.DepartmentCode).replace('Phòng ', '')}
+                                                    </span>
                                                 </span>
                                             ) : (
                                                 <span className="text-[9px] text-slate-300 dark:text-slate-600">—</span>

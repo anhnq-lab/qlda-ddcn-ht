@@ -339,4 +339,5 @@ export class EmployeeService {
     }
 }
 
+export const getEmployees = () => EmployeeService.getAll();
 export default EmployeeService;

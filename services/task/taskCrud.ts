@@ -2,6 +2,7 @@
 import { supabase } from '../../lib/supabase';
 import { toServiceError } from '../ServiceError';
 import { DbTask, DbSubTask, isDepartmentCode } from './helpers';
+import { NotificationService } from '../NotificationService';
 
 // ── READ ─────────────────────────────────────────────────────────────
 
@@ -82,17 +83,23 @@ export const getTasksByEmployeeAndMonth = async (
 export const getTasksByDepartmentAndMonth = async (
   month: number,
   year: number,
-  _departmentName?: string
+  departmentCode?: string
 ): Promise<DbTask[]> => {
   const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
   const endDate = new Date(year, month, 0).toISOString().split('T')[0];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('tasks')
     .select('*, projects(project_name)')
     .is('parent_id', null)
     .gte('due_date', startDate)
-    .lte('due_date', endDate)
+    .lte('due_date', endDate);
+
+  if (departmentCode) {
+    query = query.eq('department_code', departmentCode);
+  }
+
+  const { data, error } = await query
     .order('category', { ascending: true })
     .order('sort_order', { ascending: true });
 
@@ -163,7 +170,19 @@ export const createTask = async (task: Partial<DbTask>): Promise<DbTask> => {
     .single();
 
   if (error) throw toServiceError(error, 'Không thể tạo công việc');
-  return data as unknown as DbTask;
+  const createdTask = data as unknown as DbTask;
+
+  try {
+    if (createdTask.is_self_proposed && createdTask.proposal_status === 'pending' && createdTask.assignee_id) {
+      NotificationService.notifyTaskProposal(createdTask.title, createdTask.id, createdTask.assignee_id);
+    } else if (createdTask.assignee_id && createdTask.assignee_id !== createdTask.created_by) {
+      NotificationService.notifyTaskAssigned(createdTask.title, createdTask.id, createdTask.assignee_id);
+    }
+  } catch (notifErr) {
+    console.error('Failed to trigger notification on task creation:', notifErr);
+  }
+
+  return createdTask;
 };
 
 /** Cập nhật task (flat — không còn xử lý sub_tasks) */
@@ -203,18 +222,132 @@ export const saveTask = async (task: Partial<DbTask> & { id?: string }): Promise
   return task.id ? updateTask(task.id, task) : createTask(task);
 };
 
-/** Xóa task */
-export const deleteTask = async (taskId: string): Promise<void> => {
+/** Xóa task (Delete Guard - Điều 14) */
+export const deleteTask = async (taskId: string, currentEmployeeId?: string): Promise<void> => {
+  // 1. Lấy thông tin công việc để kiểm tra quyền
+  const { data, error: fetchErr } = await (supabase as any)
+    .from('tasks')
+    .select('assignee_id, created_by, is_self_proposed, proposal_status')
+    .eq('id', taskId)
+    .single();
+  if (fetchErr) throw toServiceError(fetchErr, 'Không tìm thấy công việc để xóa');
+
+  const task = data as any;
+
+  // Nếu là công việc tự đề xuất
+  if (task.is_self_proposed) {
+    if (task.proposal_status && task.proposal_status !== 'pending') {
+      throw new Error('Không thể xóa công việc tự đề xuất đã được duyệt hoặc từ chối');
+    }
+  } else {
+    // Nếu là công việc được giao (không phải tự đề xuất)
+    // Cán bộ (assignee) không được xóa công việc do trưởng phòng giao
+    if (currentEmployeeId && task.assignee_id === currentEmployeeId) {
+      const { data: emp } = await supabase
+        .from('employees')
+        .select('role')
+        .eq('employee_id', currentEmployeeId)
+        .single();
+      
+      const isStaff = emp && (emp.role === 'User' || emp.role === 'staff');
+      if (isStaff) {
+        throw new Error('Cán bộ không được phép xóa công việc do Trưởng phòng giao');
+      }
+    }
+  }
+
   const { error } = await supabase.from('tasks').delete().eq('id', taskId);
   if (error) throw toServiceError(error, 'Không thể xóa công việc');
 };
 
-/** Xóa tất cả tasks + steps của dự án */
-export const deleteProjectTasks = async (projectId: string): Promise<number> => {
-  // Trigger BEFORE DELETE trên monthly_plan_items sẽ cascade xóa tasks
-  await (supabase as any).from('monthly_plan_items').delete().eq('project_id', projectId);
+/** Đề xuất công việc (Cán bộ tự đề xuất - Điều 9.3) */
+export const proposeTask = async (task: Partial<DbTask>): Promise<DbTask> => {
+  return createTask({
+    ...task,
+    is_self_proposed: true,
+    proposal_status: 'pending'
+  });
+};
 
-  // Xóa luôn tasks không link MPI (safeguard)
+/** Duyệt đề xuất công việc */
+export const approveProposal = async (taskId: string, approverEmployeeId: string): Promise<DbTask> => {
+  const result = await updateTask(taskId, {
+    proposal_status: 'approved',
+    proposal_approved_by: approverEmployeeId,
+    proposal_approved_at: new Date().toISOString()
+  });
+
+  try {
+    if (result.assignee_id) {
+      await NotificationService.notifyProposalResponse(result.title, result.id, result.assignee_id, true);
+    }
+  } catch (notifErr) {
+    console.error('Failed to trigger proposal approval notification:', notifErr);
+  }
+
+  return result;
+};
+
+/** Từ chối đề xuất công việc */
+export const rejectProposal = async (taskId: string, approverEmployeeId: string): Promise<DbTask> => {
+  const result = await updateTask(taskId, {
+    proposal_status: 'rejected',
+    proposal_approved_by: approverEmployeeId,
+    proposal_approved_at: new Date().toISOString()
+  });
+
+  try {
+    if (result.assignee_id) {
+      await NotificationService.notifyProposalResponse(result.title, result.id, result.assignee_id, false);
+    }
+  } catch (notifErr) {
+    console.error('Failed to trigger proposal rejection notification:', notifErr);
+  }
+
+  return result;
+};
+
+/** Gia hạn / hoãn việc sang tháng sau (Điều 20.2) */
+export const deferToNextMonth = async (taskId: string, reason: string): Promise<DbTask> => {
+  const task = await getTaskById(taskId);
+  if (!task) throw new Error('Không tìm thấy công việc');
+
+  // Đánh dấu task cũ chưa hoàn thành với lý do
+  await updateTask(taskId, {
+    status: 'incomplete' as any,
+    incomplete_reason: reason,
+    incomplete_reason_type: 'objective' // Gia hạn / hoãn việc do nguyên nhân khách quan
+  });
+
+  // Clone sang tháng tiếp theo
+  const oldDueDate = task.due_date ? new Date(task.due_date) : new Date();
+  const nextDueDate = new Date(oldDueDate.getFullYear(), oldDueDate.getMonth() + 1, oldDueDate.getDate());
+  
+  const oldStartDate = task.start_date ? new Date(task.start_date) : new Date();
+  const nextStartDate = new Date(oldStartDate.getFullYear(), oldStartDate.getMonth() + 1, oldStartDate.getDate());
+
+  const { id: _id, created_at: _c, updated_at: _u, ...rest } = task;
+  
+  return createTask({
+    ...rest,
+    status: 'todo' as any,
+    progress: 0,
+    due_date: nextDueDate.toISOString().split('T')[0],
+    start_date: nextStartDate.toISOString().split('T')[0],
+    actual_start_date: null,
+    actual_end_date: null,
+    completion_result: null,
+    incomplete_reason: null,
+    incomplete_reason_type: null,
+    metadata: {
+      ...task.metadata,
+      deferred_from_task_id: taskId
+    }
+  });
+};
+
+/** Xóa tất cả tasks của dự án */
+export const deleteProjectTasks = async (projectId: string): Promise<number> => {
   const { data, error } = await supabase
     .from('tasks')
     .delete()
@@ -223,25 +356,4 @@ export const deleteProjectTasks = async (projectId: string): Promise<number> => 
 
   if (error) throw toServiceError(error, 'Không thể xóa công việc dự án');
   return data?.length || 0;
-};
-
-// ── SUB-TASKS (deprecated — bỏ sau refactor 24/05/2026) ──────────────
-// Giữ no-op để backward-compat trong 1 phiên bản; sẽ xóa hẳn ở refactor sau.
-
-/** @deprecated subtask đã bị loại bỏ. Hàm này no-op để tránh phá build. */
-export const saveSubTask = async (
-  _subTask: Partial<DbSubTask> & { task_id: string }
-): Promise<DbSubTask> => {
-  console.warn('[DEPRECATED] saveSubTask: subtask concept đã bị loại bỏ. Dùng saveTask thay thế.');
-  throw new Error('Sub-task không còn được hỗ trợ. Vui lòng tạo task cá nhân trực tiếp.');
-};
-
-/** @deprecated subtask đã bị loại bỏ. */
-export const deleteSubTask = async (_subTaskId: string): Promise<void> => {
-  console.warn('[DEPRECATED] deleteSubTask: subtask concept đã bị loại bỏ.');
-};
-
-/** @deprecated subtask đã bị loại bỏ → return rỗng. */
-export const getSubTasks = async (_taskId: string): Promise<DbSubTask[]> => {
-  return [];
 };

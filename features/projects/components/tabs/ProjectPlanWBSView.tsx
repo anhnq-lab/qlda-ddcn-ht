@@ -179,7 +179,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
     };
 
     return (
-        <div className="space-y-4 relative">
+        <div className="space-y-2.5 relative">
             {/* Header - py-2 px-3 giúp gọn gàng trên 1 hàng */}
             <div className="bg-gradient-to-r from-primary-50 to-warning-50 dark:from-transparent dark:to-transparent dark:bg-slate-800 border border-primary-200 dark:border-slate-700 py-2 px-3 rounded-xl flex justify-between items-center shadow-sm text-xs">
                 <div className="flex items-center gap-2">
@@ -323,12 +323,12 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                         <table className="w-full text-xs text-left border-collapse min-w-[900px]">
                             <thead>
                                 <tr className="border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] sticky top-0 z-10 backdrop-blur-sm bg-slate-50/90 dark:bg-slate-800/90">
-                                    <th className="py-2.5 px-4 w-[42%]">Nội dung công việc / Bước quy trình</th>
-                                    <th className="py-2.5 px-2 w-[10%] text-center">Tiến độ</th>
-                                    <th className="py-2.5 px-3 w-[16%] text-left">Phụ trách / Vai trò</th>
-                                    <th className="py-2.5 px-4 w-[16%] text-left">Thời hạn thực hiện</th>
-                                    <th className="py-2.5 px-3 w-[11%] text-left">Trạng thái</th>
-                                    <th className="py-2.5 px-2 w-[5%] text-center">Thao tác</th>
+                                    <th className="py-1.5 px-4 w-[42%]">Nội dung công việc / Bước quy trình</th>
+                                    <th className="py-1.5 px-2 w-[10%] text-center">Tiến độ</th>
+                                    <th className="py-1.5 px-3 w-[16%] text-left">Phụ trách / Vai trò</th>
+                                    <th className="py-1.5 px-4 w-[16%] text-left">Thời hạn thực hiện</th>
+                                    <th className="py-1.5 px-3 w-[11%] text-left">Trạng thái</th>
+                                    <th className="py-1.5 px-2 w-[5%] text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
@@ -407,23 +407,23 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                     {/* Step Row */}
                                                                     <tr className={`bg-slate-50/40 dark:bg-slate-800/20 border-b border-gray-150 dark:border-slate-800/80 hover:bg-slate-100/40 dark:hover:bg-slate-800/30 transition-colors group border-l-4 ${stepBorderColor}`}>
                                                                         {/* Cột 1: Tiêu đề bước */}
-                                                                        <td className="py-2.5 px-3 flex items-center gap-2 min-w-0">
+                                                                        <td className="py-1.5 px-3 flex items-center gap-2 min-w-0">
                                                                             <button
                                                                                 onClick={() => toggleStep(item.code)}
                                                                                 className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors shrink-0"
                                                                                 title={stepExpanded ? "Thu gọn danh sách công việc" : "Mở rộng danh sách công việc"}
                                                                             >
-                                                                                {stepExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                                                                                {stepExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                                                                             </button>
                                                                             <div className="shrink-0">
                                                                                 {isParentDone ? (
-                                                                                    <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500" />
+                                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                                                                                 ) : parentStatus === TaskStatus.Review ? (
-                                                                                    <AlertCircle className="w-4.5 h-4.5 text-primary-500" />
+                                                                                    <AlertCircle className="w-3.5 h-3.5 text-primary-500" />
                                                                                 ) : parentStatus === TaskStatus.InProgress ? (
-                                                                                    <Clock className="w-4.5 h-4.5 text-blue-500 animate-pulse" />
+                                                                                    <Clock className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
                                                                                 ) : (
-                                                                                    <Circle className="w-4.5 h-4.5 text-gray-300 dark:text-slate-600" />
+                                                                                    <Circle className="w-3.5 h-3.5 text-gray-300 dark:text-slate-600" />
                                                                                 )}
                                                                             </div>
 
@@ -442,7 +442,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         </td>
 
                                                                         {/* Cột 2: Tiến độ việc con */}
-                                                                        <td className="py-2.5 px-2 text-center">
+                                                                        <td className="py-1.5 px-2 text-center">
                                                                             <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
                                                                                 ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
                                                                                 : completedCount === linkedTasks.length
@@ -454,7 +454,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         </td>
 
                                                                         {/* Cột 3: Phụ trách / Vai trò */}
-                                                                        <td className="py-2.5 px-3 text-left">
+                                                                        <td className="py-1.5 px-3 text-left">
                                                                             {item.raci && item.raci.length > 0 ? (
                                                                                 <RaciHoverBadge raciList={item.raci} />
                                                                             ) : displayRole ? (
@@ -468,7 +468,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         </td>
 
                                                                         {/* Cột 4: Thời hạn */}
-                                                                        <td className="py-2.5 px-4 text-left text-[10px] whitespace-nowrap text-gray-500 dark:text-slate-400" title={item.startDate && item.dueDate ? `${formatDateShort(item.startDate)} - ${formatDateShort(item.dueDate)}` : 'Chưa xác định'}>
+                                                                        <td className="py-1.5 px-4 text-left text-[10px] whitespace-nowrap text-gray-500 dark:text-slate-400" title={item.startDate && item.dueDate ? `${formatDateShort(item.startDate)} - ${formatDateShort(item.dueDate)}` : 'Chưa xác định'}>
                                                                             {item.startDate || item.dueDate ? (
                                                                                 <span className="flex items-center gap-1">
                                                                                     <Calendar className="w-3 h-3 text-gray-400 shrink-0" />
@@ -487,7 +487,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         </td>
 
                                                                         {/* Cột 5: Trạng thái */}
-                                                                        <td className="py-2.5 px-3 text-left">
+                                                                        <td className="py-1.5 px-3 text-left">
                                                                             {(() => {
                                                                                 const statusCfg = getStatusConfig(parentStatus);
                                                                                 return (
@@ -500,7 +500,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                         </td>
 
                                                                         {/* Cột 6: Thao tác */}
-                                                                        <td className="py-2.5 px-2 text-center">
+                                                                        <td className="py-1.5 px-2 text-center">
                                                                             <button
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
@@ -525,16 +525,22 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     className={`cursor-pointer transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-800/30 border-b border-gray-100 dark:border-slate-800/60 group/task ${isOver ? 'bg-red-50/30 dark:bg-red-950/10' : ''}`}
                                                                                 >
                                                                                     {/* Cột 1: Tên công việc (Thụt lề pl-8) */}
-                                                                                    <td className="py-2.5 pl-8 pr-3 flex items-center gap-2 min-w-0">
+                                                                                    <td className="py-1 pl-8 pr-3 flex items-center gap-2 min-w-0">
                                                                                         <button
                                                                                             onClick={(e) => onQuickStatusChange(e, t)}
-                                                                                            className={`w-3.5 h-3.5 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 dark:ring-offset-slate-800 shrink-0 ${isTaskDone ? 'bg-emerald-500 ring-emerald-200 dark:ring-emerald-700' :
-                                                                                                t.Status === TaskStatus.Review || (t.Status as any) === 'Review' || (t.Status as any) === 'review' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700' :
-                                                                                                    t.Status === TaskStatus.InProgress || (t.Status as any) === 'InProgress' || (t.Status as any) === 'in_progress' ? 'bg-primary-500 ring-primary-200 dark:ring-primary-700 animate-pulse' :
-                                                                                                        'bg-gray-200 dark:bg-slate-600 ring-gray-100 dark:ring-slate-500 hover:bg-gray-300 dark:hover:bg-slate-500'
-                                                                                                }`}
+                                                                                            className="focus:outline-none shrink-0 transition-all duration-200 hover:scale-115"
                                                                                             title="Click để chuyển trạng thái nhanh"
-                                                                                        />
+                                                                                        >
+                                                                                            {(() => {
+                                                                                                const isReview = t.Status === TaskStatus.Review || (t.Status as any) === 'Review' || (t.Status as any) === 'review';
+                                                                                                const isInProgress = t.Status === TaskStatus.InProgress || (t.Status as any) === 'InProgress' || (t.Status as any) === 'in_progress';
+                                                                                                
+                                                                                                if (isTaskDone) return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />;
+                                                                                                if (isReview) return <AlertCircle className="w-3.5 h-3.5 text-primary-500" />;
+                                                                                                if (isInProgress) return <Clock className="w-3.5 h-3.5 text-blue-500 animate-pulse" />;
+                                                                                                return <Circle className="w-3.5 h-3.5 text-gray-300 dark:text-slate-650 hover:text-gray-400 dark:hover:text-slate-450" />;
+                                                                                            })()}
+                                                                                        </button>
 
                                                                                         <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                                                                                             {t.SubTasks && t.SubTasks.length > 0 && (
@@ -546,7 +552,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                                     {expandedMasterTasks[t.TaskID] ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> : <ChevronDown className="w-3 h-3" />}
                                                                                                 </button>
                                                                                             )}
-                                                                                            <span className={`text-[11px] truncate ${isTaskDone ? 'text-gray-400 dark:text-slate-500 line-through' : isOver ? 'text-red-700 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-slate-300'}`}>
+                                                                                            <span className={`text-[11px] truncate ${isTaskDone ? 'text-gray-400 dark:text-slate-500' : isOver ? 'text-red-700 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                                                 {t.Title.replace(/^[\d\.\:\s]+/, '').trim()}
                                                                                             </span>
                                                                                             {t.IsCritical && (
@@ -558,7 +564,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     </td>
 
                                                                                     {/* Cột 2: Tiến độ % */}
-                                                                                    <td className="py-2.5 px-2 text-center">
+                                                                                    <td className="py-1 px-2 text-center">
                                                                                         <ProgressBadge
                                                                                             value={t.ProgressPercent || (isTaskDone ? 100 : 0)}
                                                                                             size="sm"
@@ -566,10 +572,10 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     </td>
 
                                                                                     {/* Cột 3: Người phụ trách */}
-                                                                                    <td className="py-2.5 px-3 text-left max-w-[150px] truncate text-gray-500 dark:text-slate-400">
+                                                                                    <td className="py-1 px-3 text-left max-w-[150px] truncate text-gray-500 dark:text-slate-400">
                                                                                         {t.AssigneeID && employeeNameMap[t.AssigneeID] ? (
                                                                                             <div className="flex items-center gap-1 truncate" title={employeeNameMap[t.AssigneeID]}>
-                                                                                                <User className="w-3.5 h-3.5 shrink-0 text-gray-400" />
+                                                                                                <User className="w-3 h-3 shrink-0 text-gray-400" />
                                                                                                 <span className="truncate text-[10.5px] font-medium text-gray-700 dark:text-slate-300">{employeeNameMap[t.AssigneeID]}</span>
                                                                                             </div>
                                                                                         ) : (
@@ -578,7 +584,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     </td>
 
                                                                                     {/* Cột 4: Thời hạn & Tương đối */}
-                                                                                    <td className={`py-2.5 px-4 text-left ${isOver ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-slate-400'}`}>
+                                                                                    <td className={`py-1 px-4 text-left ${isOver ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-slate-400'}`}>
                                                                                         {isTaskDone ? (
                                                                                             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium" title={t.ActualEndDate ? `Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}` : 'Đã hoàn thành'}>
                                                                                                 <CheckCircle2 className="w-3 h-3 shrink-0" />
@@ -607,7 +613,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     </td>
 
                                                                                     {/* Cột 5: Trạng thái task */}
-                                                                                    <td className="py-2.5 px-3 text-left">
+                                                                                    <td className="py-1 px-3 text-left">
                                                                                         {(() => {
                                                                                             const statusCfg = getStatusConfig(t.Status);
                                                                                             return (
@@ -620,7 +626,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                     </td>
 
                                                                                     {/* Cột 6: Thao tác */}
-                                                                                    <td className="py-2.5 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                                                                                    <td className="py-1 px-2 text-center" onClick={(e) => e.stopPropagation()}>
                                                                                         <div className="flex items-center justify-center gap-1 opacity-0 group-hover/task:opacity-100 transition-opacity">
                                                                                             <button
                                                                                                 onClick={() => {
@@ -667,7 +673,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                 {/* Subtasks details inside Task Row (if expanded) */}
                                                                                 {t.SubTasks && t.SubTasks.length > 0 && expandedMasterTasks[t.TaskID] && (
                                                                                     <tr className="bg-slate-50/20 dark:bg-slate-800/10 border-b border-gray-100 dark:border-slate-800/40">
-                                                                                        <td colSpan={6} className="py-2.5 px-4">
+                                                                                        <td colSpan={6} className="py-1.5 px-4">
                                                                                             <div className="pl-12 border-l-2 border-primary-200 dark:border-slate-650 space-y-1">
                                                                                                 <h6 className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500 tracking-wider flex items-center gap-1">
                                                                                                     <ListChecks className="w-3 h-3" /> Các công việc thuộc bước ({t.SubTasks.length})
@@ -676,7 +682,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                                                     {t.SubTasks.map(sub => (
                                                                                                         <div key={sub.SubTaskID} className="flex items-center gap-2 text-[11px] py-1 px-2 hover:bg-white dark:hover:bg-slate-800 rounded-md border border-transparent hover:border-gray-100 dark:hover:border-slate-700 transition-colors">
                                                                                                             <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${(sub.Status as any) === 'Done' || (sub.Status as any) === 'done' ? 'bg-emerald-500' : (sub.Status as any) === 'InProgress' || (sub.Status as any) === 'in_progress' ? 'bg-warning-500' : 'bg-gray-300 dark:bg-slate-650'}`} />
-                                                                                                            <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' || (sub.Status as any) === 'done' ? 'text-gray-400 dark:text-slate-500 line-through' : 'text-gray-700 dark:text-slate-300'}`}>
+                                                                                                            <span className={`flex-1 font-medium ${(sub.Status as any) === 'Done' || (sub.Status as any) === 'done' ? 'text-gray-400 dark:text-slate-500' : 'text-gray-700 dark:text-slate-300'}`}>
                                                                                                                 {sub.Title.replace(/^[\d\.\:\s]+/, '').trim()}
                                                                                                             </span>
                                                                                                             <div className="flex items-center gap-3 shrink-0 text-[10px]">

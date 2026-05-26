@@ -58,15 +58,15 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     const loadTasks = async () => {
         setTasksLoading(true);
         try {
-            const conditions = [`monthly_plan_item_id.eq.${item.id}`, `metadata->>monthly_plan_item_id.eq.${item.id}`];
-            if (item.source_subtask_id) {
-                conditions.push(`id.eq.${item.source_subtask_id}`);
+            if (!item.source_project_plan_item_id) {
+                setTasks([]);
+                setTasksLoading(false);
+                return;
             }
-            
             const { data, error } = await supabase
                 .from('tasks')
                 .select('id, title, status, priority, progress, assignee_id, due_date, metadata')
-                .or(conditions.join(','));
+                .eq('project_plan_step_id', item.source_project_plan_item_id);
             if (error) throw error;
             setTasks(data || []);
         } catch (err) {
@@ -101,12 +101,15 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
     const handleSaveTask = async (taskData: Partial<Task>) => {
         try {
-            const dbTaskData = taskToDbTask(taskData, (taskData as any).ProjectID || item.project_id || '');
-            dbTaskData.monthly_plan_item_id = item.id;
+            const dbTaskData = taskToDbTask(taskData, (taskData as any).ProjectID || item.project_id || '') as any;
+            dbTaskData.project_plan_step_id = item.source_project_plan_item_id || null;
+            dbTaskData.department_code = departmentCode || null;
+            dbTaskData.source_type = 'from_project_step';
+            
             if (dbTaskData.metadata) {
-                dbTaskData.metadata.monthly_plan_item_id = item.id;
+                dbTaskData.metadata.project_plan_step_id = item.source_project_plan_item_id || null;
             } else {
-                dbTaskData.metadata = { monthly_plan_item_id: item.id };
+                dbTaskData.metadata = { project_plan_step_id: item.source_project_plan_item_id || null };
             }
             await TaskService.saveTask(dbTaskData);
             setIsTaskModalOpen(false);
@@ -135,7 +138,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
             if (item.project_id) return item.project_id;
             if (item.source_project_plan_item_id) {
                 const { data: ppi } = await (supabase as any)
-                    .from('project_plan_items')
+                    .from('project_plan_steps')
                     .select('project_id')
                     .eq('id', item.source_project_plan_item_id)
                     .maybeSingle();
@@ -505,7 +508,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     onSubmit={handleSaveTask}
                     initialData={selectedTask || {
                         ProjectID: item.project_id || project?.ProjectID || '',
-                        MonthlyPlanItemID: item.id,
+                        ProjectPlanItemID: item.source_project_plan_item_id || '',
                         Title: item.task_name,
                         Description: item.deliverable,
                         DueDate: item.due_date

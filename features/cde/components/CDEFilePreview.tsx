@@ -84,7 +84,7 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                                 <iframe src={`${viewUrl}#toolbar=0`} className="w-full h-full border-0" title="PDF Viewer" />
                             ) : (
                                 <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
-                                    <img src={viewUrl} className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
+                                    <img src={viewUrl} crossOrigin="anonymous" className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
                                 </div>
                             )}
                         </div>

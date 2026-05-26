@@ -12,31 +12,31 @@
 
 <p align="right">{{diaDiem}}, ngày {{ngay}} tháng {{thang}} năm {{nam}}</p>
 
-<h3 align="center">THÔNG BÁO KHỞI CÔNG XÂY DỰNG HẠNG MỤC CÔNG TRÌNH, CÔNG TRÌNH XÂY DỰNG</h3>
+<h3 align="center">Khởi công xây dựng công trình</h3>
 
 ---
 
 **Kính gửi:** {{kinhGui}}
 
-{{tenCoQuan}} báo cáo về việc khởi công xây dựng hạng mục công trình, công trình xây dựng như sau:
+{{tenCoQuan}} thông báo khởi công xây dựng công trình với các nội dung sau:
 
-1. Tên công trình xây dựng: {{tenDuAn}}
+1. Tên công trình: {{tenDuAn}}
 2. Địa điểm xây dựng: {{diaDiemDuAn}}
-3. Tên và địa chỉ liên lạc của Chủ đầu tư: {{chuDauTu}}. Địa chỉ: {{diaChiChuDauTu}}
-4. Tên và số điện thoại liên lạc của cá nhân phụ trách trực tiếp: {{nguoiPhuTrach}}. Số điện thoại: {{soDienThoai}}
-5. Quy mô hạng mục công trình, công trình xây dựng: {{quyMoCongTrinh}}
-6. Danh sách các nhà thầu:
-   - Nhà thầu Tư vấn thiết kế: {{nhaThauThietKe}}. Địa chỉ: {{diaChiThietKe}}
-   - Nhà thầu Tư vấn giám sát: {{nhaThauGiamSat}}. Địa chỉ: {{diaChiGiamSat}}
-   - Nhà thầu thi công xây dựng: {{nhaThauThiCong}}
-7. Ngày khởi công và ngày hoàn thành (dự kiến):
-   - Ngày khởi công: {{ngayKhoiCong}}
-   - Ngày dự kiến hoàn thành: {{ngayHoanThanh}}
+3. Chủ đầu tư: {{chuDauTu}}
+4. Nhà thầu thi công xây dựng:
+   - {{nhaThauThiCong}}
+5. Tư vấn giám sát thi công xây dựng:
+   - {{nhaThauGiamSat}}
+6. Ngày khởi công: {{ngayKhoiCong}}
+7. Ngày hoàn thành dự kiến: {{ngayHoanThanh}}
+
+{{tenCoQuan}} thông báo để các cơ quan, đơn vị được biết và phối hợp./.
 
 ---
 
 | Nơi nhận: | **{{chucDanh}}** |
 |---|---|
 | - Như trên; | *(Ký, ghi rõ họ tên, đóng dấu)* |
-| - Giám đốc Ban (để báo cáo); | |
-| - Lưu: VT. | **{{nguoiKy}}** |
+| - Ban Giám đốc (để b/c); | |
+| - Phòng QLDA; | |
+| - Lưu: VT, KS(Bảo). | **{{nguoiKy}}** |

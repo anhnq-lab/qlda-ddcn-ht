@@ -16,6 +16,7 @@ const AISummaryWidget = lazy(() => import('../../../components/ai/AISummaryWidge
 const TaskCompletionChart = lazy(() => import('./TaskCompletionChart'));
 const ProjectStatusByBoardChart = lazy(() => import('./ProjectStatusByBoardChart'));
 const ProjectDetailedStatusWidget = lazy(() => import('./ProjectDetailedStatusWidget'));
+const ProjectSpecialtyChart = lazy(() => import('./ProjectSpecialtyChart'));
 
 // Panels
 const ProjectSlideTable = lazy(() => import('./panels/ProjectSlideTable'));
@@ -67,7 +68,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
     });
 
     const { data: projectRows, isLoading: loadingProjects } = useQuery({
-        queryKey: ['dashboard', 'projectSummary'],
+        queryKey: ['dashboard', 'projectSummary', 'v4'],
         queryFn: DashboardService.getProjectSummary,
         staleTime: STALE_5M,
     });
@@ -291,7 +292,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                 3. GIẢI NGÂN THEO BAN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[400px]">
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-1">
                     {capitalVsDisbursement && (
                         <Suspense fallback={
                             <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex items-center justify-center">
@@ -301,6 +302,11 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                             <CapitalDisbursementChart data={capitalVsDisbursement} onSegmentClick={handleCapitalClick} />
                         </Suspense>
                     )}
+                </div>
+                <div className="lg:col-span-1">
+                    <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>
+                        <ProjectSpecialtyChart projects={filteredRows} />
+                    </Suspense>
                 </div>
                 <div className="lg:col-span-1">
                     <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>

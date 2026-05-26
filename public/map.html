@@ -78,7 +78,8 @@
         }).setView([16.0, 106.0], 6);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+            attribution: '&copy; OpenStreetMap contributors',
+            crossOrigin: true
         }).addTo(map);
 
         L.control.zoom({ position: 'bottomright' }).addTo(map);

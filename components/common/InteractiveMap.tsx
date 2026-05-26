@@ -370,11 +370,14 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
             map.removeLayer(tileLayerRef.current);
         }
 
-        const tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        const tileUrl = theme === 'dark'
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         const tileAttribution = '&copy; OpenStreetMap contributors &copy; CARTO';
 
         const newTileLayer = L.tileLayer(tileUrl, {
             attribution: tileAttribution,
+            crossOrigin: true, // Enable CORS requests to resolve COEP (Cross-Origin Embedder Policy) block
         }).addTo(map);
 
         tileLayerRef.current = newTileLayer;

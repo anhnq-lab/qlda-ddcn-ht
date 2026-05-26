@@ -20,7 +20,7 @@ const CapitalSlideTable: React.FC<CapitalSlideTableProps> = ({ boardName, year }
     const { openPanel } = useSlidePanel();
     
     const { data: projectRows, isLoading } = useQuery({
-        queryKey: ['dashboard', 'projectSummary'],
+        queryKey: ['dashboard', 'projectSummary', 'v4'],
         queryFn: DashboardService.getProjectSummary,
         staleTime: 5 * 60 * 1000,
     });
