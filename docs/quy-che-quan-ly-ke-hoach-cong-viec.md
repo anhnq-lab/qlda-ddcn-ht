@@ -232,7 +232,7 @@ Danh mục này có thể được điều chỉnh, bổ sung theo Quyết đị
 
 ### Điều 13. Trách nhiệm của Trưởng phòng
 
-1. Chủ trì xây dựng Kế hoạch công việc năm của phòng theo đúng thời hạn quy định tại Điều 7; tổ chức lập kế hoạch công việc tháng cho phòng đúng thời hạn quy định tại Điều 9.
+1. Chủ trì xây dựng Kế hoạch công việc năm của phòng theo đúng thời hạn quy định tại Điều 7; tổ chức lập kế hoạch công việc tháng cho phòng đúng thời hạn quy định tại Điều 8.
 
 2. Phân công công việc đến từng cán bộ một cách hợp lý, rõ ràng, có hạn chót và phân loại chính xác.
 
@@ -276,27 +276,142 @@ Danh mục này có thể được điều chỉnh, bổ sung theo Quyết đị
     b) Chi tiết từng phòng theo phân loại;
     c) Phần văn bản hành chính (do AI hỗ trợ soạn thảo, có chỉnh sửa của Văn phòng) gồm: Tổng quan tình hình, Tình hình giải ngân, Tiến độ thực hiện dự án, Kết quả công việc các phòng, Tồn tại/vướng mắc, Kiến nghị/đề xuất, Kế hoạch tháng tới.
 
-### Điều 17. Tiêu chí đánh giá
+### Điều 17. Tiêu chí và thang điểm đánh giá
 
-1. **Đối với phòng**: Tỷ lệ hoàn thành công việc tháng được tính theo công thức:
+*(Áp dụng theo khung tiêu chí tại Nghị định số ……/2026/NĐ-CP ngày ……/……/2026 của Chính phủ quy định khung tiêu chí đánh giá, xếp loại chất lượng đối với đơn vị sự nghiệp công lập và viên chức)*
 
-    **Tỷ lệ HT (%) = (Số công việc Hoàn thành / Tổng số công việc tháng) × 100**
+1. **Thang điểm**: Áp dụng thang 100 điểm, cơ cấu thành 03 nhóm tiêu chí. Điểm đánh giá từng kỳ (tháng/quý) được tổng hợp trung bình làm cơ sở xếp loại chất lượng cuối năm.
 
-2. **Mức đánh giá**:
-    - ≥ 80%: Tốt;
-    - Từ 50% đến < 80%: Đạt yêu cầu;
-    - < 50%: Cần cải thiện.
+2. **Tiêu chí đánh giá đối với phòng ban**:
 
-3. **Đối với cá nhân**: Trưởng phòng đánh giá dựa trên (i) số lượng công việc được giao, (ii) tỷ lệ hoàn thành, (iii) chất lượng kết quả thực hiện, (iv) tính chủ động trong cập nhật, đề xuất.
+| Nhóm | Tiêu chí | Điểm tối đa | Nguồn dữ liệu |
+| :-: | :--- | :-: | :--- |
+| **A** | **Kết quả hoàn thành công việc** | **40** | Phần mềm QLDA |
+| A1 | Tỷ lệ hoàn thành = CV done / Tổng CV tháng × 100 | 20 | Tự động |
+| A2 | Chất lượng kết quả (cập nhật đầy đủ, cụ thể, định lượng) | 10 | Đánh giá của LĐ Ban |
+| A3 | Tỷ lệ đúng hạn = CV hoàn thành đúng/trước deadline / Tổng CV HT | 10 | Tự động |
+| **B** | **Kết quả giải ngân** | **40** | Dữ liệu tài chính |
+| B1 | Tỷ lệ giải ngân KH vốn = GN lũy kế thực tế / KH vốn năm × 100 | 25 | Phòng KH-TĐ tổng hợp |
+| B2 | Đạt mục tiêu giải ngân theo giao của UBND tỉnh, Bộ KH&ĐT | 15 | Văn bản giao KH vốn |
+| **C** | **Tiêu chí chung** | **20** | Đánh giá tổng hợp |
+| C1 | Tuân thủ quy chế: cập nhật đúng hạn, đầy đủ trên phần mềm | 10 | Phần mềm QLDA |
+| C2 | Tính chủ động, đổi mới, sáng tạo trong thực hiện nhiệm vụ | 10 | Đánh giá của LĐ Ban |
 
-4. Kết quả đánh giá là một trong các căn cứ bình xét thi đua, khen thưởng cuối quý, cuối năm.
+3. **Cách chấm điểm nhóm A (hoàn thành công việc)**:
+    a) Tiêu chí A1 — Tỷ lệ hoàn thành:
+        - ≥ 95%: 20 điểm;
+        - 80% – <95%: 16 điểm;
+        - 60% – <80%: 12 điểm;
+        - 40% – <60%: 8 điểm;
+        - < 40%: 4 điểm.
+    b) Tiêu chí A2 — Chất lượng kết quả: Lãnh đạo Ban chấm dựa trên (i) mức độ cụ thể, định lượng của phần "Kết quả thực hiện" trên phần mềm; (ii) tính chính xác, đồng bộ của dữ liệu; (iii) mức độ đáp ứng yêu cầu nghiệp vụ;
+    c) Tiêu chí A3 — Đúng hạn:
+        - ≥ 90% CV hoàn thành đúng/trước hạn: 10 điểm;
+        - 70% – <90%: 7 điểm;
+        - 50% – <70%: 5 điểm;
+        - < 50%: 3 điểm.
+
+4. **Cách chấm điểm nhóm B (giải ngân)**:
+    a) Tiêu chí B1 — Tỷ lệ giải ngân kế hoạch vốn năm (tính lũy kế đến thời điểm đánh giá, quy đổi theo tỷ lệ thời gian trong năm):
+        - Đạt ≥ 95% KH: 25 điểm;
+        - 80% – <95%: 20 điểm;
+        - 60% – <80%: 15 điểm;
+        - 40% – <60%: 10 điểm;
+        - < 40%: 5 điểm.
+    b) Tiêu chí B2 — Đạt mục tiêu UBND tỉnh/Bộ KH&ĐT giao:
+        - Đạt hoặc vượt mục tiêu: 15 điểm;
+        - Đạt 80% – <100% mục tiêu: 10 điểm;
+        - Đạt 60% – <80% mục tiêu: 7 điểm;
+        - < 60% mục tiêu: 3 điểm.
+    c) **Lưu ý**: Đối với phòng không trực tiếp quản lý giải ngân (HC-TH, KH-ĐT), nhóm B được quy đổi: 25 điểm phân bổ sang nhóm A (A1: +15, A2: +10) và 15 điểm phân bổ sang nhóm C (C1: +8, C2: +7); tổng vẫn là 100 điểm.
+
+5. **Tiêu chí đánh giá đối với cá nhân (viên chức, người lao động)**:
+
+| Nhóm | Tiêu chí | Điểm tối đa |
+| :-: | :--- | :-: |
+| **A** | **Kết quả hoàn thành công việc cá nhân** | **40** |
+| A1 | Tỷ lệ hoàn thành = CV cá nhân done / Tổng CV được giao | 20 |
+| A2 | Chất lượng kết quả thực hiện (cụ thể, đúng yêu cầu nghiệp vụ) | 10 |
+| A3 | Tỷ lệ đúng hạn (CV HT đúng deadline / Tổng CV HT) | 10 |
+| **B** | **Đóng góp giải ngân** | **30** |
+| B1 | Giải ngân dự án trực tiếp phụ trách (tỷ lệ GN/KH vốn dự án) | 20 |
+| B2 | Đóng góp gián tiếp (lập HS thanh toán, thẩm định, phê duyệt...) | 10 |
+| **C** | **Tiêu chí chung (phẩm chất, kỷ luật, thái độ)** | **30** |
+| C1 | Phẩm chất đạo đức nghề nghiệp, ý thức tổ chức kỷ luật | 10 |
+| C2 | Tuân thủ quy chế: cập nhật phần mềm đúng hạn, đầy đủ, trung thực | 10 |
+| C3 | Tinh thần chủ động, đổi mới, sáng tạo; dám nghĩ dám làm | 10 |
+
+6. **Cách chấm điểm nhóm B đối với cá nhân**:
+    a) Tiêu chí B1 — Giải ngân dự án trực tiếp phụ trách: Áp dụng thang điểm tương tự khoản 4.a (quy đổi theo tỷ lệ 20 điểm); cá nhân phụ trách nhiều dự án thì tính bình quân gia quyền theo KH vốn từng dự án;
+    b) Tiêu chí B2 — Đóng góp gián tiếp: Trưởng phòng chấm dựa trên số lượng và chất lượng hồ sơ thanh toán/thẩm định/phê duyệt mà cá nhân hoàn thành trong kỳ, phục vụ giải ngân;
+    c) **Lưu ý**: Cá nhân thuộc phòng không trực tiếp quản lý giải ngân hoặc không phụ trách dự án cụ thể: nhóm B (30 điểm) được quy đổi sang nhóm A (+15 điểm) và nhóm C (+15 điểm); tổng vẫn là 100 điểm.
+
+7. **Thẩm quyền chấm điểm**:
+    a) Nhóm A (tiêu chí tự động): Phần mềm tự tính từ dữ liệu thực tế; Lãnh đạo Ban phê duyệt kết quả;
+    b) Nhóm B (giải ngân): Phòng Kế hoạch - Thẩm định tổng hợp số liệu; Lãnh đạo Ban phê duyệt;
+    c) Nhóm C (tiêu chí chung): Trưởng phòng chấm cho cá nhân; Lãnh đạo Ban chấm cho phòng ban và Trưởng phòng.
+
+### Điều 18. Mức xếp loại chất lượng
+
+1. **Đối với phòng ban**: Căn cứ tổng điểm đánh giá trung bình năm (bình quân 12 kỳ tháng), xếp loại chất lượng theo 04 mức:
+
+| Mức xếp loại | Điểm | Điều kiện bổ sung |
+| :--- | :-: | :--- |
+| Hoàn thành xuất sắc nhiệm vụ | ≥ 90 | Hoàn thành 100% CV được giao đúng hạn; trong đó ≥30% vượt yêu cầu; giải ngân đạt ≥95% KH |
+| Hoàn thành tốt nhiệm vụ | 70 – <90 | Hoàn thành ≥90% CV đúng hạn; giải ngân đạt ≥80% KH |
+| Hoàn thành nhiệm vụ | 50 – <70 | Hoàn thành ≥70% CV; CV trễ hạn không quá 20% tổng số |
+| Không hoàn thành nhiệm vụ | < 50 | Hoặc: hoàn thành <70% CV; hoặc giải ngân <40% KH; hoặc có sai phạm bị xử lý |
+
+2. **Đối với cá nhân**: Căn cứ điểm trung bình năm, xếp loại theo 04 mức:
+
+| Mức xếp loại | Điểm | Điều kiện bổ sung |
+| :--- | :-: | :--- |
+| Hoàn thành xuất sắc nhiệm vụ | ≥ 90 | Hoàn thành 100% CV đúng hạn, chất lượng tốt; có sáng kiến, đổi mới |
+| Hoàn thành tốt nhiệm vụ | 70 – <90 | Hoàn thành ≥90% CV; không có CV bị đánh giá kém chất lượng |
+| Hoàn thành nhiệm vụ | 50 – <70 | Hoàn thành ≥70% CV; không vi phạm kỷ luật |
+| Không hoàn thành nhiệm vụ | < 50 | Hoặc: hoàn thành <70% CV; hoặc bị kỷ luật từ khiển trách trở lên; hoặc có hành vi vi phạm liên quan hoạt động chuyên môn |
+
+3. **Tỷ lệ giới hạn**: Số cá nhân xếp loại "Hoàn thành xuất sắc nhiệm vụ" không vượt quá **20%** tổng số cá nhân được xếp loại "Hoàn thành tốt nhiệm vụ" trong phạm vi đơn vị. Trường hợp phòng có thành tích nổi trội, Giám đốc Ban xem xét nâng tỷ lệ nhưng không vượt quá 25%.
+
+4. **Mức xếp loại của Trưởng phòng** không được cao hơn mức xếp loại chất lượng của phòng.
+
+5. **Trường hợp đặc biệt**:
+    a) Viên chức có thời gian làm việc trong năm chưa đủ 06 tháng: không xếp loại chất lượng năm đó, trừ trường hợp nghỉ thai sản, nghỉ ốm theo chế độ BHXH;
+    b) Viên chức chuyển công tác: đơn vị cũ gửi kết quả đánh giá các kỳ đã hoàn thành cho đơn vị mới; đơn vị mới chịu trách nhiệm xếp loại cuối năm;
+    c) Viên chức bị kỷ luật Đảng hoặc hành chính do suy thoái, vi phạm đạo đức nghề nghiệp: xếp loại "Không hoàn thành nhiệm vụ".
+
+### Điều 19. Chu kỳ đánh giá và sử dụng kết quả
+
+1. **Chu kỳ đánh giá**:
+    a) **Hàng tháng** (theo dõi): Phần mềm tự động tính điểm nhóm A (hoàn thành công việc) cho từng phòng và cá nhân. Trưởng phòng rà soát, xác nhận kết quả trước khi giao ban đầu tháng;
+    b) **Hàng quý** (đánh giá): Lãnh đạo Ban tổ chức đánh giá toàn diện (nhóm A + B + C) cho từng phòng; Trưởng phòng đánh giá toàn diện cho cá nhân. Kết quả quý được thông báo công khai;
+    c) **Cuối năm** (xếp loại): Thực hiện trước ngày **15 tháng 12**. Điểm xếp loại năm = bình quân điểm 12 kỳ tháng (nhóm A tự động) kết hợp đánh giá nhóm B, C do cấp có thẩm quyền chấm.
+
+2. **Trình tự xếp loại cuối năm**:
+    a) Cá nhân tự đánh giá, đề xuất mức xếp loại theo Phụ lục mẫu phiếu;
+    b) Trưởng phòng tổ chức họp nhận xét, góp ý tại phòng; lập biên bản;
+    c) Trưởng phòng chấm điểm, đề xuất mức xếp loại cho từng cá nhân, gửi Lãnh đạo Ban;
+    d) Lãnh đạo Ban xem xét, quyết định công nhận kết quả xếp loại; thông báo bằng văn bản cho cá nhân;
+    đ) Công khai kết quả trên phần mềm và tại buổi tổng kết cuối năm.
+
+3. **Sử dụng kết quả đánh giá**:
+    a) **Hàng tháng**: Là căn cứ điều chỉnh phân công, đôn đốc, hỗ trợ kịp thời;
+    b) **Hàng quý**: Là căn cứ chi trả thu nhập tăng thêm, tiền thưởng theo Quy chế chi tiêu nội bộ (nếu có);
+    c) **Cuối năm**: Là căn cứ:
+        - Bình xét thi đua, khen thưởng;
+        - Đánh giá, xếp loại đảng viên;
+        - Quy hoạch, bổ nhiệm, miễn nhiệm, điều động;
+        - Đào tạo, bồi dưỡng nâng cao năng lực;
+        - Xem xét bố trí vị trí khác hoặc cho thôi việc đối với trường hợp "Không hoàn thành nhiệm vụ" 02 năm liên tiếp.
+
+4. **Khiếu nại kết quả đánh giá**: Cá nhân không đồng ý với kết quả xếp loại có quyền kiến nghị bằng văn bản gửi Trưởng phòng trong vòng 05 ngày làm việc; trường hợp không đồng ý với giải quyết của Trưởng phòng, gửi Lãnh đạo Ban xem xét quyết định cuối cùng trong vòng 10 ngày làm việc.
 
 ---
 
 ## CHƯƠNG VI
 ## XỬ LÝ VƯỚNG MẮC
 
-### Điều 18. Xử lý công việc chưa hoàn thành
+### Điều 20. Xử lý công việc chưa hoàn thành
 
 1. Công việc Chưa hoàn thành phải nêu rõ nguyên nhân khách quan/chủ quan; trách nhiệm cụ thể.
 
@@ -304,13 +419,13 @@ Danh mục này có thể được điều chỉnh, bổ sung theo Quyết đị
 
 3. Trường hợp công việc liên quan đến nhiều phòng, Trưởng phòng chủ trì làm việc với các phòng liên quan và báo cáo Lãnh đạo Ban nếu vượt thẩm quyền.
 
-### Điều 19. Sự cố hệ thống
+### Điều 21. Sự cố hệ thống
 
 1. Khi phần mềm gặp sự cố, cán bộ phản ánh ngay về Văn phòng Ban qua kênh hỗ trợ.
 
 2. Văn phòng Ban phối hợp với đơn vị cung cấp giải pháp xử lý; trường hợp gián đoạn quá 04 giờ, các phòng tạm thời ghi nhận công việc bằng file Excel theo mẫu và đồng bộ lại lên phần mềm khi hệ thống khôi phục.
 
-### Điều 20. Khiếu nại, kiến nghị
+### Điều 22. Khiếu nại, kiến nghị
 
 Cán bộ có quyền khiếu nại, kiến nghị về việc phân công, đánh giá công việc bằng văn bản gửi Trưởng phòng; trường hợp không đồng ý với cách giải quyết của Trưởng phòng, có quyền báo cáo Lãnh đạo Ban xem xét.
 
@@ -319,13 +434,13 @@ Cán bộ có quyền khiếu nại, kiến nghị về việc phân công, đá
 ## CHƯƠNG VII
 ## ĐIỀU KHOẢN THI HÀNH
 
-### Điều 21. Hiệu lực thi hành
+### Điều 23. Hiệu lực thi hành
 
 1. Quy chế này có hiệu lực kể từ ngày 01 tháng 6 năm 2026.
 
 2. Trong quá trình thực hiện, nếu phát sinh vướng mắc, các phòng phản ánh về Văn phòng Ban để tổng hợp, báo cáo Giám đốc xem xét, sửa đổi, bổ sung cho phù hợp.
 
-### Điều 22. Tổ chức thực hiện
+### Điều 24. Tổ chức thực hiện
 
 1. Trưởng các phòng chịu trách nhiệm phổ biến Quy chế này đến toàn thể cán bộ phòng mình và tổ chức thực hiện.
 
