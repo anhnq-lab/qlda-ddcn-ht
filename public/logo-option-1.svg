@@ -1,0 +1,80 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 200 240" 
+  fill="none"
+>
+  <!-- ================= TÒA NHÀ & BAN CÔNG XANH (Nửa trên) ================= -->
+  <!-- Khối cột nhà đứng phía sau bên trái -->
+  <path d="M 45 130 L 45 80 L 65 65 L 65 130 Z" fill="#1E293B" opacity="0.15" />
+  <path d="M 45 80 L 65 65 L 65 130 L 45 130 Z" stroke="#1E3A8A" strokeWidth="4" strokeLinejoin="round" />
+  
+  <!-- Cột nhà chính ở giữa có viền xanh lá -->
+  <path d="M 65 130 L 65 50 L 95 32 L 95 130 Z" fill="#0F172A" />
+  <path d="M 65 50 L 95 32 L 95 130 L 65 130 Z" stroke="#1E3A8A" strokeWidth="5" strokeLinejoin="round" />
+  <!-- Viền xanh lá dọc cột chính -->
+  <path d="M 90 40 L 90 120" stroke="#10B981" strokeWidth="4" strokeLinecap="round" />
+
+  <!-- Cột phụ bên trái sát cột chính -->
+  <path d="M 52 130 L 52 95 L 65 85" stroke="#1E3A8A" strokeWidth="4" strokeLinecap="round" />
+
+  <!-- Hệ 3 ban công xanh đúc ngang bên phải -->
+  <!-- Ban công 3 (Dưới cùng) -->
+  <path d="M 108 95 H 162 L 155 107 H 115 Z" fill="#047857" />
+  <path d="M 108 95 H 162 L 162 99 H 108 Z" fill="#10B981" />
+  <path d="M 108 95 C 120 92, 150 92, 162 95 L 162 93 H 108 Z" fill="#34D399" />
+  
+  <!-- Ban công 2 (Ở giữa) -->
+  <path d="M 108 77 H 162 L 155 89 H 115 Z" fill="#047857" />
+  <path d="M 108 77 H 162 L 162 81 H 108 Z" fill="#10B981" />
+  <path d="M 108 77 C 120 74, 150 74, 162 77 L 162 75 H 108 Z" fill="#34D399" />
+
+  <!-- Ban công 1 (Trên cùng) -->
+  <path d="M 108 59 H 162 L 155 71 H 115 Z" fill="#047857" />
+  <path d="M 108 59 H 162 L 162 63 H 108 Z" fill="#10B981" />
+  <path d="M 108 59 C 120 56, 150 56, 162 59 L 162 57 H 108 Z" fill="#34D399" />
+
+  <!-- Mảng cây trên mái cột chính -->
+  <path d="M 108 53 C 115 45, 155 45, 162 53 Z" fill="#059669" />
+  <path d="M 112 52 C 120 48, 148 48, 158 52 Z" fill="#34D399" />
+
+  <!-- ================= CẦU VƯỢT HẠ TẦNG (Giữa) ================= -->
+  <!-- Thân cầu vượt cong qua chân tòa nhà -->
+  <path d="M 25 145 C 50 120, 150 100, 175 110" stroke="#1E3A8A" strokeWidth="8" strokeLinecap="round" />
+  <path d="M 25 145 C 50 120, 150 100, 175 110" stroke="#10B981" strokeWidth="2" strokeLinecap="round" />
+  
+  <!-- Các nhịp vòm cầu nâng đỡ dưới thân cầu -->
+  <path d="M 37 137 Q 47 125 57 126" stroke="#1E3A8A" strokeWidth="4" fill="none" />
+  <path d="M 69 123 Q 84 113 99 116" stroke="#1E3A8A" strokeWidth="4" fill="none" />
+  <path d="M 113 113 Q 128 108 143 111" stroke="#1E3A8A" strokeWidth="4" fill="none" />
+  
+  <!-- Trụ cầu đứng -->
+  <line x1="57" y1="126" x2="57" y2="155" stroke="#1E3A8A" strokeWidth="5" />
+  <line x1="99" y1="116" x2="99" y2="150" stroke="#1E3A8A" strokeWidth="5" />
+  <line x1="143" y1="111" x2="143" y2="130" stroke="#1E3A8A" strokeWidth="5" />
+
+  <!-- ================= ĐƯỜNG CAO TỐC DƯỚI GẦM CẦU (Nửa dưới) ================= -->
+  <!-- Mặt đường nhựa màu xanh đen -->
+  <path d="M 45 190 C 60 145, 140 145, 155 190 Z" fill="#1E293B" />
+  
+  <!-- Dải phân làn lề trái đường màu xanh lá -->
+  <path d="M 45 190 C 60 145, 140 145, 155 190 L 165 190 C 148 135, 52 135, 35 190 Z" fill="#10B981" />
+  
+  <!-- Vạch phân làn lề phải đường màu vàng -->
+  <path d="M 132 182 C 128 168, 120 162, 110 158 L 113 154 C 125 158, 134 166, 138 178 Z" fill="#F59E0B" />
+  
+  <!-- Vạch kẻ đường đứt nét ở giữa -->
+  <path d="M 90 190 C 92 165, 108 165, 110 190" stroke="#FFFFFF" strokeWidth="2.5" strokeDasharray="5 4" fill="none" />
+
+  <!-- ================= CHỮ THƯƠNG HIỆU DD&HT ================= -->
+  <g transform="translate(100, 226)">
+    <text 
+      textAnchor="middle" 
+      style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      className="font-black text-[28px] tracking-[0.05em]"
+    >
+      <tspan fill="#1E3A8A">DD</tspan>
+      <tspan fill="#059669">&amp;</tspan>
+      <tspan fill="#059669">HT</tspan>
+    </text>
+  </g>
+</svg>

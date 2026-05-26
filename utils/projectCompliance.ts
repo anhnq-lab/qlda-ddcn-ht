@@ -76,6 +76,40 @@ export function classifyProject(
     return ProjectGroup.C;
 }
 
+/**
+ * Tự động phân loại nhóm dự án dựa trên chuyên ngành (specialty_type) và tổng mức đầu tư
+ * theo Luật Đầu tư công 58/2024/QH15
+ */
+export function classifyProjectBySpecialty(
+    totalInvestment: number,
+    specialtyType: string,
+    isNationalImportance: boolean = false
+): ProjectGroup {
+    let sector: ProjectSector;
+
+    switch (specialtyType) {
+        case 'transport_urban':
+            // Giao thông thường thuộc Khoản 3 Điều 9 (ngưỡng Nhóm A là 3.000 tỷ)
+            sector = ProjectSector.Transport;
+            break;
+        case 'civil_industrial':
+            // Dân dụng thường thuộc Khoản 5 Điều 9 (ngưỡng Nhóm A là 1.600 tỷ)
+            sector = ProjectSector.Other;
+            break;
+        case 'agriculture_rural':
+            // Nông nghiệp & PTNT thuộc Khoản 4 Điều 9 (ngưỡng Nhóm A là 2.000 tỷ)
+            sector = ProjectSector.Agriculture;
+            break;
+        case 'mixed':
+        case 'other':
+        default:
+            sector = ProjectSector.Other;
+            break;
+    }
+
+    return classifyProject(totalInvestment, sector, isNationalImportance);
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CƠ QUAN PHÊ DUYỆT
 // ═══════════════════════════════════════════════════════════════

@@ -1,0 +1,61 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 200 240" 
+  fill="none"
+>
+  <!-- ================= TÒA NHÀ ĐỨNG CÁCH ĐIỆU (Nửa trên) ================= -->
+  <!-- Tấm vách trái (Nhỏ) -->
+  <path d="M 50 140 L 50 85 L 68 70 L 68 140 Z" fill="#1E3A8A" opacity="0.15" />
+  <path d="M 50 85 L 68 70 L 68 140 L 50 140 Z" stroke="#1E3A8A" strokeWidth="4.5" strokeLinejoin="round" />
+  
+  <!-- Tấm vách chính ở giữa (Có viền vàng) -->
+  <path d="M 72 140 L 72 45 L 98 25 L 98 140 Z" fill="#0F172A" />
+  <!-- Viền vàng tinh tế chạy dọc tấm chính -->
+  <path d="M 72 45 L 98 25 L 98 140 L 72 140 Z" stroke="#1E3A8A" strokeWidth="5.5" strokeLinejoin="round" />
+  <path d="M 92 35 L 92 130" stroke="#F59E0B" strokeWidth="3.5" strokeLinecap="round" />
+
+  <!-- Ba thanh bồn hoa nằm ngang bên phải đại diện cho Dân dụng xanh -->
+  <!-- Thanh 3 (Dưới) -->
+  <path d="M 108 95 H 152 V 107 H 108 Z" fill="#047857" />
+  <path d="M 108 95 H 152 V 99 H 108 Z" fill="#10B981" />
+  <path d="M 108 95 C 115 93, 145 93, 152 95 L 152 93 H 108 Z" fill="#34D399" />
+  
+  <!-- Thanh 2 (Giữa) -->
+  <path d="M 108 77 H 152 V 89 H 108 Z" fill="#047857" />
+  <path d="M 108 77 H 152 V 81 H 108 Z" fill="#10B981" />
+  <path d="M 108 77 C 115 75, 145 75, 152 77 L 152 75 H 108 Z" fill="#34D399" />
+
+  <!-- Thanh 1 (Trên) -->
+  <path d="M 108 59 H 152 V 71 H 108 Z" fill="#047857" />
+  <path d="M 108 59 H 152 V 63 H 108 Z" fill="#10B981" />
+  <path d="M 108 59 C 115 57, 145 57, 152 59 L 152 57 H 108 Z" fill="#34D399" />
+
+  <!-- ================= ĐƯỜNG CAO TỐC UỐN LƯỢN NÂNG ĐỠ (Nửa dưới) ================= -->
+  <!-- Mặt đường cong uốn lượn hất chéo lên bên phải -->
+  <path d="M 30 185 C 50 160, 130 140, 175 140 L 175 145 C 130 145, 50 165, 30 190 Z" fill="#1E293B" opacity="0.1" />
+  
+  <!-- Tuyến đường chính màu xanh đen vuốt nhọn lên cao đại diện cho Hạ tầng -->
+  <path d="M 30 185 C 60 150, 120 132, 172 135 L 170 140 C 120 137, 60 155, 42 185 Z" fill="#1E293B" />
+  
+  <!-- Dải phân làn lề trái đường màu xanh lá uốn lượn -->
+  <path d="M 30 185 C 60 150, 120 132, 172 135 L 172 132 C 120 129, 60 147, 30 180 Z" fill="#10B981" />
+  
+  <!-- Dải lề phải đường màu vàng óng vuốt nhọn -->
+  <path d="M 42 185 C 70 157, 120 140, 155 141 L 155 143 C 120 142, 70 159, 46 185 Z" fill="#F59E0B" />
+  
+  <!-- Vạch kẻ phân làn trắng đứt nét ở giữa -->
+  <path d="M 36 185 C 65 152, 120 135, 163 138" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+
+  <!-- ================= CHỮ THƯƠNG HIỆU DD&HT ================= -->
+  <g transform="translate(100, 226)">
+    <text 
+      textAnchor="middle" 
+      style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      className="font-black text-[28px] tracking-[0.05em]"
+    >
+      <tspan fill="#1E3A8A">DD</tspan>
+      <tspan fill="#059669">&amp;</tspan>
+      <tspan fill="#1E3A8A">HT</tspan>
+    </text>
+  </g>
+</svg>

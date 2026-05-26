@@ -628,7 +628,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     initialDecisionNumber={pkg.DecisionNumber}
                                 />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-slate-100 dark:divide-slate-700/60">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-slate-100 dark:divide-slate-800">
                                     {/* Cột trái: Thông tin đơn vị trúng thầu */}
                                     <div className="space-y-4 md:pr-6">
                                         <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Thông tin đơn vị trúng thầu</h4>
@@ -640,7 +640,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 </div>
                                                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                                     {consortiumMembers.map((m: any, idx: number) => (
-                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800 border-gray-150 dark:border-slate-700/60'}`}>
+                                                        <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800 border-gray-150 dark:border-slate-800'}`}>
                                                             <div className="flex items-start gap-2.5">
                                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'}`}>
                                                                     {m.role === 'lead' ? <Crown className="w-4 h-4 text-amber-500" /> : <Building2 className="w-4 h-4" />}
@@ -675,7 +675,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                         <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{FIELD_LABELS[winningContractor.ContractorType] || winningContractor.ContractorType}</p>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-1.5 text-sm pl-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700/60">
+                                                <div className="space-y-1.5 text-sm pl-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
                                                     <InfoRow label="Mã số thuế" value={<span className="font-mono">{winningContractor.TaxCode || winningContractor.ContractorID}</span>} />
                                                     {winningContractor.Representative && <InfoRow label="Người đại diện" value={winningContractor.Representative} />}
                                                     {winningContractor.ContactInfo && (
@@ -711,7 +711,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="space-y-4 pt-4 md:pt-0 md:pl-6">
                                         <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Kết quả chi tiết</h4>
                                         <div className="grid grid-cols-2 gap-3 mb-3">
-                                            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700/60 text-center">
+                                            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                                 <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">Giá gói thầu</p>
                                                 <p className="font-bold text-gray-700 dark:text-slate-200 text-sm">{formatCurrency(pkg.Price)}</p>
                                             </div>
@@ -1260,7 +1260,7 @@ const SectionCard = ({ title, icon: Icon, color, children, badge, action }: {
         slate: 'text-slate-600 dark:text-slate-400',
     };
     return (
-        <div className="bg-white dark:bg-slate-800/90 rounded-xl border border-gray-200 dark:border-slate-600 p-4 shadow-sm dark:shadow-slate-900/40">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-600 p-4 shadow-sm dark:shadow-slate-900/40">
             {title && (
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-gray-100 dark:border-slate-700">
                     <h4 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
@@ -1287,7 +1287,7 @@ const InfoRow = ({ label, value, highlight }: { label: string; value: React.Reac
 
 const StatBox = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color: string }) => {
     const colorMap: Record<string, string> = {
-        slate: 'bg-slate-50 dark:bg-slate-800/60 text-gray-700 dark:text-slate-200',
+        slate: 'bg-slate-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200',
         green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
         blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
         purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',

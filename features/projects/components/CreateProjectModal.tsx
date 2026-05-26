@@ -10,6 +10,7 @@ import { extractProjectFromImage, fileToBase64, ExtractedProjectData } from '../
 import { supabase } from '../../../lib/supabase';
 import { useToast } from '../../../components/ui/Toast';
 import { ProjectModalFormSchema, ProjectModalFormValues } from '../../../schemas/project.schema';
+import { classifyProjectBySpecialty } from '../../../utils/projectCompliance';
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
 import { ProjectFormLegal } from './forms/ProjectFormLegal';
@@ -161,6 +162,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
             }
         }
     }, [projectNameVal, isEditMode, setValue, getValues]);
+
+    // Tự động phân loại nhóm dự án khi thay đổi tổng mức đầu tư hoặc chuyên ngành
+    const watchedTotalInvestment = watch('TotalInvestment');
+    const watchedSpecialtyType = watch('SpecialtyType');
+    useEffect(() => {
+        if (watchedTotalInvestment !== undefined && watchedSpecialtyType !== undefined) {
+            const calculatedGroup = classifyProjectBySpecialty(Number(watchedTotalInvestment) || 0, watchedSpecialtyType);
+            setValue('GroupCode', calculatedGroup, { shouldDirty: true });
+        }
+    }, [watchedTotalInvestment, watchedSpecialtyType, setValue]);
 
     const DEFAULT_BUDGET = { BudgetNSTW: 0, BudgetNSDiaphuong: 0, BudgetLoan: 0, BudgetODA: 0, BudgetOtherNSNN: 0 };
 

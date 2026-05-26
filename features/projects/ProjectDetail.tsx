@@ -361,6 +361,16 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         }`}>
                             {Number(project.Status) === 3 ? 'Kết thúc XD' : Number(project.Status) === 2 ? 'Đang triển khai' : 'Chuẩn bị dự án'}
                         </span>
+                        {project.RequiresBIM && (
+                            <button
+                                onClick={() => navigate(`/bim/${project.ProjectID}`)}
+                                className="shrink-0 flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide bg-violet-100 hover:bg-violet-200 dark:bg-violet-900/30 dark:hover:bg-violet-900/50 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 transition-all hover:scale-105 active:scale-95"
+                                title="Xem bản vẽ mô hình 3D BIM"
+                            >
+                                <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+                                3D BIM
+                            </button>
+                        )}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                         <button
@@ -436,8 +446,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             syncResult={syncResult}
                             isGeneratingReport={isGeneratingReport}
                             onGenerateReport={handleGenerateReport}
-                            onViewMember={(_employeeId) => {
-                                // TODO: Navigate to employee detail
+                            onViewMember={(employeeId) => {
+                                navigate(`/employees/${employeeId}`);
                             }}
                             onViewPackage={(packageId) => {
                                 setActiveTab('packages');

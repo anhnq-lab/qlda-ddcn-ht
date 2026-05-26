@@ -84,7 +84,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
     return (
         <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-wrap justify-between items-center gap-3">
+            <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex flex-wrap justify-between items-center gap-3">
                 <div>
                     <h4 className="font-bold text-gray-900 dark:text-slate-100 text-sm uppercase flex items-center gap-2">
                         <Users className="w-5 h-5 text-primary-500" /> Ma trận phân công trách nhiệm (RACI)
@@ -110,7 +110,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
             <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left border-collapse table-fixed min-w-[1200px]">
                     <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-900/40 border-b border-gray-200 dark:border-slate-700 text-[10px] uppercase tracking-wider text-gray-500 dark:text-slate-400 font-semibold">
+                        <tr className="bg-slate-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 text-[10px] uppercase tracking-wider text-gray-500 dark:text-slate-400 font-semibold">
                             <th className="p-3 w-12 text-center">TT</th>
                             <th className="p-3 w-80">Nội dung công việc (Bước quy trình)</th>
                             {STAKEHOLDERS.map(s => (

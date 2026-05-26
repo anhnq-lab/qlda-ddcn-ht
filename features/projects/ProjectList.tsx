@@ -365,20 +365,20 @@ const ProjectList: React.FC = () => {
                                                         {/* Tiến độ */}
                                                         <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
-                                                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.Progress || 0}%</span>
+                                                                <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.Progress || 0}%</span>
                                                                 <ProgressBar value={project.Progress || 0} color="blue" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
                                                         {/* Giải ngân */}
                                                         <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
-                                                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.PaymentProgress || 0}%</span>
+                                                                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.PaymentProgress || 0}%</span>
                                                                 <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
                                                         {/* Tổng mức ĐT */}
                                                         <td className="px-4 py-4 text-right">
-                                                            <span className="text-xs font-bold text-txt-primary tabular-nums whitespace-nowrap">
+                                                            <span className="text-xs font-mono font-bold text-txt-primary tabular-nums whitespace-nowrap">
                                                                 {formatCurrency(project.TotalInvestment)}
                                                             </span>
                                                         </td>

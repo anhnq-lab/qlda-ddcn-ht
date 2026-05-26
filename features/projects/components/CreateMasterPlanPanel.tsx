@@ -308,7 +308,7 @@ const RaciRoleCell: React.FC<RaciRoleCellProps> = ({ step, index, role, onChange
                       isSelectedForThisRole 
                         ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 font-semibold' 
                         : hasOtherRole 
-                          ? 'opacity-40 line-through bg-slate-50 dark:bg-slate-900/50' 
+                          ? 'opacity-40 line-through bg-slate-50 dark:bg-slate-900' 
                           : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-gray-600 dark:text-slate-300'
                     }`}
                   >
@@ -1269,7 +1269,7 @@ export const CreateMasterPlanPanel: React.FC<CreateMasterPlanPanelProps> = ({
                     <th className="py-3 px-2 w-28 text-center bg-blue-50/30 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-x border-gray-200/50 dark:border-slate-800">R (Thực hiện)</th>
                     <th className="py-3 px-2 w-28 text-center bg-emerald-50/30 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-r border-gray-200/50 dark:border-slate-800">A (Phê duyệt)</th>
                     <th className="py-3 px-2 w-28 text-center bg-amber-50/30 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-r border-gray-200/50 dark:border-slate-800">C (Tham vấn)</th>
-                    <th className="py-3 px-2 w-28 text-center bg-gray-50/30 dark:bg-slate-800/40 text-gray-600 dark:text-gray-400 border-r border-gray-200/50 dark:border-slate-800">I (Thông báo)</th>
+                    <th className="py-3 px-2 w-28 text-center bg-gray-50/30 dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-r border-gray-200/50 dark:border-slate-800">I (Thông báo)</th>
                     <th className="py-3 px-3 w-28">Bắt đầu</th>
                     <th className="py-3 px-3 w-28">Kết thúc</th>
                     <th className="py-3 px-3 w-20 text-center">SLA (Ngày)</th>

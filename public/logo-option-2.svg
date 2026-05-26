@@ -1,0 +1,121 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 200 240" 
+  fill="none"
+>
+  <!-- Khung viền vòm ngoài màu xanh dương đậm -->
+  <path 
+    d="M 30 115 A 70 70 0 0 1 170 115 L 170 190 L 30 190 Z" 
+    stroke="#1E3A8A" 
+    strokeWidth="8" 
+    strokeLinejoin="round" 
+  />
+
+  <!-- ================= TÒA NHÀ XANH SINH THÁI (Nửa trên) ================= -->
+  <!-- Khối lõi tòa nhà phía sau (Core) -->
+  <path d="M 65 43 L 100 35 L 135 43 L 155 115 L 45 115 Z" fill="#0F172A" />
+
+  <!-- Tầng 5 (Dưới cùng - Sát dầm cầu) -->
+  <path d="M 45 110 L 100 98 L 100 104 L 45 116 Z" fill="#10B981" />
+  <path d="M 100 98 L 155 110 L 155 116 L 100 104 Z" fill="#047857" />
+  <path d="M 45 110 L 100 98 L 155 110 L 145 106 L 100 95 L 55 106 Z" fill="#34D399" />
+
+  <!-- Tầng 4 -->
+  <path d="M 50 96 L 100 85 L 100 90 L 50 101 Z" fill="#10B981" />
+  <path d="M 100 85 L 150 96 L 150 101 L 100 90 Z" fill="#047857" />
+  <path d="M 50 96 L 100 85 L 150 96 L 141 92 L 100 82 L 59 92 Z" fill="#34D399" />
+
+  <!-- Tầng 3 -->
+  <path d="M 55 82 L 100 72 L 100 77 L 55 87 Z" fill="#10B981" />
+  <path d="M 100 72 L 145 82 L 145 87 L 100 77 Z" fill="#047857" />
+  <path d="M 55 82 L 100 72 L 145 82 L 137 78 L 100 69 L 63 78 Z" fill="#34D399" />
+
+  <!-- Tầng 2 -->
+  <path d="M 60 68 L 100 59 L 100 64 L 60 73 Z" fill="#10B981" />
+  <path d="M 100 59 L 140 68 L 140 73 L 100 64 Z" fill="#047857" />
+  <path d="M 60 68 L 100 59 L 140 68 L 133 65 L 100 56 L 67 65 Z" fill="#34D399" />
+
+  <!-- Tầng 1 (Trên cùng) -->
+  <path d="M 65 54 L 100 46 L 100 50 L 65 58 Z" fill="#10B981" />
+  <path d="M 100 46 L 135 54 L 135 58 L 100 50 Z" fill="#047857" />
+  <path d="M 65 54 L 100 46 L 135 54 L 129 42 L 100 43 L 71 42 Z" fill="#34D399" />
+
+  <!-- ================= GIÀN THÉP HẠ TẦNG (Nửa dưới) ================= -->
+  <!-- Thanh dầm ngang chính -->
+  <line x1="30" y1="115" x2="170" y2="115" stroke="#1E3A8A" strokeWidth="8" strokeLinecap="round" />
+  <line x1="30" y1="190" x2="170" y2="190" stroke="#1E3A8A" strokeWidth="8" strokeLinecap="round" />
+  
+  <!-- Cột dọc giàn thép -->
+  <g stroke="#1E3A8A" strokeWidth="5" strokeLinecap="round">
+    <line x1="30" y1="115" x2="30" y2="190" strokeWidth="8" />
+    <line x1="50" y1="115" x2="50" y2="190" />
+    <line x1="70" y1="115" x2="70" y2="190" />
+    <line x1="130" y1="115" x2="130" y2="190" />
+    <line x1="150" y1="115" x2="150" y2="190" />
+    <line x1="170" y1="115" x2="170" y2="190" strokeWidth="8" />
+  </g>
+
+  {/* Dầm ngang phụ ở giữa */}
+  <line x1="30" y1="152.5" x2="70" y2="152.5" stroke="#1E3A8A" strokeWidth="4" />
+  <line x1="130" y1="152.5" x2="170" y2="152.5" stroke="#1E3A8A" strokeWidth="4" />
+
+  <!-- Hệ chéo giàn thép chịu lực (Truss) bên trái -->
+  <g stroke="#1E3A8A" strokeWidth="3.5" strokeLinecap="round">
+    <line x1="30" y1="115" x2="50" y2="152.5" />
+    <line x1="50" y1="115" x2="30" y2="152.5" />
+    <line x1="50" y1="115" x2="70" y2="152.5" />
+    <line x1="70" y1="115" x2="50" y2="152.5" />
+    <line x1="30" y1="152.5" x2="50" y2="190" />
+    <line x1="50" y1="152.5" x2="30" y2="190" />
+    <line x1="50" y1="152.5" x2="70" y2="190" />
+    <line x1="70" y1="152.5" x2="50" y2="190" />
+  </g>
+
+  <!-- Hệ chéo giàn thép chịu lực (Truss) bên phải -->
+  <g stroke="#1E3A8A" strokeWidth="3.5" strokeLinecap="round">
+    <line x1="130" y1="115" x2="150" y2="152.5" />
+    <line x1="150" y1="115" x2="130" y2="152.5" />
+    <line x1="150" y1="115" x2="170" y2="152.5" />
+    <line x1="170" y1="115" x2="150" y2="152.5" />
+    <line x1="130" y1="152.5" x2="150" y2="190" />
+    <line x1="150" y1="152.5" x2="130" y2="190" />
+    <line x1="150" y1="152.5" x2="170" y2="190" />
+    <line x1="170" y1="152.5" x2="150" y2="190" />
+  </g>
+
+  <!-- Hệ chéo giàn thép ở khoang trên đường hầm -->
+  <g stroke="#1E3A8A" strokeWidth="3.5" strokeLinecap="round">
+    <line x1="70" y1="115" x2="100" y2="152.5" />
+    <line x1="100" y1="115" x2="70" y2="152.5" />
+    <line x1="100" y1="115" x2="130" y2="152.5" />
+    <line x1="130" y1="115" x2="100" y2="152.5" />
+  </g>
+
+  <!-- ================= ĐƯỜNG HẦM VÀ ĐƯỜNG CAO TỐC ================= -->
+  <!-- Vòm tối trong đường hầm -->
+  <path d="M 74 190 L 74 150 A 26 26 0 0 1 126 150 L 126 190 Z" fill="#0A1E3F" />
+  <!-- Cửa vòm đường hầm màu xanh lá cây -->
+  <path d="M 70 190 L 70 148 A 30 30 0 0 1 130 148 L 130 190" stroke="#059669" strokeWidth="8" fill="none" strokeLinecap="round" />
+
+  <!-- Mặt đường nhựa uốn lượn xuyên vào đường hầm -->
+  <path d="M 80 190 C 85 178, 93 165, 96 150 L 120 190 Z" fill="#1E293B" />
+  <!-- Vạch sơn xanh lá bên lề trái đường -->
+  <path d="M 80 190 C 85 178, 93 165, 96 150 L 94 150 C 91 165, 82 178, 77 190 Z" fill="#10B981" />
+  <!-- Vạch sơn vàng lề phải đường -->
+  <path d="M 120 190 C 110 178, 101 165, 100 150 L 103 150 C 104 165, 114 178, 125 190 Z" fill="#F59E0B" />
+  <!-- Vạch kẻ đứt nét phân làn ở giữa -->
+  <path d="M 98 190 C 100 180, 98 165, 98 150" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="4 4" fill="none" />
+
+  <!-- ================= CHỮ THƯƠNG HIỆU DD&HT ================= -->
+  <g transform="translate(100, 226)">
+    <text 
+      textAnchor="middle" 
+      style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      className="font-black text-[28px] tracking-[0.05em]"
+    >
+      <tspan fill="#1E3A8A">DD</tspan>
+      <tspan fill="#059669">&amp;</tspan>
+      <tspan fill="#F59E0B">HT</tspan>
+    </text>
+  </g>
+</svg>

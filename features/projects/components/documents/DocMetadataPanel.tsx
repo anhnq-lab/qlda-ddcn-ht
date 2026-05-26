@@ -17,7 +17,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
     doc, meta, onMetaChange, onSave, onClose, onPreview, onDelete, savingMeta
 }) => {
     return (
-        <div className="mx-3 mb-3 p-5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700 shadow-inner space-y-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="mx-3 mb-3 p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-inner space-y-4 animate-in slide-in-from-top-2 duration-200">
             {/* File info row */}
             <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex-1 min-w-0">

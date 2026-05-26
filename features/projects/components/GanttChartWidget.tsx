@@ -636,7 +636,7 @@ export const GanttChartWidget: React.FC<GanttChartWidgetProps> = ({
                 )}
 
                 {/* Overall progress bar */}
-                <div className="mt-3 bg-slate-100 dark:bg-slate-800/80 rounded-lg px-2.5 py-1.5 shrink-0">
+                <div className="mt-3 bg-slate-100 dark:bg-slate-800 rounded-lg px-2.5 py-1.5 shrink-0">
                     <div className="flex items-center justify-between text-[10px] mb-1">
                         <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide">Tiến độ tổng thể dự án</span>
                         <span className={`font-black tabular-nums ${stats.avgProgress >= 50 ? 'text-emerald-600' : stats.avgProgress > 20 ? 'text-primary-600' : 'text-red-600'}`}>

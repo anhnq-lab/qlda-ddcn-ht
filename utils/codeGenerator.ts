@@ -41,7 +41,7 @@ export const generateProjectCode = (params: ProjectCodeParams): string => {
     const procedure = params.procedureType || ProcedureType.Appraisal;
 
     // Hande random/sequence part (5 digits)
-    let seqStr = '';
+    let seqStr: string;
     if (params.sequence) {
         seqStr = params.sequence.toString().padStart(5, '0');
     } else {

@@ -322,7 +322,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs text-left border-collapse min-w-[900px]">
                             <thead>
-                                <tr className="border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] sticky top-0 z-10 backdrop-blur-sm bg-slate-50/90 dark:bg-slate-800/90">
+                                <tr className="border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] sticky top-0 z-10 backdrop-blur-sm bg-slate-50 dark:bg-slate-800">
                                     <th className="py-1.5 px-4 w-[42%]">Nội dung công việc / Bước quy trình</th>
                                     <th className="py-1.5 px-2 w-[10%] text-center">Tiến độ</th>
                                     <th className="py-1.5 px-3 w-[16%] text-left">Phụ trách / Vai trò</th>
@@ -337,7 +337,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                     return (
                                         <React.Fragment key={phase.id}>
                                             {/* Phase Header Row */}
-                                            <tr className="bg-slate-50 dark:bg-slate-800/30">
+                                            <tr className="bg-slate-50 dark:bg-slate-800">
                                                 <td colSpan={6} className="p-0 border-b border-gray-200 dark:border-slate-700">
                                                     <PhaseProgressCard
                                                         phase={phase}
@@ -405,7 +405,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                             return (
                                                                 <React.Fragment key={item.id}>
                                                                     {/* Step Row */}
-                                                                    <tr className={`bg-slate-50/40 dark:bg-slate-800/20 border-b border-gray-150 dark:border-slate-800/80 hover:bg-slate-100/40 dark:hover:bg-slate-800/30 transition-colors group border-l-4 ${stepBorderColor}`}>
+                                                                    <tr className={`bg-slate-50 dark:bg-slate-800 border-b border-gray-150 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group border-l-4 ${stepBorderColor}`}>
                                                                         {/* Cột 1: Tiêu đề bước */}
                                                                         <td className="py-1.5 px-3 flex items-center gap-2 min-w-0">
                                                                             <button
@@ -522,7 +522,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
                                                                             <React.Fragment key={t.TaskID}>
                                                                                 <tr
                                                                                     onClick={() => onEditTask(t)}
-                                                                                    className={`cursor-pointer transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-800/30 border-b border-gray-100 dark:border-slate-800/60 group/task ${isOver ? 'bg-red-50/30 dark:bg-red-950/10' : ''}`}
+                                                                                    className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 border-b border-gray-100 dark:border-slate-800 group/task ${isOver ? 'bg-red-50/30 dark:bg-red-950/10' : ''}`}
                                                                                 >
                                                                                     {/* Cột 1: Tên công việc (Thụt lề pl-8) */}
                                                                                     <td className="py-1 pl-8 pr-3 flex items-center gap-2 min-w-0">
@@ -672,7 +672,7 @@ export const ProjectPlanWBSView: React.FC<ProjectPlanWBSViewProps> = ({
 
                                                                                 {/* Subtasks details inside Task Row (if expanded) */}
                                                                                 {t.SubTasks && t.SubTasks.length > 0 && expandedMasterTasks[t.TaskID] && (
-                                                                                    <tr className="bg-slate-50/20 dark:bg-slate-800/10 border-b border-gray-100 dark:border-slate-800/40">
+                                                                                    <tr className="bg-slate-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-800">
                                                                                         <td colSpan={6} className="py-1.5 px-4">
                                                                                             <div className="pl-12 border-l-2 border-primary-200 dark:border-slate-650 space-y-1">
                                                                                                 <h6 className="text-[9px] uppercase font-bold text-gray-400 dark:text-slate-500 tracking-wider flex items-center gap-1">

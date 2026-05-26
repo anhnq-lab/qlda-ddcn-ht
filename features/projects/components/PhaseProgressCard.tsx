@@ -146,7 +146,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
 
                         {/* Date Range Badge */}
                         {phaseStartDate && phaseEndDate && (
-                            <span className="hidden md:flex items-center gap-1 text-[9px] text-gray-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
+                            <span className="hidden md:flex items-center gap-1 text-[9px] text-gray-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
                                 <Calendar className="w-2.5 h-2.5" />
                                 {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                             </span>

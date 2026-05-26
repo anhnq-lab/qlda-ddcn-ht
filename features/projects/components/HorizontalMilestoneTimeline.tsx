@@ -141,7 +141,7 @@ export const HorizontalMilestoneTimeline: React.FC<HorizontalMilestoneTimelinePr
             default:
                 return {
                     iconBg: 'bg-white dark:bg-slate-800 text-gray-400 dark:text-slate-500',
-                    dotBorder: 'border-gray-200 dark:border-slate-800/80',
+                    dotBorder: 'border-gray-200 dark:border-slate-800',
                     textColor: 'text-gray-400 dark:text-slate-500 font-medium',
                 };
         }
@@ -161,7 +161,7 @@ export const HorizontalMilestoneTimeline: React.FC<HorizontalMilestoneTimelinePr
     return (
         <div className="w-full relative py-3 my-1">
             {/* Thanh tiến độ ở dưới làm trục ngang timeline */}
-            <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-2 bg-gray-100 dark:bg-slate-800/80 rounded-full border border-gray-200/50 dark:border-slate-800">
+            <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-2 bg-gray-100 dark:bg-slate-800 rounded-full border border-gray-200/50 dark:border-slate-800">
                 <div 
                     className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-orange-400 via-amber-400 to-emerald-500"
                     style={{ width: `${progressPercent}%` }}

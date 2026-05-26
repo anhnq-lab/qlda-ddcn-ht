@@ -1,0 +1,49 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 200 240" 
+  fill="none"
+>
+  <!-- Vòng tròn nền ngoài -->
+  <circle cx="100" cy="108" r="82" stroke="#1E3A8A" strokeWidth="5" />
+  <circle cx="100" cy="108" r="76" stroke="#10B981" strokeWidth="1.5" strokeDasharray="4 2" />
+  
+  <!-- ================= BIỂU TƯỢNG TRUNG TÂM (Tòa nhà & Cầu vượt) ================= -->
+  <g transform="translate(5, 10) scale(0.95)">
+    <!-- Tòa tháp đứng cách điệu -->
+    <path d="M 75 140 L 75 55 L 98 38 L 98 140 Z" fill="#0F172A" />
+    <path d="M 75 55 L 98 38 L 98 140 L 75 140 Z" stroke="#1E3A8A" strokeWidth="5" strokeLinejoin="round" />
+    <path d="M 92 48 L 92 130" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+
+    <!-- Tấm vách phụ bên trái -->
+    <path d="M 54 140 L 54 90 L 75 75 L 75 140 Z" stroke="#1E3A8A" strokeWidth="4" strokeLinejoin="round" />
+    
+    <!-- 3 thanh nằm ngang bên phải đại diện cho mảng xanh Dân dụng -->
+    <path d="M 108 95 H 148 V 107 H 108 Z" fill="#047857" />
+    <path d="M 108 95 H 148 V 99 H 108 Z" fill="#10B981" />
+    <path d="M 108 77 H 148 V 89 H 108 Z" fill="#047857" />
+    <path d="M 108 77 H 148 V 81 H 108 Z" fill="#10B981" />
+    <path d="M 108 59 H 148 V 71 H 108 Z" fill="#047857" />
+    <path d="M 108 59 H 148 V 63 H 108 Z" fill="#10B981" />
+
+    <!-- Cầu vượt hạ tầng uốn lượn ôm quanh tháp -->
+    <path d="M 32 145 C 50 115, 150 115, 168 145" stroke="#1E3A8A" strokeWidth="8" strokeLinecap="round" fill="none" />
+    <path d="M 32 145 C 50 115, 150 115, 168 145" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" fill="none" />
+
+    <!-- Mặt đường giao thông hình xoáy vô cực ở chân đế đại diện cho Hạ tầng -->
+    <path d="M 40 180 C 45 150, 155 150, 160 180 C 165 205, 35 205, 40 180 Z" stroke="#1E293B" strokeWidth="8" strokeLinecap="round" fill="none" />
+    <path d="M 40 180 C 45 150, 155 150, 160 180 C 165 205, 35 205, 40 180 Z" stroke="#10B981" strokeWidth="2" strokeLinecap="round" fill="none" />
+  </g>
+
+  <!-- ================= CHỮ THƯƠNG HIỆU DD&HT ================= -->
+  <g transform="translate(100, 226)">
+    <text 
+      textAnchor="middle" 
+      style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      className="font-black text-[28px] tracking-[0.05em]"
+    >
+      <tspan fill="#1E3A8A">DD</tspan>
+      <tspan fill="#059669">&amp;</tspan>
+      <tspan fill="#F59E0B">HT</tspan>
+    </text>
+  </g>
+</svg>
