@@ -12,7 +12,8 @@ interface LobbyDisplayProps {
 }
 
 export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
-  const { theme } = useTheme();
+  // Chế độ tivi sảnh mặc định sử dụng theme tối để tối ưu hiển thị và bảo vệ màn hình
+  const theme = 'dark';
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
