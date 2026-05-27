@@ -112,8 +112,8 @@ export default function CalendarView() {
 
   const { data: events = [], isLoading } = useEvents(
     {
-      type: filterType || undefined,
-      roomId: filterRoom || undefined,
+      type: displayMode === 'lobby' ? undefined : (filterType || undefined),
+      roomId: displayMode === 'lobby' ? undefined : (filterRoom || undefined),
       startDate: dateRange.startDate,
       endDate: dateRange.endDate,
     },

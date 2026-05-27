@@ -21,12 +21,14 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
 
   // Filter today's events (meetings, business trips, internal events, and others)
   const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+  const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+
   const displayEvents = events
     .filter(e => {
       const start = new Date(e.start_time);
-      return start.getDate() === today.getDate() &&
-             start.getMonth() === today.getMonth() &&
-             start.getFullYear() === today.getFullYear();
+      const end = new Date(e.end_time);
+      return start <= todayEnd && end >= todayStart;
     })
     .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 
@@ -604,7 +606,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                       Chào mừng quý khách & đồng nghiệp
                     </h4>
                     <p className={`text-xs mt-2 leading-relaxed font-medium ${styles.welcomeBannerText}`}>
-                      Chúc tập thể cán bộ, công chức, viên chức Ban Quản lý dự án Đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh một ngày làm việc hiệu quả, đoàn kết, kỷ cương và sáng tạo!
+                      Chúc tập thể cán bộ, viên chức Ban Quản lý dự án Đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh một ngày làm việc hiệu quả, đoàn kết, kỷ cương và sáng tạo!
                     </p>
                   </div>
                 </div>
