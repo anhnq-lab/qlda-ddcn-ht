@@ -87,8 +87,14 @@ const eventSchema = z.object({
   vehicle: z.string().optional().nullable(),
   attendee_ids: z.array(z.string()).optional(),
 }).refine(data => {
-  const start = new Date(`${data.start_date}T${data.start_time_val}`);
-  const end = new Date(`${data.end_date}T${data.end_time_val}`);
+  const [sYear, sMonth, sDay] = data.start_date.split('-').map(Number);
+  const [sHour, sMin] = data.start_time_val.split(':').map(Number);
+  const start = new Date(sYear, sMonth - 1, sDay, sHour, sMin, 0, 0);
+
+  const [eYear, eMonth, eDay] = data.end_date.split('-').map(Number);
+  const [eHour, eMin] = data.end_time_val.split(':').map(Number);
+  const end = new Date(eYear, eMonth - 1, eDay, eHour, eMin, 0, 0);
+
   return start < end;
 }, {
   message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
@@ -149,8 +155,20 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
   const endDateVal = watch('end_date');
   const endTimeVal = watch('end_time_val');
 
-  const startTime = startDateVal && startTimeVal ? `${startDateVal}T${startTimeVal}:00` : '';
-  const endTime = endDateVal && endTimeVal ? `${endDateVal}T${endTimeVal}:00` : '';
+  const getIsoString = (dateVal: string, timeVal: string) => {
+    if (!dateVal || !timeVal) return '';
+    try {
+      const [year, month, day] = dateVal.split('-').map(Number);
+      const [hour, minute] = timeVal.split(':').map(Number);
+      const d = new Date(year, month - 1, day, hour, minute, 0, 0);
+      return isNaN(d.getTime()) ? '' : d.toISOString();
+    } catch {
+      return '';
+    }
+  };
+
+  const startTime = getIsoString(startDateVal, startTimeVal);
+  const endTime = getIsoString(endDateVal, endTimeVal);
 
   const [locationMode, setLocationMode] = useState<'room' | 'custom'>('room');
   const [prevStart, setPrevStart] = useState<{ date: string; time: string } | null>(null);
@@ -335,8 +353,13 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
 
   const onSubmit = async (data: EventFormValues) => {
     try {
-      const startDateTimeStr = new Date(`${data.start_date}T${data.start_time_val}`).toISOString();
-      const endDateTimeStr = new Date(`${data.end_date}T${data.end_time_val}`).toISOString();
+      const [sYear, sMonth, sDay] = data.start_date.split('-').map(Number);
+      const [sHour, sMin] = data.start_time_val.split(':').map(Number);
+      const startDateTimeStr = new Date(sYear, sMonth - 1, sDay, sHour, sMin, 0, 0).toISOString();
+
+      const [eYear, eMonth, eDay] = data.end_date.split('-').map(Number);
+      const [eHour, eMin] = data.end_time_val.split(':').map(Number);
+      const endDateTimeStr = new Date(eYear, eMonth - 1, eDay, eHour, eMin, 0, 0).toISOString();
 
       const { start_date, start_time_val, end_date, end_time_val, ...rest } = data;
       const payload = {
