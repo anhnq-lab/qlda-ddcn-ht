@@ -542,18 +542,18 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                         </div>
 
                         {/* Column 2: Attendees */}
-                        <div className="col-span-1 md:col-span-3 flex flex-col gap-1.5 min-w-0">
+                        <div className="col-span-1 md:col-span-3 flex flex-col gap-1 min-w-0">
                           {event.attendees && event.attendees.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                              {event.attendees.slice(0, 4).map((emp, idx) => (
-                                <span key={emp.EmployeeID || idx} className={`inline-flex items-center px-3 py-1.5 rounded-lg border text-xs md:text-sm whitespace-nowrap ${styles.attendeeBadge}`}>
-                                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400 mr-2" />
+                            <div className="flex flex-wrap gap-1">
+                              {event.attendees.slice(0, 10).map((emp, idx) => (
+                                <span key={emp.EmployeeID || idx} className={`inline-flex items-center px-2 py-0.5 rounded-lg border text-[10.5px] md:text-xs whitespace-nowrap ${styles.attendeeBadge}`}>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400 mr-1" />
                                   {emp.FullName}
                                 </span>
                               ))}
-                              {event.attendees.length > 4 && (
-                                <span className="inline-flex items-center px-3 py-1.5 rounded-lg bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/25 dark:border-sky-400/25 text-xs md:text-sm font-bold text-sky-600 dark:text-sky-400 shadow-sm">
-                                  +{event.attendees.length - 4}
+                              {event.attendees.length > 10 && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/25 dark:border-sky-400/25 text-[10.5px] md:text-xs font-bold text-sky-600 dark:text-sky-400 shadow-sm">
+                                  +{event.attendees.length - 10}
                                 </span>
                               )}
                             </div>
