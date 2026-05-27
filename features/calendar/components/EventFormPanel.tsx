@@ -16,20 +16,36 @@ import { format } from 'date-fns';
 const EVENT_TYPES = ['meeting', 'business_trip', 'internal_event', 'other'] as const;
 const ROOM_TYPES = ['Phòng họp 1', 'Phòng họp 2', 'Phòng họp 3'] as const;
 
+const timeOptions = Array.from({ length: 24 * 4 }).map((_, idx) => {
+  const hour = Math.floor(idx / 4).toString().padStart(2, '0');
+  const minute = ((idx % 4) * 15).toString().padStart(2, '0');
+  const timeString = `${hour}:${minute}`;
+  return {
+    value: timeString,
+    label: timeString,
+  };
+});
+
 const eventSchema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề'),
   description: z.string().optional(),
   event_type: z.enum(EVENT_TYPES),
   room: z.enum(ROOM_TYPES).optional().nullable(),
-  start_time: z.string().min(1, 'Vui lòng chọn thời gian bắt đầu'),
-  end_time: z.string().min(1, 'Vui lòng chọn thời gian kết thúc'),
+  start_date: z.string().min(1, 'Vui lòng chọn ngày bắt đầu'),
+  start_time_val: z.string().min(1, 'Vui lòng chọn giờ bắt đầu'),
+  end_date: z.string().min(1, 'Vui lòng chọn ngày kết thúc'),
+  end_time_val: z.string().min(1, 'Vui lòng chọn giờ kết thúc'),
   leader_id: z.string().optional().nullable(),
   location: z.string().optional(),
   vehicle: z.string().optional().nullable(),
   attendee_ids: z.array(z.string()).optional(),
-}).refine(data => new Date(data.start_time) < new Date(data.end_time), {
+}).refine(data => {
+  const start = new Date(`${data.start_date}T${data.start_time_val}`);
+  const end = new Date(`${data.end_date}T${data.end_time_val}`);
+  return start < end;
+}, {
   message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
-  path: ['end_time'],
+  path: ['end_time_val'],
 }).refine(data => {
   if (!data.room) {
     return !!data.location?.trim();
@@ -68,6 +84,10 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
       description: '',
       event_type: 'meeting',
       room: null,
+      start_date: '',
+      start_time_val: '08:00',
+      end_date: '',
+      end_time_val: '09:00',
       leader_id: null,
       location: '',
       vehicle: null,
@@ -77,8 +97,13 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
 
   const eventType = watch('event_type');
   const room = watch('room');
-  const startTime = watch('start_time');
-  const endTime = watch('end_time');
+  const startDateVal = watch('start_date');
+  const startTimeVal = watch('start_time_val');
+  const endDateVal = watch('end_date');
+  const endTimeVal = watch('end_time_val');
+
+  const startTime = startDateVal && startTimeVal ? `${startDateVal}T${startTimeVal}:00` : '';
+  const endTime = endDateVal && endTimeVal ? `${endDateVal}T${endTimeVal}:00` : '';
 
   const [locationMode, setLocationMode] = useState<'room' | 'custom'>('room');
 
@@ -128,14 +153,18 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
     if (event) {
       const isCustom = !event.room && !!event.location;
       setLocationMode(isCustom ? 'custom' : 'room');
+      const sDate = new Date(event.start_time);
+      const eDate = new Date(event.end_time);
       reset({
         title: event.title,
         description: event.description || '',
         event_type: event.event_type,
         room: (event.room || null) as any,
         location: event.location || '',
-        start_time: format(new Date(event.start_time), "yyyy-MM-dd'T'HH:mm"),
-        end_time: format(new Date(event.end_time), "yyyy-MM-dd'T'HH:mm"),
+        start_date: format(sDate, "yyyy-MM-dd"),
+        start_time_val: format(sDate, "HH:mm"),
+        end_date: format(eDate, "yyyy-MM-dd"),
+        end_time_val: format(eDate, "HH:mm"),
         leader_id: event.leader_id || null,
         vehicle: event.vehicle || null,
         attendee_ids: event.attendees?.map(a => a.EmployeeID) || [],
@@ -152,8 +181,10 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
         event_type: 'meeting',
         room: null,
         location: '',
-        start_time: format(start, "yyyy-MM-dd'T'HH:mm"),
-        end_time: format(end, "yyyy-MM-dd'T'HH:mm"),
+        start_date: format(start, "yyyy-MM-dd"),
+        start_time_val: format(start, "HH:mm"),
+        end_date: format(end, "yyyy-MM-dd"),
+        end_time_val: format(end, "HH:mm"),
         leader_id: null,
         vehicle: null,
         attendee_ids: [],
@@ -170,8 +201,10 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
         event_type: 'meeting',
         room: null,
         location: '',
-        start_time: format(now, "yyyy-MM-dd'T'HH:mm"),
-        end_time: format(later, "yyyy-MM-dd'T'HH:mm"),
+        start_date: format(now, "yyyy-MM-dd"),
+        start_time_val: format(now, "HH:mm"),
+        end_date: format(later, "yyyy-MM-dd"),
+        end_time_val: format(later, "HH:mm"),
         leader_id: null,
         vehicle: null,
         attendee_ids: [],
@@ -180,10 +213,15 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
   }, [event, selectedDate, reset]);
 
   const onSubmit = async (data: EventFormValues) => {
-
     try {
+      const startDateTimeStr = new Date(`${data.start_date}T${data.start_time_val}`).toISOString();
+      const endDateTimeStr = new Date(`${data.end_date}T${data.end_time_val}`).toISOString();
+
+      const { start_date, start_time_val, end_date, end_time_val, ...rest } = data;
       const payload = {
-        ...data,
+        ...rest,
+        start_time: startDateTimeStr,
+        end_time: endDateTimeStr,
         room: locationMode === 'room' ? data.room : null,
         location: locationMode === 'custom' ? data.location : (data.room || ''),
       };
@@ -196,7 +234,7 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
         const count = data.attendee_ids?.length ?? 0;
         showToast(
           count > 0
-            ? `Đăng ký lịch thành công — đã thông báo ${count} người tham dự`
+            ? `Đăng ký lịch thành công — đã thông báo ${count} người tham nhận`
             : 'Đăng ký lịch thành công',
           'success',
         );
@@ -303,22 +341,71 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              type="datetime-local"
-              label="Bắt đầu"
-              lang="en-GB"
-              {...register('start_time')}
-              error={errors.start_time?.message}
-              required
-            />
-            <Input
-              type="datetime-local"
-              label="Kết thúc"
-              lang="en-GB"
-              {...register('end_time')}
-              error={errors.end_time?.message}
-              required
-            />
+            {/* Start Date & Time */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-semibold text-txt-secondary mb-1.5">
+                Bắt đầu <span className="text-danger-500">*</span>
+              </label>
+              <div className="grid grid-cols-5 gap-2">
+                <div className="col-span-3">
+                  <Input
+                    type="date"
+                    {...register('start_date')}
+                    error={errors.start_date?.message}
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Controller
+                    name="start_time_val"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={timeOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.start_time_val?.message}
+                        searchable
+                        placeholder="Giờ"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* End Date & Time */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-semibold text-txt-secondary mb-1.5">
+                Kết thúc <span className="text-danger-500">*</span>
+              </label>
+              <div className="grid grid-cols-5 gap-2">
+                <div className="col-span-3">
+                  <Input
+                    type="date"
+                    {...register('end_date')}
+                    error={errors.end_date?.message}
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Controller
+                    name="end_time_val"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={timeOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.end_time_val?.message}
+                        searchable
+                        placeholder="Giờ"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div>
