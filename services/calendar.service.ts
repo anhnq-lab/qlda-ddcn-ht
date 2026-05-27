@@ -31,8 +31,8 @@ export const calendarService = {
       .select(ATTENDEE_SELECT)
       .order('start_time', { ascending: true });
 
-    if (filter?.startDate) query = query.gte('start_time', filter.startDate);
-    if (filter?.endDate)   query = query.lte('end_time', filter.endDate);
+    if (filter?.startDate) query = query.gte('end_time', filter.startDate);
+    if (filter?.endDate)   query = query.lte('start_time', filter.endDate);
     if (filter?.type)      query = query.eq('event_type', filter.type);
     if (filter?.roomId)    query = query.eq('room', filter.roomId);
 

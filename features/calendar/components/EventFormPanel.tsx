@@ -16,15 +16,16 @@ import { format } from 'date-fns';
 const EVENT_TYPES = ['meeting', 'business_trip', 'internal_event', 'other'] as const;
 const ROOM_TYPES = ['Phòng họp 1', 'Phòng họp 2', 'Phòng họp 3'] as const;
 
-const timeOptions = Array.from({ length: 24 * 4 }).map((_, idx) => {
-  const hour = Math.floor(idx / 4).toString().padStart(2, '0');
-  const minute = ((idx % 4) * 15).toString().padStart(2, '0');
-  const timeString = `${hour}:${minute}`;
+const timeOptions = Array.from({ length: 24 * 2 }).map((_, idx) => {
+  const hour = Math.floor(idx / 2).toString().padStart(2, '0');
+  const minute = ((idx % 2) * 30).toString().padStart(2, '0');
   return {
-    value: timeString,
-    label: timeString,
+    value: `${hour}:${minute}`,
+    label: `${hour}:${minute}`,
   };
 });
+
+const timeRegex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
 
 const eventSchema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề'),
@@ -32,9 +33,9 @@ const eventSchema = z.object({
   event_type: z.enum(EVENT_TYPES),
   room: z.enum(ROOM_TYPES).optional().nullable(),
   start_date: z.string().min(1, 'Vui lòng chọn ngày bắt đầu'),
-  start_time_val: z.string().min(1, 'Vui lòng chọn giờ bắt đầu'),
+  start_time_val: z.string().min(1, 'Vui lòng chọn giờ bắt đầu').regex(timeRegex, 'Định dạng giờ phải là HH:mm (VD: 08:30)'),
   end_date: z.string().min(1, 'Vui lòng chọn ngày kết thúc'),
-  end_time_val: z.string().min(1, 'Vui lòng chọn giờ kết thúc'),
+  end_time_val: z.string().min(1, 'Vui lòng chọn giờ kết thúc').regex(timeRegex, 'Định dạng giờ phải là HH:mm (VD: 08:30)'),
   leader_id: z.string().optional().nullable(),
   location: z.string().optional(),
   vehicle: z.string().optional().nullable(),
@@ -356,19 +357,14 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
                   />
                 </div>
                 <div className="col-span-2">
-                  <Controller
-                    name="start_time_val"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        options={timeOptions}
-                        value={field.value}
-                        onChange={field.onChange}
-                        error={errors.start_time_val?.message}
-                        searchable
-                        placeholder="Giờ"
-                      />
-                    )}
+                  <Input
+                    type="text"
+                    placeholder="HH:mm"
+                    list="time-list"
+                    maxLength={5}
+                    {...register('start_time_val')}
+                    error={errors.start_time_val?.message}
+                    required
                   />
                 </div>
               </div>
@@ -389,19 +385,14 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
                   />
                 </div>
                 <div className="col-span-2">
-                  <Controller
-                    name="end_time_val"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        options={timeOptions}
-                        value={field.value}
-                        onChange={field.onChange}
-                        error={errors.end_time_val?.message}
-                        searchable
-                        placeholder="Giờ"
-                      />
-                    )}
+                  <Input
+                    type="text"
+                    placeholder="HH:mm"
+                    list="time-list"
+                    maxLength={5}
+                    {...register('end_time_val')}
+                    error={errors.end_time_val?.message}
+                    required
                   />
                 </div>
               </div>
@@ -485,6 +476,12 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
               {event ? 'Cập nhật' : 'Đăng ký'}
             </Button>
           </div>
+
+          <datalist id="time-list">
+            {timeOptions.map(opt => (
+              <option key={opt.value} value={opt.value} />
+            ))}
+          </datalist>
         </form>
       </div>
     </div>
