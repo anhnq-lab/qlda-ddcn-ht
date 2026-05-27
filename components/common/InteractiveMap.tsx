@@ -361,7 +361,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
         };
     }, []);
 
-    // Sync map tile layer with theme
+    // Sync map tile layer with theme (always use bright voyager tiles)
     useEffect(() => {
         const map = mapRef.current;
         if (!map) return;
@@ -370,9 +370,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
             map.removeLayer(tileLayerRef.current);
         }
 
-        const tileUrl = theme === 'dark'
-            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        const tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         const tileAttribution = '&copy; OpenStreetMap contributors &copy; CARTO';
 
         const newTileLayer = L.tileLayer(tileUrl, {

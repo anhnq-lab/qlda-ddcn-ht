@@ -17,6 +17,7 @@ const TaskCompletionChart = lazy(() => import('./TaskCompletionChart'));
 const ProjectStatusByBoardChart = lazy(() => import('./ProjectStatusByBoardChart'));
 const ProjectDetailedStatusWidget = lazy(() => import('./ProjectDetailedStatusWidget'));
 const ProjectSpecialtyChart = lazy(() => import('./ProjectSpecialtyChart'));
+const YearlyCapitalDisbursementChart = lazy(() => import('./YearlyCapitalDisbursementChart'));
 
 // Panels
 const ProjectSlideTable = lazy(() => import('./panels/ProjectSlideTable'));
@@ -91,9 +92,9 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
         staleTime: STALE_5M,
     });
 
-    const { data: risks, isLoading: loadingRisks } = useQuery({
-        queryKey: ['dashboard', 'risks'],
-        queryFn: DashboardService.getRisks,
+    const { data: yearlyCapitalVsDisbursement } = useQuery({
+        queryKey: ['dashboard', 'yearlyCapitalVsDisbursement'],
+        queryFn: DashboardService.getYearlyCapitalVsDisbursement,
         staleTime: STALE_5M,
     });
 
@@ -117,6 +118,23 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
         }
         return list;
     }, [projectRows, selectedBoard, selectedYear]);
+
+    const totalInvestmentSum = useMemo(() => {
+        return filteredRows.reduce((sum, r) => sum + (r.totalInvestment || 0), 0);
+    }, [filteredRows]);
+
+    const totalAllTimeDisbursed = useMemo(() => {
+        return filteredRows.reduce((sum, r) => sum + (r.totalInvestment || 0) * ((r.paymentProgress || 0) / 100), 0);
+    }, [filteredRows]);
+
+    const overallDisbursementRate = useMemo(() => {
+        return totalInvestmentSum > 0 ? Math.round((totalAllTimeDisbursed / totalInvestmentSum) * 100) : 0;
+    }, [totalInvestmentSum, totalAllTimeDisbursed]);
+
+    const yearlyPlannedPercentage = useMemo(() => {
+        if (!metrics || totalInvestmentSum === 0) return 0;
+        return Math.round((metrics.yearlyPlanned / totalInvestmentSum) * 100);
+    }, [metrics, totalInvestmentSum]);
 
     const top10KeyProjects = useMemo(() => {
         return [...filteredRows]
@@ -237,34 +255,32 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     }
                 />
                 <StatCard
-                    label="Tổng vốn đầu tư"
-                    value={metrics ? formatShortCurrency(metrics.totalInvestment) : '—'}
+                    label="Lũy kế giải ngân"
+                    value={formatShortCurrency(totalAllTimeDisbursed)}
+                    targetValue={formatShortCurrency(totalInvestmentSum)}
                     icon={<Wallet className="w-5 h-5 flex-shrink-0" />}
                     color="amber"
-                    progressLabel="Tỷ trọng vốn năm nay"
-                    progressPercentage={metrics && metrics.totalInvestment > 0 ? Math.round((metrics.yearlyPlanned / metrics.totalInvestment) * 100) : 0}
-                    loading={loadingMetrics}
+                    progressLabel="Tỷ lệ giải ngân lũy kế"
+                    progressPercentage={overallDisbursementRate}
+                    loading={loadingProjects}
                 />
                 <StatCard
                     label={selectedYear ? `Kế hoạch vốn ${selectedYear}` : 'Tổng kế hoạch vốn'}
                     value={metrics ? formatShortCurrency(metrics.yearlyPlanned) : '—'}
-                    targetValue={metrics && metrics.totalInvestment ? formatShortCurrency(metrics.totalInvestment) : undefined}
                     icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
                     color="slate"
-                    progressLabel="Giải ngân trên KH"
-                    progressPercentage={metrics ? metrics.yearlyDisbursementRate : 0}
+                    progressLabel="Tỷ trọng trên tổng vốn đầu tư"
+                    progressPercentage={yearlyPlannedPercentage}
                     loading={loadingMetrics}
                 />
                 <StatCard
-                    label={selectedYear ? `Lũy kế giải ngân ${selectedYear}` : 'Lũy kế giải ngân'}
+                    label={selectedYear ? `Giải ngân năm ${selectedYear}` : 'Giải ngân năm'}
                     value={metrics ? formatShortCurrency(metrics.yearlyDisbursed) : '—'}
                     targetValue={metrics ? formatShortCurrency(metrics.yearlyPlanned) : undefined}
                     icon={<Activity className="w-5 h-5 flex-shrink-0" />}
                     color="emerald"
-                    progressLabel="Hoàn thành kế hoạch"
+                    progressLabel="Tiến độ giải ngân năm"
                     progressPercentage={metrics ? metrics.yearlyDisbursementRate : 0}
-                    trendLabel="Tiến độ"
-                    trendPercentage={metrics ? metrics.yearlyDisbursementRate : 0}
                     loading={loadingMetrics}
                 />
             </div>
@@ -272,7 +288,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
             {/* ═══════════════════════════════════════════════════
                 2. BIỂU ĐỒ TỔNG QUAN DỰ ÁN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[300px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[380px]">
                 <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-[280px] animate-pulse" />}>
                     <ErrorBoundary>
                         <AISummaryWidget className="h-full overflow-y-auto" />
@@ -284,7 +300,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                 </Suspense>
 
                 <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-[280px] animate-pulse" />}>
-                    <ProjectDetailedStatusWidget projects={filteredRows} onSegmentClick={handleDetailedStatusClick} />
+                    <ProjectSpecialtyChart projects={filteredRows} />
                 </Suspense>
             </div>
 
@@ -292,6 +308,17 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                 3. GIẢI NGÂN THEO BAN VÀ CÔNG VIỆC
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--density-form-gap)] min-h-[400px]">
+                <div className="lg:col-span-1">
+                    {yearlyCapitalVsDisbursement && (
+                        <Suspense fallback={
+                            <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex items-center justify-center min-h-[250px]">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+                            </div>
+                        }>
+                            <YearlyCapitalDisbursementChart data={yearlyCapitalVsDisbursement} />
+                        </Suspense>
+                    )}
+                </div>
                 <div className="lg:col-span-1">
                     {capitalVsDisbursement && (
                         <Suspense fallback={
@@ -305,18 +332,13 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                 </div>
                 <div className="lg:col-span-1">
                     <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>
-                        <ProjectSpecialtyChart projects={filteredRows} />
-                    </Suspense>
-                </div>
-                <div className="lg:col-span-1">
-                    <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>
                         <TaskCompletionChart data={taskCompletion} loading={loadingTasks} onSegmentClick={handleTaskClick} />
                     </Suspense>
                 </div>
             </div>
 
             {/* ═══════════════════════════════════════════════════
-                4. MAP + ALERTS
+                4. MAP + DETAILS
             ═══════════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-[var(--density-form-gap)] min-h-[300px] xl:h-[500px]">
                 {/* Map (2/3) */}
@@ -404,40 +426,11 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                     </div>
                 </div>
 
-                {/* Alerts (1/3) */}
-                <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-red-100 dark:border-red-950 relative overflow-hidden h-full flex flex-col">
-                    <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
-                    <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0" style={{ paddingLeft: '0.75rem', borderLeft: '3px solid #EF4444' }}>
-                        <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
-                    </h3>
-                    <div className="space-y-3 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                        {loadingRisks ? (
-                            <div className="space-y-2">
-                                <div className="h-16 bg-red-50/50 dark:bg-red-900/10 rounded-xl animate-pulse" />
-                                <div className="h-16 bg-red-50/50 dark:bg-red-900/10 rounded-xl animate-pulse" />
-                            </div>
-                        ) : risks && risks.length > 0 ? (
-                            risks.map((r: any) => (
-                                <div key={r.id} className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 rounded-xl flex items-start gap-3 transition-transform hover:scale-[1.02]">
-                                    <div className="p-1.5 bg-bg-surface rounded-lg text-red-500 shadow-sm shrink-0">
-                                        <AlertCircle className="w-4 h-4" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-bold text-red-800 dark:text-red-300 leading-snug">{r.msg}</p>
-                                        <p className="text-[10px] text-red-500 dark:text-red-400/70 mt-1 font-medium">{r.date}</p>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <EmptyState icon={<CheckCircle2 className="w-12 h-12 text-emerald-500" />} title="Không có cảnh báo nào" className="py-12" />
-                        )}
-                    </div>
-                    <button
-                        onClick={() => navigate('/reports')}
-                        className="w-full mt-4 py-2 bg-bg-surface border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0 shadow-sm hover:shadow"
-                    >
-                        Xem chi tiết báo cáo rủi ro
-                    </button>
+                {/* Detailed Status (1/3) */}
+                <div className="xl:col-span-1">
+                    <Suspense fallback={<div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full animate-pulse" />}>
+                        <ProjectDetailedStatusWidget projects={filteredRows} onSegmentClick={handleDetailedStatusClick} />
+                    </Suspense>
                 </div>
             </div>
         </div>

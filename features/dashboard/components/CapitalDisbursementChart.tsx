@@ -21,10 +21,10 @@ const CapitalDisbursementChart: React.FC<CapitalDisbursementChartProps> = ({ dat
 
     return (
         <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
-            <div className="flex justify-between items-center mb-4 shrink-0">
+            <div className="flex justify-between items-center mb-2 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><Wallet className="w-5 h-5" /></div>
-                    Kế hoạch vốn và Thực giải ngân
+                    Giải ngân theo phòng quản lý
                 </h3>
                 <div className="flex gap-3">
                     <span className="flex items-center gap-1.5 text-[10px] font-bold text-txt-secondary">

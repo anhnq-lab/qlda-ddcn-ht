@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, endOfWeek, startOfDay, endOfDay, subDays, addDays } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
@@ -36,6 +36,58 @@ const localizer = dateFnsLocalizer({
 
 const DnDCalendar = withDragAndDrop(Calendar as any);
 
+const getDateRange = (currentDate: Date, currentView: View) => {
+  let start: Date;
+  let end: Date;
+
+  switch (currentView) {
+    case 'month':
+      const monthStart = startOfMonth(currentDate);
+      const monthEnd = endOfMonth(currentDate);
+      start = startOfWeek(monthStart, { weekStartsOn: 1 });
+      end = endOfWeek(monthEnd, { weekStartsOn: 1 });
+      start = subDays(start, 7);
+      end = addDays(end, 7);
+      break;
+    case 'week':
+    case 'work_week' as any:
+      start = startOfWeek(currentDate, { weekStartsOn: 1 });
+      end = endOfWeek(currentDate, { weekStartsOn: 1 });
+      start = subDays(start, 2);
+      end = addDays(end, 2);
+      break;
+    case 'day':
+      start = startOfDay(currentDate);
+      end = endOfDay(currentDate);
+      break;
+    case 'agenda':
+      start = startOfDay(currentDate);
+      end = addDays(start, 30);
+      break;
+    default:
+      start = startOfMonth(currentDate);
+      end = endOfMonth(currentDate);
+  }
+
+  return {
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+  };
+};
+
+const formats = {
+  timeGutterFormat: (date: Date, culture?: string, localizer?: any) =>
+    localizer.format(date, 'HH:mm', culture),
+  eventTimeRangeFormat: ({ start, end }: { start: Date; end: Date }, culture?: string, localizer?: any) =>
+    `${localizer.format(start, 'HH:mm', culture)} – ${localizer.format(end, 'HH:mm', culture)}`,
+  agendaTimeRangeFormat: ({ start, end }: { start: Date; end: Date }, culture?: string, localizer?: any) =>
+    `${localizer.format(start, 'HH:mm', culture)} – ${localizer.format(end, 'HH:mm', culture)}`,
+  dayHeaderFormat: (date: Date, culture?: string, localizer?: any) =>
+    localizer.format(date, 'EEEE, dd/MM/yyyy', culture),
+  dayRangeHeaderFormat: ({ start, end }: { start: Date; end: Date }, culture?: string, localizer?: any) =>
+    `${localizer.format(start, 'dd/MM/yyyy', culture)} – ${localizer.format(end, 'dd/MM/yyyy', culture)}`,
+};
+
 export default function CalendarView() {
   const [view, setView] = useState<View>('month');
   const [date, setDate] = useState(new Date());
@@ -46,10 +98,29 @@ export default function CalendarView() {
   const [filterType, setFilterType] = useState<AgencyEventType | ''>('');
   const [filterRoom, setFilterRoom] = useState<AgencyEventRoom | ''>('');
 
-  const { data: events = [], isLoading } = useEvents({
-    type: filterType || undefined,
-    roomId: filterRoom || undefined,
-  });
+  const dateRange = React.useMemo(() => {
+    if (displayMode === 'lobby') {
+      const todayStart = startOfDay(new Date());
+      const todayEnd = endOfDay(new Date());
+      return {
+        startDate: todayStart.toISOString(),
+        endDate: todayEnd.toISOString(),
+      };
+    }
+    return getDateRange(date, view);
+  }, [date, view, displayMode]);
+
+  const { data: events = [], isLoading } = useEvents(
+    {
+      type: filterType || undefined,
+      roomId: filterRoom || undefined,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    },
+    {
+      refetchInterval: displayMode === 'lobby' ? 60 * 1000 : undefined,
+    }
+  );
 
   const { mutate: updateEvent } = useUpdateEvent();
 
@@ -168,14 +239,20 @@ export default function CalendarView() {
           <LobbyDisplay events={events} />
         </div>
       ) : (
-        <div className="px-6 py-4 flex-1 w-full flex flex-col">
-          {isLoading ? (
-            <div className="flex justify-center items-center flex-1 min-h-[600px]">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : (
-            <div className="flex-1 w-full min-h-[600px] dnd-calendar-wrapper">
-              <DnDCalendar
+        <>
+          <PageHeader
+            title="Lịch cơ quan"
+            description="Quản lý và theo dõi lịch họp, lịch công tác, sự kiện nội bộ của Ban QLDA"
+            icon={<CalendarIcon size={20} />}
+          />
+          <div className="px-6 py-4 flex-1 w-full flex flex-col">
+            {isLoading ? (
+              <div className="flex justify-center items-center flex-1 min-h-[600px]">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : (
+              <div className="flex-1 w-full min-h-[600px] dnd-calendar-wrapper">
+                <DnDCalendar
                 localizer={localizer}
                 events={mappedEvents}
                 startAccessor="start"
@@ -193,6 +270,7 @@ export default function CalendarView() {
                 onSelectSlot={handleSelectSlot}
                 onSelectEvent={handleSelectEvent}
                 eventPropGetter={eventStyleGetter}
+                formats={formats}
                 components={{
                   toolbar: (toolbarProps) => (
                     <CustomToolbar
@@ -225,7 +303,8 @@ export default function CalendarView() {
               />
             </div>
           )}
-        </div>
+          </div>
+        </>
       )}
 
 

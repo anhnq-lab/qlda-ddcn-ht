@@ -55,13 +55,13 @@ const ProjectSpecialtyChart: React.FC<ProjectSpecialtyChartProps> = ({ projects 
 
     return (
         <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
-            <div className="flex justify-between items-center mb-4 shrink-0">
+            <div className="flex justify-between items-center mb-2 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><Layers className="w-5 h-5" /></div>
-                    Cơ cấu dự án theo Chuyên ngành
+                    Chuyên ngành dự án
                 </h3>
             </div>
-            <div className="flex-1 min-h-[200px]">
+            <div className="flex-1 min-h-[280px]">
                 {chartData.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-xs text-txt-secondary font-medium">
                         Không có dữ liệu chuyên ngành
@@ -72,9 +72,9 @@ const ProjectSpecialtyChart: React.FC<ProjectSpecialtyChartProps> = ({ projects 
                             <Pie
                                 data={chartData}
                                 cx="50%"
-                                cy="50%"
-                                innerRadius={60}
-                                outerRadius={80}
+                                cy="42%"
+                                innerRadius={55}
+                                outerRadius={78}
                                 paddingAngle={5}
                                 dataKey="value"
                                 stroke="none"
@@ -97,9 +97,10 @@ const ProjectSpecialtyChart: React.FC<ProjectSpecialtyChartProps> = ({ projects 
                             />
                             <Legend 
                                 verticalAlign="bottom" 
-                                height={45} 
+                                height={55} 
                                 iconType="circle"
-                                wrapperStyle={{ fontSize: '10px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : (theme === 'nature' ? '#78716c' : '#6B7280') }}
+                                iconSize={8}
+                                wrapperStyle={{ fontSize: '9px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : (theme === 'nature' ? '#78716c' : '#6B7280'), lineHeight: '18px' }}
                             />
                         </PieChart>
                     </ResponsiveContainer>

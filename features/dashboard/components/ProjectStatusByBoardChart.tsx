@@ -37,10 +37,10 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
 
     return (
         <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
-            <div className="flex justify-between items-center mb-4 shrink-0">
+            <div className="flex justify-between items-center mb-2 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><Building2 className="w-5 h-5" /></div>
-                    Dự án theo Phòng Ban
+                    DA theo Phòng
                 </h3>
             </div>
             <div className="flex-1 min-h-[200px]">
@@ -63,15 +63,22 @@ const ProjectStatusByBoardChart: React.FC<ProjectStatusByBoardChartProps> = ({ p
                         <RechartsTooltip
                             content={({ active, payload, label }) => {
                                 if (!active || !payload?.length) return null;
+                                const total = payload.reduce((sum, entry) => sum + (Number(entry.value) || 0), 0);
                                 return (
-                                    <div className="bg-bg-elevated px-3 py-2 rounded-xl shadow-sm border border-border">
-                                        <p className="text-[10px] font-black text-txt-primary mb-1">{label}</p>
-                                        {payload.map((entry, index) => (
-                                            <p key={index} className="text-[10px] text-txt-secondary flex justify-between gap-4">
-                                                <span>{entry.name}:</span>
-                                                <strong style={{ color: entry.color }}>{entry.value}</strong>
-                                            </p>
-                                        ))}
+                                    <div className="bg-bg-elevated px-3 py-2 rounded-xl shadow-sm border border-border min-w-[150px]">
+                                        <p className="text-[10px] font-black text-txt-primary mb-1.5">{label}</p>
+                                        <div className="space-y-1">
+                                            {payload.map((entry, index) => (
+                                                <p key={index} className="text-[10px] text-txt-secondary flex justify-between gap-4">
+                                                    <span>{entry.name}:</span>
+                                                    <strong style={{ color: entry.color }}>{entry.value}</strong>
+                                                </p>
+                                            ))}
+                                            <div className="border-t border-border pt-1 mt-1 flex justify-between text-[10px] font-bold text-txt-primary">
+                                                <span>Tổng cộng:</span>
+                                                <span>{total}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 );
                             }}

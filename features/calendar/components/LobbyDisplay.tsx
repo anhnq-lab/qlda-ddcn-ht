@@ -18,14 +18,12 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const EVENTS_PER_PAGE = 4; // Tối ưu số lượng để các thẻ hiển thị to và rõ ràng hơn
 
-  // Filter today's meetings and business trips
+  // Filter today's events (meetings, business trips, internal events, and others)
   const today = new Date();
   const displayEvents = events
     .filter(e => {
-      const isTypeValid = e.event_type === 'meeting' || e.event_type === 'business_trip';
       const start = new Date(e.start_time);
-      return isTypeValid && 
-             start.getDate() === today.getDate() &&
+      return start.getDate() === today.getDate() &&
              start.getMonth() === today.getMonth() &&
              start.getFullYear() === today.getFullYear();
     })
@@ -78,30 +76,56 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   const currentEvents = displayEvents.slice(currentPage * EVENTS_PER_PAGE, (currentPage + 1) * EVENTS_PER_PAGE);
 
   const getEventTypeBadge = (type: string) => {
-    if (type === 'meeting') {
-      return (
-        <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
-          theme === 'dark'
-            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-            : theme === 'nature'
-            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-            : 'bg-blue-100 text-blue-800 border border-blue-200'
-        }`}>
-          Họp nội bộ
-        </span>
-      );
+    switch (type) {
+      case 'meeting':
+        return (
+          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
+            theme === 'dark'
+              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+              : theme === 'nature'
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+              : 'bg-blue-100 text-blue-800 border border-blue-200'
+          }`}>
+            Họp nội bộ
+          </span>
+        );
+      case 'business_trip':
+        return (
+          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
+            theme === 'dark'
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+              : theme === 'nature'
+              ? 'bg-amber-100 text-amber-800 border border-amber-200'
+              : 'bg-amber-100 text-amber-800 border border-amber-200'
+          }`}>
+            Đi công tác
+          </span>
+        );
+      case 'internal_event':
+        return (
+          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
+            theme === 'dark'
+              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+              : theme === 'nature'
+              ? 'bg-purple-100 text-purple-800 border border-purple-200'
+              : 'bg-purple-100 text-purple-800 border border-purple-200'
+          }`}>
+            Sự kiện nội bộ
+          </span>
+        );
+      default:
+        return (
+          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
+            theme === 'dark'
+              ? 'bg-slate-500/20 text-slate-300 border border-slate-500/30'
+              : theme === 'nature'
+              ? 'bg-slate-100 text-slate-800 border border-slate-200'
+              : 'bg-slate-100 text-slate-800 border border-slate-200'
+          }`}>
+            Khác
+          </span>
+        );
     }
-    return (
-      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap ${
-        theme === 'dark'
-          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-          : theme === 'nature'
-          ? 'bg-amber-100 text-amber-800 border border-amber-200'
-          : 'bg-amber-100 text-amber-800 border border-amber-200'
-      }`}>
-        Đi công tác
-      </span>
-    );
   };
 
   const getHostName = (event: AgencyEventWithAttendees) => {
@@ -130,6 +154,8 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   // Compute stats for today
   const meetingCount = displayEvents.filter(e => e.event_type === 'meeting').length;
   const businessTripCount = displayEvents.filter(e => e.event_type === 'business_trip').length;
+  const internalEventCount = displayEvents.filter(e => e.event_type === 'internal_event').length;
+  const otherCount = displayEvents.filter(e => e.event_type === 'other').length;
 
   // Local style configuration based on active theme
   const styles = {
@@ -326,11 +352,11 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
             <span className="block text-xs md:text-sm font-black tracking-wider uppercase bg-gradient-to-r from-amber-600 to-amber-800 dark:from-amber-200 dark:to-yellow-400 bg-clip-text text-transparent">
               UBND TỈNH HÀ TĨNH
             </span>
-            <span className={`block text-[11px] md:text-[12px] font-bold mt-1 tracking-wide ${theme === 'dark' ? 'text-sky-200' : 'text-slate-700'}`}>
-              Ban QLDA Đầu tư xây dựng
+            <span className={`block text-[11px] md:text-[12px] font-bold mt-1 tracking-wide uppercase ${theme === 'dark' ? 'text-sky-200' : 'text-slate-700'}`}>
+              BAN QLDA ĐẦU TƯ XÂY DỰNG
             </span>
-            <span className={`block text-[9.5px] md:text-[11px] font-semibold mt-0.5 tracking-normal ${theme === 'dark' ? 'text-sky-300/80' : 'text-slate-500'}`}>
-              Dân dụng & Hạ tầng khu vực
+            <span className={`block text-[9.5px] md:text-[11px] font-semibold mt-0.5 tracking-normal uppercase ${theme === 'dark' ? 'text-sky-300/80' : 'text-slate-500'}`}>
+              DÂN DỤNG & HẠ TẦNG KHU VỰC
             </span>
           </h2>
         </div>
@@ -359,7 +385,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
             </div>
             <div className="text-left">
               <p className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
-                Lịch sảnh hôm nay
+                Lịch Hôm Nay
               </p>
               <p className={`text-[9px] mt-0.5 ${styles.statsTitle}`}>
                 Thông tin trực quan
@@ -378,6 +404,18 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
               <span className={`text-[9px] font-semibold ${styles.statsTitle}`}>Đi công tác</span>
               <span className="text-amber-600 dark:text-amber-300 font-black text-lg font-mono mt-0.5">
                 {businessTripCount}
+              </span>
+            </div>
+            <div className={`p-2.5 rounded-lg border flex flex-col ${styles.statsBox}`}>
+              <span className={`text-[9px] font-semibold ${styles.statsTitle}`}>Sự kiện nội bộ</span>
+              <span className="text-amber-600 dark:text-amber-300 font-black text-lg font-mono mt-0.5">
+                {internalEventCount}
+              </span>
+            </div>
+            <div className={`p-2.5 rounded-lg border flex flex-col ${styles.statsBox}`}>
+              <span className={`text-[9px] font-semibold ${styles.statsTitle}`}>Khác</span>
+              <span className="text-amber-600 dark:text-amber-300 font-black text-lg font-mono mt-0.5">
+                {otherCount}
               </span>
             </div>
           </div>
@@ -482,7 +520,13 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                       >
                         {/* Event Left border accent */}
                         <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-                          event.event_type === 'meeting' ? 'bg-sky-500' : 'bg-amber-500'
+                          event.event_type === 'meeting'
+                            ? 'bg-sky-500'
+                            : event.event_type === 'business_trip'
+                            ? 'bg-amber-500'
+                            : event.event_type === 'internal_event'
+                            ? 'bg-purple-500'
+                            : 'bg-slate-500'
                         }`} />
 
                         {/* Column 1: Time and Type */}

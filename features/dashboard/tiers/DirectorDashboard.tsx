@@ -117,6 +117,27 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
         comp: data.allProjects.filter((p: any) => p.Status === 3).length,
     }), [data.allProjects]);
 
+    const totalInvestmentSum = useMemo(() => {
+        return data.allProjects.reduce((sum: number, p: any) => sum + (p.TotalInvestment ?? p.totalInvestment ?? 0), 0);
+    }, [data.allProjects]);
+
+    const totalAllTimeDisbursed = useMemo(() => {
+        return data.allProjects.reduce((sum: number, p: any) => {
+            const inv = p.TotalInvestment ?? p.totalInvestment ?? 0;
+            const progress = p.PaymentProgress ?? p.paymentProgress ?? 0;
+            return sum + inv * (progress / 100);
+        }, 0);
+    }, [data.allProjects]);
+
+    const overallDisbursementRate = useMemo(() => {
+        return totalInvestmentSum > 0 ? Math.round((totalAllTimeDisbursed / totalInvestmentSum) * 100) : 0;
+    }, [totalInvestmentSum, totalAllTimeDisbursed]);
+
+    const yearlyPlannedPercentage = useMemo(() => {
+        if (!metrics || totalInvestmentSum === 0) return 0;
+        return Math.round((metrics.yearlyPlanned / totalInvestmentSum) * 100);
+    }, [metrics, totalInvestmentSum]);
+
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             <WelcomeHeader config={config} />
@@ -124,9 +145,35 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
             {/* KPI HERO */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
                 <StatCard label="Dự án đang quản lý" value={data.allProjects.length.toString()} icon={<Building2 className="w-5 h-5 flex-shrink-0" />} color="slate" loading={loadingMetrics} onClick={() => navigate('/projects')} footer={<div className="flex items-center gap-1.5 flex-wrap mt-0.5"><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">CB: {statusSummary.prep}</span><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400">TH: {statusSummary.exec}</span><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">KT: {statusSummary.comp}</span></div>} />
-                <StatCard label="Tổng vốn đầu tư" value={metrics ? formatShortCurrency(metrics.totalInvestment) : '—'} icon={<Wallet className="w-5 h-5 flex-shrink-0" />} color="warning" loading={loadingMetrics} />
-                <StatCard label={`KH vốn ${currentYear}`} value={metrics ? formatShortCurrency(metrics.yearlyPlanned) : '—'} icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />} color="slate" loading={loadingMetrics} progressLabel="Giải ngân/KH" progressPercentage={metrics?.yearlyDisbursementRate || 0} />
-                <StatCard label={`Giải ngân ${currentYear}`} value={metrics ? formatShortCurrency(metrics.yearlyDisbursed) : '—'} icon={<Activity className="w-5 h-5 flex-shrink-0" />} color="emerald" loading={loadingMetrics} trendLabel="Tiến độ" trendPercentage={metrics?.yearlyDisbursementRate || 0} />
+                <StatCard
+                    label="Lũy kế giải ngân"
+                    value={formatShortCurrency(totalAllTimeDisbursed)}
+                    targetValue={formatShortCurrency(totalInvestmentSum)}
+                    icon={<Wallet className="w-5 h-5 flex-shrink-0" />}
+                    color="warning"
+                    progressLabel="Tỷ lệ giải ngân lũy kế"
+                    progressPercentage={overallDisbursementRate}
+                    loading={loadingMetrics}
+                />
+                <StatCard
+                    label={`KH vốn ${currentYear}`}
+                    value={metrics ? formatShortCurrency(metrics.yearlyPlanned) : '—'}
+                    icon={<TrendingUp className="w-5 h-5 flex-shrink-0" />}
+                    color="slate"
+                    progressLabel="Tỷ trọng trên tổng vốn đầu tư"
+                    progressPercentage={yearlyPlannedPercentage}
+                    loading={loadingMetrics}
+                />
+                <StatCard
+                    label={`Giải ngân ${currentYear}`}
+                    value={metrics ? formatShortCurrency(metrics.yearlyDisbursed) : '—'}
+                    targetValue={metrics ? formatShortCurrency(metrics.yearlyPlanned) : undefined}
+                    icon={<Activity className="w-5 h-5 flex-shrink-0" />}
+                    color="emerald"
+                    progressLabel="Tiến độ giải ngân năm"
+                    progressPercentage={metrics ? metrics.yearlyDisbursementRate : 0}
+                    loading={loadingMetrics}
+                />
                 <StatCard label="Cảnh báo rủi ro" value={(metrics?.riskCount || 0).toString()} icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />} color="rose" loading={loadingMetrics} />
             </div>
 

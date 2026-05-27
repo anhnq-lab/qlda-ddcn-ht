@@ -30,6 +30,14 @@ const eventSchema = z.object({
 }).refine(data => new Date(data.start_time) < new Date(data.end_time), {
   message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
   path: ['end_time'],
+}).refine(data => {
+  if (!data.room) {
+    return !!data.location?.trim();
+  }
+  return true;
+}, {
+  message: 'Vui lòng nhập địa điểm',
+  path: ['location'],
 });
 
 type EventFormValues = z.infer<typeof eventSchema>;
@@ -103,11 +111,13 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
     return () => clearTimeout(timeout);
   }, [room, startTime, endTime, locationMode, event?.id]);
 
-  // Set locationMode to custom if event_type is business_trip
+  // Set locationMode to custom if event_type is business_trip, and clear vehicle if not business_trip
   useEffect(() => {
     if (eventType === 'business_trip') {
       setLocationMode('custom');
       setValue('room', null);
+    } else {
+      setValue('vehicle', null);
     }
   }, [eventType, setValue]);
 
@@ -170,10 +180,6 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
   }, [event, selectedDate, reset]);
 
   const onSubmit = async (data: EventFormValues) => {
-    if (locationMode === 'custom' && !data.location?.trim()) {
-      showToast('Vui lòng nhập địa điểm khác', 'error');
-      return;
-    }
 
     try {
       const payload = {
@@ -341,25 +347,27 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
             )}
           />
 
-          <Controller
-            name="vehicle"
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Phương tiện di chuyển"
-                options={[
-                  { value: 'Xe ô tô 38A 00266 - Đặng Quốc Hoàn', label: 'Xe ô tô 38A 00266 - Đặng Quốc Hoàn' },
-                  { value: '38A-00292 - Nguyễn Quốc Hoàn', label: '38A-00292 - Nguyễn Quốc Hoàn' },
-                  { value: '38A 00106- Trần Văn Thanh', label: '38A 00106- Trần Văn Thanh' },
-                  { value: 'Xe tự túc', label: 'Xe tự túc' },
-                ]}
-                value={field.value || ''}
-                onChange={val => field.onChange(val || null)}
-                clearable
-                placeholder="Chọn phương tiện di chuyển..."
-              />
-            )}
-          />
+          {eventType === 'business_trip' && (
+            <Controller
+              name="vehicle"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  label="Phương tiện di chuyển"
+                  options={[
+                    { value: 'Xe ô tô 38A 00266 - Đặng Quốc Hoàn', label: 'Xe ô tô 38A 00266 - Đặng Quốc Hoàn' },
+                    { value: '38A-00292 - Nguyễn Quốc Hoàn', label: '38A-00292 - Nguyễn Quốc Hoàn' },
+                    { value: '38A 00106- Trần Văn Thanh', label: '38A 00106- Trần Văn Thanh' },
+                    { value: 'Xe tự túc', label: 'Xe tự túc' },
+                  ]}
+                  value={field.value || ''}
+                  onChange={val => field.onChange(val || null)}
+                  clearable
+                  placeholder="Chọn phương tiện di chuyển..."
+                />
+              )}
+            />
+          )}
 
           <Controller
             name="attendee_ids"

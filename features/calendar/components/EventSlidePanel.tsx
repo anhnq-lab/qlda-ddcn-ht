@@ -31,7 +31,7 @@ const getEventTypeName = (type: AgencyEventType) => {
   switch (type) {
     case 'meeting': return 'Họp nội bộ';
     case 'business_trip': return 'Đi công tác';
-    case 'internal_event': return 'Sự kiện bên ngoài';
+    case 'internal_event': return 'Sự kiện nội bộ';
     default: return 'Khác';
   }
 };
@@ -140,7 +140,7 @@ export const EventSlidePanel: React.FC<EventSlidePanelProps> = ({ event, onEdit,
               </Badge>
               <div className="flex items-center text-sm text-txt-muted">
                 <Calendar className="w-4 h-4 mr-1.5" />
-                {format(new Date(event.start_time), 'dd/MM/yyyy HH:mm', { locale: vi })}
+                {format(new Date(event.start_time), 'EEEE, dd/MM/yyyy • HH:mm', { locale: vi })}
                 {' - '}
                 {format(new Date(event.end_time), 'HH:mm', { locale: vi })}
               </div>

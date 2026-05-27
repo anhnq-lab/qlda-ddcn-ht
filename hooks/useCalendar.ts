@@ -9,11 +9,12 @@ export const CALENDAR_QUERY_KEYS = {
   detail: (id: string) => [...CALENDAR_QUERY_KEYS.all, 'detail', id] as const,
 };
 
-export function useEvents(filter?: EventFilter) {
+export function useEvents(filter?: EventFilter, options?: { refetchInterval?: number }) {
   return useQuery({
     queryKey: CALENDAR_QUERY_KEYS.list(filter || {}),
     queryFn: () => calendarService.getEvents(filter),
     staleTime: 2 * 60 * 1000,
+    ...options,
   });
 }
 

@@ -35,21 +35,21 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
 
     return (
         <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
-            <div className="flex justify-between items-center mb-4 shrink-0">
+            <div className="flex justify-between items-center mb-2 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><CheckSquare className="w-5 h-5" /></div>
-                    Tình trạng Công việc
+                    Công việc
                 </h3>
             </div>
-            <div className="flex-1 min-h-[200px]">
+            <div className="flex-1 min-h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
                             data={chartData}
                             cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
+                            cy="42%"
+                            innerRadius={55}
+                            outerRadius={78}
                             paddingAngle={5}
                             dataKey="value"
                             stroke="none"
@@ -82,9 +82,10 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
                         />
                         <Legend 
                             verticalAlign="bottom" 
-                            height={36} 
+                            height={45} 
                             iconType="circle"
-                            wrapperStyle={{ fontSize: '11px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : (theme === 'nature' ? '#78716c' : '#6B7280') }}
+                            iconSize={8}
+                            wrapperStyle={{ fontSize: '9px', fontWeight: 600, color: theme === 'dark' ? '#94A3B8' : (theme === 'nature' ? '#78716c' : '#6B7280'), lineHeight: '18px' }}
                         />
                     </PieChart>
                 </ResponsiveContainer>

@@ -168,7 +168,15 @@
       "Bash(git commit -m 'docs: add internal regulations and user guide for task management module *)",
       "Bash(git commit -m 'docs\\(quy-che\\): add comprehensive evaluation system with disbursement criteria *)",
       "Bash(node scripts/generate_quyche_docx.cjs)",
-      "Bash(dir docs\\\\QD_BanHanhQuyChe_QLKHCV.docx)"
+      "Bash(dir docs\\\\QD_BanHanhQuyChe_QLKHCV.docx)",
+      "PowerShell(Copy-Item \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\z7867705173784_96b00f3050a7e49d6ea0392f626ebedf.svg\" \"D:\\\\QuocAnh\\\\2026\\\\01.Project\\\\qlda-ddcn-ht\\\\public\\\\logo-ddcn.svg\")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__get_page_text",
+      "mcp__Claude_in_Chrome__read_page",
+      "mcp__Claude_in_Chrome__tabs_create_mcp",
+      "mcp__Claude_in_Chrome__tabs_close_mcp"
     ]
   }
 }
