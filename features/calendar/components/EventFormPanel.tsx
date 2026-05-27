@@ -306,6 +306,7 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
             <Input
               type="datetime-local"
               label="Bắt đầu"
+              lang="en-GB"
               {...register('start_time')}
               error={errors.start_time?.message}
               required
@@ -313,6 +314,7 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
             <Input
               type="datetime-local"
               label="Kết thúc"
+              lang="en-GB"
               {...register('end_time')}
               error={errors.end_time?.message}
               required
