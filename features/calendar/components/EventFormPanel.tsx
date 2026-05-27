@@ -130,7 +130,7 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
     label: `${emp.FullName}${emp.Department ? ` — ${emp.Department}` : ''}`,
   }));
 
-  const { control, register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<EventFormValues>({
+  const { control, register, handleSubmit, formState: { errors }, reset, watch, setValue, getValues } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
       title: '',
@@ -155,16 +155,24 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
   const endDateVal = watch('end_date');
   const endTimeVal = watch('end_time_val');
 
+  const parseLocalSplit = (dateStr: string, timeStr: string): Date | null => {
+    if (!dateStr || !timeStr) return null;
+    const parts = timeStr.split(':');
+    if (parts.length < 2 || parts[0].length !== 2 || parts[1].length !== 2) return null;
+    
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const [hour, minute] = parts.map(Number);
+    
+    if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour) || isNaN(minute)) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+    
+    const d = new Date(year, month - 1, day, hour, minute, 0, 0);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
   const getIsoString = (dateVal: string, timeVal: string) => {
-    if (!dateVal || !timeVal) return '';
-    try {
-      const [year, month, day] = dateVal.split('-').map(Number);
-      const [hour, minute] = timeVal.split(':').map(Number);
-      const d = new Date(year, month - 1, day, hour, minute, 0, 0);
-      return isNaN(d.getTime()) ? '' : d.toISOString();
-    } catch {
-      return '';
-    }
+    const d = parseLocalSplit(dateVal, timeVal);
+    return d ? d.toISOString() : '';
   };
 
   const startTime = getIsoString(startDateVal, startTimeVal);
@@ -177,11 +185,14 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
   useEffect(() => {
     if (startDateVal && startTimeVal) {
       if (prevStart) {
-        const oldStart = new Date(`${prevStart.date}T${prevStart.time}`);
-        const newStart = new Date(`${startDateVal}T${startTimeVal}`);
-        const currentEnd = endDateVal && endTimeVal ? new Date(`${endDateVal}T${endTimeVal}`) : null;
+        const oldStart = parseLocalSplit(prevStart.date, prevStart.time);
+        const newStart = parseLocalSplit(startDateVal, startTimeVal);
+        
+        const currentEndVal = getValues('end_date');
+        const currentEndTimeVal = getValues('end_time_val');
+        const currentEnd = parseLocalSplit(currentEndVal, currentEndTimeVal);
 
-        if (currentEnd && !isNaN(oldStart.getTime()) && !isNaN(newStart.getTime()) && !isNaN(currentEnd.getTime())) {
+        if (oldStart && newStart && currentEnd) {
           const durationMs = currentEnd.getTime() - oldStart.getTime();
           if (durationMs > 0) {
             const newEnd = new Date(newStart.getTime() + durationMs);
@@ -190,7 +201,11 @@ export const EventFormPanel: React.FC<EventFormPanelProps> = ({ event, selectedD
           }
         }
       }
-      setPrevStart({ date: startDateVal, time: startTimeVal });
+      
+      const checkValid = parseLocalSplit(startDateVal, startTimeVal);
+      if (checkValid) {
+        setPrevStart({ date: startDateVal, time: startTimeVal });
+      }
     }
   }, [startDateVal, startTimeVal]);
 
