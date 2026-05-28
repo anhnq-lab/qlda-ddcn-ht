@@ -20,6 +20,7 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "@gltf-transform/core": "^4.1.0",
         "@xeokit/xeokit-convert": "^1.1.13",
         "web-ifc": "^0.0.66",
         "cors": "^2.8.5",

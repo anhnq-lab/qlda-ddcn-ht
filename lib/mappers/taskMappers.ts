@@ -28,8 +28,6 @@ export const dbToTask = (row: DbTask): Task => ({
     Phase: row.phase || undefined,
     StepCode: row.step_code || undefined,
     SortOrder: row.sort_order,
-    EstimatedCost: row.estimated_cost ? Number(row.estimated_cost) : undefined,
-    ActualCost: row.actual_cost ? Number(row.actual_cost) : undefined,
     LegalBasis: row.legal_basis || undefined,
     OutputDocument: row.output_document || undefined,
     PredecessorTaskID: row.predecessor_task_id || undefined,
@@ -68,8 +66,6 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.Phase !== undefined) row.phase = task.Phase || null;
     if (task.StepCode !== undefined) row.step_code = task.StepCode || null;
     if (task.SortOrder !== undefined) row.sort_order = task.SortOrder;
-    if (task.EstimatedCost !== undefined) row.estimated_cost = task.EstimatedCost;
-    if (task.ActualCost !== undefined) row.actual_cost = task.ActualCost;
     if (task.LegalBasis !== undefined) row.legal_basis = task.LegalBasis || null;
     if (task.OutputDocument !== undefined) row.output_document = task.OutputDocument || null;
     if (task.PredecessorTaskID !== undefined) row.predecessor_task_id = task.PredecessorTaskID || null;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { Calendar as CalendarIcon, MapPin, Maximize2, Minimize2 } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Maximize2, Minimize2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AgencyEventWithAttendees } from '@/types/calendar.types';
 import { LogoDDCN } from '@/components/common/LogoDDCN';
@@ -340,7 +340,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
   return (
     <div 
       id="lobby-display-container"
-      className={`w-full flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl border font-sans ${styles.container} ${
+      className={`w-full flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl border font-sans ${theme === 'dark' ? 'dark' : ''} ${styles.container} ${
         isFullscreen ? 'h-screen rounded-none border-none' : 'h-full min-h-[700px]'
       }`}
     >
@@ -598,8 +598,8 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                   {theme === 'dark' && (
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
                   )}
-                  <div className="bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/20 text-amber-500 dark:text-amber-400 shrink-0">
-                    <LogoDDCN className="w-10 h-12 opacity-85" />
+                  <div className="bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20 text-amber-500 dark:text-amber-400 shrink-0 w-12 h-12 flex items-center justify-center shadow-inner">
+                    <Sparkles className="w-6 h-6 animate-pulse" />
                   </div>
                   <div>
                     <h4 className={`text-sm uppercase tracking-wider flex items-center gap-2 ${styles.welcomeBannerTitle}`}>

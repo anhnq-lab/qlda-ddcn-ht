@@ -102,13 +102,21 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
     headerRow.height = 50;
     applyRow(headerRow, { fillColor: COLOR.headerFill, bold: true, hAlign: 'center', vAlign: 'middle' });
 
+    // ── PERFORMANCE FIX: Fetch ALL data for both months in 2 queries ──
+    // Instead of N queries (one per department × 2 sections = 16+ queries),
+    // fetch all data for current month and next month in parallel, then group client-side.
+    const [reportData, planData] = await Promise.all([
+        fetchMonthData(month, year),
+        fetchMonthData(nextMonth, nextYear),
+    ]);
+
     // ── Section I: BC kết quả tháng hiện tại ───────────────────
     const secRow1 = ws.addRow(['I', `Nhiệm vụ đã thực hiện trong tháng ${month}/${year}`]);
     ws.mergeCells(`B${secRow1.number}:H${secRow1.number}`);
     secRow1.height = 20;
     applyRow(secRow1, { fillColor: COLOR.sectionFill, bold: true });
 
-    await writeAllDepts(ws, month, year, 'report');
+    writeAllDepts(ws, month, reportData, 'report');
 
     // ── Section II: KH tháng tiếp theo ─────────────────────────
     const secRow2 = ws.addRow(['II', `Kế hoạch thực hiện tháng ${nextMonth}/${nextYear}`]);
@@ -116,7 +124,7 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
     secRow2.height = 20;
     applyRow(secRow2, { fillColor: COLOR.sectionFill, bold: true });
 
-    await writeAllDepts(ws, nextMonth, nextYear, 'plan');
+    writeAllDepts(ws, nextMonth, planData, 'plan');
 
     // ── Download ────────────────────────────────────────────────
     const buffer = await wb.xlsx.writeBuffer();
@@ -130,19 +138,45 @@ export async function exportMonthlyReport(month: number, year: number): Promise<
     a.remove();
 }
 
-// ─── Write all departments for a given mode ─────────────────────
-async function writeAllDepts(
+// ─── Fetch all tasks for a month/year in ONE query ──────────────
+async function fetchMonthData(month: number, year: number): Promise<any[]> {
+    try {
+        const { data, error } = await (supabase as any)
+            .from('monthly_report_view')
+            .select('*')
+            .eq('report_month', month)
+            .eq('report_year', year);
+
+        if (error) throw error;
+        return data || [];
+    } catch (err) {
+        console.error(`Error fetching monthly report data for ${month}/${year}:`, err);
+        return [];
+    }
+}
+
+// ─── Write all departments synchronously (no more async per-dept) ──
+function writeAllDepts(
     ws: ExcelJS.Worksheet,
     month: number,
-    year: number,
+    allItems: any[],
     mode: 'report' | 'plan'
 ) {
+    // Group all items by department_code (client-side, no extra queries)
+    const byDept = new Map<string, any[]>();
+    for (const item of allItems) {
+        const code = item.department_code || '';
+        if (!byDept.has(code)) byDept.set(code, []);
+        byDept.get(code)!.push(item);
+    }
+
+    // Roman numerals — use array large enough for all department codes
+    const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+
     for (let di = 0; di < DEPARTMENT_CODES.length; di++) {
         const deptCode = DEPARTMENT_CODES[di];
         const deptName = DEPARTMENT_NAMES[deptCode];
-
-        // Roman numeral for department index
-        const romanIdx = ['I','II','III','IV','V','VI','VII','VIII'][di];
+        const romanIdx = ROMAN[di] || String(di + 1);
 
         // Dept header row
         const deptRow = ws.addRow([romanIdx, deptName]);
@@ -150,25 +184,11 @@ async function writeAllDepts(
         deptRow.height = 18;
         applyRow(deptRow, { fillColor: COLOR.deptFill, bold: true });
 
-        // Fetch tasks directly from monthly_report_view
-        let items: any[] = [];
-        try {
-            const { data, error } = await (supabase as any)
-                .from('monthly_report_view')
-                .select('*')
-                .eq('department_code', deptCode)
-                .eq('report_month', month)
-                .eq('report_year', year);
-            
-            if (error) throw error;
-            items = data || [];
+        let items = byDept.get(deptCode) || [];
 
-            if (mode === 'plan') {
-                // For plan mode, filter tasks that are todo/in-progress
-                items = items.filter(i => i.status === 'todo' || i.status === 'in_progress');
-            }
-        } catch (err) {
-            console.error('Error fetching tasks for department in excel export:', err);
+        if (mode === 'plan') {
+            // For plan mode, show upcoming tasks (todo / in-progress)
+            items = items.filter(i => i.status === 'todo' || i.status === 'in_progress');
         }
 
         if (items.length === 0) {
@@ -179,10 +199,14 @@ async function writeAllDepts(
             continue;
         }
 
-        // Group tasks
+        // Group tasks by source_type
         const groups = new Map<string, any[]>();
         for (const item of items) {
-            const g = item.source_type === 'project_step' ? 'Kế hoạch dự án' : (item.source_type === 'from_annual' ? 'KH Khung năm' : 'Công việc khác');
+            const g = item.source_type === 'project_step'
+                ? 'Kế hoạch dự án'
+                : item.source_type === 'from_annual'
+                ? 'KH Khung năm'
+                : 'Công việc khác';
             if (!groups.has(g)) groups.set(g, []);
             groups.get(g)!.push(item);
         }
@@ -200,7 +224,7 @@ async function writeAllDepts(
                 const resultText = mode === 'report'
                     ? (item.completion_result || (MONTHLY_STATUS_LABELS as any)[item.status] || item.status)
                     : '';
-                
+
                 const collaboratingTextParts = [
                     item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0
                         ? item.collaborating_dept_codes.join(', ')
@@ -220,7 +244,7 @@ async function writeAllDepts(
                 ]);
                 taskRow.height = 18;
                 applyRow(taskRow, { fillColor: COLOR.white, vAlign: 'top' });
-                // Center specific columns: A=1, D=4, E=5, F=6
+                // Center: A=1, D=4, E=5, F=6
                 [1, 4, 5, 6].forEach(colNum => {
                     taskRow.getCell(colNum).alignment = { horizontal: 'center', vertical: 'top', wrapText: true };
                 });

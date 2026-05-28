@@ -3261,7 +3261,6 @@ export type Database = {
       }
       tasks: {
         Row: {
-          actual_cost: number | null
           actual_end_date: string | null
           actual_start_date: string | null
           approver_id: string | null
@@ -3272,7 +3271,6 @@ export type Database = {
           description: string | null
           due_date: string | null
           duration_days: number | null
-          estimated_cost: number | null
           id: string
           legal_basis: string | null
           metadata: Json | null
@@ -3294,9 +3292,9 @@ export type Database = {
           updated_at: string
           workflow_id: string | null
           workflow_node_id: string | null
+          obstacles: string | null
         }
         Insert: {
-          actual_cost?: number | null
           actual_end_date?: string | null
           actual_start_date?: string | null
           approver_id?: string | null
@@ -3307,7 +3305,6 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           duration_days?: number | null
-          estimated_cost?: number | null
           id?: string
           legal_basis?: string | null
           metadata?: Json | null
@@ -3329,9 +3326,9 @@ export type Database = {
           updated_at?: string
           workflow_id?: string | null
           workflow_node_id?: string | null
+          obstacles?: string | null
         }
         Update: {
-          actual_cost?: number | null
           actual_end_date?: string | null
           actual_start_date?: string | null
           approver_id?: string | null
@@ -3342,7 +3339,6 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           duration_days?: number | null
-          estimated_cost?: number | null
           id?: string
           legal_basis?: string | null
           metadata?: Json | null
@@ -3364,6 +3360,7 @@ export type Database = {
           updated_at?: string
           workflow_id?: string | null
           workflow_node_id?: string | null
+          obstacles?: string | null
         }
         Relationships: [
           {

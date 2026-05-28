@@ -37,29 +37,61 @@ export interface WorkflowInstanceWithSteps extends WorkflowInstance {
     step_records: WorkflowStepRecord[];
 }
 
-// ─── Map bước → state_code theo QT-TK1B ─────────────────────────────
-const STEP_TO_STATE_MAP: Record<number, string> = {
-    0: '01', // Khởi tạo
-    1: '02', // Rà soát điều kiện
-    2: '02',
-    3: '03', // Giao tư vấn
-    4: '04', // Tư vấn đang thực hiện
-    5: '04',
-    6: '05', // Tiếp nhận hồ sơ
-    7: '06', // QLDA kiểm tra
-    8: '06',
-    9: '06',
-    10: '07', // Yêu cầu chỉnh sửa
-    11: '07',
-    12: '08', // Thẩm tra/thẩm định
-    13: '09', // Hoàn thiện sau thẩm định
-    14: '10', // Trình phê duyệt
-    15: '10',
-    16: '11', // Đã phê duyệt
+// ─── Map bước → state_code RIÊNG theo từng loại quy trình ───────
+const STEP_TO_STATE_TK1B: Record<number, string> = {
+    0: '01',  // Kích hoạt quy trình
+    1: '02',  // Rà soát điều kiện đầu vào tổng thể
+    2: '03',  // Giao nhiệm vụ tư vấn
+    3: '04',  // Tư vấn: Khảo sát + Lập BCKTKT
+    4: '06',  // Tiếp nhận & Kiểm tra toàn diện
+    5: '07',  // Yêu cầu chỉnh sửa & Tiếp thu
+    6: '08',  // Thẩm tra thiết kế/dự toán
+    7: '08',  // Lập tờ trình thẩm định BCKTKT
+    8: '09',  // Tiếp thu kết quả thẩm định
+    9: '10',  // Lập tờ trình + Dự thảo QĐ phê duyệt
+    10: '11', // Ban hành QĐ phê duyệt & Bàn giao
+    11: '12', // Cập nhật phần mềm & Lưu trữ
 };
 
-export function getStateCodeForStep(stepIndex: number): string {
-    return STEP_TO_STATE_MAP[stepIndex] ?? '01';
+const STEP_TO_STATE_TK2B: Record<number, string> = {
+    0: '01',  // Kích hoạt QT-TK2B
+    1: '02',  // Rà soát điều kiện đầu vào
+    2: '03',  // Giao nhiệm vụ tư vấn
+    3: '04',  // Tư vấn lập TKBVTC & Dự toán
+    4: '06',  // Tiếp nhận & Kiểm tra toàn diện
+    5: '07',  // Yêu cầu chỉnh sửa & Tiếp thu
+    6: '08',  // Thẩm tra TK/DT
+    7: '08',  // Thẩm định/Kiểm soát nội bộ CĐT
+    8: '10',  // Trình & Ban hành QĐ phê duyệt
+    9: '12',  // Bàn giao hồ sơ & Lưu trữ
+};
+
+const STEP_TO_STATE_TK3B: Record<number, string> = {
+    // Giai đoạn 1: TKKT & Dự toán
+    0: '01',  // Kích hoạt QT-TK3B
+    1: '02',  // Rà soát điều kiện lập TKKT
+    2: '03',  // Giao nhiệm vụ TV lập TKKT
+    3: '04',  // TV lập TKKT & DT theo TKKT
+    4: '06',  // Tiếp nhận & Kiểm tra toàn diện TKKT&DT
+    5: '07',  // Yêu cầu chỉnh sửa & Tiếp thu
+    6: '08',  // Thẩm tra TKKT&DT
+    7: '08',  // Thẩm định nội bộ CĐT
+    8: '11',  // Phê duyệt TKKT&DT
+    // Giai đoạn 2: TKBVTC
+    9: '03',  // Giao nhiệm vụ lập TKBVTC
+    10: '04', // TV lập TKBVTC
+    11: '12', // Kiểm tra + Phê duyệt + Bàn giao
+};
+
+const STEP_TO_STATE_MAPS: Record<string, Record<number, string>> = {
+    'QT-TK1B': STEP_TO_STATE_TK1B,
+    'QT-TK2B': STEP_TO_STATE_TK2B,
+    'QT-TK3B': STEP_TO_STATE_TK3B,
+};
+
+export function getStateCodeForStep(stepIndex: number, workflowCode?: string): string {
+    const map = (workflowCode && STEP_TO_STATE_MAPS[workflowCode]) || STEP_TO_STATE_TK1B;
+    return map[stepIndex] ?? '01';
 }
 
 // ─── CRUD ────────────────────────────────────────────────────────────
@@ -83,7 +115,7 @@ export async function createWorkflowInstance(params: {
             workflow_code: params.workflowCode,
             workflow_id: params.workflowId ?? null,
             current_step_index: 0,
-            total_steps: params.totalSteps ?? 17,
+            total_steps: params.totalSteps ?? 12,
             status: 'active',
             state_code: '01',
             initiated_by: user?.id ?? null,
@@ -174,8 +206,8 @@ export async function saveStepRecord(params: {
 /**
  * Chuyển bước tiếp theo — cập nhật current_step_index và state_code
  */
-export async function advanceStep(instanceId: string, nextStepIndex: number): Promise<WorkflowInstance> {
-    const newStateCode = getStateCodeForStep(nextStepIndex);
+export async function advanceStep(instanceId: string, nextStepIndex: number, workflowCode?: string): Promise<WorkflowInstance> {
+    const newStateCode = getStateCodeForStep(nextStepIndex, workflowCode);
 
     const { data, error } = await (supabase as any)
         .from('cde_workflow_instances')
@@ -197,7 +229,7 @@ export async function advanceStep(instanceId: string, nextStepIndex: number): Pr
 export async function completeInstance(instanceId: string): Promise<WorkflowInstance> {
     const { data, error } = await (supabase as any)
         .from('cde_workflow_instances')
-        .update({ status: 'completed', state_code: '11' })
+        .update({ status: 'completed', state_code: '13' })
         .eq('id', instanceId)
         .select()
         .single();

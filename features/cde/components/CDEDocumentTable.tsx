@@ -141,7 +141,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                     <tr
                                         key={doc.doc_id}
                                         onClick={() => onSelectDoc(doc)}
-                                        className={`group cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-slate-700 ${isSelected ? 'bg-primary-50/70 dark:bg-primary-900/20' : ''} ${isChecked ? 'bg-primary-50/50 dark:bg-primary-900/15' : ''}`}
+                                        className={`group cursor-pointer transition-all duration-200 hover:bg-slate-50/80 dark:hover:bg-slate-700/60 ${isSelected ? 'bg-primary-50/70 dark:bg-primary-900/20' : ''} ${isChecked ? 'bg-primary-50/50 dark:bg-primary-900/15' : ''}`}
                                     >
                                         {onToggleSelect && (
                                             <td className="px-3 py-3.5">
@@ -162,13 +162,13 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                 <div className="min-w-0">
                                                     <p className="font-bold text-gray-800 dark:text-slate-100 text-sm truncate">{doc.doc_name}</p>
                                                     <p className="text-[10px] text-gray-400 dark:text-slate-400 font-medium mt-0.5">
-                                                        {doc.size || '—'} {doc.discipline ? `• ${doc.discipline}` : ''}
+                                                        <span className="font-mono tracking-tight">{doc.size || '—'}</span> {doc.discipline ? `• ${doc.discipline}` : ''}
                                                     </p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-5 py-3.5 text-center">
-                                            <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full font-mono">
+                                            <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full font-mono tracking-tight">
                                                 {doc.version || 'P01.01'}
                                             </span>
                                         </td>

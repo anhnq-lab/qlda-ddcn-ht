@@ -9,8 +9,6 @@ import { useSlidePanel } from '../../context/SlidePanelContext';
 import { ContractorDetailPanel } from '../../components/common/ContractorDetailPanel';
 import { ContractorFormPanel } from './ContractorFormPanel';
 import { exportContractorsToExcel } from '../../utils/contractorExcelIO';
-import { StatCard } from '../../components/ui';
-import { SkeletonStatCard } from '../../components/ui/Skeleton';
 
 const ContractorList: React.FC = () => {
     const { showToast } = useToast();
@@ -116,7 +114,17 @@ const ContractorList: React.FC = () => {
             await queryClient.invalidateQueries({ queryKey: ['contractors'] });
             showToast('Đã xóa nhà thầu thành công', 'success');
         } catch (err: any) {
-            showToast(`Lỗi xóa: ${err.message}`, 'error');
+            console.error('Delete contractor error:', err);
+            let errorMessage = `Lỗi xóa: ${err.message}`;
+            const errorMsgStr = String(err.message || '');
+            if (errorMsgStr.includes('contracts_contractor_id_fkey') || (errorMsgStr.includes('foreign key constraint') && errorMsgStr.includes('contracts'))) {
+                errorMessage = 'Không thể xóa nhà thầu này vì đang có hợp đồng liên kết trong hệ thống. Vui lòng xóa hoặc cập nhật các hợp đồng liên quan trước.';
+            } else if (errorMsgStr.includes('package_bidders') || errorMsgStr.includes('bidding_packages')) {
+                errorMessage = 'Không thể xóa nhà thầu này vì đang liên kết với thông tin gói thầu hoặc hồ sơ dự thầu.';
+            } else if (errorMsgStr.includes('violates foreign key constraint') || errorMsgStr.includes('foreign key constraint')) {
+                errorMessage = 'Không thể xóa nhà thầu này do đang có dữ liệu liên kết khác trong hệ thống. Vui lòng kiểm tra và xóa các liên kết trước.';
+            }
+            showToast(errorMessage, 'error');
         } finally {
             setSaving(false);
             setIsDeleteConfirmOpen(false);
@@ -153,59 +161,75 @@ const ContractorList: React.FC = () => {
                 </div>
             )}
 
-            {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {Array.from({ length: 4 }).map((_, i) => <SkeletonStatCard key={i} />)}
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {stats.map((stat) => (
-                        <StatCard
-                            key={stat.label}
-                            label={stat.label}
-                            value={stat.value}
-                            icon={<stat.icon className="w-4 h-4" />}
-                            color={stat.color}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {/* Toolbar */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
-                            <select
-                                value={typeFilter}
-                                onChange={(e) => setTypeFilter(e.target.value as ContractorType | '')}
-                                className="pl-8 pr-3 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-medium text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="">Tất cả loại hình</option>
-                                {(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Actions Divider */}
-                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2 hidden sm:block"></div>
-
-                        <button
-                            onClick={() => exportContractorsToExcel(filteredContractors)}
-                            className="btn btn-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
-                            title="Xuất danh sách nhà thầu ra file Excel"
-                        >
-                            <Download className="w-4 h-4" /> Export Excel
-                        </button>
-                        
-                        <button
-                            onClick={handleAdd}
-                            className="btn btn-primary shrink-0 ml-1.5"
-                        >
-                            <Plus className="w-5 h-5" /> Thêm nhà thầu
-                        </button>
+            {/* Toolbar & Stats */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                {/* Stats Badges */}
+                {isLoading ? (
+                    <div className="flex flex-wrap items-center gap-2.5">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="h-8 w-24 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
+                        ))}
                     </div>
+                ) : (
+                    <div className="flex flex-wrap items-center gap-2.5">
+                        {stats.map((stat) => {
+                            const Icon = stat.icon;
+                            const colorStyles: Record<string, string> = {
+                                blue: 'bg-blue-50/50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/20',
+                                emerald: 'bg-emerald-50/50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 border-emerald-100/50 dark:border-emerald-900/20',
+                                warning: 'bg-amber-50/50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/20',
+                                violet: 'bg-purple-50/50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-400 border-purple-100/50 dark:border-purple-900/20',
+                            };
+                            const styleClass = colorStyles[stat.color] || colorStyles.blue;
+                            
+                            return (
+                                <div
+                                    key={stat.label}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${styleClass}`}
+                                >
+                                    <Icon className="w-3.5 h-3.5 opacity-80" />
+                                    <span className="opacity-90">{stat.label}:</span>
+                                    <span className="font-extrabold text-sm leading-none">{stat.value}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Filter and Actions */}
+                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto lg:justify-end">
+                    <div className="relative">
+                        <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
+                        <select
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value as ContractorType | '')}
+                            className="pl-8 pr-3 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-medium text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
+                        >
+                            <option value="">Tất cả loại hình</option>
+                            {(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Actions Divider */}
+                    <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
+                    <button
+                        onClick={() => exportContractorsToExcel(filteredContractors)}
+                        className="btn btn-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm flex items-center gap-1.5"
+                        title="Xuất danh sách nhà thầu ra file Excel"
+                    >
+                        <Download className="w-4 h-4" /> Export Excel
+                    </button>
+                    
+                    <button
+                        onClick={handleAdd}
+                        className="btn btn-primary shrink-0 flex items-center gap-1.5"
+                    >
+                        <Plus className="w-4 h-4" /> Thêm nhà thầu
+                    </button>
+                </div>
             </div>
 
             {/* Danh sách */}

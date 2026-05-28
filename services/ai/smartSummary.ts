@@ -1,10 +1,11 @@
 // Smart Summary — Tóm tắt thông minh cho Dashboard và Project Detail
 // Cache kết quả để tiết kiệm API calls
 
-import { generateSummary } from '../aiService';
+import { generateSummary, generateAIAnalysis } from '../aiService';
 import { DashboardService } from '../DashboardService';
 import { ProjectService } from '../ProjectService';
 import { supabase } from '../../lib/supabase';
+import { PERSONAL_SUMMARY_PROMPT } from './prompts';
 
 interface CachedSummary {
     text: string;
@@ -213,6 +214,61 @@ export async function getProjectSummary(projectId: string, forceRefresh = false)
     } catch (error) {
         console.error('Error generating project summary:', error);
         return '⚠️ Không thể tạo tóm tắt dự án. Vui lòng thử lại sau.';
+    }
+}
+
+export interface PersonalSummaryContext {
+    role: string;
+    fullName: string;
+    department?: string;
+    stats: {
+        inProgress: number;
+        todo: number;
+        done: number;
+        overdue: number;
+        total: number;
+    };
+    tasks: Array<{ Title: string; Status: string; DueDate: string; Priority: string }>;
+    deadlines: Array<{ Title: string; DueDate: string; daysLeft: number }>;
+}
+
+/**
+ * Tóm tắt cá nhân hàng ngày cho cán bộ (Personal Assistant)
+ */
+export async function getPersonalSummary(context: PersonalSummaryContext, forceRefresh = false): Promise<string> {
+    const cacheKey = `personal-${context.fullName}-${context.role}`;
+    if (!forceRefresh) {
+        const cached = getCached(cacheKey);
+        if (cached) return cached;
+    }
+
+    try {
+        const tasksList = context.tasks && context.tasks.length > 0
+            ? context.tasks.map(t => `- ${t.Title} [Trạng thái: ${t.Status}, Hạn: ${new Date(t.DueDate).toLocaleDateString('vi-VN')}, Mức độ: ${t.Priority}]`).join('\n')
+            : 'Không có công việc nào đang xử lý.';
+            
+        const deadlinesList = context.deadlines && context.deadlines.length > 0
+            ? context.deadlines.map(d => `- ${d.Title} [Hạn: ${new Date(d.DueDate).toLocaleDateString('vi-VN')}, Còn ${d.daysLeft} ngày]`).join('\n')
+            : 'Không có công việc nào sắp đến hạn.';
+
+        const prompt = PERSONAL_SUMMARY_PROMPT
+            .replace('{fullName}', context.fullName)
+            .replace('{role}', context.role)
+            .replace('{department}', context.department || '—')
+            .replace('{stats.inProgress}', String(context.stats.inProgress))
+            .replace('{stats.todo}', String(context.stats.todo))
+            .replace('{stats.done}', String(context.stats.done))
+            .replace('{stats.overdue}', String(context.stats.overdue))
+            .replace('{stats.total}', String(context.stats.total))
+            .replace('{tasksList}', tasksList)
+            .replace('{deadlinesList}', deadlinesList);
+
+        const summary = await generateAIAnalysis(prompt, { currentDate: new Date().toISOString() });
+        setCache(cacheKey, summary);
+        return summary;
+    } catch (error) {
+        console.error('Error generating personal daily summary:', error);
+        return '⚠️ Không thể tạo tóm tắt cá nhân. Vui lòng thử lại sau.';
     }
 }
 

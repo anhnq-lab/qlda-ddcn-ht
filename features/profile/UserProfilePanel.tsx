@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, Shield, Save, CheckCircle2, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Phone, Shield, Save, CheckCircle2, Lock, LogOut, AlertTriangle, KeyRound, QrCode, ShieldCheck, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 import { Avatar } from '../../components/ui';
 import { EmployeeService } from '../../services/EmployeeService';
 import { UserAccountService } from '../../services/UserAccountService';
@@ -24,6 +25,21 @@ export const UserProfilePanel: React.FC = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    // Sign out all devices
+    const [signOutAllConfirm, setSignOutAllConfirm] = useState(false);
+    const [signOutAllLoading, setSignOutAllLoading] = useState(false);
+
+    // MFA state
+    type MfaEnrollStep = 'idle' | 'loading' | 'scan' | 'verify' | 'done';
+    const [mfaEnrolled, setMfaEnrolled] = useState<boolean | null>(null); // null = unknown
+    const [mfaStep, setMfaStep] = useState<MfaEnrollStep>('idle');
+    const [mfaQr, setMfaQr] = useState('');
+    const [mfaSecret, setMfaSecret] = useState('');
+    const [mfaFactorId, setMfaFactorId] = useState('');
+    const [mfaCode, setMfaCode] = useState('');
+    const [mfaError, setMfaError] = useState('');
+    const [mfaUnenrollConfirm, setMfaUnenrollConfirm] = useState(false);
 
     const handleSaveProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -83,6 +99,92 @@ export const UserProfilePanel: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSignOutAll = async () => {
+        setSignOutAllLoading(true);
+        try {
+            await supabase.auth.signOut({ scope: 'global' });
+            showToast('Đã đăng xuất khỏi tất cả thiết bị', 'success');
+            // Auth state listener in AuthContext will clear local state and redirect to /login
+        } catch (err: any) {
+            showToast(err.message || 'Lỗi khi đăng xuất', 'error');
+            setSignOutAllConfirm(false);
+        } finally {
+            setSignOutAllLoading(false);
+        }
+    };
+
+    // Load MFA enrollment status when security tab is active
+    useEffect(() => {
+        if (activeTab !== 'security' || mfaEnrolled !== null) return;
+        supabase.auth.mfa.listFactors().then(({ data }) => {
+            setMfaEnrolled((data?.totp?.length ?? 0) > 0);
+        });
+    }, [activeTab, mfaEnrolled]);
+
+    const handleMfaEnroll = async () => {
+        setMfaStep('loading');
+        setMfaError('');
+        const { data, error } = await supabase.auth.mfa.enroll({
+            factorType: 'totp',
+            issuer: 'QLDA DDCN Hà Tĩnh',
+            friendlyName: 'QLDA DDCN',
+        });
+        if (error || !data) {
+            setMfaError(error?.message || 'Không thể khởi tạo TOTP');
+            setMfaStep('idle');
+            return;
+        }
+        setMfaFactorId(data.id);
+        setMfaQr(data.totp.qr_code);
+        setMfaSecret(data.totp.secret);
+        setMfaStep('scan');
+    };
+
+    const handleMfaVerify = async () => {
+        setMfaError('');
+        if (mfaCode.replace(/\s/g, '').length !== 6) {
+            setMfaError('Mã phải gồm đúng 6 chữ số.');
+            return;
+        }
+        setMfaStep('loading');
+        const { data: challenge, error: chalErr } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+        if (chalErr || !challenge) {
+            setMfaError(chalErr?.message || 'Lỗi tạo challenge');
+            setMfaStep('scan');
+            return;
+        }
+        const { error: verErr } = await supabase.auth.mfa.verify({
+            factorId: mfaFactorId,
+            challengeId: challenge.id,
+            code: mfaCode.replace(/\s/g, ''),
+        });
+        if (verErr) {
+            setMfaError('Mã không đúng. Vui lòng kiểm tra lại thời gian thiết bị và thử lại.');
+            setMfaCode('');
+            setMfaStep('scan');
+            return;
+        }
+        setMfaEnrolled(true);
+        setMfaStep('done');
+        showToast('Xác thực 2 yếu tố đã được bật', 'success');
+    };
+
+    const handleMfaUnenroll = async () => {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const totp = factors?.totp?.[0];
+        if (!totp) return;
+        const { error } = await supabase.auth.mfa.unenroll({ factorId: totp.id });
+        if (error) {
+            showToast(error.message || 'Lỗi khi tắt xác thực 2 yếu tố', 'error');
+            return;
+        }
+        setMfaEnrolled(false);
+        setMfaUnenrollConfirm(false);
+        setMfaStep('idle');
+        setMfaCode('');
+        showToast('Đã tắt xác thực 2 yếu tố', 'success');
     };
 
     return (
@@ -263,6 +365,173 @@ export const UserProfilePanel: React.FC = () => {
                                 minLength={6}
                                 className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                             />
+                        </div>
+
+                        {/* ── MFA TOTP Section ── */}
+                        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+                            <div className="flex items-start gap-3 mb-3">
+                                <div className="p-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg shrink-0">
+                                    <KeyRound className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Xác thực 2 yếu tố (TOTP)</h4>
+                                        {mfaEnrolled === true && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
+                                                <ShieldCheck className="w-3 h-3" /> Đã bật
+                                            </span>
+                                        )}
+                                        {mfaEnrolled === false && (
+                                            <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full">Chưa bật</span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        Yêu cầu nhập mã từ ứng dụng xác thực mỗi lần đăng nhập.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Enrolled: show unenroll option */}
+                            {mfaEnrolled === true && mfaStep !== 'done' && (
+                                <div>
+                                    {!mfaUnenrollConfirm ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setMfaUnenrollConfirm(true)}
+                                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            Tắt xác thực 2 yếu tố
+                                        </button>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <button type="button" onClick={handleMfaUnenroll} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+                                                <Trash2 className="w-4 h-4" /> Xác nhận tắt
+                                            </button>
+                                            <button type="button" onClick={() => setMfaUnenrollConfirm(false)} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">Hủy</button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Not enrolled: enroll flow */}
+                            {mfaEnrolled === false && (
+                                <div>
+                                    {mfaStep === 'idle' && (
+                                        <button
+                                            type="button"
+                                            onClick={handleMfaEnroll}
+                                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-700/50 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                                        >
+                                            <QrCode className="w-4 h-4" />
+                                            Bật xác thực 2 yếu tố
+                                        </button>
+                                    )}
+                                    {mfaStep === 'loading' && (
+                                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                                            <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                                            Đang tải…
+                                        </div>
+                                    )}
+                                    {mfaStep === 'scan' && (
+                                        <div className="space-y-3">
+                                            <p className="text-xs text-slate-600 dark:text-slate-400">
+                                                1. Mở <strong>Google Authenticator</strong> hoặc <strong>Authy</strong>, quét mã QR bên dưới.
+                                            </p>
+                                            {mfaQr && (
+                                                <div className="w-40 h-40 p-2 bg-white rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm"
+                                                    dangerouslySetInnerHTML={{ __html: mfaQr }}
+                                                />
+                                            )}
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                Hoặc nhập thủ công: <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs break-all">{mfaSecret}</code>
+                                            </p>
+                                            <p className="text-xs text-slate-600 dark:text-slate-400">
+                                                2. Nhập mã 6 chữ số hiển thị trong ứng dụng để xác nhận.
+                                            </p>
+                                            {mfaError && (
+                                                <p className="text-xs text-red-500">{mfaError}</p>
+                                            )}
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    maxLength={6}
+                                                    value={mfaCode}
+                                                    onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                                                    placeholder="000000"
+                                                    className="w-32 text-center font-mono tracking-widest px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleMfaVerify}
+                                                    disabled={mfaCode.length < 6}
+                                                    className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors disabled:opacity-60"
+                                                >
+                                                    <ShieldCheck className="w-4 h-4" /> Xác nhận
+                                                </button>
+                                                <button type="button" onClick={() => { setMfaStep('idle'); setMfaCode(''); setMfaError(''); }} className="px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Hủy</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Success confirmation */}
+                            {mfaStep === 'done' && (
+                                <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 font-medium">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    Xác thực 2 yếu tố đã được kích hoạt thành công.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Sign out all devices */}
+                        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+                            <div className="flex items-start gap-3 mb-3">
+                                <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg shrink-0">
+                                    <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Đăng xuất tất cả thiết bị</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        Kết thúc mọi phiên đang hoạt động, kể cả thiết bị hiện tại. Bạn sẽ cần đăng nhập lại.
+                                    </p>
+                                </div>
+                            </div>
+                            {!signOutAllConfirm ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setSignOutAllConfirm(true)}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Đăng xuất tất cả thiết bị
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleSignOutAll}
+                                        disabled={signOutAllLoading}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-70"
+                                    >
+                                        {signOutAllLoading
+                                            ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            : <LogOut className="w-4 h-4" />
+                                        }
+                                        Xác nhận đăng xuất
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSignOutAllConfirm(false)}
+                                        disabled={signOutAllLoading}
+                                        className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                    >
+                                        Hủy
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </form>
                 )}

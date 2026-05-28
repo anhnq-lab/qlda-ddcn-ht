@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { Project, ProjectStage, Employee, BiddingPackage, Contractor } from '@/types';
 import {
     Pencil, Clock, Info, Maximize, Target,
-    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler, Box, Layers, Database, Eye, EyeOff
+    Hash, Building2, MapPin, Briefcase, Wallet, Copy, Check, Ruler, Box, Layers, Database, Eye, EyeOff,
+    ArrowRightLeft, FileText, UserCheck, AlertCircle, Calendar, Coins
 } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 import { LifecycleStepper, StageHistoryEntry } from '../LifecycleStepper';
@@ -53,6 +54,27 @@ interface ProjectInfoTabProps {
     onEditProject?: () => void;
     onTabChange?: (tab: string) => void;
 }
+
+const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '—';
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) {
+            return dateStr;
+        }
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    } catch {
+        return dateStr || '—';
+    }
+};
+
+const formatVND = (value?: number) => {
+    if (value === undefined || value === null) return '—';
+    return `${value.toLocaleString('vi-VN')} đ`;
+};
 
 export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     project,
@@ -238,6 +260,24 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     // ═══ Calculate disbursed amount from real disbursement data ═══
     const { data: capitalSummary } = useProjectCapitalSummary(project.ProjectID);
     const disbursedAmount = capitalSummary?.summary.totalDisbursed || 0;
+
+    const isHandoverProject = useMemo(() => {
+        return !!(
+            project.OldInvestor ||
+            project.TransferDecision ||
+            project.DecisionLevelBeforeHandover ||
+            project.ProjectManagement?.ban_tiep_nhan ||
+            project.ProjectManagement?.thoi_diem_ban_giao ||
+            project.ProjectManagement?.ho_so_ban_giao ||
+            (project.ProjectManagement?.gia_tri_khoi_luong_ban_giao !== undefined && project.ProjectManagement?.gia_tri_khoi_luong_ban_giao > 0) ||
+            project.ProjectStatusInfo?.ton_tai_vuong_mac_ban_giao ||
+            project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 ||
+            project.ProjectStatusInfo?.cong_no_den_30_6_2025 ||
+            project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao ||
+            project.ProjectStatusInfo?.cong_no_sau_ban_giao ||
+            project.ProjectStatusInfo?.cham_tien_do
+        );
+    }, [project]);
 
 
     // ═══ FETCH KEY DATES FROM MULTIPLE SOURCES ═══
@@ -568,6 +608,185 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             </div>
                         </div>
                     ) : null}
+
+                    {/* ═══ THÔNG TIN BÀN GIAO & TIẾP NHẬN ═══ */}
+                    {isHandoverProject && (
+                        <div className="section-card">
+                            <div className="section-card-header">
+                                <div className="flex items-center gap-2">
+                                    <div className="section-icon">
+                                        <ArrowRightLeft className="w-3.5 h-3.5" />
+                                    </div>
+                                    <span>Thông tin bàn giao & Tiếp nhận</span>
+                                </div>
+                            </div>
+                            <div className="p-2.5 space-y-3">
+                                {/* Grid thông tin chung bàn bàn giao */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-b border-border-subtle pb-2">
+                                    {project.OldInvestor && (
+                                        <EnhancedInfoItem
+                                            icon={Building2}
+                                            label="Chủ đầu tư cũ (Bàn giao)"
+                                            value={project.OldInvestor}
+                                        />
+                                    )}
+                                    {project.DecisionLevelBeforeHandover && (
+                                        <EnhancedInfoItem
+                                            icon={Briefcase}
+                                            label="Cấp quyết định trước bàn giao"
+                                            value={project.DecisionLevelBeforeHandover}
+                                        />
+                                    )}
+                                    {project.TransferDecision && (
+                                        <EnhancedInfoItem
+                                            icon={FileText}
+                                            label="Quyết định bàn giao"
+                                            value={project.TransferDecision}
+                                        />
+                                    )}
+                                    {(project.ProjectManagement?.thoi_diem_ban_giao || project.HandoverDate) && (
+                                        <EnhancedInfoItem
+                                            icon={Calendar}
+                                            label="Ngày bàn giao"
+                                            value={formatDate(project.ProjectManagement?.thoi_diem_ban_giao || project.HandoverDate)}
+                                        />
+                                    )}
+                                    {project.ProjectManagement?.ban_tiep_nhan && (
+                                        <EnhancedInfoItem
+                                            icon={UserCheck}
+                                            label="Đơn vị tiếp nhận"
+                                            value={project.ProjectManagement?.ban_tiep_nhan}
+                                        />
+                                    )}
+                                    {project.ProjectManagement?.ho_so_ban_giao && (
+                                        <EnhancedInfoItem
+                                            icon={FileText}
+                                            label="Hồ sơ bàn giao"
+                                            value={project.ProjectManagement?.ho_so_ban_giao}
+                                        />
+                                    )}
+                                    {project.ProjectManagement?.gia_tri_khoi_luong_ban_giao !== undefined && project.ProjectManagement?.gia_tri_khoi_luong_ban_giao > 0 && (
+                                        <EnhancedInfoItem
+                                            icon={Coins}
+                                            label="Giá trị khối lượng bàn giao"
+                                            value={formatVND(project.ProjectManagement?.gia_tri_khoi_luong_ban_giao)}
+                                            highlight
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Quyết toán & Công nợ */}
+                                {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 || 
+                                  project.ProjectStatusInfo?.cong_no_den_30_6_2025 || 
+                                  project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao || 
+                                  project.ProjectStatusInfo?.cong_no_sau_ban_giao) && (
+                                    <div className="space-y-2">
+                                        <h4 className="text-[10px] font-bold text-txt-muted uppercase tracking-wider px-2.5">
+                                            Tình trạng quyết toán & Công nợ
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 px-2.5">
+                                            {/* Mốc 30/6/2025 */}
+                                            {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 || project.ProjectStatusInfo?.cong_no_den_30_6_2025 !== undefined) && (
+                                                <div className="rounded-xl border border-border-subtle bg-bg-muted/30 p-2.5">
+                                                    <div className="text-[10px] font-bold text-txt-muted mb-1">Mốc 30/06/2025 (Trước bàn giao)</div>
+                                                    <div className="space-y-1">
+                                                        {project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 && (
+                                                            <div className="text-xs">
+                                                                <span className="text-txt-muted">Trạng thái QT: </span>
+                                                                <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.tinh_trang_quyet_toan_den_30_6_2025}</span>
+                                                            </div>
+                                                        )}
+                                                        {project.ProjectStatusInfo?.cong_no_den_30_6_2025 !== undefined && (
+                                                            <div className="text-xs">
+                                                                <span className="text-txt-muted">Công nợ: </span>
+                                                                <span className="font-bold text-rose-500">{formatVND(project.ProjectStatusInfo.cong_no_den_30_6_2025)}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Sau bàn giao */}
+                                            {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao || project.ProjectStatusInfo?.cong_no_sau_ban_giao !== undefined) && (
+                                                <div className="rounded-xl border border-border-subtle bg-bg-muted/30 p-2.5">
+                                                    <div className="text-[10px] font-bold text-txt-muted mb-1">Sau khi bàn giao</div>
+                                                    <div className="space-y-1">
+                                                        {project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao && (
+                                                            <div className="text-xs">
+                                                                <span className="text-txt-muted">Trạng thái QT: </span>
+                                                                <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.tinh_trang_quyet_toan_sau_ban_giao}</span>
+                                                            </div>
+                                                        )}
+                                                        {project.ProjectStatusInfo?.cong_no_sau_ban_giao !== undefined && (
+                                                            <div className="text-xs">
+                                                                <span className="text-txt-muted">Công nợ: </span>
+                                                                <span className="font-bold text-rose-500">{formatVND(project.ProjectStatusInfo.cong_no_sau_ban_giao)}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Tồn tại vướng mắc bàn giao */}
+                                {project.ProjectStatusInfo?.ton_tai_vuong_mac_ban_giao && (
+                                    <div className="px-2.5 pb-1">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                            <AlertCircle className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-pulse" />
+                                            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Tồn tại, vướng mắc bàn giao</span>
+                                        </div>
+                                        <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed bg-amber-50 dark:bg-amber-950/20 rounded-xl p-2.5 border border-amber-200 dark:border-amber-900/30">
+                                            {project.ProjectStatusInfo.ton_tai_vuong_mac_ban_giao}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Chậm tiến độ & Kiến nghị */}
+                                {project.ProjectStatusInfo?.cham_tien_do && (
+                                    <div className="px-2.5 pb-1 space-y-2 border-t border-border-subtle pt-2">
+                                        <div className="flex items-center gap-1.5">
+                                            <AlertCircle className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
+                                            <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Thông tin chậm tiến độ & Kiến nghị</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                                            {project.ProjectStatusInfo.cham_tien_do.thoi_gian_hoan_thanh && (
+                                                <div className="flex justify-between items-center bg-bg-muted rounded-lg p-2 border border-border-subtle">
+                                                    <span className="text-txt-muted text-[11px]">Hạn hoàn thành:</span>
+                                                    <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.cham_tien_do.thoi_gian_hoan_thanh}</span>
+                                                </div>
+                                            )}
+                                            {project.ProjectStatusInfo.cham_tien_do.thoi_gian_cham && (
+                                                <div className="flex justify-between items-center bg-bg-muted rounded-lg p-2 border border-border-subtle">
+                                                    <span className="text-txt-muted text-[11px]">Thời gian chậm:</span>
+                                                    <span className="font-semibold text-rose-500">{project.ProjectStatusInfo.cham_tien_do.thoi_gian_cham}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {project.ProjectStatusInfo.cham_tien_do.nguyen_nhan && (
+                                            <div className="bg-bg-muted rounded-xl p-2.5 border border-border-subtle">
+                                                <div className="text-[10px] font-bold text-txt-muted mb-1">Nguyên nhân chậm trễ:</div>
+                                                <p className="text-xs text-txt-secondary leading-relaxed">{project.ProjectStatusInfo.cham_tien_do.nguyen_nhan}</p>
+                                            </div>
+                                        )}
+                                        {project.ProjectStatusInfo.cham_tien_do.bien_phap_da_ap_dung && (
+                                            <div className="bg-bg-muted rounded-xl p-2.5 border border-border-subtle">
+                                                <div className="text-[10px] font-bold text-txt-muted mb-1">Biện pháp đã áp dụng:</div>
+                                                <p className="text-xs text-txt-secondary leading-relaxed">{project.ProjectStatusInfo.cham_tien_do.bien_phap_da_ap_dung}</p>
+                                            </div>
+                                        )}
+                                        {project.ProjectStatusInfo.cham_tien_do.kien_nghi_de_xuat && (
+                                            <div className="bg-emerald-50 dark:bg-emerald-950/15 rounded-xl p-2.5 border border-emerald-100 dark:border-emerald-900/30">
+                                                <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mb-1">Kiến nghị, đề xuất giải pháp:</div>
+                                                <p className="text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed font-medium">{project.ProjectStatusInfo.cham_tien_do.kien_nghi_de_xuat}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
 
                     {/* ═══ Tiến độ giải ngân ═══ */}

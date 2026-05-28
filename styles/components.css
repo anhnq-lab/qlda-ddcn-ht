@@ -419,32 +419,7 @@
     box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
   }
 
-  /* Don't use border-none which might break RBC absolute positioning width calculations */
-  .rbc-event {
-    @apply rounded-md px-2 py-1 shadow-sm transition-all duration-200 hover:-translate-y-[1px] hover:shadow-md;
-    border-width: 0; 
-  }
 
-  /* Event type colors - use box-shadow inset instead of border-l-4 to prevent width shifting */
-  .agency-event-meeting {
-    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 !important;
-    box-shadow: inset 4px 0 0 0 #3b82f6;
-  }
-  
-  .agency-event-business_trip {
-    @apply bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300 !important;
-    box-shadow: inset 4px 0 0 0 #f97316;
-  }
-  
-  .agency-event-internal_event {
-    @apply bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 !important;
-    box-shadow: inset 4px 0 0 0 #a855f7;
-  }
-  
-  .agency-event-other {
-    @apply bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300 !important;
-    box-shadow: inset 4px 0 0 0 #9ca3af;
-  }
 
   /* Calendar grid styling - Only apply border colors, don't use overflow-hidden which breaks month view */
   .rbc-month-view, .rbc-time-view, .rbc-agenda-view {

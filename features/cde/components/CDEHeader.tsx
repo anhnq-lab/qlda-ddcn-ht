@@ -27,10 +27,10 @@ const CDEHeader: React.FC<CDEHeaderProps> = ({
 
     return (
         <div className="flex-none mb-6">
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
                 <div>
                     <h1 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" >
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary-600 to-primary-500 flex items-center justify-center shadow-md shadow-primary-200 dark:shadow-primary-950/40" >
                             <FolderTree className="w-5 h-5 text-white" />
                         </div>
                         Môi trường dữ liệu chung
@@ -40,8 +40,8 @@ const CDEHeader: React.FC<CDEHeaderProps> = ({
                         {userRole && <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold rounded-full uppercase">{userRole}</span>}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-3 min-w-[320px]">
+                <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 flex items-center gap-3 min-w-[320px] flex-1 max-w-[450px] shadow-sm">
                         <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                         <select
                             value={selectedProjectId}
@@ -56,8 +56,7 @@ const CDEHeader: React.FC<CDEHeaderProps> = ({
                     <button
                         onClick={onUpload}
                         disabled={!canUpload || isUploading}
-                        className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        
+                        className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap shadow-md shadow-primary-200/50 dark:shadow-none"
                     >
                         {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         Nộp hồ sơ

@@ -38,7 +38,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
         const selectedCount = (filters as any)[filterKey]?.length || 0;
 
         return (
-            <div className="relative">
+            <div className="relative" data-filter-dropdown>
                 <button
                     onClick={() => setExpandedFilter(isOpen ? null : filterKey)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCount > 0
@@ -107,16 +107,17 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
             />
 
             {/* Date Range */}
-            <div className="flex items-center gap-1.5">
-                <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
-                    <Calendar className="w-3 h-3 text-gray-400" />
+            <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider shrink-0 select-none">Từ:</span>
                     <input type="date" value={filters.dateFrom} onChange={e => onChange({ ...filters, dateFrom: e.target.value })}
-                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200" placeholder="Từ ngày" />
+                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200 focus:ring-0" />
                 </div>
-                <span className="text-gray-300 text-xs">—</span>
-                <div className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg px-2 py-1.5">
+                <span className="text-gray-300 dark:text-slate-600 text-xs select-none">—</span>
+                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider shrink-0 select-none">Đến:</span>
                     <input type="date" value={filters.dateTo} onChange={e => onChange({ ...filters, dateTo: e.target.value })}
-                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200" placeholder="Đến ngày" />
+                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200 focus:ring-0" />
                 </div>
             </div>
 

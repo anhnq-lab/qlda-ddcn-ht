@@ -129,19 +129,14 @@ function formatInline(text: string, onActionClick?: (action: string) => void): R
                     const action = actionMatch[2];
                     const isWord = action.startsWith('download_word');
                     const isPptx = action.startsWith('download_pptx');
-                    const isExcel = action.startsWith('download_excel');
                     
                     const icon = isWord 
                         ? <FileText size={12} className="inline mr-1" /> 
-                        : isPptx 
-                        ? <Presentation size={12} className="inline mr-1" /> 
-                        : <FileSpreadsheet size={12} className="inline mr-1" />;
+                        : <Presentation size={12} className="inline mr-1" />;
                     
                     const bgClass = isWord 
                         ? 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800' 
-                        : isPptx 
-                        ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800' 
-                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800';
+                        : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800';
 
                     return (
                         <button
@@ -223,9 +218,6 @@ export const AIChatbot: React.FC = () => {
             } else if (actionType === 'download_pptx') {
                 setActionMessage('Đang thiết kế slide trình chiếu (Midnight Gold)...');
                 await docxGenerator.generatePowerPoint(project.ProjectName, payload);
-            } else if (actionType === 'download_excel') {
-                setActionMessage('Đang tạo bảng tính kế hoạch nguồn vốn...');
-                await docxGenerator.generateExcelCapitalPlan(project.ProjectName, payload);
             }
         } catch (err: any) {
             console.error('Document generation failed:', err);
@@ -424,14 +416,6 @@ export const AIChatbot: React.FC = () => {
                         >
                             <Presentation size={11} />
                             Slide
-                        </button>
-                        <button
-                            onClick={() => handleActionClick('download_excel')}
-                            disabled={isLoading}
-                            className="flex items-center gap-1 px-2 py-1 bg-white hover:bg-emerald-50 dark:bg-slate-750 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded font-semibold shadow-sm hover:border-emerald-350 transition-all duration-205 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <FileSpreadsheet size={11} />
-                            Excel
                         </button>
                     </div>
                 </div>

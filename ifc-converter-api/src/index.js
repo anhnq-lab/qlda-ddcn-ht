@@ -90,6 +90,8 @@ const { convert2xkt } = require('@xeokit/xeokit-convert');
 // WebIFC is REQUIRED for IFC file conversion per xeokit docs
 // Import from root package - package.json exports handle the node/browser split
 const WebIFC = require('web-ifc');
+// IFC → glTF converter (new pipeline — server-side, replaces browser WASM parsing)
+const { convertIfcToGlb } = require('./ifc-to-glb');
 
 // Convert IFC to XKT using @xeokit/xeokit-convert API
 async function runConvertIFCtoXKT(inputPath, outputPath, jobId, onProgress) {

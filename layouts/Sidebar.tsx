@@ -84,18 +84,20 @@ const Sidebar: React.FC<SidebarProps> = ({
   onClose
 }) => {
   const { currentUser, logout, userType } = useAuth();
-  const { can } = usePermissionCheck();
+  const { can, loading: permLoading } = usePermissionCheck();
   const isContractor = userType === 'contractor';
 
   // Filter nav items based on permissions
   const visibleNavItems = useMemo(() => {
     // Contractors get a limited menu
     if (isContractor) return contractorNavItems;
+    // While permissions are loading, show nothing to avoid flash of wrong items
+    if (permLoading) return [];
     return navItems.filter(item => {
-      if (!item.resource) return true; // No resource = always visible  
+      if (!item.resource) return true; // No resource = always visible
       return can(item.resource, 'view');
     });
-  }, [can, isContractor]);
+  }, [can, isContractor, permLoading]);
 
 
   return (
@@ -137,6 +139,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* ── Navigation ── */}
         <nav className={`flex-1 overflow-y-auto min-h-0 p-4 ${isCollapsed ? 'md:px-2' : 'px-4'} space-y-1 no-scrollbar`}>
+          {/* Skeleton — shown while permissions are loading to prevent flash of empty/wrong menu */}
+          {permLoading && !isContractor && (
+            <div className="space-y-1 animate-pulse">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className={`flex items-center gap-3 px-4 py-3 rounded-lg ${isCollapsed ? 'md:px-0 md:justify-center' : ''}`}>
+                  <div className="w-[18px] h-[18px] rounded bg-slate-200 dark:bg-slate-700 shrink-0" />
+                  {!isCollapsed && <div className="h-3 rounded bg-slate-200 dark:bg-slate-700 flex-1" style={{ width: `${50 + (i * 13) % 35}%` }} />}
+                </div>
+              ))}
+            </div>
+          )}
           {visibleNavItems.map((item) => (
             <NavLink
               key={item.path}

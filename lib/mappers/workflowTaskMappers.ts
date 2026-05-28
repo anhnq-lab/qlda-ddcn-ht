@@ -64,8 +64,6 @@ export const workflowTaskToTask = (wt: DbTask | any, projectId?: string): Task =
         SubTasks: [],  // ← Subtask đã bỏ sau refactor 24/05/2026
         Attachments: metadata.attachments || [],
         Dependencies: metadata.dependencies || [],
-        EstimatedCost: Number(metadata.estimated_cost) || 0,
-        ActualCost: Number(metadata.actual_cost) || 0,
         MonthlyPlanItemID: wt.monthly_plan_item_id || undefined,
         ProjectPlanItemID: wt.project_plan_step_id || wt.project_plan_item_id || undefined,
         ResponsibilityLevel: wt.responsibility_level || 'individual',
@@ -154,8 +152,6 @@ export const taskToDbTask = (task: Partial<Task>, projectId?: string): Partial<D
             priority: task.Priority,
             attachments: task.Attachments,
             dependencies: task.Dependencies,
-            estimated_cost: (task as any).EstimatedCost,
-            actual_cost: (task as any).ActualCost,
             assignee_role: task.AssigneeID && isDepartmentCode(task.AssigneeID)
                 ? task.AssigneeID : undefined,
         },

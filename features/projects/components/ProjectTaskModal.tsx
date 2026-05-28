@@ -788,15 +788,9 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Thời gian (ngày)</label>
-                                        <input type="number" min="1" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="15" value={formData.DurationDays || ''} onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })} />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Chi phí dự kiến (VNĐ)</label>
-                                        <input type="number" min="0" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="50,000,000" value={formData.EstimatedCost || ''} onChange={e => setFormData({ ...formData, EstimatedCost: parseInt(e.target.value) || undefined })} />
-                                    </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Thời gian (ngày)</label>
+                                    <input type="number" min="1" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="15" value={formData.DurationDays || ''} onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })} />
                                 </div>
 
                                 <div className="space-y-1.5">

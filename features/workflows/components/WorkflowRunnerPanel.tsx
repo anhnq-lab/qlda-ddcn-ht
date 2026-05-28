@@ -27,13 +27,15 @@ interface Props {
 
 // ─── Constants ───────────────────────────────────────────────────────
 const PHASE_LABELS: Record<string, { label: string; color: string }> = {
-    initiation:    { label: 'Khởi tạo',               color: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300' },
-    consultant:    { label: 'Tư vấn',                  color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
-    reception:     { label: 'Tiếp nhận HS',            color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' },
-    review:        { label: 'Kiểm tra',                 color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
-    consolidation: { label: 'Tổng hợp / Thẩm định',   color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
-    approval:      { label: 'Phê duyệt',               color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' },
-    handover:      { label: 'Bàn giao',                color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' },
+    initiation:      { label: 'Khởi tạo',               color: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300' },
+    consultant:      { label: 'Tư vấn',                  color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+    reception:       { label: 'Tiếp nhận HS',            color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' },
+    review:          { label: 'Kiểm tra',                color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
+    consolidation:   { label: 'Tổng hợp / Thẩm định',   color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
+    approval:        { label: 'Phê duyệt',               color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' },
+    handover:        { label: 'Bàn giao',                color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' },
+    initiation_gd2:  { label: 'GĐ2 — Giao TV',           color: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300' },
+    consultant_gd2:  { label: 'GĐ2 — Tư vấn',            color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' },
 };
 
 // ─── Render guidelines ───────────────────────────────────────────────
@@ -125,18 +127,19 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
     const currentFormDone  = currentCheckedIds.length;
     const isFormAllDone    = currentFormTotal === 0 || currentFormDone >= currentFormTotal;
 
-    const needsStep11 = useMemo(() =>
-        [7, 8, 9].some(i => stepRecords.find(r => r.step_index === i && r.conclusion === 'fail')),
-    [stepRecords]);
+    // Xác định bước đầu giai đoạn 2 cho TK3B (nếu có)
+    const gd2StartIndex = useMemo(() => {
+        if (instance?.workflow_code !== 'QT-TK3B') return -1;
+        return steps.findIndex(s => (s.metadata as any)?.phase === 'initiation_gd2');
+    }, [instance?.workflow_code, steps]);
 
     const canAdvance = useMemo(() => {
         if (isCurrentCompleted) return true;
-        if (currentIdx === 10 && !needsStep11) return true;
         if (!formCode) return true;
         // Biểu mẫu checklist: phải lưu đủ hết + chọn kết luận
         if (currentFormTotal > 0 && !isFormAllDone) return false;
         return conclusion === 'pass' || conclusion === 'na';
-    }, [isCurrentCompleted, formCode, conclusion, currentIdx, needsStep11, currentFormTotal, isFormAllDone]);
+    }, [isCurrentCompleted, formCode, conclusion, currentFormTotal, isFormAllDone]);
 
     // Ref để tránh stale closure trong setTimeout (phải khai báo TRƯỚC handleFormSave)
     const handleSaveAndAdvanceRef = React.useRef<(() => void) | null>(null);
@@ -219,15 +222,14 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
             });
             setStepRecords(prev => [...prev.filter(r => r.step_index !== currentIdx), updated]);
 
-            let actualNext = currentIdx + 1;
-            if (actualNext === 10 && !needsStep11) actualNext = 11;
+            const actualNext = currentIdx + 1;
 
             if (actualNext >= steps.length) {
                 await completeInstance(instance.id);
                 addToast({ title: '🎉 Hoàn thành!', message: 'Quy trình đã kết thúc thành công.', type: 'success' });
                 onComplete?.();
             } else {
-                const newInst = await advanceStep(instance.id, actualNext);
+                const newInst = await advanceStep(instance.id, actualNext, instance.workflow_code);
                 setInstance(newInst);
             }
         } catch {
@@ -260,7 +262,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
 
     const handleGoBack = async () => {
         if (!instance || currentIdx === 0) return;
-        const newInst = await advanceStep(instance.id, currentIdx - 1);
+        const newInst = await advanceStep(instance.id, currentIdx - 1, instance.workflow_code);
         setInstance(newInst);
     };
 
@@ -309,16 +311,21 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                         const isActive = idx === currentIdx;
                         const isDone = record?.is_completed;
                         const isFail = record?.conclusion === 'fail';
-                        const isSkipped = idx === 10 && !needsStep11 && currentIdx > 10;
+                        const showGd2Separator = gd2StartIndex > 0 && idx === gd2StartIndex;
 
                         return (
-                            <div key={idx} className={`flex items-start gap-2 px-3 py-1.5 ${isActive ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}>
+                            <React.Fragment key={idx}>
+                            {/* GĐ2 separator for TK3B */}
+                            {showGd2Separator && (
+                                <div className="mx-3 my-2 flex items-center gap-2">
+                                    <div className="flex-1 h-px bg-sky-300 dark:bg-sky-700" />
+                                    <span className="text-[8px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest whitespace-nowrap">Giai đoạn 2 — TKBVTC</span>
+                                    <div className="flex-1 h-px bg-sky-300 dark:bg-sky-700" />
+                                </div>
+                            )}
+                            <div className={`flex items-start gap-2 px-3 py-1.5 ${isActive ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}>
                                 <div className="mt-0.5 shrink-0">
-                                    {isSkipped ? (
-                                        <div className="w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 flex items-center justify-center">
-                                            <span className="text-[7px] text-gray-400">–</span>
-                                        </div>
-                                    ) : isDone ? (
+                                    {isDone ? (
                                         <CheckCircle2 className={`w-4 h-4 ${isFail ? 'text-red-500' : 'text-emerald-500'}`} />
                                     ) : isActive ? (
                                         <div className="w-4 h-4 rounded-full border-2 border-primary-500 bg-primary-100 dark:bg-primary-900/40" />
@@ -334,6 +341,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                     {step.name}
                                 </p>
                             </div>
+                            </React.Fragment>
                         );
                     })}
                 </div>

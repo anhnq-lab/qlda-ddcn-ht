@@ -405,10 +405,37 @@ export function useBimEngine(
                 // significantly more WASM heap than the 2 GB default — we cap at 4 GB
                 // (the practical wasm32 ceiling) which gives ~6–8× the raw IFC size to
                 // work with after geometry inflation.
+                //
+                // customLocateFileHandler resolves WASM/worker file paths using the
+                // page origin. Without it, Emscripten's `_scriptName` is `undefined`
+                // in Vite ESM context → pthread Worker creation fails (SyntaxError:
+                // "Unexpected token '<'" because the browser fetches the SPA HTML
+                // fallback at /bim/undefined). The handler ensures web-ifc.wasm and
+                // web-ifc-mt.wasm are resolved from /wasm/.
                 const ifcLoader = components.get(OBC.IfcLoader);
+
+                // ── Pre-initialize web-ifc in FORCED SINGLE-THREAD mode ──
+                // In Vite ESM context, `_scriptName = globalThis.document?.currentScript?.src`
+                // is `undefined`. When COOP/COEP headers enable `crossOriginIsolated`, web-ifc
+                // tries to spawn pthread Workers with `new Worker(undefined)` → the browser
+                // fetches the SPA HTML fallback → `SyntaxError: Unexpected token '<'` ×N.
+                // The Workers all fail, and web-ifc falls back to single-thread anyway, but
+                // this wastes ~200–500ms and spams the console.
+                //
+                // By calling `Init(locateHandler, forceSingleThread=true)` first, we set
+                // `wasmModule` on the IfcAPI instance. When @thatopen's `readIfcFile()` later
+                // calls `Init(handler)` again (line 3913 of index.mjs), web-ifc sees
+                // `wasmModule` is already set and returns immediately — no duplicate init,
+                // no broken Workers, no wasted time.
+                const locateWasm = (url: string) => `${window.location.origin}/wasm/${url}`;
+                ifcLoader.webIfc.SetWasmPath('/wasm/', true);
+                await ifcLoader.webIfc.Init(locateWasm, true); // forceSingleThread = true
+                console.log('[BimEngine] web-ifc pre-initialized (single-thread, WASM ready)');
+
                 await ifcLoader.setup({
                     autoSetWasm: false,
                     wasm: { path: '/wasm/', absolute: true },
+                    customLocateFileHandler: locateWasm,
                     webIfc: {
                         COORDINATE_TO_ORIGIN: true,
                         // @ts-ignore

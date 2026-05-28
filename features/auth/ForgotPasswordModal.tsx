@@ -26,18 +26,15 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
 
         setIsLoading(true);
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: `${window.location.origin}/reset-password`,
             });
-
-            if (error) {
-                addToast({ title: 'Lỗi', message: error.message || 'Có lỗi xảy ra, vui lòng thử lại', type: 'error' });
-            } else {
-                setIsSuccess(true);
-                addToast({ title: 'Thành công', message: 'Đã gửi liên kết đặt lại mật khẩu', type: 'success' });
-            }
-        } catch (err: any) {
-            addToast({ title: 'Lỗi', message: err.message || 'Lỗi hệ thống', type: 'error' });
+            // Always show success screen regardless of whether the email exists.
+            // This prevents email enumeration attacks (attackers cannot tell if an email is registered).
+            setIsSuccess(true);
+        } catch {
+            // Even on unexpected errors, show the success screen to prevent enumeration.
+            setIsSuccess(true);
         } finally {
             setIsLoading(false);
         }

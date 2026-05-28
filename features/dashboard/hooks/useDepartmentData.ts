@@ -12,6 +12,7 @@ import { useTasks } from '../../../hooks/useTasks';
 import { supabase } from '../../../lib/supabase';
 import { TaskStatus } from '../../../types';
 import type { DashboardConfig } from './useDashboardConfig';
+import { DashboardService } from '../../../services/DashboardService';
 
 const STALE_5M = 5 * 60 * 1000;
 
@@ -21,28 +22,21 @@ export function useDepartmentData(config: DashboardConfig) {
     const { data: allTasks } = useTasks();
     const tasks = allTasks || [];
 
-    // ── Department employees ──
-    const { data: deptEmployees = [] } = useQuery({
-        queryKey: ['dept-employees', config.departmentName],
+    // ── Department dashboard scoped data (via RPC) ──
+    const { data: deptDashboardData } = useQuery({
+        queryKey: ['dept-dashboard-data', config.departmentCode, currentUser?.EmployeeID],
         queryFn: async () => {
-            if (!config.departmentName) return [];
-            const { data } = await supabase
-                .from('employees')
-                .select('employee_id, full_name, position, role, avatar_url, status')
-                .eq('department', config.departmentName)
-                .eq('status', 1)
-                .order('position');
-            return data || [];
+            if (!config.departmentCode || !currentUser?.EmployeeID) {
+                return { dept_employees: [], monthly_plan_items: [], dept_member_ids: [] };
+            }
+            return DashboardService.getDepartmentDashboardData(config.departmentCode, currentUser.EmployeeID);
         },
-        enabled: !!config.departmentName && config.tier !== 'staff',
+        enabled: !!config.departmentCode && !!currentUser?.EmployeeID,
         staleTime: STALE_5M,
     });
 
-    // ── Department member IDs ──
-    const deptMemberIds = useMemo(() =>
-        deptEmployees.map((e: any) => e.employee_id),
-        [deptEmployees]
-    );
+    const deptEmployees = deptDashboardData?.dept_employees || [];
+    const deptMemberIds = deptDashboardData?.dept_member_ids || [];
 
     // ── My Projects (scoped) ──
     const myProjects = useMemo(() => {
@@ -128,39 +122,32 @@ export function useDepartmentData(config: DashboardConfig) {
     }, [dashboardStats]);
 
     const myTaskStats = unifiedTaskStats;
-    const deptTaskStats = unifiedTaskStats;
+    
+    const deptTaskStats = useMemo(() => {
+        if (config.tier === 'staff') return unifiedTaskStats;
+        const inProgress = deptTasks.filter(t => t.Status === TaskStatus.InProgress).length;
+        const done = deptTasks.filter(t => t.Status === TaskStatus.Done).length;
+        const overdue = deptTasks.filter(t => {
+            if (t.Status === TaskStatus.Done) return false;
+            if (!t.DueDate) return false;
+            return new Date(t.DueDate) < new Date();
+        }).length;
+        const total = deptTasks.length;
+        const todo = Math.max(0, total - inProgress - done);
+
+        return { inProgress, todo, done, overdue, total };
+    }, [deptTasks, config.tier, unifiedTaskStats]);
 
     // ── Monthly Plan Progress ──
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
+    const { currentMonth, currentYear } = useMemo(() => {
+        const now = new Date();
+        return {
+            currentMonth: now.getMonth() + 1,
+            currentYear: now.getFullYear()
+        };
+    }, []);
 
-    const { data: monthlyPlanItems = [] } = useQuery({
-        queryKey: ['dashboard-monthly-plan', config.departmentCode, currentMonth, currentYear],
-        queryFn: async () => {
-            if (!config.departmentCode) return [];
-            const startDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
-            const endDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
-
-            const { data: items } = await supabase
-                .from('tasks')
-                .select('id, title, status, assignee_id, due_date, employees(full_name)')
-                .eq('department_code', config.departmentCode)
-                .gte('due_date', startDate)
-                .lte('due_date', endDate)
-                .order('sort_order');
-
-            return (items || []).map((t: any) => ({
-                id: t.id,
-                task_name: t.title,
-                status: t.status === 'done' ? 'completed' : (t.status === 'in_progress' ? 'partial' : (t.status === 'incomplete' ? 'incomplete' : 'planned')),
-                staff_id: t.assignee_id,
-                staff_name: t.employees?.full_name || '',
-                due_date: t.due_date
-            }));
-        },
-        enabled: !!config.departmentCode,
-        staleTime: STALE_5M,
-    });
+    const monthlyPlanItems = deptDashboardData?.monthly_plan_items || [];
 
     // ── My Monthly Plan Items (for staff tier) ──
     const myMonthlyItems = useMemo(() => {
@@ -193,6 +180,11 @@ export function useDepartmentData(config: DashboardConfig) {
         const projectNameMap: Record<string, string> = {};
         projects.forEach(p => { projectNameMap[p.ProjectID] = p.ProjectName; });
 
+        const employeeMap: Record<string, { name: string, avatar?: string }> = {};
+        deptEmployees.forEach(e => {
+            employeeMap[e.employee_id] = { name: e.full_name, avatar: e.avatar_url || undefined };
+        });
+
         return taskSource
             .filter(t => {
                 const due = new Date(t.DueDate);
@@ -203,8 +195,10 @@ export function useDepartmentData(config: DashboardConfig) {
             .map(t => ({
                 ...t,
                 _projectName: projectNameMap[t.ProjectID] || t.ProjectID,
+                AssigneeName: employeeMap[t.AssigneeID]?.name || '',
+                AssigneeAvatar: employeeMap[t.AssigneeID]?.avatar || '',
             }));
-    }, [myTasks, deptTasks, config.tier, projects]);
+    }, [myTasks, deptTasks, config.tier, projects, deptEmployees]);
 
     return {
         // Employees

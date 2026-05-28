@@ -4,16 +4,21 @@ import { supabase } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
 import { permissionCache } from '../utils/permissionCache';
 
+export type LoginResult = 'success' | 'failed' | 'mfa_required';
+
 interface AuthContextType {
     currentUser: Employee | null;
     supabaseUser: User | null;
     session: Session | null;
     userType: 'employee' | 'contractor';
     contractorId: string | null;
-    login: (identifier: string, pass: string) => Promise<boolean>;
+    login: (identifier: string, pass: string) => Promise<LoginResult>;
     logout: () => Promise<void>;
     isAuthenticated: boolean;
     isLoading: boolean;
+    mfaPending: boolean;
+    completeMfaChallenge: (code: string) => Promise<boolean>;
+    cancelMfaChallenge: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -87,23 +92,9 @@ async function fetchUserProfile(authUserId: string): Promise<{
         }
 
         if (profileData.user_type === 'contractor') {
-            const contractorName = profileData.full_name || 'Nhà thầu';
-            
-            // Fetch allowed_project_ids for this contractor account
-            let allowedProjectIds: string[] = [];
-            try {
-                const { data: contractorData, error: contractorErr } = await supabase
-                    .from('contractor_accounts')
-                    .select('allowed_project_ids')
-                    .eq('auth_user_id', authUserId)
-                    .single();
-                
-                if (!contractorErr && contractorData?.allowed_project_ids) {
-                    allowedProjectIds = contractorData.allowed_project_ids;
-                }
-            } catch (err) {
-                console.error('[fetchUserProfile] Error fetching contractor accounts:', err);
-            }
+            const contractorName = profileData.full_name || profileData.display_name || 'Nhà thầu';
+            // allowed_project_ids now included in RPC response — no extra query needed
+            const allowedProjectIds: string[] = profileData.allowed_project_ids || [];
 
             return {
                 user: {
@@ -161,6 +152,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [userType, setUserType] = useState<'employee' | 'contractor'>('employee');
     const [contractorId, setContractorId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [pendingMfa, setPendingMfa] = useState<{ factorId: string; challengeId: string } | null>(null);
 
     // Add fetching ref to prevent concurrent duplicate profile requests
     const fetchingProfileRef = useRef<string | null>(null);
@@ -194,22 +186,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return;
         }
 
-        // Fallback: user exists in Auth but not linked
+        // Orphan auth user — exists in Supabase Auth but NOT linked to any employee/contractor.
+        // Force sign-out to prevent a ghost session with no meaningful permissions.
+        console.warn('[Auth] Orphan auth user detected (no employee/contractor link). Forcing sign-out.', authUser.id);
+        await supabase.auth.signOut({ scope: 'local' });
+        setCurrentUser(null);
+        setSupabaseUser(null);
         setUserType('employee');
         setContractorId(null);
-        setCurrentUser({
-            EmployeeID: authUser.id,
-            FullName: authUser.email || 'User',
-            Role: 'Staff' as any,
-            Department: '',
-            Position: '',
-            Email: authUser.email || '',
-            Phone: '',
-            AvatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.email || 'U')}&background=0D8ABC&color=fff`,
-            JoinDate: '',
-            Status: 'Active' as any,
-            Username: authUser.email || '',
-        });
     }, []);
 
     // Track user activity to enforce inactivity timeout
@@ -335,8 +319,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
     }, [handleAuthUser]);
 
-    const login = async (identifier: string, pass: string): Promise<boolean> => {
+    const login = async (identifier: string, pass: string): Promise<LoginResult> => {
         console.log('[Auth] Login attempt for:', identifier);
+
+        // Server-side rate limit check (defense-in-depth over client-side hook)
+        // Cast to any: new RPCs not yet in generated DB types
+        try {
+            const { data: rlData } = await (supabase as any).rpc('check_auth_rate_limit', { p_identifier: identifier });
+            if ((rlData as any)?.blocked) {
+                console.warn('[Auth] Server-side rate limit active for:', identifier);
+                return 'failed';
+            }
+        } catch (rlErr) {
+            // Non-blocking: if RPC fails, continue login attempt
+            console.warn('[Auth] Rate-limit check failed (non-blocking):', rlErr);
+        }
 
         // Resolve username/phone to email for Supabase Auth
         // Do NOT call signOut() before this — it causes lock conflicts
@@ -344,17 +341,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('[Auth] Resolved email:', email);
 
         if (!email) {
-            // Identifier không khớp với username / phone nào trong hệ thống
-            console.error('[Auth] Could not resolve email for:', identifier);
-            // Fire-and-forget: ghi audit log đăng nhập thất bại (username không tồn tại)
-            supabase.from('audit_logs').insert({
-                action: 'LOGIN_FAILED',
-                target_entity: 'auth',
-                target_id: 'auth',
-                changed_by: identifier,
-                details: `Identifier not found: ${identifier}`,
-            }).then(() => {});
-            return false;
+            console.warn('[Auth] Could not resolve email for:', identifier);
+            // Record failed attempt even for unknown identifiers (prevents timing attacks)
+            (supabase as any).rpc('record_auth_attempt', { p_identifier: identifier, p_success: false }).then(() => {});
+            return 'failed';
         }
 
         // Sign out existing session before new login (local scope only)
@@ -367,19 +357,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             password: pass,
         });
 
+        // Record attempt result server-side (fire-and-forget)
+        (supabase as any).rpc('record_auth_attempt', {
+            p_identifier: identifier,
+            p_success: !error && !!data.user,
+        }).then(() => {});
+
         if (error || !data.user) {
             console.error('[Auth] Login failed:', error?.message);
-            // Fire-and-forget: ghi audit log đăng nhập thất bại (sai mật khẩu)
-            supabase.from('audit_logs').insert({
-                action: 'LOGIN_FAILED',
-                target_entity: 'auth',
-                target_id: 'auth',
-                changed_by: identifier,
-                details: `Wrong password for: ${identifier}`,
-            }).then(() => {});
-            return false;
+            return 'failed';
         }
 
+        // Check if MFA challenge is required (AAL1 session → need AAL2)
+        try {
+            const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+            if (aal?.nextLevel === 'aal2' && aal?.currentLevel !== 'aal2') {
+                const { data: factors } = await supabase.auth.mfa.listFactors();
+                const totp = factors?.totp?.[0];
+                if (totp) {
+                    const { data: challenge, error: chalErr } = await supabase.auth.mfa.challenge({ factorId: totp.id });
+                    if (!chalErr && challenge) {
+                        setPendingMfa({ factorId: totp.id, challengeId: challenge.id });
+                        return 'mfa_required';
+                    }
+                }
+            }
+        } catch (mfaErr) {
+            console.warn('[Auth] MFA level check failed (non-blocking):', mfaErr);
+        }
+
+        // Full login success (no MFA needed)
         console.log('[Auth] Login success for:', email);
         localStorage.removeItem('explicitlyLoggedOut');
         localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
@@ -406,7 +413,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             .eq('auth_user_id', data.user.id)
             .then(() => { });
 
+        return 'success';
+    };
+
+    const completeMfaChallenge = async (code: string): Promise<boolean> => {
+        if (!pendingMfa) return false;
+        const { data: session, error } = await supabase.auth.mfa.verify({
+            factorId: pendingMfa.factorId,
+            challengeId: pendingMfa.challengeId,
+            code: code.replace(/\s/g, ''),
+        });
+        if (error || !session) {
+            console.error('[Auth] MFA verify failed:', error?.message);
+            return false;
+        }
+        setPendingMfa(null);
+        localStorage.removeItem('explicitlyLoggedOut');
+        localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
+        // Auth state listener fires SIGNED_IN with AAL2 session → handleAuthUser completes login
         return true;
+    };
+
+    const cancelMfaChallenge = () => {
+        setPendingMfa(null);
+        supabase.auth.signOut({ scope: 'local' }).catch(() => {});
     };
 
     const logout = async () => {
@@ -434,6 +464,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             logout,
             isAuthenticated: !!currentUser,
             isLoading,
+            mfaPending: !!pendingMfa,
+            completeMfaChallenge,
+            cancelMfaChallenge,
         }}>
             {children}
         </AuthContext.Provider>

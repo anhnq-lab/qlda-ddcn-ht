@@ -59,8 +59,9 @@ const ResetPassword: React.FC = () => {
                 setError(updateError.message || 'Không thể đặt lại mật khẩu. Liên kết có thể đã hết hạn.');
                 return;
             }
+            // Invalidate all sessions on all devices after password change
+            await supabase.auth.signOut({ scope: 'global' });
             setIsSuccess(true);
-            // Tự chuyển về login sau 3 giây
             setTimeout(() => navigate('/login', { replace: true }), 3000);
         } catch (err: any) {
             setError(err.message || 'Lỗi hệ thống');

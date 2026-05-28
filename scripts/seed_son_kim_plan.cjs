@@ -451,8 +451,6 @@ async function run() {
         actual_end_date: actualEnd,
         phase: ct.phase === 'Chuẩn bị đầu tư' ? 'preparation' : 'execution',
         step_code: ct.contractId.replace(/-/g, '_'),
-        estimated_cost: ct.value,
-        actual_cost: status === 'done' ? ct.value : Math.round(ct.value * (progress / 100)),
         legal_basis: ct.legalBasis,
         output_document: `Báo cáo sản phẩm nghiệm thu thuộc ${ct.contractId}`,
         sort_order: i + 1,

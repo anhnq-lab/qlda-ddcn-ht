@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Lock, User, Eye, EyeOff, LayoutDashboard, BrainCircuit, ShieldCheck, Smartphone, Sun, Moon, Timer } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, LayoutDashboard, BrainCircuit, ShieldCheck, Smartphone, Sun, Moon, Timer, KeyRound, ArrowLeft } from 'lucide-react';
 import { LogoDDCN } from '../../components/common/LogoDDCN';
 import { useLoginRateLimit } from './useLoginRateLimit';
 import ForgotPasswordModal from './ForgotPasswordModal';
@@ -14,10 +14,13 @@ const Login: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showForgotModal, setShowForgotModal] = useState(false);
+    const [mfaCode, setMfaCode] = useState('');
+    const [mfaError, setMfaError] = useState('');
+    const [mfaLoading, setMfaLoading] = useState(false);
 
     const { isLocked, secondsRemaining, attemptCount, canAttempt, recordFailedAttempt, resetAttempts } = useLoginRateLimit();
-    
-    const { login, isAuthenticated } = useAuth();
+
+    const { login, isAuthenticated, mfaPending, completeMfaChallenge, cancelMfaChallenge } = useAuth();
     const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
@@ -50,11 +53,15 @@ const Login: React.FC = () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            const success = await login(username.trim(), password);
-            if (success) {
+            const result = await login(username.trim(), password);
+            if (result === 'success') {
                 resetAttempts();
                 const from = (location.state as any)?.from || '/dashboard';
                 navigate(from, { replace: true });
+            } else if (result === 'mfa_required') {
+                resetAttempts();
+                setIsLoading(false);
+                // mfaPending flag will cause MFA step to render
             } else {
                 recordFailedAttempt();
                 const remaining = 5 - (attemptCount + 1);
@@ -176,9 +183,84 @@ const Login: React.FC = () => {
                 </div>
             </div>
 
-            {/* ─── RIGHT COLUMN: LOGIN FORM ─── */}
+            {/* ─── RIGHT COLUMN: LOGIN FORM / MFA STEP ─── */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-white dark:bg-slate-800 dark:bg-[#060A14] transition-colors duration-300">
                 <div className="w-full max-w-[420px] lg:-mt-16">
+
+                {/* ── MFA Challenge Step ── */}
+                {mfaPending && (
+                    <div className="flex flex-col items-center text-center">
+                        <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-5">
+                            <KeyRound className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-1">Xác thực 2 yếu tố</h2>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-xs">
+                            Nhập mã 6 chữ số từ ứng dụng xác thực (Google Authenticator, Authy, …) của bạn.
+                        </p>
+
+                        {mfaError && (
+                            <div className="w-full mb-4 p-3 bg-red-50/50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-medium rounded-xl border border-red-100 dark:border-red-500/20">
+                                {mfaError}
+                            </div>
+                        )}
+
+                        <form
+                            className="w-full space-y-4"
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setMfaError('');
+                                if (mfaCode.replace(/\s/g, '').length !== 6) {
+                                    setMfaError('Mã phải gồm đúng 6 chữ số.');
+                                    return;
+                                }
+                                setMfaLoading(true);
+                                const ok = await completeMfaChallenge(mfaCode);
+                                if (ok) {
+                                    const from = (location.state as any)?.from || '/dashboard';
+                                    navigate(from, { replace: true });
+                                } else {
+                                    setMfaError('Mã không đúng hoặc đã hết hạn. Vui lòng thử lại.');
+                                    setMfaCode('');
+                                }
+                                setMfaLoading(false);
+                            }}
+                        >
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                maxLength={6}
+                                value={mfaCode}
+                                onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                                placeholder="000000"
+                                autoFocus
+                                className="w-full text-center text-2xl font-mono tracking-[0.5em] py-4 border border-[#E8E1D5] dark:border-slate-700 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm"
+                            />
+                            <button
+                                type="submit"
+                                disabled={mfaLoading || mfaCode.length < 6}
+                                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-sm"
+                            >
+                                {mfaLoading
+                                    ? <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+                                    : 'Xác nhận'
+                                }
+                            </button>
+                        </form>
+
+                        <button
+                            type="button"
+                            onClick={() => { cancelMfaChallenge(); setMfaCode(''); setMfaError(''); }}
+                            className="mt-4 flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Quay lại đăng nhập
+                        </button>
+                    </div>
+                )}
+
+                {/* ── Normal Login Form ── */}
+                {!mfaPending && (<>
                     
                     {/* Logo & Headers */}
                     <div className="flex flex-col items-center text-center mb-5 w-full">
@@ -299,13 +381,15 @@ const Login: React.FC = () => {
                             © 2026 Ban QLDA đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
                         </p>
                     </div>
+                </>)}
+
                 </div>
             </div>
 
             {/* Forgot Password Modal */}
-            <ForgotPasswordModal 
-                isOpen={showForgotModal} 
-                onClose={() => setShowForgotModal(false)} 
+            <ForgotPasswordModal
+                isOpen={showForgotModal}
+                onClose={() => setShowForgotModal(false)}
             />
         </div>
     );

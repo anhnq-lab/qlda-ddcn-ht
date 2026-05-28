@@ -28,8 +28,6 @@ export interface DbTask {
   phase: string | null;
   step_code: string | null;
   sort_order: number;
-  estimated_cost: number | null;
-  actual_cost: number | null;
   legal_basis: string | null;
   output_document: string | null;
   predecessor_task_id: string | null;
@@ -49,6 +47,7 @@ export interface DbTask {
   project_plan_step_id?: string | null;
   department_code: string | null;
   source_type: string | null;
+  obstacles: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;

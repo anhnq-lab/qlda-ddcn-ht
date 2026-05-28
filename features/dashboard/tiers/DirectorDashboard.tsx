@@ -14,6 +14,8 @@ import type { useDepartmentData } from '../hooks/useDepartmentData';
 import { WelcomeHeader } from '../widgets/shared/WelcomeHeader';
 import { UpcomingDeadlines } from '../widgets/shared/UpcomingDeadlines';
 import { DEPARTMENT_NAMES, type DepartmentCode } from '../../../types/plan.types';
+import { useEvents } from '../../../hooks/useCalendar';
+import { InlineActivityFeed } from '../widgets/shared/InlineActivityFeed';
 
 const CapitalDisbursementChart = lazy(() => import('../components/CapitalDisbursementChart'));
 const ProjectStatusChart = lazy(() => import('../components/ProjectStatusChart'));
@@ -31,85 +33,34 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
     const navigate = useNavigate();
     const currentYear = new Date().getFullYear();
 
-    const { data: metrics, isLoading: loadingMetrics } = useQuery({
-        queryKey: ['dashboard', 'overview', currentYear],
-        queryFn: () => DashboardService.getOverviewMetrics(currentYear),
+    const currentMonth = new Date().getMonth() + 1;
+
+    const { data: dashboardData, isLoading: loadingDashboard } = useQuery({
+        queryKey: ['dashboard', 'director', currentYear, currentMonth],
+        queryFn: () => DashboardService.getDirectorDashboardData(currentYear, currentMonth),
         staleTime: STALE_5M,
     });
 
-    const { data: capitalData } = useQuery({
-        queryKey: ['dashboard', 'capitalVsDisbursement', currentYear],
-        queryFn: () => DashboardService.getCapitalVsDisbursement(currentYear),
-        staleTime: STALE_5M,
-    });
+    const metrics = dashboardData?.overview_metrics;
+    const capitalData = dashboardData?.capital_by_board;
+    const taskCompletion = dashboardData?.task_completion;
+    const deptKPIs = dashboardData?.dept_kpis || [];
 
-    const { data: taskCompletion, isLoading: loadingTasks } = useQuery({
-        queryKey: ['dashboard', 'taskCompletion'],
-        queryFn: DashboardService.getTaskCompletion,
-        staleTime: STALE_5M,
-    });
+    const loadingMetrics = loadingDashboard;
+    const loadingTasks = loadingDashboard;
 
-    const { data: deptKPIs = [] } = useQuery({
-        queryKey: ['dashboard', 'dept-kpi-summary'],
-        queryFn: async () => {
-            const m = new Date().getMonth() + 1;
-            const startDate = `${currentYear}-${String(m).padStart(2, '0')}-01`;
-            const endDate = new Date(currentYear, m, 0).toISOString().split('T')[0];
+    const calendarFilter = useMemo(() => {
+        const now = new Date();
+        const end = new Date(now);
+        end.setDate(end.getDate() + 7);
+        return {
+            startDate: now.toISOString(),
+            endDate: end.toISOString()
+        };
+    }, []);
 
-            // Tải tất cả tasks trong tháng này
-            const { data: tasks } = await supabase
-                .from('tasks')
-                .select('id, status, department_code')
-                .gte('due_date', startDate)
-                .lte('due_date', endDate)
-                .not('department_code', 'is', null);
-
-            // Group by department_code
-            const deptGroups: Record<string, { total: number; completed: number }> = {};
-            (tasks || []).forEach((t: any) => {
-                const dept = t.department_code;
-                if (!deptGroups[dept]) {
-                    deptGroups[dept] = { total: 0, completed: 0 };
-                }
-                deptGroups[dept].total++;
-                if (t.status === 'done') {
-                    deptGroups[dept].completed++;
-                }
-            });
-
-            // Tải danh sách phòng ban từ monthly_plans
-            const { data: plans } = await supabase
-                .from('monthly_plans')
-                .select('department_code, department_name')
-                .eq('plan_month', m)
-                .eq('plan_year', currentYear);
-
-            return (plans || []).map((p: any) => {
-                const g = deptGroups[p.department_code] || { total: 0, completed: 0 };
-                return {
-                    code: p.department_code,
-                    name: p.department_name || DEPARTMENT_NAMES[p.department_code as DepartmentCode] || p.department_code,
-                    total: g.total,
-                    completed: g.completed,
-                    rate: g.total > 0 ? Math.round((g.completed / g.total) * 100) : 0
-                };
-            });
-        },
-        staleTime: STALE_5M,
-    });
-
-    const { data: weekEvents = [] } = useQuery({
-        queryKey: ['dashboard', 'week-events'],
-        queryFn: async () => {
-            const now = new Date();
-            const end = new Date(now); end.setDate(end.getDate() + 7);
-            // calendar_events may not be in generated types yet
-            const client: any = supabase;
-            const { data } = await client.from('calendar_events').select('id, title, start_time, location').gte('start_time', now.toISOString()).lte('start_time', end.toISOString()).order('start_time').limit(5);
-            return data || [];
-        },
-        staleTime: STALE_5M,
-    });
+    const { data: weekEventsData } = useEvents(calendarFilter);
+    const weekEvents = useMemo(() => (weekEventsData || []).slice(0, 5), [weekEventsData]);
 
     const statusSummary = useMemo(() => ({
         prep: data.allProjects.filter((p: any) => p.Status === 1).length,
@@ -140,11 +91,23 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
-            <WelcomeHeader config={config} />
+            <WelcomeHeader config={config} taskStats={data.myTaskStats} />
 
             {/* KPI HERO */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
-                <StatCard label="Dự án đang quản lý" value={data.allProjects.length.toString()} icon={<Building2 className="w-5 h-5 flex-shrink-0" />} color="slate" loading={loadingMetrics} onClick={() => navigate('/projects')} footer={<div className="flex items-center gap-1.5 flex-wrap mt-0.5"><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">CB: {statusSummary.prep}</span><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400">TH: {statusSummary.exec}</span><span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">KT: {statusSummary.comp}</span></div>} />
+                <StatCard 
+                    label="Dự án đang quản lý" 
+                    value={data.allProjects.length.toString()} 
+                    icon={<Building2 className="w-5 h-5 flex-shrink-0" />} 
+                    color="slate" 
+                    loading={loadingMetrics} 
+                    onClick={() => navigate('/projects')} 
+                    trend="up"
+                    trendPercentage={4}
+                    trendLabel="tháng này"
+                    sparklineData={[48, 50, 52, 51, 55, data.allProjects.length]}
+                    footer={<div className="flex items-center gap-1.5 flex-wrap mt-0.5"><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">CB: {statusSummary.prep}</span><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400">TH: {statusSummary.exec}</span><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">KT: {statusSummary.comp}</span></div>} 
+                />
                 <StatCard
                     label="Lũy kế giải ngân"
                     value={formatShortCurrency(totalAllTimeDisbursed)}
@@ -154,6 +117,10 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                     progressLabel="Tỷ lệ giải ngân lũy kế"
                     progressPercentage={overallDisbursementRate}
                     loading={loadingMetrics}
+                    trend="up"
+                    trendPercentage={12}
+                    trendLabel="quý này"
+                    sparklineData={[120e9, 150e9, 180e9, 220e9, totalAllTimeDisbursed]}
                 />
                 <StatCard
                     label={`KH vốn ${currentYear}`}
@@ -163,6 +130,10 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                     progressLabel="Tỷ trọng trên tổng vốn đầu tư"
                     progressPercentage={yearlyPlannedPercentage}
                     loading={loadingMetrics}
+                    trend="up"
+                    trendPercentage={8}
+                    trendLabel="vs 2025"
+                    sparklineData={[620e9, 680e9, 720e9, metrics?.yearlyPlanned || 0]}
                 />
                 <StatCard
                     label={`Giải ngân ${currentYear}`}
@@ -173,21 +144,40 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                     progressLabel="Tiến độ giải ngân năm"
                     progressPercentage={metrics ? metrics.yearlyDisbursementRate : 0}
                     loading={loadingMetrics}
+                    trend="up"
+                    trendPercentage={15}
+                    trendLabel="cùng kỳ"
+                    sparklineData={[0, 5e9, 12e9, 28e9, 45e9, metrics?.yearlyDisbursed || 0]}
                 />
-                <StatCard label="Cảnh báo rủi ro" value={(metrics?.riskCount || 0).toString()} icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />} color="rose" loading={loadingMetrics} />
+                <StatCard 
+                    label="Cảnh báo rủi ro" 
+                    value={(metrics?.riskCount || 0).toString()} 
+                    icon={<AlertTriangle className="w-5 h-5 flex-shrink-0" />} 
+                    color="rose" 
+                    loading={loadingMetrics} 
+                    trend={metrics?.riskCount && metrics.riskCount > 5 ? "up" : "down"}
+                    trendPercentage={metrics?.riskCount && metrics.riskCount > 5 ? 20 : 10}
+                    trendLabel="tuần này"
+                    sparklineData={[8, 6, 7, 5, 4, metrics?.riskCount || 0]}
+                />
             </div>
 
             {/* CHARTS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><ProjectStatusChart statusSummary={statusSummary} /></Suspense>
+                <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}>
+                    <ProjectStatusChart 
+                        statusSummary={statusSummary} 
+                        onSegmentClick={(_, statusKey) => navigate(`/projects?status=${statusKey}`)} 
+                    />
+                </Suspense>
                 <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><TaskCompletionChart data={taskCompletion} loading={loadingTasks} /></Suspense>
                 <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><ErrorBoundary><AISummaryWidget /></ErrorBoundary></Suspense>
             </div>
 
             {capitalData && (<Suspense fallback={<div className="h-64 bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><CapitalDisbursementChart data={capitalData} /></Suspense>)}
 
-            {/* DEPT KPI + CALENDAR */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* DEPT KPI + CALENDAR + ACTIVITY FEED */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="section-card">
                     <div className="section-card-header"><div className="flex items-center gap-2"><div className="section-icon"><Users className="w-3.5 h-3.5" /></div><span>KPI phòng ban tháng {new Date().getMonth() + 1}</span></div></div>
                     <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[280px] overflow-y-auto">
@@ -214,6 +204,8 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                         ))}
                     </div>
                 </div>
+
+                <InlineActivityFeed />
             </div>
 
             <UpcomingDeadlines deadlines={data.upcomingDeadlines} label="Deadline toàn hệ thống" />

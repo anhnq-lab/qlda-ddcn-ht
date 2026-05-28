@@ -203,7 +203,7 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
                 <div
                     className={`relative w-full h-full bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 
               flex flex-col overflow-hidden slide-panel-stacked
-              ${isResizing ? 'slide-panel-resizing' : ''}`}
+              ${isResizing ? 'slide-panel-resizing' : ''} ${panel.className || ''}`}
                     style={isTopPanel ? {} : { filter: 'brightness(0.97)' }}
                     role="dialog"
                     aria-modal={isTopPanel}

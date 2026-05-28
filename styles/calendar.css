@@ -191,75 +191,143 @@
 
 /* Premium Event Styles via Custom Classes */
 .agency-event {
-  @apply rounded-md overflow-hidden border-l-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md;
+  @apply rounded-md overflow-hidden border-l-4 border-solid transition-all duration-200 hover:-translate-y-px hover:shadow-md;
 }
 
 /* Light Mode Events */
 .theme-light .agency-event-meeting {
-  @apply bg-blue-50 border-blue-500 text-blue-800;
+  background-color: #dbeafe !important;
+  border-color: #3b82f6 !important;
+}
+.theme-light .agency-event-meeting .rbc-event-content {
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
 }
 .theme-light .agency-event-business_trip {
-  @apply bg-amber-50 border-amber-500 text-amber-800;
+  background-color: #fef3c7 !important;
+  border-color: #f59e0b !important;
+}
+.theme-light .agency-event-business_trip .rbc-event-content {
+  color: #b45309 !important;
+  font-weight: 600 !important;
 }
 .theme-light .agency-event-internal_event {
-  @apply bg-purple-50 border-purple-500 text-purple-800;
+  background-color: #f3e8ff !important;
+  border-color: #a855f7 !important;
+}
+.theme-light .agency-event-internal_event .rbc-event-content {
+  color: #7e22ce !important;
+  font-weight: 600 !important;
 }
 .theme-light .agency-event-other {
   background-color: #f1f5f9 !important;
-  border-color: #64748b !important;
-  color: #1e293b !important;
+  border-color: #94a3b8 !important;
+}
+.theme-light .agency-event-other .rbc-event-content {
+  color: #475569 !important;
+  font-weight: 600 !important;
 }
 
 /* Nature Theme Events (Màu dịu nhẹ, ngả cát/đất ấm bảo vệ mắt) */
 .theme-nature .agency-event-meeting {
-  background-color: #e2ecf5 !important;
-  border-color: #7da4c6 !important;
-  color: #2b4e6f !important;
+  background-color: #e0f2fe !important;
+  border-color: #0ea5e9 !important;
+}
+.theme-nature .agency-event-meeting .rbc-event-content {
+  color: #0369a1 !important;
+  font-weight: 600 !important;
 }
 .theme-nature .agency-event-business_trip {
-  background-color: #f7ebd3 !important;
-  border-color: #d3a758 !important;
-  color: #724e1a !important;
+  background-color: #fef3c7 !important;
+  border-color: #d97706 !important;
+}
+.theme-nature .agency-event-business_trip .rbc-event-content {
+  color: #92400e !important;
+  font-weight: 600 !important;
 }
 .theme-nature .agency-event-internal_event {
-  background-color: #efe4f2 !important;
-  border-color: #bd8eca !important;
-  color: #63336e !important;
+  background-color: #fae8ff !important;
+  border-color: #d946ef !important;
+}
+.theme-nature .agency-event-internal_event .rbc-event-content {
+  color: #a21caf !important;
+  font-weight: 600 !important;
 }
 .theme-nature .agency-event-other {
   background-color: #ede8df !important;
-  border-color: #b5ab99 !important;
-  color: #554d3e !important;
+  border-color: #a8a29e !important;
+}
+.theme-nature .agency-event-other .rbc-event-content {
+  color: #57534e !important;
+  font-weight: 600 !important;
 }
 
 /* Dark Mode Events */
 .dark .agency-event-meeting {
-  @apply bg-blue-900 bg-opacity-40 border-blue-400 text-blue-300 shadow-none hover:shadow-glow;
+  background-color: #1e3a8a !important;
+  border-color: #3b82f6 !important;
+}
+.dark .agency-event-meeting .rbc-event-content {
+  color: #dbeafe !important;
+  font-weight: 600 !important;
 }
 .dark .agency-event-business_trip {
-  @apply bg-amber-900 bg-opacity-40 border-amber-400 text-amber-300 shadow-none hover:shadow-glow;
+  background-color: #78350f !important;
+  border-color: #f59e0b !important;
+}
+.dark .agency-event-business_trip .rbc-event-content {
+  color: #fde68a !important;
+  font-weight: 600 !important;
 }
 .dark .agency-event-internal_event {
-  @apply bg-purple-900 bg-opacity-40 border-purple-400 text-purple-300 shadow-none hover:shadow-glow;
+  background-color: #581c87 !important;
+  border-color: #a855f7 !important;
+}
+.dark .agency-event-internal_event .rbc-event-content {
+  color: #f3e8ff !important;
+  font-weight: 600 !important;
 }
 .dark .agency-event-other {
-  @apply bg-slate-800 bg-opacity-40 border-slate-400 text-slate-300 shadow-none hover:shadow-glow;
+  background-color: #334155 !important;
+  border-color: #64748b !important;
+}
+.dark .agency-event-other .rbc-event-content {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
 }
 
 /* Fallback default if theme classes not matched */
 .agency-event-meeting {
-  @apply bg-blue-50 border-blue-500 text-blue-800;
+  background-color: #dbeafe !important;
+  border-color: #3b82f6 !important;
+}
+.agency-event-meeting .rbc-event-content {
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
 }
 .agency-event-business_trip {
-  @apply bg-amber-50 border-amber-500 text-amber-800;
+  background-color: #fef3c7 !important;
+  border-color: #f59e0b !important;
+}
+.agency-event-business_trip .rbc-event-content {
+  color: #b45309 !important;
+  font-weight: 600 !important;
 }
 .agency-event-internal_event {
-  @apply bg-purple-50 border-purple-500 text-purple-800;
+  background-color: #f3e8ff !important;
+  border-color: #a855f7 !important;
+}
+.agency-event-internal_event .rbc-event-content {
+  color: #7e22ce !important;
+  font-weight: 600 !important;
 }
 .agency-event-other {
   background-color: #f1f5f9 !important;
-  border-color: #64748b !important;
-  color: #1e293b !important;
+  border-color: #94a3b8 !important;
+}
+.agency-event-other .rbc-event-content {
+  color: #475569 !important;
+  font-weight: 600 !important;
 }
 
 /* Event Types Selection */
@@ -353,3 +421,116 @@
 .rbc-slot-selection {
   @apply bg-primary-500 bg-opacity-20 border border-primary-500 border-opacity-50 rounded-md;
 }
+
+/* =============================================================================
+   Force dark theme variables inside calendar container
+   ============================================================================= */
+.calendar-dark-mode-force {
+  color-scheme: dark !important;
+  
+  /* Core backgrounds */
+  --bg-app: #0f1117 !important;
+  --bg-surface: #1f2332 !important;
+  --bg-subtle: #1a1e2e !important;
+  --bg-muted: #252a3b !important;
+  --bg-elevated: #252a3b !important;
+
+  /* Borders */
+  --border-default: #222533 !important;
+  --border-subtle: #191b26 !important;
+
+  /* Text colors */
+  --text-primary: #f8fafc !important;
+  --text-secondary: #e2e8f0 !important;
+  --text-muted: #94a3b8 !important;
+  --text-placeholder: #64748b !important;
+
+  /* Inputs */
+  --input-bg: #1a1e2e !important;
+  --input-border: #262b3b !important;
+
+  /* Tailwind config slate colors overrides */
+  --color-slate-50: #f8fafc !important;
+  --color-slate-100: #f1f5f9 !important;
+  --color-slate-200: #e2e8f0 !important;
+  --color-slate-300: #cbd5e1 !important;
+  --color-slate-400: #94a3b8 !important;
+  --color-slate-500: #64748b !important;
+  --color-slate-600: #475569 !important;
+  --color-slate-700: #293548 !important;
+  --color-slate-800: #1e293b !important;
+  --color-slate-900: #151d2e !important;
+  --color-slate-950: #0b1120 !important;
+
+  /* Main variables */
+  --color-bg-primary: #0b1120 !important;
+  --color-bg-secondary: #151d2e !important;
+  --color-bg-tertiary: #1e293b !important;
+  --color-bg-elevated: #151d2e !important;
+  
+  --color-text-primary: #f8fafc !important;
+  --color-text-secondary: #e2e8f0 !important;
+  --color-text-tertiary: #94a3b8 !important;
+  --color-text-muted: #64748b !important;
+
+  --color-border-primary: #293548 !important;
+  --color-border-secondary: #1e293b !important;
+}
+
+/* Force dark event colors inside the dark calendar wrapper */
+.calendar-dark-mode-force .agency-event-meeting {
+  background-color: #1e3a8a !important;
+  border-color: #3b82f6 !important;
+  border-style: solid !important;
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+.calendar-dark-mode-force .agency-event-meeting .rbc-event-content {
+  color: #dbeafe !important;
+}
+.calendar-dark-mode-force .agency-event-meeting:hover {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4) !important;
+}
+
+.calendar-dark-mode-force .agency-event-business_trip {
+  background-color: #78350f !important;
+  border-color: #f59e0b !important;
+  border-style: solid !important;
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+.calendar-dark-mode-force .agency-event-business_trip .rbc-event-content {
+  color: #fde68a !important;
+}
+.calendar-dark-mode-force .agency-event-business_trip:hover {
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4) !important;
+}
+
+.calendar-dark-mode-force .agency-event-internal_event {
+  background-color: #581c87 !important;
+  border-color: #a855f7 !important;
+  border-style: solid !important;
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+.calendar-dark-mode-force .agency-event-internal_event .rbc-event-content {
+  color: #f3e8ff !important;
+}
+.calendar-dark-mode-force .agency-event-internal_event:hover {
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4) !important;
+}
+
+.calendar-dark-mode-force .agency-event-other {
+  background-color: #334155 !important;
+  border-color: #64748b !important;
+  border-style: solid !important;
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+.calendar-dark-mode-force .agency-event-other .rbc-event-content {
+  color: #f1f5f9 !important;
+}
+.calendar-dark-mode-force .agency-event-other:hover {
+  box-shadow: 0 0 10px rgba(100, 116, 139, 0.4) !important;
+}
+

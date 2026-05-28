@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Báo cáo Phân tích và Cảnh báo Sai lệch Logic Số liệu - Ban QLDA đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh">
+  <title>Báo cáo Phân tích và Cảnh báo Sai lệch Logic Số liệu</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #161b2a;
+      --bg-tertiary: #1f2638;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-color: #06b6d4;
+      --accent-hover: #0891b2;
+      --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --border-color: #2e3748;
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Layout Wrapper */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 2.5rem 1.5rem;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      background: var(--accent-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .toc-title {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toc-item a {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border-left: 2px solid transparent;
+    }
+
+    .toc-item a:hover {
+      color: var(--accent-color);
+      background-color: var(--bg-tertiary);
+      padding-left: 1rem;
+      border-left: 2px solid var(--accent-color);
+    }
+
+    .toc-item.active a {
+      color: white;
+      background: var(--accent-gradient);
+      font-weight: 600;
+      border-left: 2px solid transparent;
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: 320px;
+      padding: 3rem 4rem;
+      max-width: 1300px;
+    }
+
+    /* Document Header Header styling */
+    .doc-header {
+      margin-bottom: 3.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .doc-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100px;
+      height: 3px;
+      background: var(--accent-gradient);
+      border-radius: 3px;
+    }
+
+    .doc-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 1rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .meta-item i {
+      color: var(--accent-color);
+    }
+
+    /* Markdown Styling overrides */
+    h1 {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 2.25rem;
+      line-height: 1.3;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, white 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.65rem;
+      margin-top: 3rem;
+      margin-bottom: 1.25rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background: var(--accent-gradient);
+      border-radius: 4px;
+    }
+
+    h3 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    h4 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: white;
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      text-align: justify;
+    }
+
+    /* Lists styling */
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1.02rem;
+    }
+
+    /* Table styling - Stunning dashboard look */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin: 2.5rem 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      background-color: var(--bg-secondary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-tertiary);
+      color: white;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 2px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      color: white;
+      background-color: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Format numbers in table */
+    td:nth-child(n+3) {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Alerts styling (GitHub style) */
+    blockquote {
+      margin: 2rem 0;
+      padding: 1.25rem 1.5rem;
+      background-color: var(--bg-secondary);
+      border-left: 4px solid var(--accent-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Custom classes injected for alerts dynamically */
+    .alert-warning {
+      border-left-color: var(--warning-color);
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+    .alert-warning .alert-title {
+      color: var(--warning-color);
+    }
+
+    .alert-note {
+      border-left-color: var(--accent-color);
+      background-color: rgba(6, 182, 212, 0.05);
+    }
+    .alert-note .alert-title {
+      color: var(--accent-color);
+    }
+
+    .alert-tip {
+      border-left-color: var(--success-color);
+      background-color: rgba(16, 187, 129, 0.05);
+    }
+    .alert-tip .alert-title {
+      color: var(--success-color);
+    }
+
+    .alert-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    hr {
+      margin: 3.5rem 0;
+      border: 0;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    /* Highlight Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-error {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--error-color);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning-color);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success-color);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="brand-title">CIC ERP - Portal</div>
+      </div>
+      <h3 class="toc-title">Mục lục báo cáo</h3>
+      <ul class="toc-list" id="toc-nav">
+        <!-- Will be populated dynamically by JavaScript -->
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="doc-header">
+        <h1>Báo cáo Phân tích và Cảnh báo Sai lệch Logic Số liệu</h1>
+        <div class="doc-meta">
+          <div class="meta-item"><i class="fa-regular fa-calendar"></i> 28/05/2026</div>
+          <div class="meta-item"><i class="fa-regular fa-user"></i> Ban Giam Doc</div>
+          <div class="meta-item"><i class="fa-solid fa-shield-halved"></i> Đã rà soát & đánh giá</div>
+        </div>
+      </div>
+      
+      <div class="doc-body" id="doc-body">
+        <h1>BÁO CÁO PHÂN TÍCH CHUYÊN SÂU VÀ CẢNH BÁO SAI LỆCH LOGIC SỐ LIỆU</h1>
+<h2>Danh mục dự án cấp huyện chuyển giao về Ban QLDA đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh</h2>
+<p><em>(Kết quả rà soát chi tiết từ file Excel: <code>28.5.26 BC  dự án các huyện chuyển về.xlsx</code>)</em></p>
+<hr>
+<h2>I. TỔNG QUAN KẾT QUẢ RÀ SOÁT LOGIC (AUDIT SUMMARY)</h2>
+<p>Áp dụng các thuật toán đối chiếu chéo số liệu tự động giữa các cột: <strong>Tổng mức đầu tư (TMDT)</strong>, <strong>Kế hoạch vốn đã bố trí</strong>, <strong>Lũy kế giá trị nghiệm thu</strong>, <strong>Lũy kế giải ngân</strong> và <strong>Công nợ</strong>, hệ thống đã phát hiện số lượng lỗi logic rất lớn trên cả hai bảng biểu chính:</p>
+<ul>
+<li><strong>Sheet PL03 (Dự án đã hoàn thành):</strong> Phát hiện <strong>136 lỗi logic</strong> (bao gồm lệch cộng nguồn vốn, giải ngân vượt kế hoạch vốn, giải ngân vượt nghiệm thu thực tế, và công nợ lệch công thức).</li>
+<li><strong>Sheet PL04 (Dự án đang thi công / Chuẩn bị đầu tư):</strong> Phát hiện <strong>59 lỗi logic</strong> (nhiều lỗi có chênh lệch giá trị cực lớn, lên tới hàng trăm tỷ đồng do gõ sai định dạng).</li>
+</ul>
+<p>Dưới đây là phân tích chi tiết các nhóm lỗi logic điển hình và danh sách các dự án sai lệch nghiêm trọng nhất cần được làm rõ với Ban QLDA các huyện trước khi tiếp nhận chính thức.</p>
+<hr>
+<h2>II. CHI TIẾT CÁC NHÓM LỖI LOGIC ĐIỂN HÌNH</h2>
+<h3>1. Nhóm 1: Giải ngân vượt giá trị Khối lượng nghiệm thu (Lỗi nghiêm trọng)</h3>
+<p>Về nguyên tắc quản lý đầu tư công, lũy kế giải ngân thực thanh không được vượt quá giá trị khối lượng nghiệm thu hoàn thành (trừ phần tạm ứng theo hợp đồng). Nếu giải ngân thực thanh vượt quá lớn so với nghiệm thu, công trình đang ở trạng thái <strong>tạm ứng quá mức</strong> hoặc <strong>số liệu giải ngân bị ghi nhận sai lệch</strong>.</p>
+<h4>Các dự án tiêu biểu ở Sheet PL04 (Đang thi công):</h4>
+<ul>
+<li><strong>Dòng 44 (Cẩm Xuyên): Dự án &quot;Đường Cẩm Sơn đi Cẩm Thịnh (Đường tránh lũ)&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>17.833,53 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>470 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Giải ngân vượt nghiệm thu <strong>17.363,53 triệu đồng (gấp 38 lần giá trị nghiệm thu)</strong>. Dự án đang tạm ứng quá lớn hoặc số liệu nghiệm thu chưa được cập nhật đầy đủ.</li>
+</ul>
+</li>
+<li><strong>Dòng 62 (Can Lộc): Dự án &quot;Đường giao thông liên xã Khánh Vĩnh Yên - Thanh Lộc&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>23.120 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>7.813 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Giải ngân vượt nghiệm thu <strong>15.307 triệu đồng (gấp 3 lần giá trị nghiệm thu)</strong>.</li>
+</ul>
+</li>
+<li><strong>Dòng 93 (Hương Khê): Dự án &quot;Đường giao thông tránh lũ kết hợp vào khu xử lý chất thải rắn...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>8.500 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>5.900 triệu đồng</strong> (Vượt <strong>2.600 triệu đồng</strong>).</li>
+</ul>
+</li>
+<li><strong>Dòng 130 (Thạch Hà): Dự án &quot;Đường giao thông tổ 9, thị trấn Thạch Hà&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>3.500 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>394 triệu đồng</strong> (Vượt <strong>3.106 triệu đồng</strong>).</li>
+</ul>
+</li>
+<li><strong>Dòng 145 (Thạch Hà): &quot;Tiểu dự án cải thiện cơ sở hạ tầng đô thị Thạch Hà&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>580.712 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>483.305,41 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Giải ngân vượt nghiệm thu thực tế <strong>97.406,59 triệu đồng (97,4 tỷ đồng)</strong>.</li>
+</ul>
+</li>
+</ul>
+<h4>Các dự án tiêu biểu ở Sheet PL03 (Đã hoàn thành):</h4>
+<ul>
+<li><strong>Dòng 306 (Hương Khê): Dự án &quot;Nhà máy nước và Hệ thống cấp nước sạch cho Nhân dân thị trấn Hương Khê...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Lũy kế giải ngân = <strong>219.412 triệu đồng</strong> vs Lũy kế nghiệm thu = <strong>225,443 triệu đồng</strong> (ở dạng hiển thị dấu chấm thập phân bị gõ nhầm).</li>
+<li><em>Sai lệch:</em> Chênh lệch hiển thị làm giải ngân vượt nghiệm thu tới <strong>219.186,56 triệu đồng</strong> do giá trị nghiệm thu gốc bị lưu dưới dạng số thực bé (<code>225.443</code> triệu đồng thay vì <code>225,443</code> triệu đồng).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3>2. Nhóm 2: Lỗi dấu chấm thập phân làm TMDT bị thu nhỏ 1.000 lần (Lỗi nhập liệu)</h3>
+<p>Tại địa bàn huyện Thạch Hà, người nhập liệu đã sử dụng dấu chấm thập phân thay vì dấu phẩy phân cách hàng ngàn cho cột <strong>Tổng mức đầu tư</strong>, khiến TMDT bị Excel hiểu là một số lẻ cực nhỏ (vài triệu đồng), trong khi vốn bố trí và giải ngân lại lên tới hàng tỷ hoặc hàng chục tỷ đồng.</p>
+<h4>Các sai lệch nghiêm trọng nhất ở Sheet PL04 (Đang thi công):</h4>
+<ul>
+<li><strong>Dòng 150 (Thạch Hà): Dự án &quot;Xử lý cấp bách đê Hữu Phủ, huyện Thạch Hà...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> TMDT = <strong>130 triệu đồng</strong> (Excel hiểu là 130 triệu đồng do gõ <code>130</code> thay vì <code>130.000</code>).</li>
+<li><em>Vô lý:</em> Kế hoạch vốn bố trí = <strong>100.398 triệu đồng (100,3 tỷ đồng)</strong> and Lũy kế giải ngân = <strong>57.249 triệu đồng (57,2 tỷ đồng)</strong>. Vốn bố trí gấp <strong>772 lần</strong> Tổng mức đầu tư phê duyệt!</li>
+</ul>
+</li>
+<li><strong>Dòng 120 (Thạch Hà): Dự án &quot;Xây dựng tràn điều tiết kết hợp đường giao thông nội đồng...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> TMDT = <strong>2 triệu đồng</strong> (Gõ <code>2</code> thay vì <code>2.000</code> hoặc <code>2.500</code>).</li>
+<li><em>Vô lý:</em> Kế hoạch vốn bố trí = <strong>2.000 triệu đồng (2 tỷ đồng)</strong> và Lũy kế giải ngân = <strong>214,59 triệu đồng</strong>. Vốn bố trí gấp <strong>1.000 lần</strong> TMDT!</li>
+</ul>
+</li>
+</ul>
+<h4>Các sai lệch ở Sheet PL03 (Đã hoàn thành):</h4>
+<ul>
+<li><strong>Dòng 358 (Thạch Hà): Dự án &quot;Đường giao thông liên xã Ngọc Sơn - Lưu Vĩnh Sơn&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> TMDT = <strong>10,96 triệu đồng</strong> (Excel đọc giá trị gõ <code>10.961</code>).</li>
+<li><em>Vô lý:</em> Vốn bố trí = <strong>9.609 triệu đồng (9,6 tỷ đồng)</strong> và Giải ngân = <strong>9.609 triệu đồng</strong>.</li>
+</ul>
+</li>
+<li><strong>Dòng 362 (Thạch Hà): Dự án &quot;Hạ tầng khuôn viên, bếp ăn bán trú... Trường mầm non Thạch Hải&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> TMDT = <strong>5,99 triệu đồng</strong> (Excel đọc từ <code>5.994</code>).</li>
+<li><em>Vô lý:</em> Vốn bố trí = <strong>5.588 triệu đồng (5,5 tỷ đồng)</strong>.</li>
+</ul>
+</li>
+<li><strong>Dòng 366 (Thạch Hà): Dự án &quot;Nhà HCQT... trường TH Tượng Sơn&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> TMDT = <strong>10 triệu đồng</strong> (Gõ <code>10</code> thay vì <code>10.000</code>).</li>
+<li><em>Vô lý:</em> Vốn bố trí = <strong>9.240,56 triệu đồng (9,2 tỷ đồng)</strong>.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3>3. Nhóm 3: Giải ngân vượt Kế hoạch vốn đã bố trí</h3>
+<p>Lũy kế giải ngân của dự án vượt quá kế hoạch vốn đã cấp, đây là lỗi vi phạm nguyên tắc kiểm soát chi của Kho bạc Nhà nước.</p>
+<h4>Các dự án tiêu biểu ở Sheet PL04 (Đang thi công):</h4>
+<ul>
+<li><strong>Dòng 118 (Thạch Hà): Dự án &quot;Xây dựng trạm bơm Cồn Đình, xã Thạch Long&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn bố trí = <strong>500 triệu đồng</strong> vs Lũy kế giải ngân = <strong>88.133 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Giải ngân vượt kế hoạch vốn <strong>87.633 triệu đồng (87,6 tỷ đồng)</strong>. Đây là lỗi nhập sai số liệu giải ngân hoặc vốn bố trí cực kỳ nghiêm trọng.</li>
+</ul>
+</li>
+<li><strong>Dòng 119 (Thạch Hà): Dự án &quot;Hàng rào và các công trình phụ trợ Trường THCS Ngọc Sơn&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn bố trí = <strong>600 triệu đồng</strong> vs Lũy kế giải ngân = <strong>115.015 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Giải ngân vượt kế hoạch vốn <strong>114.415 triệu đồng (114,4 tỷ đồng)</strong>.</li>
+</ul>
+</li>
+<li><strong>Dòng 132 (Thạch Hà): Dự án &quot;Nâng cấp Kênh tiêu cầu Trung Nghĩa, thị trấn Lộc Hà...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn bố trí = <strong>12.500 triệu đồng</strong> vs Lũy kế giải ngân = <strong>14.233 triệu đồng</strong> (Vượt <strong>1.733 triệu đồng</strong>).</li>
+</ul>
+</li>
+</ul>
+<h4>Các dự án tiêu biểu ở Sheet PL03 (Đã hoàn thành):</h4>
+<ul>
+<li><strong>Dòng 236 (Hương Khê): Dự án &quot;Nâng cấp, cải tạo trường THCS và TH Phúc Đồng&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn bố trí = <strong>1.678 triệu đồng</strong> vs Lũy kế giải ngân = <strong>2.515 triệu đồng</strong> (Vượt <strong>837 triệu đồng</strong>).</li>
+</ul>
+</li>
+<li><strong>Dòng 243 (Hương Khê): Dự án &quot;Đường GT từ đường HCM đi khu xử lý chất thải rắn...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn báo cáo = <strong>10.763 triệu đồng</strong> vs Lũy kế giải ngân = <strong>11.008 triệu đồng</strong> (Vượt <strong>245 triệu đồng</strong>).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3>4. Nhóm 4: Tổng nguồn vốn thành phần không khớp với Tổng số vốn đã bố trí</h3>
+<p>Tổng số vốn đã bố trí (Cột 6) phải bằng tổng của các nguồn vốn thành phần: <code>NS Trung ương (Cột 7) + NS Tỉnh (Cột 8) + NS Huyện (Cột 9) + Khác (Cột 10)</code>. Rất nhiều dòng dữ liệu cộng tay bị lệch số.</p>
+<h4>Các dự án tiêu biểu:</h4>
+<ul>
+<li><strong>Dòng 42 (Cẩm Xuyên - PL04): Dự án &quot;Đường trục xã TX.05 xã Cẩm Thành&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn ghi nhận <strong>11.834,04 triệu đồng</strong>.</li>
+<li><em>Thành phần nguồn vốn:</em> NS Tỉnh = <strong>10.493 triệu đồng</strong>, NS Huyện = <strong>11.834 triệu đồng</strong>.</li>
+<li><em>Sai lệch:</em> Cộng các nguồn thành phần là <strong>22.327 triệu đồng</strong>, lệch <strong>10.492,96 triệu đồng</strong> so với cột Tổng số báo cáo.</li>
+</ul>
+</li>
+<li><strong>Dòng 54 (Cẩm Xuyên - PL04): Dự án &quot;Nâng cấp, mở rộng tuyến đường Cẩm Thạch - Thạch Hội...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Kế hoạch vốn báo cáo = <strong>116.994 triệu đồng</strong>.</li>
+<li><em>Thành phần nguồn vốn:</em> Tất cả các cột NS TW, NS Tỉnh, NS Huyện, Khác đều để trống (<code>0</code> hoặc <code>null</code>). Lệch <strong>116.994 triệu đồng</strong> (Chưa phân rã nguồn vốn).</li>
+</ul>
+</li>
+<li><strong>Dòng 144 (Cẩm Xuyên - PL03): Dự án &quot;Khắc phục cấp bách kè chống sạt lở bờ tả hạ lưu cầu Chợ Vực...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Vốn bố trí = <strong>14.382 triệu đồng</strong>, nhưng tổng nguồn cộng lại = <strong>14.318,38 triệu đồng</strong> (Lệch <strong>63,62 triệu đồng</strong>).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3>5. Nhóm 5: Số liệu Công nợ báo cáo lệch so với Công thức kế toán</h3>
+<p>Công nợ lý thuyết phải bằng: <code>Lũy kế giá trị nghiệm thu (Cột 11) - Lũy kế giải ngân (Cột 13)</code>. Tuy nhiên số liệu thực tế nhập vào cột Công nợ báo cáo (Cột 15) lệch rất xa.</p>
+<h4>Các dự án tiêu biểu ở Sheet PL03 (Đã hoàn thành):</h4>
+<ul>
+<li><strong>Dòng 75 (Vũ Quang): Dự án &quot;Mở rộng, nâng cấp đường trục xã Trục Thác - Ngõ Bà Tuyết...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Nghiệm thu = <strong>2.120 triệu đồng</strong>, Giải ngân = <strong>1.875 triệu đồng</strong> (Chênh lệch thực tế là <strong>245 triệu đồng</strong>).</li>
+<li><em>Công nợ báo cáo:</em> Ghi nhận <strong>1.709,82 triệu đồng</strong> (Lệch <strong>1.464,82 triệu đồng</strong> so với công thức).</li>
+</ul>
+</li>
+<li><strong>Dòng 176 (Can Lộc): Dự án &quot;Đường Xô Viết kéo dài thị trấn Nghèn&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Nghiệm thu = <strong>49.212 triệu đồng</strong>, Giải ngân = <strong>49.069 triệu đồng</strong> (Chênh lệch thực tế là <strong>143 triệu đồng</strong>).</li>
+<li><em>Công nợ báo cáo:</em> Ghi nhận <strong>637,48 triệu đồng</strong> (Lệch <strong>494,48 triệu đồng</strong>).</li>
+</ul>
+</li>
+<li><strong>Dòng 182 (Hương Khê): Dự án &quot;Nâng cấp đường GTNT xã Phúc Trạch...&quot;</strong><ul>
+<li><em>Số liệu báo cáo:</em> Nghiệm thu = <strong>7.096 triệu đồng</strong>, Giải ngân = <strong>8.646 triệu đồng</strong> (Giải ngân vượt nghiệm thu <strong>1.550 triệu đồng</strong>).</li>
+<li><em>Công nợ báo cáo:</em> Vẫn ghi nhận công nợ dương <strong>608 triệu đồng</strong> (Lệch <strong>2.158 triệu đồng</strong>).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2>III. KHUYẾN NGHỊ VỀ PHƯƠNG ÁN XỬ LÝ SỐ LIỆU TRƯỚC KHI IMPORT ERP</h2>
+<p>Để đảm bảo tính toàn vẹn dữ liệu cho hệ thống <strong>CIC ERP</strong> và tránh các lỗi tính toán tự động trên hệ thống, đề xuất các hành động khẩn cấp sau:</p>
+<ol>
+<li><strong>Từ chối tiếp nhận số liệu thô chưa chuẩn hóa:</strong> Trả lại tệp dữ liệu cho tổ chuyên môn của huyện Thạch Hà và huyện Hương Khê yêu cầu đính chính toàn bộ các dòng lỗi dấu chấm thập phân (TMDT bị thu nhỏ 1000 lần) và lỗi giải ngân vượt kế hoạch vốn đột biến tại dòng 118, 119 (Thạch Hà).</li>
+<li><strong>Yêu cầu cung cấp Thư xác nhận số dư Kho bạc:</strong> Đối với các dự án có chênh lệch lớn giữa Lũy kế giải ngân và Lũy kế nghiệm thu (như dự án <em>Đường Cẩm Sơn đi Cẩm Thịnh</em> dôi dư 17,3 tỷ giải ngân), yêu cầu Kho bạc cấp huyện cung cấp sao kê/xác nhận số dư tạm ứng thực tế để kiểm tra dòng tiền dở dang.</li>
+<li><strong>Khóa tính năng tự động tính toán trên ERP:</strong> Khi IT thực hiện viết code import dữ liệu từ file Excel này, bắt buộc phải viết các hàm kiểm tra ràng buộc (Constraint Checks) dựa trên các quy tắc logic nêu trên để tự động cách ly các dòng lỗi, không cho phép ghi đè vào bảng dữ liệu chính thức của hệ thống.</li>
+</ol>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Dynamic Table of Contents Generation
+    document.addEventListener("DOMContentLoaded", () => {
+      const docBody = document.getElementById("doc-body");
+      const tocNav = document.getElementById("toc-nav");
+      
+      const headings = docBody.querySelectorAll("h2, h3");
+      headings.forEach((heading, idx) => {
+        // Create an ID if not exists
+        const id = heading.id || "section-" + idx;
+        heading.id = id;
+        
+        // Add item to TOC sidebar
+        const li = document.createElement("li");
+        li.className = "toc-item " + (heading.tagName === "H3" ? "toc-sub-item" : "");
+        li.style.paddingLeft = heading.tagName === "H3" ? "1rem" : "0px";
+        
+        const a = document.createElement("a");
+        a.href = "#" + id;
+        a.textContent = heading.textContent;
+        
+        li.appendChild(a);
+        tocNav.appendChild(li);
+      });
+
+      // Quick intersection observer for active menu
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const activeLink = document.querySelector(`#toc-nav a[href="#${entry.target.id}"]`);
+            if (activeLink) {
+              document.querySelectorAll("#toc-nav li").forEach(li => li.classList.remove("active"));
+              activeLink.parentElement.classList.add("active");
+            }
+          }
+        });
+      }, { rootMargin: "-20% 0px -80% 0px" });
+
+      headings.forEach(heading => observer.observe(heading));
+    });
+  </script>
+</body>
+</html>

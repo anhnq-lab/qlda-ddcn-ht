@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useSlidePanel } from '../../context/SlidePanelContext';
@@ -18,6 +18,7 @@ import {
 import { StatusBadge, StatCard } from '../../components/ui';
 import { MonthlyPlanItemService } from '../../services/PlanService';
 import { getEmployees } from '../../services/EmployeeService';
+import { MONTH_NAMES } from '../../utils/dateUtils';
 
 interface MonthlyReportPageProps {
     month: number;
@@ -64,6 +65,7 @@ interface ReportTask {
     source_type: string | null;
 }
 
+// DeptPlanState & ReportTask local types (kept for backward-compat, DeptPlanState shared in plan.types.ts)
 interface DeptPlanState {
     id: string;
     department_code: DepartmentCode;
@@ -73,9 +75,6 @@ interface DeptPlanState {
     report_approved_by?: string;
     report_approved_at?: string;
 }
-
-const MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; variant: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }> = {
     todo:        { label: 'Cần làm', icon: <Clock className="w-3 h-3" />, variant: 'neutral' },
@@ -104,18 +103,19 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
     const isDirector = userRole === 'Director' || userRole === 'DeputyDirector' || userRole === 'Admin';
     const isDeptHead = userRole === 'DepartmentHead';
 
-    const handleExportExcel = async () => {
+    const handleExportExcel = useCallback(async () => {
         setExporting(true);
         try {
             const { exportMonthlyReport } = await import('../monthly-plan/exportMonthlyReport');
             await exportMonthlyReport(month, year);
         } catch (e) {
             console.error('Lỗi khi xuất excel báo cáo:', e);
-            alert('Không thể xuất báo cáo Excel.');
+            // Do NOT use alert() — it blocks the UI. Show error in console only.
+            // TODO: replace with toast when ToastContext is available app-wide
         } finally {
             setExporting(false);
         }
-    };
+    }, [month, year]);
 
     useEffect(() => {
         loadData();

@@ -167,7 +167,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
         setProgressModalTarget(s);
     };
 
-    const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective') => {
+    const handleProgressUpdateSubmit = async (newProgress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective', obstacles?: string) => {
         if (!task) return;
 
         const finalStatus = newStatus || task.Status;
@@ -183,6 +183,10 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
         if (finalStatus === 'incomplete') {
             taskUpdate.IncompleteReason = note || task.IncompleteReason;
             taskUpdate.IncompleteReasonType = incompleteReasonType || task.IncompleteReasonType;
+        }
+        // Save obstacles regardless of status (can have obstacles even when in_progress)
+        if (obstacles !== undefined) {
+            (taskUpdate as any).obstacles = obstacles || null;
         }
 
         updateTaskMutation.mutate(taskUpdate);
@@ -408,7 +412,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                         </div>
 
                         {/* Kết quả & Vướng mắc */}
-                        {(task.CompletionResult || task.IncompleteReason || task.Notes) && (
+                        {(task.CompletionResult || task.IncompleteReason || (task as any).obstacles || task.Notes) && (
                             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
                                 <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4" /> Kết quả báo cáo
@@ -423,6 +427,14 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800">
                                         <p className="text-[10px] font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider mb-1">Lý do chưa hoàn thành</p>
                                         <p className="text-sm text-rose-800 dark:text-rose-300 whitespace-pre-wrap">{task.IncompleteReason}</p>
+                                    </div>
+                                )}
+                                {(task as any).obstacles && (
+                                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                                        <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                            <AlertTriangle className="w-3 h-3" /> Khó khăn / Vướng mắc
+                                        </p>
+                                        <p className="text-sm text-amber-800 dark:text-amber-300 whitespace-pre-wrap">{(task as any).obstacles}</p>
                                     </div>
                                 )}
                                 {task.Notes && (

@@ -240,10 +240,10 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col">
+            <div className="bg-bg-surface border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col">
 
                 {/* ── Header ── */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-xl">
                             <FileText className="w-5 h-5" />
@@ -259,7 +259,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-bg-app rounded-lg transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -293,7 +293,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 </button>
                                 <button
                                     onClick={generateReportDirectly}
-                                    className="btn btn-outline flex items-center gap-2 px-7 py-2.5 text-sm border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 bg-white dark:bg-slate-800"
+                                    className="btn btn-outline flex items-center gap-2 px-7 py-2.5 text-sm border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 bg-bg-surface"
                                 >
                                     <FileText className="w-4 h-4" />
                                     Xuất báo cáo trực tiếp
@@ -350,7 +350,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                     className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300"
                                 />
                             ) : (
-                                <div className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 max-h-[480px] overflow-y-auto">
+                                <div className="bg-bg-subtle border border-border rounded-xl p-6 max-h-[480px] overflow-y-auto">
                                     <div 
                                         className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200"
                                         style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -371,7 +371,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 rounded-b-2xl">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-bg-subtle rounded-b-2xl">
                     <button
                         onClick={onClose}
                         className="btn btn-outline text-sm"

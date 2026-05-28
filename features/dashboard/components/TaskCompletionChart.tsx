@@ -34,14 +34,14 @@ const TaskCompletionChart: React.FC<TaskCompletionChartProps> = ({ data, loading
     ].filter(item => item.value > 0);
 
     return (
-        <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col">
+        <div className="bg-bg-surface p-[var(--density-card-p)] rounded-2xl shadow-sm border border-border h-full flex flex-col" role="region" aria-label="Biểu đồ trạng thái công việc">
             <div className="flex justify-between items-center mb-2 shrink-0">
                 <h3 className="section-header text-sm">
                     <div className="section-icon"><CheckSquare className="w-5 h-5" /></div>
                     Công việc
                 </h3>
             </div>
-            <div className="flex-1 min-h-[280px]">
+            <div className="flex-1 min-h-[280px]" role="img" aria-label="Biểu đồ hình tròn phân bổ công việc theo trạng thái Hoàn thành, Đang xử lý, Chờ xử lý, và Quá hạn">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie

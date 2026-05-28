@@ -110,10 +110,10 @@ export const CONTAINER_COLORS: Record<CDEContainerType, {
     lightBg: string; badge: string; gradient: string;
 }> = {
     WIP: {
-        bg: 'bg-primary-500', text: 'text-primary-700 dark:text-primary-400',
-        border: 'border-primary-200 dark:border-primary-700', dot: 'bg-primary-500',
-        lightBg: 'bg-primary-50 dark:bg-primary-900/20',
-        badge: 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300',
+        bg: 'bg-warning-500', text: 'text-warning-700 dark:text-warning-400',
+        border: 'border-warning-200 dark:border-warning-700', dot: 'bg-warning-500',
+        lightBg: 'bg-warning-50 dark:bg-warning-900/20',
+        badge: 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300',
         gradient: 'linear-gradient(135deg, #4A4535 0%, #3D3A2D 100%)',
     },
     SHARED: {

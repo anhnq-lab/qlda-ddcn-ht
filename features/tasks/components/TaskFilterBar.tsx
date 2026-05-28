@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, FolderOpen, ChevronDown, Calendar, Layers, Filter, X, AlertTriangle, ListTodo, LayoutGrid, Plus, User, Tag, FileCheck, Clock } from 'lucide-react';
+import { Search, FolderOpen, ChevronDown, Calendar, Layers, Filter, X, AlertTriangle, ListTodo, LayoutGrid, Plus, User, Tag, FileCheck, Clock, Upload, Download, FileSpreadsheet } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
 import { TaskStatus } from '../../../types';
 
@@ -30,6 +30,9 @@ interface TaskFilterBarProps {
     openCreateModal: () => void;
     hideMonthFilter?: boolean;
     hideDepartmentFilter?: boolean;
+    onImportClick: () => void;
+    onExportClick: () => void;
+    onDownloadTemplateClick: () => void;
 }
 
 export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
@@ -47,7 +50,10 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     viewMode, setViewMode,
     openCreateModal,
     hideMonthFilter = false,
-    hideDepartmentFilter = false
+    hideDepartmentFilter = false,
+    onImportClick,
+    onExportClick,
+    onDownloadTemplateClick
 }) => {
     return (
         <div className="bg-transparent pb-2.5 flex items-center justify-between gap-1.5 w-full flex-wrap shrink-0 border-b border-slate-100/30 dark:border-slate-800/30">
@@ -86,7 +92,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     onClick={() => setFilterNotUpdatedThisWeek(!filterNotUpdatedThisWeek)}
                     className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[10px] font-bold transition-all ${
                         filterNotUpdatedThisWeek 
-                        ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 shadow-sm' 
+                        ? 'bg-amber-55 dark:bg-amber-900/30 border-amber-250 dark:border-amber-800 text-amber-700 dark:text-amber-400 shadow-sm' 
                         : 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                     }`}
                     title={filterNotUpdatedThisWeek ? "Đang hiện việc chưa cập nhật tuần này" : "Hiện việc chưa cập nhật tuần này"}
@@ -217,9 +223,9 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                 )}
             </div>
 
-            {/* Phải: View toggle + Tạo công việc */}
-            <div className="flex items-center gap-1.5 shrink-0">
-                <div className="flex items-center bg-slate-100 dark:bg-slate-700/50 rounded-lg p-0.5">
+            {/* Phải: View toggle + Nhập/Xuất/Template + Tạo công việc */}
+            <div className="flex items-center gap-1.5 shrink-0 flex-wrap lg:flex-nowrap">
+                <div className="flex items-center bg-slate-100 dark:bg-slate-700/50 rounded-lg p-0.5 mr-1">
                     <button
                         onClick={() => setViewMode('list')}
                         className={`p-1 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-700 dark:text-slate-200' : 'text-slate-450 hover:text-slate-650 dark:hover:text-slate-300'}`}
@@ -234,10 +240,42 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     </button>
                 </div>
 
+                {/* Tải Template */}
+                <button
+                    onClick={onDownloadTemplateClick}
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
+                    title="Tải file mẫu Excel (.xlsx)"
+                >
+                    <Download className="w-3 h-3" />
+                    <span>Tải Mẫu</span>
+                </button>
+
+                {/* Nhập Excel */}
+                <PermissionGate resource="tasks" action="create">
+                    <button
+                        onClick={onImportClick}
+                        className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-500 border border-blue-700 hover:border-blue-600 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
+                        title="Nhập công việc từ Excel"
+                    >
+                        <Upload className="w-3 h-3" />
+                        <span>Nhập Excel</span>
+                    </button>
+                </PermissionGate>
+
+                {/* Xuất Excel */}
+                <button
+                    onClick={onExportClick}
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-500 border border-emerald-700 hover:border-emerald-600 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
+                    title="Xuất công việc ra Excel"
+                >
+                    <FileSpreadsheet className="w-3 h-3" />
+                    <span>Xuất Excel</span>
+                </button>
+
                 <PermissionGate resource="tasks" action="create">
                     <button
                         onClick={openCreateModal}
-                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-white bg-primary-600 hover:bg-primary-500 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
+                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-white bg-primary-600 hover:bg-primary-500 border border-primary-750 hover:border-primary-650 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
                     >
                         <Plus className="w-3 h-3" />
                         <span>Tạo công việc</span>

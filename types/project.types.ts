@@ -306,6 +306,10 @@ export interface ProjectManagement {
     accountant?: string;      // Kế toán theo dõi
     projectDirector?: string; // Giám đốc QLDA
     techStaff?: string;       // Cán bộ kỹ thuật
+    ban_tiep_nhan?: string;
+    thoi_diem_ban_giao?: string;
+    ho_so_ban_giao?: string;
+    gia_tri_khoi_luong_ban_giao?: number;
 }
 
 /** Hiện trạng & tình hình dự án */
@@ -319,6 +323,18 @@ export interface ProjectStatusInfo {
     delayResolution?: string;           // Kết quả xử lý
     delayRecommendation?: string;       // Kiến nghị, đề xuất giải pháp
     notes?: string;                     // Ghi chú
+    cong_no_den_30_6_2025?: number;
+    tinh_trang_quyet_toan_den_30_6_2025?: string;
+    ton_tai_vuong_mac_ban_giao?: string;
+    cong_no_sau_ban_giao?: number;
+    tinh_trang_quyet_toan_sau_ban_giao?: string;
+    cham_tien_do?: {
+        thoi_gian_hoan_thanh?: string;
+        thoi_gian_cham?: string;
+        nguyen_nhan?: string;
+        bien_phap_da_ap_dung?: string;
+        kien_nghi_de_xuat?: string;
+    };
 }
 
 /** Chi tiết tổng mức đầu tư — TT24 A.II.7.4 */

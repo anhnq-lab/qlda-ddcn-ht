@@ -21,6 +21,8 @@ import { User, Sparkles, FolderOpen, X, ChevronsLeft, ChevronsRight, ChevronLeft
 import { TaskStatsRow } from './components/TaskStatsRow';
 import { TaskFilterBar } from './components/TaskFilterBar';
 import { TaskTableView } from './components/TaskTableView';
+import ExcelJS from 'exceljs';
+import { TaskImportModal } from './components/TaskImportModal';
 
 // ═══════════════════════════════════════════════════
 // Sort / Pagination Types
@@ -84,6 +86,8 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     const [searchParams] = useSearchParams();
     const urlTaskId = searchParams.get('taskId');
     
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [filterProject, setFilterProject] = useState<string>('All');
     
@@ -126,7 +130,290 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     const saveTaskMutation = useSaveTask();
     const updateTaskMutation = useUpdateTask();
     const deleteTaskMutation = useDeleteTask();
-    
+
+    // Excel Export & Template download handlers
+    const handleExportExcel = async () => {
+        try {
+            const wb = new ExcelJS.Workbook();
+            const ws = wb.addWorksheet('Danh sách công việc');
+
+            // Columns definition
+            ws.columns = [
+                { header: 'STT', key: 'stt', width: 6 },
+                { header: 'Mã công việc', key: 'id', width: 25 },
+                { header: 'Tên công việc', key: 'title', width: 35 },
+                { header: 'Mô tả', key: 'description', width: 40 },
+                { header: 'Loại công việc', key: 'task_type', width: 18 },
+                { header: 'Tên dự án', key: 'project_name', width: 30 },
+                { header: 'Người phụ trách', key: 'assignee_name', width: 20 },
+                { header: 'Phòng ban', key: 'department', width: 18 },
+                { header: 'Phân loại', key: 'category', width: 18 },
+                { header: 'Trạng thái', key: 'status', width: 16 },
+                { header: 'Độ ưu tiên', key: 'priority', width: 14 },
+                { header: 'Ngày bắt đầu', key: 'start_date', width: 14 },
+                { header: 'Hạn chót', key: 'due_date', width: 14 },
+                { header: 'Tiến độ (%)', key: 'progress', width: 12 },
+                { header: 'Căn cứ pháp lý', key: 'legal_basis', width: 25 },
+                { header: 'Sản phẩm đầu ra', key: 'output_document', width: 25 },
+                { header: 'Ghi chú', key: 'notes', width: 30 },
+            ];
+
+            // Add title block
+            ws.insertRow(1, []);
+            ws.insertRow(2, [null, 'DANH SÁCH CÔNG VIỆC CHI TIẾT']);
+            ws.mergeCells('B2:K2');
+            const titleRow = ws.getRow(2);
+            titleRow.height = 32;
+            titleRow.getCell(2).font = { name: 'Times New Roman', bold: true, size: 16, color: { argb: 'FF1F4E78' } };
+            titleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(3, [null, `Xuất ngày: ${new Date().toLocaleDateString('vi-VN')} | Tổng số: ${filteredTasks.length} công việc`]);
+            ws.mergeCells('B3:K3');
+            const subtitleRow = ws.getRow(3);
+            subtitleRow.height = 20;
+            subtitleRow.getCell(2).font = { name: 'Times New Roman', italic: true, size: 11, color: { argb: 'FF595959' } };
+            subtitleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(4, []);
+
+            // Now, build table starting at row 5
+            const headerRow = ws.getRow(5);
+            headerRow.height = 28;
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF1F4E78' } // Navy blue
+                };
+                cell.font = { name: 'Times New Roman', bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+            });
+
+            // Map and add rows
+            const TASK_STATUS_LABELS: Record<string, string> = {
+                todo: 'Mới',
+                in_progress: 'Đang làm',
+                done: 'Hoàn thành',
+                incomplete: 'Chưa hoàn thành',
+                review: 'Chờ duyệt',
+            };
+
+            const TASK_PRIORITY_LABELS: Record<string, string> = {
+                low: 'Thấp',
+                medium: 'Trung bình',
+                high: 'Cao',
+                urgent: 'Khẩn cấp',
+            };
+
+            const TASK_TYPE_LABELS_LOCAL: Record<string, string> = {
+                project: 'Dự án',
+                internal: 'Nội bộ',
+                management: 'Điều hành',
+            };
+
+            const TASK_CATEGORY_LABELS_LOCAL = {
+                dieu_hanh: 'Điều hành',
+                tham_dinh: 'Thẩm định/Phê duyệt',
+                thi_cong: 'Thi công/Giám sát',
+                quyet_toan: 'Quyết toán',
+                thanh_toan: 'Thanh toán',
+                gpmb: 'GPMB',
+                dau_thau: 'Đấu thầu',
+                dieu_chinh: 'Điều chỉnh',
+                gop_y: 'Góp ý/Văn bản',
+                bao_cao: 'Báo cáo',
+                kiem_tra: 'Kiểm tra/QLCL',
+                ban_giao: 'Bàn giao/Nghiệm thu',
+                khac: 'Khác',
+            };
+
+            filteredTasks.forEach((task, idx) => {
+                const assignee = getAssignee(task.AssigneeID);
+                const categoryLabel = task.Category ? (TASK_CATEGORY_LABELS_LOCAL[task.Category as keyof typeof TASK_CATEGORY_LABELS_LOCAL] || task.Category) : '';
+                const row = ws.addRow({
+                    stt: idx + 1,
+                    id: task.TaskID,
+                    title: task.Title,
+                    description: task.Description || '',
+                    task_type: TASK_TYPE_LABELS_LOCAL[task.TaskType] || task.TaskType,
+                    project_name: task.ProjectName || '',
+                    assignee_name: assignee ? assignee.FullName : (task.AssigneeID || ''),
+                    department: task.DepartmentCode || (assignee ? assignee.Department : ''),
+                    category: categoryLabel,
+                    status: TASK_STATUS_LABELS[task.Status] || task.Status,
+                    priority: TASK_PRIORITY_LABELS[task.Priority] || task.Priority,
+                    start_date: task.StartDate || '',
+                    due_date: task.DueDate || '',
+                    progress: task.ProgressPercent || 0,
+                    legal_basis: task.LegalBasis || '',
+                    output_document: task.OutputDocument || '',
+                    notes: task.Notes || '',
+                });
+
+                row.height = 20;
+
+                // Color based on status
+                let rowColor = 'FFFFFFFF'; // White default
+                if (task.Status === 'done') {
+                    rowColor = 'FFE2EFDA'; // Light green
+                } else if (task.Status === 'incomplete') {
+                    rowColor = 'FFFCE4EC'; // Light pink
+                }
+
+                row.eachCell({ includeEmpty: true }, (cell, cellNumber) => {
+                    cell.font = { name: 'Times New Roman', size: 10 };
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: rowColor }
+                    };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    };
+
+                    // Alignments
+                    if (cellNumber === 1 || cellNumber === 2 || cellNumber === 10 || cellNumber === 11 || cellNumber === 12 || cellNumber === 13 || cellNumber === 14) {
+                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    } else {
+                        cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+                    }
+                });
+            });
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `DS_CongViec_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Lỗi khi xuất file Excel:', error);
+            alert('Có lỗi xảy ra khi xuất file Excel.');
+        }
+    };
+
+    const handleDownloadTemplate = async () => {
+        try {
+            const wb = new ExcelJS.Workbook();
+            const ws = wb.addWorksheet('Mau_Import_CongViec');
+
+            // Columns definition (same order as import map)
+            ws.columns = [
+                { header: 'Tên công việc (*)', key: 'title', width: 35 },
+                { header: 'Mô tả', key: 'description', width: 35 },
+                { header: 'Loại công việc (Nội bộ/Dự án/Điều hành)', key: 'task_type', width: 25 },
+                { header: 'Mã dự án (nếu là CV dự án)', key: 'project_code', width: 25 },
+                { header: 'Tên cán bộ phụ trách', key: 'assignee_name', width: 25 },
+                { header: 'Phòng ban (QLDA1/QLDA2/QLDA3/HCTH/KHDT/KTTD/TCKT/PTDV)', key: 'department', width: 25 },
+                { header: 'Phân loại (Thẩm định, Thi công, Quyết toán, GPMB...)', key: 'category', width: 25 },
+                { header: 'Trạng thái (Mới/Đang làm/Xong/Chưa xong)', key: 'status', width: 22 },
+                { header: 'Độ ưu tiên (Thấp/Trung bình/Cao/Khẩn cấp)', key: 'priority', width: 22 },
+                { header: 'Ngày bắt đầu (YYYY-MM-DD)', key: 'start_date', width: 22 },
+                { header: 'Hạn chót (YYYY-MM-DD)', key: 'due_date', width: 22 },
+                { header: 'Tiến độ (%)', key: 'progress', width: 14 },
+                { header: 'Căn cứ pháp lý', key: 'legal_basis', width: 25 },
+                { header: 'Sản phẩm đầu ra', key: 'output_document', width: 25 },
+                { header: 'Ghi chú', key: 'notes', width: 25 },
+                { header: 'Mã công việc (chỉ điền khi muốn cập nhật)', key: 'id', width: 25 },
+            ];
+
+            // Title block
+            ws.insertRow(1, []);
+            ws.insertRow(2, [null, 'MẪU FILE NHẬP CÔNG VIỆC HÀNG LOẠT (IMPORT TEMPLATE)']);
+            ws.mergeCells('B2:L2');
+            const titleRow = ws.getRow(2);
+            titleRow.height = 32;
+            titleRow.getCell(2).font = { name: 'Times New Roman', bold: true, size: 15, color: { argb: 'FFC00000' } };
+            titleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(3, [
+                null,
+                'HƯỚNG DẪN: Cột có dấu (*) là bắt buộc. Nhập đúng các giá trị trong ngoặc đơn ở tiêu đề cột. Định dạng ngày là YYYY-MM-DD.'
+            ]);
+            ws.mergeCells('B3:L3');
+            const subtitleRow = ws.getRow(3);
+            subtitleRow.height = 20;
+            subtitleRow.getCell(2).font = { name: 'Times New Roman', italic: true, size: 10, color: { argb: 'FF595959' } };
+            subtitleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(4, []);
+
+            // Table headers style
+            const headerRow = ws.getRow(5);
+            headerRow.height = 30;
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF3B82F6' } // Blue color matching primary theme
+                };
+                cell.font = { name: 'Times New Roman', bold: true, size: 10, color: { argb: 'FFFFFFFF' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+            });
+
+            // Add sample row
+            const sampleRow = ws.addRow({
+                title: 'Soạn thảo văn bản gửi cơ quan nhà nước đề nghị kiểm tra công tác nghiệm thu dự án X',
+                description: 'Soạn thảo và gửi văn bản kiểm tra nghiệm thu',
+                task_type: 'Dự án',
+                project_code: projects[0]?.ProjectID || 'Mã_dự_án_hoặc_mã_quốc_gia',
+                assignee_name: employees[0]?.FullName || 'Tên cán bộ phụ trách',
+                department: employees[0]?.Department || 'QLDA1',
+                category: 'Góp ý/Văn bản',
+                status: 'Đang làm',
+                priority: 'Trung bình',
+                start_date: new Date().toISOString().split('T')[0],
+                due_date: new Date(Date.now() + 10 * 86400 * 1000).toISOString().split('T')[0],
+                progress: 20,
+                legal_basis: 'Nghị định 15/2021/NĐ-CP',
+                output_document: 'Văn bản trình duyệt gửi Sở Xây dựng',
+                notes: 'Dữ liệu mẫu để tham khảo',
+                id: ''
+            });
+
+            sampleRow.height = 24;
+            sampleRow.eachCell((cell) => {
+                cell.font = { name: 'Times New Roman', size: 9, italic: true, color: { argb: 'FF808080' } };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+                cell.alignment = { vertical: 'middle', wrapText: true };
+            });
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Mau_Import_CongViec.xlsx';
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Lỗi khi tải mẫu Excel:', error);
+            alert('Có lỗi xảy ra khi tải mẫu Excel.');
+        }
+    };
+
     // Derived
     const departments = useMemo(() => {
         const depts = new Set(employees.map(e => e.Department).filter(Boolean));
@@ -415,8 +702,6 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             project_id: taskData.ProjectID,
             actual_start_date: taskData.ActualStartDate,
             actual_end_date: taskData.ActualEndDate,
-            estimated_cost: taskData.EstimatedCost,
-            actual_cost: taskData.ActualCost,
             monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
             metadata: {
                  sub_tasks: taskData.SubTasks,
@@ -497,6 +782,9 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                 openCreateModal={openCreateModal}
                 hideMonthFilter={externalMonth !== undefined}
                 hideDepartmentFilter={externalDepartment !== undefined}
+                onImportClick={() => setIsImportModalOpen(true)}
+                onExportClick={handleExportExcel}
+                onDownloadTemplateClick={handleDownloadTemplate}
             />
 
             {/* ══════════ BATCH BAR ══════════ */}
@@ -622,6 +910,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                 />
             )}
 
+            <TaskImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
         </div>
     );
 };

@@ -29,6 +29,7 @@ export interface SelectProps {
     size?: 'sm' | 'md' | 'lg';
     fullWidth?: boolean;
     className?: string;
+    usePortal?: boolean;
 }
 
 const sizeStyles = {
@@ -52,6 +53,7 @@ export const Select: React.FC<SelectProps> = ({
     size = 'md',
     fullWidth = true,
     className = '',
+    usePortal = true,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -155,7 +157,91 @@ export const Select: React.FC<SelectProps> = ({
                     </button>
                 </Popover.Trigger>
 
-                <Popover.Portal>
+                {usePortal ? (
+                    <Popover.Portal>
+                        <Popover.Content
+                            sideOffset={4}
+                            align="start"
+                            style={{ width: 'var(--radix-popover-trigger-width)' }}
+                            onOpenAutoFocus={(e) => {
+                                if (searchable) {
+                                    e.preventDefault();
+                                    inputRef.current?.focus();
+                                }
+                            }}
+                            className={cn(
+                                "z-[70] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-dropdown overflow-hidden",
+                                "animate-in data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-200"
+                            )}
+                        >
+                            {/* Search Input */}
+                            {searchable && (
+                                <div className="p-2 border-b border-slate-200 dark:border-slate-700">
+                                    <div className="relative flex items-center">
+                                        <Search className="absolute left-3 w-4 h-4 text-slate-400" />
+                                        <input
+                                            ref={inputRef}
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Tìm kiếm..."
+                                            className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border-0 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Options List */}
+                            <div className="max-h-60 overflow-y-auto scrollbar-thin">
+                                {filteredOptions.length === 0 ? (
+                                    <div className="px-4 py-3 text-sm text-slate-500 text-center">
+                                        Không tìm thấy kết quả
+                                    </div>
+                                ) : (
+                                    filteredOptions.map((option) => {
+                                        const isSelected = multiple
+                                            ? Array.isArray(value) && value.includes(option.value)
+                                            : value === option.value;
+
+                                        return (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                disabled={option.disabled}
+                                                onClick={() => handleSelect(option)}
+                                                className={cn(
+                                                    "w-full flex items-center gap-2 px-4 py-2.5 text-sm text-left transition-colors outline-none",
+                                                    option.disabled
+                                                        ? "text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                                                        : "hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-800 focus:bg-slate-50 dark:bg-slate-800 dark:focus:bg-slate-800",
+                                                    isSelected
+                                                        ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 font-medium"
+                                                        : "text-slate-700 dark:text-slate-300"
+                                                )}
+                                            >
+                                                {multiple && (
+                                                    <div className={cn(
+                                                        "w-4 h-4 border rounded flex flex-shrink-0 items-center justify-center transition-colors",
+                                                        isSelected
+                                                            ? "bg-primary-500 border-primary-500 text-white"
+                                                            : "border-slate-300 dark:border-slate-600"
+                                                    )}>
+                                                        {isSelected && <Check className="w-3 h-3" />}
+                                                    </div>
+                                                )}
+                                                {option.icon && <span className="shrink-0">{option.icon}</span>}
+                                                <span className="flex-1 truncate">{option.label}</span>
+                                                {!multiple && isSelected && (
+                                                    <Check className="w-4 h-4 text-primary-500 shrink-0" />
+                                                )}
+                                            </button>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </Popover.Content>
+                    </Popover.Portal>
+                ) : (
                     <Popover.Content
                         sideOffset={4}
                         align="start"
@@ -237,7 +323,7 @@ export const Select: React.FC<SelectProps> = ({
                             )}
                         </div>
                     </Popover.Content>
-                </Popover.Portal>
+                )}
             </Popover.Root>
 
             {/* Helper/Error Text */}

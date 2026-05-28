@@ -6,7 +6,6 @@ import { vi } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
-import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -21,6 +20,7 @@ import { LobbyDisplay } from './components/LobbyDisplay';
 import { CustomToolbar } from './components/CustomToolbar';
 import { Monitor, Calendar as CalendarIcon, FileText } from 'lucide-react';
 import { useSlidePanel } from '@/context/SlidePanelContext';
+import { cn } from '@/lib/utils';
 
 const locales = {
   'vi': vi,
@@ -212,7 +212,10 @@ export default function CalendarView() {
   const hasActiveFilters = filterType !== '' || filterRoom !== '';
 
   return (
-    <div className="flex flex-col flex-1 h-full min-h-screen bg-slate-50/50 dark:bg-slate-900">
+    <div className={cn(
+      "flex flex-col flex-1 h-full min-h-screen bg-bg-app text-txt-primary",
+      displayMode === 'lobby' && "calendar-dark-mode-force dark"
+    )}>
       {displayMode === 'lobby' ? (
         <div className="flex-1 w-full flex flex-col px-6 py-4">
           {/* Lobby Display Mini Controller */}
@@ -239,14 +242,8 @@ export default function CalendarView() {
           <LobbyDisplay events={events} />
         </div>
       ) : (
-        <>
-          <PageHeader
-            title="Lịch cơ quan"
-            description="Quản lý và theo dõi lịch họp, lịch công tác, sự kiện nội bộ của Ban QLDA"
-            icon={<CalendarIcon size={20} />}
-          />
-          <div className="px-6 py-4 flex-1 w-full flex flex-col">
-            {isLoading ? (
+        <div className="px-6 py-5 flex-1 w-full flex flex-col">
+          {isLoading ? (
               <div className="flex justify-center items-center flex-1 min-h-[600px]">
                 <LoadingSpinner size="lg" />
               </div>
@@ -303,8 +300,7 @@ export default function CalendarView() {
               />
             </div>
           )}
-          </div>
-        </>
+        </div>
       )}
 
 

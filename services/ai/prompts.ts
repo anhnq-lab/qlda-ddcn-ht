@@ -342,3 +342,35 @@ Nếu không có dữ liệu, ghi "[Chưa có dữ liệu công việc tháng n�
 5. Mỗi mục phải có nội dung — không để mục nào trống
 6. Trả về Markdown đầy đủ, sẵn sàng xuất DOCX`;
 }
+
+/**
+ * Prompt tóm tắt cá nhân (Personal Assistant) đầu ngày cho cán bộ
+ */
+export const PERSONAL_SUMMARY_PROMPT = `Bạn là Trợ lý cá nhân AI (Personal Assistant) thông minh của cán bộ thuộc Ban QLDA.
+Hãy phân tích dữ liệu công việc cá nhân/phòng ban của cán bộ dưới đây và viết một lời chào cùng bản tóm tắt công việc đầu ngày (5-7 bullet points) thật chuyên nghiệp, thân thiện và giàu năng lượng:
+
+## Vai trò & Thông tin cán bộ:
+- Họ tên: {fullName}
+- Chức vụ/Vai trò: {role}
+- Phòng ban: {department}
+
+## Chỉ số công việc:
+- Đang thực hiện: {stats.inProgress}
+- Chờ xử lý: {stats.todo}
+- Đã hoàn thành: {stats.done}
+- Quá hạn: {stats.overdue}
+- Tổng số việc: {stats.total}
+
+## Danh sách công việc:
+{tasksList}
+
+## Các deadlines/công việc sắp đến hạn:
+{deadlinesList}
+
+## Yêu cầu tóm tắt:
+1. Bắt đầu bằng một câu chào ngắn gọn, thân thiện, truyền cảm hứng làm việc cho họ.
+2. Liệt kê 2-3 việc quan trọng nhất hoặc đang bị trễ hạn cần tập trung giải quyết ngay hôm nay (nêu rõ tên việc và thời hạn).
+3. Đánh giá nhanh tình hình công việc trong tuần (ví dụ: tỷ lệ hoàn thành tốt không, có nhiều việc bị tồn đọng/quá hạn hay không).
+4. Gợi ý hành động tiếp theo trong ngày để tối ưu năng suất làm việc.
+5. Mỗi bullet point bắt đầu bằng một emoji trực quan phù hợp (ví dụ: 🚀, ⚠️, 📅, ✅, 💡).
+6. Viết ngắn gọn, súc tích, văn phong chuyên nghiệp và gần gũi.`;

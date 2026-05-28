@@ -1,9 +1,13 @@
 import { useState, useCallback } from 'react';
-import { getDashboardSummary, getProjectSummary } from '../../services/ai/smartSummary';
+import { getDashboardSummary, getProjectSummary, getPersonalSummary, PersonalSummaryContext } from '../../services/ai/smartSummary';
 import { isAIAvailable } from '../../services/aiService';
 
-export function useAISummary(projectId?: string) {
-    const cacheKey = projectId ? `ai_summary_project_${projectId}` : 'ai_summary_dashboard';
+export function useAISummary(projectId?: string, personalContext?: PersonalSummaryContext) {
+    const cacheKey = projectId 
+        ? `ai_summary_project_${projectId}` 
+        : personalContext 
+            ? `ai_summary_personal_${personalContext.fullName}` 
+            : 'ai_summary_dashboard';
 
     const [summary, setSummary] = useState<string | null>(() => {
         try {
@@ -33,13 +37,18 @@ export function useAISummary(projectId?: string) {
 
     const [loading, setLoading] = useState(false);
 
+    const personalContextStr = JSON.stringify(personalContext);
+
     const loadSummary = useCallback(async (force = false) => {
         if (!isAIAvailable()) return;
         setLoading(true);
         try {
+            const parsedContext = personalContextStr ? JSON.parse(personalContextStr) : undefined;
             const result = projectId
                 ? await getProjectSummary(projectId, force)
-                : await getDashboardSummary(force);
+                : parsedContext
+                    ? await getPersonalSummary(parsedContext, force)
+                    : await getDashboardSummary(force);
             setSummary(result);
             const now = Date.now();
             setUpdatedAt(now);
@@ -49,8 +58,7 @@ export function useAISummary(projectId?: string) {
         } finally {
             setLoading(false);
         }
-    }, [projectId, cacheKey]);
+    }, [projectId, personalContextStr, cacheKey]);
 
     return { summary, loading, loadSummary, isAIAvailable, updatedAt };
 }
-

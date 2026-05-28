@@ -38,6 +38,14 @@ const BM_TK1B_01: FormDefinition = {
         { id: 13, content: 'Có kế hoạch lựa chọn nhà thầu tư vấn hoặc căn cứ giao tư vấn hợp lệ' },
         { id: 14, content: 'Tư vấn dự kiến có năng lực phù hợp với loại, cấp công trình và phạm vi công việc' },
         { id: 15, content: 'Đã xác định thời hạn hoàn thành và người chịu trách nhiệm theo dõi trên phần mềm' },
+        // ── Phụ lục A: Rà soát quy hoạch / GPMB / tài sản công ──
+        { id: 16, content: '[Phụ lục A] Xác nhận phạm vi đất, ranh giới, diện tích theo bản đồ quy hoạch' },
+        { id: 17, content: '[Phụ lục A] Xác nhận sự phù hợp với quy hoạch chung/chi tiết/phân khu được duyệt' },
+        { id: 18, content: '[Phụ lục A] Xác định phạm vi thu hồi đất, hiện trạng mặt bằng, các công trình liền kề' },
+        { id: 19, content: '[Phụ lục A] Đã rà soát tài sản công / kết cấu hạ tầng cần di dời, thanh lý, bàn giao' },
+        { id: 20, content: '[Phụ lục A] Có phương án GPMB, bồi thường, hỗ trợ, tái định cư (nếu phát sinh)' },
+        { id: 21, content: '[Phụ lục A] Đã mở nhánh xử lý tài sản công (điều chuyển/thanh lý/đấu giá) nếu có' },
+        { id: 22, content: '[Phụ lục A] Phương án GPMB và tài sản công được tích hợp vào BCKTKT và dự toán' },
     ],
 };
 

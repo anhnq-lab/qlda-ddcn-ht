@@ -114,10 +114,6 @@ export interface Task {
     StepCode?: string;
     SortOrder?: number;
     
-    // Cost
-    EstimatedCost?: number;
-    ActualCost?: number;
-    
     // Legal
     LegalBasis?: string;
     OutputDocument?: string;

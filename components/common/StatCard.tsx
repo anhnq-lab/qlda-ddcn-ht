@@ -88,6 +88,10 @@ interface StatCardProps {
      * with hover/focus styles and keyboard activation (Enter / Space).
      */
     onClick?: () => void;
+    /** Sparkline data for drawing a mini chart next to the value. */
+    sparklineData?: number[];
+    /** Sparkline stroke color. If omitted, uses card color theme. */
+    sparklineColor?: string;
 }
 
 // COLOR_MAP: icon container color classes per StatCard color prop
@@ -150,6 +154,89 @@ const BORDER_TOP_MAP: Record<StatCardColor, string> = {
     gray:    'border-t-gray-500',
 };
 
+const AnimatedValue: React.FC<{ value: string | number }> = ({ value }) => {
+    const [displayVal, setDisplayVal] = React.useState<string | number>(typeof value === 'number' ? 0 : '0');
+
+    React.useEffect(() => {
+        const strVal = String(value);
+        // Match numbers, allowing for dots/commas
+        const match = strVal.match(/^([\d.,]+)(.*)$/);
+        
+        if (!match) {
+            setDisplayVal(value);
+            return;
+        }
+
+        const numStr = match[1].replace(/,/g, '');
+        const numVal = parseFloat(numStr);
+        const suffix = match[2];
+
+        if (isNaN(numVal) || numVal <= 0) {
+            setDisplayVal(value);
+            return;
+        }
+
+        const duration = 800; // ms
+        const steps = 30;
+        const stepTime = duration / steps;
+        const increment = numVal / steps;
+        let currentStep = 0;
+        let start = 0;
+
+        const timer = setInterval(() => {
+            currentStep++;
+            if (currentStep >= steps) {
+                setDisplayVal(value);
+                clearInterval(timer);
+            } else {
+                start += increment;
+                const decimalPlaces = (numStr.split('.')[1] || '').length;
+                let formattedNum = start.toFixed(decimalPlaces);
+                if (strVal.includes(',')) {
+                    const parts = formattedNum.split('.');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    formattedNum = parts.join('.');
+                }
+                setDisplayVal(formattedNum + suffix);
+            }
+        }, stepTime);
+
+        return () => clearInterval(timer);
+    }, [value]);
+
+    return <>{displayVal}</>;
+};
+
+const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
+    if (!data || data.length < 2) return null;
+    const width = 60;
+    const height = 18;
+    const padding = 1.5;
+    
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    const range = max - min === 0 ? 1 : max - min;
+    
+    const points = data.map((val, index) => {
+        const x = padding + (index / (data.length - 1)) * (width - padding * 2);
+        const y = padding + (1 - (val - min) / range) * (height - padding * 2);
+        return `${x},${y}`;
+    }).join(' ');
+    
+    return (
+        <svg width={width} height={height} className="overflow-visible shrink-0">
+            <polyline
+                fill="none"
+                stroke={color}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                points={points}
+            />
+        </svg>
+    );
+};
+
 /**
  * StatCard — Reusable KPI tile for CIC ERP QLDA dashboards.
  */
@@ -170,6 +257,8 @@ export const StatCard: React.FC<StatCardProps> = ({
     className = '',
     onClick,
     compact = false,
+    sparklineData,
+    sparklineColor,
 }) => {
     const iconCls = COLOR_MAP[color] || COLOR_MAP.blue;
     const bgCls = BG_MAP[color] || BG_MAP.blue;
@@ -180,12 +269,20 @@ export const StatCard: React.FC<StatCardProps> = ({
         : 'p-5 rounded-2xl gap-2 border-t-[3px]';
 
     const labelSize = compact 
-        ? 'text-[10px] min-h-[12px]' 
-        : 'text-[11px] min-h-[14px]';
+        ? 'text-[11px] min-h-[12px]' 
+        : 'text-[12px] min-h-[14px]';
 
     const valueSize = compact 
         ? 'text-lg font-extrabold' 
         : 'text-2xl font-black';
+
+    const sparkColor = sparklineColor || (
+        color === 'success' || color === 'emerald' ? '#10b981' :
+        color === 'warning' || color === 'amber' || color === 'orange' ? '#f59e0b' :
+        color === 'danger' || color === 'rose' ? '#ef4444' :
+        color === 'primary' || color === 'indigo' || color === 'blue' ? '#3b82f6' :
+        '#64748b'
+    );
 
     const iconWrapperCls = compact 
         ? 'p-1.5 rounded-lg [&_svg]:w-3.5 [&_svg]:h-3.5' 
@@ -213,7 +310,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                     {label}
                 </div>
                 {(trendPercentage !== undefined || trend) && (
-                    <div className={`flex items-center gap-0.5 text-[10px] font-bold ${
+                    <div className={`flex items-center gap-0.5 text-[11px] font-bold ${
                         (trendPercentage !== undefined && trendPercentage >= 0) || trend === 'up' ? 'text-emerald-500' : 'text-red-500'
                     }`}>
                         {((trendPercentage !== undefined && trendPercentage >= 0) || trend === 'up') ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -227,19 +324,28 @@ export const StatCard: React.FC<StatCardProps> = ({
             <div className="flex items-center justify-between gap-2 mt-0.5">
                 <div className="flex items-baseline flex-wrap gap-x-1.5 gap-y-0.5 min-w-0">
                     <div className={`text-txt-primary tracking-tight leading-none ${valueSize}`}>
-                        {loading ? <div className={`${compact ? 'h-5 w-16' : 'h-7 w-20'} bg-slate-200 dark:bg-slate-800 rounded animate-pulse`} /> : value}
+                        {loading ? (
+                            <div className={`${compact ? 'h-5 w-16' : 'h-7 w-20'} bg-slate-200 dark:bg-slate-800 rounded animate-pulse`} />
+                        ) : (
+                            typeof value === 'string' || typeof value === 'number' ? <AnimatedValue value={value} /> : value
+                        )}
                     </div>
                     {targetValue && !loading && (
-                        <span className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-txt-muted truncate mt-1 lg:mt-0`}>
+                        <span className={`${compact ? 'text-[11px]' : 'text-xs'} font-medium text-txt-muted truncate mt-1 lg:mt-0`}>
                             / {targetValue}
                         </span>
                     )}
                     {compact && progressPercentage !== undefined && !loading && (
-                        <span className="text-[10px] font-bold text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/30 px-1 rounded-md">
+                        <span className="text-[11px] font-bold text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-900/30 px-1 rounded-md">
                             {progressPercentage}%
                         </span>
                     )}
                 </div>
+                {sparklineData && sparklineData.length > 1 && !loading && (
+                    <div className="ml-auto mr-1 hidden sm:block">
+                        <Sparkline data={sparklineData} color={sparkColor} />
+                    </div>
+                )}
                 <div className={`shrink-0 ${iconWrapperCls} ${iconCls}`}>
                     {icon}
                 </div>
@@ -249,15 +355,15 @@ export const StatCard: React.FC<StatCardProps> = ({
             {progressPercentage !== undefined && progressLabel && !compact ? (
                 <div className="mt-1">
                     <div className="flex justify-between items-center mb-0.5">
-                        <span className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-bold text-txt-muted uppercase tracking-wider`}>{progressLabel}</span>
-                        <span className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
+                        <span className={`${compact ? 'text-[10px]' : 'text-[11px]'} font-bold text-txt-muted uppercase tracking-wider`}>{progressLabel}</span>
+                        <span className={`${compact ? 'text-[11px]' : 'text-[12px]'} font-bold ${COLOR_MAP[color]?.split(' ')[0]}`}>{progressPercentage}%</span>
                     </div>
                     <div className={`${compact ? 'h-1' : 'h-1.5'} w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden`}>
                         <div className={`h-full ${bgCls} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${Math.min(100, Math.max(0, progressPercentage))}%` }}></div>
                     </div>
                 </div>
             ) : sublabel ? (
-                <div className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-medium text-txt-muted leading-none mt-1`}>
+                <div className={`${compact ? 'text-[10px]' : 'text-[11px]'} font-medium text-txt-muted leading-none mt-1`}>
                     {sublabel}
                 </div>
             ) : (

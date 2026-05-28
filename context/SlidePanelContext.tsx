@@ -9,6 +9,7 @@ export interface PanelEntry {
     icon?: React.ReactNode;
     url?: string;
     width?: number | string;
+    className?: string;
 }
 
 // Default & constraints for panel width

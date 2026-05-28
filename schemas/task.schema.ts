@@ -61,9 +61,6 @@ export const TaskCreateSchema = z.object({
     StepCode: z.string().optional(),
     SortOrder: z.coerce.number().int().optional(),
 
-    EstimatedCost: z.coerce.number().min(0, 'Chi phí dự kiến phải ≥ 0').optional(),
-    ActualCost: z.coerce.number().min(0, 'Chi phí thực tế phải ≥ 0').optional(),
-
     LegalBasis: z.string().optional(),
     OutputDocument: z.string().optional(),
 

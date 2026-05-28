@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, MessageSquare, Play, XCircle, Target } from 'lucide-react';
+import { X, CheckCircle2, MessageSquare, Play, XCircle, Target, AlertTriangle } from 'lucide-react';
 import { Task, TaskStatus } from '../../../types';
 
 const getStatusConfig = (s: TaskStatus) => {
@@ -18,13 +18,14 @@ export interface TaskProgressUpdateResult {
     completionResult?: string;
     incompleteReason?: string;
     incompleteReasonType?: 'objective' | 'subjective';
+    obstacles?: string;
 }
 
 interface TaskProgressUpdateModalProps {
     task: Task;
     targetStatus: TaskStatus | null;
     onClose: () => void;
-    onSubmit: (progress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective') => void;
+    onSubmit: (progress: number, note: string, newStatus?: TaskStatus, incompleteReasonType?: 'objective' | 'subjective', obstacles?: string) => void;
     isSaving?: boolean;
 }
 
@@ -34,6 +35,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
         targetStatus === TaskStatus.Done ? 100 : (task.ProgressPercent || 0)
     );
     const [note, setNote] = useState<string>('');
+    const [obstacles, setObstacles] = useState<string>((task as any).obstacles || '');
     const [incompleteReasonType, setIncompleteReasonType] = useState<'objective' | 'subjective' | ''>('');
 
     const targetStatusCfg = targetStatus ? getStatusConfig(targetStatus) : null;
@@ -48,7 +50,8 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
             progress,
             note,
             targetStatus || undefined,
-            targetStatus === TaskStatus.Incomplete ? (incompleteReasonType as 'objective' | 'subjective') : undefined
+            targetStatus === TaskStatus.Incomplete ? (incompleteReasonType as 'objective' | 'subjective') : undefined,
+            obstacles.trim() || undefined
         );
     };
 
@@ -114,6 +117,22 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                             </div>
                         </div>
                     )}
+
+                    {/* Khó khăn / Vướng mắc — hiển thị mọi trạng thái */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-amber-500" />
+                            Khó khăn / Vướng mắc
+                            <span className="text-xs font-normal text-slate-400">(nếu có — hiển thị trong báo cáo giao ban)</span>
+                        </label>
+                        <textarea
+                            value={obstacles}
+                            onChange={(e) => setObstacles(e.target.value)}
+                            rows={2}
+                            placeholder="Mô tả các khó khăn, vướng mắc cần tháo gỡ trong quá trình thực hiện..."
+                            className="w-full p-3 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/10 focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                        />
+                    </div>
 
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">

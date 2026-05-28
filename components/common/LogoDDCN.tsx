@@ -9,37 +9,37 @@ export const LogoDDCN = ({ className = "w-16 h-16" }: { className?: string }) =>
       className={className}
     >
       {/* Left building (shorter, behind) */}
-      <rect x="48" y="48" width="32" height="155" fill="#2B6EA0" />
-      <rect x="48" y="48" width="32" height="155" fill="none" stroke="#1E5A88" strokeWidth="1.5" />
+      <rect x="48" y="48" width="32" height="155" className="fill-[#2B6EA0] dark:fill-[#60a5fa] transition-colors duration-200" />
+      <rect x="48" y="48" width="32" height="155" fill="none" className="stroke-[#1E5A88] dark:stroke-[#3b82f6] transition-colors duration-200" strokeWidth="1.5" />
       {/* Gold accents on left building */}
-      <rect x="58" y="48" width="5" height="155" fill="#BDA558" />
-      <rect x="67" y="48" width="5" height="155" fill="#BDA558" />
+      <rect x="58" y="48" width="5" height="155" className="fill-[#BDA558] dark:fill-[#fbbf24] transition-colors duration-200" />
+      <rect x="67" y="48" width="5" height="155" className="fill-[#BDA558] dark:fill-[#fbbf24] transition-colors duration-200" />
 
       {/* Right building (taller, overlapping) */}
-      <rect x="72" y="14" width="44" height="189" fill="#2568A0" />
-      <rect x="72" y="14" width="44" height="189" fill="none" stroke="#1B5590" strokeWidth="2" />
+      <rect x="72" y="14" width="44" height="189" className="fill-[#2568A0] dark:fill-[#3b82f6] transition-colors duration-200" />
+      <rect x="72" y="14" width="44" height="189" fill="none" className="stroke-[#1B5590] dark:stroke-[#2563eb] transition-colors duration-200" strokeWidth="2" />
       {/* Gold accents on right building */}
-      <rect x="84" y="14" width="5.5" height="189" fill="#BDA558" />
-      <rect x="96" y="14" width="5.5" height="55" fill="#BDA558" />
+      <rect x="84" y="14" width="5.5" height="189" className="fill-[#BDA558] dark:fill-[#fbbf24] transition-colors duration-200" />
+      <rect x="96" y="14" width="5.5" height="55" className="fill-[#BDA558] dark:fill-[#fbbf24] transition-colors duration-200" />
 
       {/* Building edge highlights (subtle lighter tones) */}
-      <rect x="48" y="48" width="2" height="155" fill="#3B82B8" opacity="0.4" />
-      <rect x="72" y="14" width="2" height="189" fill="#3B82B8" opacity="0.4" />
+      <rect x="48" y="48" width="2" height="155" className="fill-[#3B82B8] dark:fill-[#93c5fd] transition-colors duration-200" opacity="0.4" />
+      <rect x="72" y="14" width="2" height="189" className="fill-[#3B82B8] dark:fill-[#93c5fd] transition-colors duration-200" opacity="0.4" />
 
       {/* Three green horizontal bars */}
-      <rect x="114" y="58" width="88" height="22" rx="1.5" fill="#8BC63E" />
-      <rect x="114" y="78" width="88" height="5" rx="1" fill="#6A9F45" opacity="0.7" />
+      <rect x="114" y="58" width="88" height="22" rx="1.5" className="fill-[#8BC63E] dark:fill-[#34d399] transition-colors duration-200" />
+      <rect x="114" y="78" width="88" height="5" rx="1" className="fill-[#6A9F45] dark:fill-[#059669] transition-colors duration-200" opacity="0.7" />
 
-      <rect x="114" y="94" width="88" height="22" rx="1.5" fill="#6AAB4A" />
-      <rect x="114" y="114" width="88" height="5" rx="1" fill="#4A8F3A" opacity="0.7" />
+      <rect x="114" y="94" width="88" height="22" rx="1.5" className="fill-[#6AAB4A] dark:fill-[#34d399] transition-colors duration-200" />
+      <rect x="114" y="114" width="88" height="5" rx="1" className="fill-[#4A8F3A] dark:fill-[#059669] transition-colors duration-200" opacity="0.7" />
 
-      <rect x="114" y="130" width="88" height="22" rx="1.5" fill="#4A9540" />
-      <rect x="114" y="150" width="88" height="5" rx="1" fill="#3A7530" opacity="0.7" />
+      <rect x="114" y="130" width="88" height="22" rx="1.5" className="fill-[#4A9540] dark:fill-[#10b981] transition-colors duration-200" />
+      <rect x="114" y="150" width="88" height="5" rx="1" className="fill-[#3A7530] dark:fill-[#047857] transition-colors duration-200" opacity="0.7" />
 
       {/* Curved road */}
-      <path d="M 58 190 C 85 160, 150 165, 230 230 L 226 255 C 145 195, 80 190, 64 215 Z" fill="#1E5A8F" />
-      <path d="M 64 215 C 80 190, 145 195, 226 255 L 230 265 C 150 205, 85 198, 68 225 Z" fill="#BDA558" />
-      <path d="M 65 200 C 88 175, 148 180, 225 240" stroke="#C4A44A" strokeWidth="3.5" strokeDasharray="10 8" fill="none" />
+      <path d="M 58 190 C 85 160, 150 165, 230 230 L 226 255 C 145 195, 80 190, 64 215 Z" className="fill-[#1E5A8F] dark:fill-[#2563eb] transition-colors duration-200" />
+      <path d="M 64 215 C 80 190, 145 195, 226 255 L 230 265 C 150 205, 85 198, 68 225 Z" className="fill-[#BDA558] dark:fill-[#fbbf24] transition-colors duration-200" />
+      <path d="M 65 200 C 88 175, 148 180, 225 240" className="stroke-[#C4A44A] dark:stroke-[#fbbf24] transition-colors duration-200" strokeWidth="3.5" strokeDasharray="10 8" fill="none" />
 
       {/* Text DD&HT */}
       <g transform="translate(0,347) scale(0.1,-0.1)" stroke="none">

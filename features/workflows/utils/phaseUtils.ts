@@ -65,6 +65,17 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
         gradient: 'from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-900/10',
         icon: '📦',
     },
+    // ── TK3B Giai đoạn 2 phases ──────────────────────────────────────
+    initiation_gd2: {
+        title: 'GĐ2 — GIAO NHIỆM VỤ TKBVTC',
+        gradient: 'from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-900/10',
+        icon: '🔄',
+    },
+    consultant_gd2: {
+        title: 'GĐ2 — TƯ VẤN LẬP TKBVTC',
+        gradient: 'from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-900/10',
+        icon: '📐',
+    },
     other: {
         title: 'KHÁC',
         gradient: 'from-slate-200 to-slate-300/50 dark:from-slate-800 dark:to-slate-900/50',
@@ -78,6 +89,7 @@ export const PHASE_CONFIG: Record<string, PhaseConfig> = {
 export const PHASE_ORDER = [
     'preparation', 'execution',
     'initiation', 'consultant', 'reception', 'review', 'consolidation', 'approval', 'handover',
+    'initiation_gd2', 'consultant_gd2',
     'completion', 'other',
 ];
 

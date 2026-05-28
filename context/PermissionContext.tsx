@@ -160,8 +160,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
         const userId = effectiveUser?.EmployeeID;
 
-        // Fetch DB role defaults concurrently or fallback to cache
-        fetchRoleDefaults(systemRole);
+        // Await role defaults before marking loaded — prevents hardcoded-fallback window
+        await fetchRoleDefaults(systemRole);
 
         // Not logged in → clear state
         if (!userId || !isAuthenticated) {
@@ -341,13 +341,15 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 return result;
             }
 
-            // 3) Fallback to hardcoded role defaults (Safety Net)
+            // 3) Hardcoded fallback — last resort when DB role defaults unavailable
             const defaults = DEFAULT_ROLE_PERMISSIONS[state.systemRole];
             if (!defaults) return false;
             const defaultActions = defaults[resource as keyof typeof defaults];
             const result = defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
-            if (import.meta.env.DEV) {
-                console.debug(`[PermissionCtx] [hardcoded-fallback] ${resource}.${action} = ${result}`);
+            // Warn in all environments for non-contractor roles — DB should be authoritative
+            // (super_admin is handled above and never reaches here)
+            if (state.systemRole !== 'contractor') {
+                console.warn(`[PermissionCtx] ⚠️ Hardcoded fallback: role=${state.systemRole} ${resource}.${action}=${result} — DB role defaults unavailable`);
             }
             return result;
         },

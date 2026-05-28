@@ -150,13 +150,30 @@ export const GLOBAL_VIEW_DEPARTMENTS = [
     'Trung tâm Dịch vụ tư vấn',
 ];
 
-/** Ban ĐHDA departments — project-scoped */
+/**
+ * Project-scoped departments — members only see their own projects.
+ * Includes both canonical DB names ('Phòng Quản lý dự án') and legacy
+ * naming variants ('Ban Điều hành dự án') that may exist in employees.department.
+ * Must stay in sync with the `departments` table (is_global_scope = FALSE rows).
+ */
 export const PROJECT_SCOPED_DEPARTMENTS = [
+    // Current canonical names (DB departments table)
+    'Phòng Quản lý dự án 1',
+    'Phòng Quản lý dự án 2',
+    'Phòng Quản lý dự án 3',
+    'Phòng Quản lý dự án 4',
+    'Phòng Quản lý dự án 5',
+    // Legacy / alias names (employees.department may still carry these)
     'Ban Điều hành dự án 1',
     'Ban Điều hành dự án 2',
     'Ban Điều hành dự án 3',
     'Ban Điều hành dự án 4',
     'Ban Điều hành dự án 5',
+    'Ban ĐHDA 1',
+    'Ban ĐHDA 2',
+    'Ban ĐHDA 3',
+    'Ban ĐHDA 4',
+    'Ban ĐHDA 5',
 ];
 
 // ═══════════════════════════════════════════

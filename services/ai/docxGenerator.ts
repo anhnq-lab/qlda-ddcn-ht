@@ -84,16 +84,14 @@ export const docxGenerator = {
                 new TableRow({
                     children: [
                         headerCell('STT', 600),
-                        headerCell('Tên công việc', 4500),
-                        headerCell('Hạn hoàn thành', 1800),
-                        headerCell('Trạng thái', 1500),
-                        headerCell('Kế hoạch vốn (VNĐ)', 2000),
+                        headerCell('Tên công việc', 5500),
+                        headerCell('Hạn hoàn thành', 2000),
+                        headerCell('Trạng thái', 1900),
                     ]
                 })
             ];
 
             data.tasks.forEach((t, i) => {
-                const planCost = t.estimated_cost ? t.estimated_cost.toLocaleString('vi-VN') : '0';
                 tableRows.push(
                     new TableRow({
                         children: [
@@ -101,7 +99,6 @@ export const docxGenerator = {
                             dataCell(t.title || ''),
                             dataCell(t.due_date || t.dueDate || 'Chưa rõ', AlignmentType.CENTER),
                             dataCell(t.status === 'done' ? 'Hoàn thành' : t.status === 'in_progress' ? 'Đang chạy' : 'Chưa bắt đầu', AlignmentType.CENTER),
-                            dataCell(planCost, AlignmentType.RIGHT),
                         ]
                     })
                 );
@@ -271,87 +268,6 @@ export const docxGenerator = {
         // Save
         const filename = `Slide_tiendo_${projectName.replace(/\s+/g, '_')}.pptx`;
         await pres.writeFile({ fileName: filename });
-    },
-
-    /**
-     * Sinh bảng tính Excel kế hoạch vốn & giải ngân
-     */
-    generateExcelCapitalPlan: async (projectName: string, data: {
-        tasks?: any[];
-    }): Promise<void> => {
-        const wb = XLSX.utils.book_new();
-        const headers = [['STT', 'Hạng mục/Nội dung công việc', 'Kế hoạch vốn (VNĐ)', 'Đã giải ngân (VNĐ)', 'Tỷ lệ giải ngân (%)', 'Trạng thái']];
-        
-        const rows = (data.tasks || []).map((t: any, index: number) => {
-            const plan = t.estimated_cost || 0;
-            const actual = t.actual_cost || 0;
-            const rate = plan > 0 ? (actual / plan) * 100 : 0;
-            return [
-                index + 1,
-                t.title,
-                plan,
-                actual,
-                rate / 100, // Để Excel format dạng % (0.xx)
-                t.status === 'done' ? 'Đã hoàn thành' : 'Đang triển khai'
-            ];
-        });
-
-        // Hàng tổng cộng
-        const totalPlan = rows.reduce((acc: number, r: any) => acc + r[2], 0);
-        const totalActual = rows.reduce((acc: number, r: any) => acc + r[3], 0);
-        
-        // Hàng tổng cộng sẽ được lưu ở hàng cuối
-        const totalRowIdx = rows.length + 2; // +1 cho header (1-indexed), +1 cho hàng sau
-        rows.push([
-            '', 
-            'TỔNG CỘNG', 
-            totalPlan, 
-            totalActual, 
-            `=IF(C${totalRowIdx}>0, D${totalRowIdx}/C${totalRowIdx}, 0)`, // Formula tính tỷ lệ giải ngân tổng
-            ''
-        ]);
-
-        const wsData = [...headers, ...rows];
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-        // Định dạng cột số và phần trăm trong SheetJS
-        const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:F1');
-        for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-            // Cột C (Kế hoạch vốn) - Index 2
-            const planCellRef = XLSX.utils.encode_cell({ r: R, c: 2 });
-            if (ws[planCellRef]) {
-                ws[planCellRef].z = '#,##0'; // Định dạng tiền tệ VND nguyên tệ
-            }
-            // Cột D (Đã giải ngân) - Index 3
-            const actualCellRef = XLSX.utils.encode_cell({ r: R, c: 3 });
-            if (ws[actualCellRef]) {
-                ws[actualCellRef].z = '#,##0';
-            }
-            // Cột E (Tỷ lệ giải ngân) - Index 4
-            const rateCellRef = XLSX.utils.encode_cell({ r: R, c: 4 });
-            if (ws[rateCellRef]) {
-                if (typeof ws[rateCellRef].v === 'string' && ws[rateCellRef].v.startsWith('=')) {
-                    ws[rateCellRef].f = ws[rateCellRef].v; // Gán công thức thực sự cho ô tổng cộng
-                    delete ws[rateCellRef].v;
-                }
-                ws[rateCellRef].z = '0.0%';
-            }
-        }
-
-        // Định dạng cột rộng
-        ws['!cols'] = [
-            { wch: 6 },   // STT
-            { wch: 45 },  // Nội dung
-            { wch: 22 },  // Kế hoạch vốn
-            { wch: 22 },  // Đã giải ngân
-            { wch: 20 },  // Tỷ lệ
-            { wch: 18 }   // Trạng thái
-        ];
-
-        XLSX.utils.book_append_sheet(wb, ws, 'KeHoachCapital');
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([wbout], { type: 'application/octet-stream' });
-        saveAs(blob, `Ke_hoach_von_${projectName.replace(/\s+/g, '_')}.xlsx`);
     }
 };
 

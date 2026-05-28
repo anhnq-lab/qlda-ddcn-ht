@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Báo cáo Đánh giá Nội dung và Chất lượng Dữ liệu - Ban QLDA đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh">
+  <title>Báo cáo Đánh giá Nội dung và Chất lượng Dữ liệu</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #161b2a;
+      --bg-tertiary: #1f2638;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-color: #06b6d4;
+      --accent-hover: #0891b2;
+      --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --border-color: #2e3748;
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Layout Wrapper */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 2.5rem 1.5rem;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      background: var(--accent-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .toc-title {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toc-item a {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border-left: 2px solid transparent;
+    }
+
+    .toc-item a:hover {
+      color: var(--accent-color);
+      background-color: var(--bg-tertiary);
+      padding-left: 1rem;
+      border-left: 2px solid var(--accent-color);
+    }
+
+    .toc-item.active a {
+      color: white;
+      background: var(--accent-gradient);
+      font-weight: 600;
+      border-left: 2px solid transparent;
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: 320px;
+      padding: 3rem 4rem;
+      max-width: 1300px;
+    }
+
+    /* Document Header Header styling */
+    .doc-header {
+      margin-bottom: 3.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .doc-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100px;
+      height: 3px;
+      background: var(--accent-gradient);
+      border-radius: 3px;
+    }
+
+    .doc-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 1rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .meta-item i {
+      color: var(--accent-color);
+    }
+
+    /* Markdown Styling overrides */
+    h1 {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 2.25rem;
+      line-height: 1.3;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, white 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.65rem;
+      margin-top: 3rem;
+      margin-bottom: 1.25rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background: var(--accent-gradient);
+      border-radius: 4px;
+    }
+
+    h3 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    h4 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: white;
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      text-align: justify;
+    }
+
+    /* Lists styling */
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1.02rem;
+    }
+
+    /* Table styling - Stunning dashboard look */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin: 2.5rem 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      background-color: var(--bg-secondary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-tertiary);
+      color: white;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 2px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      color: white;
+      background-color: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Format numbers in table */
+    td:nth-child(n+3) {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Alerts styling (GitHub style) */
+    blockquote {
+      margin: 2rem 0;
+      padding: 1.25rem 1.5rem;
+      background-color: var(--bg-secondary);
+      border-left: 4px solid var(--accent-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Custom classes injected for alerts dynamically */
+    .alert-warning {
+      border-left-color: var(--warning-color);
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+    .alert-warning .alert-title {
+      color: var(--warning-color);
+    }
+
+    .alert-note {
+      border-left-color: var(--accent-color);
+      background-color: rgba(6, 182, 212, 0.05);
+    }
+    .alert-note .alert-title {
+      color: var(--accent-color);
+    }
+
+    .alert-tip {
+      border-left-color: var(--success-color);
+      background-color: rgba(16, 187, 129, 0.05);
+    }
+    .alert-tip .alert-title {
+      color: var(--success-color);
+    }
+
+    .alert-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    hr {
+      margin: 3.5rem 0;
+      border: 0;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    /* Highlight Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-error {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--error-color);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning-color);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success-color);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="brand-title">CIC ERP - Portal</div>
+      </div>
+      <h3 class="toc-title">Mục lục báo cáo</h3>
+      <ul class="toc-list" id="toc-nav">
+        <!-- Will be populated dynamically by JavaScript -->
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="doc-header">
+        <h1>Báo cáo Đánh giá Nội dung và Chất lượng Dữ liệu</h1>
+        <div class="doc-meta">
+          <div class="meta-item"><i class="fa-regular fa-calendar"></i> 28/05/2026</div>
+          <div class="meta-item"><i class="fa-regular fa-user"></i> Ban Giam Doc</div>
+          <div class="meta-item"><i class="fa-solid fa-shield-halved"></i> Đã rà soát & đánh giá</div>
+        </div>
+      </div>
+      
+      <div class="doc-body" id="doc-body">
+        <h1>BÁO CÁO ĐÁNH GIÁ NỘI DUNG VÀ CHẤT LƯỢNG DỮ LIỆU</h1>
+<h2>Danh mục dự án cấp huyện chuyển về Ban QLDA đầu tư xây dựng công trình Dân dụng và Công nghiệp tỉnh Hà Tĩnh</h2>
+<p><em>(Phân tích và đánh giá từ tệp tin dữ liệu: <code>28.5.26 BC  dự án các huyện chuyển về.xlsx</code>)</em></p>
+<hr>
+<h2>I. TỔNG QUAN HỒ SƠ BÀN GIAO VÀ CĂN CỨ PHÁP LÝ</h2>
+<p>Qua rà soát các văn bản pháp lý tại các sheet chỉ đạo (<strong>PL01</strong> và <strong>PL02</strong>), quá trình chuyển giao chủ đầu tư các dự án từ cấp huyện về cấp tỉnh được thực hiện theo lộ trình sắp xếp đơn vị hành chính và tổ chức lại chính quyền địa phương 02 cấp của tỉnh Hà Tĩnh giai đoạn 2025–2026.</p>
+<ul>
+<li><strong>Văn bản chỉ đạo cấp tỉnh (PL01):</strong> Tổng số <strong>39 văn bản chỉ đạo</strong> từ UBND tỉnh Hà Tĩnh và Sở Kế hoạch - Đầu tư từ ngày 01/03/2025 đến nay. Trọng tâm pháp lý là Quyết định số <strong>1734/QĐ-UBND ngày 30/06/2025</strong> và Quyết định số <strong>2140/QĐ-UBND ngày 23/08/2025</strong> của UBND tỉnh phê duyệt chuyển cấp quyết định đầu tư, chuyển giao chủ đầu tư các dự án công cộng cấp huyện về Ban QLDA đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh.</li>
+<li><strong>Văn bản xử lý vướng mắc, tiến độ (PL02):</strong> Tổng số <strong>33 văn bản</strong> đôn đốc, xử lý tiến độ, quyết toán gói thầu và kiểm điểm trách nhiệm. Đáng lưu ý có việc kiểm điểm trách nhiệm liên quan đến chậm tiến độ tại dự án <em>Nhà máy nước và Hệ thống cấp nước sạch cho Nhân dân thị trấn Hương Khê và 08 xã phụ cận</em> (các báo cáo kiểm điểm số 7, 60, 295 của Ban Tỉnh).</li>
+</ul>
+<hr>
+<h2>II. SỐ LIỆU TỔNG HỢP VÀ ĐÁNH GIÁ CHI TIẾT DANH MỤC DỰ ÁN</h2>
+<p>Hồ sơ dữ liệu bàn giao thực tế ghi nhận thông tin của <strong>542 dự án</strong> cấp huyện chuyển về, được chia làm 2 phân nhóm chính tại Sheet <strong>PL03</strong> và <strong>PL04</strong>:</p>
+<h3>1. Nhóm dự án đã hoàn thành bàn giao đưa vào sử dụng (PL03)</h3>
+<p>Nhóm này bao gồm các dự án đã hoàn thành thi công trước ngày sáp nhập, đang trong giai đoạn quyết toán hoặc theo dõi bảo hành công trình.</p>
+<ul>
+<li><strong>Tổng số lượng dự án:</strong> <strong>423 dự án</strong></li>
+<li><strong>Tổng mức đầu tư (TMDT):</strong> <strong>8.451,74 tỷ đồng</strong> (<code>8.451.738,89</code> triệu đồng)</li>
+<li><strong>Tổng kế hoạch vốn đã bố trí:</strong> <strong>5.479,02 tỷ đồng</strong> (<code>5.479.023,98</code> triệu đồng) - Đạt tỷ lệ <strong>64,8%</strong> so với TMDT.</li>
+</ul>
+<h4>Số liệu chi tiết theo từng huyện:</h4>
+<div class="table-responsive"><table>
+<thead>
+<tr>
+<th align="left">STT</th>
+<th align="left">Địa bàn</th>
+<th align="center">Số dự án</th>
+<th align="center">Tổng mức đầu tư (triệu đồng)</th>
+<th align="center">Kế hoạch vốn đã bố trí (triệu đồng)</th>
+<th align="center">Tỷ lệ bố trí vốn</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">Huyện Hương Khê</td>
+<td align="center">144</td>
+<td align="center">3.853.970,00</td>
+<td align="center">1.635.505,00</td>
+<td align="center">42,4%</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">Huyện Thạch Hà (gồm cả Lộc Hà cũ)</td>
+<td align="center">118</td>
+<td align="center">2.699.435,48</td>
+<td align="center">2.263.322,58</td>
+<td align="center">83,8%</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">Huyện Cẩm Xuyên</td>
+<td align="center">40</td>
+<td align="center">705.069,10</td>
+<td align="center">544.481,76</td>
+<td align="center">77,2%</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">Huyện Đức Thọ</td>
+<td align="center">37</td>
+<td align="center">493.099,00</td>
+<td align="center">435.635,00</td>
+<td align="center">88,3%</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">Huyện Can Lộc</td>
+<td align="center">19</td>
+<td align="center">361.559,00</td>
+<td align="center">289.688,00</td>
+<td align="center">80,1%</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">Huyện Vũ Quang</td>
+<td align="center">64</td>
+<td align="center">338.600,30</td>
+<td align="center">310.384,64</td>
+<td align="center">91,7%</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">Chưa phân loại (Lỗi lọc dòng)</td>
+<td align="center">1</td>
+<td align="center">6,00</td>
+<td align="center">7,00</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>TỔNG CỘNG</strong></td>
+<td align="center"><strong>423</strong></td>
+<td align="center"><strong>8.451.738,89</strong></td>
+<td align="center"><strong>5.479.023,98</strong></td>
+<td align="center"><strong>64,8%</strong></td>
+</tr>
+</tbody></table></div>
+<blockquote class="alert-note"><div class="alert-title"><i class="fa-solid fa-circle-info"></i> Ghi chú</div><p>
+Huyện Hương Khê có số lượng dự án đã bàn giao lớn nhất (144 dự án) nhưng tỷ lệ bố trí vốn chỉ đạt <strong>42,4%</strong>, cho thấy áp lực nợ đọng xây dựng cơ bản và nhu cầu vốn để tất toán các dự án đã hoàn thành tại địa bàn này là rất lớn. Ngược lại, huyện Vũ Quang có tỷ lệ bố trí vốn đạt cao nhất (<strong>91,7%</strong>).</p></blockquote>
+<h4>Các dự án quy mô lớn tiêu biểu trong nhóm đã hoàn thành (TMDT &gt; 200 tỷ đồng):</h4>
+<ol>
+<li><em>Nâng cấp, cải tạo Trung tâm hành chính công huyện Hương Khê</em> (TMDT: <strong>934 tỷ đồng</strong> - Mã DA: 7709956).</li>
+<li><em>Chương trình phát triển đô thị thị trấn Hương Khê đến năm 2030</em> (TMDT: <strong>811 tỷ đồng</strong> - Mã DA: 3034081).</li>
+<li><em>Nâng cấp, mở rộng đường Tỉnh lộ 9 (Đoạn cầu Hộ Độ đi trung tâm Lộc Hà)</em> (TMDT: <strong>482,7 tỷ đồng</strong> - Mã DA: 7043186).</li>
+<li><em>Đề án phân loại đô thị thị trấn Hương Khê mở rộng đạt tiêu chí loại V</em> (TMDT: <strong>370 tỷ đồng</strong> - Mã DA: 3034080).</li>
+<li><em>Nâng cấp, mở rộng đường Tỉnh lộ 21</em> (TMDT: <strong>312,3 tỷ đồng</strong> - Mã DA: 7910838).</li>
+<li><em>Kè biển chống xâm thực huyện Lộc Hà đoạn K3+00 - K11+105</em> (TMDT: <strong>312 tỷ đồng</strong> - Mã DA: 7398566).</li>
+</ol>
+<hr>
+<h3>2. Nhóm dự án đang thi công, chuẩn bị đầu tư (PL04)</h3>
+<p>Nhóm này gồm các dự án chuyển tiếp, dở dang cần tiếp tục triển khai thi công, nghiệm thu giải ngân hoặc lập thủ tục đầu tư.</p>
+<ul>
+<li><strong>Tổng số lượng dự án:</strong> <strong>119 dự án</strong></li>
+<li><strong>Tổng mức đầu tư (TMDT):</strong> <strong>4.276,70 tỷ đồng</strong> (<code>4.276.696,59</code> triệu đồng)</li>
+<li><strong>Tổng kế hoạch vốn đã bố trí:</strong> <strong>3.468,71 tỷ đồng</strong> (<code>3.468.711,15</code> triệu đồng) - Đạt tỷ lệ <strong>81,1%</strong> so với TMDT.</li>
+</ul>
+<h4>Số liệu chi tiết theo từng địa bàn:</h4>
+<div class="table-responsive"><table>
+<thead>
+<tr>
+<th align="left">STT</th>
+<th align="left">Địa bàn</th>
+<th align="center">Số dự án</th>
+<th align="center">Tổng mức đầu tư (triệu đồng)</th>
+<th align="center">Kế hoạch vốn đã bố trí (triệu đồng)</th>
+<th align="center">Tỷ lệ bố trí vốn</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">Huyện Thạch Hà (gồm cả Lộc Hà cũ)</td>
+<td align="center">37</td>
+<td align="center">2.205.706,36</td>
+<td align="center">2.142.273,68</td>
+<td align="center">97,1%</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">Huyện Cẩm Xuyên</td>
+<td align="center">25</td>
+<td align="center">832.351,05</td>
+<td align="center">514.330,98</td>
+<td align="center">61,8%</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">Huyện Vũ Quang</td>
+<td align="center">11</td>
+<td align="center">354.402,18</td>
+<td align="center">290.982,50</td>
+<td align="center">82,1%</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">Huyện Can Lộc</td>
+<td align="center">8</td>
+<td align="center">314.124,00</td>
+<td align="center">152.812,00</td>
+<td align="center">48,6%</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">Huyện Hương Khê</td>
+<td align="center">30</td>
+<td align="center">288.036,00</td>
+<td align="center">141.318,00</td>
+<td align="center">49,1%</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">Huyện Đức Thọ</td>
+<td align="center">7</td>
+<td align="center">282.071,00</td>
+<td align="center">226.987,00</td>
+<td align="center">80,5%</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">Chưa phân loại (Lỗi lọc dòng)</td>
+<td align="center">1</td>
+<td align="center">6,00</td>
+<td align="center">7,00</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"><strong>TỔNG CỘNG</strong></td>
+<td align="center"><strong>119</strong></td>
+<td align="center"><strong>4.276.696,59</strong></td>
+<td align="center"><strong>3.468.711,15</strong></td>
+<td align="center"><strong>81,1%</strong></td>
+</tr>
+</tbody></table></div>
+<blockquote class="alert-tip"><div class="alert-title"><i class="fa-regular fa-lightbulb"></i> Gợi ý</div><p>
+Tỷ lệ bố trí vốn trung bình của nhóm dự án đang thi công đạt rất cao (<strong>81,1%</strong>), đặc biệt là tại Thạch Hà đạt <strong>97,1%</strong>. Tuy nhiên, tỷ lệ bố trí vốn tại Can Lộc và Hương Khê vẫn ở mức thấp (dưới 50%), cần ưu tiên rà soát cân đối nguồn vốn bổ sung để tránh phát sinh nợ đọng xây dựng cơ bản cho nhà thầu.</p></blockquote>
+<h4>Các dự án chuyển tiếp quy mô lớn tiêu biểu (TMDT &gt; 100 tỷ đồng):</h4>
+<ol>
+<li><em>Tiểu dự án cải thiện cơ sở hạ tầng đô thị Thạch Hà</em> (TMDT: <strong>911,9 tỷ đồng</strong> - Mã DA: 7786649 - Đã được bố trí 100% vốn).</li>
+<li><em>Xử lý cấp bách đê tả nghèn huyện Lộc Hà</em> (TMDT: <strong>182,3 tỷ đồng</strong> - Mã DA: 7853227 - Đã được bố trí 100% vốn).</li>
+<li><em>Hạ tầng khu du lịch Nam Thiên Cầm, huyện Cẩm Xuyên</em> (TMDT: <strong>166 tỷ đồng</strong> - Mã DA: 7941956).</li>
+<li><em>Đường trục ngang ven biển huyện Thạch Hà</em> (TMDT: <strong>164 tỷ đồng</strong> - Mã DA: 7936829 - Đã được bố trí 100% vốn).</li>
+<li><em>Kè chống sạt lở bờ hữu sông Ngàn Sâu đoạn qua xã Đức Đồng - Đức Lạc, huyện Đức Thọ</em> (TMDT: <strong>130 tỷ đồng</strong> - Mã DA: 7778248).</li>
+<li><em>Nâng cấp, mở rộng tuyến đường Cẩm Thạch - Thạch Hội, huyện Cẩm Xuyên</em> (TMDT: <strong>125 tỷ đồng</strong> - Mã DA: 7941955).</li>
+<li><em>Đường cứu hộ cứu nạn cho nhân dân các xã ven biển huyện Lộc Hà</em> (TMDT: <strong>123,2 tỷ đồng</strong> - Mã DA: 7275750).</li>
+<li><em>Cầu Hốp Chuối, thị trấn Vũ Quang</em> (TMDT: <strong>120 tỷ đồng</strong> - Mã DA: 7959984).</li>
+<li><em>Đường từ thị trấn Đức Thọ đến Khu lưu niệm Trần Phú, huyện Đức Thọ</em> (TMDT: <strong>117 tỷ đồng</strong> - Mã DA: 7941294).</li>
+</ol>
+<hr>
+<h2>III. RÀ SOÁT KẾT LUẬN KIỂM TOÁN, THANH TRA (PL05)</h2>
+<p>Dữ liệu tại Sheet <strong>PL05 (2)</strong> theo dõi các dự án có kết luận thanh tra, kiểm toán đang chờ xử lý tài chính:</p>
+<ul>
+<li><strong>Tình trạng chung:</strong> Tổng cộng <strong>15 dự án</strong> thực tế được liệt kê có kiến nghị xử lý tài chính liên quan đến thu hồi nộp NSNN hoặc giảm trừ quyết toán.</li>
+<li><strong>Tổng số tiền kiến nghị thu hồi:</strong> <strong>42,55 triệu đồng</strong> (Sau khi đã lọc bỏ dòng tiêu đề và dòng chỉ mục thô số 8).<ul>
+<li><em>Dự án Đường giao thông kết hợp vào trang trại chăn nuôi tập trung tại xã Đức Lạng, Tân Hương, Đức Dũng (Đức Thọ):</em> Kiến nghị thu hồi <strong>24,82 triệu đồng</strong> theo Thông báo số 05/TB-KTNN KVII ngày 18/08/2017.</li>
+<li><em>Ban quản lý các Dự án XDCB huyện Đức Thọ (Chi phí QLDA chuyển về):</em> Kiến nghị thu hồi <strong>17,73 triệu đồng</strong> theo Thông báo số 60/TB-KTNN KVII ngày 02/12/2016.</li>
+</ul>
+</li>
+<li><strong>Kết quả thực hiện:</strong> Tỷ lệ thực hiện đạt <strong>0%</strong> (chưa có ghi nhận số tiền đã nộp lại NSNN hay chứng từ UNC chứng minh đã nộp).</li>
+</ul>
+<blockquote class="alert-warning"><div class="alert-title"><i class="fa-solid fa-triangle-exclamation"></i> Cảnh báo</div><p>
+Mặc dù giá trị kiến nghị xử lý tài chính còn tồn đọng nhỏ (42,55 triệu đồng) nhưng thời gian tồn đọng kéo dài từ năm 2016–2017 đến nay. Phòng Kế toán - Tài vụ cần khẩn trương yêu cầu Kho bạc kiểm soát chi hoặc phối hợp với ban quản lý cũ của huyện Đức Thọ để tất toán dứt điểm nghĩa vụ này.</p></blockquote>
+<hr>
+<h2>IV. CÁC PHÁT HIỆN NGHIÊM TRỌNG VỀ CHẤT LƯỢNG DỮ LIỆU</h2>
+<p>Qua kiểm tra đối chiếu dữ liệu tự động, phát hiện các lỗi nghiêm trọng sau đây trong tệp dữ liệu báo cáo:</p>
+<h3>1. Lỗi dấu phẩy thập phân gây sai số số liệu tài chính cực lớn</h3>
+<ul>
+<li>Tại Sheet <strong>PL04</strong>, dòng 16 (Dự án: <em>Nhà học bộ môn 02 tầng 8 phòng và các hạng mục phụ trợ</em> - Vũ Quang), cột G (Kế hoạch vốn đã bố trí) giá trị được nhập dạng text là <code>&quot;7550,067&quot;</code>.</li>
+<li><strong>Hậu quả:</strong> <ul>
+<li>Hệ thống máy tính hoặc phần mềm kế toán tự động hiểu dấu phẩy là dấu phân cách hàng ngàn và đọc trị giá này là <strong>7.550.067 triệu đồng (tức là 7,55 nghìn tỷ đồng!)</strong>, gấp gần 1000 lần so với Tổng mức đầu tư của dự án là <strong>8.000 triệu đồng</strong> (8 tỷ đồng).</li>
+<li>Lỗi định dạng này làm lệch tổng vốn đã bố trí của huyện Vũ Quang trong các báo cáo thô từ <strong>290,98 tỷ đồng</strong> vọt lên <strong>7.833,50 tỷ đồng</strong>, gây sai lệch hoàn toàn báo cáo cân đối ngân sách của cả tỉnh.</li>
+</ul>
+</li>
+<li><strong>Khắc phục:</strong> Đã sửa và chuẩn hóa về dạng số thực đúng là <code>7.550,067</code> triệu đồng (7,55 tỷ đồng).</li>
+</ul>
+<h3>2. Thiếu hụt thông tin định danh pháp lý và phần mềm</h3>
+<ul>
+<li><strong>Khuyết Mã dự án:</strong> Có <strong>15 dự án</strong> hoàn toàn không có mã số dự án (mã đầu tư công/TABMIS), trong đó có dự án quy mô lớn như <em>Trụ sở UBND huyện Cẩm Xuyên</em> (dòng 35 - PL04), <em>Cầu Cây Soi</em> (dòng 78 - PL04)...</li>
+<li><strong>Khuyết Quyết định đầu tư:</strong> Có <strong>23 dự án</strong> không ghi số hiệu, ngày ban hành quyết định phê duyệt dự án, gây khó khăn cho việc tra cứu pháp lý.</li>
+</ul>
+<h3>3. Tồn tại các bảng biểu trắng không có dữ liệu</h3>
+<ul>
+<li>Bốn bảng biểu gồm: <strong>02.1</strong> (Tổng hợp dự án đầu tư công), <strong>02.2</strong> (Tổng hợp dự án PPP), <strong>04.1</strong> (Tình hình sử dụng tài sản nhà nước) và <strong>04.2</strong> (Kết quả sắp xếp nhà đất) hoàn toàn là <strong>bảng trống (Template)</strong>, chỉ có tiêu đề và dòng hướng dẫn mẫu của Sở Tài chính/Sở KH-ĐT mà không chứa bất kỳ dữ liệu thực tế nào của các huyện.</li>
+<li><strong>Hậu quả:</strong> Ban Tỉnh chưa có số liệu tổng hợp về hiện trạng nhà, đất làm việc, ô tô và trang thiết bị làm việc của các ban QLDA huyện sáp nhập chuyển về để quản lý theo chế độ tài sản công.</li>
+</ul>
+<hr>
+<h2>V. ĐỀ XUẤT PHƯƠNG ÁN XỬ LÝ VÀ KIẾN NGHỊ BƯỚC TIẾP THEO</h2>
+<p>Để giải quyết triệt để các tồn tại về dữ liệu và chuẩn bị bàn giao đưa lên phần mềm quản lý dự án <strong>CIC ERP</strong>, đề xuất thực hiện các nội dung sau:</p>
+<h3>1. Xử lý dữ liệu thô (Dành cho Phòng Kế hoạch - Tổng hợp và các Phòng QLDA)</h3>
+<ol>
+<li><strong>Làm sạch dữ liệu thô:</strong> Thay thế dấu phẩy thập phân lỗi bằng dấu chấm phân cách chuẩn ở tất cả các cột số liệu tài chính. Đồng bộ hóa toàn bộ chỉ mục phân cấp từ dạng la mã (<code>I.1</code>, <code>I.2</code>) về dạng số nguyên phẳng để phục vụ import.</li>
+<li><strong>Truy vết điền khuyết:</strong> Gửi văn bản yêu cầu các huyện bổ sung gấp mã TABMIS của các dự án đang bị khuyết, đồng thời cung cấp bản scan Quyết định phê duyệt đầu tư để lưu trữ số hóa trên hệ thống CDE (Common Data Environment).</li>
+<li><strong>Yêu cầu cung cấp bổ sung báo cáo tài sản:</strong> Các ban quản lý dự án huyện cũ bắt buộc phải điền đầy đủ thông tin vào sheet <strong>04.1</strong> và <strong>04.2</strong> để làm cơ sở bàn giao tài sản nhà đất và công cụ dụng cụ làm việc.</li>
+</ol>
+<h3>2. Giải pháp kỹ thuật trên hệ thống CIC ERP (Dành cho Phòng IT / Ban Quản trị ERP)</h3>
+<ul>
+<li><strong>Triển khai Công cụ Nhập liệu Thông minh (Smart Importer):</strong> <ul>
+<li>Tích hợp bộ lọc cảnh báo tài chính: Hệ thống tự động báo lỗi nếu giá trị tại cột <code>Vốn đã bố trí</code> hoặc <code>Giải ngân</code> lớn hơn <code>Tổng mức đầu tư</code> của dự án (Giúp ngăn chặn lỗi gõ nhầm dấu phẩy thập phân như trường hợp của huyện Vũ Quang).</li>
+<li>Cơ chế mapping mã dự án: Thiết lập trường bắt buộc khóa (Primary Key) là Mã Dự Án. Các dự án thiếu mã sẽ được đưa vào danh sách chờ duyệt (Draft/Pending Table) trên ERP cho đến khi được bổ sung thông tin chính xác.</li>
+</ul>
+</li>
+</ul>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Dynamic Table of Contents Generation
+    document.addEventListener("DOMContentLoaded", () => {
+      const docBody = document.getElementById("doc-body");
+      const tocNav = document.getElementById("toc-nav");
+      
+      const headings = docBody.querySelectorAll("h2, h3");
+      headings.forEach((heading, idx) => {
+        // Create an ID if not exists
+        const id = heading.id || "section-" + idx;
+        heading.id = id;
+        
+        // Add item to TOC sidebar
+        const li = document.createElement("li");
+        li.className = "toc-item " + (heading.tagName === "H3" ? "toc-sub-item" : "");
+        li.style.paddingLeft = heading.tagName === "H3" ? "1rem" : "0px";
+        
+        const a = document.createElement("a");
+        a.href = "#" + id;
+        a.textContent = heading.textContent;
+        
+        li.appendChild(a);
+        tocNav.appendChild(li);
+      });
+
+      // Quick intersection observer for active menu
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const activeLink = document.querySelector(`#toc-nav a[href="#${entry.target.id}"]`);
+            if (activeLink) {
+              document.querySelectorAll("#toc-nav li").forEach(li => li.classList.remove("active"));
+              activeLink.parentElement.classList.add("active");
+            }
+          }
+        });
+      }, { rootMargin: "-20% 0px -80% 0px" });
+
+      headings.forEach(heading => observer.observe(heading));
+    });
+  </script>
+</body>
+</html>

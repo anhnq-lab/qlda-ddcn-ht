@@ -52,14 +52,6 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
                             {approver?.FullName || "Lãnh đạo Ban"}
                         </p>
                     </div>
-                    <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
-                            <DollarSign className="w-3 h-3" /> Chi phí dự kiến
-                        </label>
-                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                            {task.EstimatedCost ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(task.EstimatedCost) : "Chưa lập dự toán"}
-                        </p>
-                    </div>
                 </div>
             </div>
 

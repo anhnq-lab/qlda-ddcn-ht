@@ -348,14 +348,14 @@ const CDEPage: React.FC = () => {
 
             {/* Tab Navigation */}
             {userType !== 'contractor' && (
-                <div className="flex items-center gap-1 bg-gray-100/80 dark:bg-slate-800 p-1 rounded-xl w-fit">
+                <div className="flex items-center gap-1 bg-gray-100/80 dark:bg-slate-900/60 p-1.5 rounded-2xl w-fit border border-gray-200/40 dark:border-slate-800/80 shadow-inner-sm">
                     {TABS.map(tab => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab.key
-                                ? 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 shadow-sm'
-                                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
+                            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.key
+                                ? 'bg-white dark:bg-slate-700 border-gray-200/30 dark:border-slate-650/40 text-gray-800 dark:text-slate-100 shadow-sm'
+                                : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800/50'
                                 }`}
                         >
                             <tab.icon className="w-3.5 h-3.5" />
@@ -364,7 +364,7 @@ const CDEPage: React.FC = () => {
                     ))}
                     <button
                         onClick={() => setShowTransmittal(true)}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all ml-1"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all ml-1"
                     >
                         <ClipboardList className="w-3.5 h-3.5" />
                         Chuyển giao

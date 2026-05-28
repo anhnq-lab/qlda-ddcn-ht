@@ -105,6 +105,14 @@ export type AnnualPlanItemInput = Omit<AnnualPlanItem, 'id' | 'created_at' | 'up
 
 // ─── KH tháng (header) ────────────────────────────────────────
 
+export type ReportStatus = 'open' | 'finalized' | 'approved';
+
+export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
+    open:      'Đang mở',
+    finalized: 'Đã khóa',
+    approved:  'Đã duyệt',
+};
+
 export interface MonthlyPlan {
     id: string;
     plan_month: number;   // 1-12
@@ -116,6 +124,13 @@ export interface MonthlyPlan {
     created_by?: string;
     created_at?: string;
     updated_at?: string;
+
+    // Report workflow columns (used by MonthlyReportPage finalize/approve flow)
+    report_status?: ReportStatus;
+    finalized_by?: string;
+    finalized_at?: string;
+    report_approved_by?: string;
+    report_approved_at?: string;
 
     // Populated khi fetch chi tiết
     items?: MonthlyPlanItem[];
@@ -241,6 +256,7 @@ export interface MonthlyPlanGroup {
 }
 
 // Tổng hợp báo cáo tháng (dùng cho dashboard & export)
+// Matches RPC get_monthly_report_summary output
 export interface MonthlyReportSummary {
     plan_month: number;
     plan_year: number;
@@ -253,6 +269,20 @@ export interface MonthlyReportSummary {
     deferred: number;
     planned: number;
     completion_rate: number; // 0-100
+    // Additional RPC fields
+    on_time_done?: number;
+    on_time_rate?: number;
+    category_stats?: Record<string, { total: number; completed: number }>;
+}
+
+// Trạng thái báo cáo theo phòng (dùng trong MonthlyReportPage)
+export interface DeptPlanState {
+    id?: string;
+    report_status?: ReportStatus;
+    finalized_by?: string;
+    finalized_at?: string;
+    report_approved_by?: string;
+    report_approved_at?: string;
 }
 
 // ─── DB row types (khớp với Supabase response) ───────────────

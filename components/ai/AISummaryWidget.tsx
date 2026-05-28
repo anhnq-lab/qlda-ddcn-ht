@@ -1,10 +1,12 @@
 import React from 'react';
 import { Sparkles, RefreshCw } from 'lucide-react';
 import { useAISummary } from '../../hooks/ai/useAISummary';
+import type { PersonalSummaryContext } from '../../services/ai/smartSummary';
 
 interface AISummaryWidgetProps {
     /** If provided, show project-specific summary. Otherwise show dashboard summary. */
     projectId?: string;
+    personalContext?: PersonalSummaryContext;
     className?: string;
 }
 
@@ -19,8 +21,8 @@ const formatTime = (ts: number | null) => {
     return `${hours}:${minutes} ${day}/${month}/${year}`;
 };
 
-export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, className = '' }) => {
-    const { summary, loading, loadSummary, isAIAvailable, updatedAt } = useAISummary(projectId);
+export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, personalContext, className = '' }) => {
+    const { summary, loading, loadSummary, isAIAvailable, updatedAt } = useAISummary(projectId, personalContext);
 
     if (!isAIAvailable()) return null;
 
@@ -29,7 +31,9 @@ export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, cla
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-primary-500" />
-                    <span className="text-xs font-bold text-primary-700 dark:text-primary-300">Tóm tắt AI</span>
+                    <span className="text-xs font-bold text-primary-700 dark:text-primary-300">
+                        {personalContext ? 'Trợ lý AI cá nhân' : 'Tóm tắt AI'}
+                    </span>
                     {updatedAt && (
                         <span className="text-[10px] text-txt-muted font-normal">
                             ({formatTime(updatedAt)})
@@ -57,9 +61,13 @@ export const AISummaryWidget: React.FC<AISummaryWidgetProps> = ({ projectId, cla
                 <div className="flex flex-col items-center justify-center py-6 px-4 text-center gap-2 border border-dashed border-border rounded-xl bg-bg-muted/10">
                     <Sparkles size={16} className="text-txt-muted opacity-60 animate-pulse" />
                     <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-bold text-txt-primary">Chưa có tóm tắt AI</span>
+                        <span className="text-xs font-bold text-txt-primary">
+                            {personalContext ? 'Chưa có tóm tắt công việc' : 'Chưa có tóm tắt AI'}
+                        </span>
                         <span className="text-[10px] text-txt-muted max-w-[200px]">
-                            Bấm nút làm mới để phân tích dữ liệu dự án bằng AI.
+                            {personalContext 
+                                ? 'Bấm nút làm mới để trợ lý AI tóm tắt công việc ngày hôm nay.' 
+                                : 'Bấm nút làm mới để phân tích dữ liệu dự án bằng AI.'}
                         </span>
                     </div>
                     <button

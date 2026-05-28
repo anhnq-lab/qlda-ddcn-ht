@@ -28,6 +28,69 @@ export function clearIfcDownloadCache(key?: string) {
     else ifcDownloadCache.clear();
 }
 
+// ── Prefetch cache ─────────────────────────────────────
+// Stores prefetched model list + binary data so loadExistingModels()
+// can skip the network entirely on warm visits.
+interface PrefetchResult {
+    models: BimModel[];
+    fragBuffers: Map<string, ArrayBuffer>;
+    propsBuffers: Map<string, ArrayBuffer>;
+}
+const prefetchPromiseMap = new Map<string, Promise<PrefetchResult>>();
+
+/**
+ * Start downloading model list + binary data in the background.
+ * Called as early as possible (component mount, before engine is ready)
+ * so data is warm by the time loadExistingModels() needs it.
+ * Returns a cached promise — multiple calls with the same projectId
+ * share one in-flight request.
+ */
+function startPrefetch(projectId: string): Promise<PrefetchResult> {
+    const existing = prefetchPromiseMap.get(projectId);
+    if (existing) return existing;
+
+    const promise = (async (): Promise<PrefetchResult> => {
+        const t0 = performance.now();
+        const models = await getProjectModels(projectId);
+        const readyModels = models.filter(m => m.status === 'ready');
+
+        // Download all .frag and properties files in parallel
+        const fragBuffers = new Map<string, ArrayBuffer>();
+        const propsBuffers = new Map<string, ArrayBuffer>();
+
+        const downloads: Promise<void>[] = [];
+        for (const m of readyModels) {
+            if (m.frag_path) {
+                downloads.push(
+                    downloadFile(m.frag_path)
+                        .then(buf => { fragBuffers.set(m.frag_path!, buf); })
+                        .catch(err => console.warn(`[Prefetch] frag download failed: ${m.file_name}`, err))
+                );
+            }
+            if (m.properties_path) {
+                downloads.push(
+                    downloadFile(m.properties_path)
+                        .then(buf => { propsBuffers.set(m.properties_path!, buf); })
+                        .catch(err => console.warn(`[Prefetch] props download failed: ${m.file_name}`, err))
+                );
+            }
+        }
+        await Promise.all(downloads);
+
+        console.log(
+            `[Prefetch] ${readyModels.length} models, ` +
+            `${fragBuffers.size} frags, ${propsBuffers.size} props — ` +
+            `${(performance.now() - t0).toFixed(0)}ms`
+        );
+        return { models, fragBuffers, propsBuffers };
+    })();
+
+    prefetchPromiseMap.set(projectId, promise);
+    // Clean up after 5 minutes to allow GC of large buffers
+    setTimeout(() => prefetchPromiseMap.delete(projectId), 5 * 60 * 1000);
+    return promise;
+}
+
 export type LoadStatus = 'idle' | 'initializing' | 'loading' | 'converting' | 'success' | 'error';
 
 export interface DisciplineModel {
@@ -97,125 +160,38 @@ function cleanSpatialTree(node: any): any {
     return cleanNode;
 }
 
-function applyCoordination(model: any, offset: THREE.Vector3) {
-    if (!model) return;
-    const obj = model.object || model;
-    if (!(obj instanceof THREE.Object3D)) return;
-
-    obj.traverse((child: any) => {
-        if (child.isMesh) {
-            if (child.isInstancedMesh) {
-                const instMesh = child as THREE.InstancedMesh;
-                const tempMatrix = new THREE.Matrix4();
-                const tempPosition = new THREE.Vector3();
-                const tempRotation = new THREE.Quaternion();
-                const tempScale = new THREE.Vector3();
-                
-                for (let i = 0; i < instMesh.count; i++) {
-                    instMesh.getMatrixAt(i, tempMatrix);
-                    tempMatrix.decompose(tempPosition, tempRotation, tempScale);
-                    tempPosition.sub(offset);
-                    tempMatrix.compose(tempPosition, tempRotation, tempScale);
-                    instMesh.setMatrixAt(i, tempMatrix);
-                }
-                if (instMesh.instanceMatrix) {
-                    instMesh.instanceMatrix.needsUpdate = true;
-                }
-            } else {
-                child.position.sub(offset);
-            }
-            if (child.geometry) {
-                child.geometry.computeBoundingBox();
-                child.geometry.computeBoundingSphere();
-            }
-        }
-    });
-    obj.position.set(0, 0, 0);
-    obj.updateMatrixWorld(true);
-}
-
-function revertCoordination(model: any, offset: THREE.Vector3) {
-    if (!model) return;
-    const obj = model.object || model;
-    if (!(obj instanceof THREE.Object3D)) return;
-
-    obj.traverse((child: any) => {
-        if (child.isMesh) {
-            if (child.isInstancedMesh) {
-                const instMesh = child as THREE.InstancedMesh;
-                const tempMatrix = new THREE.Matrix4();
-                const tempPosition = new THREE.Vector3();
-                const tempRotation = new THREE.Quaternion();
-                const tempScale = new THREE.Vector3();
-                
-                for (let i = 0; i < instMesh.count; i++) {
-                    instMesh.getMatrixAt(i, tempMatrix);
-                    tempMatrix.decompose(tempPosition, tempRotation, tempScale);
-                    tempPosition.add(offset);
-                    tempMatrix.compose(tempPosition, tempRotation, tempScale);
-                    instMesh.setMatrixAt(i, tempMatrix);
-                }
-                if (instMesh.instanceMatrix) {
-                    instMesh.instanceMatrix.needsUpdate = true;
-                }
-            } else {
-                child.position.add(offset);
-            }
-            if (child.geometry) {
-                child.geometry.computeBoundingBox();
-                child.geometry.computeBoundingSphere();
-            }
-        }
-    });
-    obj.updateMatrixWorld(true);
-}
-
 async function triggerBackgroundMigration(
     modelId: string,
     projectId: string,
     model: any,
     fileName: string,
-    appliedOffset?: THREE.Vector3
 ) {
     try {
         console.log(`[BimUpload] [Migration] Starting background migration for ${fileName}...`);
-        
-        // 1. Revert coordination offset if applied to export raw coordinates in .frag file
-        if (appliedOffset) {
-            console.log(`[BimUpload] [Migration] Temporarily reverting offset of (${appliedOffset.x.toFixed(0)}, ${appliedOffset.y.toFixed(0)}, ${appliedOffset.z.toFixed(0)}) for export`);
-            revertCoordination(model, appliedOffset);
-        }
 
-        // 2. Export fragment buffer
+        // Group-level offset (coordinateModel) does NOT affect vertex data,
+        // so getBuffer exports raw coordinates without revert/reapply.
         const fragBuffer = await model.getBuffer(false);
         const fragData = new Uint8Array(fragBuffer);
-        
-        // 3. Re-apply offset to restore visual state on canvas
-        if (appliedOffset) {
-            applyCoordination(model, appliedOffset);
-        }
 
-        // 4. Extract properties in batches to prevent WASM "memory access out of bounds" crash on large models
         const localIds = await model.getLocalIds();
         const rawProperties = await getItemsDataInBatches(model, localIds, 1000);
-        
-        // 5. Extract spatial tree
+
         const rawSpatialTree = await model.getSpatialStructure();
         const spatialTree = cleanSpatialTree(rawSpatialTree);
-        
+
         const propertiesData = {
             spatialTree,
             properties: rawProperties
         };
         const propertiesJson = await stringifyOffMain(propertiesData);
 
-        // 6. Upload to Supabase Storage
         console.log(`[BimUpload] [Migration] Uploading properties JSON...`);
         await uploadProperties(modelId, projectId, propertiesJson, fileName);
-        
+
         console.log(`[BimUpload] [Migration] Uploading fragments binary...`);
         await uploadFragments(modelId, projectId, fragData, fileName);
-        
+
         console.log(`[BimUpload] [Migration] Background migration completed for ${fileName}`);
     } catch (err) {
         console.warn(`[BimUpload] [Migration] Failed to migrate ${fileName}:`, err);
@@ -270,6 +246,11 @@ export function useBimUpload(
             localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(remote));
         })();
 
+        // 3. Start prefetching model data NOW — runs in parallel with engine init.
+        // By the time viewerReady=true and loadExistingModels() is called, the
+        // model list + .frag binaries + properties JSON are already in memory.
+        startPrefetch(projectID);
+
         return () => { cancelled = true; };
     }, [projectID]);
 
@@ -278,46 +259,47 @@ export function useBimUpload(
         const obj = (model as any).object || model;
         if (!(obj instanceof THREE.Object3D)) return;
 
-        // Smart bounding box: traverse child meshes and exclude survey origin points/lines (at 0,0,0)
-        // when calculating the actual offset of the buildings (which are at large coordinate numbers)
+        // If project offset already determined (from DB/localStorage), apply at
+        // the GROUP level and return. This works correctly with streaming fragments
+        // because child tiles inherit the parent's world matrix automatically.
+        if (coordinationOffsetRef.current) {
+            const offset = coordinationOffsetRef.current;
+            console.log(`[BIM Coordination] Applying stored offset: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
+            obj.position.set(-offset.x, -offset.y, -offset.z);
+            obj.updateMatrixWorld(true);
+            return;
+        }
+
+        // First model in project: compute offset from mesh bounding boxes.
+        // Only works for IFC-loaded models where meshes exist immediately;
+        // streaming .frag models with no meshes yet will skip (no offset needed
+        // since COORDINATE_TO_ORIGIN: true already centered the data).
         const childBoxes: THREE.Box3[] = [];
         obj.traverse((child: any) => {
             if (child.isMesh && child.geometry) {
                 const childBox = new THREE.Box3().setFromObject(child);
-                if (!childBox.isEmpty()) {
-                    childBoxes.push(childBox);
-                }
+                if (!childBox.isEmpty()) childBoxes.push(childBox);
             }
         });
 
+        if (childBoxes.length === 0) return;
+
         const box = new THREE.Box3();
-        if (childBoxes.length > 0) {
-            // Filter child boxes that are far away from (0,0,0) in raw survey coordinate space (>1000 units)
-            const farBoxes = childBoxes.filter(b => {
-                const c = b.getCenter(new THREE.Vector3());
-                return Math.abs(c.x) > 1000 || Math.abs(c.z) > 1000;
-            });
-            const targetBoxes = farBoxes.length > 0 ? farBoxes : childBoxes;
-            for (const b of targetBoxes) {
-                box.union(b);
-            }
-        }
+        const farBoxes = childBoxes.filter(b => {
+            const c = b.getCenter(new THREE.Vector3());
+            return Math.abs(c.x) > 1000 || Math.abs(c.z) > 1000;
+        });
+        const targetBoxes = farBoxes.length > 0 ? farBoxes : childBoxes;
+        for (const b of targetBoxes) box.union(b);
 
         if (box.isEmpty()) {
             const nativeBox = (model as any).box;
-            if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
-                box.copy(nativeBox);
-            }
+            if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) box.copy(nativeBox);
         }
-
         if (box.isEmpty()) return;
 
         const center = box.getCenter(new THREE.Vector3());
-        
-        // If center is far from origin and we don't have a project offset yet, initialize it.
-        // The offset is persisted to the DB so other devices reuse it instead of recomputing
-        // (a different first-loaded model could otherwise pick a different center → misalignment).
-        if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000) && !coordinationOffsetRef.current) {
+        if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000)) {
             const offset = { x: center.x, y: center.y, z: center.z };
             coordinationOffsetRef.current = new THREE.Vector3(offset.x, offset.y, offset.z);
             localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(offset));
@@ -327,40 +309,9 @@ export function useBimUpload(
 
         if (coordinationOffsetRef.current) {
             const offset = coordinationOffsetRef.current;
-            console.log(`[BIM Coordination] Offsetting model by: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
-            
-            // Transform child meshes directly to solve single-precision float32 matrix distortion on GPU
-            applyCoordination(model, offset);
-
-            // Re-calculate the local model bounding box using only meshes close to local origin (building),
-            // effectively throwing away localized survey points which now drift to (-offset)
-            if ((model as any).box instanceof THREE.Box3) {
-                const localizedBox = new THREE.Box3();
-                const localizedChildBoxes: THREE.Box3[] = [];
-                obj.traverse((child: any) => {
-                    if (child.isMesh && child.geometry) {
-                        const childBox = new THREE.Box3().setFromObject(child);
-                        if (!childBox.isEmpty()) {
-                            localizedChildBoxes.push(childBox);
-                        }
-                    }
-                });
-                if (localizedChildBoxes.length > 0) {
-                    const nearBoxes = localizedChildBoxes.filter(b => {
-                        const c = b.getCenter(new THREE.Vector3());
-                        return Math.abs(c.x) < 10000 && Math.abs(c.z) < 10000;
-                    });
-                    const targetBoxes = nearBoxes.length > 0 ? nearBoxes : localizedChildBoxes;
-                    for (const b of targetBoxes) {
-                        localizedBox.union(b);
-                    }
-                }
-                if (!localizedBox.isEmpty()) {
-                    (model as any).box.copy(localizedBox);
-                } else {
-                    (model as any).box.makeEmpty();
-                }
-            }
+            console.log(`[BIM Coordination] Offsetting model (group-level): (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
+            obj.position.set(-offset.x, -offset.y, -offset.z);
+            obj.updateMatrixWorld(true);
         }
     }, [projectID]);
 
@@ -387,9 +338,18 @@ export function useBimUpload(
     }, []);
 
     // ── Load existing models from Supabase ──────────
+    // Uses prefetched data (started on mount) so downloads are already done
+    // by the time the engine is ready. On warm visits (IndexedDB cache hit),
+    // total load time is dominated by fragments.core.load() (~100-500ms/model).
     const loadExistingModels = useCallback(async () => {
         try {
-            const models = await getProjectModels(projectID);
+            const t0 = performance.now();
+
+            // Await the prefetch that was started on mount — if data is already
+            // in IndexedDB this resolves in <50ms; otherwise it waits for Supabase
+            // downloads that have been running in parallel with engine init.
+            const prefetched = await startPrefetch(projectID);
+            const models = prefetched.models;
             if (models.length === 0) return;
 
             // Filter models that are ready and have an IFC path or frag path
@@ -405,7 +365,7 @@ export function useBimUpload(
                 const bIsMain = /arch|stru|combine/i.test(b.file_name);
                 if (aIsMain && !bIsMain) return -1;
                 if (!aIsMain && bIsMain) return 1;
-                
+
                 const aSize = a.file_size || 0;
                 const bSize = b.file_size || 0;
                 return bSize - aSize;
@@ -421,40 +381,45 @@ export function useBimUpload(
 
             for (const m of readyModels) {
                 try {
-                    // Try to load using optimized .frag file first
+                    // Try to load using optimized .frag file first (fast path)
                     if (m.frag_path && m.properties_path && fragments && worldRef.current) {
                         setStatusMessage(`Đang tải fragment: ${m.file_name}...`);
-                        const fragBuffer = await downloadFile(m.frag_path);
+
+                        // Use prefetched buffer if available, otherwise download (fallback)
+                        const fragBuffer = prefetched.fragBuffers.get(m.frag_path)
+                            || await downloadFile(m.frag_path);
                         const fragModel = await fragments.core.load(new Uint8Array(fragBuffer), { modelId: m.id });
                         coordinateModel(fragModel);
-                        
-                        console.log(`[BimUpload] Successfully loaded fragment model: ${m.file_name}`);
-                        
+
+                        console.log(`[BimUpload] Loaded fragment: ${m.file_name} (${(performance.now() - t0).toFixed(0)}ms total)`);
+
                         // Force add to scene to prevent silent failures
+                        // (onItemSet in useBimEngine should have already added it, but be safe)
                         const obj = (fragModel as any).object || fragModel;
                         if (obj && !worldRef.current.scene.three.children.includes(obj)) {
                             worldRef.current.scene.three.add(obj);
                         }
 
-                        // Load properties JSON
+                        // Load properties JSON (from prefetch if available)
                         try {
-                            const propsBuffer = await downloadFile(m.properties_path);
+                            const propsBuffer = prefetched.propsBuffers.get(m.properties_path)
+                                || await downloadFile(m.properties_path);
                             const propsStr = new TextDecoder('utf-8').decode(propsBuffer);
                             const propsData = JSON.parse(propsStr);
-                            
+
                             // Load properties and spatial tree into selection
                             onModelLoaded?.(undefined, propsData, m.file_name);
                         } catch (propsErr) {
                             console.warn(`[BimUpload] Failed to load/parse properties JSON for ${m.file_name}:`, propsErr);
                         }
-                        
+
                         completed++;
                         setLoadingProgress((completed / readyModels.length) * 100);
                         setStatusMessage(`Đã tải ${completed}/${readyModels.length}: ${m.file_name}`);
-                        
+
                         newDisciplineModels.push({ model: m, visible: true, fragModel });
                     } else {
-                        // Fallback to loading raw IFC file
+                        // Fallback to loading raw IFC file (slow path — triggers WASM IFC parsing)
                         if (!m.ifc_path) {
                             throw new Error(`Model ${m.file_name} has no IFC path or frag path`);
                         }
@@ -478,7 +443,7 @@ export function useBimUpload(
                                 },
                             });
                             coordinateModel(model);
-                            console.log(`[BimUpload] Successfully loaded existing IFC model: ${m.file_name}`);
+                            console.log(`[BimUpload] Loaded IFC model: ${m.file_name} (${(performance.now() - t0).toFixed(0)}ms total)`);
 
                             // Force add to scene to prevent silent failures
                             const obj = (model as any).object || model;
@@ -492,7 +457,7 @@ export function useBimUpload(
                             onModelLoaded?.(uint8Array);
 
                             // Trigger background migration to convert to fragments and properties JSON
-                            triggerBackgroundMigration(m.id, projectID, model, m.file_name, coordinationOffsetRef.current || undefined);
+                            triggerBackgroundMigration(m.id, projectID, model, m.file_name);
 
                             completed++;
                             setLoadingProgress((completed / readyModels.length) * 100);
@@ -521,11 +486,58 @@ export function useBimUpload(
             const total = newDisciplineModels.reduce((sum, dm) => sum + (dm.model.element_count || 0), 0);
             setObjectCount(total);
 
+            // Ensure streaming tiles are evaluated, then fit camera to loaded models
+            if (worldRef.current && newDisciplineModels.some(dm => dm.visible)) {
+                try {
+                    const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+                    if (fragments?.core) {
+                        await fragments.core.update(true);
+                        // Reduced from 300ms → 100ms. Streaming tiles arrive almost
+                        // instantly for cached .frag files; only a short grace period
+                        // is needed for the GPU to flush the first batch of tiles.
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                    const camera = getSafeCamera(worldRef.current);
+                    if (camera) {
+                        const sceneBox = new THREE.Box3();
+                        for (const dm of newDisciplineModels) {
+                            if (!dm.visible || !dm.fragModel) continue;
+                            const obj = (dm.fragModel as any).object || dm.fragModel;
+                            if (obj instanceof THREE.Object3D) {
+                                obj.traverse((child: any) => {
+                                    if (child.isMesh && child.geometry) {
+                                        const childBox = new THREE.Box3().setFromObject(child);
+                                        if (!childBox.isEmpty()) sceneBox.expandByObject(child);
+                                    }
+                                });
+                            }
+                            // Fallback: use model's native box
+                            if (sceneBox.isEmpty()) {
+                                const nativeBox = (dm.fragModel as any).box;
+                                if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                                    sceneBox.union(nativeBox);
+                                }
+                            }
+                        }
+                        if (!sceneBox.isEmpty()) {
+                            const sphere = new THREE.Sphere();
+                            sceneBox.getBoundingSphere(sphere);
+                            if (isFinite(sphere.radius) && sphere.radius > 0) {
+                                camera.controls.fitToSphere(sphere, true);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[BimUpload] Could not fit camera to loaded models:', err);
+                }
+            }
+
+            const elapsed = performance.now() - t0;
+            console.log(`[BimUpload] All models loaded in ${elapsed.toFixed(0)}ms`);
             setStatus('success');
-            setStatusMessage(`Đã tải ${readyModels.length} mô hình thành công`);
+            setStatusMessage(`Đã tải ${readyModels.length} mô hình (${(elapsed / 1000).toFixed(1)}s)`);
             setLoadingProgress(100);
             setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 3000);
-
 
         } catch (err: any) {
             console.warn('Load models error:', err);
@@ -595,6 +607,8 @@ export function useBimUpload(
                 setStatusMessage(`Đang upload ${file.name}... ${pct}%`);
             });
             if (record.ifc_path) clearIfcDownloadCache(record.ifc_path);
+            // Invalidate prefetch cache so next loadExistingModels picks up the new model
+            prefetchPromiseMap.delete(projectID);
             
             setLoadingProgress(60);
 
@@ -614,13 +628,13 @@ export function useBimUpload(
                     importer.distanceThreshold = null;
                 },
             });
-            // 1. Export fragment buffer BEFORE applying coordination offset
-            // This ensures the saved .frag file on storage retains its raw geodesic coordinates
+            // Coordinate model to local scene origin for immediate visualization.
+            // Group-level offset does NOT modify vertex data, so getBuffer() below
+            // still exports raw coordinates suitable for re-loading.
+            coordinateModel(model);
+
             const fragBuffer = await (model as any).getBuffer(false);
             const fragData = new Uint8Array(fragBuffer);
-
-            // 2. Now coordinate the model to the local scene origin for immediate visualization
-            coordinateModel(model);
             console.log(`[BimUpload] IFC conversion completed successfully. Model UUID: ${(model as any).uuid || 'N/A'}`);
             setLoadingProgress(85);
 

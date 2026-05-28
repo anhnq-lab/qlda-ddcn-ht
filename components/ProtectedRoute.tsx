@@ -6,6 +6,7 @@
  */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
 import type { PermissionAction, PermissionResource } from '../types/permission.types';
 
@@ -31,6 +32,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     fallback = '/',
 }) => {
     const { can, loading } = usePermissionCheck();
+    const { userType } = useAuth();
+    // Contractors denied fallback → send to /cde (their home) to avoid double-redirect via ContractorAwareHome
+    const resolvedFallback = fallback === '/' && userType === 'contractor' ? '/cde' : fallback;
 
     // Still loading permissions → show nothing (avoid flash)
     if (loading) {
@@ -43,7 +47,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
     if (!can(resource, action)) {
         console.warn(`[ProtectedRoute] Access denied: ${resource}/${action}`);
-        return <Navigate to={fallback} replace />;
+        return <Navigate to={resolvedFallback} replace />;
     }
 
     return <>{children}</>;

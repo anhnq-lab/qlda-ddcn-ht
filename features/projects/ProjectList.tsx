@@ -9,14 +9,20 @@ import { ProgressBar, DataTable, Column } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient, getGroupColor } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
-import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown } from 'lucide-react';
+import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown, Download, Upload, FileSpreadsheet } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { CreateProjectModal } from './components/CreateProjectModal';
+import { ProjectImportModal } from './components/ProjectImportModal';
 import { SelectedMember } from '../../types';
 import ProjectService from '../../services/ProjectService';
 import { Project } from '../../types';
 import { supabase } from '../../lib/supabase';
+import ExcelJS from 'exceljs';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
+import { useImpersonation } from '../../context/ImpersonationContext';
+import { useAuth } from '../../context/AuthContext';
+import { extractBanNumber } from '../../hooks/useScopedProjects';
 
 // ── PaginationBar — memo để tránh re-render không cần thiết khi filter/sort thay đổi ──
 const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }: {
@@ -97,7 +103,21 @@ const ProjectList: React.FC = () => {
     useProjectsRealtime();
     const invalidateProjects = useInvalidateProjects();
 
+    // ── Auth & Permissions ──
+    const { currentUser } = useAuth();
+    const { isGlobalScope, systemRole } = usePermissionCheck();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const banNumber = useMemo(() => extractBanNumber(effectiveUser?.Department), [effectiveUser]);
+
     // ── Filter + Data from shared Context (same instance as Header) ──
+    const { can } = usePermissionCheck();
+    const systemRoleCheck = usePermissionCheck();
+    
+    console.log('[DEBUG-ProjectList] systemRole:', systemRoleCheck.systemRole);
+    console.log('[DEBUG-ProjectList] can("projects", "create"):', can('projects', 'create'));
+    console.log('[DEBUG-ProjectList] loading:', systemRoleCheck.loading);
+
     const {
         searchQuery, setSearchQuery,
         sortBy, setSortBy,
@@ -106,10 +126,12 @@ const ProjectList: React.FC = () => {
         hasActiveFilters, clearFilters,
         scopedProjects, total, totalPages, pageSize,
         isLoading, isFetching, refetch,
+        queryParams,
     } = useProjectFilterContext();
 
-    // Create Modal State
+    // Create & Import Modal States
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isImportOpen, setIsImportOpen] = useState(false);
 
     // Responsive setup
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -159,8 +181,307 @@ const ProjectList: React.FC = () => {
         navigate(`/projects/${project.ProjectID}`);
     }, [navigate]);
 
+    const handleExportExcel = async () => {
+        try {
+            // Build filter params with board scope injected
+            const exportParams = {
+                search: queryParams.search,
+                filters: { ...queryParams.filters },
+                sortBy: queryParams.sortBy,
+                sortOrder: queryParams.sortOrder,
+            };
 
+            if (!isGlobalScope && systemRole !== 'super_admin' && systemRole !== 'contractor' && banNumber !== null) {
+                exportParams.filters.board = banNumber.toString();
+            }
 
+            let allProjects = await ProjectService.getAll(exportParams);
+
+            if (systemRole === 'contractor') {
+                const allowedIds = effectiveUser?.AllowedProjectIDs || [];
+                allProjects = allProjects.filter(p => allowedIds.includes(p.ProjectID));
+            }
+
+            const wb = new ExcelJS.Workbook();
+            const ws = wb.addWorksheet('Danh sách dự án');
+
+            // Columns definition
+            ws.columns = [
+                { header: 'STT', key: 'stt', width: 6 },
+                { header: 'Mã dự án', key: 'project_id', width: 25 },
+                { header: 'Tên dự án', key: 'project_name', width: 40 },
+                { header: 'Nhóm', key: 'group_code', width: 10 },
+                { header: 'Loại hình đầu tư', key: 'investment_type', width: 25 },
+                { header: 'Tổng mức đầu tư', key: 'total_investment', width: 20 },
+                { header: 'Nguồn vốn', key: 'capital_source', width: 25 },
+                { header: 'Trạng thái', key: 'status', width: 20 },
+                { header: 'Hiện trạng chi tiết', key: 'current_status', width: 30 },
+                { header: 'Địa điểm', key: 'location_code', width: 20 },
+                { header: 'Lĩnh vực', key: 'sector', width: 20 },
+                { header: 'Cấp QĐ chủ trương', key: 'policy_level', width: 20 },
+                { header: 'Số QĐ chủ trương', key: 'policy_number', width: 20 },
+                { header: 'Ngày QĐ chủ trương', key: 'policy_date', width: 20 },
+                { header: 'Phòng QLDA', key: 'management_board', width: 20 },
+                { header: 'Chủ đầu tư cũ', key: 'old_investor', width: 25 },
+                { header: 'Quyết định điều chuyển', key: 'transfer_decision', width: 25 },
+                { header: 'Ngày khởi công', key: 'start_date', width: 15 },
+                { header: 'Hạn chót dự kiến', key: 'expected_end_date', width: 15 },
+                { header: 'Thực tế kết thúc', key: 'actual_end_date', width: 15 },
+                { header: 'Tiến độ vật lý (%)', key: 'progress', width: 15 },
+                { header: 'Tiến độ giải ngân (%)', key: 'payment_progress', width: 15 },
+            ];
+
+            // Title block
+            ws.insertRow(1, []);
+            ws.insertRow(2, [null, 'DANH SÁCH DỰ ÁN CHI TIẾT']);
+            ws.mergeCells('B2:K2');
+            const titleRow = ws.getRow(2);
+            titleRow.height = 32;
+            titleRow.getCell(2).font = { name: 'Times New Roman', bold: true, size: 16, color: { argb: 'FF1F4E78' } };
+            titleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(3, [null, `Xuất ngày: ${new Date().toLocaleDateString('vi-VN')} | Tổng số: ${allProjects.length} dự án`]);
+            ws.mergeCells('B3:K3');
+            const subtitleRow = ws.getRow(3);
+            subtitleRow.height = 20;
+            subtitleRow.getCell(2).font = { name: 'Times New Roman', italic: true, size: 11, color: { argb: 'FF595959' } };
+            subtitleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(4, []);
+
+            // Headers style
+            const headerRow = ws.getRow(5);
+            headerRow.height = 28;
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF1F4E78' }
+                };
+                cell.font = { name: 'Times New Roman', bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+            });
+
+            // Map and add rows
+            const PROJECT_STATUS_LABELS: Record<number, string> = {
+                1: 'Chuẩn bị dự án',
+                2: 'Thực hiện dự án',
+                3: 'Kết thúc xây dựng',
+            };
+
+            const INVESTMENT_TYPE_LABELS: Record<number, string> = {
+                1: 'Đầu tư công',
+                2: 'Vốn NN ngoài ĐTC',
+                3: 'PPP',
+                4: 'Khác',
+            };
+
+            allProjects.forEach((proj, idx) => {
+                const boardLabel = proj.ManagementBoard ? `Phòng QLDA ${proj.ManagementBoard}` : '';
+                const currentStatusLabel = proj.CurrentStatusCode ? (PROJECT_CURRENT_STATUS_CONFIG[proj.CurrentStatusCode]?.label || '') : '';
+                
+                const row = ws.addRow({
+                    stt: idx + 1,
+                    project_id: proj.ProjectID,
+                    project_name: proj.ProjectName,
+                    group_code: proj.GroupCode ? `Nhóm ${proj.GroupCode}` : '',
+                    investment_type: INVESTMENT_TYPE_LABELS[proj.InvestmentType] || '',
+                    total_investment: proj.TotalInvestment || 0,
+                    capital_source: proj.CapitalSource || '',
+                    status: PROJECT_STATUS_LABELS[proj.Status] || '',
+                    current_status: currentStatusLabel,
+                    location_code: proj.LocationCode || '',
+                    sector: proj.Sector || '',
+                    policy_level: proj.PolicyDecisionLevel || '',
+                    policy_number: proj.PolicyDecisionNumber || '',
+                    policy_date: proj.PolicyDecisionDate || '',
+                    management_board: boardLabel,
+                    old_investor: proj.OldInvestor || '',
+                    transfer_decision: proj.TransferDecision || '',
+                    start_date: proj.StartDate || '',
+                    expected_end_date: proj.ExpectedEndDate || '',
+                    actual_end_date: proj.ActualEndDate || '',
+                    progress: proj.Progress || 0,
+                    payment_progress: proj.PaymentProgress || 0,
+                });
+
+                row.height = 22;
+
+                // Color based on status
+                let rowColor = 'FFFFFFFF';
+                if (proj.Status === 3) {
+                    rowColor = 'FFE2EFDA'; // Light green
+                }
+
+                row.eachCell({ includeEmpty: true }, (cell, cellNumber) => {
+                    cell.font = { name: 'Times New Roman', size: 10 };
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: rowColor }
+                    };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                        right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    };
+
+                    // Alignments
+                    if ([1, 2, 4, 8, 10, 14, 15, 18, 19, 20, 21, 22].includes(cellNumber)) {
+                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    } else if (cellNumber === 6) { // TotalInvestment
+                        cell.alignment = { horizontal: 'right', vertical: 'middle' };
+                        cell.numFmt = '#,##0';
+                    } else {
+                        cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+                    }
+                });
+            });
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `DS_DuAn_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Lỗi khi xuất file Excel:', error);
+            alert('Có lỗi xảy ra khi xuất file Excel.');
+        }
+    };
+
+    const handleDownloadTemplate = async () => {
+        try {
+            const wb = new ExcelJS.Workbook();
+            const ws = wb.addWorksheet('Mau_Import_DuAn');
+
+            // Columns definition
+            ws.columns = [
+                { header: 'Tên dự án (*)', key: 'project_name', width: 35 },
+                { header: 'Mã dự án (chỉ điền khi muốn cập nhật)', key: 'project_id', width: 25 },
+                { header: 'Nhóm dự án (QN/A/B/C)', key: 'group_code', width: 20 },
+                { header: 'Loại hình đầu tư (Đầu tư công / Vốn nhà nước ngoài đầu tư công / PPP / Khác)', key: 'investment_type', width: 30 },
+                { header: 'Tổng mức đầu tư (VNĐ)', key: 'total_investment', width: 22 },
+                { header: 'Nguồn vốn', key: 'capital_source', width: 25 },
+                { header: 'Trạng thái (Chuẩn bị dự án / Thực hiện dự án / Kết thúc xây dựng)', key: 'status', width: 30 },
+                { header: 'Hiện trạng chi tiết (ví dụ: Đang thi công)', key: 'current_status', width: 30 },
+                { header: 'Địa điểm', key: 'location_code', width: 20 },
+                { header: 'Lĩnh vực', key: 'sector', width: 20 },
+                { header: 'Cấp quyết định chủ trương', key: 'policy_level', width: 25 },
+                { header: 'Số QĐ chủ trương', key: 'policy_number', width: 20 },
+                { header: 'Ngày QĐ chủ trương (YYYY-MM-DD)', key: 'policy_date', width: 25 },
+                { header: 'Phòng QLDA (Phòng 1/Phòng 2/Phòng 3)', key: 'management_board', width: 25 },
+                { header: 'Chủ đầu tư cũ', key: 'old_investor', width: 25 },
+                { header: 'Quyết định điều chuyển', key: 'transfer_decision', width: 25 },
+                { header: 'Ngày khởi công (YYYY-MM-DD)', key: 'start_date', width: 25 },
+                { header: 'Hạn chót dự kiến (YYYY-MM-DD)', key: 'expected_end_date', width: 25 },
+                { header: 'Thực tế kết thúc (YYYY-MM-DD)', key: 'actual_end_date', width: 25 },
+                { header: 'Tiến độ vật lý (%)', key: 'progress', width: 18 },
+                { header: 'Tiến độ giải ngân (%)', key: 'payment_progress', width: 20 },
+            ];
+
+            // Title block
+            ws.insertRow(1, []);
+            ws.insertRow(2, [null, 'MẪU FILE NHẬP DỰ ÁN HÀNG LOẠT (PROJECT IMPORT TEMPLATE)']);
+            ws.mergeCells('B2:M2');
+            const titleRow = ws.getRow(2);
+            titleRow.height = 32;
+            titleRow.getCell(2).font = { name: 'Times New Roman', bold: true, size: 15, color: { argb: 'FFC00000' } };
+            titleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(3, [
+                null,
+                'HƯỚNG DẪN: Các cột có dấu (*) là bắt buộc. Nhập đúng các giá trị trong ngoặc đơn ở tiêu đề cột. Định dạng ngày là YYYY-MM-DD.'
+            ]);
+            ws.mergeCells('B3:M3');
+            const subtitleRow = ws.getRow(3);
+            subtitleRow.height = 20;
+            subtitleRow.getCell(2).font = { name: 'Times New Roman', italic: true, size: 10, color: { argb: 'FF595959' } };
+            subtitleRow.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            ws.insertRow(4, []);
+
+            // Table headers style
+            const headerRow = ws.getRow(5);
+            headerRow.height = 30;
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF3B82F6' }
+                };
+                cell.font = { name: 'Times New Roman', bold: true, size: 10, color: { argb: 'FFFFFFFF' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+            });
+
+            // Add sample row
+            const sampleRow = ws.addRow({
+                project_name: 'Dự án Đầu tự xây dựng tuyến đường trục chính kết nối khu công nghiệp X',
+                project_id: '', // Empty for new project
+                group_code: 'B',
+                investment_type: 'Đầu tư công',
+                total_investment: 150000000000,
+                capital_source: 'Ngân sách Trung ương',
+                status: 'Thực hiện dự án',
+                current_status: 'Đang thi công',
+                location_code: 'Hà Tĩnh',
+                sector: 'Transport',
+                policy_level: 'UBND tỉnh',
+                policy_number: '123/QĐ-UBND',
+                policy_date: '2025-01-15',
+                management_board: 'Phòng QLDA 1',
+                old_investor: 'CĐT Cũ X',
+                transfer_decision: '456/QĐ-TC',
+                start_date: '2025-03-01',
+                expected_end_date: '2026-12-31',
+                actual_end_date: '',
+                progress: 30,
+                payment_progress: 25,
+            });
+
+            sampleRow.height = 24;
+            sampleRow.eachCell((cell, cellNumber) => {
+                cell.font = { name: 'Times New Roman', size: 9, italic: true, color: { argb: 'FF808080' } };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                    right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+                };
+                cell.alignment = { vertical: 'middle', wrapText: true };
+                if (cellNumber === 5) {
+                    cell.numFmt = '#,##0';
+                }
+            });
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Mau_Import_DuAn.xlsx';
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Lỗi khi tải mẫu Excel:', error);
+            alert('Có lỗi xảy ra khi tải mẫu Excel.');
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4 animate-in fade-in duration-300 pb-20">
@@ -217,6 +538,37 @@ const ProjectList: React.FC = () => {
                                         <option value="created">Mới nhất</option>
                                     </select>
                                 </div>
+
+                                <PermissionGate resource="projects" action="view">
+                                    <button
+                                        onClick={handleDownloadTemplate}
+                                        className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-txt-secondary hover:text-txt-primary border border-border/50 shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold h-8 transition-all"
+                                        title="Tải mẫu nhập dự án từ Excel"
+                                    >
+                                        <Download className="w-3.5 h-3.5 text-txt-muted" />
+                                        <span className="hidden md:inline">Tải Mẫu</span>
+                                    </button>
+                                </PermissionGate>
+
+                                <PermissionGate resource="projects" action="create">
+                                    <button
+                                        onClick={() => setIsImportOpen(true)}
+                                        className="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold h-8 shadow-sm transition-all"
+                                        title="Nhập danh sách dự án từ Excel"
+                                    >
+                                        <Upload className="w-3.5 h-3.5" />
+                                        <span className="hidden md:inline">Nhập Excel</span>
+                                    </button>
+                                </PermissionGate>
+
+                                <button
+                                    onClick={handleExportExcel}
+                                    className="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold h-8 shadow-sm transition-all"
+                                    title="Xuất danh sách dự án ra Excel"
+                                >
+                                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                                    <span className="hidden md:inline">Xuất Excel</span>
+                                </button>
 
                                 <PermissionGate resource="projects" action="create">
                                     <button
@@ -424,6 +776,12 @@ const ProjectList: React.FC = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSaveProject}
+            />
+
+            {/* Import Project Modal */}
+            <ProjectImportModal
+                isOpen={isImportOpen}
+                onClose={() => setIsImportOpen(false)}
             />
         </div>
     );
