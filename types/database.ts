@@ -461,6 +461,7 @@ export type Database = {
           date_assigned: string | null
           decision_number: string | null
           disbursed_amount: number
+          luy_ke_nghiem_thu: number
           notes: string | null
           period_end: number | null
           period_start: number | null
@@ -480,6 +481,7 @@ export type Database = {
           date_assigned?: string | null
           decision_number?: string | null
           disbursed_amount?: number
+          luy_ke_nghiem_thu?: number
           notes?: string | null
           period_end?: number | null
           period_start?: number | null
@@ -499,6 +501,7 @@ export type Database = {
           date_assigned?: string | null
           decision_number?: string | null
           disbursed_amount?: number
+          luy_ke_nghiem_thu?: number
           notes?: string | null
           period_end?: number | null
           period_start?: number | null

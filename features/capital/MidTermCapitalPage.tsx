@@ -11,7 +11,6 @@ import {
     ChevronDown, ChevronRight, Search, Building2, ArrowRight, DollarSign,
     BarChart3, TrendingDown, ArrowUpDown, Download, Filter, X, BookOpen, FileText, Upload
 } from 'lucide-react';
-import { StatCard } from '../../components/ui';
 
 const CapitalOverviewChart = React.lazy(() => import('./components/CapitalOverviewChart'));
 import { CapitalImportModal } from './CapitalImportModal';
@@ -220,14 +219,50 @@ const CapitalPlanningPage: React.FC = () => {
                         Luật ĐTC 58/2024/QH15 • Quản lý tổng hợp tất cả dự án
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+            </div>
+
+            {/* ───── Toolbar & Stats ───── */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                {/* Stats Badges */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                    {[
+                        { label: 'Vốn Trung hạn', value: fmtB(totalMidTerm), sub: `${midTermPlans.length} KH`, icon: Landmark, color: 'blue' },
+                        { label: `Vốn giao ${yearFilter}`, value: fmtB(totalAnnual), sub: `${annualPlans.filter((p: any) => p.year === yearFilter).length} DA`, icon: Calendar, color: 'emerald' },
+                        { label: `Đã giải ngân`, value: fmtB(totalDisbursed), sub: `${disbRate.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%`, icon: DollarSign, color: 'amber' },
+                        { label: 'Còn lại', value: fmtB(totalAnnual - totalDisbursed), sub: disbRate < 50 ? 'Chậm' : 'Bình thường', icon: ArrowUpDown, color: disbRate < 50 ? 'rose' : 'violet' }
+                    ].map((stat) => {
+                        const Icon = stat.icon;
+                        const colorStyles: Record<string, string> = {
+                            blue: 'bg-blue-50/50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/20',
+                            emerald: 'bg-emerald-50/50 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 border-emerald-100/50 dark:border-emerald-900/20',
+                            amber: 'bg-amber-50/50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/20',
+                            violet: 'bg-purple-50/50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-400 border-purple-100/50 dark:border-purple-900/20',
+                            rose: 'bg-rose-50/50 dark:bg-rose-900/10 text-rose-700 dark:text-rose-400 border-rose-100/50 dark:border-rose-900/20',
+                        };
+                        const styleClass = colorStyles[stat.color] || colorStyles.blue;
+                        return (
+                            <div
+                                key={stat.label}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${styleClass}`}
+                            >
+                                <Icon className="w-3.5 h-3.5 opacity-80" />
+                                <span className="opacity-90">{stat.label}:</span>
+                                <span className="font-extrabold text-[13px] leading-none">{stat.value}</span>
+                                <span className="text-[10px] opacity-75 font-medium">({stat.sub})</span>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Filters and Actions */}
+                <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto lg:justify-end">
                     {/* Source filter */}
                     <div className="flex items-center gap-1.5">
                         <Filter className="w-3.5 h-3.5 text-gray-400" />
                         <select
                             value={sourceFilter}
                             onChange={e => setSourceFilter(e.target.value)}
-                            className="filter-primary px-3 py-1.5 text-xs"
+                            className="filter-primary px-3 py-1.5 text-xs bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
                         >
                             <option value="all">Tất cả nguồn</option>
                             <option value="NSĐP">NS Địa phương</option>
@@ -241,15 +276,19 @@ const CapitalPlanningPage: React.FC = () => {
                         <select
                             value={yearFilter}
                             onChange={e => setYearFilter(Number(e.target.value))}
-                            className="filter-primary px-3 py-1.5"
+                            className="filter-primary px-3 py-1.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
                         >
                             {Array.from({ length: 8 }, (_, i) => new Date().getFullYear() + 2 - i).map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
                     </div>
+                    
+                    {/* Actions Divider */}
+                    <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
                     {/* Import Excel */}
                     <button
                         onClick={() => setIsImportModalOpen(true)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
                         title="Import Kế hoạch vốn từ Excel"
                     >
                         <Upload className="w-3.5 h-3.5" />
@@ -261,36 +300,13 @@ const CapitalPlanningPage: React.FC = () => {
                             currentExportData, activeTab, yearFilter,
                             { disbPlans: disbPlans as any[], disbursements: disbursements as any[], annualPlans: filteredAnnual }
                         )}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
                         title="Xuất dữ liệu ra Excel"
                     >
                         <Download className="w-3.5 h-3.5" />
                         Xuất Excel
                     </button>
                 </div>
-            </div>
-
-            {/* ───── KPI Cards (stat-card design system) ───── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'VỐN TRUNG HẠN', value: fmtB(totalMidTerm), sub: `${midTermPlans.length} KH`, icon: <Landmark className="w-5 h-5" />, variant: 'blue' },
-                    { label: `VỐN GIAO ${yearFilter}`, value: fmtB(totalAnnual), sub: `${annualPlans.filter((p:any) => p.year === yearFilter).length} DA`, icon: <Calendar className="w-5 h-5" />, variant: 'emerald' },
-                    { label: `ĐÃ GIẢI NGÂN ${yearFilter}`, value: fmtB(totalDisbursed), sub: `${disbRate.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%`, icon: <DollarSign className="w-5 h-5" />, variant: 'amber' },
-                    { label: 'CHÊNH LỆCH', value: fmtB(totalAnnual - totalDisbursed), sub: disbRate < 50 ? 'Cần đẩy nhanh' : 'Bình thường', icon: <ArrowUpDown className={`w-5 h-5 ${disbRate < 50 ? 'animate-pulse' : ''}`} />, variant: disbRate < 50 ? 'rose' : 'violet' },
-                ].map((kpi, index) => (
-                    <StatCard
-                        key={index}
-                        label={kpi.label}
-                        value={kpi.value}
-                        icon={kpi.icon}
-                        color={kpi.variant as "blue" | "emerald" | "amber" | "violet" | "rose"}
-                        footer={
-                            <div className="text-[10px] font-bold mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                                {kpi.sub}
-                            </div>
-                        }
-                    />
-                ))}
             </div>
 
             {/* ───── Automatic Alerts ───── */}

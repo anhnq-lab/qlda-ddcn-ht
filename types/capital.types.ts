@@ -66,6 +66,7 @@ export interface CapitalPlan {
     ApprovedBy?: string;
     ApprovedDate?: string;
     Notes?: string;
+    LuyKeNghiemThu?: number;
 }
 
 // ─── Summary page data models (trang tổng hợp) ─────────
@@ -78,6 +79,7 @@ export interface CapitalPlanRow {
     year: number;
     amount: number;
     disbursed_amount: number;
+    luy_ke_nghiem_thu: number;
     source: string;
     decision_number: string;
     date_assigned: string;

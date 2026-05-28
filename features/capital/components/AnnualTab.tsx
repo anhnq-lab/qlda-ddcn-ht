@@ -29,6 +29,7 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
 
     const totalAlloc = filtered.reduce((s: number, p: any) => s + Number(p.amount), 0);
     const totalDisb = filtered.reduce((s: number, p: any) => s + Number(p.disbursed_amount), 0);
+    const totalNghiemThu = filtered.reduce((s: number, p: any) => s + Number(p.luy_ke_nghiem_thu), 0);
 
     if (filtered.length === 0) return <EmptyState icon={Calendar} text={`Chưa có KH vốn hàng năm ${yearFilter}`} />;
 
@@ -43,6 +44,7 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                             <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">QĐ giao vốn</th>
                             <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nguồn</th>
                             <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">KHV {yearFilter}</th>
+                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Lũy kế Nghiệm thu</th>
                             <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Đã giải ngân</th>
                             <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Còn lại</th>
                             <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ GN</th>
@@ -84,6 +86,7 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                                     </td>
                                     <td className="px-4 py-2.5 text-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${(SOURCE_LABELS[normalizeSource(p.source)] || SOURCE_LABELS['NSĐP']).color}`}>{(SOURCE_LABELS[normalizeSource(p.source)] || SOURCE_LABELS['NSĐP']).label}</span></td>
                                     <td className="px-4 py-2.5 text-right font-mono font-bold text-blue-600 dark:text-blue-300">{formatCurrency(Number(p.amount))}</td>
+                                    <td className="px-4 py-2.5 text-right font-mono text-amber-600 dark:text-amber-400">{formatCurrency(Number(p.luy_ke_nghiem_thu))}</td>
                                     <td className="px-4 py-2.5 text-right font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(Number(p.disbursed_amount))}</td>
                                     <td className="px-4 py-2.5 text-right font-mono text-gray-600 dark:text-slate-300">{formatCurrency(remaining)}</td>
                                     <td className="px-4 py-2.5 text-center">
@@ -107,6 +110,7 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                         <tr>
                             <td className="px-4 py-2.5" colSpan={4}><span className="text-gray-800 dark:text-slate-100">TỔNG CỘNG</span></td>
                             <td className="px-4 py-2.5 text-right font-mono text-blue-600 dark:text-blue-300">{formatCurrency(totalAlloc)}</td>
+                            <td className="px-4 py-2.5 text-right font-mono text-amber-600 dark:text-amber-400">{formatCurrency(totalNghiemThu)}</td>
                             <td className="px-4 py-2.5 text-right font-mono text-emerald-700 dark:text-emerald-400">{formatCurrency(totalDisb)}</td>
                             <td className="px-4 py-2.5 text-right font-mono text-gray-600 dark:text-slate-300">{formatCurrency(totalAlloc - totalDisb)}</td>
                             <td className="px-4 py-2.5 text-center text-xs font-bold text-blue-600 dark:text-blue-300">{totalAlloc > 0 ? ((totalDisb/totalAlloc)*100).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : 0}%</td>

@@ -19,6 +19,7 @@ export class CapitalMapper {
             ApprovedBy: row.approved_by || undefined,
             ApprovedDate: row.approved_date || undefined,
             Notes: row.notes || undefined,
+            LuyKeNghiemThu: Number(row.luy_ke_nghiem_thu) || 0,
         };
     }
 
