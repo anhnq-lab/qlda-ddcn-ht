@@ -4,12 +4,13 @@ import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 interface BudgetVarianceProps {
     totalInvestment: number;
     disbursedAmount: number;
+    luyKeNghiemThu?: number;
     plannedDisbursement?: number;
     previousMonthDisbursed?: number;
 }
 
 const formatShort = (n: number) => {
-    if (n >= 1e9) return `${(n / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tỷ`;
+    if (n >= 1e9) return `${(n / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} tỷ`;
     if (n >= 1e6) return `${(n / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 0 })} tr`;
     return n.toLocaleString('vi-VN');
 };
@@ -17,6 +18,7 @@ const formatShort = (n: number) => {
 export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
     totalInvestment,
     disbursedAmount,
+    luyKeNghiemThu = 0,
     plannedDisbursement,
     previousMonthDisbursed
 }) => {
@@ -64,10 +66,14 @@ export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
                 </div>
 
                 {/* Key figures — compact row */}
-                <div className="grid grid-cols-3 gap-1.5 text-center">
+                <div className="grid grid-cols-4 gap-1 md:gap-1.5 text-center">
                     <div className="bg-gray-50 dark:bg-slate-700 rounded-lg py-1.5 px-1">
                         <p className="text-[8px] text-gray-400 dark:text-slate-400 uppercase font-bold tracking-wide">Tổng ĐT</p>
                         <p className="text-[11px] font-black text-gray-700 dark:text-slate-200 tabular-nums">{formatShort(totalInvestment)}</p>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg py-1.5 px-1">
+                        <p className="text-[8px] text-amber-500 dark:text-amber-400 uppercase font-bold tracking-wide">Nghiệm thu</p>
+                        <p className="text-[11px] font-black text-amber-700 dark:text-amber-300 tabular-nums">{formatShort(luyKeNghiemThu)}</p>
                     </div>
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg py-1.5 px-1">
                         <p className="text-[8px] text-blue-500 dark:text-blue-400 uppercase font-bold tracking-wide">Đã GN</p>

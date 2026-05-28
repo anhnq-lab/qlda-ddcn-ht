@@ -72,6 +72,7 @@ export class CapitalOverviewService {
             disbursementRate: number;
             yearlyTarget: number;
             yearlyDisbursed: number;
+            totalLuyKeNghiemThu: number;
         };
     }> {
         const [plansRes, disbRes, disbPlanRes, projectRes] = await Promise.all([
@@ -181,6 +182,8 @@ export class CapitalOverviewService {
             ? CapitalMapper.calculateTrueDisbursed(disbursements.filter(d => new Date(d.Date).getFullYear() === currentYear))
             : (annualPlans.find(p => p.Year === currentYear)?.DisbursedAmount || 0);
 
+        const totalLuyKeNghiemThu = annualPlans.reduce((s, p) => s + (p.LuyKeNghiemThu || 0), 0);
+
         return {
             capitalPlans,
             disbursements,
@@ -196,6 +199,7 @@ export class CapitalOverviewService {
                 disbursementRate: totalAllocated > 0 ? Math.round((totalDisbursed / totalAllocated) * 100) : 0,
                 yearlyTarget,
                 yearlyDisbursed,
+                totalLuyKeNghiemThu,
             },
         };
     }

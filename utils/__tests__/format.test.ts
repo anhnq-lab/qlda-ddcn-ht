@@ -48,7 +48,7 @@ describe('formatShortCurrency', () => {
     it('formats billions as "tỷ"', () => {
         const result = formatShortCurrency(2_500_000_000);
         expect(result).toContain('tỷ');
-        expect(result).toMatch(/2[,.]5/);
+        expect(result).toMatch(/2[,.]500/);
     });
 
     it('formats millions as "tr"', () => {
@@ -62,9 +62,10 @@ describe('formatShortCurrency', () => {
         expect(result).toContain('VNĐ');
     });
 
-    it('rounds to 1 decimal for billions', () => {
+    it('rounds to 3 decimals for billions', () => {
         const result = formatShortCurrency(1_234_567_890);
         expect(result).toContain('tỷ');
+        expect(result).toMatch(/1[,.]235/);
     });
 });
 

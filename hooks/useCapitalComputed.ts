@@ -132,22 +132,26 @@ export function useCapitalComputed(params: {
         allocations
             .filter(a => a.PlanType === 'annual')
             .map(a => {
-                const disbursed = disbursements
-                    .filter(d => {
-                        const dYear = new Date(d.Date).getFullYear();
-                        const matchPlan = d.CapitalPlanID === a.PlanID || (d as any).AllocationID === (a as any).AllocationID;
-                        const matchYear = dYear === a.Year;
-                        return (matchPlan || matchYear) && d.Status === 'Approved' && d.Type !== 'ThuHoiTamUng';
-                    })
-                    .filter(d => new Date(d.Date).getFullYear() === a.Year)
-                    .reduce((s, d) => s + d.Amount, 0);
-                const recovered = disbursements
-                    .filter(d => new Date(d.Date).getFullYear() === a.Year && d.Status === 'Approved' && d.Type === 'ThuHoiTamUng')
-                    .reduce((s, d) => s + d.Amount, 0);
+                let disbursedVal = a.DisbursedAmount || 0;
+                if (disbursements.length > 0) {
+                    const disbursed = disbursements
+                        .filter(d => {
+                            const dYear = new Date(d.Date).getFullYear();
+                            const matchPlan = d.CapitalPlanID === a.PlanID || (d as any).AllocationID === (a as any).AllocationID;
+                            const matchYear = dYear === a.Year;
+                            return (matchPlan || matchYear) && d.Status === 'Approved' && d.Type !== 'ThuHoiTamUng';
+                        })
+                        .filter(d => new Date(d.Date).getFullYear() === a.Year)
+                        .reduce((s, d) => s + d.Amount, 0);
+                    const recovered = disbursements
+                        .filter(d => new Date(d.Date).getFullYear() === a.Year && d.Status === 'Approved' && d.Type === 'ThuHoiTamUng')
+                        .reduce((s, d) => s + d.Amount, 0);
+                    disbursedVal = disbursed - recovered;
+                }
                 return {
                     ...a,
-                    disbursed: disbursed - recovered,
-                    rate: a.Amount > 0 ? ((disbursed - recovered) / a.Amount) * 100 : 0,
+                    disbursed: disbursedVal,
+                    rate: a.Amount > 0 ? (disbursedVal / a.Amount) * 100 : 0,
                 };
             }),
         [allocations, disbursements]

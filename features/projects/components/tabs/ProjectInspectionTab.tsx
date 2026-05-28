@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Shield, Plus, Search, Calendar, Building2, AlertTriangle, CheckCircle2, Clock, FileText, ChevronDown, ChevronUp, Edit3, Trash2, X, User, Upload, Paperclip, Download, File as FileIcon, ArrowUpDown } from 'lucide-react';
+import { Shield, Plus, Search, Calendar, Building2, AlertTriangle, CheckCircle2, Clock, FileText, ChevronDown, ChevronUp, Edit3, Trash2, X, User, Upload, Paperclip, Download, File as FileIcon, ArrowUpDown, ArrowDownToLine, Scale, Landmark, Users, TrendingUp } from 'lucide-react';
 import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
 import { Inspection, InspectionType, FollowUpStatus, INSPECTION_TYPE_LABELS, FOLLOW_UP_STATUS_LABELS } from '@/types/inspection.types';
 import { formatFullCurrency } from '@/utils/format';
@@ -394,6 +394,247 @@ const InspectionFormModal: React.FC<{
     );
 };
 
+// ── Helper parsing Conclusion text and Visual Component ──
+interface InspectionPhaseData {
+    thuHoiKn: number;
+    thuHoiTh: number;
+    giamTruKn: number;
+    giamTruTh: number;
+    xlKhacKn: number;
+    xlKhacTh: number;
+    xlHanhChinhKn: number;
+    xlHanhChinhTh: number;
+}
+
+interface ParsedConclusion {
+    title: string;
+    phase1: InspectionPhaseData;
+    phase2: InspectionPhaseData;
+}
+
+const parseConclusionText = (text: string): ParsedConclusion | null => {
+    if (!text) return null;
+    if (!text.includes('Giai đoạn đến ngày 30/6/2025') && !text.includes('Giai đoạn từ 01/7/2025 đến 31/3/2026')) {
+        return null;
+    }
+
+    try {
+        const lines = text.split('\n').map(l => l.trim());
+        let title = '';
+        const titleLine = lines.find(l => l.startsWith('Thông tin kết luận:'));
+        if (titleLine) {
+            title = titleLine.replace('Thông tin kết luận:', '').trim();
+        }
+
+        const parseNumber = (line: string, label: string): { kn: number; th: number } | null => {
+            if (!line.toLowerCase().includes(label.toLowerCase())) return null;
+            // Tìm số sau "Kiến nghị" và "đã thực hiện"
+            const knMatch = line.match(/Kiến nghị\s+([\d,.]+)/i);
+            const thMatch = line.match(/đã thực hiện\s+([\d,.]+)/i);
+            const kn = knMatch ? parseFloat(knMatch[1]) : 0;
+            const th = thMatch ? parseFloat(thMatch[1]) : 0;
+            return { kn, th };
+        };
+
+        let phase1Start = -1;
+        let phase2Start = -1;
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes('Giai đoạn đến ngày 30/6/2025')) {
+                phase1Start = i;
+            } else if (lines[i].includes('Giai đoạn từ 01/7/2025 đến 31/3/2026')) {
+                phase2Start = i;
+            }
+        }
+
+        const getPhaseData = (startIndex: number): InspectionPhaseData => {
+            const data: InspectionPhaseData = {
+                thuHoiKn: 0, thuHoiTh: 0,
+                giamTruKn: 0, giamTruTh: 0,
+                xlKhacKn: 0, xlKhacTh: 0,
+                xlHanhChinhKn: 0, xlHanhChinhTh: 0
+            };
+            if (startIndex === -1) return data;
+
+            for (let i = startIndex + 1; i <= startIndex + 4 && i < lines.length; i++) {
+                const line = lines[i];
+                if (line.includes('Thu hồi')) {
+                    const res = parseNumber(line, 'Thu hồi');
+                    if (res) { data.thuHoiKn = res.kn; data.thuHoiTh = res.th; }
+                } else if (line.includes('Giảm trừ')) {
+                    const res = parseNumber(line, 'Giảm trừ');
+                    if (res) { data.giamTruKn = res.kn; data.giamTruTh = res.th; }
+                } else if (line.includes('Xử lý khác')) {
+                    const res = parseNumber(line, 'Xử lý khác');
+                    if (res) { data.xlKhacKn = res.kn; data.xlKhacTh = res.th; }
+                } else if (line.includes('Xử lý hành chính')) {
+                    const res = parseNumber(line, 'Xử lý hành chính');
+                    if (res) { data.xlHanhChinhKn = res.kn; data.xlHanhChinhTh = res.th; }
+                }
+            }
+            return data;
+        };
+
+        return {
+            title,
+            phase1: getPhaseData(phase1Start),
+            phase2: getPhaseData(phase2Start)
+        };
+    } catch (err) {
+        console.error('Error parsing conclusion:', err);
+        return null;
+    }
+};
+
+const VisualConclusion: React.FC<{ conclusionText: string }> = ({ conclusionText }) => {
+    const parsed = parseConclusionText(conclusionText);
+    
+    if (!parsed) {
+        return (
+            <div>
+                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Kết luận</p>
+                <p className="text-sm text-txt-secondary whitespace-pre-wrap">{conclusionText}</p>
+            </div>
+        );
+    }
+
+    const formatVal = (val: number, isCurrency: boolean = true) => {
+        if (isCurrency) {
+            return `${val.toFixed(3)} tr.đ`;
+        }
+        return `${val.toFixed(0)} tập thể/cá nhân`;
+    };
+
+    const renderMetric = (
+        icon: React.ReactNode, 
+        label: string, 
+        kn: number, 
+        th: number, 
+        isCurrency: boolean = true
+    ) => {
+        const hasValue = kn > 0 || th > 0;
+        let percent = 0;
+        if (kn > 0) {
+            percent = Math.min(Math.round((th / kn) * 100), 100);
+        } else if (kn === 0 && th > 0) {
+            percent = 100;
+        }
+
+        let barColor = 'bg-gray-200 dark:bg-zinc-800';
+        let textColor = 'text-txt-muted';
+        if (kn > 0) {
+            if (percent === 100) {
+                barColor = 'bg-emerald-500';
+                textColor = 'text-emerald-500 font-bold';
+            } else if (percent > 0) {
+                barColor = 'bg-blue-500';
+                textColor = 'text-blue-500 font-bold';
+            } else {
+                barColor = 'bg-amber-500';
+                textColor = 'text-amber-500 font-bold';
+            }
+        } else if (th > 0) {
+            barColor = 'bg-emerald-500';
+            textColor = 'text-emerald-500 font-bold';
+        }
+
+        return (
+            <div className={`p-4 rounded-2xl border transition-all ${hasValue ? 'bg-bg-surface border-border hover:shadow-sm' : 'bg-bg-muted/40 border-border/45 opacity-60'}`}>
+                <div className="flex items-center gap-3 mb-2.5">
+                    <div className={`p-2 rounded-xl ${hasValue ? 'bg-primary-500/10 text-primary-500' : 'bg-bg-muted text-txt-muted'}`}>
+                        {icon}
+                    </div>
+                    <span className="text-xs font-bold text-txt-primary">{label}</span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-xs mb-3">
+                    <div>
+                        <span className="text-[10px] text-txt-muted block mb-0.5">Kiến nghị</span>
+                        <span className="font-extrabold text-txt-primary">{formatVal(kn, isCurrency)}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] text-txt-muted block mb-0.5">Đã thực hiện</span>
+                        <span className={`font-extrabold ${th > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-txt-primary'}`}>{formatVal(th, isCurrency)}</span>
+                    </div>
+                </div>
+
+                {kn > 0 ? (
+                    <div>
+                        <div className="flex justify-between items-center text-[10px] mb-1">
+                            <span className="text-txt-muted font-medium">Tiến độ thực hiện</span>
+                            <span className={textColor}>{percent}%</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-bg-muted rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${percent}%` }} />
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="flex justify-between items-center text-[10px] mb-1">
+                            <span className="text-txt-muted font-medium">Trạng thái</span>
+                            <span className="text-txt-muted italic">{th > 0 ? 'Hoàn thành' : 'Không có kiến nghị'}</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-bg-muted rounded-full" />
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const renderPhase = (title: string, data: InspectionPhaseData) => {
+        const totalKn = data.thuHoiKn + data.giamTruKn + data.xlKhacKn;
+        const totalTh = data.thuHoiTh + data.giamTruTh + data.xlKhacTh;
+        let totalPercent = 0;
+        if (totalKn > 0) {
+            totalPercent = Math.min(Math.round((totalTh / totalKn) * 100), 100);
+        } else if (totalKn === 0 && totalTh > 0) {
+            totalPercent = 100;
+        }
+
+        return (
+            <div className="bg-bg-muted/30 border border-border rounded-2xl p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                    <h5 className="text-xs font-black text-txt-primary uppercase tracking-wider flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-primary-500" />
+                        {title}
+                    </h5>
+                    {totalKn > 0 && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-txt-muted font-bold">Tổng tài chính hoàn thành:</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${totalPercent === 100 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                {totalPercent}%
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {renderMetric(<ArrowDownToLine className="w-4 h-4" />, "Kiến nghị thu hồi", data.thuHoiKn, data.thuHoiTh)}
+                    {renderMetric(<Scale className="w-4 h-4" />, "Giảm trừ quyết toán", data.giamTruKn, data.giamTruTh)}
+                    {renderMetric(<Landmark className="w-4 h-4" />, "Xử lý tài chính khác", data.xlKhacKn, data.xlKhacTh)}
+                    {renderMetric(<Users className="w-4 h-4" />, "Xử lý hành chính", data.xlHanhChinhKn, data.xlHanhChinhTh, false)}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="space-y-6">
+            <div>
+                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-2">Thông tin quyết định / kết luận</p>
+                <div className="bg-primary-500/5 border border-primary-500/10 rounded-xl px-4 py-3 text-sm text-txt-secondary flex items-center gap-2.5 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+                    {parsed.title || conclusionText}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {renderPhase("Giai đoạn đến ngày 30/6/2025", parsed.phase1)}
+                {renderPhase("Giai đoạn từ 01/7/2025 đến 31/3/2026", parsed.phase2)}
+            </div>
+        </div>
+    );
+};
+
 // ── Main Tab Component ──
 interface ProjectInspectionTabProps {
     projectID: string;
@@ -576,10 +817,7 @@ export const ProjectInspectionTab: React.FC<ProjectInspectionTabProps> = ({ proj
                                 {isExpanded && (
                                     <div className="px-5 pb-5 border-t border-border pt-4 space-y-3">
                                         {item.Conclusion && (
-                                            <div>
-                                                <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Kết luận</p>
-                                                <p className="text-sm text-txt-secondary whitespace-pre-wrap">{item.Conclusion}</p>
-                                            </div>
+                                            <VisualConclusion conclusionText={item.Conclusion} />
                                         )}
                                         {item.Recommendations && (
                                             <div>

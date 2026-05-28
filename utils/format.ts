@@ -20,7 +20,7 @@ export const formatShortCurrency = (amount: number): string => {
     
     if (absAmount >= 1_000_000_000) {
         const val = absAmount / 1_000_000_000;
-        const formatted = val.toLocaleString('vi-VN', { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        const formatted = val.toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         return `${isNegative ? '-' : ''}${formatted} tỷ`;
     }
     if (absAmount >= 1_000_000) {

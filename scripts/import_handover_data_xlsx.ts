@@ -21,8 +21,8 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const excelFilePath = 'd:/QuocAnh/2026/01.Project/qlda-ddcn-ht/Ks/28.5.26 BC  dự án các huyện chuyển về.xlsx';
-const errorsJsonPath = 'd:/QuocAnh/2026/01.Project/qlda-ddcn-ht/scratch/audit_errors.json';
+const excelFilePath = './Ks/28.5.26 BC  dự án các huyện chuyển về.xlsx';
+const errorsJsonPath = './scratch/audit_errors.json';
 
 const getStr = (val: any): string => (val !== null && val !== undefined) ? String(val).trim() : '';
 
@@ -233,20 +233,21 @@ async function main() {
       const luyKeGiaiNgan = parseMoney(row.getCell(14).value);
       const luyKeGiaiNganXL = parseMoney(row.getCell(15).value);
       const congNoDaBoTri = parseMoney(row.getCell(16).value);
-      const banQLDATiepNhan = getStr(row.getCell(17).value);
-      const thoiDiemBanGiao = parseExcelDate(row.getCell(18).value);
-      const hoSoBanGiao = getStr(row.getCell(19).value);
-      const klThucHienBanGiao = parseMoney(row.getCell(20).value);
+      const tinhTrangQuyetToan = getStr(row.getCell(17).value);
+      const banQLDATiepNhan = getStr(row.getCell(18).value);
+      const thoiDiemBanGiao = parseExcelDate(row.getCell(19).value);
+      const hoSoBanGiao = getStr(row.getCell(20).value);
+      const klThucHienBanGiao = parseMoney(row.getCell(21).value);
       
-      const khVonBanGiaoTong = parseMoney(row.getCell(21).value);
-      const khVonBanGiaoHuyen = parseMoney(row.getCell(22).value);
-      const khVonBanGiaoKhac = parseMoney(row.getCell(23).value);
+      const khVonBanGiaoTong = parseMoney(row.getCell(22).value);
+      const khVonBanGiaoHuyen = parseMoney(row.getCell(23).value);
+      const khVonBanGiaoKhac = parseMoney(row.getCell(24).value);
 
-      const tonTaiBanGiao = getStr(row.getCell(24).value);
-      const khVonDieuChinhBoSung = parseMoney(row.getCell(25).value);
-      const giaiNganGiaiDoan2 = parseMoney(row.getCell(26).value);
-      const congNoGiaiDoan2 = parseMoney(row.getCell(27).value);
-      const tinhTrangQTGiaiDoan2 = getStr(row.getCell(28).value);
+      const tonTaiBanGiao = getStr(row.getCell(25).value);
+      const khVonDieuChinhBoSung = parseMoney(row.getCell(26).value);
+      const giaiNganGiaiDoan2 = parseMoney(row.getCell(27).value);
+      const congNoGiaiDoan2 = parseMoney(row.getCell(28).value);
+      const tinhTrangQTGiaiDoan2 = getStr(row.getCell(29).value);
 
       // Get validation errors for this specific row in PL03
       const rowErrors = errorsJson.PL03?.filter((err: any) => err.row === rowNumber) || [];
@@ -282,7 +283,7 @@ async function main() {
         },
         project_status_info: {
           cong_no_den_30_6_2025: congNoDaBoTri,
-          tinh_trang_quyet_toan_den_30_6_2025: tinhTrangQTGiaiDoan2 || null,
+          tinh_trang_quyet_toan_den_30_6_2025: tinhTrangQuyetToan || null,
           ton_tai_vuong_mac_ban_giao: tonTaiBanGiao || null,
           cong_no_sau_ban_giao: congNoGiaiDoan2,
           tinh_trang_quyet_toan_sau_ban_giao: tinhTrangQTGiaiDoan2 || null,

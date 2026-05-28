@@ -47,6 +47,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         totalInvestment: 0, totalAllocated: 0, totalDisbursed: 0,
         totalAdvance: 0, advanceRecovered: 0, advanceBalance: 0,
         completionPayment: 0, disbursementRate: 0, yearlyTarget: 0, yearlyDisbursed: 0,
+        totalLuyKeNghiemThu: 0,
     };
 
     // ── UI State ──

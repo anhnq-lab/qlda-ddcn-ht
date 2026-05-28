@@ -793,6 +793,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     <BudgetVarianceCard
                         totalInvestment={project.TotalInvestment}
                         disbursedAmount={disbursedAmount}
+                        luyKeNghiemThu={capitalSummary?.summary.totalLuyKeNghiemThu || 0}
                         plannedDisbursement={project.PlannedDisbursement || disbursementData?.planned || 0}
                         previousMonthDisbursed={disbursementData?.prevMonth || 0}
                     />

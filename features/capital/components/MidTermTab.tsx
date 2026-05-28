@@ -16,7 +16,7 @@ interface MidTermTabProps {
 }
 
 function fmtB(n: number): string {
-    if (n >= 1e9) return `${(n / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 1, minimumFractionDigits: 0 })} tỷ`;
+    if (n >= 1e9) return `${(n / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} tỷ`;
     if (n >= 1e6) return `${(n / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 0 })} tr`;
     return formatCurrency(n);
 }

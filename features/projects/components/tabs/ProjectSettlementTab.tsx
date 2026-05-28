@@ -19,7 +19,7 @@ interface Props { projectID: string; }
 // ── Helpers ────────────────────────────────────────────────────
 const fmt = (n: number) => new Intl.NumberFormat('vi-VN').format(Math.round(n));
 const fmtB = (n: number) => {
-    if (n >= 1e9) return `${(n / 1e9).toFixed(2)} tỷ`;
+    if (n >= 1e9) return `${(n / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} tỷ`;
     if (n >= 1e6) return `${(n / 1e6).toFixed(0)} tr`;
     return fmt(n);
 };

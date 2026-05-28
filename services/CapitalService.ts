@@ -112,6 +112,7 @@ export class CapitalService {
             disbursementRate: number;
             yearlyTarget: number;
             yearlyDisbursed: number;
+            totalLuyKeNghiemThu: number;
         };
     }> {
         return CapitalOverviewService.getProjectCapitalSummary(projectId);

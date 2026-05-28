@@ -53,8 +53,8 @@ export const DisbursementDetailPanel: React.FC<DisbursementDetailPanelProps> = (
     // Định dạng tiền tệ VND
     const formatCurrency = (val: number | string): string => {
         const num = Number(val);
-        if (num >= 1e12) return (num / 1e12).toFixed(2) + ' nghìn tỷ';
-        if (num >= 1e9) return (num / 1e9).toFixed(2) + ' tỷ';
+        if (num >= 1e12) return (num / 1e12).toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' nghìn tỷ';
+        if (num >= 1e9) return (num / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' tỷ';
         if (num >= 1e6) return (num / 1e6).toFixed(2) + ' triệu';
         return num.toLocaleString('vi-VN') + ' đ';
     };

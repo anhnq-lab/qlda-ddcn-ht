@@ -45,6 +45,7 @@ export interface CapitalSummaryExtended {
     disbursementRate: number;
     yearlyTarget: number;
     yearlyDisbursed: number;
+    totalLuyKeNghiemThu: number;
 }
 
 // Capital Plan (Kế hoạch vốn) — Luật ĐTC 58/2024
