@@ -50,7 +50,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
         >
             <h4
                 className={`
-                    font-bold text-slate-500 dark:text-slate-400
+                    font-bold text-txt-muted
                     uppercase flex items-center gap-2
                     ${sizeStyles[size]}
                 `.replace(/\s+/g, ' ').trim()}

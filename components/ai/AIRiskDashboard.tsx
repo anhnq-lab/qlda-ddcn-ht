@@ -50,16 +50,16 @@ export const AIRiskDashboard: React.FC = () => {
     const warningCount = report?.risks.filter(r => r.level === 'warning').length ?? 0;
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden">
+        <div className="bg-bg-surface rounded-xl border border-border shadow-lg overflow-hidden">
             {/* Header */}
-            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-red-500 flex items-center justify-center">
                         <Sparkles size={14} className="text-white" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Cảnh báo AI</h3>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-400">Phân tích rủi ro tự động</p>
+                        <h3 className="text-sm font-bold text-txt-secondary">Cảnh báo AI</h3>
+                        <p className="text-[10px] text-txt-placeholder">Phân tích rủi ro tự động</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export const AIRiskDashboard: React.FC = () => {
                     <button
                         onClick={loadRisks}
                         disabled={loading}
-                        className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
+                        className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors disabled:opacity-50"
                         title="Phân tích lại"
                     >
                         <RefreshCw size={14} className={`text-slate-400 ${loading ? 'animate-spin' : ''}`} />
@@ -87,7 +87,7 @@ export const AIRiskDashboard: React.FC = () => {
             {/* Content */}
             <div className="p-3">
                 {loading && !report && (
-                    <div className="flex items-center justify-center py-8 gap-2 text-slate-400 dark:text-slate-400">
+                    <div className="flex items-center justify-center py-8 gap-2 text-txt-placeholder">
                         <RefreshCw size={16} className="animate-spin" />
                         <span className="text-xs">Đang phân tích rủi ro...</span>
                     </div>
@@ -101,7 +101,7 @@ export const AIRiskDashboard: React.FC = () => {
                 )}
 
                 {report && report.risks.length === 0 && (
-                    <div className="flex flex-col items-center py-6 text-slate-400 dark:text-slate-400">
+                    <div className="flex flex-col items-center py-6 text-txt-placeholder">
                         <CheckCircle2 size={32} className="text-emerald-400 mb-2" />
                         <p className="text-xs font-medium">Không phát hiện rủi ro</p>
                         <p className="text-[10px]">Tất cả dự án hoạt động bình thường</p>
@@ -127,7 +127,7 @@ export const AIRiskDashboard: React.FC = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">
+                                                <span className="text-xs font-semibold text-txt-secondary truncate">
                                                     {risk.title}
                                                 </span>
                                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${config.badge}`}>
@@ -135,12 +135,12 @@ export const AIRiskDashboard: React.FC = () => {
                                                 </span>
                                             </div>
                                             {risk.projectName && (
-                                                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                                <p className="text-[10px] text-txt-muted truncate mt-0.5">
                                                     {risk.projectName}
                                                 </p>
                                             )}
                                             {risk.metric && (
-                                                <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 font-mono">
+                                                <p className="text-[10px] text-txt-placeholder mt-0.5 font-mono">
                                                     {risk.metric}
                                                 </p>
                                             )}
@@ -153,14 +153,14 @@ export const AIRiskDashboard: React.FC = () => {
 
                                     {isExpanded && (
                                         <div className="px-2.5 pb-2.5 pt-0 border-t border-slate-200/50 dark:border-slate-700/50 mt-1">
-                                            <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-2">
+                                            <p className="text-[11px] text-txt-muted mt-2">
                                                 {risk.description}
                                             </p>
-                                            <div className="mt-2 p-2 bg-white/60 dark:bg-slate-700 rounded text-[11px] text-slate-600 dark:text-slate-300">
+                                            <div className="mt-2 p-2 bg-white/60 dark:bg-slate-700 rounded text-[11px] text-txt-muted">
                                                 <span className="font-medium">💡 Khuyến nghị:</span> {risk.recommendation}
                                             </div>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <span className="text-[9px] text-slate-400 dark:text-slate-400 flex items-center gap-1">
+                                                <span className="text-[9px] text-txt-placeholder flex items-center gap-1">
                                                     {categoryIcons[risk.category] || <Shield size={10} />}
                                                     {risk.source === 'ai' ? 'Phân tích AI' : 'Quy tắc tự động'}
                                                 </span>
@@ -176,11 +176,11 @@ export const AIRiskDashboard: React.FC = () => {
                 {/* Score bar */}
                 {report && (
                     <div className="mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
-                        <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-400 mb-1">
+                        <div className="flex items-center justify-between text-[10px] text-txt-placeholder mb-1">
                             <span>Điểm sức khỏe</span>
-                            <span className="font-bold text-slate-600 dark:text-slate-300">{report.overallScore}/100</span>
+                            <span className="font-bold text-txt-muted">{report.overallScore}/100</span>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-bg-muted rounded-full overflow-hidden">
                             <div
                                 className={`h-full rounded-full transition-all duration-500 ${report.overallScore >= 70
                                         ? 'bg-emerald-500'
@@ -191,7 +191,7 @@ export const AIRiskDashboard: React.FC = () => {
                                 style={{ width: `${report.overallScore}%` }}
                             />
                         </div>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1">
+                        <p className="text-[10px] text-txt-placeholder mt-1">
                             {report.summary}
                         </p>
                     </div>

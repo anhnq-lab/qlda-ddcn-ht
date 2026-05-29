@@ -28,7 +28,7 @@ const KANBAN_COLUMNS: KanbanColumn[] = [
         title: 'Chờ làm',
         icon: Circle,
         color: 'text-gray-600',
-        bgColor: 'bg-slate-50 dark:bg-slate-800',
+        bgColor: 'bg-bg-subtle',
         borderColor: 'border-gray-200'
     },
     {
@@ -150,7 +150,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                         key={column.id}
                         className={`flex flex-col rounded-xl border-2 transition-all min-h-[400px] ${isDropTarget
                             ? `${column.borderColor} ring-2 ring-offset-2 ring-${column.color.replace('text-', '')}`
-                            : 'border-gray-200 dark:border-slate-700'
+                            : 'border-border'
                             }`}
                         onDragOver={(e) => handleDragOver(e, column.id)}
                         onDragLeave={handleDragLeave}
@@ -187,7 +187,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                     onDragStart={(e) => handleDragStart(e, task)}
                                     onDragEnd={handleDragEnd}
                                     onClick={() => onTaskClick(task)}
-                                    className={`group bg-white dark:bg-slate-800 rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
+                                    className={`group bg-bg-surface rounded-lg border dark:border-slate-700 p-3 cursor-pointer transition-all hover:shadow-md border-l-4 ${getPriorityStyle(task.Priority as TaskPriority)} ${draggedTask?.TaskID === task.TaskID ? 'opacity-50 scale-95' : ''
                                         } ${isOverdue(task) ? 'bg-red-50/50' : ''}`}
                                 >
                                     {/* Drag Handle + Title */}
@@ -198,7 +198,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                                 ? 'text-gray-400'
                                                 : isOverdue(task)
                                                     ? 'text-red-700'
-                                                    : 'text-gray-800 dark:text-slate-200'
+                                                    : 'text-txt-primary'
                                                 }`}>
                                                 {task.Title?.replace(/^(?:Phòng|Ban)\s+[^-]+-\s*/i, '')}
                                             </h4>
@@ -234,7 +234,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                     </div>
 
                                     {/* Progress + Assignee Row */}
-                                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-slate-700">
+                                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
                                         {/* Progress */}
                                         {task.ProgressPercent !== undefined && (
                                             <ProgressBadge value={task.ProgressPercent} size="sm" />
@@ -262,7 +262,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
 
                             {/* Empty State */}
                             {columnTasks.length === 0 && (
-                                <div className="h-32 flex flex-col items-center justify-center text-gray-400 dark:text-slate-400 text-sm">
+                                <div className="h-32 flex flex-col items-center justify-center text-txt-placeholder text-sm">
                                     <Icon className="w-8 h-8 mb-2 opacity-30" />
                                     <p className="text-xs">Không có công việc</p>
                                 </div>

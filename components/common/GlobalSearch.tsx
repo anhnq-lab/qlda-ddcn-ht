@@ -405,17 +405,17 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
     };
 
     const typeColors: Record<string, string> = {
-        project: 'bg-blue-100 text-blue-700',
-        contractor: 'bg-purple-100 text-purple-700',
-        contract: 'bg-emerald-100 text-emerald-700',
-        employee: 'bg-warning-100 text-warning-700',
-        package: 'bg-cyan-100 text-cyan-700',
-        task: 'bg-orange-100 text-orange-700',
-        asset: 'bg-indigo-100 text-indigo-700',
-        legal_doc: 'bg-rose-100 text-rose-700',
-        regulation: 'bg-teal-100 text-teal-700',
-        regulation_article: 'bg-teal-50 text-teal-600',
-        workflow: 'bg-sky-100 text-sky-700'
+        project: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
+        contractor: 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400',
+        contract: 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400',
+        employee: 'bg-warning-100 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400',
+        package: 'bg-cyan-100 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400',
+        task: 'bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400',
+        asset: 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400',
+        legal_doc: 'bg-rose-100 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400',
+        regulation: 'bg-teal-100 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400',
+        regulation_article: 'bg-teal-50 dark:bg-teal-900/15 text-teal-600 dark:text-teal-400',
+        workflow: 'bg-sky-100 dark:bg-sky-900/20 text-sky-700 dark:text-sky-400'
     };
 
     if (!isOpen) return null;
@@ -423,11 +423,11 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div
-                className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200"
+                className="w-full max-w-2xl bg-bg-surface rounded-2xl shadow-2xl overflow-hidden border border-border animate-in zoom-in-95 duration-200"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search Input */}
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
                     <Search className="w-5 h-5 text-gray-400" />
                     <input
                         ref={inputRef}
@@ -438,20 +438,20 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                             setActiveIndex(0);
                         }}
                         placeholder="Tìm kiếm dự án, nhân sự, công việc, văn bản pháp luật, quy chế..."
-                        className="flex-1 text-gray-800 dark:text-slate-100 placeholder-gray-400 focus:outline-none text-base bg-transparent"
+                        className="flex-1 text-txt-primary placeholder-gray-400 focus:outline-none text-base bg-transparent"
                         autoComplete="off"
                     />
                     {query && (
                         <button
                             onClick={() => setQuery('')}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+                            className="p-1 hover:bg-bg-muted rounded-full transition-colors"
                         >
                             <X className="w-4 h-4 text-gray-400" />
                         </button>
                     )}
                     <button
                         onClick={onClose}
-                        className="px-2 py-1 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-slate-700 rounded border border-gray-200 dark:border-slate-600"
+                        className="px-2 py-1 text-xs font-medium text-gray-400 bg-bg-muted rounded border border-gray-200 dark:border-slate-600"
                     >
                         ESC
                     </button>
@@ -475,7 +475,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                                     <button
                                         key={suggestion}
                                         onClick={() => setQuery(suggestion)}
-                                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-300 text-sm rounded-full transition-colors flex items-center gap-1"
+                                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-txt-secondary text-sm rounded-full transition-colors flex items-center gap-1"
                                     >
                                         <Clock className="w-3 h-3 text-gray-400" />
                                         {suggestion}
@@ -492,19 +492,19 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                                     key={`${result.type}-${result.id}`}
                                     onClick={() => handleSelect(result)}
                                     onMouseEnter={() => setActiveIndex(idx)}
-                                    className={`w-full px-5 py-3 flex items-center gap-4 text-left transition-colors ${activeIndex === idx ? 'bg-blue-50 dark:bg-slate-700/50' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                                    className={`w-full px-5 py-3 flex items-center gap-4 text-left transition-colors ${activeIndex === idx ? 'bg-blue-50 dark:bg-slate-700/50' : 'hover:bg-bg-hover-row'
                                         }`}
                                 >
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${typeColors[result.type]}`}>
                                         <result.icon className="w-5 h-5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-800 dark:text-slate-100 truncate">{result.title}</p>
-                                        <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{result.subtitle}</p>
+                                        <p className="text-sm font-semibold text-txt-primary truncate">{result.title}</p>
+                                        <p className="text-xs text-txt-muted truncate">{result.subtitle}</p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
                                         {result.meta && (
-                                            <span className="text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded">
+                                            <span className="text-[10px] font-medium text-gray-400 bg-bg-muted px-2 py-0.5 rounded">
                                                 {result.meta}
                                             </span>
                                         )}
@@ -520,15 +520,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 py-3 bg-slate-50 dark:bg-slate-800/80 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between text-xs text-gray-400">
+                <div className="px-5 py-3 bg-bg-subtle/80 border-t border-border flex items-center justify-between text-xs text-gray-400">
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">↑</kbd>
-                            <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">↓</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">↑</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">↓</kbd>
                             để di chuyển
                         </span>
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">Enter</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded text-[10px] font-mono">Enter</kbd>
                             để chọn
                         </span>
                     </div>

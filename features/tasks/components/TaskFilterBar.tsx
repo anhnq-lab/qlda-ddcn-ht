@@ -121,7 +121,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <select
                         value={filterProject}
                         onChange={(e) => setFilterProject(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
+                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
                     >
                         <option value="All">Tất cả dự án</option>
                         {projects.map(p => (
@@ -140,7 +140,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         <select
                             value={filterMonth}
                             onChange={(e) => setFilterMonth(e.target.value)}
-                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all min-w-[85px]"
+                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all min-w-[85px]"
                         >
                             <option value="All">Tất cả tháng</option>
                             {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
@@ -158,7 +158,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                         <select
                             value={filterDepartment}
                             onChange={(e) => setFilterDepartment(e.target.value)}
-                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
+                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
                         >
                             <option value="All">Tất cả phòng ban</option>
                             {departments.map(dept => (
@@ -175,7 +175,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <select
                         value={filterTaskType}
                         onChange={(e) => setFilterTaskType(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[120px]"
+                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[120px]"
                     >
                         <option value="All">Tất cả loại</option>
                         <option value="project">📁 Dự án</option>
@@ -191,7 +191,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
+                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
                     >
                         <option value="All">Tất cả trạng thái</option>
                         <option value={TaskStatus.Todo}>Mới</option>
@@ -225,16 +225,16 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
 
             {/* Phải: View toggle + Nhập/Xuất/Template + Tạo công việc */}
             <div className="flex items-center gap-1.5 shrink-0 flex-wrap lg:flex-nowrap">
-                <div className="flex items-center bg-slate-100 dark:bg-slate-700/50 rounded-lg p-0.5 mr-1">
+                <div className="flex items-center bg-bg-muted/50 rounded-lg p-0.5 mr-1">
                     <button
                         onClick={() => setViewMode('list')}
-                        className={`p-1 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-700 dark:text-slate-200' : 'text-slate-450 hover:text-slate-650 dark:hover:text-slate-300'}`}
+                        className={`p-1 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow-sm text-txt-secondary' : 'text-slate-450 hover:text-slate-650 dark:hover:text-slate-300'}`}
                     >
                         <ListTodo className="w-3 h-3" />
                     </button>
                     <button
                         onClick={() => setViewMode('board')}
-                        className={`p-1 rounded-md transition-all ${viewMode === 'board' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-700 dark:text-slate-200' : 'text-slate-450 hover:text-slate-650 dark:hover:text-slate-305'}`}
+                        className={`p-1 rounded-md transition-all ${viewMode === 'board' ? 'bg-white dark:bg-slate-600 shadow-sm text-txt-secondary' : 'text-slate-450 hover:text-slate-650 dark:hover:text-slate-305'}`}
                     >
                         <LayoutGrid className="w-3 h-3" />
                     </button>
@@ -243,7 +243,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                 {/* Tải Template */}
                 <button
                     onClick={onDownloadTemplateClick}
-                    className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-txt-secondary bg-bg-muted border border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg shadow-sm transition-all hover:-translate-y-[1px] whitespace-nowrap"
                     title="Tải file mẫu Excel (.xlsx)"
                 >
                     <Download className="w-3 h-3" />

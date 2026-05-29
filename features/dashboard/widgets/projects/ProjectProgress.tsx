@@ -66,14 +66,14 @@ export const ProjectProgress: React.FC<Props> = ({ data }) => {
                     ) : data.deptProjects.slice(0, 10).map((p: any) => (
                         <div key={p.ProjectID} onClick={() => navigate(`/projects/${p.ProjectID}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                             <div className="flex items-center justify-between gap-2 mb-1.5">
-                                <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate flex-1">{p.ProjectName}</p>
-                                <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 shrink-0 tabular-nums">{formatShortCurrency(p.TotalInvestment || 0)}</span>
+                                <p className="text-xs font-bold text-txt-secondary truncate flex-1">{p.ProjectName}</p>
+                                <span className="text-[10px] font-bold text-txt-placeholder shrink-0 tabular-nums">{formatShortCurrency(p.TotalInvestment || 0)}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div className="flex-1 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                     <div className={`h-full rounded-full transition-all ${(p.Progress || 0) >= 80 ? 'bg-emerald-500' : (p.Progress || 0) >= 50 ? 'bg-warning-500' : 'bg-primary-500'}`} style={{ width: `${p.Progress || 0}%` }} />
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 w-8 text-right tabular-nums">{p.Progress || 0}%</span>
+                                <span className="text-[10px] font-bold text-txt-muted w-8 text-right tabular-nums">{p.Progress || 0}%</span>
                             </div>
                         </div>
                     ))}
@@ -93,7 +93,7 @@ export const ProjectProgress: React.FC<Props> = ({ data }) => {
                     <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[200px] overflow-y-auto">
                         {overdueTasks.slice(0, 5).map((task: any) => (
                             <div key={task.TaskID} className="p-3 cursor-pointer hover:bg-bg-app dark:hover:bg-slate-700 transition-colors" onClick={() => navigate(`/tasks/${task.TaskID}`)}>
-                                <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{task.Title}</p>
+                                <p className="text-xs font-bold text-txt-secondary truncate">{task.Title}</p>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
                                         Quá hạn {Math.ceil((new Date().getTime() - new Date(task.DueDate).getTime()) / (1000 * 60 * 60 * 24))} ngày

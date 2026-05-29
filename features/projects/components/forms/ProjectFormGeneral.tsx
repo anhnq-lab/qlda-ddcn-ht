@@ -132,7 +132,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                             className={`py-2 px-3 rounded-xl text-sm font-semibold transition-all border-2 text-center ${
                                 formData.ManagementBoard === board.value
                                     ? `${board.color} text-white border-transparent shadow-md scale-[1.02]`
-                                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-400 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                    : 'bg-bg-surface text-txt-muted border-gray-200 dark:border-slate-400 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-bg-hover-row'
                             }`}>
                             {board.label}
                         </button>

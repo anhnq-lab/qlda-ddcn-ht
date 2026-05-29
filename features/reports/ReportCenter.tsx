@@ -25,8 +25,8 @@ const REPORTS: {
         desc: 'Báo cáo tình hình thực hiện dự án theo biểu mẫu quy định của Bộ KH&ĐT (BC-01).',
         period: 'Định kỳ: Tháng / Quý',
         icon: BarChart2,
-        iconBg: 'bg-slate-100 dark:bg-slate-700',
-        iconColor: 'text-slate-700 dark:text-slate-300',
+        iconBg: 'bg-bg-muted',
+        iconColor: 'text-txt-secondary',
     },
     {
         type: 'disbursement',
@@ -100,10 +100,10 @@ const ReportCenter: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-slate-100">
+                    <h2 className="text-2xl font-bold text-txt-primary">
                         Trung tâm Báo cáo &amp; Điều hành
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+                    <p className="text-sm text-txt-muted mt-1">
                         Tổng hợp báo cáo giám sát đầu tư và đồng bộ dữ liệu quốc gia
                     </p>
                 </div>
@@ -125,7 +125,7 @@ const ReportCenter: React.FC = () => {
             </div>
 
             {/* BC-03: Đồng bộ CSDL Quốc gia */}
-            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-white dark:bg-slate-800 dark:border-slate-700 border-gray-200">
+            <div className="rounded-2xl shadow-sm p-4 overflow-hidden relative border bg-bg-surface dark:border-slate-700 border-gray-200">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-blue-50/50 dark:bg-blue-900/10 skew-x-12 transform translate-x-10 pointer-events-none" />
 
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center relative z-10 gap-6">
@@ -134,16 +134,16 @@ const ReportCenter: React.FC = () => {
                             <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-slate-700 shrink-0">
                                 <Database className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                            <h3 className="text-lg font-bold text-txt-primary">
                                 Hệ thống Thông tin Quốc gia về Đầu tư công
                             </h3>
                         </div>
-                        <p className="text-gray-500 dark:text-slate-400 text-sm max-w-xl pl-16">
+                        <p className="text-txt-muted text-sm max-w-xl pl-16">
                             Tự động đồng bộ dữ liệu dự án, gói thầu về CSDL Quốc gia qua API theo chuẩn Nghị định 111/2025/NĐ-CP.
                         </p>
                         <div className="flex items-center gap-4 mt-5 pl-16">
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Trạng thái kết nối</span>
+                                <span className="text-[10px] text-txt-placeholder font-bold uppercase tracking-wider mb-1">Trạng thái kết nối</span>
                                 <span className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800/30">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -153,8 +153,8 @@ const ReportCenter: React.FC = () => {
                                 </span>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Lần đồng bộ cuối</span>
-                                <span className="text-sm font-bold text-gray-700 dark:text-slate-300 px-3 py-1.5 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-100 dark:border-slate-600">
+                                <span className="text-[10px] text-txt-placeholder font-bold uppercase tracking-wider mb-1">Lần đồng bộ cuối</span>
+                                <span className="text-sm font-bold text-txt-secondary px-3 py-1.5 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-100 dark:border-slate-600">
                                     Hôm nay, 08:30 AM
                                 </span>
                             </div>
@@ -191,7 +191,7 @@ const ReportCenter: React.FC = () => {
 
             {/* Reports Grid */}
             <div>
-                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 mt-2 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-txt-primary mt-2 mb-4 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     Danh sách Báo cáo định kỳ
                     <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
@@ -204,18 +204,18 @@ const ReportCenter: React.FC = () => {
                         const isExporting = exportingReport === type;
                         const isSuccess = exportSuccess === type;
                         return (
-                            <div key={type} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group flex flex-col">
+                            <div key={type} className="bg-bg-surface p-5 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow group flex flex-col">
                                 <div className={`w-12 h-12 ${iconBg} rounded-xl flex items-center justify-center ${iconColor} mb-4 group-hover:scale-110 transition-transform`}>
                                     <Icon className="w-6 h-6" />
                                 </div>
-                                <h4 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-2">{title}</h4>
-                                <p className="text-sm text-gray-500 dark:text-slate-400 mb-4 flex-1">{desc}</p>
+                                <h4 className="text-base font-bold text-txt-primary mb-2">{title}</h4>
+                                <p className="text-sm text-txt-muted mb-4 flex-1">{desc}</p>
 
-                                <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex flex-col gap-3">
+                                <div className="pt-4 border-t border-border flex flex-col gap-3">
                                     {type === 'appendix' ? (
                                         <>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
+                                                <span className="text-xs font-medium text-txt-placeholder bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
                                                     {period}
                                                 </span>
                                             </div>
@@ -226,7 +226,7 @@ const ReportCenter: React.FC = () => {
                                                     className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
                                                         exportSuccess === 'appendix1'
                                                             ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
-                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                            : 'text-txt-secondary bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-bg-muted'
                                                     } disabled:opacity-60`}
                                                 >
                                                     {exportingReport === 'appendix1' ? (
@@ -244,7 +244,7 @@ const ReportCenter: React.FC = () => {
                                                     className={`text-xs font-bold flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl border transition-all ${
                                                         exportSuccess === 'appendix2'
                                                             ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800'
-                                                            : 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                            : 'text-txt-secondary bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:bg-bg-muted'
                                                     } disabled:opacity-60`}
                                                 >
                                                     {exportingReport === 'appendix2' ? (
@@ -278,7 +278,7 @@ const ReportCenter: React.FC = () => {
                                         </>
                                     ) : (
                                         <div className="flex justify-between items-center w-full">
-                                            <span className="text-xs font-medium text-gray-400 dark:text-slate-400 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
+                                            <span className="text-xs font-medium text-txt-placeholder bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">
                                                 {period}
                                             </span>
                                             <button

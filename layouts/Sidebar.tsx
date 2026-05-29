@@ -104,26 +104,26 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div
       className={`layout-sidebar
         h-full flex flex-col justify-between
-        transition-all duration-300 ease-out bg-white dark:bg-slate-800 border-r border-border z-50
+        transition-all duration-300 ease-out bg-bg-surface border-r border-border z-50
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}
     >
       {/* ── Logo & Brand ── */}
       <div className="flex flex-col h-full overflow-hidden">
-        <div className={`relative h-16 px-4 shrink-0 flex items-center justify-between ${isCollapsed ? 'md:px-3 md:justify-center' : ''} border-b border-slate-100 dark:border-slate-800`}>
+        <div className={`relative h-16 px-4 shrink-0 flex items-center justify-between ${isCollapsed ? 'md:px-3 md:justify-center' : ''} border-b border-border-subtle`}>
           {/* Subtle gradient accent line at bottom */}
-          <div className="absolute bottom-0 left-4 right-4 h-[1px] bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
+          <div className="absolute bottom-0 left-4 right-4 h-[1px] bg-gradient-to-r from-transparent via-border to-transparent" />
 
           {/* Logo - Expanded state */}
           <div className={`flex items-center overflow-hidden transition-all duration-300 gap-3 ${isCollapsed ? 'md:hidden' : 'w-auto'}`}>
-            <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
+            <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-card border border-border">
                <LogoDDCN className="w-full h-full" />
             </div>
             <div className="animate-fade-in flex flex-col justify-center min-w-0">
                <h1 className="text-[14px] font-black text-transparent bg-clip-text bg-gradient-to-r from-warning-400 via-warning-200 to-warning-400 drop-shadow-sm leading-tight uppercase tracking-wide w-full">
                  UBND tỉnh Hà Tĩnh
                </h1>
-               <p className="text-[8.5px] font-bold text-slate-800 dark:text-slate-200 uppercase leading-tight tracking-tight mt-0.5">
+               <p className="text-[8.5px] font-bold text-txt-primary uppercase leading-tight tracking-tight mt-0.5">
                  Ban QLDA Đầu tư xây dựng<br />Dân dụng & Hạ tầng khu vực
                </p>
             </div>
@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logo - Collapsed state */}
           <div className={`hidden transition-all duration-300 ${isCollapsed ? 'md:flex justify-center' : ''}`}>
-             <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-lg border border-border">
+             <div className="w-10 h-10 bg-bg-surface rounded-lg p-0.5 flex items-center justify-center shrink-0 shadow-card border border-border">
                <LogoDDCN className="w-full h-full" />
              </div>
           </div>
@@ -144,8 +144,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="space-y-1 animate-pulse">
               {Array.from({ length: 7 }).map((_, i) => (
                 <div key={i} className={`flex items-center gap-3 px-4 py-3 rounded-lg ${isCollapsed ? 'md:px-0 md:justify-center' : ''}`}>
-                  <div className="w-[18px] h-[18px] rounded bg-slate-200 dark:bg-slate-700 shrink-0" />
-                  {!isCollapsed && <div className="h-3 rounded bg-slate-200 dark:bg-slate-700 flex-1" style={{ width: `${50 + (i * 13) % 35}%` }} />}
+                  <div className="w-[18px] h-[18px] rounded bg-bg-muted shrink-0" />
+                  {!isCollapsed && <div className="h-3 rounded bg-bg-muted flex-1" style={{ width: `${50 + (i * 13) % 35}%` }} />}
                 </div>
               ))}
             </div>
@@ -159,8 +159,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               className={({ isActive }) => `
                 relative w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
                 ${isActive
-                  ? 'bg-primary-50 dark:bg-slate-800 text-primary-700 dark:text-primary-400 shadow-lg dark:shadow-primary-500/5 border-l-[3px] border-l-primary-600 dark:border-l-primary-500'
-                  : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent'
+                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-card border-l-[3px] border-l-primary-600 dark:border-l-primary-500'
+                  : 'text-txt-muted hover:bg-bg-muted hover:text-txt-primary border-l-[3px] border-l-transparent'
                 }
                 ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
               `}
@@ -183,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </span>
                   )}
                   {item.badge && isCollapsed && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500 border-2 border-white dark:border-slate-900" />
+                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500 border-2 border-bg-surface" />
                   )}
                 </>
               )}
@@ -193,14 +193,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* ── Footer ── */}
-      <div className={`p-4 border-t border-slate-100 dark:border-slate-800 space-y-1 ${isCollapsed ? 'md:px-2' : ''}`}>
+      <div className={`p-4 border-t border-border-subtle space-y-1 ${isCollapsed ? 'md:px-2' : ''}`}>
         {/* Collapse Toggle */}
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
             className={`
               w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
-              text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent
+              text-txt-muted hover:bg-bg-muted hover:text-txt-primary border-l-[3px] border-l-transparent
               ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
             `}
             aria-label={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
@@ -223,7 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             to="/settings"
             className={`
               w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
-              text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 border-l-[3px] border-l-transparent
+              text-txt-muted hover:bg-bg-muted hover:text-txt-primary border-l-[3px] border-l-transparent
               ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
             `}
             title={isCollapsed ? 'Cài đặt hệ thống' : undefined}
@@ -238,7 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => { logout(); }}
           className={`
             w-full flex items-center gap-3 px-4 py-3 text-[13px] font-bold rounded-lg transition-all mb-1
-            text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 border-l-[3px] border-l-transparent
+            text-txt-muted hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 border-l-[3px] border-l-transparent
             ${isCollapsed ? 'md:px-0 md:justify-center' : ''}
           `}
           title={isCollapsed ? 'Đăng xuất' : undefined}

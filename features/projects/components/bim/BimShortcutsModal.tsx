@@ -56,7 +56,7 @@ export const BimShortcutsModal: React.FC<BimShortcutsModalProps> = ({ isOpen, on
             <div
                 className={`
                     relative z-10 w-[400px] max-h-[80%] overflow-auto rounded-2xl border shadow-sm
-                    ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white dark:bg-slate-800 border-gray-200'}
+                    ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-bg-surface border-gray-200'}
                 `}
                 onClick={e => e.stopPropagation()}
             >
@@ -80,7 +80,7 @@ export const BimShortcutsModal: React.FC<BimShortcutsModalProps> = ({ isOpen, on
                             </h4>
                             <div className="space-y-1">
                                 {group.items.map(item => (
-                                    <div key={item.key} className={`flex items-center justify-between py-1 px-2 rounded ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-50 dark:bg-slate-800'}`}>
+                                    <div key={item.key} className={`flex items-center justify-between py-1 px-2 rounded ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-bg-subtle'}`}>
                                         <span className={`text-xs ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>{item.action}</span>
                                         <kbd className={`
                                             text-[10px] font-mono px-2 py-0.5 rounded border min-w-[32px] text-center

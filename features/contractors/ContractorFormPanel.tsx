@@ -85,25 +85,25 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-bg-subtle">
             {/* ═══ HEADER ═══ */}
-            <div className="px-6 py-5 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+            <div className="px-6 py-5 bg-bg-surface border-b border-border flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-blue-500 flex items-center justify-center shrink-0 shadow-sm shadow-primary-500/20">
                         <Building2 className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-tight">
+                        <h2 className="text-lg font-bold text-txt-primary leading-tight">
                             {isEditing ? 'Cập nhật nhà thầu' : 'Thêm nhà thầu mới'}
                         </h2>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-txt-muted mt-0.5">
                             {isEditing ? 'Chỉnh sửa thông tin tổ chức' : 'Nhập thông tin cho tổ chức mới'}
                         </p>
                     </div>
                 </div>
                 <button
                     onClick={() => closePanel()}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-400 transition-colors"
+                    className="p-2 rounded-lg hover:bg-bg-muted text-txt-placeholder transition-colors"
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -114,19 +114,19 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                 <form id="contractor-form" onSubmit={handleSave} className="p-4 space-y-4 max-w-3xl mx-auto">
                     
                     {/* Thông tin cơ bản */}
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm space-y-4">
-                        <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 border-b border-gray-100 dark:border-slate-700/50 pb-3 flex items-center gap-2">
+                    <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm space-y-4">
+                        <h3 className="text-sm font-bold text-txt-primary border-b border-border-subtle pb-3 flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-primary-500" /> Thông tin cơ bản
                         </h3>
                         
                         <div className="space-y-4">
                             {/* Tên nhà thầu */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tên nhà thầu <span className="text-red-500">*</span></label>
+                                <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">Tên nhà thầu <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                     value={currentContractor.FullName || ''}
                                     onChange={e => { setCurrentContractor(prev => ({ ...prev, FullName: e.target.value })); setFormErrors(prev => ({ ...prev, FullName: '' })); }}
                                     placeholder="VD: Công Ty CP Tư Vấn Xây Dựng ABC"
@@ -136,9 +136,9 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
 
                             {/* Loại hình */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Loại hình <span className="text-red-500">*</span></label>
+                                <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">Loại hình <span className="text-red-500">*</span></label>
                                 <select
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer font-medium"
+                                    className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer font-medium"
                                     value={currentContractor.ContractorType || 'Construction'}
                                     onChange={e => setCurrentContractor(prev => ({ ...prev, ContractorType: e.target.value as ContractorType }))}
                                 >
@@ -151,12 +151,12 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Mã số thuế */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                         <Hash className="w-3.5 h-3.5" /> Mã số thuế
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
                                         value={currentContractor.TaxCode || ''}
                                         onChange={e => { setCurrentContractor(prev => ({ ...prev, TaxCode: e.target.value })); setFormErrors(prev => ({ ...prev, TaxCode: '' })); }}
                                         placeholder="0100106112"
@@ -165,14 +165,14 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                                 </div>
                                 {/* Năm thành lập */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                         <Calendar className="w-3.5 h-3.5" /> Năm thành lập
                                     </label>
                                     <input
                                         type="number"
                                         min="1900"
                                         max="2030"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                         value={currentContractor.EstablishedYear || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, EstablishedYear: e.target.value ? parseInt(e.target.value) : undefined }))}
                                         placeholder="1998"
@@ -183,20 +183,20 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                             {/* Mã chứng chỉ & Link */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mã chứng chỉ năng lực</label>
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">Mã chứng chỉ năng lực</label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-mono"
                                         value={currentContractor.CapCertCode || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertCode: e.target.value }))}
                                         placeholder="BXD-..."
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Link tra cứu chứng chỉ</label>
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">Link tra cứu chứng chỉ</label>
                                     <input
                                         type="url"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                         value={currentContractor.CapCertLink || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertLink: e.target.value }))}
                                         placeholder="https://nangluchdxd.gov.vn/..."
@@ -207,20 +207,20 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                     </div>
 
                     {/* Thông tin liên hệ */}
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm space-y-4">
-                        <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 border-b border-gray-100 dark:border-slate-700/50 pb-3 flex items-center gap-2">
+                    <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm space-y-4">
+                        <h3 className="text-sm font-bold text-txt-primary border-b border-border-subtle pb-3 flex items-center gap-2">
                             <User className="w-4 h-4 text-blue-500" /> Thông tin liên hệ
                         </h3>
                         
                         <div className="space-y-4">
                             {/* Người đại diện */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                     Người đại diện
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                     value={currentContractor.Representative || ''}
                                     onChange={e => setCurrentContractor(prev => ({ ...prev, Representative: e.target.value }))}
                                     placeholder="Nguyễn Văn A"
@@ -229,12 +229,12 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
 
                             {/* Địa chỉ */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                     <MapPin className="w-3.5 h-3.5" /> Địa chỉ
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                     value={currentContractor.Address || ''}
                                     onChange={e => setCurrentContractor(prev => ({ ...prev, Address: e.target.value }))}
                                     placeholder="123 Đường ABC, Quận XYZ, Hà Nội"
@@ -244,12 +244,12 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Email */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                                         Email
                                     </label>
                                     <input
                                         type="email"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                         value={currentContractor.Email || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, Email: e.target.value }))}
                                         placeholder="info@contractor.vn"
@@ -257,12 +257,12 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
                                 </div>
                                 {/* Website */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                                         Website
                                     </label>
                                     <input
                                         type="url"
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                        className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                         value={currentContractor.Website || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, Website: e.target.value }))}
                                         placeholder="https://contractor.vn"
@@ -272,12 +272,12 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
 
                             {/* Điện thoại */}
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                <label className="block text-[11px] font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                                     <Phone className="w-3.5 h-3.5" /> Điện thoại
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    className="w-full px-4 py-2 bg-bg-subtle border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                                     value={currentContractor.ContactInfo || ''}
                                     onChange={e => setCurrentContractor(prev => ({ ...prev, ContactInfo: e.target.value }))}
                                     placeholder="024 xxxx xxxx"
@@ -289,11 +289,11 @@ export const ContractorFormPanel: React.FC<ContractorFormPanelProps> = ({ contra
             </div>
 
             {/* ═══ FOOTER ACTIONS ═══ */}
-            <div className="px-6 py-4 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 shrink-0">
+            <div className="px-6 py-4 bg-bg-surface border-t border-border flex justify-end gap-3 shrink-0">
                 <button
                     type="button"
                     onClick={() => closePanel()}
-                    className="px-5 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                    className="px-5 py-2.5 bg-bg-muted text-txt-secondary text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                     disabled={saving}
                 >
                     Hủy bỏ

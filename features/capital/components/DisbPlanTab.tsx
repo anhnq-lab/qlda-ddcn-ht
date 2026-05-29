@@ -38,15 +38,15 @@ export const DisbPlanTab: React.FC<DisbPlanTabProps> = ({
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                        <tr className="text-slate-500 dark:text-slate-400">
-                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
-                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700">KHV</th>
-                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700 ${i + 1 === currentMonth ? 'bg-primary-100/60 dark:bg-primary-900/20' : ''}`}>{m}</th>)}
-                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-slate-200 dark:border-slate-700">Tổng KH GN</th>
+                    <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                        <tr className="text-txt-muted">
+                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-border" style={{ background: 'inherit' }}>Dự án</th>
+                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-border">KHV</th>
+                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-border ${i + 1 === currentMonth ? 'bg-primary-100/60 dark:bg-primary-900/20' : ''}`}>{m}</th>)}
+                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-border">Tổng KH GN</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-border-subtle">
                         {projectIds.map((pid) => {
                             const pPlans = yearDisbPlans.filter((d: any) => d.project_id === pid);
                             const pName = pPlans[0]?.project_name || pid;
@@ -58,13 +58,13 @@ export const DisbPlanTab: React.FC<DisbPlanTabProps> = ({
 
                             return (
                                 <tr key={pid} className="hover:bg-primary-50/20 dark:hover:bg-primary-900/5 transition-colors">
-                                    <td className="px-3 py-2 sticky left-0 bg-white dark:bg-slate-800 z-10">
-                                        <p className="font-bold text-gray-800 dark:text-slate-100 truncate">{pName}</p>
+                                    <td className="px-3 py-2 sticky left-0 bg-bg-surface z-10">
+                                        <p className="font-bold text-txt-primary truncate">{pName}</p>
                                     </td>
                                     <td className="px-3 py-2 text-right font-mono font-bold text-blue-600 dark:text-blue-300">{khv > 0 ? fmtB(khv) : '—'}</td>
                                     {MONTHS.map((_, i) => {
                                         const v = monthlyMap.get(i + 1) || 0;
-                                        return <td key={i} className={`px-2 py-2 text-right font-mono text-slate-600 dark:text-slate-300 ${i + 1 === currentMonth ? 'bg-primary-50/40 dark:bg-primary-900/10' : ''}`}>{v > 0 ? fmtB(v) : ''}</td>;
+                                        return <td key={i} className={`px-2 py-2 text-right font-mono text-txt-muted ${i + 1 === currentMonth ? 'bg-primary-50/40 dark:bg-primary-900/10' : ''}`}>{v > 0 ? fmtB(v) : ''}</td>;
                                     })}
                                     <td className="px-3 py-2 text-right font-mono font-bold text-primary-600 dark:text-primary-300">{totalPlanned > 0 ? fmtB(totalPlanned) : '—'}</td>
                                 </tr>
@@ -73,7 +73,7 @@ export const DisbPlanTab: React.FC<DisbPlanTabProps> = ({
                     </tbody>
                     <tfoot className="bg-primary-50/30 dark:bg-primary-900/10 font-bold border-t-2 border-primary-200 dark:border-primary-800">
                         <tr>
-                            <td className="px-3 py-2 sticky left-0 bg-primary-50/30 dark:bg-primary-900/10 z-10 font-black text-gray-800 dark:text-slate-100">TỔNG</td>
+                            <td className="px-3 py-2 sticky left-0 bg-primary-50/30 dark:bg-primary-900/10 z-10 font-black text-txt-primary">TỔNG</td>
                             <td className="px-3 py-2 text-right font-mono text-blue-600 dark:text-blue-300">{fmtB(projectIds.reduce((s: number, pid: string) => { const ap = annualPlans.find((a:any) => a.project_id === pid && a.year === yearFilter); return s + (ap ? Number(ap.amount) : 0); }, 0))}</td>
                             {MONTHS.map((_, i) => {
                                 const total = projectIds.reduce((s: number, pid: string) => {

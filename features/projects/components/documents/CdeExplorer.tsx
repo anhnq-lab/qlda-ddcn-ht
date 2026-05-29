@@ -82,13 +82,13 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                 onClick={() => setActiveFolderId((folder as any).id)}
                                 className={`flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all text-sm group ${isActive
                                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold shadow-sm'
-                                    : 'text-gray-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
+                                    : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700'
                                     }`}
                             >
-                                <FolderIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400 fill-blue-100 dark:fill-blue-900/40' : 'text-gray-400 dark:text-slate-400 group-hover:text-gray-500 dark:group-hover:text-slate-400'}`} />
+                                <FolderIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400 fill-blue-100 dark:fill-blue-900/40' : 'text-txt-placeholder group-hover:text-gray-500 dark:group-hover:text-slate-400'}`} />
                                 <span className="truncate flex-1">{(folder as any).name}</span>
                                 {docCount > 0 && (
-                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200' : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'}`}>
+                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200' : 'bg-bg-muted text-txt-muted'}`}>
                                         {docCount}
                                     </span>
                                 )}
@@ -102,18 +102,18 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex h-[600px]">
+        <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden flex h-[600px]">
             {/* Folder Tree Sidebar */}
-            <div className="w-[280px] border-r border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900 flex flex-col">
-                <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                    <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
+            <div className="w-[280px] border-r border-border bg-bg-subtle dark:bg-slate-900 flex flex-col">
+                <div className="p-4 border-b border-border bg-bg-surface">
+                    <h3 className="text-xs font-black text-txt-primary uppercase tracking-widest flex items-center gap-2">
                         <FolderOpen className="w-4 h-4 text-blue-600" />
                         Cấu trúc CDE
                     </h3>
                 </div>
 
                 {/* Container Quick Access */}
-                <div className="p-3 space-y-1 border-b border-gray-200 dark:border-slate-700">
+                <div className="p-3 space-y-1 border-b border-border">
                     {CDE_CONTAINERS.map(container => {
                         const colors = getStageColor(container.color);
                         const ContainerIcon = container.icon;
@@ -136,14 +136,14 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                 <div className="flex-1 overflow-y-auto p-4">
                     {renderFolderTree(undefined)}
                     {folders.length === 0 && (
-                        <div className="text-center text-gray-400 dark:text-slate-400 text-xs py-8">
+                        <div className="text-center text-txt-placeholder text-xs py-8">
                             <FolderIcon className="w-8 h-8 text-gray-200 dark:text-slate-600 mx-auto mb-2" />
                             Chưa có cấu trúc thư mục
                         </div>
                     )}
                 </div>
 
-                <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-400 dark:text-slate-400 text-center flex items-center justify-center gap-1.5">
+                <div className="p-3 border-t border-border bg-bg-surface text-xs text-txt-placeholder text-center flex items-center justify-center gap-1.5">
                     <CheckCircle2 className="w-3 h-3" />
                     ISO 19650 Compliant
                 </div>
@@ -152,13 +152,13 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
             {/* Document List Area */}
             <div className="flex-1 flex flex-col">
                 {/* Breadcrumb */}
-                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-800">
+                <div className="px-5 py-3 border-b border-border flex items-center gap-2 text-sm text-txt-muted bg-bg-surface">
                     <FolderIcon className="w-4 h-4 text-gray-300" />
                     {breadcrumbs.map((f, i) => (
                         <React.Fragment key={(f as any).id}>
                             {i > 0 && <ChevronRight className="w-4 h-4 text-gray-300" />}
                             <span
-                                className={`${i === breadcrumbs.length - 1 ? 'font-bold text-gray-900 dark:text-slate-100' : 'hover:text-blue-600 cursor-pointer transition-colors'}`}
+                                className={`${i === breadcrumbs.length - 1 ? 'font-bold text-txt-primary' : 'hover:text-blue-600 cursor-pointer transition-colors'}`}
                                 onClick={() => setActiveFolderId((f as any).id)}
                             >
                                 {(f as any).name}
@@ -179,8 +179,8 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                             <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
                                 <FolderOpen className="w-10 h-10 text-gray-200" />
                             </div>
-                            <p className="text-sm font-bold text-gray-500 dark:text-slate-400 mb-1">Thư mục trống</p>
-                            <p className="text-xs text-gray-400 dark:text-slate-400 mb-4">
+                            <p className="text-sm font-bold text-txt-muted mb-1">Thư mục trống</p>
+                            <p className="text-xs text-txt-placeholder mb-4">
                                 {searchQuery ? 'Không tìm thấy tài liệu phù hợp' : 'Tải lên tài liệu đầu tiên vào thư mục này'}
                             </p>
                             {!searchQuery && (
@@ -193,9 +193,9 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                             )}
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">
+                                <thead className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border">
                                     <tr>
                                         <th className="px-5 py-3 w-10"></th>
                                         <th className="px-5 py-3">Tên tài liệu</th>
@@ -205,7 +205,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                         <th className="px-5 py-3 w-16"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                <tbody className="divide-y divide-border-subtle">
                                     {filteredDocuments.map((doc) => {
                                         const fIcon = getFileIcon((doc as any).doc_name);
                                         return (
@@ -220,11 +220,11 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-3">
-                                                    <p className="font-medium text-gray-800 dark:text-slate-100 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{(doc as any).doc_name}</p>
+                                                    <p className="font-medium text-txt-primary group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{(doc as any).doc_name}</p>
                                                     <p className="text-[10px] text-gray-400 uppercase font-mono mt-0.5">{(doc as any).doc_id}</p>
                                                 </td>
                                                 <td className="px-5 py-3">
-                                                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 rounded text-[10px] font-bold font-mono">
+                                                    <span className="px-2 py-0.5 bg-bg-muted text-txt-muted rounded text-[10px] font-bold font-mono">
                                                         {(doc as any).version || 'P01.01'}
                                                     </span>
                                                 </td>
@@ -234,12 +234,12 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                                                             className="w-2.5 h-2.5 rounded-full shrink-0"
                                                             style={{ backgroundColor: getStatusColor((doc as any).iso_status) }}
                                                         />
-                                                        <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400">
+                                                        <span className="text-[11px] font-bold text-txt-muted">
                                                             {getStatusLabel((doc as any).iso_status)}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-5 py-3 text-right text-xs text-gray-500 dark:text-slate-400 font-mono">{(doc as any).created_at ? new Date((doc as any).created_at).toLocaleDateString('vi-VN') : ''}</td>
+                                                <td className="px-5 py-3 text-right text-xs text-txt-muted font-mono">{(doc as any).created_at ? new Date((doc as any).created_at).toLocaleDateString('vi-VN') : ''}</td>
                                                 <td className="px-5 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                                                     <DocActionMenu
                                                         onView={() => onPreview(doc)}

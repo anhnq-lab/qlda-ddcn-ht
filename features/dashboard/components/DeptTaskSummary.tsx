@@ -51,7 +51,7 @@ export const DeptTaskSummary: React.FC<DeptTaskSummaryProps> = React.memo(({
         );
     }
 
-    const rateColorClass = rateAll >= 80 ? 'bg-emerald-100 text-emerald-700' : rateAll >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+    const rateColorClass = rateAll >= 80 ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : rateAll >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400' : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400';
 
     return (
         <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
@@ -124,7 +124,7 @@ export const DeptTaskSummary: React.FC<DeptTaskSummaryProps> = React.memo(({
                         <tbody className="divide-y divide-border">
                             {taskBriefing.map(dept => {
                                 const cr = dept.completion_rate;
-                                const crClass = cr >= 80 ? 'bg-emerald-100 text-emerald-700' : cr >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+                                const crClass = cr >= 80 ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : cr >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400' : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400';
                                 return (
                                     <tr
                                         key={dept.department_name}

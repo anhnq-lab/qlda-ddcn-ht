@@ -243,19 +243,19 @@ const ContractorAccountManager: React.FC = () => {
                             <Building2 className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đơn vị</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.orgs}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Đơn vị</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{stats.orgs}</p>
                         </div>
                     </div>
                 </div>
                 <div className="bg-bg-surface border border-border rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all duration-200">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600/50">
-                            <Users className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                            <Users className="w-6 h-6 text-txt-muted" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Tài khoản</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.total}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Tài khoản</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{stats.total}</p>
                         </div>
                     </div>
                 </div>
@@ -265,8 +265,8 @@ const ContractorAccountManager: React.FC = () => {
                             <ToggleRight className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đang hoạt động</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{stats.active}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Đang hoạt động</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{stats.active}</p>
                         </div>
                     </div>
                 </div>
@@ -286,12 +286,12 @@ const ContractorAccountManager: React.FC = () => {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input type="text" placeholder="Tìm theo tên, username, đơn vị..."
                         value={search} onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100" />
+                        className="w-full pl-12 pr-4 py-3 bg-bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-txt-primary" />
                 </div>
                 <div className="flex gap-2">
                     {grouped.length > 1 && (
                         <button onClick={expandedOrgs.size === grouped.length ? collapseAll : expandAll}
-                            className="px-3 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 rounded-xl text-xs font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors whitespace-nowrap">
+                            className="px-3 py-2.5 bg-bg-muted text-txt-muted rounded-xl text-xs font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors whitespace-nowrap">
                             {expandedOrgs.size === grouped.length ? 'Thu gọn' : 'Mở rộng'} tất cả
                         </button>
                     )}

@@ -153,7 +153,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
             {bidders.length > 0 ? (
                 <div className="space-y-2">
                     {bidders.map((b, idx) => (
-                        <div key={b.id || b.contractor_id} className="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                        <div key={b.id || b.contractor_id} className="border border-border rounded-lg overflow-hidden">
                             {/* Bidder header */}
                             <div
                                 draggable
@@ -165,7 +165,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                     }));
                                     e.dataTransfer.effectAllowed = 'copy';
                                 }}
-                                className="flex items-center gap-2 p-2.5 bg-white dark:bg-slate-800 cursor-grab active:cursor-grabbing hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750"
+                                className="flex items-center gap-2 p-2.5 bg-bg-surface cursor-grab active:cursor-grabbing hover:bg-bg-subtle dark:hover:bg-slate-750"
                                 onClick={() => setEditingBidder(editingBidder === b.id ? null : b.id!)}
                                 title="Kéo thả nhà thầu này sang Kết quả lựa chọn nhà thầu hoặc click để xem chi tiết"
                             >
@@ -173,12 +173,12 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                     {b.rank || idx + 1}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">
+                                    <p className="text-xs font-medium text-txt-primary truncate">
                                         {b.contractor?.FullName || b.contractor_id}
                                     </p>
                                 </div>
                                 {b.bid_price ? (
-                                    <span className="text-xs font-medium text-gray-600 dark:text-slate-300">{formatCurrency(b.bid_price)}</span>
+                                    <span className="text-xs font-medium text-txt-muted">{formatCurrency(b.bid_price)}</span>
                                 ) : null}
                                 {b.combined_score ? (
                                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{b.combined_score}đ</span>
@@ -203,14 +203,14 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
             ) : !isAdding ? (
                 <div className="text-center py-4">
                     <Users className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 dark:text-slate-400">Chưa có nhà thầu tham gia</p>
+                    <p className="text-sm text-txt-muted">Chưa có nhà thầu tham gia</p>
                 </div>
             ) : null}
 
             {/* Add bidder search */}
             {isAdding ? (
                 <div ref={dropdownRef} className="relative">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-600 rounded-lg ring-2 ring-blue-500/20">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-bg-surface border border-blue-300 dark:border-blue-600 rounded-lg ring-2 ring-blue-500/20">
                         <Search className="w-4 h-4 text-blue-400 shrink-0" />
                         <input
                             autoFocus
@@ -219,14 +219,14 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                             value={searchText}
                             onChange={(e) => { setSearchText(e.target.value); setIsDropdownOpen(true); }}
                             onFocus={() => setIsDropdownOpen(true)}
-                            className="flex-1 bg-transparent text-sm text-gray-800 dark:text-slate-200 placeholder-gray-400 outline-none"
+                            className="flex-1 bg-transparent text-sm text-txt-primary placeholder-gray-400 outline-none"
                         />
                         <button onClick={() => { setIsAdding(false); setSearchText(''); setIsDropdownOpen(false); }}>
                             <X className="w-4 h-4 text-gray-400" />
                         </button>
                     </div>
                     {isDropdownOpen && (
-                        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-40 overflow-y-auto">
+                        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-bg-surface border border-border rounded-lg shadow-sm max-h-40 overflow-y-auto">
                             {filteredContractors.length > 0 ? (
                                 <>
                                     {filteredContractors.map(c => (
@@ -238,13 +238,13 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                         >
                                             <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
-                                                <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
+                                                <p className="text-xs font-medium text-txt-primary truncate">{c.FullName}</p>
+                                                <p className="text-[10px] text-txt-muted">MST: {c.TaxCode || c.ContractorID}</p>
                                             </div>
                                             <Plus className="w-4 h-4 text-blue-400 shrink-0" />
                                         </button>
                                     ))}
-                                    <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                    <div className="sticky bottom-0 bg-bg-surface border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
@@ -262,7 +262,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                                 </>
                             ) : (
                                 <div className="px-3 py-4 text-center">
-                                    <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
+                                    <p className="text-sm text-txt-placeholder mb-3">
                                         {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
                                     </p>
                                     <button
@@ -295,7 +295,7 @@ export const BidderListSection: React.FC<BidderEvaluationSectionProps> = ({ pack
 
             {/* Summary */}
             {bidders.length > 0 && (
-                <div className="flex items-center justify-between px-2 py-1.5 bg-slate-50 dark:bg-slate-800 rounded text-xs text-gray-500 dark:text-slate-400">
+                <div className="flex items-center justify-between px-2 py-1.5 bg-bg-subtle rounded text-xs text-txt-muted">
                     <span>{bidders.length} nhà thầu tham gia</span>
                     {bidders.filter(b => b.status === 'valid' || b.status === 'winner').length > 0 && (
                         <span className="text-green-600 dark:text-green-400">
@@ -363,11 +363,11 @@ const EditBidderRow: React.FC<{
         });
     };
 
-    const inputClass = "w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-800 dark:text-slate-200";
-    const labelClass = "text-[10px] font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1";
+    const inputClass = "w-full px-2 py-1.5 text-xs bg-bg-surface border border-gray-200 dark:border-slate-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-txt-primary";
+    const labelClass = "text-[10px] font-medium text-txt-muted uppercase tracking-wide mb-1";
 
     return (
-        <div className="p-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 space-y-3">
+        <div className="p-3 bg-bg-subtle dark:bg-slate-800 border-t border-border space-y-3">
             <div className="grid grid-cols-2 gap-2">
                 <div>
                     <label className={labelClass}>Giá dự thầu (VND)</label>
@@ -499,14 +499,14 @@ const InlineScoreRow: React.FC<{
         }
     };
 
-    const inputClass = "w-full text-center px-1 py-1 text-xs bg-transparent border border-transparent hover:border-gray-300 dark:hover:border-slate-600 focus:border-blue-400 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-900 focus:ring-1 focus:ring-blue-400 rounded outline-none transition-colors tabular-nums";
+    const inputClass = "w-full text-center px-1 py-1 text-xs bg-transparent border border-transparent hover:border-gray-300 dark:hover:border-slate-600 focus:border-blue-400 focus:bg-bg-surface dark:focus:bg-slate-900 focus:ring-1 focus:ring-blue-400 rounded outline-none transition-colors tabular-nums";
 
     return (
-        <tr className={`border-b border-gray-100 dark:border-slate-800 ${bidder.status === 'winner' ? 'bg-primary-50/50 dark:bg-primary-950/20' : 'hover:bg-gray-50 dark:hover:bg-slate-800'}`}>
+        <tr className={`border-b border-border-subtle ${bidder.status === 'winner' ? 'bg-primary-50/50 dark:bg-primary-950/20' : 'hover:bg-bg-hover-row'}`}>
             <td className="py-1.5 px-2">
                 <div className="flex items-center gap-1.5">
                     {bidder.status === 'winner' && <Trophy className="w-3.5 h-3.5 text-primary-500 shrink-0" />}
-                    <span className="font-medium text-gray-800 dark:text-slate-200 truncate" title={bidder.contractor?.FullName}>
+                    <span className="font-medium text-txt-primary truncate" title={bidder.contractor?.FullName}>
                         {bidder.contractor?.FullName || bidder.contractor_id}
                     </span>
                 </div>
@@ -549,7 +549,7 @@ const InlineScoreRow: React.FC<{
             <td className="py-1.5 px-1 text-center">
                 {bidder.rank ? (
                     <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${bidder.rank === 1 ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300' :
-                        'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
+                        'bg-bg-muted text-txt-muted'
                         }`}>{bidder.rank}</span>
                 ) : '-'}
             </td>
@@ -699,11 +699,11 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
         return (
             <div className="space-y-4">
                 {/* Upload overall evaluation report */}
-                <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-lg p-4 text-center hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+                <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
                     <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
                     <Upload className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Tải lên Báo cáo đánh giá HSDT</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">PDF, Word, Excel</p>
+                    <p className="text-sm font-medium text-txt-muted">Tải lên Báo cáo đánh giá HSDT</p>
+                    <p className="text-xs text-txt-placeholder mt-1">PDF, Word, Excel</p>
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         className="mt-3 px-4 py-1.5 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
@@ -711,7 +711,7 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                         Chọn file
                     </button>
                 </div>
-                <p className="text-center text-[10px] text-gray-400 dark:text-slate-400">
+                <p className="text-center text-[10px] text-txt-placeholder">
                     Thêm nhà thầu tham gia ở bên trái để nhập điểm đánh giá chi tiết
                 </p>
             </div>
@@ -725,7 +725,7 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
             {/* Auto-rank button + validation */}
             {bidders.length > 0 && (
                 <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500 dark:text-slate-400">
+                    <div className="text-xs text-txt-muted">
                         {scoredBidders.length}/{bidders.length} nhà thầu đã có điểm
                     </div>
                     <button
@@ -766,7 +766,7 @@ export const EvaluationSection: React.FC<BidderEvaluationSectionProps> = ({ pack
                 <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                         <thead>
-                            <tr className="border-b border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400">
+                            <tr className="border-b border-border text-txt-muted">
                                 <th className="text-left py-2 px-2 font-medium">Nhà thầu</th>
                                 <th className="text-right py-2 px-2 font-medium w-[140px]">Giá dự thầu</th>
                                 <th className="text-center py-2 px-2 font-medium w-[70px]">KT</th>

@@ -80,7 +80,7 @@ const CapitalSlideTable: React.FC<CapitalSlideTableProps> = ({ boardName, year }
             header: 'Tên dự án',
             width: '35%',
             render: (value) => (
-                <p className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-2" title={value}>{value}</p>
+                <p className="font-semibold text-txt-primary line-clamp-2" title={value}>{value}</p>
             )
         },
         {
@@ -88,7 +88,7 @@ const CapitalSlideTable: React.FC<CapitalSlideTableProps> = ({ boardName, year }
             header: 'Tổng mức ĐT',
             width: '20%',
             align: 'right',
-            render: (value) => <span className="text-slate-700 dark:text-slate-300 font-medium">{formatShortCurrency(value)}</span>
+            render: (value) => <span className="text-txt-secondary font-medium">{formatShortCurrency(value)}</span>
         },
         {
             key: 'planned',

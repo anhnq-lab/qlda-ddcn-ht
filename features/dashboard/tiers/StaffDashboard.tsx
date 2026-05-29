@@ -23,7 +23,7 @@ interface Props {
 const AISummaryWidget = lazy(() => import('../../../components/ai/AISummaryWidget'));
 
 const WidgetSkeleton = () => (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl animate-pulse h-[280px]" />
+    <div className="bg-bg-surface rounded-2xl animate-pulse h-[280px]" />
 );
 
 const priorityColors: Record<string, string> = {
@@ -163,7 +163,7 @@ export const StaffDashboard: React.FC<Props> = ({ config, data }) => {
                                 <div key={task.TaskID} onClick={() => navigate(`/tasks/${task.TaskID}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{task.Title}</p>
+                                            <p className="text-sm font-medium text-txt-primary truncate">{task.Title}</p>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${priorityColors[task.Priority] || ''}`}>
                                                     {statusLabels[task.Status] || task.Status}
@@ -173,7 +173,7 @@ export const StaffDashboard: React.FC<Props> = ({ config, data }) => {
                                                 )}
                                             </div>
                                         </div>
-                                        <span className={`text-[11px] font-bold shrink-0 ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-gray-400 dark:text-slate-400'}`}>
+                                        <span className={`text-[11px] font-bold shrink-0 ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-txt-placeholder'}`}>
                                             {new Date(task.DueDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                         </span>
                                     </div>
@@ -203,7 +203,7 @@ export const StaffDashboard: React.FC<Props> = ({ config, data }) => {
                         <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[300px] overflow-y-auto">
                             {data.myProjects.slice(0, 5).map((p: any) => (
                                 <div key={p.ProjectID} onClick={() => navigate(`/projects/${p.ProjectID}`)} className="p-3 hover:bg-bg-subtle/50 cursor-pointer transition-colors">
-                                    <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{p.ProjectName}</p>
+                                    <p className="text-xs font-bold text-txt-secondary truncate">{p.ProjectName}</p>
                                     <p className="text-[11px] text-txt-muted mt-0.5">{p.ManagementUnit || '—'}</p>
                                 </div>
                             ))}

@@ -79,7 +79,7 @@ export const InlineActivityFeed: React.FC = () => {
             case 'CREATE': return <Plus className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />;
             case 'UPDATE': return <Edit3 className="w-3 h-3 text-blue-600 dark:text-blue-400" />;
             case 'DELETE': return <Trash2 className="w-3 h-3 text-rose-600 dark:text-rose-400" />;
-            case 'VIEW': return <Eye className="w-3 h-3 text-slate-600 dark:text-slate-400" />;
+            case 'VIEW': return <Eye className="w-3 h-3 text-txt-muted" />;
             case 'EXPORT': return <Download className="w-3 h-3 text-purple-600 dark:text-purple-400" />;
             default: return <Activity className="w-3 h-3 text-primary-600 dark:text-primary-400" />;
         }
@@ -91,7 +91,7 @@ export const InlineActivityFeed: React.FC = () => {
             case 'UPDATE': return 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-900/30';
             case 'DELETE': return 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-900/30';
             case 'EXPORT': return 'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-900/30';
-            default: return 'bg-slate-50 dark:bg-slate-800 border-border';
+            default: return 'bg-bg-subtle border-border';
         }
     };
 
@@ -136,7 +136,7 @@ export const InlineActivityFeed: React.FC = () => {
                 </div>
             </div>
             
-            <div className="flex-1 divide-y divide-gray-100 dark:divide-slate-800 overflow-y-auto max-h-[300px]">
+            <div className="flex-1 divide-y divide-border-subtle overflow-y-auto max-h-[300px]">
                 {loading ? (
                     <div className="space-y-3 p-4">
                         {[1, 2, 3].map(i => (

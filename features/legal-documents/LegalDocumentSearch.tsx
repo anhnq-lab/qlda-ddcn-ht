@@ -250,7 +250,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     if (isLoading && filteredDocs.length === 0) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-140px)]">
-                <div className="flex flex-col items-center gap-3 text-gray-500 dark:text-gray-400">
+                <div className="flex flex-col items-center gap-3 text-txt-muted">
                     <svg className="w-8 h-8 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
@@ -262,7 +262,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
     }
 
     return (
-        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-white dark:bg-slate-800 p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
+        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-bg-surface p-4' : (isEmbedded ? 'h-full' : 'h-[calc(100vh-140px)]')} animate-in fade-in duration-300`}>
             {/* Back Navigation Banner */}
             {!isEmbedded && fromPath && fromLabel && (
                 <div className="shrink-0 mb-2">
@@ -309,7 +309,7 @@ const LegalDocumentSearch: React.FC<LegalDocumentSearchProps> = ({
                     setShowDeepSearch={setShowDeepSearch}
                 />
 
-                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+                <div className="flex-1 bg-bg-surface rounded-3xl shadow-sm border border-border flex flex-col overflow-hidden">
                     {/* Content Area with optional TOC */}
                     {selectedDoc ? (
                         <LegalDetail

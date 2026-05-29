@@ -60,7 +60,7 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
 
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-white dark:bg-slate-800 p-4 pt-16">
+            <div className="flex flex-col h-full bg-bg-surface p-4 pt-16">
                 <div className="animate-pulse space-y-4">
                     {[...Array(4)].map((_, i) => <div key={i} className="h-8 bg-slate-200 rounded" />)}
                 </div>
@@ -71,8 +71,8 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
     if (!workflow) return null;
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900 relative">
-            <div className="px-6 py-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col h-full bg-bg-subtle relative">
+            <div className="px-6 py-8 bg-bg-surface border-b border-border shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                     <BookOpen size={120} />
                 </div>
@@ -82,10 +82,10 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                             <span className="px-2.5 py-1 text-xs font-bold bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 rounded-md">Quy trình nội bộ</span>
                             <span className="text-xs font-mono text-slate-500">{workflow.code}</span>
                         </div>
-                        <h2 className="text-2xl font-black text-slate-800 dark:text-white leading-tight font-display mb-3">
+                        <h2 className="text-2xl font-black text-txt-primary leading-tight font-display mb-3">
                             {workflow.name}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
+                        <p className="text-txt-muted leading-relaxed max-w-3xl">
                             {workflow.description || 'Chưa có mô tả quy trình.'}
                         </p>
                     </div>
@@ -94,16 +94,16 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
 
             <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar">
                 <div className="max-w-4xl mx-auto space-y-12 pb-20">
-                    <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-700 pb-4">
+                    <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
                             <LayoutList size={16} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+                        <h3 className="text-lg font-bold text-txt-primary uppercase tracking-wider">
                             Chi tiết luồng thực hiện ({nodes.length} bước)
                         </h3>
                     </div>
 
-                    <div className="relative border-l-2 border-slate-200 dark:border-slate-700 ml-4 space-y-10">
+                    <div className="relative border-l-2 border-border ml-4 space-y-10">
                         {nodes.map((node, index) => {
                             const meta = (node.metadata as any) || {};
                             const guidelines = meta.guidelines || meta.description;
@@ -111,25 +111,25 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
 
                             return (
                                 <div key={node.id} className="relative pl-8">
-                                    <div className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-white dark:bg-slate-800 border-4 border-primary-500 shadow-sm flex items-center justify-center font-bold text-primary-600 text-xs">
+                                    <div className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-bg-surface border-4 border-primary-500 shadow-sm flex items-center justify-center font-bold text-primary-600 text-xs">
                                         {index + 1}
                                     </div>
 
-                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow">
-                                        <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800">
+                                    <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
+                                        <div className="p-5 border-b border-border-subtle bg-slate-50/50 dark:bg-slate-800">
                                             <h4 className="text-[17px] font-bold text-primary-700 dark:text-primary-400 mb-3">{node.name}</h4>
                                             
                                             <div className="flex flex-wrap gap-4 text-sm mt-3">
-                                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                <div className="flex items-center gap-1.5 text-txt-muted">
                                                     <Users size={15} className="text-blue-500" />
                                                     <span className="font-semibold">{node.assignee_role || 'Chưa phân công'}</span>
                                                 </div>
-                                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                <div className="flex items-center gap-1.5 text-txt-muted">
                                                     <Clock size={15} className="text-warning-500" />
                                                     <span className="font-semibold">Thời gian: {node.sla_formula || (meta.sla ? meta.sla : 'Theo hợp đồng')}</span>
                                                 </div>
                                                 {meta.phase && (
-                                                    <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                    <div className="flex items-center gap-1.5 text-txt-muted">
                                                         <Shield size={15} className="text-emerald-500" />
                                                         <span className="font-semibold capitalize">Giai đoạn: {meta.phase}</span>
                                                     </div>
@@ -158,13 +158,13 @@ const InternalWorkflowViewerPanel: React.FC<InternalWorkflowViewerPanelProps> = 
                                             )}
 
                                             {subTasks && subTasks.length > 0 && (
-                                                <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-800">
+                                                <div className="bg-bg-subtle rounded-xl p-4 border border-border-subtle">
                                                     <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                                                         <AlertCircle size={14} /> Danh sách công việc con
                                                     </h5>
                                                     <ul className="space-y-2">
                                                         {subTasks.map((st: any, idx: number) => (
-                                                            <li key={idx} className="flex gap-3 text-sm text-slate-700 dark:text-slate-300">
+                                                            <li key={idx} className="flex gap-3 text-sm text-txt-secondary">
                                                                 <span className="text-primary-500 font-mono mt-0.5">{index + 1}.{idx + 1}</span>
                                                                 <div>
                                                                     <p className="font-medium">{st.name}</p>

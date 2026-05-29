@@ -211,30 +211,30 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     ];
 
     const content = (
-        <div className={asSlidePanel ? 'flex flex-col h-full bg-white dark:bg-slate-800' : 'relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col'}>
+        <div className={asSlidePanel ? 'flex flex-col h-full bg-bg-surface' : 'relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col'}>
             {/* Header */}
-            <div className="shrink-0 px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-blue-50 to-primary-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
+            <div className="shrink-0 px-6 py-4 border-b border-border bg-gradient-to-r from-slate-50 via-blue-50 to-primary-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
                         {!asSlidePanel && (
-                            <button onClick={onClose} className="flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 mb-2">
+                            <button onClick={onClose} className="flex items-center gap-1 text-sm text-txt-muted hover:text-gray-700 dark:hover:text-slate-200 mb-2">
                                 <ArrowLeft className="w-4 h-4" />
                                 Quay lại danh sách
                             </button>
                         )}
                         <div className="flex items-center gap-3 mb-2">
-                            <span className="text-2xl font-bold text-gray-800 dark:text-slate-100">{pkg.PackageNumber}</span>
+                            <span className="text-2xl font-bold text-txt-primary">{pkg.PackageNumber}</span>
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
                                 {statusConfig.label}
                             </span>
                             {pkg.Field && (
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${pkg.Field === 'Construction' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700' : pkg.Field === 'Consultancy' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-700' : 'bg-slate-50 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600'}`}>
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${pkg.Field === 'Construction' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700' : pkg.Field === 'Consultancy' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-700' : 'bg-slate-50 dark:bg-slate-700 text-txt-muted border-gray-200 dark:border-slate-600'}`}>
                                     {FIELD_LABELS[pkg.Field] || pkg.Field}
                                 </span>
                             )}
                         </div>
-                        <h2 className="text-base text-gray-600 dark:text-slate-400 leading-relaxed max-w-4xl line-clamp-2">{pkg.PackageName}</h2>
+                        <h2 className="text-base text-txt-muted leading-relaxed max-w-4xl line-clamp-2">{pkg.PackageName}</h2>
                         <div className="flex items-center gap-3 mt-3">
                             {pkg.NotificationCode && (
                                 <a href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?type=es-contractor-selection&noticeNo=${pkg.NotificationCode}`} target="_blank" rel="noopener noreferrer"
@@ -243,14 +243,14 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 </a>
                             )}
                             {onEdit && (
-                                <button onClick={() => onEdit(pkg)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+                                <button onClick={() => onEdit(pkg)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-bg-muted text-txt-secondary text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
                                     <Edit className="w-3.5 h-3.5" /> Chỉnh sửa
                                 </button>
                             )}
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white/50 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                        <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
+                        <X className="w-5 h-5 text-txt-muted" />
                     </button>
                 </div>
             </div>
@@ -270,7 +270,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     (!pkg.WinningContractorID || !pkg.ApprovalDate_Result);
                 if (!canTransitionToExecution && !canComplete && !canCancel && !showSelectionHint) return null;
                 return (
-                    <div className="shrink-0 px-6 py-2 border-b border-gray-200 dark:border-slate-700 bg-amber-50 dark:bg-amber-900/10 flex items-center justify-between gap-3">
+                    <div className="shrink-0 px-6 py-2 border-b border-border bg-amber-50 dark:bg-amber-900/10 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
                             <Bell className="w-3.5 h-3.5 shrink-0" />
                             {canTransitionToExecution && <span>Đã có KQLCNT — gói thầu sẵn sàng chuyển sang Đang thực hiện</span>}
@@ -315,10 +315,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
             })()}
 
             {/* Tabs */}
-            <div className="shrink-0 flex border-b border-gray-200 dark:border-slate-700 px-6 bg-slate-50 dark:bg-slate-800">
+            <div className="shrink-0 flex border-b border-border px-6 bg-bg-subtle">
                 {tabs.map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.id ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-800' : 'text-gray-400 dark:text-slate-600 border-transparent hover:text-gray-800 dark:hover:text-slate-200'}`}
+                        className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.id ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 bg-bg-surface' : 'text-txt-placeholder border-transparent hover:text-gray-800 dark:hover:text-slate-200'}`}
                     >
                         <tab.icon className="w-4 h-4" />
                         {tab.label}
@@ -328,7 +328,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
 
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900">
+            <div className="flex-1 overflow-y-auto p-4 bg-bg-subtle">
 
                 {/* ===== TAB: TỔNG QUAN ===== */}
                 {activeTab === 'overview' && (
@@ -336,9 +336,9 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         {/* Phần A: Thông tin chung */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <SectionCard title="Thông tin cơ bản" icon={ClipboardList} color="blue">
-                                <InfoRow label="Giá gói thầu" value={<span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(pkg.Price)}</span>} />
+                                <InfoRow label="Giá gói thầu" value={<span className="font-bold text-txt-primary">{formatCurrency(pkg.Price)}</span>} />
                                 {(pkg.EstimatePrice ?? 0) >= 1000 && pkg.EstimatePrice !== pkg.Price && (
-                                    <InfoRow label="Giá dự toán" value={<span className="text-gray-600 dark:text-slate-300">{formatCurrency(pkg.EstimatePrice)}</span>} />
+                                    <InfoRow label="Giá dự toán" value={<span className="text-txt-muted">{formatCurrency(pkg.EstimatePrice)}</span>} />
                                 )}
                                 {(pkg.BidFee ?? 0) >= 1000 && (
                                     <InfoRow label="Phí dự thầu" value={formatCurrency(pkg.BidFee)} />
@@ -365,7 +365,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 } />
                                 <InfoRow label="Phương thức" value={
                                     (pkg.SelectionMethod === 'Appointed' || pkg.SelectionMethod === 'AppointedSimplified' || pkg.SelectionMethod === 'SelfExecution')
-                                        ? <span className="text-gray-400 dark:text-slate-500 italic">Không áp dụng</span>
+                                        ? <span className="text-txt-placeholder italic">Không áp dụng</span>
                                         : PROCEDURE_LABELS[pkg.SelectionProcedure || ''] || pkg.SelectionProcedure || '-'
                                 } />
                                 {pkg.BiddingScope && (
@@ -384,7 +384,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         {/* Section Mô tả gói thầu */}
                         {pkg.Description && (
                             <SectionCard title="Mô tả gói thầu" icon={FileText} color="slate">
-                                <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{pkg.Description}</p>
+                                <p className="text-sm text-txt-muted leading-relaxed whitespace-pre-wrap">{pkg.Description}</p>
                             </SectionCard>
                         )}
 
@@ -394,12 +394,12 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 <div className="flex flex-wrap gap-3 items-start">
                                     {pkg.MSCPublishStatus && (
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs text-gray-500 dark:text-slate-400">Trạng thái MSC:</span>
+                                            <span className="text-xs text-txt-muted">Trạng thái MSC:</span>
                                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                                                 pkg.MSCPublishStatus === 'Published' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' :
                                                 pkg.MSCPublishStatus === 'Pending' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400' :
                                                 pkg.MSCPublishStatus === 'Overdue' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400' :
-                                                'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
+                                                'bg-bg-muted text-txt-muted'
                                             }`}>
                                                 {pkg.MSCPublishStatus === 'Published' ? '✓ Đã đăng tải' :
                                                  pkg.MSCPublishStatus === 'Pending' ? '⏳ Chờ đăng tải' :
@@ -432,10 +432,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         {pkg.Status === PackageStatus.Selection && (
                             <SectionCard title="Tiến trình lựa chọn nhà thầu" icon={CalendarDays} color="indigo">
                                 {pkg.SelectionStartDate && (
-                                    <div className="mb-3 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
+                                    <div className="mb-3 flex items-center gap-2 text-sm text-txt-muted">
                                         <CalendarDays className="w-3.5 h-3.5 shrink-0" />
-                                        <span>Bắt đầu LCNT: <span className="font-medium text-gray-700 dark:text-slate-200">{formatDate(pkg.SelectionStartDate)}</span></span>
-                                        {pkg.SelectionDuration && <span className="text-gray-400 dark:text-slate-500">— Thời gian LCNT: {pkg.SelectionDuration}</span>}
+                                        <span>Bắt đầu LCNT: <span className="font-medium text-txt-secondary">{formatDate(pkg.SelectionStartDate)}</span></span>
+                                        {pkg.SelectionDuration && <span className="text-txt-placeholder">— Thời gian LCNT: {pkg.SelectionDuration}</span>}
                                     </div>
                                 )}
                                 <div className="relative">
@@ -449,11 +449,11 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         ].map((step, idx, arr) => (
                                             <div key={idx} className="flex items-center flex-1 min-w-0">
                                                 <div className="flex flex-col items-center flex-1 min-w-0">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${step.done ? 'bg-green-500 border-green-500 text-white' : step.active ? 'bg-blue-500 border-blue-500 text-white' : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-400'}`}>
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${step.done ? 'bg-green-500 border-green-500 text-white' : step.active ? 'bg-blue-500 border-blue-500 text-white' : 'bg-bg-surface border-gray-300 dark:border-slate-600 text-gray-400'}`}>
                                                         {step.done ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
                                                     </div>
-                                                    <p className={`text-xs mt-1.5 font-medium text-center ${step.done ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'}`}>{step.label}</p>
-                                                    <p className="text-[11px] text-gray-400 dark:text-slate-500 text-center">{step.date ? formatDate(step.date) : '—'}</p>
+                                                    <p className={`text-xs mt-1.5 font-medium text-center ${step.done ? 'text-green-600 dark:text-green-400' : 'text-txt-placeholder'}`}>{step.label}</p>
+                                                    <p className="text-[11px] text-txt-placeholder text-center">{step.date ? formatDate(step.date) : '—'}</p>
                                                 </div>
                                                 {idx < arr.length - 1 && (
                                                     <div className={`h-0.5 w-full mt-[-28px] mx-1 ${step.done ? 'bg-green-400' : 'bg-gray-200 dark:bg-slate-700'}`} />
@@ -463,24 +463,24 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     </div>
                                 </div>
                                 {(pkg.BiddersCount || pkg.EvaluationBiddersCount) && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700 grid grid-cols-2 gap-3">
+                                    <div className="mt-3 pt-3 border-t border-border-subtle grid grid-cols-2 gap-3">
                                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
-                                            <p className="text-xs text-gray-400 dark:text-slate-500">Số NTh nộp HSDT</p>
+                                            <p className="text-xs text-txt-placeholder">Số NTh nộp HSDT</p>
                                             <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">{pkg.BiddersCount ?? '—'}</p>
                                         </div>
                                         <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-center">
-                                            <p className="text-xs text-gray-400 dark:text-slate-500">Vào đánh giá TC</p>
+                                            <p className="text-xs text-txt-placeholder">Vào đánh giá TC</p>
                                             <p className="font-bold text-indigo-600 dark:text-indigo-400 text-lg">{pkg.EvaluationBiddersCount ?? '—'}</p>
                                         </div>
                                     </div>
                                 )}
                                 {pkg.NotificationCode && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                                    <div className="mt-3 pt-3 border-t border-border-subtle">
                                         <InfoRow label="Mã TBMT" value={<span className="font-mono text-blue-600 dark:text-blue-400">{pkg.NotificationCode}</span>} />
                                     </div>
                                 )}
                                 {!pkg.PostingDate && !pkg.NotificationCode && (
-                                    <p className="text-sm text-gray-400 dark:text-slate-500 text-center py-3">Chưa có thông tin tiến trình lựa chọn nhà thầu</p>
+                                    <p className="text-sm text-txt-placeholder text-center py-3">Chưa có thông tin tiến trình lựa chọn nhà thầu</p>
                                 )}
                             </SectionCard>
                         )}
@@ -499,13 +499,13 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {relatedContract && (
                                         <div>
                                             <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-500 dark:text-slate-400">Tiến độ thanh toán</span>
+                                                <span className="text-txt-muted">Tiến độ thanh toán</span>
                                                 <span className="font-bold text-green-600 dark:text-green-400">{paymentProgress.toFixed(1)}%</span>
                                             </div>
-                                            <div className="h-2.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div className="h-2.5 bg-bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(paymentProgress, 100)}%` }} />
                                             </div>
-                                            <div className="flex justify-between text-xs text-gray-400 dark:text-slate-500 mt-1">
+                                            <div className="flex justify-between text-xs text-txt-placeholder mt-1">
                                                 <span>Đã TT: {formatCurrency(totalPaid)}</span>
                                                 <span>Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                             </div>
@@ -515,10 +515,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {/* % Khối lượng hoàn thành — nhập thủ công */}
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span className="text-gray-500 dark:text-slate-400 flex items-center gap-1">
+                                            <span className="text-txt-muted flex items-center gap-1">
                                                 <Percent className="w-3.5 h-3.5" /> Khối lượng hoàn thành
                                                 {pkg.CompletionUpdatedAt && (
-                                                    <span className="text-xs text-gray-400 dark:text-slate-500 ml-1">
+                                                    <span className="text-xs text-txt-placeholder ml-1">
                                                         (cập nhật {formatDate(pkg.CompletionUpdatedAt)})
                                                     </span>
                                                 )}
@@ -534,11 +534,11 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 onTouchEnd={e => saveCompletionPct(Number((e.target as HTMLInputElement).value))}
                                                 className="flex-1 h-2 accent-blue-600 cursor-pointer"
                                             />
-                                            <span className="text-xs text-gray-400 dark:text-slate-500 w-12 text-right">
+                                            <span className="text-xs text-txt-placeholder w-12 text-right">
                                                 {isSavingPct ? '...' : `${completionPct}%`}
                                             </span>
                                         </div>
-                                        <div className="h-2.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mt-1">
+                                        <div className="h-2.5 bg-bg-muted rounded-full overflow-hidden mt-1">
                                             <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all" style={{ width: `${completionPct}%` }} />
                                         </div>
                                     </div>
@@ -564,7 +564,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 {!relatedContract && (
                                     <div className="text-center py-3">
                                         <AlertTriangle className="w-5 h-5 text-warning-500 mx-auto mb-1" />
-                                        <p className="text-sm text-gray-400 dark:text-slate-500">Chưa có hợp đồng —
+                                        <p className="text-sm text-txt-placeholder">Chưa có hợp đồng —
                                             <button onClick={() => setActiveTab('contract')} className="text-blue-600 dark:text-blue-400 hover:underline ml-1">Tạo hợp đồng</button>
                                         </p>
                                     </div>
@@ -608,7 +608,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             action={
                                 <button
                                     onClick={() => setIsEditingWinner(!isEditingWinner)}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg transition-colors shadow-sm"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-bg-subtle dark:hover:bg-slate-700 border border-border text-txt-secondary text-xs font-medium rounded-lg transition-colors shadow-sm"
                                 >
                                     {isEditingWinner ? 'Xem kết quả' : 'Chỉnh sửa'}
                                 </button>
@@ -628,10 +628,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     initialDecisionNumber={pkg.DecisionNumber}
                                 />
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-slate-100 dark:divide-slate-800">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-border-subtle">
                                     {/* Cột trái: Thông tin đơn vị trúng thầu */}
                                     <div className="space-y-4 md:pr-6">
-                                        <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Thông tin đơn vị trúng thầu</h4>
+                                        <h4 className="text-[11px] font-bold text-txt-placeholder uppercase tracking-wider mb-3">Thông tin đơn vị trúng thầu</h4>
                                         {consortiumMembers.length > 1 ? (
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-2 p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-800/30">
@@ -642,12 +642,12 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     {consortiumMembers.map((m: any, idx: number) => (
                                                         <div key={m.contractor_id || idx} className={`p-3 rounded-lg border transition-colors ${m.role === 'lead' ? 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-250 dark:border-amber-900/30 shadow-sm' : 'bg-slate-50/50 dark:bg-slate-800 border-gray-150 dark:border-slate-800'}`}>
                                                             <div className="flex items-start gap-2.5">
-                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-400'}`}>
+                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${m.role === 'lead' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 'bg-bg-muted text-gray-400'}`}>
                                                                     {m.role === 'lead' ? <Crown className="w-4 h-4 text-amber-500" /> : <Building2 className="w-4 h-4" />}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                                        <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm leading-tight truncate">{m.contractor?.FullName || m.contractor_id}</p>
+                                                                        <p className="font-semibold text-txt-primary text-sm leading-tight truncate">{m.contractor?.FullName || m.contractor_id}</p>
                                                                         {m.role === 'lead' && (
                                                                             <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded font-semibold flex items-center gap-0.5 border border-amber-200 dark:border-amber-800/30">👑 Nhà thầu đại diện</span>
                                                                         )}
@@ -655,7 +655,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                                             <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded font-medium">{m.share_percent}%</span>
                                                                         )}
                                                                     </div>
-                                                                    <div className="mt-1.5 space-y-1 text-xs text-gray-500 dark:text-slate-400">
+                                                                    <div className="mt-1.5 space-y-1 text-xs text-txt-muted">
                                                                         <p>MST: <span className="font-mono">{m.contractor?.TaxCode || '—'}</span></p>
                                                                     </div>
                                                                 </div>
@@ -671,33 +671,33 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                         <Building2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-gray-900 dark:text-slate-100 leading-tight">{winningContractor.FullName}</p>
-                                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{FIELD_LABELS[winningContractor.ContractorType] || winningContractor.ContractorType}</p>
+                                                        <p className="font-semibold text-txt-primary leading-tight">{winningContractor.FullName}</p>
+                                                        <p className="text-xs text-txt-placeholder mt-0.5">{FIELD_LABELS[winningContractor.ContractorType] || winningContractor.ContractorType}</p>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-1.5 text-sm pl-1 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                                <div className="space-y-1.5 text-sm pl-1 bg-bg-subtle p-3 rounded-lg border border-border-subtle">
                                                     <InfoRow label="Mã số thuế" value={<span className="font-mono">{winningContractor.TaxCode || winningContractor.ContractorID}</span>} />
                                                     {winningContractor.Representative && <InfoRow label="Người đại diện" value={winningContractor.Representative} />}
                                                     {winningContractor.ContactInfo && (
-                                                        <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 py-1">
+                                                        <div className="flex items-center gap-2 text-txt-muted py-1">
                                                             <Phone className="w-3.5 h-3.5 shrink-0" />
                                                             <span>{winningContractor.ContactInfo}</span>
                                                         </div>
                                                     )}
                                                     {winningContractor.Email && (
-                                                        <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 py-1">
+                                                        <div className="flex items-center gap-2 text-txt-muted py-1">
                                                             <Mail className="w-3.5 h-3.5 shrink-0" />
                                                             <span className="truncate">{winningContractor.Email}</span>
                                                         </div>
                                                     )}
                                                     {winningContractor.Address && (
-                                                        <div className="flex items-start gap-2 text-gray-500 dark:text-slate-400 py-1">
+                                                        <div className="flex items-start gap-2 text-txt-muted py-1">
                                                             <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                                                             <span>{winningContractor.Address}</span>
                                                         </div>
                                                     )}
                                                     {winningContractor.Website && (
-                                                        <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 py-1">
+                                                        <div className="flex items-center gap-2 text-txt-muted py-1">
                                                             <Globe className="w-3.5 h-3.5 shrink-0" />
                                                             <a href={winningContractor.Website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate">{winningContractor.Website}</a>
                                                         </div>
@@ -709,14 +709,14 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
 
                                     {/* Cột phải: Thông tin kết quả trúng thầu */}
                                     <div className="space-y-4 pt-4 md:pt-0 md:pl-6">
-                                        <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Kết quả chi tiết</h4>
+                                        <h4 className="text-[11px] font-bold text-txt-placeholder uppercase tracking-wider mb-3">Kết quả chi tiết</h4>
                                         <div className="grid grid-cols-2 gap-3 mb-3">
-                                            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
-                                                <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">Giá gói thầu</p>
-                                                <p className="font-bold text-gray-700 dark:text-slate-200 text-sm">{formatCurrency(pkg.Price)}</p>
+                                            <div className="p-3 bg-bg-subtle rounded-xl border border-border-subtle text-center">
+                                                <p className="text-xs text-txt-placeholder mb-1">Giá gói thầu</p>
+                                                <p className="font-bold text-txt-secondary text-sm">{formatCurrency(pkg.Price)}</p>
                                             </div>
                                             <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-900/30 text-center">
-                                                <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">Giá trúng thầu</p>
+                                                <p className="text-xs text-txt-placeholder mb-1">Giá trúng thầu</p>
                                                 <p className="font-bold text-green-600 dark:text-green-400 text-sm">{pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'}</p>
                                             </div>
                                         </div>
@@ -727,7 +727,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             </div>
                                         )}
                                         <div className="space-y-1.5 text-sm pl-1">
-                                            <InfoRow label="QĐ phê duyệt KQLCNT" value={pkg.DecisionNumber ? <span className="font-medium text-slate-700 dark:text-slate-300">{pkg.DecisionNumber}</span> : '-'} />
+                                            <InfoRow label="QĐ phê duyệt KQLCNT" value={pkg.DecisionNumber ? <span className="font-medium text-txt-secondary">{pkg.DecisionNumber}</span> : '-'} />
                                             <InfoRow label="Ngày phê duyệt" value={pkg.ApprovalDate_Result ? formatDate(pkg.ApprovalDate_Result) : '-'} />
                                             {pkg.DecisionAgency && <InfoRow label="Cơ quan phê duyệt" value={pkg.DecisionAgency} />}
                                             {pkg.BiddingScope && (
@@ -773,26 +773,26 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {personnelList.length === 0 ? (
                                         <div className="text-center py-6">
                                             <UserCheck className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                                            <p className="text-sm text-gray-400 dark:text-slate-500">Chưa có nhân sự được thêm</p>
+                                            <p className="text-sm text-txt-placeholder">Chưa có nhân sự được thêm</p>
                                             <button onClick={addPersonnel} className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">+ Thêm nhân sự đầu tiên</button>
                                         </div>
                                     ) : (
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-sm">
                                                 <thead>
-                                                    <tr className="border-b border-gray-100 dark:border-slate-700">
-                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500 w-8">#</th>
-                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Họ và tên</th>
-                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Chức vụ</th>
-                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Vai trò trong GT</th>
-                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Số CCHN</th>
+                                                    <tr className="border-b border-border-subtle">
+                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder w-8">#</th>
+                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Họ và tên</th>
+                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Chức vụ</th>
+                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Vai trò trong GT</th>
+                                                        <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Số CCHN</th>
                                                         <th className="w-16" />
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {personnelList.map((person, idx) => (
                                                         <tr key={idx} className="border-b border-gray-50 dark:border-slate-700/50 group">
-                                                            <td className="py-1.5 pr-3 text-gray-400 dark:text-slate-500 text-xs">{idx + 1}</td>
+                                                            <td className="py-1.5 pr-3 text-txt-placeholder text-xs">{idx + 1}</td>
                                                             <td className="py-1.5 pr-3">
                                                                 <input value={person.name} onChange={e => updatePersonnel(idx, 'name', e.target.value)}
                                                                     onBlur={() => savePersonnel(personnelList)}
@@ -856,8 +856,8 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="space-y-3">
                                         <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Liên danh nhà thầu</p>
                                         {consortiumMembers.map((m: any, idx: number) => (
-                                            <div key={m.contractor_id || idx} className="py-2 border-b border-gray-100 dark:border-slate-700/60 last:border-0">
-                                                <p className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap text-xs">
+                                            <div key={m.contractor_id || idx} className="py-2 border-b border-border-subtle last:border-0">
+                                                <p className="font-semibold text-txt-primary flex items-center gap-1.5 flex-wrap text-xs">
                                                     {m.role === 'lead' ? <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" /> : <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />}
                                                     <span>{m.contractor?.FullName || m.contractor_id}</span>
                                                     {m.role === 'lead' && <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">(Đại diện liên danh)</span>}
@@ -869,8 +869,8 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     </div>
                                 ) : winningContractor ? (
                                     <div className="space-y-2">
-                                        <p className="font-semibold text-gray-800 dark:text-slate-100">{winningContractor.FullName}</p>
-                                        <div className="text-sm text-gray-600 dark:text-slate-400 space-y-1.5">
+                                        <p className="font-semibold text-txt-primary">{winningContractor.FullName}</p>
+                                        <div className="text-sm text-txt-muted space-y-1.5">
                                             <p className="flex items-center gap-2"><Target className="w-3.5 h-3.5 text-gray-400" /> MST: {winningContractor.TaxCode || winningContractor.ContractorID}</p>
                                             {winningContractor.ContactInfo && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-gray-400" />{winningContractor.ContactInfo}</p>}
                                             {winningContractor.Address && <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-gray-400" />{winningContractor.Address}</p>}
@@ -903,7 +903,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             const isExpired = expiry < new Date();
                                             return (
                                                 <InfoRow label="Ngày hết bảo hành" value={
-                                                    <span className={isExpired ? 'text-red-500 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-slate-200'}>
+                                                    <span className={isExpired ? 'text-red-500 dark:text-red-400 font-medium' : 'text-txt-secondary'}>
                                                         {formatDate(expiry.toISOString())} {isExpired && '(Đã hết)'}
                                                     </span>
                                                 } />
@@ -917,11 +917,11 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             } />
                                         )}
                                         <InfoRow label="Trạng thái" value={
-                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === ContractStatus.Executing ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : relatedContract.Status === ContractStatus.Liquidated ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'}`}>
+                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === ContractStatus.Executing ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : relatedContract.Status === ContractStatus.Liquidated ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : 'bg-bg-muted text-txt-muted'}`}>
                                                 {relatedContract.Status === ContractStatus.Executing ? 'Đang thực hiện' : relatedContract.Status === ContractStatus.Liquidated ? 'Đã thanh lý' : 'Tạm dừng'}
                                             </span>
                                         } />
-                                        <div className="pt-2 border-t border-gray-100 dark:border-slate-700 flex gap-2">
+                                        <div className="pt-2 border-t border-border-subtle flex gap-2">
                                             <button onClick={() => setIsEditingContract(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
                                                 <Edit className="w-3.5 h-3.5" /> Sửa hợp đồng
                                             </button>
@@ -995,26 +995,26 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
                                             <thead>
-                                                <tr className="border-b border-gray-100 dark:border-slate-700">
-                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Số phụ lục</th>
-                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Ngày ký</th>
-                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Nội dung</th>
-                                                    <th className="text-right py-2 pr-3 text-xs font-medium text-gray-400 dark:text-slate-500">Điều chỉnh giá trị</th>
-                                                    <th className="text-right py-2 text-xs font-medium text-gray-400 dark:text-slate-500">Thời gian</th>
+                                                <tr className="border-b border-border-subtle">
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Số phụ lục</th>
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Ngày ký</th>
+                                                    <th className="text-left py-2 pr-3 text-xs font-medium text-txt-placeholder">Nội dung</th>
+                                                    <th className="text-right py-2 pr-3 text-xs font-medium text-txt-placeholder">Điều chỉnh giá trị</th>
+                                                    <th className="text-right py-2 text-xs font-medium text-txt-placeholder">Thời gian</th>
                                                     <th className="w-16"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {variationOrders.map((vo, idx) => (
                                                     <React.Fragment key={vo.VOID || idx}>
-                                                        <tr className="border-b border-gray-50 dark:border-slate-700/50 group hover:bg-gray-50 dark:hover:bg-slate-800">
-                                                            <td className="py-2 pr-3 font-mono text-xs text-gray-700 dark:text-slate-300">{vo.Number || `PL-${idx + 1}`}</td>
-                                                            <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs">{vo.SignDate ? formatDate(vo.SignDate) : '-'}</td>
-                                                            <td className="py-2 pr-3 text-gray-500 dark:text-slate-400 text-xs max-w-[180px] truncate" title={vo.Content}>{vo.Content || '-'}</td>
+                                                        <tr className="border-b border-gray-50 dark:border-slate-700/50 group hover:bg-bg-hover-row">
+                                                            <td className="py-2 pr-3 font-mono text-xs text-txt-secondary">{vo.Number || `PL-${idx + 1}`}</td>
+                                                            <td className="py-2 pr-3 text-txt-muted text-xs">{vo.SignDate ? formatDate(vo.SignDate) : '-'}</td>
+                                                            <td className="py-2 pr-3 text-txt-muted text-xs max-w-[180px] truncate" title={vo.Content}>{vo.Content || '-'}</td>
                                                             <td className={`py-2 pr-3 text-right font-medium text-xs ${(vo.AdjustedAmount || 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                                                                 {(vo.AdjustedAmount || 0) >= 0 ? '+' : ''}{formatCurrency(vo.AdjustedAmount || 0)}
                                                             </td>
-                                                            <td className="py-2 text-right text-xs text-gray-400 dark:text-slate-500">
+                                                            <td className="py-2 text-right text-xs text-txt-placeholder">
                                                                 {vo.AdjustedDuration !== 0 && vo.AdjustedDuration !== undefined
                                                                     ? `${vo.AdjustedDuration > 0 ? '+' : ''}${vo.AdjustedDuration} ngày`
                                                                     : '-'
@@ -1070,7 +1070,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             </tbody>
                                             <tfoot>
                                                 <tr className="border-t border-gray-200 dark:border-slate-600">
-                                                    <td colSpan={3} className="py-2 pr-3 text-sm font-medium text-gray-600 dark:text-slate-300">Tổng điều chỉnh</td>
+                                                    <td colSpan={3} className="py-2 pr-3 text-sm font-medium text-txt-muted">Tổng điều chỉnh</td>
                                                     <td className={`py-2 pr-3 text-right font-bold text-sm ${sumVariationOrders >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                                                         {sumVariationOrders >= 0 ? '+' : ''}{formatCurrency(sumVariationOrders)}
                                                     </td>
@@ -1080,7 +1080,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         </table>
                                     </div>
                                 ) : !isAddingVO && (
-                                    <p className="text-sm text-gray-400 dark:text-slate-500 text-center py-4">
+                                    <p className="text-sm text-txt-placeholder text-center py-4">
                                         Chưa có phụ lục điều chỉnh — click "Tạo phụ lục" để thêm mới
                                     </p>
                                 )}
@@ -1119,16 +1119,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="flex items-center justify-between mb-3">
                                         <div>
                                             <span className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(totalPaid)}</span>
-                                            <span className="text-gray-400 dark:text-slate-500"> / </span>
-                                            <span className="text-gray-600 dark:text-slate-300">{formatCurrency(contractValue)}</span>
+                                            <span className="text-txt-placeholder"> / </span>
+                                            <span className="text-txt-muted">{formatCurrency(contractValue)}</span>
                                         </div>
                                         <span className="text-lg font-bold text-green-600 dark:text-green-400">{paymentProgress.toFixed(1)}%</span>
                                     </div>
-                                    <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                    <div className="h-4 bg-bg-muted rounded-full overflow-hidden">
                                         <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(paymentProgress, 100)}%` }} />
                                     </div>
                                     <div className="flex justify-between text-sm mt-2">
-                                        <span className="text-gray-400 dark:text-slate-500">Đã thanh toán</span>
+                                        <span className="text-txt-placeholder">Đã thanh toán</span>
                                         <span className="text-warning-600 dark:text-warning-400 font-medium">Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                     </div>
                                     {relatedContract.Warranty && relatedContract.Warranty > 0 && relatedContract.SignDate && (() => {
@@ -1136,7 +1136,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         expiry.setMonth(expiry.getMonth() + relatedContract.Warranty);
                                         const isExpired = expiry < new Date();
                                         return (
-                                            <div className={`mt-3 pt-3 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between text-sm ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-slate-400'}`}>
+                                            <div className={`mt-3 pt-3 border-t border-border-subtle flex items-center justify-between text-sm ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-txt-muted'}`}>
                                                 <span>Bảo hành: {relatedContract.Warranty} tháng</span>
                                                 <span className="font-medium">Hết hạn: {formatDate(expiry.toISOString())} {isExpired && '⚠ Đã hết'}</span>
                                             </div>
@@ -1152,22 +1152,22 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 const sc = PaymentService.getStatusColor(payment.Status);
                                                 const transitions = PaymentService.getAvailableTransitions(payment.Status);
                                                 return (
-                                                    <div key={payment.PaymentID} className="p-3 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 space-y-2">
+                                                    <div key={payment.PaymentID} className="p-3 rounded-lg border border-border hover:bg-bg-hover-row space-y-2">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
                                                                 <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
                                                                     <DollarSign className="w-4 h-4 text-green-600 dark:text-green-400" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="font-medium text-gray-800 dark:text-slate-200">Đợt {idx + 1}: {payment.Type === 'Advance' ? 'Tạm ứng' : 'Khối lượng'}</p>
-                                                                    <p className="text-xs text-gray-400 dark:text-slate-500">
+                                                                    <p className="font-medium text-txt-primary">Đợt {idx + 1}: {payment.Type === 'Advance' ? 'Tạm ứng' : 'Khối lượng'}</p>
+                                                                    <p className="text-xs text-txt-placeholder">
                                                                         {payment.RequestDate ? `Ngày ĐN: ${formatDate(payment.RequestDate)}` : 'Chưa gửi duyệt'}
                                                                         {payment.TreasuryRef ? ` • KB: ${payment.TreasuryRef}` : ''}
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="font-bold text-gray-800 dark:text-slate-100">{formatCurrency(payment.Amount)}</p>
+                                                                <p className="font-bold text-txt-primary">{formatCurrency(payment.Amount)}</p>
                                                                 <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ring-1 ${sc.bg} ${sc.text} ${sc.ring} ${sc.darkBg} ${sc.darkText} ${sc.darkRing}`}>
                                                                     {PaymentService.getStatusLabel(payment.Status)}
                                                                 </span>
@@ -1198,7 +1198,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {isAddingPayment ? (
                                         <PaymentFormInline contractId={relatedContract.ContractID} projectId={pkg.ProjectID} contractValue={contractValue} totalPaid={totalPaid} onSaved={() => setIsAddingPayment(false)} onCancel={() => setIsAddingPayment(false)} />
                                     ) : (
-                                        <button onClick={() => setIsAddingPayment(true)} className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-500 dark:text-slate-400 hover:border-green-400 hover:text-green-600 dark:hover:border-green-500 dark:hover:text-green-400 transition-colors flex items-center justify-center gap-2">
+                                        <button onClick={() => setIsAddingPayment(true)} className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg text-sm text-txt-muted hover:border-green-400 hover:text-green-600 dark:hover:border-green-500 dark:hover:text-green-400 transition-colors flex items-center justify-center gap-2">
                                             <DollarSign className="w-4 h-4" /> + Thêm đợt thanh toán
                                         </button>
                                     )}
@@ -1256,15 +1256,15 @@ const SectionCard = ({ title, icon: Icon, color, children, badge, action }: {
         indigo: 'text-primary-600 dark:text-primary-400',
         amber: 'text-amber-600 dark:text-amber-400',
         emerald: 'text-emerald-600 dark:text-emerald-400',
-        gray: 'text-gray-600 dark:text-slate-400',
-        slate: 'text-slate-600 dark:text-slate-400',
+        gray: 'text-txt-muted',
+        slate: 'text-txt-muted',
     };
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-600 p-4 shadow-sm dark:shadow-slate-900/40">
+        <div className="bg-bg-surface rounded-xl border border-gray-200 dark:border-slate-600 p-4 shadow-sm dark:shadow-slate-900/40">
             {title && (
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-gray-100 dark:border-slate-700">
-                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
-                        <Icon className={`w-4 h-4 ${colorMap[color] || 'text-gray-500 dark:text-slate-400'}`} />
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-border-subtle">
+                    <h4 className="font-semibold text-txt-primary flex items-center gap-2">
+                        <Icon className={`w-4 h-4 ${colorMap[color] || 'text-txt-muted'}`} />
                         {title}
                     </h4>
                     <div className="flex items-center gap-2">
@@ -1280,14 +1280,14 @@ const SectionCard = ({ title, icon: Icon, color, children, badge, action }: {
 
 const InfoRow = ({ label, value, highlight }: { label: string; value: React.ReactNode; highlight?: boolean }) => (
     <div className={`flex justify-between py-1.5 ${highlight ? 'bg-warning-50 dark:bg-warning-900/20 -mx-2 px-2 rounded' : ''}`}>
-        <span className="text-gray-500 dark:text-slate-400 shrink-0 mr-3">{label}</span>
-        <span className={`font-medium text-gray-800 dark:text-slate-200 text-right ${highlight ? 'text-warning-600 dark:text-warning-400' : ''}`}>{value || '-'}</span>
+        <span className="text-txt-muted shrink-0 mr-3">{label}</span>
+        <span className={`font-medium text-txt-primary text-right ${highlight ? 'text-warning-600 dark:text-warning-400' : ''}`}>{value || '-'}</span>
     </div>
 );
 
 const StatBox = ({ label, value, sub, color }: { label: string; value: string; sub?: string; color: string }) => {
     const colorMap: Record<string, string> = {
-        slate: 'bg-slate-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200',
+        slate: 'bg-bg-subtle text-txt-secondary',
         green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
         blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
         purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
@@ -1295,7 +1295,7 @@ const StatBox = ({ label, value, sub, color }: { label: string; value: string; s
     };
     return (
         <div className={`p-3 rounded-lg text-center ${colorMap[color] || colorMap.slate}`}>
-            <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">{label}</p>
+            <p className="text-xs text-txt-placeholder mb-1">{label}</p>
             <p className="font-bold text-sm leading-tight">{value}</p>
             {sub && <p className="text-xs mt-0.5 opacity-75">{sub}</p>}
         </div>
@@ -1329,17 +1329,17 @@ const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; trans
             {showRejectInput && (
                 <div className="flex items-center gap-2">
                     <input type="text" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Lý do từ chối..."
-                        className="flex-1 px-2.5 py-1.5 text-xs border border-red-200 dark:border-red-800 rounded-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-red-500/20 outline-none" autoFocus />
+                        className="flex-1 px-2.5 py-1.5 text-xs border border-red-200 dark:border-red-800 rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-red-500/20 outline-none" autoFocus />
                     <button onClick={() => { if (rejectReason.trim()) { rejectMutation.mutate({ id: payment.PaymentID, rejectedBy: userName, reason: rejectReason }); setShowRejectInput(false); setRejectReason(''); } }} disabled={!rejectReason.trim() || isPending} className={`${btnBase} bg-red-600 hover:bg-red-700 text-white`}>Xác nhận</button>
-                    <button onClick={() => { setShowRejectInput(false); setRejectReason(''); }} className={`${btnBase} text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700`}>Hủy</button>
+                    <button onClick={() => { setShowRejectInput(false); setRejectReason(''); }} className={`${btnBase} text-gray-500 hover:bg-bg-muted`}>Hủy</button>
                 </div>
             )}
             {showTransferInput && (
                 <div className="flex items-center gap-2">
                     <input type="text" value={treasuryRef} onChange={e => setTreasuryRef(e.target.value)} placeholder="Mã giao dịch kho bạc (tùy chọn)..."
-                        className="flex-1 px-2.5 py-1.5 text-xs border border-emerald-200 dark:border-emerald-800 rounded-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500/20 outline-none" autoFocus />
+                        className="flex-1 px-2.5 py-1.5 text-xs border border-emerald-200 dark:border-emerald-800 rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-emerald-500/20 outline-none" autoFocus />
                     <button onClick={() => { transferMutation.mutate({ id: payment.PaymentID, treasuryRef: treasuryRef || undefined }); setShowTransferInput(false); setTreasuryRef(''); }} disabled={isPending} className={`${btnBase} bg-emerald-600 hover:bg-emerald-700 text-white`}>Xác nhận</button>
-                    <button onClick={() => { setShowTransferInput(false); setTreasuryRef(''); }} className={`${btnBase} text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700`}>Hủy</button>
+                    <button onClick={() => { setShowTransferInput(false); setTreasuryRef(''); }} className={`${btnBase} text-gray-500 hover:bg-bg-muted`}>Hủy</button>
                 </div>
             )}
             {!showRejectInput && !showTransferInput && (
@@ -1360,7 +1360,7 @@ const PaymentActions = ({ payment, transitions }: { payment: PaymentType2; trans
                         </button>
                     )}
                     {transitions.includes(PaymentStatus.Draft) && (
-                        <button onClick={() => revertMutation.mutate(payment.PaymentID)} disabled={isPending} className={`${btnBase} bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-300`}>
+                        <button onClick={() => revertMutation.mutate(payment.PaymentID)} disabled={isPending} className={`${btnBase} bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-txt-secondary`}>
                             <Edit className="w-3 h-3" /> Sửa lại
                         </button>
                     )}

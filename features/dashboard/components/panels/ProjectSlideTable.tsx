@@ -42,7 +42,7 @@ const ProjectSlideTable: React.FC<ProjectSlideTableProps> = ({ projects, filterS
             width: '40%',
             render: (value, row) => (
                 <div>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-2" title={value}>{value}</p>
+                    <p className="font-semibold text-txt-primary line-clamp-2" title={value}>{value}</p>
                     <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest">{row.projectId}</p>
                 </div>
             )
@@ -70,7 +70,7 @@ const ProjectSlideTable: React.FC<ProjectSlideTableProps> = ({ projects, filterS
             width: '20%',
             align: 'right',
             render: (value) => (
-                <span className="font-bold text-slate-700 dark:text-slate-300">
+                <span className="font-bold text-txt-secondary">
                     {formatShortCurrency(value)}
                 </span>
             )
@@ -81,7 +81,7 @@ const ProjectSlideTable: React.FC<ProjectSlideTableProps> = ({ projects, filterS
             width: '20%',
             render: (value) => {
                 const board = MANAGEMENT_BOARDS.find(b => b.value.toString() === value?.toString());
-                return <span className="text-xs text-slate-600 dark:text-slate-400">{board?.label || '—'}</span>;
+                return <span className="text-xs text-txt-muted">{board?.label || '—'}</span>;
             }
         }
     ];

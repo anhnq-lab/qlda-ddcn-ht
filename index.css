@@ -14,6 +14,7 @@
 @import './styles/workflow.css';
 @import './styles/tables.css';
 @import './styles/dark-contrast.css';
+@import './styles/third-party.css';
 @import './styles/calendar.css';
 
 @tailwind base;

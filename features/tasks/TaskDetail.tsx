@@ -45,7 +45,7 @@ const getPriorityConfig = (p?: TaskPriority) => {
         case TaskPriority.High:   return { label: 'Cao',      color: 'text-warning-700 bg-warning-50 ring-1 ring-warning-500/20' };
         case TaskPriority.Medium: return { label: 'Trung bình', color: 'text-sky-600 bg-sky-50 ring-1 ring-sky-500/20' };
         case TaskPriority.Low:    return { label: 'Thấp',    color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
-        default: return { label: 'N/A', color: 'text-slate-400 bg-slate-50 dark:bg-slate-800' };
+        default: return { label: 'N/A', color: 'text-slate-400 bg-bg-subtle' };
     }
 };
 
@@ -121,7 +121,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                     <div className="w-14 h-14 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <AlertTriangle className="w-6 h-6 text-red-400" />
                     </div>
-                    <p className="text-slate-600 dark:text-slate-400 font-medium">Không tìm thấy công việc!</p>
+                    <p className="text-txt-muted font-medium">Không tìm thấy công việc!</p>
                     {!isPanel && (
                         <button onClick={() => navigate('/tasks')} className="text-sm text-blue-600 dark:text-blue-400 mt-2 hover:underline">← Quay lại</button>
                     )}
@@ -225,7 +225,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
 
                 {/* ══════════ BREADCRUMB ══════════ */}
                 {!isPanel && (
-                    <nav className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-400 flex-wrap">
+                    <nav className="flex items-center gap-1.5 text-sm text-txt-placeholder flex-wrap">
                         <button onClick={() => navigate('/tasks')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center gap-1">
                             <ArrowLeft className="w-3.5 h-3.5" />
                             Công việc
@@ -242,12 +242,12 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                         </>
                     )}
                     <ChevronRight className="w-3 h-3" />
-                    <span className="text-slate-700 dark:text-slate-200 font-bold truncate max-w-[300px]">{task.Title}</span>
+                    <span className="text-txt-secondary font-bold truncate max-w-[300px]">{task.Title}</span>
                 </nav>
                 )}
 
                 {/* ══════════ HEADER CARD ══════════ */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
                     {/* Top accent */}
                     <div className={`h-1 ${statusCfg.bg}`} />
 
@@ -262,7 +262,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${priorityCfg.color}`}>
                                         {priorityCfg.label}
                                     </span>
-                                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md">{task.TaskID}</span>
+                                    <span className="text-[10px] font-mono text-txt-placeholder bg-bg-subtle px-2 py-1 rounded-md">{task.TaskID}</span>
                                     {task.Category && (() => {
                                         const cat = task.Category as TaskCategory;
                                         const colors = TASK_CATEGORY_COLORS[cat];
@@ -284,9 +284,9 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     )}
                                 </div>
 
-                                <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">{task.Title}</h1>
+                                <h1 className="text-2xl font-black text-txt-primary leading-tight mb-2">{task.Title}</h1>
 
-                                <p className="text-sm text-slate-400 dark:text-slate-400 flex items-center gap-2">
+                                <p className="text-sm text-txt-placeholder flex items-center gap-2">
                                     <Building2 className="w-4 h-4" />
                                     Thuộc dự án:
                                     <button
@@ -331,7 +331,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                         {prevStatus && (
                                             <button
                                                 onClick={() => handleStatusChange(prevStatus)}
-                                                className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98] cursor-pointer"
+                                                className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-txt-muted transition-all active:scale-[0.98] cursor-pointer"
                                             >
                                                 ← {getStatusConfig(prevStatus).label}
                                             </button>
@@ -368,9 +368,9 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                         </div>
 
                         {/* ── Progress Bar ── */}
-                        <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
+                        <div className="mt-5 pt-5 border-t border-border-subtle">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-txt-placeholder uppercase tracking-wider flex items-center gap-1.5">
                                     <BarChart3 className="w-3.5 h-3.5" /> Tiến độ thực hiện
                                 </span>
                                 <div className="flex items-center gap-3">
@@ -385,7 +385,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     )}
                                 </div>
                             </div>
-                            <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div className="w-full h-2.5 bg-bg-muted rounded-full overflow-hidden">
                                 <div
                                     className={`h-full rounded-full bg-gradient-to-r ${getProgressGradient(progress)} transition-all duration-700`}
                                     style={{ width: `${progress}%` }}
@@ -402,19 +402,19 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                     <div className="lg:col-span-2 space-y-6">
 
                         {/* Description */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
-                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4">
+                            <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <FileText className="w-4 h-4" /> Nội dung thực hiện
                             </h3>
-                            <div className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <div className="prose prose-sm max-w-none text-txt-muted leading-relaxed">
                                 <p className="whitespace-pre-wrap">{task.Description || "Chưa có mô tả chi tiết."}</p>
                             </div>
                         </div>
 
                         {/* Kết quả & Vướng mắc */}
                         {(task.CompletionResult || task.IncompleteReason || (task as any).obstacles || task.Notes) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4" /> Kết quả báo cáo
                                 </h3>
                                 {task.CompletionResult && (
@@ -438,16 +438,16 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     </div>
                                 )}
                                 {task.Notes && (
-                                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700">
-                                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Ghi chú</p>
-                                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{task.Notes}</p>
+                                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-border">
+                                        <p className="text-[10px] font-bold text-txt-muted uppercase tracking-wider mb-1">Ghi chú</p>
+                                        <p className="text-sm text-txt-muted whitespace-pre-wrap">{task.Notes}</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
                         {/* Regulatory */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
                             <div className="h-1" style={{ background: 'linear-gradient(90deg, #fb923c, #4a90e2)' }} />
                             <div className="p-4">
                                 <h3 className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -456,14 +456,14 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Căn cứ pháp lý</label>
+                                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-2 block tracking-wider">Căn cứ pháp lý</label>
                                         <div className="flex items-start gap-2.5 bg-blue-50/60 dark:bg-blue-900/20 p-4 rounded-xl text-blue-800 dark:text-blue-300 text-sm font-medium ring-1 ring-blue-100 dark:ring-blue-800/40">
                                             <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" />
                                             {task.LegalBasis || "Chưa cập nhật"}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
+                                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
                                         <div className="flex items-start gap-2.5 bg-emerald-50/60 dark:bg-emerald-900/20 p-4 rounded-xl text-emerald-800 dark:text-emerald-300 text-sm font-medium ring-1 ring-emerald-100 dark:ring-emerald-800/40">
                                             <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-500" />
                                             {task.OutputDocument || "Chưa xác định"}
@@ -471,22 +471,22 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5 border-t border-slate-100 dark:border-slate-800">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5 border-t border-border-subtle">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Bước thực hiện</label>
+                                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-2 block tracking-wider">Bước thực hiện</label>
                                         <div className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold ${phaseColor.bg} ${phaseColor.text} ring-1 ${phaseColor.border}`}>
                                             <Layers className="w-3.5 h-3.5" />
                                             {stepLabel}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Thời gian quy định</label>
-                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                            <Clock className="w-4 h-4 text-slate-400 dark:text-slate-400" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
+                                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-2 block tracking-wider">Thời gian quy định</label>
+                                        <p className="text-sm font-bold text-txt-secondary flex items-center gap-1.5">
+                                            <Clock className="w-4 h-4 text-txt-placeholder" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-2 block tracking-wider">Phụ thuộc</label>
+                                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-2 block tracking-wider">Phụ thuộc</label>
                                         <div className="space-y-1.5">
                                             {task.Dependencies && task.Dependencies.length > 0 ? (
                                                 task.Dependencies.map((dep, idx) => {
@@ -506,7 +506,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                                                     navigate(`/tasks/${dep.TaskID}`);
                                                                 }
                                                             }}
-                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
+                                                            className="flex items-center gap-1.5 text-xs bg-bg-subtle hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-800 hover:ring-blue-200 dark:hover:ring-blue-700"
                                                         >
                                                             <Link2 className="w-3 h-3 shrink-0 text-slate-400 group-hover/dep:text-blue-500 transition-colors" />
                                                             <span className="truncate font-medium">{depTask ? depTask.Title : dep.TaskID}</span>

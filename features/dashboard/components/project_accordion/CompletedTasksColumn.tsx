@@ -15,7 +15,7 @@ export const CompletedTasksColumn: React.FC<Props> = ({ tasks }) => (
         <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
             {tasks.map(t => (
                 <div key={t.id} className="p-2.5 bg-bg-surface border border-border rounded-lg shadow-sm space-y-1 hover:shadow transition-shadow">
-                    <p className="text-[11px] font-semibold text-slate-800 dark:text-slate-200 leading-normal">{t.title}</p>
+                    <p className="text-[11px] font-semibold text-txt-primary leading-normal">{t.title}</p>
                     <div className="flex justify-between items-center gap-2">
                         <span className="text-[9px] font-medium text-txt-muted flex items-center gap-1">
                             <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {t.assigneeName}

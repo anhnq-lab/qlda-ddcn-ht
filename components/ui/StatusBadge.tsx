@@ -46,8 +46,8 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; ring: stri
         dot: 'bg-blue-500',
     },
     neutral: {
-        bg: 'bg-slate-100 dark:bg-slate-700',
-        text: 'text-slate-600 dark:text-slate-300',
+        bg: 'bg-bg-muted',
+        text: 'text-txt-muted',
         ring: 'ring-slate-200 dark:ring-slate-600',
         dot: 'bg-slate-400',
     },

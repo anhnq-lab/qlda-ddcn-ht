@@ -278,9 +278,6 @@
   /* Skeleton shimmer stays visible but static */
   .skeleton {
     animation: none;
-    background: #e2e8f0;
-  }
-  .dark .skeleton {
-    background: #1e293b;
+    background: var(--bg-muted, #e2e8f0);
   }
 }

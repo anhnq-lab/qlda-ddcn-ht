@@ -84,8 +84,8 @@ export const HRSummary: React.FC = () => {
                                 <p className="text-[9px] font-bold text-emerald-600/70 dark:text-emerald-500/70">Đang làm</p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-slate-700">
-                                <p className="text-lg font-black text-gray-600 dark:text-slate-300 tabular-nums">{empStats.inactive}</p>
-                                <p className="text-[9px] font-bold text-gray-500 dark:text-slate-400">Nghỉ việc</p>
+                                <p className="text-lg font-black text-txt-muted tabular-nums">{empStats.inactive}</p>
+                                <p className="text-[9px] font-bold text-txt-muted">Nghỉ việc</p>
                             </div>
                         </div>
 
@@ -93,8 +93,8 @@ export const HRSummary: React.FC = () => {
                         <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[200px] overflow-y-auto">
                             {empStats.departments.map(dept => (
                                 <div key={dept.name} className="px-4 py-2 flex items-center justify-between">
-                                    <span className="text-xs text-gray-700 dark:text-slate-200 truncate flex-1">{dept.name}</span>
-                                    <span className="text-xs font-black text-gray-500 dark:text-slate-400 tabular-nums ml-2">{dept.count}</span>
+                                    <span className="text-xs text-txt-secondary truncate flex-1">{dept.name}</span>
+                                    <span className="text-xs font-black text-txt-muted tabular-nums ml-2">{dept.count}</span>
                                 </div>
                             ))}
                         </div>
@@ -115,8 +115,8 @@ export const HRSummary: React.FC = () => {
                         <EmptyState icon={<FileText className="w-10 h-10" />} title="Chưa có văn bản" className="py-6" />
                     ) : recentDocs.map((doc: any) => (
                         <div key={doc.document_id} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
-                            <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{doc.title}</p>
-                            <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">
+                            <p className="text-xs font-bold text-txt-secondary truncate">{doc.title}</p>
+                            <p className="text-[10px] text-txt-placeholder mt-0.5">
                                 {new Date(doc.created_at).toLocaleDateString('vi-VN')} · {doc.document_type || 'Khác'}
                             </p>
                         </div>

@@ -538,7 +538,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects, materialMines
                 <div className="absolute bottom-6 left-6 z-[1000]">
                     <button
                         onClick={() => setHiddenProjectIds(new Set())}
-                        className="bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 px-3 py-2 rounded-xl shadow-md text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center gap-2"
+                        className="bg-bg-surface text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 px-3 py-2 rounded-xl shadow-md text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center gap-2"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                         Khôi phục {hiddenProjectIds.size} dự án đã ẩn

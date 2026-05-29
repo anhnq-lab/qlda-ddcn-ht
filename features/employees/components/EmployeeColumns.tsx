@@ -9,7 +9,7 @@ const getRoleInfo = (role: Role) => {
     switch (role) {
         case Role.Admin: return { label: 'Q.Trị', color: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 ring-1 ring-primary-500/20', dot: 'bg-primary-500' };
         case Role.Manager: return { label: 'Q.Lý', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20', dot: 'bg-emerald-500' };
-        default: return { label: 'N.Viên', color: 'bg-slate-50 text-slate-600 dark:text-slate-400 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+        default: return { label: 'N.Viên', color: 'bg-slate-50 text-txt-muted ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
     }
 };
 
@@ -23,7 +23,7 @@ export function getEmployeeColumns(
             width: '48px',
             align: 'center',
             render: (_: any, __: Employee, index: number) => (
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{index + 1}</span>
+                <span className="text-xs text-txt-muted font-medium">{index + 1}</span>
             ),
         },
         {
@@ -36,7 +36,7 @@ export function getEmployeeColumns(
                         <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
                     </div>
                     <div className="min-w-0">
-                        <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm group-hover:text-blue-600 transition-colors truncate">{emp.FullName}</p>
+                        <p className="font-semibold text-txt-primary text-sm group-hover:text-blue-600 transition-colors truncate">{emp.FullName}</p>
                         <p className="text-[10px] text-slate-400 font-mono">{emp.EmployeeID}</p>
                     </div>
                 </div>
@@ -47,8 +47,8 @@ export function getEmployeeColumns(
             header: 'Chức vụ / Phòng ban',
             render: (_: any, emp: Employee) => (
                 <div className="min-w-0">
-                    <p className="font-medium text-slate-700 dark:text-slate-300 text-sm truncate">{emp.Position}</p>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-400 truncate">{emp.Department}</p>
+                    <p className="font-medium text-txt-secondary text-sm truncate">{emp.Position}</p>
+                    <p className="text-[11px] text-txt-placeholder truncate">{emp.Department}</p>
                 </div>
             ),
         },

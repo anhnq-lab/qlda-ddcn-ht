@@ -45,7 +45,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
             default:
                 return {
                     icon: Info,
-                    colorClass: 'text-slate-600 bg-slate-50 dark:text-slate-400 dark:bg-slate-800'
+                    colorClass: 'text-txt-secondary bg-bg-subtle'
                 };
         }
     };
@@ -73,9 +73,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
             onClick={() => onItemClick(notification)}
             className={`px-4 py-3 flex gap-3 transition-colors cursor-pointer group ${
                 isRead
-                    ? 'bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800'
-                    : 'bg-blue-50/10 hover:bg-blue-50/20 dark:bg-blue-950/10 dark:hover:bg-blue-950/20'
-            } border-b border-slate-100 dark:border-slate-850`}
+                    ? 'bg-bg-surface hover:bg-bg-hover-row'
+                    : 'bg-blue-50/30 hover:bg-blue-50/50 dark:bg-blue-950/10 dark:hover:bg-blue-950/20'
+            } border-b border-border-subtle`}
         >
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${colorClass}`}>
                 <Icon className="w-4.5 h-4.5" />
@@ -83,7 +83,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
 
             <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                    <p className={`text-xs font-bold leading-tight ${isRead ? 'text-slate-700 dark:text-slate-300' : 'text-slate-950 dark:text-slate-100'}`}>
+                    <p className={`text-xs font-bold leading-tight ${isRead ? 'text-txt-secondary' : 'text-txt-primary'}`}>
                         {title}
                     </p>
                     {!isRead && (
@@ -91,18 +91,18 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
                     )}
                 </div>
                 {message && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                    <p className="text-xs text-txt-muted mt-1 line-clamp-2">
                         {message}
                     </p>
                 )}
-                <p className="text-[10px] text-slate-450 dark:text-slate-500 mt-1.5 flex items-center gap-1">
+                <p className="text-[10px] text-txt-placeholder mt-1.5 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {formatRelativeTime(created_at)}
                 </p>
             </div>
 
             {action_url && (
-                <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 shrink-0 self-center transition-colors" />
+                <ChevronRight className="w-4 h-4 text-txt-placeholder group-hover:text-txt-muted shrink-0 self-center transition-colors" />
             )}
         </div>
     );

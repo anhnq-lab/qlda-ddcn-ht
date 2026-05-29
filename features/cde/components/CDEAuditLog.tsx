@@ -11,8 +11,8 @@ const ACTION_CONFIG: Record<string, { label: string; icon: typeof FileText; colo
     'transmit': { label: 'Chuyển giao', icon: Send, color: 'text-primary-600 bg-primary-50 dark:bg-primary-900/20' },
     'delete': { label: 'Xóa', icon: Trash2, color: 'text-red-600 bg-red-50 dark:bg-red-900/20' },
     'edit': { label: 'Sửa đổi', icon: Edit2, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' },
-    'view': { label: 'Xem', icon: Eye, color: 'text-gray-500 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700' },
-    'download': { label: 'Tải xuống', icon: Download, color: 'text-gray-500 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700' },
+    'view': { label: 'Xem', icon: Eye, color: 'text-gray-500 bg-bg-subtle dark:bg-slate-700' },
+    'download': { label: 'Tải xuống', icon: Download, color: 'text-gray-500 bg-bg-subtle dark:bg-slate-700' },
     'permission': { label: 'Phân quyền', icon: Shield, color: 'text-red-600 bg-red-50 dark:bg-red-900/20' },
 };
 
@@ -61,30 +61,30 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center">
                         <ScrollText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Nhật ký hoạt động</h3>
+                        <h3 className="text-sm font-black text-txt-primary">Nhật ký hoạt động</h3>
                         <p className="text-[10px] text-gray-400">Audit Trail — ISO 19650</p>
                     </div>
                 </div>
-                <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">{filtered.length} bản ghi</span>
+                <span className="text-[10px] font-bold text-gray-400 bg-bg-muted px-2.5 py-1 rounded-lg">{filtered.length} bản ghi</span>
             </div>
 
             {/* Filters */}
-            <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700/50 flex items-center gap-3 bg-slate-50 dark:bg-slate-800">
+            <div className="px-5 py-3 border-b border-border-subtle flex items-center gap-3 bg-bg-subtle">
                 <div className="relative flex-1 max-w-xs">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
                     <input type="text" placeholder="Tìm kiếm..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                        className="w-full pl-8 pr-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                 </div>
                 <select value={filterAction} onChange={e => setFilterAction(e.target.value)}
-                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
+                    className="px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
                     <option value="">Tất cả hành động</option>
                     {Object.entries(ACTION_CONFIG).map(([key, cfg]) => (
                         <option key={key} value={key}>{cfg.label}</option>
@@ -108,16 +108,16 @@ const CDEAuditLog: React.FC<CDEAuditLogProps> = ({ projectId }) => {
                             const actionCfg = ACTION_CONFIG[entry.action] || ACTION_CONFIG['view'];
                             const ActionIcon = actionCfg.icon;
                             return (
-                                <div key={entry.id} className="px-5 py-3.5 flex items-start gap-3 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all group">
+                                <div key={entry.id} className="px-5 py-3.5 flex items-start gap-3 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-all group">
                                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${actionCfg.color}`}>
                                         <ActionIcon className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-gray-800 dark:text-slate-100">{entry.actor_name || entry.actor_id}</span>
-                                            <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{actionCfg.label}</span>
+                                            <span className="text-xs font-bold text-txt-primary">{entry.actor_name || entry.actor_id}</span>
+                                            <span className="text-[10px] font-bold text-gray-400 bg-bg-muted px-1.5 py-0.5 rounded">{actionCfg.label}</span>
                                         </div>
-                                        <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5">
+                                        <p className="text-[10px] text-txt-muted mt-0.5">
                                             {entry.entity_type}: <span className="font-mono font-semibold">{entry.entity_id}</span>
                                         </p>
                                         {entry.details && Object.keys(entry.details).length > 0 && (

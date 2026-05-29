@@ -62,20 +62,20 @@ export const PackageStatsDashboard: React.FC<PackageStatsDashboardProps> = ({ pa
             </div>
 
             {/* Progress Bar */}
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-700">
+            <div className="mt-3 pt-3 border-t border-border">
                 <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">Tiến độ hoàn thành</span>
-                    <span className="text-sm font-bold text-gray-800 dark:text-slate-100 tabular-nums">{progressPct}%</span>
+                    <span className="text-sm font-medium text-txt-secondary">Tiến độ hoàn thành</span>
+                    <span className="text-sm font-bold text-txt-primary tabular-nums">{progressPct}%</span>
                 </div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden flex">
+                <div className="h-3 bg-bg-muted rounded-full overflow-hidden flex">
                     <div className="h-full bg-slate-400 transition-all" style={{ width: `${pct(completedCount)}%` }} title="Kết thúc" />
                     <div className="h-full bg-green-500 transition-all" style={{ width: `${pct(executionCount)}%` }} title="Đang thực hiện" />
                     <div className="h-full bg-blue-500 transition-all" style={{ width: `${pct(selectionCount)}%` }} title="Lựa chọn nhà thầu" />
                 </div>
                 <div className="flex flex-wrap gap-4 mt-2 text-xs">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span className="text-gray-600 dark:text-slate-400">Kết thúc ({completedCount})</span></span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-green-500"></span><span className="text-gray-600 dark:text-slate-400">Đang thực hiện ({executionCount})</span></span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span className="text-gray-600 dark:text-slate-400">Lựa chọn nhà thầu ({selectionCount})</span></span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span className="text-txt-muted">Kết thúc ({completedCount})</span></span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-green-500"></span><span className="text-txt-muted">Đang thực hiện ({executionCount})</span></span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span className="text-txt-muted">Lựa chọn nhà thầu ({selectionCount})</span></span>
                 </div>
             </div>
         </div>

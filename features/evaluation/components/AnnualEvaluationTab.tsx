@@ -382,7 +382,7 @@ export const AnnualEvaluationTab: React.FC = () => {
                                                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                                                         Number(row.total_planned_adjusted) < Number(row.total_planned)
                                                             ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 border border-amber-200'
-                                                            : 'bg-slate-50 dark:bg-slate-800 text-txt-muted border border-border'
+                                                            : 'bg-bg-subtle text-txt-muted border border-border'
                                                     }`}>
                                                         {Number(row.total_planned_adjusted) < Number(row.total_planned) ? 'Đã hiệu chỉnh' : 'Không vướng'}
                                                     </span>

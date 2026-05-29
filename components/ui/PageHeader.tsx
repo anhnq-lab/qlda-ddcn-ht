@@ -63,27 +63,27 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
     return (
         <div className={`
-            bg-white dark:bg-slate-800
-            border-b border-border-DEFAULT dark:border-slate-700/60
+            bg-bg-surface
+            border-b border-border
             ${sticky ? 'sticky top-0 z-20' : ''}
             ${className}
         `}>
             <div className={`px-6 pt-5 ${tabs || stats ? 'pb-0' : 'pb-5'}`}>
                 {/* Breadcrumbs */}
                 {breadcrumbs && breadcrumbs.length > 0 && (
-                    <nav className="flex items-center gap-1.5 text-xs text-txt-muted dark:text-slate-400 mb-3">
+                    <nav className="flex items-center gap-1.5 text-xs text-txt-muted mb-3">
                         {breadcrumbs.map((crumb, i) => (
                             <React.Fragment key={i}>
-                                {i > 0 && <span className="text-border-DEFAULT dark:text-slate-600">/</span>}
+                                {i > 0 && <span className="text-border">/</span>}
                                 {crumb.href || crumb.onClick ? (
                                     <button
                                         onClick={crumb.onClick}
-                                        className="hover:text-txt-secondary dark:hover:text-slate-300 transition-colors"
+                                        className="hover:text-txt-secondary transition-colors"
                                     >
                                         {crumb.label}
                                     </button>
                                 ) : (
-                                    <span className="text-txt-secondary dark:text-slate-300 font-medium">{crumb.label}</span>
+                                    <span className="text-txt-secondary font-medium">{crumb.label}</span>
                                 )}
                             </React.Fragment>
                         ))}
@@ -100,13 +100,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                         )}
                         <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-xl font-bold text-txt-primary dark:text-white truncate">
+                                <h1 className="text-xl font-bold text-txt-primary truncate">
                                     {title}
                                 </h1>
                                 {badge && <div className="shrink-0">{badge}</div>}
                             </div>
                             {description && (
-                                <p className="text-sm text-txt-muted dark:text-slate-400 mt-0.5 line-clamp-2">
+                                <p className="text-sm text-txt-muted mt-0.5 line-clamp-2">
                                     {description}
                                 </p>
                             )}

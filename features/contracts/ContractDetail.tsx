@@ -80,9 +80,9 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
 
     if (!contract) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-slate-800 dark:bg-slate-900">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-slate-200 mb-2">Không tìm thấy hợp đồng</h2>
-                <p className="text-gray-500 dark:text-slate-400 mb-4 text-sm">Mã hợp đồng: {id}</p>
+            <div className="flex flex-col items-center justify-center h-screen bg-bg-subtle dark:bg-slate-900">
+                <h2 className="text-xl font-bold text-txt-primary mb-2">Không tìm thấy hợp đồng</h2>
+                <p className="text-txt-muted mb-4 text-sm">Mã hợp đồng: {id}</p>
                 <button onClick={() => navigate(-1)} className="text-blue-600 dark:text-blue-400 hover:underline">Quay lại</button>
             </div>
         );
@@ -139,24 +139,24 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     {!asSlidePanel && (
-                        <button onClick={() => navigate('/bidding?tab=contracts')} className="p-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-sm">
-                            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-slate-400" />
+                        <button onClick={() => navigate('/bidding?tab=contracts')} className="p-2 bg-bg-surface border border-border rounded-xl hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors shadow-sm">
+                            <ArrowLeft className="w-5 h-5 text-txt-muted" />
                         </button>
                     )}
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight">Hợp đồng số: {contract.ContractID}</h1>
+                            <h1 className="text-2xl font-black text-txt-primary tracking-tight">Hợp đồng số: {contract.ContractID}</h1>
                             <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${contract.Status === ContractStatus.Executing ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' :
-                                contract.Status === ContractStatus.Liquidated ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
+                                contract.Status === ContractStatus.Liquidated ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-bg-muted text-txt-muted'
                                 }`}>
                                 {contract.Status === ContractStatus.Executing ? 'Đang thực hiện' : 'Đã thanh lý'}
                             </span>
                         </div>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 font-medium">{pkg?.PackageName}</p>
+                        <p className="text-sm text-txt-muted mt-1 font-medium">{pkg?.PackageName}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-bg-surface border border-border text-txt-muted font-bold rounded-xl hover:bg-bg-subtle dark:hover:bg-slate-700 text-sm transition-colors">
                         <Printer className="w-4 h-4" /> In Hợp đồng
                     </button>
                     <button 
@@ -169,7 +169,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                         onClick={handleDelete}
                         disabled={isDeleting || payments.length > 0 || variationOrders.length > 0}
                         title={(payments.length > 0 || variationOrders.length > 0) ? "Không thể xóa hợp đồng đã có thanh toán hoặc phụ lục" : "Xóa hợp đồng"}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 font-bold rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 bg-bg-surface border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 font-bold rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Trash2 className="w-4 h-4" /> {isDeleting ? 'Đang xóa...' : 'Xóa HĐ'}
                     </button>
@@ -211,8 +211,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 flex gap-8 overflow-x-auto">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                <div className="border-b border-border px-6 flex gap-8 overflow-x-auto">
                     {[
                         { id: 'general', label: 'Thông tin chung', icon: FileText },
                         { id: 'boq', label: 'Nội dung & Khối lượng', icon: Layers },
@@ -225,7 +225,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`py-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
                                 ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                                : 'border-transparent text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+                                : 'border-transparent text-txt-placeholder hover:text-gray-700 dark:hover:text-slate-300'
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -246,31 +246,31 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                 </h3>
                                 <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-sm">
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Ngày ký hợp đồng</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200">{contract.SignDate ? new Date(contract.SignDate).toLocaleDateString('vi-VN') : '—'}</p>
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Ngày ký hợp đồng</p>
+                                        <p className="font-medium text-txt-primary">{contract.SignDate ? new Date(contract.SignDate).toLocaleDateString('vi-VN') : '—'}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Loại hợp đồng</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200">{pkg?.ContractType || "Trọn gói"}</p>
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Loại hợp đồng</p>
+                                        <p className="font-medium text-txt-primary">{pkg?.ContractType || "Trọn gói"}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Thời gian thực hiện</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200">
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Thời gian thực hiện</p>
+                                        <p className="font-medium text-txt-primary">
                                             {totalAdjustedDuration ? `${totalAdjustedDuration} tháng` : '—'} 
                                             {sumDurationExtensions > 0 && <span className="text-[10px] text-green-600 ml-1">(+{sumDurationExtensions})</span>}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Ngày bắt đầu</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200">{contract.StartDate ? new Date(contract.StartDate).toLocaleDateString('vi-VN') : '—'}</p>
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Ngày bắt đầu</p>
+                                        <p className="font-medium text-txt-primary">{contract.StartDate ? new Date(contract.StartDate).toLocaleDateString('vi-VN') : '—'}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Ngày kết thúc (dự kiến)</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200">{contract.EndDate ? new Date(contract.EndDate).toLocaleDateString('vi-VN') : '—'}</p>
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Ngày kết thúc (dự kiến)</p>
+                                        <p className="font-medium text-txt-primary">{contract.EndDate ? new Date(contract.EndDate).toLocaleDateString('vi-VN') : '—'}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 font-bold uppercase">Bảo hành công trình</p>
-                                        <p className="font-medium text-gray-800 dark:text-slate-200 flex items-center gap-1">
+                                        <p className="text-xs text-txt-placeholder font-bold uppercase">Bảo hành công trình</p>
+                                        <p className="font-medium text-txt-primary flex items-center gap-1">
                                             <ShieldCheck className="w-4 h-4 text-emerald-500" /> {contract.Warranty} tháng
                                         </p>
                                     </div>
@@ -291,8 +291,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                         Bên giao thầu (Bên A)
                                     </h3>
                                     <div className="mt-4 p-4 bg-bg-app dark:bg-slate-900 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600">
-                                        <p className="font-bold text-gray-800 dark:text-slate-200 text-sm">{project?.InvestorName}</p>
-                                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Đại diện: Giám đốc Ban QLDA</p>
+                                        <p className="font-bold text-txt-primary text-sm">{project?.InvestorName}</p>
+                                        <p className="text-xs text-txt-muted mt-1">Đại diện: Giám đốc Ban QLDA</p>
                                     </div>
                                 </div>
                                 <div>
@@ -321,7 +321,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                     {activeTab === 'boq' && (
                         <div>
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Phụ lục khối lượng công việc</h3>
+                                <h3 className="text-lg font-bold text-txt-primary">Phụ lục khối lượng công việc</h3>
                                 {boqItems.length > 0 && (
                                     <button className="text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1">
                                         <Download className="w-4 h-4" /> Xuất Excel
@@ -329,9 +329,9 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                 )}
                             </div>
                             {boqItems.length > 0 ? (
-                                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-slate-700">
+                                <div className="overflow-x-auto rounded-xl border border-border">
                                     <table className="w-full text-sm text-left">
-                                        <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-xs border-b border-slate-200 dark:border-slate-700">
+                                        <thead className="bg-bg-subtle text-txt-muted font-bold uppercase text-xs border-b border-border">
                                             <tr>
                                                 <th className="px-6 py-4 w-16 text-center">STT</th>
                                                 <th className="px-6 py-4">Nội dung công việc</th>
@@ -341,19 +341,19 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                                 <th className="px-6 py-4 w-40 text-right">Thành tiền</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                        <tbody className="divide-y divide-border-subtle">
                                             {boqItems.map((item, idx) => (
-                                                <tr key={item.id} className="hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700">
-                                                    <td className="px-6 py-4 text-center font-mono text-gray-400 dark:text-slate-400">{idx + 1}</td>
-                                                    <td className="px-6 py-4 font-medium text-gray-800 dark:text-slate-200">{item.name}</td>
-                                                    <td className="px-6 py-4 text-center text-gray-500 dark:text-slate-400">{item.unit}</td>
+                                                <tr key={item.id} className="hover:bg-bg-subtle dark:hover:bg-slate-700">
+                                                    <td className="px-6 py-4 text-center font-mono text-txt-placeholder">{idx + 1}</td>
+                                                    <td className="px-6 py-4 font-medium text-txt-primary">{item.name}</td>
+                                                    <td className="px-6 py-4 text-center text-txt-muted">{item.unit}</td>
                                                     <td className="px-6 py-4 text-right font-mono dark:text-slate-300">{item.qty.toLocaleString('vi-VN')}</td>
-                                                    <td className="px-6 py-4 text-right font-mono text-gray-600 dark:text-slate-400">{formatFullCurrency(item.price)}</td>
-                                                    <td className="px-6 py-4 text-right font-mono font-bold text-gray-900 dark:text-slate-100">{formatFullCurrency(item.total)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono text-txt-muted">{formatFullCurrency(item.price)}</td>
+                                                    <td className="px-6 py-4 text-right font-mono font-bold text-txt-primary">{formatFullCurrency(item.total)}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
-                                        <tfoot className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 font-bold text-gray-900 dark:text-slate-100 border-t border-gray-200 dark:border-slate-700">
+                                        <tfoot className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 font-bold text-txt-primary border-t border-border">
                                             <tr>
                                                 <td colSpan={5} className="px-6 py-4 text-right uppercase text-xs tracking-wider">Tổng giá trị hợp đồng gốc</td>
                                                 <td className="px-6 py-4 text-right text-blue-600 dark:text-blue-400">{formatFullCurrency(contract.Value)}</td>
@@ -366,7 +366,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                     icon={<Layers className="w-12 h-12 text-gray-300 dark:text-slate-600" />}
                                     title="Chưa có phụ lục khối lượng"
                                     description="Dữ liệu BOQ sẽ được cập nhật khi quản lý khối lượng thi công"
-                                    className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
+                                    className="bg-bg-surface rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
                                 />
                             )}
                         </div>
@@ -376,21 +376,21 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                     {activeTab === 'payment' && (
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2">
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-6">Lịch sử thanh toán</h3>
+                                <h3 className="text-lg font-bold text-txt-primary mb-6">Lịch sử thanh toán</h3>
                                 <div className="space-y-4">
                                     {payments.length > 0 ? payments.map((pay) => (
-                                        <div key={pay.PaymentID} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 p-4 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                                        <div key={pay.PaymentID} className="bg-bg-surface border border-gray-200 dark:border-slate-600 p-4 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
                                             <div className="flex items-center gap-4">
                                                 <div className={`p-3 rounded-xl ${pay.Type === 'Advance' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'}`}>
                                                     <DollarSign className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-gray-800 dark:text-slate-200 text-sm uppercase">Đợt {pay.BatchNo}: {pay.Type === 'Advance' ? 'Tạm ứng hợp đồng' : 'Thanh toán khối lượng'}</p>
-                                                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 font-mono">Mã GD Kho bạc: {pay.TreasuryRef}</p>
+                                                    <p className="font-bold text-txt-primary text-sm uppercase">Đợt {pay.BatchNo}: {pay.Type === 'Advance' ? 'Tạm ứng hợp đồng' : 'Thanh toán khối lượng'}</p>
+                                                    <p className="text-xs text-txt-muted mt-1 font-mono">Mã GD Kho bạc: {pay.TreasuryRef}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-gray-900 dark:text-slate-100">{formatFullCurrency(pay.Amount)}</p>
+                                                <p className="text-lg font-black text-txt-primary">{formatFullCurrency(pay.Amount)}</p>
                                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase mt-1 ${pay.Status === PaymentStatus.Transferred ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-warning-100 dark:bg-warning-900/40 text-primary-700 dark:text-warning-300'
                                                     }`}>
                                                     {pay.Status === PaymentStatus.Transferred ? 'Đã giải ngân' : 'Chờ xử lý'}
@@ -401,7 +401,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                         <EmptyState
                                             icon={<DollarSign className="w-12 h-12 text-gray-300 dark:text-slate-600" />}
                                             title="Chưa có đợt thanh toán nào."
-                                            className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
+                                            className="bg-bg-surface rounded-xl border border-dashed border-slate-200 dark:border-slate-600"
                                         />
                                     )}
                                 </div>
@@ -409,8 +409,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
 
                             {/* Payment Chart */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-6">Biểu đồ dòng tiền</h3>
-                                <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 h-80">
+                                <h3 className="text-lg font-bold text-txt-primary mb-6">Biểu đồ dòng tiền</h3>
+                                <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 p-4 rounded-2xl border border-border h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={financialData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -431,7 +431,7 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                 </div>
                                 <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/40">
                                     <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-2">Tỷ lệ hoàn thành tài chính</p>
-                                    <div className="w-full bg-white dark:bg-slate-800 rounded-full h-3 mb-2 border border-blue-100 dark:border-blue-800/40">
+                                    <div className="w-full bg-bg-surface rounded-full h-3 mb-2 border border-blue-100 dark:border-blue-800/40">
                                         <div className="bg-primary-600 h-full rounded-full transition-all duration-1000" style={{ width: `${paymentPercent}%` }}></div>
                                     </div>
                                     <div className="flex justify-between text-xs font-medium text-blue-700 dark:text-blue-300">
@@ -451,21 +451,21 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                             <div>
                                 <div className="flex items-center justify-between mb-6">
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Biểu đồ S-Curve</h3>
-                                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">So sánh tiến độ kế hoạch và thực tế</p>
+                                        <h3 className="text-lg font-bold text-txt-primary">Biểu đồ S-Curve</h3>
+                                        <p className="text-sm text-txt-muted mt-1">So sánh tiến độ kế hoạch và thực tế</p>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-2">
                                             <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                                            <span className="text-xs font-medium text-gray-600 dark:text-slate-400">Kế hoạch</span>
+                                            <span className="text-xs font-medium text-txt-muted">Kế hoạch</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                            <span className="text-xs font-medium text-gray-600 dark:text-slate-400">Thực tế</span>
+                                            <span className="text-xs font-medium text-txt-muted">Thực tế</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 h-80">
+                                <div className="bg-bg-app dark:bg-slate-900 dark:bg-slate-700 p-4 rounded-2xl border border-border h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart
                                             data={[
@@ -560,8 +560,8 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
 
                             {/* Milestones */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-6">Mốc tiến độ hợp đồng</h3>
-                                <div className="relative border-l-2 border-gray-200 dark:border-slate-700 ml-4 space-y-8 pb-4">
+                                <h3 className="text-lg font-bold text-txt-primary mb-6">Mốc tiến độ hợp đồng</h3>
+                                <div className="relative border-l-2 border-border ml-4 space-y-8 pb-4">
                                     {milestones.map((ms, idx) => (
                                         <div key={ms.id} className="relative pl-10 group">
                                             {/* Status Dot */}
@@ -569,15 +569,15 @@ const ContractDetail: React.FC<ContractDetailProps> = ({ contractId: propContrac
                                                 ms.status === 'In Progress' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
                                                 }`}></div>
 
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl hover:shadow-md transition-shadow">
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl hover:shadow-md transition-shadow">
                                                 <div>
-                                                    <h4 className={`font-bold text-sm ${ms.status === 'Pending' ? 'text-gray-500 dark:text-slate-400' : 'text-gray-800 dark:text-slate-200'}`}>{ms.name}</h4>
-                                                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-1 flex items-center gap-1">
+                                                    <h4 className={`font-bold text-sm ${ms.status === 'Pending' ? 'text-txt-muted' : 'text-txt-primary'}`}>{ms.name}</h4>
+                                                    <p className="text-xs text-txt-placeholder mt-1 flex items-center gap-1">
                                                         <Calendar className="w-3 h-3" /> {ms.date}
                                                     </p>
                                                 </div>
                                                 <span className={`mt-2 md:mt-0 px-3 py-1 rounded-full text-[10px] font-black uppercase w-fit ${ms.status === 'Done' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' :
-                                                    ms.status === 'In Progress' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
+                                                    ms.status === 'In Progress' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-bg-muted text-txt-muted'
                                                     }`}>
                                                     {ms.status === 'Done' ? 'Hoàn thành' : ms.status === 'In Progress' ? 'Đang thực hiện' : 'Chưa đến hạn'}
                                                 </span>

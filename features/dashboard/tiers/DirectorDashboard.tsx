@@ -164,17 +164,17 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
 
             {/* CHARTS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}>
+                <Suspense fallback={<div className="h-[280px] bg-bg-surface rounded-2xl animate-pulse" />}>
                     <ProjectStatusChart 
                         statusSummary={statusSummary} 
                         onSegmentClick={(_, statusKey) => navigate(`/projects?status=${statusKey}`)} 
                     />
                 </Suspense>
-                <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><TaskCompletionChart data={taskCompletion} loading={loadingTasks} /></Suspense>
-                <Suspense fallback={<div className="h-[280px] bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><ErrorBoundary><AISummaryWidget /></ErrorBoundary></Suspense>
+                <Suspense fallback={<div className="h-[280px] bg-bg-surface rounded-2xl animate-pulse" />}><TaskCompletionChart data={taskCompletion} loading={loadingTasks} /></Suspense>
+                <Suspense fallback={<div className="h-[280px] bg-bg-surface rounded-2xl animate-pulse" />}><ErrorBoundary><AISummaryWidget /></ErrorBoundary></Suspense>
             </div>
 
-            {capitalData && (<Suspense fallback={<div className="h-64 bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />}><CapitalDisbursementChart data={capitalData} /></Suspense>)}
+            {capitalData && (<Suspense fallback={<div className="h-64 bg-bg-surface rounded-2xl animate-pulse" />}><CapitalDisbursementChart data={capitalData} /></Suspense>)}
 
             {/* DEPT KPI + CALENDAR + ACTIVITY FEED */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -184,10 +184,10 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                         {deptKPIs.length === 0 ? (<EmptyState icon={<Users className="w-10 h-10" />} title="Chưa có dữ liệu" className="py-6" />) : deptKPIs.map((d: any) => (
                             <div key={d.code} className="p-3 flex items-center gap-3">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{d.name}</p>
-                                    <div className="mt-1.5 flex items-center gap-2"><div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${d.rate >= 80 ? 'bg-emerald-500' : d.rate >= 50 ? 'bg-warning-500' : 'bg-rose-500'}`} style={{ width: `${d.rate}%` }} /></div><span className="text-[10px] font-bold text-gray-600 dark:text-slate-300 w-8 text-right tabular-nums">{d.rate}%</span></div>
+                                    <p className="text-xs font-bold text-txt-secondary truncate">{d.name}</p>
+                                    <div className="mt-1.5 flex items-center gap-2"><div className="flex-1 h-1.5 bg-bg-muted rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${d.rate >= 80 ? 'bg-emerald-500' : d.rate >= 50 ? 'bg-warning-500' : 'bg-rose-500'}`} style={{ width: `${d.rate}%` }} /></div><span className="text-[10px] font-bold text-txt-muted w-8 text-right tabular-nums">{d.rate}%</span></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 shrink-0">{d.completed}/{d.total}</span>
+                                <span className="text-[10px] font-bold text-txt-placeholder shrink-0">{d.completed}/{d.total}</span>
                             </div>
                         ))}
                     </div>
@@ -199,7 +199,7 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                         {weekEvents.length === 0 ? (<EmptyState icon={<CalendarIcon className="w-10 h-10" />} title="Không có lịch trong tuần" className="py-6" />) : weekEvents.map((e: any) => (
                             <div key={e.id} className="p-3 flex items-start gap-3">
                                 <div className="w-10 text-center shrink-0"><p className="text-xs font-bold text-primary-600 dark:text-primary-400">{new Date(e.start_time).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}</p><p className="text-[10px] text-gray-400">{new Date(e.start_time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</p></div>
-                                <div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{e.title}</p>{e.location && <p className="text-xs text-gray-400 mt-0.5 truncate">📍 {e.location}</p>}</div>
+                                <div className="flex-1 min-w-0"><p className="text-sm font-medium text-txt-primary truncate">{e.title}</p>{e.location && <p className="text-xs text-gray-400 mt-0.5 truncate">📍 {e.location}</p>}</div>
                             </div>
                         ))}
                     </div>

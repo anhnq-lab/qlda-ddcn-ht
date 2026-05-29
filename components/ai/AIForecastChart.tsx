@@ -36,15 +36,15 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
         : simpleForecast.projectedYearEnd;
 
     return (
-        <div className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden ${className}`}>
+        <div className={`bg-bg-surface rounded-xl border border-border shadow-lg overflow-hidden ${className}`}>
             {/* Header */}
-            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
                         <TrendingUp size={14} className="text-white" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Dự báo giải ngân</h3>
+                        <h3 className="text-sm font-bold text-txt-secondary">Dự báo giải ngân</h3>
                         <p className="text-[10px] text-slate-400">
                             {useAI ? '🤖 Phân tích AI' : '📊 Dự báo tuyến tính'}
                         </p>
@@ -65,8 +65,8 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
             {/* KPI Cards */}
             <div className="grid grid-cols-3 gap-2 p-3">
                 <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2.5 text-center">
-                    <p className="text-[10px] text-slate-400 dark:text-slate-400">Hiện tại</p>
-                    <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{currentDisbursementRate}%</p>
+                    <p className="text-[10px] text-txt-placeholder">Hiện tại</p>
+                    <p className="text-lg font-bold text-txt-secondary">{currentDisbursementRate}%</p>
                 </div>
                 <div className="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-2.5 text-center">
                     <p className="text-[10px] text-violet-500 dark:text-violet-400">Dự báo cuối năm</p>
@@ -78,8 +78,8 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
                     </p>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2.5 text-center">
-                    <p className="text-[10px] text-slate-400 dark:text-slate-400">TB/tháng</p>
-                    <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{simpleForecast.monthlyAvgRate}%</p>
+                    <p className="text-[10px] text-txt-placeholder">TB/tháng</p>
+                    <p className="text-lg font-bold text-txt-secondary">{simpleForecast.monthlyAvgRate}%</p>
                 </div>
             </div>
 
@@ -126,11 +126,11 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
 
             {/* Completion forecast */}
             {forecast?.completionForecast && (
-                <div className="px-3 pb-3 pt-1 border-t border-slate-100 dark:border-slate-700">
+                <div className="px-3 pb-3 pt-1 border-t border-border-subtle">
                     <div className="flex items-center gap-2 text-[11px]">
                         <Calendar size={12} className="text-slate-400" />
-                        <span className="text-slate-500 dark:text-slate-400">Dự kiến hoàn thành:</span>
-                        <span className="font-medium text-slate-700 dark:text-slate-200">
+                        <span className="text-txt-muted">Dự kiến hoàn thành:</span>
+                        <span className="font-medium text-txt-secondary">
                             {forecast.completionForecast.projectedDate}
                         </span>
                         {forecast.completionForecast.delayDays > 0 && (
@@ -145,7 +145,7 @@ export const AIForecastChart: React.FC<AIForecastChartProps> = ({
             {/* Analysis */}
             {forecast?.analysis && (
                 <div className="px-3 pb-3">
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <p className="text-[11px] text-txt-muted leading-relaxed">
                         💡 {forecast.analysis}
                     </p>
                 </div>

@@ -94,8 +94,8 @@ export const FormChecklistPanel: React.FC<Props> = ({
         return (
             <div className="flex flex-col items-center justify-center h-64 text-center p-6">
                 <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mb-3" />
-                <p className="text-sm font-bold text-gray-600 dark:text-slate-400">Không tìm thấy biểu mẫu</p>
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Mã: {formCode}</p>
+                <p className="text-sm font-bold text-txt-muted">Không tìm thấy biểu mẫu</p>
+                <p className="text-xs text-txt-placeholder mt-1">Mã: {formCode}</p>
             </div>
         );
     }
@@ -131,34 +131,34 @@ export const FormChecklistPanel: React.FC<Props> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-800">
+        <div className="flex flex-col h-full bg-bg-surface">
 
             {/* ── Header ── */}
-            <div className="p-5 border-b border-gray-100 dark:border-slate-700">
+            <div className="p-5 border-b border-border-subtle">
                 <div className="flex items-center gap-2 mb-2">
                     {TYPE_ICON[form.type] ?? <FileText className="w-4 h-4 text-gray-400" />}
-                    <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-slate-400">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-txt-muted">
                         {TYPE_LABEL[form.type] ?? form.type}
                     </span>
                     <span className="ml-auto text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
                         {formCode}
                     </span>
                 </div>
-                <h2 className="text-sm font-black text-gray-900 dark:text-white leading-snug">{form.title}</h2>
-                <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">{form.description}</p>
+                <h2 className="text-sm font-black text-txt-primary leading-snug">{form.title}</h2>
+                <p className="text-[11px] text-txt-muted mt-1 leading-relaxed">{form.description}</p>
 
                 {/* Progress bar */}
                 {form.type === 'checklist' && total > 0 && (
                     <div className="mt-3">
                         <div className="flex justify-between items-center mb-1">
-                            <span className="text-[10px] text-gray-400 dark:text-slate-500">
+                            <span className="text-[10px] text-txt-placeholder">
                                 {isAllDone ? '✅ Đã hoàn thành tất cả mục' : 'Tiến độ kiểm tra'}
                             </span>
                             <span className={`text-[10px] font-bold ${isAllDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-primary-600 dark:text-primary-400'}`}>
                                 {done}/{total} mục ({pct}%)
                             </span>
                         </div>
-                        <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
                             <div
                                 className={`h-2 rounded-full transition-all duration-500 ${
                                     isAllDone
@@ -189,7 +189,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                 {/* Checklist type */}
                 {form.type === 'checklist' && (
                     <>
-                        <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">
+                        <p className="text-[10px] font-black text-txt-placeholder uppercase tracking-wider mb-3">
                             Danh mục kiểm tra ({total} mục)
                         </p>
                         {form.items.map(item => {
@@ -201,16 +201,16 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                     className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all border ${
                                         isChecked
                                             ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/40'
-                                            : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 active:scale-[0.99]'
+                                            : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600/50 hover:bg-bg-muted/60 active:scale-[0.99]'
                                     }`}
                                 >
-                                    <span className="mt-0.5 shrink-0 text-[10px] font-black text-gray-400 dark:text-slate-500 w-5 text-right">
+                                    <span className="mt-0.5 shrink-0 text-[10px] font-black text-txt-placeholder w-5 text-right">
                                         {item.id}.
                                     </span>
                                     <span className={`flex-1 text-[12px] leading-relaxed ${
                                         isChecked
                                             ? 'text-emerald-700 dark:text-emerald-400 line-through opacity-60'
-                                            : 'text-gray-700 dark:text-slate-300'
+                                            : 'text-txt-secondary'
                                     }`}>
                                         {item.content}
                                     </span>
@@ -235,7 +235,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                 </button>
                                 <button
                                     onClick={() => { setChecked(new Set()); setSavedOnce(false); }}
-                                    className="flex-1 text-[10px] font-bold py-1.5 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                                    className="flex-1 text-[10px] font-bold py-1.5 text-txt-muted border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-bg-hover-row transition-colors"
                                 >
                                     ☐ Bỏ chọn tất
                                 </button>
@@ -247,28 +247,28 @@ export const FormChecklistPanel: React.FC<Props> = ({
                 {/* Table type */}
                 {form.type === 'table' && (
                     <div>
-                        <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">
+                        <p className="text-[10px] font-black text-txt-placeholder uppercase tracking-wider mb-3">
                             Cấu trúc bảng biểu
                         </p>
                         <div className="bg-gray-50 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600 overflow-hidden">
                             <table className="w-full text-xs">
                                 <thead>
-                                    <tr className="bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
-                                        <th className="text-left px-3 py-2 font-black text-gray-600 dark:text-slate-300 w-8">TT</th>
-                                        <th className="text-left px-3 py-2 font-black text-gray-600 dark:text-slate-300">Nội dung cột</th>
+                                    <tr className="bg-bg-muted border-b border-gray-200 dark:border-slate-600">
+                                        <th className="text-left px-3 py-2 font-black text-txt-muted w-8">TT</th>
+                                        <th className="text-left px-3 py-2 font-black text-txt-muted">Nội dung cột</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {form.items.map((item, i) => (
-                                        <tr key={item.id} className={`border-b border-gray-100 dark:border-slate-700 ${i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-slate-700'}`}>
-                                            <td className="px-3 py-2.5 text-gray-400 dark:text-slate-500 font-bold">{item.id}</td>
-                                            <td className="px-3 py-2.5 text-gray-700 dark:text-slate-300">{item.content}</td>
+                                        <tr key={item.id} className={`border-b border-border-subtle ${i % 2 === 0 ? '' : 'bg-gray-50/50 dark:bg-slate-700'}`}>
+                                            <td className="px-3 py-2.5 text-txt-placeholder font-bold">{item.id}</td>
+                                            <td className="px-3 py-2.5 text-txt-secondary">{item.content}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                        <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-3 italic">
+                        <p className="text-[10px] text-txt-placeholder mt-3 italic">
                             * Biểu mẫu này được điền theo dữ liệu thực tế của từng dự án.
                         </p>
                     </div>
@@ -279,16 +279,16 @@ export const FormChecklistPanel: React.FC<Props> = ({
                     <div>
                         {formCode === 'BM-TK1B-02' ? (
                             <div className="space-y-4 mb-4">
-                                <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                                <p className="text-[10px] font-black text-txt-placeholder uppercase tracking-wider">
                                     Thông tin phiếu giao nhiệm vụ
                                 </p>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                                        <label className="block text-xs font-medium text-txt-muted mb-1">
                                             Chuyên viên phụ trách
                                         </label>
                                         <select
-                                            className="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2"
+                                            className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-3 py-2"
                                             value={bmtkFormData.canBoPhuTrach}
                                             onChange={(e) => setBmtkFormData(p => ({ ...p, canBoPhuTrach: e.target.value }))}
                                         >
@@ -302,11 +302,11 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                                        <label className="block text-xs font-medium text-txt-muted mb-1">
                                             Đơn vị tư vấn
                                         </label>
                                         <select
-                                            className="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2"
+                                            className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-3 py-2"
                                             value={bmtkFormData.donViTuVan}
                                             onChange={(e) => setBmtkFormData(p => ({ ...p, donViTuVan: e.target.value }))}
                                         >
@@ -320,11 +320,11 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                                        <label className="block text-xs font-medium text-txt-muted mb-1">
                                             Hạng mục / Gói thầu
                                         </label>
                                         <select
-                                            className="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2"
+                                            className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-3 py-2"
                                             value={bmtkFormData.hangMuc}
                                             onChange={(e) => setBmtkFormData(p => ({ ...p, hangMuc: e.target.value }))}
                                         >
@@ -337,31 +337,31 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                         </select>
                                     </div>
                                     <div className="col-span-1">
-                                        <label className="block text-gray-500 dark:text-slate-400 mb-1 font-semibold">Số văn bản / HĐ</label>
+                                        <label className="block text-txt-muted mb-1 font-semibold">Số văn bản / HĐ</label>
                                         <input 
                                             type="text" 
                                             value={bmtkFormData.soHopDong}
                                             onChange={e => setBmtkFormData(prev => ({...prev, soHopDong: e.target.value}))}
-                                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
+                                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
                                             placeholder="12/HĐ-TV..."
                                         />
                                     </div>
                                     <div className="col-span-1">
-                                        <label className="block text-gray-500 dark:text-slate-400 mb-1 font-semibold">Ngày lập</label>
+                                        <label className="block text-txt-muted mb-1 font-semibold">Ngày lập</label>
                                         <input 
                                             type="text" 
                                             value={bmtkFormData.ngayLap}
                                             onChange={e => setBmtkFormData(prev => ({...prev, ngayLap: e.target.value}))}
-                                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
+                                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
                                         />
                                     </div>
                                     <div className="col-span-2">
-                                        <label className="block text-gray-500 dark:text-slate-400 mb-1 font-semibold">Thời hạn hoàn thành</label>
+                                        <label className="block text-txt-muted mb-1 font-semibold">Thời hạn hoàn thành</label>
                                         <input 
                                             type="text" 
                                             value={bmtkFormData.thoiHanHoanThanh}
                                             onChange={e => setBmtkFormData(prev => ({...prev, thoiHanHoanThanh: e.target.value}))}
-                                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
+                                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow" 
                                             placeholder="Theo hợp đồng..."
                                         />
                                     </div>
@@ -392,13 +392,13 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                     {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                                     Xuất file Word (DOCX)
                                 </button>
-                                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-2 text-center italic">
+                                <p className="text-[10px] text-txt-placeholder mt-2 text-center italic">
                                     Hệ thống sẽ tự động sử dụng thông tin từ dự án <b>{project?.ProjectName}</b> cho các trường còn lại.
                                 </p>
                             </div>
                         ) : (
                             <>
-                                <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">
+                                <p className="text-[10px] font-black text-txt-placeholder uppercase tracking-wider mb-3">
                                     Nội dung chính cần có
                                 </p>
                                 <div className="space-y-2">
@@ -407,11 +407,11 @@ export const FormChecklistPanel: React.FC<Props> = ({
                                             <span className="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-[9px] font-black text-primary-600 dark:text-primary-400 mt-0.5">
                                                 {item.id}
                                             </span>
-                                            <p className="text-[12px] text-gray-700 dark:text-slate-300 leading-relaxed">{item.content}</p>
+                                            <p className="text-[12px] text-txt-secondary leading-relaxed">{item.content}</p>
                                         </div>
                                     ))}
                                 </div>
-                                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-3 italic">
+                                <p className="text-[10px] text-txt-placeholder mt-3 italic">
                                     * Hồ sơ / văn bản do chuyên viên soạn thảo theo mẫu và ký theo thẩm quyền.
                                 </p>
                             </>
@@ -421,7 +421,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
             </div>
 
             {/* ── Footer: Nút Lưu ── */}
-            <div className="shrink-0 px-4 py-3 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-2">
+            <div className="shrink-0 px-4 py-3 border-t border-border-subtle bg-bg-surface space-y-2">
                 {/* Cảnh báo nếu chưa đủ */}
                 {form.type === 'checklist' && !isAllDone && done > 0 && (
                     <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
@@ -449,7 +449,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                     </button>
                 )}
 
-                <p className="text-[9px] text-gray-400 dark:text-slate-500 italic text-center">
+                <p className="text-[9px] text-txt-placeholder italic text-center">
                     📌 QT-DAXD-TK-QLDA2-2026 — áp dụng từ 01/7/2026
                 </p>
             </div>

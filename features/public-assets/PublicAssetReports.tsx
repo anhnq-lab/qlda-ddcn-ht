@@ -135,11 +135,11 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
       
       {/* Overview Stat Widgets */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tổng số tài sản</span>
-            <h4 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">{stats.totalCount}</h4>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
+            <span className="text-xs font-bold text-txt-placeholder uppercase tracking-wider">Tổng số tài sản</span>
+            <h4 className="text-2xl font-bold text-txt-primary mt-1">{stats.totalCount}</h4>
+            <p className="text-[10px] text-txt-placeholder mt-1 flex items-center gap-1">
               <Activity className="w-3 h-3 text-emerald-500" />
               Hoạt động ổn định
             </p>
@@ -149,33 +149,33 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tổng nguyên giá</span>
-            <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 mt-1.5">{formatCurrency(stats.totalOriginalCost)}</h4>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5">Ngân sách & nguồn hợp pháp khác</p>
+            <span className="text-xs font-bold text-txt-placeholder uppercase tracking-wider">Tổng nguyên giá</span>
+            <h4 className="text-xl font-bold text-txt-primary mt-1.5">{formatCurrency(stats.totalOriginalCost)}</h4>
+            <p className="text-[10px] text-txt-placeholder mt-1.5">Ngân sách & nguồn hợp pháp khác</p>
           </div>
           <div className="w-12 h-12 bg-emerald-50 dark:bg-slate-700 rounded-xl flex items-center justify-center text-emerald-500">
             <DollarSign className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Hao mòn lũy kế</span>
-            <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 mt-1.5">{formatCurrency(stats.totalDepreciation)}</h4>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5">Khấu hao lũy kế qua các năm</p>
+            <span className="text-xs font-bold text-txt-placeholder uppercase tracking-wider">Hao mòn lũy kế</span>
+            <h4 className="text-xl font-bold text-txt-primary mt-1.5">{formatCurrency(stats.totalDepreciation)}</h4>
+            <p className="text-[10px] text-txt-placeholder mt-1.5">Khấu hao lũy kế qua các năm</p>
           </div>
           <div className="w-12 h-12 bg-amber-50 dark:bg-slate-700 rounded-xl flex items-center justify-center text-amber-500">
             <Printer className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Giá trị còn lại</span>
-            <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 mt-1.5">{formatCurrency(stats.totalRemainingValue)}</h4>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5">Giá trị thuần hiện tại</p>
+            <span className="text-xs font-bold text-txt-placeholder uppercase tracking-wider">Giá trị còn lại</span>
+            <h4 className="text-xl font-bold text-txt-primary mt-1.5">{formatCurrency(stats.totalRemainingValue)}</h4>
+            <p className="text-[10px] text-txt-placeholder mt-1.5">Giá trị thuần hiện tại</p>
           </div>
           <div className="w-12 h-12 bg-violet-50 dark:bg-slate-700 rounded-xl flex items-center justify-center text-violet-500">
             <ShieldCheck className="w-6 h-6" />
@@ -184,14 +184,14 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
       </div>
 
       {/* Reports Panel */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+      <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-base font-bold text-txt-primary flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-500" />
               Sổ theo dõi tài sản công (Phụ lục số 02)
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-txt-muted mt-1">
               Báo cáo đúng chuẩn quy định của Bộ Tài chính tại Thông tư số 23/2023/TT-BTC
             </p>
           </div>
@@ -199,7 +199,7 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               onClick={handlePrint}
-              className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5 text-sm"
+              className="flex-1 sm:flex-none px-4 py-2 border border-border rounded-xl text-txt-secondary font-medium hover:bg-bg-hover-row transition-colors flex items-center justify-center gap-1.5 text-sm"
             >
               <Printer className="w-4 h-4" />
               In ấn báo cáo
@@ -215,10 +215,10 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
         </div>
 
         {/* BK02 Preview Table — grouped by asset section */}
-        <div className="overflow-x-auto border border-slate-100 dark:border-slate-700/60 rounded-xl">
+        <div className="overflow-x-auto border border-border-subtle rounded-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-bold uppercase border-b dark:border-slate-700">
+              <tr className="bg-bg-subtle/80 text-txt-muted font-bold uppercase border-b dark:border-slate-700">
                 <th className="p-3 border-r dark:border-slate-700 text-center w-10">STT</th>
                 <th className="p-3 border-r dark:border-slate-700">Mã TSCĐ</th>
                 <th className="p-3 border-r dark:border-slate-700">Tên tài sản</th>
@@ -230,7 +230,7 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
                 <th className="p-3">Bộ phận</th>
               </tr>
             </thead>
-            <tbody className="text-slate-700 dark:text-slate-300">
+            <tbody className="text-txt-secondary">
               {groupedAssets.length === 0 && (
                 <tr><td colSpan={9} className="p-8 text-center text-slate-400">Không có dữ liệu tài sản công.</td></tr>
               )}
@@ -242,9 +242,9 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
                 return (
                   <React.Fragment key={label}>
                     {/* Section header row */}
-                    <tr className="bg-slate-100/80 dark:bg-slate-800/60 border-y border-slate-200 dark:border-slate-700">
-                      <td colSpan={5} className="p-2.5 pl-3 font-bold text-slate-700 dark:text-slate-200 text-[11px] uppercase tracking-wide">{label}</td>
-                      <td className="p-2.5 text-right font-bold text-slate-700 dark:text-slate-200 border-l dark:border-slate-700">{formatCurrency(subOriginal)}</td>
+                    <tr className="bg-slate-100/80 dark:bg-slate-800/60 border-y border-border">
+                      <td colSpan={5} className="p-2.5 pl-3 font-bold text-txt-secondary text-[11px] uppercase tracking-wide">{label}</td>
+                      <td className="p-2.5 text-right font-bold text-txt-secondary border-l dark:border-slate-700">{formatCurrency(subOriginal)}</td>
                       <td className="p-2.5 text-right font-bold text-slate-500 border-l dark:border-slate-700">{formatCurrency(subDep)}</td>
                       <td className="p-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400 border-l dark:border-slate-700">{formatCurrency(subRemaining)}</td>
                       <td className="p-2.5 border-l dark:border-slate-700"></td>
@@ -253,7 +253,7 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
                     {items.map((a) => {
                       stt++;
                       return (
-                        <tr key={a.id} className="border-b border-slate-100 dark:border-slate-700/60 hover:bg-slate-50/50 dark:hover:bg-slate-800">
+                        <tr key={a.id} className="border-b border-border-subtle hover:bg-slate-50/50 dark:hover:bg-slate-800">
                           <td className="p-2.5 border-r dark:border-slate-700 text-center text-slate-500">{stt}</td>
                           <td className="p-2.5 border-r dark:border-slate-700 font-mono font-medium text-primary-600 dark:text-primary-400">{a.asset_code}</td>
                           <td className="p-2.5 border-r dark:border-slate-700 font-medium">{a.asset_name}</td>
@@ -272,9 +272,9 @@ export const PublicAssetReports: React.FC<PublicAssetReportsProps> = ({ assets }
               {/* Grand total row */}
               {assets.length > 0 && (
                 <tr className="bg-primary-50 dark:bg-primary-950/20 border-t-2 border-primary-200 dark:border-primary-800">
-                  <td colSpan={5} className="p-3 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase">TỔNG CỘNG</td>
-                  <td className="p-3 text-right font-bold text-slate-800 dark:text-slate-100 border-l dark:border-slate-700">{formatCurrency(stats.totalOriginalCost)}</td>
-                  <td className="p-3 text-right font-bold text-slate-600 dark:text-slate-400 border-l dark:border-slate-700">{formatCurrency(stats.totalDepreciation)}</td>
+                  <td colSpan={5} className="p-3 font-bold text-txt-secondary text-xs uppercase">TỔNG CỘNG</td>
+                  <td className="p-3 text-right font-bold text-txt-primary border-l dark:border-slate-700">{formatCurrency(stats.totalOriginalCost)}</td>
+                  <td className="p-3 text-right font-bold text-txt-muted border-l dark:border-slate-700">{formatCurrency(stats.totalDepreciation)}</td>
                   <td className="p-3 text-right font-bold text-emerald-600 dark:text-emerald-400 border-l dark:border-slate-700">{formatCurrency(stats.totalRemainingValue)}</td>
                   <td className="border-l dark:border-slate-700"></td>
                 </tr>

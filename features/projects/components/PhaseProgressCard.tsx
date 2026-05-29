@@ -92,8 +92,8 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     const statusConfig = {
         todo: {
             icon: Circle,
-            color: 'text-gray-400 dark:text-slate-400',
-            bgColor: 'bg-gray-100 dark:bg-slate-700',
+            color: 'text-txt-placeholder',
+            bgColor: 'bg-bg-muted',
             progressColor: 'from-gray-300 to-gray-400',
             borderColor: 'border-l-gray-300 dark:border-l-slate-600'
         },
@@ -117,10 +117,10 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     const StatusIcon = config.icon;
 
     return (
-        <div className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
+        <div className={`bg-bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
             {/* Header - py-2 px-4 giúp thanh giai đoạn mỏng nhẹ */}
             <div
-                className="px-4 py-2 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+                className="px-4 py-2 flex items-center justify-between cursor-pointer hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors"
                 onClick={onToggle}
             >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -132,7 +132,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                     {/* Title, Date & Mô tả ẩn hiện bằng Hover */}
                     <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2">
                         <div className="flex items-center gap-2 group/title relative">
-                            <h4 className="font-bold text-gray-800 dark:text-slate-200 text-xs sm:text-sm">
+                            <h4 className="font-bold text-txt-primary text-xs sm:text-sm">
                                 {phase.title}
                             </h4>
                             {/* Icon Info hiển thị mô tả giai đoạn khi hover */}
@@ -146,7 +146,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
 
                         {/* Date Range Badge */}
                         {phaseStartDate && phaseEndDate && (
-                            <span className="hidden md:flex items-center gap-1 text-[9px] text-gray-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
+                            <span className="hidden md:flex items-center gap-1 text-[9px] text-txt-placeholder bg-bg-subtle px-1.5 py-0.5 rounded border border-border shrink-0">
                                 <Calendar className="w-2.5 h-2.5" />
                                 {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                             </span>
@@ -200,7 +200,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
 
                         {/* Mini Progress (Horizontal layout) */}
                         <div className="flex items-center gap-2">
-                            <div className="w-20 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden shrink-0">
+                            <div className="w-20 h-1.5 bg-bg-muted rounded-full overflow-hidden shrink-0">
                                 <div
                                     className={`h-full bg-gradient-to-r ${config.progressColor} transition-all duration-500`}
                                     style={{ width: `${progress}%` }}
@@ -212,8 +212,8 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                         </div>
 
                         {/* Item Counter (Horizontal layout) */}
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 shrink-0">
-                            <span className="text-xs font-black text-gray-700 dark:text-slate-300 tabular-nums">
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-bg-subtle rounded-lg border border-border shrink-0">
+                            <span className="text-xs font-black text-txt-secondary tabular-nums">
                                 {completedItems}/{totalItems}
                             </span>
                             <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wide shrink-0">
@@ -244,7 +244,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                 </div>
                 {/* Mobile Date Range */}
                 {phaseStartDate && phaseEndDate && (
-                    <div className="flex items-center gap-1 text-[9px] text-gray-400 dark:text-slate-400 mt-1">
+                    <div className="flex items-center gap-1 text-[9px] text-txt-placeholder mt-1">
                         <Calendar className="w-2.5 h-2.5" />
                         {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                     </div>

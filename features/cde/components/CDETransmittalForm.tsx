@@ -72,15 +72,15 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
                             <ClipboardList className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-base font-black text-gray-800 dark:text-slate-100">Phiếu chuyển giao tài liệu</h2>
+                            <h2 className="text-base font-black text-txt-primary">Phiếu chuyển giao tài liệu</h2>
                             <p className="text-[10px] font-mono text-gray-400">{transmittalNo}</p>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                             <div className="flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-blue-600" />
                                 <div>
-                                    <p className="text-xs font-bold text-gray-800 dark:text-slate-100">{currentUser?.Department || 'Ban QLDA'}</p>
+                                    <p className="text-xs font-bold text-txt-primary">{currentUser?.Department || 'Ban QLDA'}</p>
                                     <p className="text-[10px] text-gray-400">{currentUser?.FullName}</p>
                                 </div>
                             </div>
@@ -103,9 +103,9 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">Bên nhận *</label>
                             <input placeholder="Tên đơn vị" value={form.to_org} onChange={e => setForm(f => ({ ...f, to_org: e.target.value }))}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                             <input placeholder="Người nhận" value={form.to_person} onChange={e => setForm(f => ({ ...f, to_person: e.target.value }))}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                         </div>
                     </div>
 
@@ -113,21 +113,21 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-500 uppercase">Tiêu đề *</label>
                         <input placeholder="Chuyển giao hồ sơ thiết kế..." value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-medium dark:text-slate-200" />
+                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-sm font-medium dark:text-slate-200" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">Mục đích</label>
                             <select value={form.purpose} onChange={e => setForm(f => ({ ...f, purpose: e.target.value as TransmittalPurpose }))}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
+                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200">
                                 {PURPOSES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                             </select>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-500 uppercase">CC (phân cách dấu phẩy)</label>
                             <input placeholder="abc@email.com, xyz@email.com" value={form.cc} onChange={e => setForm(f => ({ ...f, cc: e.target.value }))}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
+                                className="w-full px-3 py-2 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs dark:text-slate-200" />
                         </div>
                     </div>
 
@@ -146,7 +146,7 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                                         className="w-3.5 h-3.5 rounded border-gray-300 dark:border-slate-600 text-blue-600" />
                                     <FileText className="w-4 h-4 text-blue-600 shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-medium text-gray-800 dark:text-slate-100 truncate">{doc.doc_name}</p>
+                                        <p className="text-xs font-medium text-txt-primary truncate">{doc.doc_name}</p>
                                         <p className="text-[10px] text-gray-400">{doc.version || 'P01.01'} • {doc.discipline || '—'}</p>
                                     </div>
                                 </label>
@@ -158,12 +158,12 @@ const CDETransmittalForm: React.FC<CDETransmittalFormProps> = ({
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-500 uppercase">Ghi chú</label>
                         <textarea rows={3} placeholder="Ghi chú bổ sung..." value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-                            className="w-full px-3 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-xs resize-none dark:text-slate-200" />
+                            className="w-full px-3 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-xs resize-none dark:text-slate-200" />
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between bg-gray-50/80 dark:bg-slate-800">
+                <div className="px-6 py-4 border-t border-border flex items-center justify-between bg-gray-50/80 dark:bg-slate-800">
                     <button onClick={onClose} className="px-4 py-2 text-gray-500 text-sm font-medium hover:text-gray-700">Hủy bỏ</button>
                     <button onClick={handleSend} disabled={isPending || !form.subject || !form.to_org || selectedDocIds.length === 0}
                         className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-sm font-bold transition-all shadow-md">

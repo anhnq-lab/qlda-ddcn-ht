@@ -126,12 +126,12 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
             id={`article-${article.id}`}
             className={`p-3 md:p-4 rounded-xl border transition-all duration-300 ${isActive
                 ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-200 dark:border-primary-800 shadow-sm ring-1 ring-primary-500/20'
-                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg'
+                : 'bg-bg-surface border-border hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg'
                 } ${isEditing ? 'ring-2 ring-warning-400 ring-offset-2' : ''}`}
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1" onClick={(e) => !isEditing && toggleArticleExpansion(article.id, e as unknown as React.MouseEvent)}>
-                    <h5 className={`font-bold transition-colors ${isActive ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-slate-100'} flex items-center gap-2 ${!isEditing ? 'cursor-pointer' : ''}`}>
+                    <h5 className={`font-bold transition-colors ${isActive ? 'text-primary-700 dark:text-primary-400' : 'text-txt-primary'} flex items-center gap-2 ${!isEditing ? 'cursor-pointer' : ''}`}>
                         <span className="font-black text-primary-600 dark:text-primary-400">{article.code}.</span>
                         <HighlightText text={article.title} query={searchQuery} />
                         {isEditing && (
@@ -198,13 +198,13 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
             </div>
 
             {isExpanded && (
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-700">
-                    <p className="text-gray-600 dark:text-slate-400 mb-3 pb-3 border-b border-dashed border-gray-200 dark:border-slate-700 italic opacity-80 leading-relaxed font-medium">
+                <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-txt-muted mb-3 pb-3 border-b border-dashed border-border italic opacity-80 leading-relaxed font-medium">
                         <HighlightText text={article.summary} query={searchQuery} />
                     </p>
-                    <div className="text-gray-800 dark:text-slate-200 leading-loose space-y-2 font-normal relative text-justify">
+                    <div className="text-txt-primary leading-loose space-y-2 font-normal relative text-justify">
                         {isEditing && (
-                            <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 p-2 bg-warning-100 dark:bg-warning-900/50 border border-warning-300 dark:border-warning-700 rounded-xl mb-4 text-gray-700 dark:text-gray-300 shadow-sm">
+                            <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 p-2 bg-warning-100 dark:bg-warning-900/50 border border-warning-300 dark:border-warning-700 rounded-xl mb-4 text-txt-secondary shadow-sm">
                                 <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('bold', false); }} className="p-1.5 hover:bg-warning-200 dark:hover:bg-warning-800 rounded-lg transition-colors" title="In đậm"><Bold className="w-4 h-4" /></button>
                                 <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('italic', false); }} className="p-1.5 hover:bg-warning-200 dark:hover:bg-warning-800 rounded-lg transition-colors" title="In nghiêng"><Italic className="w-4 h-4" /></button>
                                 <button onMouseDown={(e) => { e.preventDefault(); document.execCommand('underline', false); }} className="p-1.5 hover:bg-warning-200 dark:hover:bg-warning-800 rounded-lg transition-colors" title="Gạch chân"><Underline className="w-4 h-4" /></button>

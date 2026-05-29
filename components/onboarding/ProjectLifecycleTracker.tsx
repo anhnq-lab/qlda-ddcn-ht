@@ -40,23 +40,23 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
   const currentIndex = PHASES.findIndex((p) => p.id === currentPhase);
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg mb-6 w-full">
+    <div className="bg-bg-surface rounded-xl border border-border p-6 shadow-lg mb-6 w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-txt-primary flex items-center gap-2">
             La bàn Dự án
             <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
               Quy trình chuẩn
             </span>
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-txt-muted mt-1">
             Theo dõi tiến độ tổng thể và các bước thực hiện của dự án đầu tư xây dựng.
           </p>
         </div>
       </div>
 
       <div className="relative">
-        <div className="absolute top-5 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800 -z-10" />
+        <div className="absolute top-5 left-0 right-0 h-0.5 bg-bg-muted -z-10" />
 
         <div className="flex justify-between relative z-10">
           {PHASES.map((phase, index) => {
@@ -68,12 +68,12 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
               <div key={phase.id} className="group relative flex flex-col items-center w-1/4">
                 {/* Node Status Indicator */}
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-white dark:bg-slate-800 ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-200 mb-3 bg-bg-surface ${
                     isCompleted
                       ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400'
                       : isCurrent
                         ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 shadow-[0_0_0_4px_rgba(79,70,229,0.1)] dark:shadow-[0_0_0_4px_rgba(99,102,241,0.15)] ring-1 ring-indigo-600 dark:ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 animate-pulse'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-400'
+                        : 'border-border text-txt-placeholder'
                   }`}
                 >
                   {isCompleted ? <CheckCircle2 size={20} /> : isCurrent ? <Clock size={20} /> : <Circle size={20} />}
@@ -92,13 +92,13 @@ export const ProjectLifecycleTracker: React.FC<TrackerProps> = ({ currentPhase, 
                 <h3
                   className={`text-sm font-medium text-center transition-colors duration-200 ${
                     isCompleted || isCurrent
-                      ? 'text-slate-900 dark:text-slate-100'
-                      : 'text-slate-500 dark:text-slate-400'
+                      ? 'text-txt-primary'
+                      : 'text-txt-muted'
                   }`}
                 >
                   {phase.title}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-center hidden md:block">
+                <p className="text-xs text-txt-muted mt-1 text-center hidden md:block">
                   {phase.description}
                 </p>
 

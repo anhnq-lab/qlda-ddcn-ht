@@ -158,24 +158,24 @@ const AnnualPlanItemModal: React.FC<Props> = ({
 
     return (
         <div
-            className="flex flex-col h-full bg-white dark:bg-slate-900 animate-in fade-in duration-300"
+            className="flex flex-col h-full bg-bg-surface animate-in fade-in duration-300"
             onKeyDown={handleKeyDown}
         >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
                     <div>
-                        <h2 className="font-semibold text-slate-800 dark:text-slate-100">
+                        <h2 className="font-semibold text-txt-primary">
                             {item ? 'Sửa nhiệm vụ KH khung' : `Thêm nhiệm vụ KH khung — ${year}`}
                         </h2>
                         <p className="text-xs text-slate-400 mt-0.5">{departmentName} · Ctrl+Enter để lưu</p>
                     </div>
-                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-bg-muted">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
 
                 <div className="flex-1 overflow-auto">
-                    <form onSubmit={onSubmit} className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                    <form onSubmit={onSubmit} className="divide-y divide-border-subtle">
                         {(serverError || errors.task_name) && (
                             <div className="mx-6 mt-4 bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg border border-red-100">
                                 {serverError || errors.task_name?.message}
@@ -361,7 +361,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between gap-2 px-6 py-4 border-t border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between gap-2 px-6 py-4 border-t border-border-subtle">
                     <p className="text-xs text-slate-400">
                         {item ? `Cập nhật: ${new Date(item.updated_at ?? '').toLocaleDateString('vi-VN')}` : 'Bản ghi mới'}
                     </p>
@@ -369,7 +369,7 @@ const AnnualPlanItemModal: React.FC<Props> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                            className="px-4 py-2 text-sm text-txt-muted border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-bg-hover-row"
                         >
                             Hủy
                         </button>
@@ -420,7 +420,7 @@ const SectionPanel: React.FC<SectionPanelProps> = ({ icon, title, sectionKey, ex
                 className="w-full flex items-center gap-2 text-left group"
             >
                 {icon}
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200 flex-1">{title}</span>
+                <span className="text-sm font-medium text-txt-secondary flex-1">{title}</span>
                 {badge}
                 {isOpen
                     ? <ChevronUp className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />

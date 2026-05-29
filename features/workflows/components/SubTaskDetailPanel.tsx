@@ -143,9 +143,9 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative">
             <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-border shadow-sm space-y-5">
                     <div className="space-y-1.5 p-1">
-                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">Nội dung công việc <span className="text-rose-500">*</span></label>
+                        <label className="text-xs font-semibold text-txt-muted mb-1.5 block">Nội dung công việc <span className="text-rose-500">*</span></label>
                         <textarea value={subTask.name} onChange={e => handleChange('name', e.target.value)}
                             ref={(el) => {
                                 if (el) {
@@ -161,30 +161,30 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                             style={{ minHeight: '80px' }}
                             rows={2}
                             placeholder="VD: Trình, thẩm định, duyệt nội dung..."
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[13px] font-medium leading-relaxed focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none overflow-hidden" 
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-[13px] font-medium leading-relaxed focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none overflow-hidden" 
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><Shield size={12} className="text-blue-500"/> Đơn vị thực hiện</label>
+                            <label className="text-xs font-semibold text-txt-muted flex items-center gap-1.5"><Shield size={12} className="text-blue-500"/> Đơn vị thực hiện</label>
                             <input type="text" value={subTask.assignee_role} onChange={e => handleChange('assignee_role', e.target.value)}
                                 placeholder="VD: Chủ đầu tư..."
-                                className="w-full h-10 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 text-xs focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                                className="w-full h-10 bg-bg-subtle border border-border rounded-xl px-3 text-xs focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><Target size={12} className="text-rose-500"/> Đầu ra quy định</label>
+                            <label className="text-xs font-semibold text-txt-muted flex items-center gap-1.5"><Target size={12} className="text-rose-500"/> Đầu ra quy định</label>
                             <input type="text" value={subTask.output} onChange={e => handleChange('output', e.target.value)}
                                 placeholder="VD: Tờ trình, Báo cáo..."
-                                className="w-full h-10 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 text-xs focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                                className="w-full h-10 bg-bg-subtle border border-border rounded-xl px-3 text-xs focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-semibold text-txt-muted flex items-center gap-1.5">
                             <Clock size={12} className="text-warning-500" /> Thời gian (SLA)
                         </label>
-                        <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
+                        <div className="flex bg-bg-subtle border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
                             <input type="text" 
                                 inputMode="numeric"
                                 pattern="[0-9]*"
@@ -194,11 +194,11 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                                     handleChange('sla', v);
                                 }}
                                 placeholder=""
-                                className="w-16 flex-1 h-9 bg-transparent px-3 text-xs font-bold text-center border-r border-slate-200 dark:border-slate-700 focus:outline-none text-slate-800 dark:text-white" />
+                                className="w-16 flex-1 h-9 bg-transparent px-3 text-xs font-bold text-center border-r border-border focus:outline-none text-txt-primary" />
                             <select 
                                 value={subTask.sla_unit || 'd'} 
                                 onChange={e => handleChange('sla_unit', e.target.value)}
-                                className="min-w-[90px] h-9 bg-slate-100 dark:bg-slate-800 px-2.5 text-[11px] font-semibold focus:outline-none text-slate-700 dark:text-slate-300 border-none cursor-pointer">
+                                className="min-w-[90px] h-9 bg-bg-muted px-2.5 text-[11px] font-semibold focus:outline-none text-txt-secondary border-none cursor-pointer">
                                 <option value="d">Ngày lịch</option>
                                 <option value="wd">Ngày LV</option>
                                 <option value="h">Giờ</option>
@@ -209,7 +209,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between mb-1.5">
-                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-primary-500"/> Biểu mẫu</label>
+                                <label className="text-xs font-semibold text-txt-muted flex items-center gap-1.5"><FileSpreadsheet size={12} className="text-primary-500"/> Biểu mẫu</label>
                                 <button type="button" 
                                     onClick={(e) => { 
                                         e.preventDefault(); 
@@ -224,7 +224,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                             </div>
                             <textarea value={subTask.template_forms} onChange={e => handleChange('template_forms', e.target.value)} rows={2}
                                 placeholder="VD: Mẫu 01 (ND-112)"
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-y min-h-[60px]" />
+                                className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-y min-h-[60px]" />
                             {subTask.template_url && (
                                 <div className="flex items-center gap-1 mt-1 text-[11px] text-primary-600 dark:text-primary-400 font-medium">
                                     <LinkIcon size={10} />
@@ -239,7 +239,7 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                         </div>
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between mb-1.5">
-                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5"><BookOpen size={12} className="text-emerald-500"/> Cơ sở pháp lý</label>
+                                <label className="text-xs font-semibold text-txt-muted flex items-center gap-1.5"><BookOpen size={12} className="text-emerald-500"/> Cơ sở pháp lý</label>
                                 <button type="button" 
                                     onClick={(e) => { 
                                         e.preventDefault(); 
@@ -253,15 +253,15 @@ export const SubTaskDetailPanel: React.FC<SubTaskDetailPanelProps> = ({ node, su
                             </div>
                             <textarea value={subTask.legal_basis || ''} onChange={e => handleChange('legal_basis', e.target.value)} rows={2}
                                 placeholder="VD: Khoản 3, Điều 43..."
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none" />
+                                className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-[12px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none" />
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Sticky Footer Actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 z-10">
-                <button onClick={closePanel} className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-t border-border flex justify-end gap-3 z-10">
+                <button onClick={closePanel} className="px-5 py-2.5 text-sm font-bold text-txt-muted hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                     Hủy bỏ
                 </button>
                 <button 

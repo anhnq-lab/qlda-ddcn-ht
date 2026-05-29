@@ -237,7 +237,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                 <div className="flex flex-col md:flex-row items-center gap-3 flex-wrap">
 
                     {/* Filter trạng thái */}
-                    <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5">
+                    <div className="flex items-center bg-bg-muted rounded-xl p-1 gap-0.5">
                         {[
                             { value: 'all' as const, label: 'Tất cả', count: stats.total },
                             { value: ContractStatus.Executing, label: 'Đang TH', count: stats.executingCount },
@@ -247,12 +247,12 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                 key={opt.value}
                                 onClick={() => setStatusFilter(opt.value)}
                                 className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${statusFilter === opt.value
-                                    ? 'bg-white dark:bg-slate-800 dark:bg-slate-600 text-gray-900 dark:text-slate-200 shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+                                    ? 'bg-bg-surface dark:bg-slate-600 text-txt-primary shadow-sm'
+                                    : 'text-txt-muted hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                             >
                                 {opt.label}
-                                <span className={`ml-1 text-[10px] ${statusFilter === opt.value ? 'text-primary-600' : 'text-slate-500 dark:text-slate-400'}`}>
+                                <span className={`ml-1 text-[10px] ${statusFilter === opt.value ? 'text-primary-600' : 'text-txt-muted'}`}>
                                     {opt.count}
                                 </span>
                             </button>
@@ -275,7 +275,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                     </select>
 
                     <div className="ml-auto flex items-center gap-3">
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden lg:inline">
+                        <span className="text-xs text-txt-muted font-medium hidden lg:inline">
                             Hiển thị {filteredContracts.length} / {stats.total}
                         </span>
                         {/* Xuất CSV */}
@@ -305,20 +305,20 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
             <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                            <tr className="text-slate-500 dark:text-slate-400">
-                                <th className="px-3 py-3 text-center w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
-                                <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Số hợp đồng</th>
-                                <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nhà thầu</th>
-                                <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Dự án / Gói thầu</th>
-                                <th className="px-4 py-3 text-right whitespace-nowrap border-b border-slate-200 dark:border-slate-700">Giá trị HĐ</th>
-                                <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Giải ngân</th>
-                                <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Ngày ký</th>
-                                <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Trạng thái</th>
-                                <th className="px-6 py-3 w-10 border-b border-slate-200 dark:border-slate-700"></th>
+                        <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                            <tr className="text-txt-muted">
+                                <th className="px-3 py-3 text-center w-12 border-b border-border">STT</th>
+                                <th className="px-4 py-3 border-b border-border">Số hợp đồng</th>
+                                <th className="px-4 py-3 border-b border-border">Nhà thầu</th>
+                                <th className="px-4 py-3 border-b border-border">Dự án / Gói thầu</th>
+                                <th className="px-4 py-3 text-right whitespace-nowrap border-b border-border">Giá trị HĐ</th>
+                                <th className="px-4 py-3 text-center border-b border-border">Giải ngân</th>
+                                <th className="px-4 py-3 text-center border-b border-border">Ngày ký</th>
+                                <th className="px-4 py-3 text-center border-b border-border">Trạng thái</th>
+                                <th className="px-6 py-3 w-10 border-b border-border"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-border-subtle">
                             {filteredContracts.map((contract, rowIdx) => {
                                 const payProgress = getPaymentProgress(contract.ContractID, contract.Value);
                                 const contractorName = getContractorName(contract.ContractorID);
@@ -331,7 +331,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                         onClick={() => handleContractClick(contract)}
                                     >
                                         {/* STT */}
-                                        <td className="px-3 py-4 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">{rowIdx + 1}</td>
+                                        <td className="px-3 py-4 text-center text-xs text-txt-muted font-medium">{rowIdx + 1}</td>
                                         {/* Contract ID */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3 relative z-10">
@@ -340,7 +340,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 text-xs block whitespace-nowrap leading-tight mb-0.5">{contract.ContractID}</span>
-                                                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Gói {contract.PackageID?.split('-').pop() || '—'}</span>
+                                                    <span className="text-[10px] text-txt-muted">Gói {contract.PackageID?.split('-').pop() || '—'}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -349,9 +349,9 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2.5">
                                                 <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center ring-1 ring-slate-200 dark:ring-slate-600 shadow-sm">
-                                                    <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                                                    <Building2 className="w-3.5 h-3.5 text-txt-muted" />
                                                 </div>
-                                                <span className="font-semibold text-slate-800 dark:text-slate-200 max-w-[200px] truncate leading-tight text-xs" title={contractorName}>
+                                                <span className="font-semibold text-txt-primary max-w-[200px] truncate leading-tight text-xs" title={contractorName}>
                                                     {contractorName}
                                                 </span>
                                             </div>
@@ -360,10 +360,10 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                         {/* Project + Package */}
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-0.5">
-                                                <span className="text-slate-600 dark:text-slate-300 font-medium text-[11px] max-w-[200px] truncate leading-tight" title={projectName}>
+                                                <span className="text-txt-muted font-medium text-[11px] max-w-[200px] truncate leading-tight" title={projectName}>
                                                     {projectName}
                                                 </span>
-                                                <span className="text-[10px] text-slate-400 dark:text-slate-500 max-w-[200px] truncate" title={getPackageName(contract)}>
+                                                <span className="text-[10px] text-txt-placeholder max-w-[200px] truncate" title={getPackageName(contract)}>
                                                     {getPackageName(contract)}
                                                 </span>
                                             </div>
@@ -371,7 +371,7 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
 
                                         {/* Contract Value */}
                                         <td className="px-6 py-4 text-right">
-                                            <span className="font-bold text-gray-900 dark:text-slate-100 font-mono text-xs tracking-tight whitespace-nowrap">{formatCurrency(contract.Value)}</span>
+                                            <span className="font-bold text-txt-primary font-mono text-xs tracking-tight whitespace-nowrap">{formatCurrency(contract.Value)}</span>
                                         </td>
 
                                         {/* Payment Progress */}
@@ -383,9 +383,9 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                                                     <>
                                                         <ProgressBar value={payProgress.percent} size="sm" />
                                                         <div className="flex items-center gap-1.5 text-[10px]">
-                                                            <span className="font-bold text-slate-600 dark:text-slate-300">{payProgress.percent.toFixed(0)}%</span>
+                                                            <span className="font-bold text-txt-muted">{payProgress.percent.toFixed(0)}%</span>
                                                             <span className="text-gray-300 dark:text-slate-600">·</span>
-                                                            <span className="text-slate-500 dark:text-slate-400">{payProgress.count} đợt</span>
+                                                            <span className="text-txt-muted">{payProgress.count} đợt</span>
                                                             {payProgress.pending > 0 && (
                                                                 <>
                                                                     <span className="text-gray-300 dark:text-slate-600">·</span>
@@ -402,8 +402,8 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
 
                                         {/* Sign Date */}
                                         <td className="px-6 py-4 text-center">
-                                            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                                                <CalendarDays className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+                                            <div className="flex items-center justify-center gap-1.5 text-xs text-txt-muted">
+                                                <CalendarDays className="w-3 h-3 text-txt-muted" />
                                                 {contract.SignDate ? new Date(contract.SignDate).toLocaleDateString('vi-VN') : '—'}
                                             </div>
                                         </td>
@@ -438,16 +438,16 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                         <div className="flex items-center gap-6">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                <span className="text-xs text-slate-500 dark:text-slate-400">Đang thực hiện: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.executingCount}</span></span>
+                                <span className="text-xs text-txt-muted">Đang thực hiện: <span className="font-bold text-txt-secondary">{stats.executingCount}</span></span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                <span className="text-xs text-slate-500 dark:text-slate-400">Đã thanh lý: <span className="font-bold text-gray-700 dark:text-slate-200">{stats.liquidatedCount}</span></span>
+                                <span className="text-xs text-txt-muted">Đã thanh lý: <span className="font-bold text-txt-secondary">{stats.liquidatedCount}</span></span>
                             </div>
                             <div className="w-px h-4 bg-gray-200 dark:bg-slate-600"></div>
-                            <span className="text-xs text-slate-500 dark:text-slate-400">Tổng giá trị: <span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(stats.totalValue)}</span></span>
+                            <span className="text-xs text-txt-muted">Tổng giá trị: <span className="font-bold text-txt-primary">{formatCurrency(stats.totalValue)}</span></span>
                         </div>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">{filteredContracts.length} hợp đồng</span>
+                        <span className="text-xs text-txt-muted">{filteredContracts.length} hợp đồng</span>
                     </div>
                 </div>
 
@@ -456,8 +456,8 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                         <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center mx-auto mb-5 ring-1 ring-gray-200 dark:ring-slate-600">
                             <FileText className="w-10 h-10 text-gray-300 dark:text-slate-400" />
                         </div>
-                        <p className="text-slate-600 dark:text-slate-400 font-bold text-lg">Không tìm thấy hợp đồng</p>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                        <p className="text-txt-muted font-bold text-lg">Không tìm thấy hợp đồng</p>
+                        <p className="text-txt-muted text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
                     </div>
                 )}
             </div>

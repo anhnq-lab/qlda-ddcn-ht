@@ -157,7 +157,7 @@ export const RiskIndicators: React.FC<RiskIndicatorsProps> = ({
                                 }`}>
                                 {alert.title}
                             </p>
-                            <p className="text-[10px] text-gray-600 dark:text-slate-400 mt-0.5">{alert.description}</p>
+                            <p className="text-[10px] text-txt-muted mt-0.5">{alert.description}</p>
                         </div>
                         {alert.metric && (
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${alert.type === 'critical' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :

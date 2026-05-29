@@ -30,7 +30,7 @@ interface Props {
 }
 
 const WidgetSkeleton = () => (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl animate-pulse h-[280px]" />
+    <div className="bg-bg-surface rounded-2xl animate-pulse h-[280px]" />
 );
 
 export const ManagerDashboard: React.FC<Props> = ({ config, data }) => {
@@ -210,11 +210,11 @@ export const ManagerDashboard: React.FC<Props> = ({ config, data }) => {
                                             className="shrink-0"
                                         />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{emp.full_name}</p>
+                                            <p className="text-xs font-bold text-txt-secondary truncate">{emp.full_name}</p>
                                             <p className="text-[11px] text-txt-muted truncate">{emp.position}</p>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
-                                            <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400">{empTasks.length} việc</span>
+                                            <span className="text-[11px] font-bold text-txt-muted">{empTasks.length} việc</span>
                                             {empOverdue > 0 && (
                                                 <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">{empOverdue} trễ</span>
                                             )}

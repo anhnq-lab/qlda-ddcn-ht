@@ -327,7 +327,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
     };
 
     if (isLoading) return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-800 p-4 pt-16">
+        <div className="flex flex-col h-full bg-bg-surface p-4 pt-16">
             <div className="animate-pulse space-y-4">
                 {[...Array(4)].map((_, i) => <div key={i} className="h-8 bg-slate-200 dark:bg-slate-800 rounded" />)}
             </div>
@@ -465,14 +465,14 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
 
     return (
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative">
-            <div className="p-4 pb-0 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800">
+            <div className="p-4 pb-0 bg-bg-surface border-b border-border-subtle">
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                             <LayoutList size={20} className="text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-slate-800 dark:text-white leading-tight font-display">
+                            <h2 className="text-lg font-black text-txt-primary leading-tight font-display">
                                 {isCreateMode ? 'Tạo Quy Trình Mới' : workflow?.name}
                             </h2>
                             {!isCreateMode && (
@@ -482,7 +482,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                     </div>
                     <button 
                         onClick={onClose}
-                        className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
+                        className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-bg-muted dark:hover:text-white transition-colors"
                         title="Đóng panel"
                     >
                         <X size={20} />
@@ -510,12 +510,12 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
             <div className="flex-1 overflow-hidden p-4 pb-20 flex flex-col">
                 {!isCreateMode && activeTab === 'overview' && (
                     <div className="flex flex-col gap-3 animate-fade-in h-full">
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-700 shadow-sm">
-                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                        <div className="bg-bg-surface rounded-xl p-3 border border-border-subtle shadow-sm">
+                            <p className="text-sm text-txt-muted leading-relaxed">
                                 {workflow?.description || 'Chưa có mô tả quy trình.'}
                             </p>
                             <div className="flex items-center gap-2 pt-2">
-                                <div className="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300">
+                                <div className="px-2.5 py-1 bg-bg-muted rounded-lg text-xs font-bold text-txt-muted">
                                     {displayNodes.length} bước thực hiện
                                 </div>
                                 <div className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
@@ -528,7 +528,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
 
                         <div className="flex flex-col gap-2 flex-1 min-h-0">
                             <div className="flex items-center justify-between flex-shrink-0">
-                                <h3 className="text-[13px] font-bold text-slate-800 dark:text-white uppercase tracking-wider">Quy trình chi tiết</h3>
+                                <h3 className="text-[13px] font-bold text-txt-primary uppercase tracking-wider">Quy trình chi tiết</h3>
                                 {onViewFlowchart && (
                                     <button onClick={onViewFlowchart}
                                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition shadow-sm"
@@ -537,33 +537,33 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                     </button>
                                 )}
                             </div>
-                            <div className="overflow-y-auto flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm custom-scrollbar">
+                            <div className="overflow-y-auto flex-1 min-h-0 rounded-xl border border-border bg-bg-surface shadow-sm custom-scrollbar">
                                 <table className="w-full text-left text-[13px] border-collapse table-fixed">
-                                    <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50">
-                                        <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                                            <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 text-center w-10 align-middle">TT</th>
+                                    <thead className="bg-bg-subtle sticky top-0 z-10 shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50">
+                                        <tr className="text-[10px] font-black uppercase tracking-widest text-txt-muted">
+                                            <th className="p-2.5 border-r border-b border-border text-center w-10 align-middle">TT</th>
                                             {isInternalWorkflow ? (
                                                 <>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[30%] align-middle">Nội dung công việc</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị thực hiện</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Đơn vị phối hợp</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[20%] align-middle">Thời gian thực hiện</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[12%] align-middle">Ghi chú</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[30%] align-middle">Nội dung công việc</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[12%] align-middle">Đơn vị thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[12%] align-middle">Đơn vị phối hợp</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[20%] align-middle">Thời gian thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[12%] align-middle">Ghi chú</th>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-14 align-middle text-center">SLA</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[26%] align-middle">Công việc chi tiết</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đơn vị thực hiện</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Đầu ra</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[10%] align-middle">Biểu mẫu</th>
-                                                    <th className="p-2.5 border-r border-b border-slate-200 dark:border-slate-700 w-[13%] align-middle">Cơ sở pháp lý</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-14 align-middle text-center">SLA</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[26%] align-middle">Công việc chi tiết</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[13%] align-middle">Đơn vị thực hiện</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[13%] align-middle">Đầu ra</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[10%] align-middle">Biểu mẫu</th>
+                                                    <th className="p-2.5 border-r border-b border-border w-[13%] align-middle">Cơ sở pháp lý</th>
                                                 </>
                                             )}
-                                            <th className="p-2.5 border-b border-slate-200 dark:border-slate-700 text-center w-20 align-middle">Tác vụ</th>
+                                            <th className="p-2.5 border-b border-border text-center w-20 align-middle">Tác vụ</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+                                    <tbody className="divide-y divide-border text-txt-secondary">
                                         {groupedPhases.map((group) => {
                                             const phaseKey = group.phase;
                                             const phaseConf = group.config;
@@ -572,16 +572,16 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                 <React.Fragment key={phaseKey}>
                                                     {!isInternalWorkflow && (
                                                         <tr 
-                                                            className="bg-slate-50 dark:bg-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                            className="bg-bg-subtle cursor-pointer hover:bg-bg-hover-row transition-colors"
                                                             onClick={() => togglePhase(phaseKey)}
                                                         >
-                                                            <td colSpan={8} className="p-3 font-bold text-slate-800 dark:text-white uppercase tracking-wide text-[13px] border-b border-slate-300 dark:border-slate-600">
+                                                            <td colSpan={8} className="p-3 font-bold text-txt-primary uppercase tracking-wide text-[13px] border-b border-slate-300 dark:border-slate-600">
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className="text-slate-500 dark:text-slate-400">
+                                                                    <span className="text-txt-muted">
                                                                         {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                                                                     </span>
                                                                     Giai đoạn: {phaseConf.title} 
-                                                                    <span className="text-slate-500 dark:text-slate-400 font-medium text-xs normal-case ml-2">
+                                                                    <span className="text-txt-muted font-medium text-xs normal-case ml-2">
                                                                         ({Object.values(group.subProcesses).reduce((count: number, nodes: any) => count + nodes.length, 0)} bước)
                                                                     </span>
                                                                 </div>
@@ -621,37 +621,37 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
 
                                                                     return (
                                                                         <React.Fragment key={node.id}>
-                                                                            <tr className="bg-slate-50 dark:bg-slate-800 group border-b text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700">
-                                                                                <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-center font-bold text-slate-500">
+                                                                            <tr className="bg-bg-subtle group border-b text-txt-primary border-border">
+                                                                                <td className="p-3 border-r border-border text-center font-bold text-slate-500">
                                                                                     {displayIndex}
                                                                                 </td>
                                                                                 {isInternalWorkflow ? (
                                                                                     <>
-                                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 cursor-pointer" onClick={() => openEditPanel(node)}>
+                                                                                        <td className="p-3 border-r border-border cursor-pointer" onClick={() => openEditPanel(node)}>
                                                                                             <div className="font-bold text-sm text-primary-700 dark:text-primary-400 whitespace-pre-wrap">{node.name}</div>
                                                                                             {meta.description && <div className="text-xs text-slate-500 mt-0.5">{meta.description}</div>}
                                                                                         </td>
-                                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700">
+                                                                                        <td className="p-3 border-r border-border">
                                                                                             <div className="whitespace-pre-wrap text-[12.5px]">{node.assignee_role}</div>
                                                                                         </td>
-                                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700">
+                                                                                        <td className="p-3 border-r border-border">
                                                                                             <div className="whitespace-pre-wrap text-[12.5px]">{meta.coordinating_role}</div>
                                                                                         </td>
-                                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700 text-[12px]">
+                                                                                        <td className="p-3 border-r border-border text-[12px]">
                                                                                             {meta.sla_regulated && (
                                                                                                 <div className="mb-2">
-                                                                                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy định:</span><br/>
+                                                                                                    <span className="font-semibold text-txt-muted">Theo quy định:</span><br/>
                                                                                                     <span className="whitespace-pre-wrap block leading-snug">{meta.sla_regulated}</span>
                                                                                                 </div>
                                                                                             )}
                                                                                             {node.sla_formula && (
                                                                                                 <div>
-                                                                                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy trình:</span><br/>
+                                                                                                    <span className="font-semibold text-txt-muted">Theo quy trình:</span><br/>
                                                                                                     <span className="whitespace-pre-wrap block leading-snug">{node.sla_formula}</span>
                                                                                                 </div>
                                                                                             )}
                                                                                         </td>
-                                                                                        <td className="p-3 border-r border-slate-200 dark:border-slate-700">
+                                                                                        <td className="p-3 border-r border-border">
                                                                                             <div className="whitespace-pre-wrap text-[12px] leading-snug">{meta.notes}</div>
                                                                                         </td>
                                                                                     </>
@@ -661,7 +661,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                         {meta.description && <div className="text-xs text-slate-500 mt-0.5">{meta.description}</div>}
                                                                                     </td>
                                                                                 )}
-                                                                                <td className="p-2 text-center align-middle border-slate-200 dark:border-slate-700">
+                                                                                <td className="p-2 text-center align-middle border-border">
                                                                                     <div className="flex items-center justify-center gap-1 opacity-100">
                                                                                         <button onClick={(e) => { e.stopPropagation(); moveNodeUp(node.id); }}
                                                                                             className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Lên trên">
@@ -688,7 +688,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                 const stSla = stSlaStr ? parseSla(stSlaStr) : null;
                                                                                 return (
                                                                                 <tr key={st.id || stIdx}
-                                                                                    className="bg-white dark:bg-slate-800 hover:bg-blue-50/50 dark:hover:bg-slate-50 transition-colors cursor-pointer"
+                                                                                    className="bg-bg-surface hover:bg-blue-50/50 dark:hover:bg-slate-50 transition-colors cursor-pointer"
                                                                                     onClick={() => openPanel({
                                                                                         id: 'subtask-' + (st.id || `${node.id}-${stIdx}`),
                                                                                         title: `Công việc con: ${st.name?.substring(0, 50)}`,
@@ -703,53 +703,53 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                         )
                                                                                     })}
                                                                                 >
-                                                                                    <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-center text-xs font-semibold text-slate-400">
+                                                                                    <td className="p-2.5 border-r border-border-subtle text-center text-xs font-semibold text-slate-400">
                                                                                         {displayIndex}.{stIdx + 1}
                                                                                     </td>
                                                                                     {isInternalWorkflow ? (
                                                                                         <>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800">
-                                                                                                <div className="font-medium text-slate-700 dark:text-slate-300 text-[12px] whitespace-pre-wrap leading-snug">{st.name}</div>
+                                                                                            <td className="p-2.5 border-r border-border-subtle">
+                                                                                                <div className="font-medium text-txt-secondary text-[12px] whitespace-pre-wrap leading-snug">{st.name}</div>
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px] whitespace-pre-wrap">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px] whitespace-pre-wrap">
                                                                                                 {st.assignee_role}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px] whitespace-pre-wrap">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px] whitespace-pre-wrap">
                                                                                                 {st.coordinating_role}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[12px]">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[12px]">
                                                                                                 {st.sla_regulated && (
                                                                                                     <div className="mb-2">
-                                                                                                        <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy định:</span><br/>
+                                                                                                        <span className="font-semibold text-txt-muted">Theo quy định:</span><br/>
                                                                                                         <span className="whitespace-pre-wrap block leading-snug">{st.sla_regulated}</span>
                                                                                                     </div>
                                                                                                 )}
                                                                                                 {stSla && (
                                                                                                     <div>
-                                                                                                        <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy trình:</span><br/>
+                                                                                                        <span className="font-semibold text-txt-muted">Theo quy trình:</span><br/>
                                                                                                         <span className="whitespace-pre-wrap block leading-snug">{stSla}</span>
                                                                                                     </div>
                                                                                                 )}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px] whitespace-pre-wrap leading-snug">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px] whitespace-pre-wrap leading-snug">
                                                                                                 {st.notes}
                                                                                             </td>
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50/30 dark:bg-emerald-900/10">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50/30 dark:bg-emerald-900/10">
                                                                                                 {stSla || ''}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800">
-                                                                                                <div className="font-medium text-slate-700 dark:text-slate-300 text-[12px] whitespace-pre-wrap leading-snug">{st.name}</div>
+                                                                                            <td className="p-2.5 border-r border-border-subtle">
+                                                                                                <div className="font-medium text-txt-secondary text-[12px] whitespace-pre-wrap leading-snug">{st.name}</div>
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px]">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px]">
                                                                                                 {st.assignee_role}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[12px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[12px] text-txt-muted whitespace-pre-wrap">
                                                                                                 {st.output}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px] align-middle">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px] align-middle">
                                                                                                 {st.template_url ? (
                                                                                                     <a href={st.template_url} target="_blank" rel="noreferrer" 
                                                                                                        onClick={(e) => e.stopPropagation()}
@@ -761,12 +761,12 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                                         </span>
                                                                                                     </a>
                                                                                                 ) : (
-                                                                                                    <span className="text-slate-500 dark:text-slate-400 italic break-words line-clamp-2" title={st.template_forms}>
+                                                                                                    <span className="text-txt-muted italic break-words line-clamp-2" title={st.template_forms}>
                                                                                                         {st.template_forms || "-"}
                                                                                                     </span>
                                                                                                 )}
                                                                                             </td>
-                                                                                            <td className="p-2.5 border-r border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                                                                                            <td className="p-2.5 border-r border-border-subtle text-[11px] text-txt-muted">
                                                                                                 {st.legal_basis ? (
                                                                                                     <button 
                                                                                                         type="button"
@@ -784,7 +784,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                             </td>
                                                                                         </>
                                                                                     )}
-                                                                                    <td className="p-1.5 border-slate-100 dark:border-slate-800 text-center">
+                                                                                    <td className="p-1.5 border-border-subtle text-center">
                                                                                         <ChevronRight size={12} className="text-slate-300 mx-auto" />
                                                                                     </td>
                                                                                 </tr>
@@ -808,7 +808,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                         )}
                                     </tbody>
                                 </table>
-                                <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-center">
+                                <div className="p-3 border-t border-border bg-bg-subtle flex justify-center">
                                     <button onClick={addNode} className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-xl transition-colors border border-dashed border-primary-200 dark:border-primary-800">
                                         <Plus size={16} /> Thêm Bước Nghiệp Vụ Mới
                                     </button>
@@ -831,31 +831,31 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                             </div>
                         )}
 
-                        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                        <div className="bg-bg-surface p-5 rounded-2xl border border-border shadow-sm space-y-5">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+                                <label className="text-xs font-bold text-txt-muted uppercase tracking-wide flex items-center gap-1.5">
                                     <FileText size={14} className="text-primary-500" /> Tên quy trình <span className="text-rose-500">*</span>
                                 </label>
                                 <input type="text" value={name} onChange={e => setName(e.target.value)}
                                     placeholder="VD: Quy trình phê duyệt thiết kế cơ sở"
-                                    className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                                    className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+                                    <label className="text-xs font-bold text-txt-muted uppercase tracking-wide flex items-center gap-1.5">
                                         <Hash size={14} className="text-emerald-500" /> Mã quy trình <span className="text-rose-500">*</span>
                                     </label>
                                     <input type="text" value={code} onChange={e => setCode(e.target.value)}
                                         placeholder="VD: QT-TKCS"
-                                        className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold uppercase font-mono focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                                        className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold uppercase font-mono focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+                                    <label className="text-xs font-bold text-txt-muted uppercase tracking-wide flex items-center gap-1.5">
                                         <Tag size={14} className="text-blue-500" /> Phân loại
                                     </label>
                                     <select value={category} onChange={e => setCategory(e.target.value as WorkflowCategory)}
-                                        className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors">
+                                        className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors">
                                         {CATEGORY_OPTIONS.map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -864,17 +864,17 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+                                <label className="text-xs font-bold text-txt-muted uppercase tracking-wide flex items-center gap-1.5">
                                     <FileText size={14} className="text-slate-500" /> Mô tả
                                 </label>
                                 <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
                                     placeholder="Mô tả quy trình, mục đích, phạm vi áp dụng..."
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors custom-scrollbar" />
+                                    className="w-full bg-bg-subtle border border-border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors custom-scrollbar" />
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                            <div className="flex items-center justify-between p-4 bg-bg-subtle rounded-xl border border-border-subtle">
                                 <div>
-                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                    <h4 className="text-sm font-bold text-txt-primary flex items-center gap-2">
                                         <ToggleLeft size={16} className={isActive ? 'text-emerald-500' : 'text-slate-400'} />
                                         Trạng thái hoạt động
                                     </h4>
@@ -882,7 +882,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" className="sr-only peer" checked={isActive} onChange={e => setIsActive(e.target.checked)} />
-                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-800 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500" />
+                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500" />
                                 </label>
                             </div>
                         </div>
@@ -903,16 +903,16 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-800 dark:bg-slate-800 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between z-10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-bg-surface dark:bg-slate-800 backdrop-blur-md border-t border-border flex items-center justify-between z-10">
                 <div className="flex items-center gap-2">
                     {!isCreateMode && (
                         <>
                             <button onClick={exportWorkflowJson}
-                                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700"
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-txt-muted hover:bg-bg-muted transition border border-border"
                                 title="Xuất cấu hình JSON">
                                 <Download size={14} /> Export
                             </button>
-                            <label className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700 cursor-pointer"
+                            <label className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-txt-muted hover:bg-bg-muted transition border border-border cursor-pointer"
                                 title="Nhập cấu hình từ file JSON">
                                 <Upload size={14} /> Import
                                 <input ref={importFileRef} type="file" accept=".json" onChange={importWorkflowJson} className="hidden" />
@@ -922,7 +922,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                 </div>
                 <div className="flex items-center gap-3">
                     <button onClick={onClose}
-                        className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700">
+                        className="px-5 py-2.5 rounded-xl text-sm font-bold text-txt-muted hover:bg-bg-muted transition border border-border">
                         Đóng
                     </button>
                     {(activeTab === 'settings' || isCreateMode) && (

@@ -50,7 +50,7 @@ const EmployeeList: React.FC = () => {
     const tabClass = (tab: string) =>
         `flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${activeTab === tab
             ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+            : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
         }`;
 
     return (
@@ -125,7 +125,7 @@ const EmployeeList: React.FC = () => {
                                         <select
                                             value={selectedDept}
                                             onChange={(e) => setSelectedDept(e.target.value)}
-                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                                         >
                                             <option value="All">Tất cả đơn vị</option>
                                             {departments.map(dept => (
@@ -140,7 +140,7 @@ const EmployeeList: React.FC = () => {
                                         <select
                                             value={filterRole}
                                             onChange={(e) => setFilterRole(e.target.value)}
-                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                                         >
                                             <option value="All">Tất cả vai trò</option>
                                             <option value={Role.Admin}>Quản trị viên</option>
@@ -208,7 +208,7 @@ const EmployeeList: React.FC = () => {
                                         icon={<Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-400" />}
                                         title="Không tìm thấy nhân sự nào."
                                         description="Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
-                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                                        className="bg-bg-surface rounded-2xl border border-dashed border-border"
                                     />
                                 )}
                             </>

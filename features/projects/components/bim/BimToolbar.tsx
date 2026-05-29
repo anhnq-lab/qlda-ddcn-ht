@@ -184,7 +184,7 @@ const ToolDropdown: React.FC<{
                                         ? isDark ? 'bg-cyan-500/10 text-cyan-400 font-medium border-l-2 border-cyan-400 pl-2.5' : 'bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500 pl-2.5'
                                         : item.danger
                                             ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
-                                            : isDark ? 'text-slate-300 hover:bg-white/5 hover:pl-4' : 'text-gray-700 hover:bg-slate-50 dark:bg-slate-800 hover:pl-4'}
+                                            : isDark ? 'text-slate-300 hover:bg-white/5 hover:pl-4' : 'text-gray-700 hover:bg-bg-subtle hover:pl-4'}
                                 `}
                             >
                                 <span className="w-5 h-5 flex items-center justify-center shrink-0">{item.icon}</span>

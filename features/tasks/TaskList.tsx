@@ -796,7 +796,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                     <div className="flex items-center gap-2">
                         <select
                             onChange={(e) => { if (e.target.value) handleBatchStatus(e.target.value as TaskStatus); e.target.value = ''; }}
-                            className="text-xs px-3 py-1.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 cursor-pointer"
+                            className="text-xs px-3 py-1.5 bg-bg-surface border border-blue-200 dark:border-slate-600 rounded-lg text-txt-secondary cursor-pointer"
                             defaultValue=""
                         >
                             <option value="" disabled>Đổi trạng thái...</option>
@@ -813,7 +813,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                         </button>
                         <button
                             onClick={() => setSelectedIds(new Set())}
-                            className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 px-2"
+                            className="text-xs text-txt-muted hover:text-slate-700 dark:hover:text-slate-300 px-2"
                         >
                             Bỏ chọn
                         </button>
@@ -824,9 +824,9 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             {/* ══════════ TASK LIST ══════════ */}
             {isLoading ? (
                 <div className="overflow-hidden">
-                    <div className="h-10 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700" />
+                    <div className="h-10 bg-bg-subtle dark:bg-slate-700 border-b border-border" />
                     {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                        <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-border-subtle last:border-0">
                             <div className="w-4 h-4 rounded bg-slate-200 dark:bg-slate-600 shrink-0" />
                             <div className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-600 shrink-0" />
                             <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded animate-pulse flex-1 max-w-xs" />
@@ -862,35 +862,35 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
                 {sortedTasks.length > pageSize && (
                     <div className="flex items-center justify-between py-3 border-t border-slate-200 dark:border-slate-750 mt-4">
                         <div className="flex items-center gap-3">
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                            <span className="text-xs text-txt-muted">
                                 Hiển thị {page * pageSize + 1}–{Math.min((page + 1) * pageSize, sortedTasks.length)} / {sortedTasks.length}
                             </span>
                             <select
                                 value={pageSize}
                                 onChange={e => { setPageSize(Number(e.target.value)); setPage(0); }}
-                                className="text-xs px-2 py-1 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+                                className="text-xs px-2 py-1 bg-bg-subtle dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-txt-muted cursor-pointer"
                             >
                                 {PAGE_SIZES.map(s => <option key={s} value={s}>{s} / trang</option>)}
                             </select>
                         </div>
                         <div className="flex items-center gap-1">
                             <button onClick={() => setPage(0)} disabled={page === 0}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 disabled:opacity-30 transition-colors">
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-slate-400 disabled:opacity-30 transition-colors">
                                 <ChevronsLeft className="w-4 h-4" />
                             </button>
                             <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 disabled:opacity-30 transition-colors">
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-slate-400 disabled:opacity-30 transition-colors">
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <span className="px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg min-w-[60px] text-center">
+                            <span className="px-3 py-1 text-xs font-semibold text-txt-secondary bg-bg-muted rounded-lg min-w-[60px] text-center">
                                 {page + 1} / {totalPages}
                             </span>
                             <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 disabled:opacity-30 transition-colors">
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-slate-400 disabled:opacity-30 transition-colors">
                                 <ChevronRight className="w-4 h-4" />
                             </button>
                             <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 disabled:opacity-30 transition-colors">
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-slate-400 disabled:opacity-30 transition-colors">
                                 <ChevronsRight className="w-4 h-4" />
                             </button>
                         </div>

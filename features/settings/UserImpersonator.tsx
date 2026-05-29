@@ -181,8 +181,8 @@ const UserImpersonator: React.FC = () => {
                                         </span>
                                     )}
                                 </div>
-                                <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{impersonatedUser.FullName}</p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                <p className="font-bold text-lg text-txt-primary">{impersonatedUser.FullName}</p>
+                                <p className="text-sm text-txt-muted">
                                     {impersonatedUser.Position || impersonatedUser.Role}
                                     {impersonatedUser.Department && ` • ${impersonatedUser.Department}`}
                                 </p>
@@ -231,11 +231,11 @@ const UserImpersonator: React.FC = () => {
                                 {ALL_RESOURCES.map(resource => {
                                     const actions = (permissions as any)[resource] || [];
                                     return (
-                                        <div key={resource} className={`rounded-lg p-2 text-xs ${actions.length > 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-800 opacity-50'}`}>
-                                            <span className="font-semibold text-slate-700 dark:text-slate-300 block">
+                                        <div key={resource} className={`rounded-lg p-2 text-xs ${actions.length > 0 ? 'bg-bg-surface' : 'bg-bg-muted opacity-50'}`}>
+                                            <span className="font-semibold text-txt-secondary block">
                                                 {RESOURCE_LABELS[resource]}
                                             </span>
-                                            <span className="text-slate-500 dark:text-slate-400">
+                                            <span className="text-txt-muted">
                                                 {actions.length > 0 ? actions.map((a: string) => ACTION_LABELS[a as PermissionAction] || a).join(', ') : '—'}
                                             </span>
                                         </div>
@@ -249,7 +249,7 @@ const UserImpersonator: React.FC = () => {
 
             {/* User Selection Dropdown */}
             <div className="relative">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-semibold text-txt-secondary mb-2">
                     Chọn nhân viên để giả làm
                 </label>
 
@@ -257,9 +257,9 @@ const UserImpersonator: React.FC = () => {
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     disabled={loading}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-bg-surface border border-border rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
                 >
-                    <span className={loading ? 'text-slate-400' : 'text-slate-700 dark:text-slate-300'}>
+                    <span className={loading ? 'text-slate-400' : 'text-txt-secondary'}>
                         {loading ? 'Đang tải danh sách...' : `${totalCount} người dùng có sẵn (${employees.length} NV + ${contractorAccounts.length} NT)`}
                     </span>
                     <ChevronDown size={20} className={`text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -267,15 +267,15 @@ const UserImpersonator: React.FC = () => {
 
                 {/* Dropdown Content */}
                 {isDropdownOpen && !loading && (
-                    <div className="absolute z-50 w-full mt-2 left-0 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm dark:shadow-black/40 overflow-hidden">
+                    <div className="absolute z-50 w-full mt-2 left-0 right-0 bg-bg-surface border border-border rounded-lg shadow-sm dark:shadow-black/40 overflow-hidden">
                         {/* Tab Switcher */}
-                        <div className="flex border-b border-slate-100 dark:border-slate-700">
+                        <div className="flex border-b border-border-subtle">
                             <button
                                 onClick={() => setActiveTab('employees')}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold transition-colors ${
                                     activeTab === 'employees'
                                         ? 'text-primary-700 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10 border-b-2 border-primary-500'
-                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:bg-bg-hover-row'
                                 }`}
                             >
                                 <Users size={14} />
@@ -286,7 +286,7 @@ const UserImpersonator: React.FC = () => {
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold transition-colors ${
                                     activeTab === 'contractors'
                                         ? 'text-primary-700 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/10 border-b-2 border-primary-500'
-                                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:bg-bg-hover-row'
                                 }`}
                             >
                                 <Building2 size={14} />
@@ -295,7 +295,7 @@ const UserImpersonator: React.FC = () => {
                         </div>
 
                         {/* Search */}
-                        <div className="p-3 border-b border-slate-100 dark:border-slate-700">
+                        <div className="p-3 border-b border-border-subtle">
                             <div className="relative">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
@@ -303,7 +303,7 @@ const UserImpersonator: React.FC = () => {
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
                                     placeholder={activeTab === 'employees' ? 'Tìm theo tên, chức vụ, phòng ban...' : 'Tìm theo tên, đơn vị, username...'}
-                                    className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200"
+                                    className="w-full pl-9 pr-3 py-2 bg-bg-subtle dark:bg-slate-900 border border-border rounded-lg text-sm text-txt-primary"
                                     autoFocus
                                 />
                             </div>
@@ -329,8 +329,8 @@ const UserImpersonator: React.FC = () => {
                                                 className="flex-shrink-0"
                                             />
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">{emp.FullName}</p>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                                <p className="font-semibold text-txt-primary truncate">{emp.FullName}</p>
+                                                <p className="text-xs text-txt-muted truncate">
                                                     {emp.Position || emp.Role}
                                                     {emp.Department && ` • ${emp.Department}`}
                                                 </p>
@@ -358,8 +358,8 @@ const UserImpersonator: React.FC = () => {
                                                 className="flex-shrink-0"
                                             />
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">{ctr.display_name}</p>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                                <p className="font-semibold text-txt-primary truncate">{ctr.display_name}</p>
+                                                <p className="text-xs text-txt-muted truncate">
                                                     {ctr.contractor_name} • @{ctr.username}
                                                 </p>
                                             </div>

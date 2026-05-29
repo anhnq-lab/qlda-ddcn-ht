@@ -11,6 +11,26 @@
     max-width: 100vw;
   }
 
+  /* Smooth theme switch — applies to color/bg/border transitions.
+     The .theme-switching class is added by ThemeContext during switch
+     and removed after 400ms to avoid interfering with normal interactions. */
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease !important;
+  }
+
+  /* Respect reduced motion for theme switch too */
+  @media (prefers-reduced-motion: reduce) {
+    html.theme-switching,
+    html.theme-switching *,
+    html.theme-switching *::before,
+    html.theme-switching *::after {
+      transition: none !important;
+    }
+  }
+
   body {
     font-family: var(--font-sans);
     line-height: 1.6;
@@ -101,16 +121,37 @@
     color: #93c5fd;
   }
 
-  /* Đồng bộ header của toàn bộ Table trong hệ thống */
-  thead {
-    @apply sticky top-0 z-10 backdrop-blur-sm shadow-sm;
-    background-color: rgb(241 245 249); /* slate-100 */
-    box-shadow: 0 1px 0 rgb(203 213 225); /* slate-300 contrast */
+  /* ────────────────────────────────────────────────────────────────────────
+     TABLE — Single source of truth (theme-aware via CSS variables)
+     This replaces previous thead/tr/th overrides in theme-overrides.css and
+     dark-contrast.css. To opt out for specific tables, add class `unstyled`.
+     ──────────────────────────────────────────────────────────────────────── */
+  table:not(.unstyled) thead {
+    background-color: var(--bg-subtle);
+    box-shadow: 0 1px 0 var(--border-default);
   }
 
-  .dark thead {
-    background-color: rgb(30 41 59);
-    box-shadow: 0 1px 0 rgb(51 65 85 / 0.6);
+  table:not(.unstyled) thead th {
+    color: var(--text-muted);
+    border-color: var(--border-default);
+  }
+
+  table:not(.unstyled) tbody td {
+    color: var(--text-secondary);
+    border-color: var(--border-default);
+  }
+
+  table:not(.unstyled) tbody tr:hover {
+    background-color: var(--bg-hover-row);
+  }
+
+  table:not(.unstyled) tfoot {
+    background-color: var(--bg-subtle);
+  }
+  table:not(.unstyled) tfoot td,
+  table:not(.unstyled) tfoot th {
+    color: var(--text-secondary);
+    border-color: var(--border-default);
   }
 
   /* Tabular numbers cho mọi bảng số liệu — đảm bảo căn đều cột số */
@@ -162,23 +203,42 @@
     background: #3b4a60;
   }
 
-  /* Dark mode native select */
-  .dark select {
-      background-color: #1e293b !important;
-      color: #e2e8f0 !important;
+  /* ────────────────────────────────────────────────────────────────────────
+     FORM CONTROLS — Single source of truth (theme-aware via CSS variables)
+     This replaces previous overrides in theme-overrides.css and dark-contrast.css
+     ──────────────────────────────────────────────────────────────────────── */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
   }
 
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-placeholder);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--ring-focus);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring-focus) 25%, transparent);
+  }
+
+  /* Dark mode native <option> — không kế thừa được từ var() */
   .dark select option {
-      background-color: #1e293b !important;
-      color: #e2e8f0 !important;
-      padding: 8px 12px;
+    background-color: #1e293b;
+    color: #e2e8f0;
+    padding: 8px 12px;
   }
 
   .dark select option:hover,
   .dark select option:focus,
   .dark select option:checked {
-      background-color: #293548 !important;
-      color: #f8fafc !important;
+    background-color: #293548;
+    color: #f8fafc;
   }
 }
 

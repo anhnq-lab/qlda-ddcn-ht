@@ -171,7 +171,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
         <div className="p-6 space-y-6">
             {!file ? (
                 <div 
-                    className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    className="bg-bg-surface border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-bg-hover-row transition-colors"
                     onClick={() => fileInputRef.current?.click()}
                 >
                     <input 
@@ -183,10 +183,10 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                     <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/20 text-primary-500 rounded-full flex items-center justify-center mb-4">
                         <Upload size={32} />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <h3 className="text-lg font-semibold text-txt-primary mb-2">
                         Kéo thả hoặc chọn tệp để tải lên
                     </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-txt-muted">
                         Hỗ trợ PDF, DOCX, XLSX, hình ảnh...
                     </p>
                 </div>
@@ -194,11 +194,11 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                 <div className="space-y-6">
                     <div className="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-900/10 rounded-xl border border-primary-100 dark:border-primary-800/30">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+                            <div className="p-2 bg-bg-surface rounded-lg shadow-sm">
                                 <FileText className="text-primary-500" size={24} />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-xs">{file.name}</h4>
+                                <h4 className="font-semibold text-txt-primary truncate max-w-xs">{file.name}</h4>
                                 <p className="text-xs text-slate-500">{(file.size / 1024).toFixed(0)} KB</p>
                             </div>
                         </div>
@@ -212,7 +212,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                            <h3 className="text-sm font-bold text-txt-primary">
                                 Thông tin tài liệu
                             </h3>
                             {isExtracting && (
@@ -234,25 +234,25 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                             )}
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Tên tài liệu *</label>
+                                <label className="block text-xs font-semibold text-txt-muted mb-1.5">Tên tài liệu *</label>
                                 <input 
                                     type="text" 
                                     value={docName} 
                                     onChange={e => setDocName(e.target.value)}
-                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                    className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Loại văn bản</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Loại văn bản</label>
                                     <div className="space-y-2">
                                         <input 
                                             type="text" 
                                             value={docType} 
                                             onChange={e => setDocType(e.target.value)}
                                             placeholder="VD: Quyết định"
-                                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                         />
                                         <div className="flex flex-wrap gap-1.5">
                                             {['Quyết định', 'Tờ trình', 'Báo cáo', 'Thông báo', 'Công văn'].map(t => (
@@ -260,7 +260,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                                     key={t}
                                                     type="button"
                                                     onClick={() => setDocType(t)}
-                                                    className="px-2 py-1 text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 rounded transition-colors"
+                                                    className="px-2 py-1 text-[10px] font-medium bg-bg-muted text-txt-muted hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 rounded transition-colors"
                                                 >
                                                     {t}
                                                 </button>
@@ -269,86 +269,86 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Cơ quan ban hành</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Cơ quan ban hành</label>
                                     <input 
                                         type="text" 
                                         value={issuingAuthority} 
                                         onChange={e => setIssuingAuthority(e.target.value)}
                                         placeholder="VD: BQL Dự án"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Trích yếu</label>
+                                <label className="block text-xs font-semibold text-txt-muted mb-1.5">Trích yếu</label>
                                 <textarea 
                                     value={summary} 
                                     onChange={e => setSummary(e.target.value)}
                                     rows={2}
                                     placeholder="Tóm tắt nội dung chính"
-                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none resize-none"
+                                    className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none resize-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Số, ký hiệu</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Số, ký hiệu</label>
                                     <input 
                                         type="text" 
                                         value={docNumber} 
                                         onChange={e => setDocNumber(e.target.value)}
                                         placeholder="VD: 133/QĐ-BQLDA"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ngày ban hành</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Ngày ban hành</label>
                                     <input 
                                         type="date" 
                                         value={issueDate} 
                                         onChange={e => setIssueDate(e.target.value)}
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ký hiệu văn bản</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Ký hiệu văn bản</label>
                                     <input 
                                         type="text" 
                                         value={documentSymbol} 
                                         onChange={e => setDocumentSymbol(e.target.value)}
                                         placeholder="VD: QĐ-BQLDA"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Người ký</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Người ký</label>
                                     <input 
                                         type="text" 
                                         value={signer} 
                                         onChange={e => setSigner(e.target.value)}
                                         placeholder="VD: Nguyễn Văn A"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Đơn vị thảo</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Đơn vị thảo</label>
                                     <input 
                                         type="text" 
                                         value={draftingDepartment} 
                                         onChange={e => setDraftingDepartment(e.target.value)}
                                         placeholder="VD: Phòng Kỹ thuật"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Người soạn thảo</label>
+                                    <label className="block text-xs font-semibold text-txt-muted mb-1.5">Người soạn thảo</label>
                                     <input 
                                         type="text" 
                                         value={drafter} 
                                         onChange={e => setDrafter(e.target.value)}
                                         placeholder="VD: Lê Văn B"
-                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-3 py-2 bg-bg-subtle border border-border rounded-lg text-sm text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none"
                                     />
                                 </div>
                             </div>

@@ -6,14 +6,14 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
     const { result, loading, analyze: loadAnalysis } = useAIResourceOptimize();
 
     return (
-        <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className={`bg-bg-surface rounded-xl border border-border shadow-lg overflow-hidden ${className}`}>
+            <div className="px-4 py-3 bg-bg-subtle border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
                         <BarChart3 size={14} className="text-white" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Tối ưu Nguồn lực AI</h3>
+                        <h3 className="text-sm font-bold text-txt-secondary">Tối ưu Nguồn lực AI</h3>
                         <p className="text-[10px] text-slate-400">
                             {result ? `${result.totalActiveProjects} dự án đang thực hiện` : 'Nhấn để phân tích'}
                         </p>
@@ -61,12 +61,12 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
 
                 {/* Project allocations */}
                 {result?.allocations.map(alloc => (
-                    <div key={alloc.projectId} className="rounded-lg border border-slate-200 dark:border-slate-700 p-2.5">
+                    <div key={alloc.projectId} className="rounded-lg border border-border p-2.5">
                         <div className="flex items-center justify-between mb-1.5">
-                            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate flex-1">{alloc.projectName}</p>
+                            <p className="text-xs font-bold text-txt-secondary truncate flex-1">{alloc.projectName}</p>
                             <span className="text-[10px] font-bold text-slate-500">{alloc.utilizationRate}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-1.5">
+                        <div className="w-full h-1.5 bg-bg-muted rounded-full overflow-hidden mb-1.5">
                             <div className={`h-full rounded-full ${alloc.utilizationRate >= 70 ? 'bg-emerald-500' : alloc.utilizationRate >= 30 ? 'bg-cyan-500' : 'bg-primary-500'
                                 }`} style={{ width: `${Math.min(100, alloc.utilizationRate)}%` }} />
                         </div>
@@ -97,7 +97,7 @@ export const AIResourceOptimizer: React.FC<{ className?: string }> = ({ classNam
 
                 {/* Recommendations */}
                 {result?.recommendations.map((rec, i) => (
-                    <div key={i} className="text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-1.5 px-1">
+                    <div key={i} className="text-[11px] text-txt-muted flex items-start gap-1.5 px-1">
                         <CheckCircle2 size={12} className="text-cyan-500 mt-0.5 shrink-0" />
                         {rec}
                     </div>

@@ -29,7 +29,7 @@ export const ScoreApprovalBar: React.FC<ScoreApprovalBarProps> = ({
   const currentIdx = getStepIndex(status);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl gap-4">
+    <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-bg-subtle border border-border rounded-2xl gap-4">
       {/* Trái: Tiến trình các bước */}
       <div className="flex items-center gap-2 flex-wrap">
         {steps.map((step, idx) => {
@@ -42,7 +42,7 @@ export const ScoreApprovalBar: React.FC<ScoreApprovalBarProps> = ({
                   ? 'bg-blue-600 text-white shadow-sm ring-4 ring-blue-500/20'
                   : isDone
                   ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-450 border border-emerald-200 dark:border-emerald-800'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
+                  : 'bg-bg-muted text-txt-placeholder'
               }`}>
                 <span>{step.label}</span>
               </div>

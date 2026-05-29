@@ -134,17 +134,17 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
             default:
                 return {
                     iconBg: 'bg-gray-200 dark:bg-slate-600',
-                    iconColor: 'text-gray-400 dark:text-slate-400',
+                    iconColor: 'text-txt-placeholder',
                     lineColor: 'bg-gray-200 dark:bg-slate-600',
-                    textColor: 'text-gray-500 dark:text-slate-400',
-                    dotColor: 'bg-gray-300 dark:bg-slate-50 dark:bg-slate-800'
+                    textColor: 'text-txt-muted',
+                    dotColor: 'bg-gray-300 dark:bg-bg-subtle'
                 };
         }
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
-            <h4 className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+        <div className="bg-bg-surface border border-border rounded-xl p-5 shadow-sm">
+            <h4 className="text-xs font-bold text-txt-placeholder uppercase tracking-wide mb-4 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 Các mốc quan trọng
             </h4>
@@ -181,7 +181,7 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                                    <p className="text-xs text-txt-muted mt-0.5">
                                         {milestone.description}
                                     </p>
                                 </div>

@@ -67,7 +67,7 @@ export const UpcomingDeadlines: React.FC<UpcomingDeadlinesProps> = ({
                 ) : (
                     <>
                         {/* Vertical Timeline Line */}
-                        <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-gray-100 dark:bg-slate-800"></div>
+                        <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-bg-muted"></div>
 
                         <div className="space-y-4">
                             {deadlines.map(task => {
@@ -96,15 +96,15 @@ export const UpcomingDeadlines: React.FC<UpcomingDeadlinesProps> = ({
                                         )}
 
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-gray-800 dark:text-slate-100 text-xs sm:text-sm group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                                            <p className="font-bold text-txt-primary text-xs sm:text-sm group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
                                                 {task.Title}
                                             </p>
                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                <span className="text-[11px] text-gray-400 dark:text-slate-500 font-medium truncate max-w-[200px]">
+                                                <span className="text-[11px] text-txt-placeholder font-medium truncate max-w-[200px]">
                                                     {task._projectName}
                                                 </span>
                                                 {task.AssigneeName && (
-                                                    <span className="text-[11px] text-gray-400 dark:text-slate-500 font-medium">
+                                                    <span className="text-[11px] text-txt-placeholder font-medium">
                                                         • {task.AssigneeName}
                                                     </span>
                                                 )}

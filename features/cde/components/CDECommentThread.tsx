@@ -80,13 +80,13 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
-                    <span className="text-xs font-bold text-gray-800 dark:text-slate-100">{comment.author_name}</span>
+                    <span className="text-xs font-bold text-txt-primary">{comment.author_name}</span>
                     {comment.author_role && (
-                        <span className="text-[9px] font-semibold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">{comment.author_role}</span>
+                        <span className="text-[9px] font-semibold text-txt-placeholder bg-bg-muted px-1.5 py-0.5 rounded">{comment.author_role}</span>
                     )}
-                    <span className="text-[9px] text-gray-400 dark:text-slate-400">{formatTime(comment.created_at)}</span>
+                    <span className="text-[9px] text-txt-placeholder">{formatTime(comment.created_at)}</span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-slate-300 mt-1 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                <p className="text-xs text-txt-muted mt-1 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
                 {!isReply && (
                     <button
                         onClick={() => { setReplyTo(comment); inputRef.current?.focus(); }}
@@ -103,7 +103,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
         <div className="space-y-3 animate-in fade-in duration-300">
             <div className="flex items-center gap-2">
                 <MessageSquare className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <h4 className="text-[10px] font-black text-txt-muted uppercase tracking-wider">
                     Thảo luận
                 </h4>
                 {comments.length > 0 && (
@@ -114,7 +114,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
             {/* Comment List */}
             <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {comments.length === 0 ? (
-                    <p className="text-xs text-gray-400 dark:text-slate-400 text-center py-4 italic">Chưa có thảo luận</p>
+                    <p className="text-xs text-txt-placeholder text-center py-4 italic">Chưa có thảo luận</p>
                 ) : topLevel.map(comment => (
                     <div key={comment.id} className="space-y-2">
                         <CommentBubble comment={comment} />
@@ -131,7 +131,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
             {replyTo && (
                 <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2 text-[10px]">
                     <CornerDownRight className="w-3 h-3 text-blue-500" />
-                    <span className="text-gray-500 dark:text-slate-400">Trả lời <span className="font-bold text-gray-700 dark:text-slate-200">{replyTo.author_name}</span></span>
+                    <span className="text-txt-muted">Trả lời <span className="font-bold text-txt-secondary">{replyTo.author_name}</span></span>
                     <button onClick={() => setReplyTo(null)} className="ml-auto text-gray-400 hover:text-red-500 text-xs font-bold">✕</button>
                 </div>
             )}
@@ -145,7 +145,7 @@ const CDECommentThread: React.FC<CDECommentThreadProps> = ({ docId, docName }) =
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                     placeholder="Viết nhận xét..."
                     rows={1}
-                    className="flex-1 resize-none text-xs bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
+                    className="flex-1 resize-none text-xs bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 dark:text-slate-200 dark:placeholder-slate-400 transition-all"
                 />
                 <button
                     onClick={handleSubmit}

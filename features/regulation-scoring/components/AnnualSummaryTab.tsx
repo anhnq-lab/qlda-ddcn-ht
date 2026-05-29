@@ -101,9 +101,9 @@ export const AnnualSummaryTab: React.FC<AnnualSummaryTabProps> = ({
     <div className="space-y-6">
       {/* KPI Stats row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Điểm trung bình năm</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-txt-placeholder">Điểm trung bình năm</span>
             <p className="text-3xl font-black font-mono text-slate-805 dark:text-white mt-1">
               {data.average > 0 ? data.average.toFixed(2) : '—'}
             </p>
@@ -113,9 +113,9 @@ export const AnnualSummaryTab: React.FC<AnnualSummaryTabProps> = ({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Xếp loại năm dự kiến</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-txt-placeholder">Xếp loại năm dự kiến</span>
             <div className={`mt-1.5 px-3 py-1 rounded-full text-xs font-black inline-block ${getAnnualClassColor(data.average)}`}>
               {data.average > 0 ? getAnnualClass(data.average) : 'Chưa xếp loại'}
             </div>
@@ -125,9 +125,9 @@ export const AnnualSummaryTab: React.FC<AnnualSummaryTabProps> = ({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Số tháng đã đánh giá</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-txt-placeholder">Số tháng đã đánh giá</span>
             <p className="text-3xl font-black font-mono text-slate-805 dark:text-white mt-1">
               {data.count} / 12 tháng
             </p>
@@ -139,7 +139,7 @@ export const AnnualSummaryTab: React.FC<AnnualSummaryTabProps> = ({
       </div>
 
       {/* Chart: trend of monthly scores */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+      <div className="bg-bg-surface p-5 rounded-2xl border border-border-subtle shadow-sm space-y-4">
         <div>
           <h4 className="text-xs font-black uppercase tracking-wider text-slate-450 dark:text-slate-400 mb-1">
             Biểu đồ diễn biến điểm số hàng tháng

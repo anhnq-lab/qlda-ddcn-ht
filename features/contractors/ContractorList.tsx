@@ -147,7 +147,7 @@ const ContractorList: React.FC = () => {
         Survey: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
         Appraisal: 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300',
         Supplier: 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300',
-        Other: 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300',
+        Other: 'bg-gray-100 dark:bg-gray-900 text-txt-secondary',
     };
 
     return (
@@ -162,12 +162,12 @@ const ContractorList: React.FC = () => {
             )}
 
             {/* Toolbar & Stats */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 {/* Stats Badges */}
                 {isLoading ? (
                     <div className="flex flex-wrap items-center gap-2.5">
                         {Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="h-8 w-24 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
+                            <div key={i} className="h-8 w-24 bg-bg-muted rounded-xl animate-pulse" />
                         ))}
                     </div>
                 ) : (
@@ -199,11 +199,11 @@ const ContractorList: React.FC = () => {
                 {/* Filter and Actions */}
                 <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto lg:justify-end">
                     <div className="relative">
-                        <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" />
+                        <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-txt-placeholder" />
                         <select
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value as ContractorType | '')}
-                            className="pl-8 pr-3 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-medium text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
+                            className="pl-8 pr-3 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-medium text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
                         >
                             <option value="">Tất cả loại hình</option>
                             {(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => (
@@ -233,21 +233,21 @@ const ContractorList: React.FC = () => {
             </div>
 
             {/* Danh sách */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mt-4">
                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
-                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                            <tr className="text-slate-500 dark:text-slate-400">
-                                <th className="px-3 py-3 text-center text-[10px] font-black uppercase tracking-widest w-12 border-b border-slate-200 dark:border-slate-700">STT</th>
+                        <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                            <tr className="text-txt-muted">
+                                <th className="px-3 py-3 text-center text-[10px] font-black uppercase tracking-widest w-12 border-b border-border">STT</th>
                                 <SortHeader label="Mã số thuế" field="TaxCode" />
                                 <SortHeader label="Tên nhà thầu" field="FullName" />
                                 <SortHeader label="Người đại diện" field="Representative" />
                                 <SortHeader label="Loại hình" field="ContractorType" className="text-center" />
-                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700">Địa chỉ / Liên hệ</th>
-                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-right border-b border-slate-200 dark:border-slate-700">Thao tác</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b border-border">Địa chỉ / Liên hệ</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-right border-b border-border">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-border-subtle">
                             {isLoading ? (
                                 // Loading skeleton
                                 Array.from({ length: 5 }).map((_, i) => (
@@ -275,19 +275,19 @@ const ContractorList: React.FC = () => {
                                             ),
                                         })}
                                     >
-                                        <td className="px-3 py-4 text-center text-xs text-gray-500 dark:text-slate-400 font-medium">{(page - 1) * ITEMS_PER_PAGE + index + 1}</td>
+                                        <td className="px-3 py-4 text-center text-xs text-txt-muted font-medium">{(page - 1) * ITEMS_PER_PAGE + index + 1}</td>
                                         <td className="px-6 py-4">
-                                            <span className="font-mono text-xs font-bold text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-lg border border-gray-200 dark:border-slate-600">
+                                            <span className="font-mono text-xs font-bold text-txt-muted bg-bg-muted px-2 py-1 rounded-lg border border-gray-200 dark:border-slate-600">
                                                 {contractor.TaxCode || contractor.ContractorID}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-gray-800 dark:text-slate-100 max-w-xs">
+                                        <td className="px-6 py-4 font-bold text-txt-primary max-w-xs">
                                             <div className="truncate" title={contractor.FullName}>{contractor.FullName}</div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
+                                        <td className="px-6 py-4 text-sm text-txt-secondary">
                                             {contractor.Representative ? (
                                                 <div className="flex items-center gap-1.5">
-                                                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400 shrink-0" />
+                                                    <User className="w-3.5 h-3.5 text-txt-placeholder shrink-0" />
                                                     {contractor.Representative}
                                                 </div>
                                             ) : (
@@ -300,12 +300,12 @@ const ContractorList: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-xs">
-                                            <div className="flex items-center gap-1.5 truncate max-w-xs font-medium text-gray-900 dark:text-slate-200" title={contractor.Address}>
-                                                <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-400 shrink-0" />
+                                            <div className="flex items-center gap-1.5 truncate max-w-xs font-medium text-txt-primary" title={contractor.Address}>
+                                                <MapPin className="w-3 h-3 text-txt-placeholder shrink-0" />
                                                 {contractor.Address || '—'}
                                             </div>
                                             {contractor.ContactInfo && (
-                                                <div className="flex items-center gap-1.5 text-gray-400 dark:text-slate-400 mt-0.5">
+                                                <div className="flex items-center gap-1.5 text-txt-placeholder mt-0.5">
                                                     <Phone className="w-3 h-3 shrink-0" />
                                                     {contractor.ContactInfo}
                                                 </div>
@@ -335,8 +335,8 @@ const ContractorList: React.FC = () => {
                                 <tr>
                                     <td colSpan={6} className="px-6 py-16 text-center">
                                         <Search className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
-                                        <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Không tìm thấy nhà thầu nào</p>
-                                        <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Thử thay đổi từ khóa tìm kiếm</p>
+                                        <p className="text-sm font-medium text-txt-muted">Không tìm thấy nhà thầu nào</p>
+                                        <p className="text-xs text-txt-placeholder mt-1">Thử thay đổi từ khóa tìm kiếm</p>
                                     </td>
                                 </tr>
                             )}
@@ -345,8 +345,8 @@ const ContractorList: React.FC = () => {
                 </div>
 
                 {/* Pagination Footer */}
-                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-slate-400">
+                <div className="px-6 py-3 border-t border-border flex items-center justify-between">
+                    <span className="text-xs text-txt-muted">
                         Hiển thị {Math.min((page - 1) * ITEMS_PER_PAGE + 1, filteredContractors.length)}-{Math.min(page * ITEMS_PER_PAGE, filteredContractors.length)} / {filteredContractors.length} nhà thầu
                     </span>
                     {totalPages > 1 && (
@@ -354,7 +354,7 @@ const ContractorList: React.FC = () => {
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page <= 1}
-                                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 disabled:opacity-30 transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-txt-muted disabled:opacity-30 transition-colors"
                             >
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
@@ -368,7 +368,7 @@ const ContractorList: React.FC = () => {
                                             className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
                                                 p === page
                                                     ? 'bg-primary-600 text-white shadow-sm'
-                                                    : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-400'
+                                                    : 'hover:bg-bg-muted text-txt-muted'
                                             }`}
                                         >
                                             {p}
@@ -378,7 +378,7 @@ const ContractorList: React.FC = () => {
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page >= totalPages}
-                                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 disabled:opacity-30 transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-bg-muted text-txt-muted disabled:opacity-30 transition-colors"
                             >
                                 <ChevronRight className="w-4 h-4" />
                             </button>
@@ -391,18 +391,18 @@ const ContractorList: React.FC = () => {
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-sm border border-gray-200 dark:border-slate-700 p-4 animate-in zoom-in-95 duration-200">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-sm border border-border p-4 animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 mb-2">Xác nhận xóa</h3>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Bạn có chắc chắn muốn xóa nhà thầu này? Thao tác này không thể hoàn tác.</p>
+                            <h3 className="text-lg font-bold text-txt-primary mb-2">Xác nhận xóa</h3>
+                            <p className="text-sm text-txt-muted">Bạn có chắc chắn muốn xóa nhà thầu này? Thao tác này không thể hoàn tác.</p>
                         </div>
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={() => { setIsDeleteConfirmOpen(false); setDeleteTarget(null); }}
-                                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                                className="flex-1 px-4 py-2.5 bg-bg-muted text-txt-muted text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                                 disabled={saving}
                             >
                                 Hủy bỏ

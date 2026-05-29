@@ -90,23 +90,23 @@ export const PaymentFormInline: React.FC<PaymentFormInlineProps> = ({
     };
 
     const inputClass = (field: keyof FormData) =>
-        `w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border rounded-lg outline-none transition-colors
+        `w-full px-3 py-2 text-sm bg-bg-surface border rounded-lg outline-none transition-colors
         ${errors[field]
             ? 'border-red-300 dark:border-red-600 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
             : 'border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
-        } text-gray-800 dark:text-slate-200`;
+        } text-txt-primary`;
 
-    const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
+    const labelClass = "block text-xs font-medium text-txt-muted mb-1";
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
+                <h4 className="font-semibold text-txt-primary flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-green-600 dark:text-green-400" />
                     Thêm đợt thanh toán
                 </h4>
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <button type="button" onClick={onCancel} className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
                         <X className="w-4 h-4 text-gray-400" />
                     </button>
                 )}
@@ -114,13 +114,13 @@ export const PaymentFormInline: React.FC<PaymentFormInlineProps> = ({
 
             {/* Info bar */}
             <div className="flex items-center gap-4 text-sm bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                <span className="text-gray-500 dark:text-slate-400">Giá trị HĐ:</span>
+                <span className="text-txt-muted">Giá trị HĐ:</span>
                 <span className="font-medium">{formatCurrency(contractValue)}</span>
                 <span className="text-gray-400">|</span>
-                <span className="text-gray-500 dark:text-slate-400">Đã TT:</span>
+                <span className="text-txt-muted">Đã TT:</span>
                 <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(totalPaid)}</span>
                 <span className="text-gray-400">|</span>
-                <span className="text-gray-500 dark:text-slate-400">Còn lại:</span>
+                <span className="text-txt-muted">Còn lại:</span>
                 <span className="font-medium text-warning-600 dark:text-warning-400">{formatCurrency(remaining)}</span>
             </div>
 
@@ -204,9 +204,9 @@ export const PaymentFormInline: React.FC<PaymentFormInlineProps> = ({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors">
                         Hủy
                     </button>
                 )}

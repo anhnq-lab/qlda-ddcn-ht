@@ -70,10 +70,10 @@ export const LeaderCommentSection: React.FC<Props> = ({
                     </div>
                 </div>
             ) : (
-                <div className={`p-3 rounded-lg border leading-relaxed ${proj.leaderComment ? 'bg-primary-50/20 dark:bg-primary-950/10 border-primary-100 dark:border-primary-900/30' : 'bg-slate-50/50 dark:bg-slate-900/5 border-dashed border-slate-200 dark:border-slate-800'}`}>
+                <div className={`p-3 rounded-lg border leading-relaxed ${proj.leaderComment ? 'bg-primary-50/20 dark:bg-primary-950/10 border-primary-100 dark:border-primary-900/30' : 'bg-slate-50/50 dark:bg-slate-900/5 border-dashed border-border'}`}>
                     {proj.leaderComment ? (
                         <div className="relative pl-3 border-l-2 border-primary-500">
-                            <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line italic">
+                            <p className="text-xs text-txt-secondary whitespace-pre-line italic">
                                 "{proj.leaderComment}"
                             </p>
                         </div>

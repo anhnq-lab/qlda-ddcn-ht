@@ -50,7 +50,7 @@ const FilterChip: React.FC<{ label: string; active: boolean; onClick: () => void
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${active
             ? 'bg-primary-600 text-white border-blue-600 shadow-md shadow-primary-200 dark:shadow-primary-900/30'
-            : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
+            : 'bg-bg-surface text-txt-muted border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700'
             }`}
     >
         {icon}
@@ -67,16 +67,16 @@ const VersionHistoryModal: React.FC<{ file: ArchiveDoc; onClose: () => void }> =
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in zoom-in-95">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-border flex justify-between items-center bg-bg-subtle">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Lịch sử phiên bản</h3>
-                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 truncate max-w-md">{file.name}</p>
+                        <h3 className="text-lg font-bold text-txt-primary">Lịch sử phiên bản</h3>
+                        <p className="text-sm text-txt-muted mt-1 truncate max-w-md">{file.name}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full text-gray-500"><X className="w-5 h-5" /></button>
                 </div>
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                    <thead className="bg-bg-subtle text-xs uppercase font-bold text-txt-muted border-b border-border">
                         <tr>
                             <th className="px-6 py-4">Phiên bản</th>
                             <th className="px-6 py-4">Thời gian</th>
@@ -84,26 +84,26 @@ const VersionHistoryModal: React.FC<{ file: ArchiveDoc; onClose: () => void }> =
                             <th className="px-6 py-4 text-right">Dung lượng</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-border-subtle">
                         {history.map((ver, idx) => (
-                            <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                            <tr key={idx} className="hover:bg-bg-hover-row">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-1 rounded-md font-mono text-xs font-bold ${ver.isCurrent ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'}`}>
+                                        <span className={`px-2 py-1 rounded-md font-mono text-xs font-bold ${ver.isCurrent ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-bg-muted text-txt-muted'}`}>
                                             {ver.version}
                                         </span>
-                                        {ver.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800 px-1.5 rounded">Hiện tại</span>}
+                                        {ver.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600 bg-bg-surface border border-emerald-200 dark:border-emerald-800 px-1.5 rounded">Hiện tại</span>}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{ver.date}</td>
+                                <td className="px-6 py-4 text-txt-muted">{ver.date}</td>
                                 <td className="px-6 py-4 font-medium text-gray-800 dark:text-slate-300">{ver.user}</td>
-                                <td className="px-6 py-4 text-right font-mono text-gray-500 dark:text-slate-400">{ver.size}</td>
+                                <td className="px-6 py-4 text-right font-mono text-txt-muted">{ver.size}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
+                <div className="p-4 bg-bg-subtle border-t border-border text-right">
+                    <button onClick={onClose} className="px-4 py-2 bg-bg-surface border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
                 </div>
             </div>
         </div>
@@ -218,11 +218,11 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
 
             {/* Search & Filter Bar */}
             <div className="flex items-stretch gap-4 mb-4">
-                <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400">
+                <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-border flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400">
                     <Search className="w-5 h-5 text-gray-400 mr-3" />
                     <input
                         type="text" placeholder="Tìm kiếm tài liệu theo tên..."
-                        className="flex-1 h-full outline-none text-sm font-medium text-gray-700 dark:text-slate-300 placeholder-gray-400 bg-transparent py-3"
+                        className="flex-1 h-full outline-none text-sm font-medium text-txt-secondary placeholder-gray-400 bg-transparent py-3"
                         value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                     />
                     {searchQuery && (
@@ -236,7 +236,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
 
             {/* Quick Filters */}
             <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
-                <span className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase mr-2 shrink-0">Bộ lọc:</span>
+                <span className="text-xs font-bold text-txt-placeholder uppercase mr-2 shrink-0">Bộ lọc:</span>
                 <FilterChip label="Tất cả" active={filterType === 'all'} onClick={() => setFilterType('all')} />
                 <FilterChip label="PDF" active={filterType === 'pdf'} onClick={() => setFilterType('pdf')} icon={<FileIcon className="w-3 h-3" />} />
                 <FilterChip label="Office" active={filterType === 'office'} onClick={() => setFilterType('office')} icon={<FileIcon className="w-3 h-3" />} />
@@ -247,8 +247,8 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
             {/* Main Content */}
             <div className="flex flex-1 gap-4 overflow-hidden">
                 {/* Folder Tree */}
-                <div className="w-72 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 flex flex-col overflow-y-auto shrink-0">
-                    <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">Cấu trúc thư mục</h3>
+                <div className="w-72 bg-bg-surface rounded-2xl shadow-sm border border-border p-4 flex flex-col overflow-y-auto shrink-0">
+                    <h3 className="text-[10px] font-black text-txt-placeholder uppercase tracking-[0.2em] mb-4 px-2">Cấu trúc thư mục</h3>
                     <div className="space-y-1.5">
                         {ARCHIVE_FOLDERS.map(folder => {
                             const count = (uploadedDocs[`${projectId}-${folder.id}`] || []).length;
@@ -258,7 +258,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                                     onClick={() => setSelectedFolder(folder.id)}
                                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${selectedFolder === folder.id
                                         ? 'bg-primary-600 text-white shadow-sm shadow-primary-100 dark:shadow-primary-900/30'
-                                        : 'text-gray-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700'
                                         }`}
                                 >
                                     <Folder className={`w-4 h-4 ${selectedFolder === folder.id ? 'fill-white/30' : ''}`} />
@@ -275,13 +275,13 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                 </div>
 
                 {/* Document Table */}
-                <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center">
-                        <h3 className="font-black text-gray-800 dark:text-slate-200 text-sm flex items-center gap-2 uppercase tracking-widest">
+                <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-border flex flex-col overflow-hidden">
+                    <div className="p-4 border-b border-border-subtle bg-bg-subtle flex justify-between items-center">
+                        <h3 className="font-black text-txt-primary text-sm flex items-center gap-2 uppercase tracking-widest">
                             <Folder className="w-4 h-4 text-blue-500" />
                             {ARCHIVE_FOLDERS.find(f => f.id === selectedFolder)?.name}
                         </h3>
-                        <span className="bg-white dark:bg-slate-800 text-gray-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-200 dark:border-slate-600">
+                        <span className="bg-bg-surface text-gray-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-200 dark:border-slate-600">
                             {filteredDocs.length} TÀI LIỆU
                         </span>
                     </div>
@@ -289,10 +289,10 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                     <div className="flex-1 overflow-y-auto">
                         {filteredDocs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full p-4">
-                                <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-full flex items-center justify-center mb-6">
+                                <div className="w-24 h-24 bg-bg-subtle dark:bg-slate-700 rounded-full flex items-center justify-center mb-6">
                                     <Folder className="w-10 h-10 text-gray-300 dark:text-slate-400" />
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-2">Chưa có tài liệu nào</h3>
+                                <h3 className="text-lg font-bold text-txt-primary mb-2">Chưa có tài liệu nào</h3>
                                 <p className="text-gray-400 text-sm text-center max-w-xs mb-6">
                                     {searchQuery ? 'Không tìm thấy tài liệu phù hợp' : 'Tải lên tài liệu đầu tiên vào thư mục này'}
                                 </p>
@@ -304,7 +304,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                             </div>
                         ) : (
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-black text-gray-400 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 tracking-[0.1em]">
+                                <thead className="bg-bg-surface text-[10px] uppercase font-black text-txt-placeholder sticky top-0 z-10 border-b border-border tracking-[0.1em]">
                                     <tr>
                                         <th className="px-5 py-4">Tên tài liệu</th>
                                         <th className="px-5 py-4 w-28 text-center">Phiên bản</th>
@@ -325,7 +325,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                                                             {isBIM ? <Box className="w-5 h-5" /> : <FIcon className={`w-5 h-5 ${fIcon.color}`} />}
                                                         </div>
                                                         <div>
-                                                            <p className="font-bold text-gray-800 dark:text-slate-200 text-sm flex items-center gap-2">
+                                                            <p className="font-bold text-txt-primary text-sm flex items-center gap-2">
                                                                 {doc.name}
                                                                 {doc.isLocal && <span className="text-[9px] bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-black uppercase">Mới</span>}
                                                             </p>
@@ -334,23 +334,23 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-3.5 text-center">
-                                                    <span className="text-[11px] font-black text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full font-mono border border-gray-200 dark:border-slate-600">
+                                                    <span className="text-[11px] font-black text-txt-muted bg-bg-muted px-3 py-1 rounded-full font-mono border border-gray-200 dark:border-slate-600">
                                                         {doc.version}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-3.5 text-xs font-bold text-gray-500 dark:text-slate-400">{doc.uploadDate}</td>
+                                                <td className="px-5 py-3.5 text-xs font-bold text-txt-muted">{doc.uploadDate}</td>
                                                 <td className="px-5 py-3.5 text-right">
                                                     <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
-                                                        <button onClick={() => setPreviewFile(doc)} className="p-2 bg-white dark:bg-slate-800 text-blue-600 rounded-lg hover:bg-primary-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Xem">
+                                                        <button onClick={() => setPreviewFile(doc)} className="p-2 bg-bg-surface text-blue-600 rounded-lg hover:bg-primary-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Xem">
                                                             <Eye className="w-4 h-4" />
                                                         </button>
-                                                        <button onClick={() => setSignFile(doc)} className="p-2 bg-white dark:bg-slate-800 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Ký số">
+                                                        <button onClick={() => setSignFile(doc)} className="p-2 bg-bg-surface text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Ký số">
                                                             <PenTool className="w-4 h-4" />
                                                         </button>
-                                                        <button onClick={() => setHistoryFile(doc)} className="p-2 bg-white dark:bg-slate-800 text-warning-600 rounded-lg hover:bg-warning-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Lịch sử">
+                                                        <button onClick={() => setHistoryFile(doc)} className="p-2 bg-bg-surface text-warning-600 rounded-lg hover:bg-warning-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Lịch sử">
                                                             <History className="w-4 h-4" />
                                                         </button>
-                                                        <button className="p-2 bg-white dark:bg-slate-800 text-gray-400 rounded-lg hover:bg-gray-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Tải xuống">
+                                                        <button className="p-2 bg-bg-surface text-gray-400 rounded-lg hover:bg-gray-600 hover:text-white shadow-sm border border-gray-200 dark:border-slate-600 transition-all" title="Tải xuống">
                                                             <Download className="w-4 h-4" />
                                                         </button>
                                                     </div>

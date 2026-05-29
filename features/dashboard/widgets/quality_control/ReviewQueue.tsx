@@ -85,7 +85,7 @@ export const ReviewQueue: React.FC = () => {
                         <div key={task.id} onClick={() => navigate(`/tasks/${task.id}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                             <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{task.title}</p>
+                                    <p className="text-sm font-medium text-txt-primary truncate">{task.title}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400">
                                             Chờ xử lý
@@ -98,7 +98,7 @@ export const ReviewQueue: React.FC = () => {
                                     </div>
                                 </div>
                                 {task.due_date && (
-                                    <span className={`text-[10px] font-bold shrink-0 flex items-center gap-1 ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-gray-400 dark:text-slate-400'}`}>
+                                    <span className={`text-[10px] font-bold shrink-0 flex items-center gap-1 ${isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-txt-placeholder'}`}>
                                         <Clock className="w-3 h-3" />
                                         {new Date(task.due_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                     </span>

@@ -49,11 +49,28 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         // Text
         '--text-primary':   '#1d1c1c',
         '--text-secondary': '#4a3426',
-        '--text-muted':     '#78716c',
-        '--text-placeholder': '#a8a29e',
+        '--text-muted':     '#6d665f',   // WCAG AA 4.94:1 on bg-subtle (#F5EFE6)
+        '--text-placeholder': '#908880', // WCAG AA 3.05:1 on bg-subtle
         // Inputs
         '--input-bg':       '#FCF9F2',
         '--input-border':   '#d6cfc4',
+        // Shadows — warm brown tint cho sand theme
+        '--shadow-card':        '0 1px 2px 0 rgb(74 49 16 / 0.04), 0 1px 3px 0 rgb(74 49 16 / 0.06)',
+        '--shadow-card-hover':  '0 8px 20px -4px rgb(74 49 16 / 0.10), 0 4px 8px -4px rgb(74 49 16 / 0.06)',
+        '--shadow-dropdown':    '0 10px 15px -3px rgb(74 49 16 / 0.10), 0 4px 6px -4px rgb(74 49 16 / 0.06)',
+        '--shadow-modal':       '0 25px 50px -12px rgb(74 49 16 / 0.18)',
+        // Brand on surface — nature không dùng brand bg cho header/sidebar
+        '--brand-on-surface':        '#ffffff',
+        '--brand-on-surface-muted':  'rgba(255, 255, 255, 0.72)',
+        '--brand-on-surface-subtle': 'rgba(255, 255, 255, 0.15)',
+        // Table states
+        '--bg-hover-row':   '#F5EFE6',
+        '--bg-active-row':  '#EDE8DF',
+        '--bg-stripe':      '#F8F5EC',
+        // Overlay & focus
+        '--bg-overlay':     'rgba(45, 30, 10, 0.50)',
+        '--ring-focus':        '#00668c',
+        '--ring-focus-offset': '#FCF9F2',
     },
     light: {
         // Backgrounds
@@ -68,11 +85,28 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         // Text
         '--text-primary':   '#0f172a',
         '--text-secondary': '#334155',
-        '--text-muted':     '#64748b',
-        '--text-placeholder': '#94a3b8',
+        '--text-muted':     '#64748b',   // WCAG AA 4.76:1 on bg-surface (#ffffff)
+        '--text-placeholder': '#7d8b9e', // WCAG AA 3.47:1 on bg-surface
         // Inputs
         '--input-bg':       '#ffffff',
         '--input-border':   '#e2e8f0',
+        // Shadows — neutral slate
+        '--shadow-card':        '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)',
+        '--shadow-card-hover':  '0 8px 20px -4px rgb(15 23 42 / 0.10), 0 4px 8px -4px rgb(15 23 42 / 0.06)',
+        '--shadow-dropdown':    '0 10px 15px -3px rgb(15 23 42 / 0.10), 0 4px 6px -4px rgb(15 23 42 / 0.06)',
+        '--shadow-modal':       '0 25px 50px -12px rgb(15 23 42 / 0.20)',
+        // Brand on surface — light theme dùng primary-500 cho header/sidebar
+        '--brand-on-surface':        '#ffffff',
+        '--brand-on-surface-muted':  'rgba(255, 255, 255, 0.72)',
+        '--brand-on-surface-subtle': 'rgba(255, 255, 255, 0.15)',
+        // Table states
+        '--bg-hover-row':   '#f8fafc',
+        '--bg-active-row':  '#f1f5f9',
+        '--bg-stripe':      '#fafbfc',
+        // Overlay & focus
+        '--bg-overlay':     'rgba(15, 23, 42, 0.45)',
+        '--ring-focus':        '#00668c',
+        '--ring-focus-offset': '#ffffff',
     },
     dark: {
         // Backgrounds
@@ -92,6 +126,23 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         // Inputs
         '--input-bg':       '#1a1e2e',
         '--input-border':   '#262b3b',
+        // Shadows — dark cần outline thin để tách layer
+        '--shadow-card':        '0 1px 3px 0 rgb(0 0 0 / 0.35), 0 0 0 1px rgb(255 255 255 / 0.03)',
+        '--shadow-card-hover':  '0 10px 15px -3px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.04)',
+        '--shadow-dropdown':    '0 10px 15px -3px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.04)',
+        '--shadow-modal':       '0 25px 50px -12px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.04)',
+        // Brand on surface — dark theme cũng white text on brand
+        '--brand-on-surface':        '#ffffff',
+        '--brand-on-surface-muted':  'rgba(255, 255, 255, 0.65)',
+        '--brand-on-surface-subtle': 'rgba(255, 255, 255, 0.10)',
+        // Table states
+        '--bg-hover-row':   '#252a3b',
+        '--bg-active-row':  '#2a3147',
+        '--bg-stripe':      '#1c2030',
+        // Overlay & focus
+        '--bg-overlay':     'rgba(0, 0, 0, 0.65)',
+        '--ring-focus':        '#3995b8',
+        '--ring-focus-offset': '#1f2332',
     },
 };
 
@@ -132,6 +183,16 @@ function applyDensity(density: DataDensity) {
 function applyTheme(theme: Theme) {
     const root = document.documentElement;
 
+    // 0. Enable smooth transition for theme switch (CSS in base.css)
+    //    Skip on first paint (no previous theme class → no transition needed)
+    const isFirstPaint = !root.classList.contains('dark')
+        && !root.classList.contains('theme-light')
+        && !root.classList.contains('theme-nature');
+
+    if (!isFirstPaint) {
+        root.classList.add('theme-switching');
+    }
+
     // 1. Xoá các theme class cũ
     root.classList.remove('dark', 'theme-light', 'theme-nature');
 
@@ -149,6 +210,11 @@ function applyTheme(theme: Theme) {
     Object.entries(tokens).forEach(([key, value]) => {
         root.style.setProperty(key, value);
     });
+
+    // 4. Remove transition class after animation completes
+    if (!isFirstPaint) {
+        setTimeout(() => root.classList.remove('theme-switching'), 400);
+    }
 }
 
 // ============================================================

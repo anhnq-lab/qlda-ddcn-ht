@@ -126,14 +126,14 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800">
+    <div className="flex flex-col h-full bg-bg-subtle border-l border-border">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850 flex items-center justify-between">
+      <div className="px-5 py-4 border-b border-border bg-bg-surface flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider">
+          <h3 className="text-sm font-black text-txt-primary uppercase tracking-wider">
             Chấm điểm phòng ban: {DEPARTMENT_NAMES[score.department_code]}
           </h3>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5">
+          <p className="text-[10px] text-txt-placeholder font-bold uppercase tracking-widest mt-0.5">
             Tháng {score.eval_month}/{score.eval_year}
           </p>
         </div>
@@ -141,14 +141,14 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
 
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
         {/* Real-time score card */}
-        <div className="grid grid-cols-3 gap-3 bg-white dark:bg-slate-850 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+        <div className="grid grid-cols-3 gap-3 bg-bg-surface p-4 rounded-2xl border border-border-subtle shadow-sm text-center">
           <div className="flex flex-col">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Điểm tính sẵn</span>
-            <span className="text-xl font-mono font-black text-slate-700 dark:text-slate-300 mt-1">
+            <span className="text-xl font-mono font-black text-txt-secondary mt-1">
               {(score.a1_score + score.a3_score).toFixed(1)}
             </span>
           </div>
-          <div className="flex flex-col border-x border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col border-x border-border-subtle">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-450">Điểm tổng</span>
             <span className="text-2xl font-mono font-black text-primary-600 dark:text-primary-400 mt-0.5 animate-pulse">
               {computedValues.total.toFixed(1)}
@@ -165,7 +165,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
         {/* Rating Form */}
         <form onSubmit={handleSave} className="space-y-4">
           {/* Nhóm A2: Chất lượng kết quả */}
-          <div className="bg-white dark:bg-slate-850 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
+          <div className="bg-bg-surface p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
               Nhóm A2: Chất lượng kết quả (Tối đa {maxA2} điểm)
             </h4>
@@ -179,7 +179,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
                 value={a2Score}
                 onChange={(e) => setA2Score(Number(e.target.value))}
                 disabled={!isDirector || score.status === 'approved'}
-                className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-center"
+                className="p-2 bg-bg-subtle border border-border rounded-lg text-xs font-bold text-center"
               />
             </div>
             <textarea
@@ -188,13 +188,13 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
               onChange={(e) => setA2Notes(e.target.value)}
               disabled={!isDirector || score.status === 'approved'}
               rows={2}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs"
+              className="w-full p-2.5 bg-bg-subtle border border-border rounded-xl text-xs"
             />
           </div>
 
           {/* Nhóm B: Chỉ hiển thị cho phòng ban có giải ngân */}
           {!isNonDisb && (
-            <div className="bg-white dark:bg-slate-850 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
+            <div className="bg-bg-surface p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
               <h4 className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-450">
                 Nhóm B: Chỉ số Giải ngân vốn đầu tư (Tối đa 40 điểm)
               </h4>
@@ -208,7 +208,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
                   value={b1Rate}
                   onChange={(e) => setB1Rate(Number(e.target.value))}
                   disabled={!isDirector || score.status === 'approved'}
-                  className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-center"
+                  className="p-2 bg-bg-subtle border border-border rounded-lg text-xs font-bold text-center"
                 />
               </div>
               <div className="grid grid-cols-4 gap-3 items-center">
@@ -221,14 +221,14 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
                   value={b2Rate}
                   onChange={(e) => setB2Rate(Number(e.target.value))}
                   disabled={!isDirector || score.status === 'approved'}
-                  className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-center"
+                  className="p-2 bg-bg-subtle border border-border rounded-lg text-xs font-bold text-center"
                 />
               </div>
             </div>
           )}
 
           {/* Nhóm C: Tiêu chí chung */}
-          <div className="bg-white dark:bg-slate-850 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
+          <div className="bg-bg-surface p-4 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
               Nhóm C: Tiêu chí chung & Sáng kiến (Tối đa {maxC1 + maxC2} điểm)
             </h4>
@@ -242,7 +242,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
                 value={c1Score}
                 onChange={(e) => setC1Score(Number(e.target.value))}
                 disabled={!isDirector || score.status === 'approved'}
-                className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-center"
+                className="p-2 bg-bg-subtle border border-border rounded-lg text-xs font-bold text-center"
               />
             </div>
             <textarea
@@ -251,9 +251,9 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
               onChange={(e) => setC1Notes(e.target.value)}
               disabled={!isDirector || score.status === 'approved'}
               rows={2}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs"
+              className="w-full p-2.5 bg-bg-subtle border border-border rounded-xl text-xs"
             />
-            <div className="grid grid-cols-4 gap-3 items-center pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="grid grid-cols-4 gap-3 items-center pt-2 border-t border-border-subtle">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-350 col-span-3">C2: Điểm thưởng Sáng kiến (Max {maxC2}):</label>
               <input
                 type="number"
@@ -263,7 +263,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
                 value={c2Score}
                 onChange={(e) => setC2Score(Number(e.target.value))}
                 disabled={!isDirector || score.status === 'approved'}
-                className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-center"
+                className="p-2 bg-bg-subtle border border-border rounded-lg text-xs font-bold text-center"
               />
             </div>
             <textarea
@@ -272,7 +272,7 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
               onChange={(e) => setC2Notes(e.target.value)}
               disabled={!isDirector || score.status === 'approved'}
               rows={2}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs"
+              className="w-full p-2.5 bg-bg-subtle border border-border rounded-xl text-xs"
             />
           </div>
 
@@ -290,8 +290,8 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
         </form>
 
         {/* Task list for validation */}
-        <div className="bg-white dark:bg-slate-850 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+        <div className="bg-bg-surface p-4 rounded-2xl border border-border-subtle shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-border-subtle pb-2">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-655 dark:text-slate-400 flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5" />
               Công việc trong kỳ báo cáo ({tasks.length})
@@ -305,10 +305,10 @@ export const DeptScoreDetail: React.FC<DeptScoreDetailProps> = ({
           ) : (
             <div className="space-y-2.5 max-h-60 overflow-y-auto">
               {tasks.map(t => (
-                <div key={t.task_id} className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
+                <div key={t.task_id} className="p-3 bg-bg-subtle rounded-xl border border-border-subtle flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{t.title}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Assignee: {t.assignee_name}</p>
+                    <p className="text-xs font-bold text-txt-primary truncate">{t.title}</p>
+                    <p className="text-[10px] text-txt-placeholder mt-0.5">Assignee: {t.assignee_name}</p>
                     {t.status === 'done' && (
                       <p className="text-[10px] text-emerald-600 dark:text-emerald-450 mt-1 font-semibold">
                         ✓ {t.completion_result || 'Hoàn thành'}

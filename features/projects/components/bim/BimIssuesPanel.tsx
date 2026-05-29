@@ -352,7 +352,7 @@ const IssueDetail: React.FC<{
 
             <div className="flex-1 overflow-y-auto p-3 space-y-3">
                 <h3 className="text-sm font-bold">{issue.title}</h3>
-                {issue.description && <p className="text-xs text-slate-600 dark:text-slate-400">{issue.description}</p>}
+                {issue.description && <p className="text-xs text-txt-muted">{issue.description}</p>}
 
                 <div className="flex items-center gap-1">
                     {STATUS_OPTIONS.map((opt) => (

@@ -80,12 +80,12 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex w-full bg-[#FAFAF8] dark:bg-[#060A14] text-slate-800 dark:text-slate-100 font-sans selection:bg-primary-500/30 transition-colors duration-300 relative">
+        <div className="min-h-screen flex w-full bg-[#FAFAF8] dark:bg-[#060A14] text-txt-primary font-sans selection:bg-primary-500/30 transition-colors duration-300 relative">
             {/* Theme Toggle Button */}
             <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
+                className="absolute top-6 right-6 lg:right-10 z-50 p-2.5 rounded-full bg-bg-muted backdrop-blur-md border border-slate-200/80 dark:border-white/5 text-txt-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-bg-surface dark:hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all shadow-sm group"
                 title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'}
             >
                 {theme === 'dark' ? <Sun className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
@@ -104,10 +104,10 @@ const Login: React.FC = () => {
                 <div className="relative z-10 flex items-center gap-4">
                     <LogoDDCN className="w-[64px] h-[64px] drop-shadow-md" />
                     <div>
-                        <div className="font-black tracking-widest text-[18px] uppercase text-slate-900 dark:text-white leading-tight">
+                        <div className="font-black tracking-widest text-[18px] uppercase text-txt-primary leading-tight">
                             Smart<span className="text-primary-600 dark:text-primary-500">PM</span>
                         </div>
-                        <div className="text-[12px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase mt-1">
+                        <div className="text-[12px] text-txt-muted font-medium tracking-wider uppercase mt-1">
                             Project Management Info System
                         </div>
                     </div>
@@ -121,7 +121,7 @@ const Login: React.FC = () => {
                             thông minh.
                         </span>
                     </h1>
-                    <p className="mt-4 text-base xl:text-lg text-slate-600 dark:text-slate-400 font-medium max-w-sm">
+                    <p className="mt-4 text-base xl:text-lg text-txt-muted font-medium max-w-sm">
                         Tối ưu tiến độ giải ngân, kiểm soát chặt chẽ ngân sách đầu tư công.
                     </p>
 
@@ -133,8 +133,8 @@ const Login: React.FC = () => {
                                 <LayoutDashboard className="w-[22px] h-[22px]" />
                             </div>
                             <div>
-                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">Biểu đồ trực quan</h3>
-                                <p className="text-[13px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Dashboard phân tích tiến độ, vốn theo thời gian thực</p>
+                                <h3 className="text-[15px] font-bold text-txt-primary">Biểu đồ trực quan</h3>
+                                <p className="text-[13px] text-txt-muted mt-0.5 font-medium">Dashboard phân tích tiến độ, vốn theo thời gian thực</p>
                             </div>
                         </div>
 
@@ -144,8 +144,8 @@ const Login: React.FC = () => {
                                 <BrainCircuit className="w-[22px] h-[22px]" />
                             </div>
                             <div>
-                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">AI phân tích thông minh</h3>
-                                <p className="text-[13px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Tự động phát hiện xu hướng và đề xuất chiến lược tối ưu</p>
+                                <h3 className="text-[15px] font-bold text-txt-primary">AI phân tích thông minh</h3>
+                                <p className="text-[13px] text-txt-muted mt-0.5 font-medium">Tự động phát hiện xu hướng và đề xuất chiến lược tối ưu</p>
                             </div>
                         </div>
 
@@ -155,8 +155,8 @@ const Login: React.FC = () => {
                                 <Smartphone className="w-[22px] h-[22px]" />
                             </div>
                             <div>
-                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">Đa nền tảng đám mây</h3>
-                                <p className="text-[13px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Truy cập mượt mà trên desktop, tablet và điện thoại di động</p>
+                                <h3 className="text-[15px] font-bold text-txt-primary">Đa nền tảng đám mây</h3>
+                                <p className="text-[13px] text-txt-muted mt-0.5 font-medium">Truy cập mượt mà trên desktop, tablet và điện thoại di động</p>
                             </div>
                         </div>
 
@@ -166,15 +166,15 @@ const Login: React.FC = () => {
                                 <ShieldCheck className="w-[22px] h-[22px]" />
                             </div>
                             <div>
-                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">Bảo mật cấp chính phủ</h3>
-                                <p className="text-[13px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Phân quyền chi tiết (RBAC), kiểm soát truy cập theo vai trò</p>
+                                <h3 className="text-[15px] font-bold text-txt-primary">Bảo mật cấp chính phủ</h3>
+                                <p className="text-[13px] text-txt-muted mt-0.5 font-medium">Phân quyền chi tiết (RBAC), kiểm soát truy cập theo vai trò</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer Info */}
-                <div className="relative z-10 flex items-center gap-5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase">
+                <div className="relative z-10 flex items-center gap-5 text-[11px] font-semibold text-txt-muted tracking-wider uppercase">
                     <span>Phiên bản 2.5</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
                     <span>Bảo mật SSL 256-bit</span>
@@ -184,7 +184,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* ─── RIGHT COLUMN: LOGIN FORM / MFA STEP ─── */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-white dark:bg-slate-800 dark:bg-[#060A14] transition-colors duration-300">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 relative bg-bg-surface dark:bg-[#060A14] transition-colors duration-300">
                 <div className="w-full max-w-[420px] lg:-mt-16">
 
                 {/* ── MFA Challenge Step ── */}
@@ -193,8 +193,8 @@ const Login: React.FC = () => {
                         <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-5">
                             <KeyRound className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                         </div>
-                        <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-1">Xác thực 2 yếu tố</h2>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-xs">
+                        <h2 className="text-xl font-bold text-txt-primary mb-1">Xác thực 2 yếu tố</h2>
+                        <p className="text-sm text-txt-muted mb-6 max-w-xs">
                             Nhập mã 6 chữ số từ ứng dụng xác thực (Google Authenticator, Authy, …) của bạn.
                         </p>
 
@@ -234,7 +234,7 @@ const Login: React.FC = () => {
                                 onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
                                 placeholder="000000"
                                 autoFocus
-                                className="w-full text-center text-2xl font-mono tracking-[0.5em] py-4 border border-[#E8E1D5] dark:border-slate-700 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm"
+                                className="w-full text-center text-2xl font-mono tracking-[0.5em] py-4 border border-[#E8E1D5] dark:border-slate-700 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-bg-surface text-txt-primary shadow-sm"
                             />
                             <button
                                 type="submit"
@@ -265,7 +265,7 @@ const Login: React.FC = () => {
                     {/* Logo & Headers */}
                     <div className="flex flex-col items-center text-center mb-5 w-full">
                         <LogoDDCN className="w-[210px] h-auto drop-shadow-2xl dark:drop-shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-2 transition-transform hover:scale-105 duration-500" />
-                        <h2 className="text-[13px] sm:text-[14px] font-bold tracking-[0.15em] uppercase text-slate-600 dark:text-slate-400 mb-0.5 flex justify-center w-full">
+                        <h2 className="text-[13px] sm:text-[14px] font-bold tracking-[0.15em] uppercase text-txt-muted mb-0.5 flex justify-center w-full">
                             Ban Quản Lý Dự Án ĐTXD Công Trình
                         </h2>
                         <h3 className="text-[20px] sm:text-[22px] font-black tracking-wider uppercase leading-snug flex justify-center w-full">
@@ -273,7 +273,7 @@ const Login: React.FC = () => {
                             <span className="text-primary-700 dark:text-primary-600 mx-2">VÀ</span>
                             <span className="text-primary-800 dark:text-primary-700">HẠ TẦNG KHU VỰC</span>
                         </h3>
-                        <p className="mt-0.5 text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-[0.2em] uppercase flex justify-center w-full">
+                        <p className="mt-0.5 text-[11px] font-bold text-txt-placeholder tracking-[0.2em] uppercase flex justify-center w-full">
                             UBND Tỉnh Hà Tĩnh
                         </p>
                     </div>
@@ -281,7 +281,7 @@ const Login: React.FC = () => {
                     {/* Divider */}
                     <div className="flex items-center gap-4 mb-4">
                         <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200 dark:to-white/5"></div>
-                        <span className="text-xs font-bold text-slate-400 dark:text-slate-400 tracking-widest uppercase">Đăng nhập ngay</span>
+                        <span className="text-xs font-bold text-txt-placeholder tracking-widest uppercase">Đăng nhập ngay</span>
                         <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200 dark:to-slate-800"></div>
                     </div>
 
@@ -312,7 +312,7 @@ const Login: React.FC = () => {
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
                                 disabled={isLocked || isLoading}
-                                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-800 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full pl-11 pr-4 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-txt-primary shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 autoFocus
                             />
                         </div>
@@ -328,7 +328,7 @@ const Login: React.FC = () => {
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 disabled={isLocked || isLoading}
-                                className="w-full pl-11 pr-12 py-3 bg-white dark:bg-slate-800 border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-slate-800 dark:text-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full pl-11 pr-12 py-3 bg-bg-surface border border-[#E8E1D5] dark:border-slate-800 rounded-xl focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-500 transition-all text-sm font-medium placeholder-slate-400 text-txt-primary shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                             <button
                                 type="button"
@@ -342,7 +342,7 @@ const Login: React.FC = () => {
                         <div className="flex justify-between items-center pt-1 pb-2 px-1">
                             <label className="flex items-center gap-2 cursor-pointer group">
                                 <input type="checkbox" className="w-4 h-4 rounded border-[#D6CEBF] dark:border-slate-700 text-primary-600 focus:ring-primary-500 dark:bg-slate-800" />
-                                <span className="text-xs text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">Ghi nhớ đăng nhập</span>
+                                <span className="text-xs text-txt-muted group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">Ghi nhớ đăng nhập</span>
                             </label>
                             
                             <button
@@ -377,7 +377,7 @@ const Login: React.FC = () => {
                     </form>
 
                     <div className="mt-12 text-center">
-                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                        <p className="text-[11px] font-medium text-txt-muted">
                             © 2026 Ban QLDA đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh. <br className="sm:hidden" />All rights reserved.
                         </p>
                     </div>

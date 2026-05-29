@@ -11,15 +11,15 @@ import { cn } from '../../lib/utils';
 
 const contentStyles = cn(
     'z-50 min-w-[8rem] overflow-hidden rounded-xl border shadow-dropdown',
-    'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700',
-    'text-slate-900 dark:text-slate-100',
+    'bg-bg-surface border-border',
+    'text-txt-primary',
     'data-[state=open]:animate-fade-in-down data-[state=closed]:animate-fade-out',
     'p-1'
 );
 
 const itemStyles = cn(
     'relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-3 py-2',
-    'text-sm text-slate-700 dark:text-slate-200',
+    'text-sm text-txt-secondary',
     'outline-none transition-colors duration-150',
     'focus:bg-slate-100 dark:focus:bg-slate-700 focus:text-slate-900 dark:focus:text-white',
     'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
@@ -27,7 +27,7 @@ const itemStyles = cn(
 
 const separatorStyles = 'my-1 h-px bg-slate-200 dark:bg-slate-700';
 
-const labelStyles = 'px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400';
+const labelStyles = 'px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-txt-muted';
 
 // ── Root ──────────────────────────────────────────────────────
 export const DropdownMenu = RadixDropdown.Root;
@@ -165,7 +165,7 @@ DropdownMenuSeparator.displayName = RadixDropdown.Separator.displayName;
 // ── Shortcut ──────────────────────────────────────────────────
 export const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
     <span
-        className={cn('ml-auto text-[10px] tracking-widest text-slate-500 dark:text-slate-400', className)}
+        className={cn('ml-auto text-[10px] tracking-widest text-txt-muted', className)}
         {...props}
     />
 );

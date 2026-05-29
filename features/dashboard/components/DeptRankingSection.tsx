@@ -73,7 +73,7 @@ export const DeptRankingSection: React.FC<DeptRankingSectionProps> = React.memo(
                         return (
                             <div
                                 key={score.department_code}
-                                className="relative flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-900/10 shadow-sm"
+                                className="relative flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-slate-50/20 dark:bg-slate-900/10 shadow-sm"
                                 role="article"
                                 aria-label={`${deptName}: Hạng ${index + 1}, ${score.total_score}/100 điểm, ${label}`}
                             >
@@ -84,7 +84,7 @@ export const DeptRankingSection: React.FC<DeptRankingSectionProps> = React.memo(
                                 </div>
 
                                 <div className="ml-3 flex-1 min-w-0">
-                                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate">
+                                    <h4 className="font-bold text-txt-primary text-sm truncate">
                                         {deptName}
                                     </h4>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">

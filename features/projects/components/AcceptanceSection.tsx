@@ -94,14 +94,14 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
     };
 
     const hasFinalAcceptance = records.some(r => r.acceptanceType === 'final');
-    const inputClass = "w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-800 dark:text-slate-200 transition-colors";
-    const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
+    const inputClass = "w-full px-3 py-2 text-sm bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-txt-primary transition-colors";
+    const labelClass = "block text-xs font-medium text-txt-muted mb-1";
 
     return (
         <div className="space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
+                <h4 className="font-semibold text-txt-primary flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                     Nghiệm thu
                     {records.length > 0 && (
@@ -207,7 +207,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
                     )}
 
                     <div className="flex justify-end gap-2 pt-2 border-t border-green-200 dark:border-green-800">
-                        <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="px-4 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors">
                             Hủy
                         </button>
                         <button type="submit" disabled={createMutation.isPending} className="flex items-center gap-2 px-5 py-2 text-sm font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 transition-colors">
@@ -220,7 +220,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
 
             {/* Records list */}
             {isLoading ? (
-                <div className="flex items-center justify-center p-4 text-gray-400 dark:text-slate-400">
+                <div className="flex items-center justify-center p-4 text-txt-placeholder">
                     <Loader2 className="w-5 h-5 animate-spin mr-2" /> Đang tải...
                 </div>
             ) : records.length > 0 ? (
@@ -232,7 +232,7 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
                                 key={record.id}
                                 className={`flex items-center justify-between p-3 rounded-lg border ${record.acceptanceType === 'final'
                                     ? 'border-green-300 dark:border-green-700 bg-green-50/50 dark:bg-green-950/20'
-                                    : 'border-gray-200 dark:border-slate-700'
+                                    : 'border-border'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -243,11 +243,11 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
                                         <CheckCircle2 className="w-4 h-4" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-800 dark:text-slate-200">
+                                        <p className="text-sm font-medium text-txt-primary">
                                             {TYPE_LABELS[record.acceptanceType]}
                                             {record.description && ` — ${record.description}`}
                                         </p>
-                                        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                                        <div className="flex items-center gap-3 text-xs text-txt-muted mt-0.5">
                                             <span>{formatDate(record.acceptanceDate)}</span>
                                             {record.inspector && <span>• {record.inspector}</span>}
                                         </div>
@@ -275,8 +275,8 @@ export const AcceptanceSection: React.FC<AcceptanceSectionProps> = ({ contractId
             ) : !showForm ? (
                 <div className="text-center py-6">
                     <CheckCircle2 className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 dark:text-slate-400">Chưa nghiệm thu</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400">Hoàn thành hợp đồng để nghiệm thu</p>
+                    <p className="text-sm text-txt-muted">Chưa nghiệm thu</p>
+                    <p className="text-xs text-txt-placeholder">Hoàn thành hợp đồng để nghiệm thu</p>
                 </div>
             ) : null}
 

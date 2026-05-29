@@ -70,7 +70,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
     const dueSoonCount = dates.filter(d => d.status === 'due-soon').length;
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
             {/* Header */}
             <div className="section-card-header">
                 <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
             {/* Dates List */}
             <div className="divide-y divide-gray-50 dark:divide-slate-700">
                 {sortedDates.length === 0 ? (
-                    <div className="px-3 py-5 text-center text-gray-400 dark:text-slate-400">
+                    <div className="px-3 py-5 text-center text-txt-placeholder">
                         <Calendar className="w-6 h-6 mx-auto mb-1.5 opacity-50" />
                         <p className="text-xs">Chưa có mốc thời gian nào</p>
                     </div>
@@ -107,7 +107,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                         return (
                             <div
                                 key={date.id}
-                                className={`px-3 py-2 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
+                                className={`px-3 py-2 hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors cursor-pointer group`}
                             >
                                 <div className="flex items-start gap-2">
                                     <div className={`w-7 h-7 rounded-lg ${style.bg} ${style.border} border flex items-center justify-center shrink-0`}>
@@ -115,13 +115,13 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-1.5">
-                                            <p className="text-xs font-bold text-gray-800 dark:text-slate-200 truncate">{date.title}</p>
+                                            <p className="text-xs font-bold text-txt-primary truncate">{date.title}</p>
                                             <span className={`text-[9px] font-bold px-1 py-0.5 rounded ${style.bg} ${style.text}`}>
                                                 {getTypeLabel(date.type)}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1.5 mt-0.5">
-                                            <span className="text-[10px] text-gray-500 dark:text-slate-400">{formatted}</span>
+                                            <span className="text-[10px] text-txt-muted">{formatted}</span>
                                             {relative && (
                                                 <span className={`text-[9px] font-bold ${style.text}`}>
                                                     • {relative}
@@ -129,7 +129,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                                             )}
                                         </div>
                                         {date.description && (
-                                            <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">{date.description}</p>
+                                            <p className="text-[10px] text-txt-placeholder mt-0.5 truncate">{date.description}</p>
                                         )}
                                     </div>
                                     <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 shrink-0" />
@@ -142,7 +142,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
 
             {/* View All */}
             {dates.length > maxItems && onViewAll && (
-                <div className="px-3 py-2 border-t border-gray-200 dark:border-slate-700">
+                <div className="px-3 py-2 border-t border-border">
                     <button
                         onClick={onViewAll}
                         className="w-full text-center text-[10px] font-bold text-blue-600 hover:text-blue-700"

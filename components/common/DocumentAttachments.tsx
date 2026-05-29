@@ -23,7 +23,7 @@ const FILE_ICONS: Record<string, { icon: React.ElementType; color: string }> = {
     image: { icon: Image, color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/30' },
     excel: { icon: FileSpreadsheet, color: 'text-green-500 bg-green-50 dark:bg-green-900/30' },
     word: { icon: FileText, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30' },
-    other: { icon: File, color: 'text-gray-500 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700' },
+    other: { icon: File, color: 'text-gray-500 bg-bg-subtle dark:bg-slate-700' },
 };
 
 const ACCEPT = '.pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.zip,.rar';
@@ -86,11 +86,11 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
         <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h5 className={`font-medium text-gray-700 dark:text-slate-300 flex items-center gap-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
+                <h5 className={`font-medium text-txt-secondary flex items-center gap-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
                     <Paperclip className="w-3.5 h-3.5 text-gray-400" />
                     Tài liệu đính kèm
                     {documents.length > 0 && (
-                        <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 rounded text-xs">{documents.length}</span>
+                        <span className="px-1.5 py-0.5 bg-bg-muted text-txt-muted rounded text-xs">{documents.length}</span>
                     )}
                 </h5>
             </div>
@@ -102,7 +102,7 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                         key={label}
                         onClick={() => handleDescriptionUpload(label)}
                         disabled={uploadMutation.isPending}
-                        className="px-2.5 py-1 text-xs rounded-lg border border-dashed border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
+                        className="px-2.5 py-1 text-xs rounded-lg border border-dashed border-gray-300 dark:border-slate-600 text-txt-muted hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
                     >
                         <Upload className="w-3 h-3 inline mr-1" />
                         {label}
@@ -111,7 +111,7 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                 <button
                     onClick={() => { setDescription(''); fileInputRef.current?.click(); }}
                     disabled={uploadMutation.isPending}
-                    className="px-2.5 py-1 text-xs rounded-lg border border-dashed border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
+                    className="px-2.5 py-1 text-xs rounded-lg border border-dashed border-gray-300 dark:border-slate-600 text-txt-muted hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
                 >
                     <Paperclip className="w-3 h-3 inline mr-1" />
                     Tải file...
@@ -161,10 +161,10 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
 
                                             {/* Info */}
                                             <div className="flex-1 min-w-0 text-left">
-                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                <p className="text-sm font-medium text-txt-primary truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                     {doc.fileName}
                                                 </p>
-                                                <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-400">
+                                                <div className="flex items-center gap-2 text-xs text-txt-placeholder">
                                                     {doc.description && <span className="text-blue-500 dark:text-blue-400">{doc.description}</span>}
                                                     <span>{DocumentService.formatSize(doc.fileSize)}</span>
                                                     <span>• {formatDate(doc.createdAt)}</span>
@@ -176,7 +176,7 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                                     return (
                                         <div
                                             key={doc.id}
-                                            className="flex items-center gap-2.5 p-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 group transition-colors"
+                                            className="flex items-center gap-2.5 p-2 rounded-lg border border-border-subtle hover:bg-bg-hover-row group transition-colors"
                                         >
                                             {doc.publicUrl ? (
                                                 <a
@@ -227,14 +227,14 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                     {/* Image files grid */}
                     {documents.filter(doc => doc.fileType.startsWith('image/')).length > 0 && (
                         <div className="space-y-2">
-                            <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Hình ảnh hiện trường / đính kèm</p>
+                            <p className="text-xs font-semibold text-txt-placeholder uppercase tracking-wider">Hình ảnh hiện trường / đính kèm</p>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 {documents
                                     .filter(doc => doc.fileType.startsWith('image/'))
                                     .map(doc => (
                                         <div
                                             key={doc.id}
-                                            className="relative aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 group hover:border-blue-500 transition-colors"
+                                            className="relative aspect-video rounded-xl overflow-hidden border border-border bg-bg-subtle group hover:border-blue-500 transition-colors"
                                         >
                                             {/* Image element */}
                                             {doc.publicUrl && (
@@ -279,7 +279,7 @@ export const DocumentAttachments: React.FC<DocumentAttachmentsProps> = ({
                     <div className="relative max-w-4xl max-h-[90vh] p-2">
                         <button
                             onClick={() => setPreviewUrl(null)}
-                            className="absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-red-500 z-10"
+                            className="absolute -top-3 -right-3 w-8 h-8 bg-bg-surface rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-red-500 z-10"
                         >
                             <X className="w-4 h-4" />
                         </button>

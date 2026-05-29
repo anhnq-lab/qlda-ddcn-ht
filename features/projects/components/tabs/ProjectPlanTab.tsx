@@ -782,7 +782,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                     
                                     <span className="text-gray-300 dark:text-slate-700">|</span>
                                     
-                                    <span className="text-xs font-black text-txt-primary bg-slate-50 dark:bg-slate-800 border border-border px-2 py-0.5 rounded-lg">{pct}%</span>
+                                    <span className="text-xs font-black text-txt-primary bg-bg-subtle border border-border px-2 py-0.5 rounded-lg">{pct}%</span>
                                 </div>
                             </div>
                             

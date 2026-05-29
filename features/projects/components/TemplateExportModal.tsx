@@ -360,7 +360,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                     <Loader2 size={32} className="text-blue-400 animate-spin" />
                                 </div>
                             ) : (
-                                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm max-w-3xl mx-auto min-h-[400px]">
+                                <div className="bg-bg-surface rounded-xl p-4 shadow-sm max-w-3xl mx-auto min-h-[400px]">
                                     <pre className="whitespace-pre-wrap text-sm text-gray-800 font-serif leading-relaxed"
                                         style={{ fontFamily: "'Times New Roman', 'Noto Serif', serif" }}>
                                         {previewContent || '(Chưa có nội dung)'}

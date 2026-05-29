@@ -29,7 +29,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                 <div className="flex items-center gap-2">
                     <div className="section-icon"><Users className="w-3.5 h-3.5" /></div>
                     <span>Thành viên dự án</span>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400">({members.length})</span>
+                    <span className="text-[10px] font-bold text-txt-placeholder">({members.length})</span>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                 {(showAll ? members : members.slice(0, MAX_SHOW)).map((member, idx) => (
                     <div
                         key={member.EmployeeID}
-                        className="px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer group flex items-center gap-3"
+                        className="px-3 py-2.5 hover:bg-bg-hover-row transition-colors cursor-pointer group flex items-center gap-3"
                         onClick={() => onViewMember?.(member.EmployeeID)}
                     >
                         {/* Avatar */}
@@ -53,10 +53,10 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-bold text-gray-800 dark:text-slate-200 truncate">
+                            <p className="text-[11px] font-bold text-txt-primary truncate">
                                 {member.FullName}
                             </p>
-                            <p className="text-[10px] text-gray-500 dark:text-slate-400 truncate mt-0.5">
+                            <p className="text-[10px] text-txt-muted truncate mt-0.5">
                                 {member.Position} • {member.Department}
                             </p>
                         </div>
@@ -91,7 +91,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
 
             {/* View All */}
             {members.length > MAX_SHOW && (
-                <div className="px-3 py-2 border-t border-gray-100 dark:border-slate-700">
+                <div className="px-3 py-2 border-t border-border-subtle">
                     <button
                         onClick={() => setShowAll(!showAll)}
                         className="w-full flex items-center justify-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 py-0.5"

@@ -12,22 +12,22 @@ export const AITab: React.FC = () => {
         <div className="space-y-6 animate-fade-in fade-in-up">
             <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
+                    <Suspense fallback={<div className="h-48 bg-bg-subtle rounded-xl animate-pulse" />}>
                         <ErrorBoundary>
                             <AIRiskDashboard />
                         </ErrorBoundary>
                     </Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
+                    <Suspense fallback={<div className="h-48 bg-bg-subtle rounded-xl animate-pulse" />}>
                         <ErrorBoundary>
                             <AIAnomalyDetector />
                         </ErrorBoundary>
                     </Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
+                    <Suspense fallback={<div className="h-48 bg-bg-subtle rounded-xl animate-pulse" />}>
                         <ErrorBoundary>
                             <AIContractorScoring />
                         </ErrorBoundary>
                     </Suspense>
-                    <Suspense fallback={<div className="h-48 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
+                    <Suspense fallback={<div className="h-48 bg-bg-subtle rounded-xl animate-pulse" />}>
                         <ErrorBoundary>
                             <AIResourceOptimizer />
                         </ErrorBoundary>

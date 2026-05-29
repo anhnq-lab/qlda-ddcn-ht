@@ -236,7 +236,7 @@ export const PublicAssetList: React.FC = () => {
       width: '4%',
       align: 'center' as const,
       render: (_: any, row: PublicAsset) => (
-        <span className="text-slate-500 dark:text-slate-400 text-xs">
+        <span className="text-txt-muted text-xs">
           {filteredAssets.indexOf(row) + 1}
         </span>
       )
@@ -246,7 +246,7 @@ export const PublicAssetList: React.FC = () => {
       header: 'Mã tài sản',
       sortable: true,
       width: '10%',
-      render: (val: string) => <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{val}</span>
+      render: (val: string) => <span className="font-mono font-bold text-txt-primary">{val}</span>
     },
     {
       key: 'asset_name',
@@ -255,8 +255,8 @@ export const PublicAssetList: React.FC = () => {
       width: '22%',
       render: (val: string, row: PublicAsset) => (
         <div>
-          <div className="font-bold text-slate-800 dark:text-slate-200">{val}</div>
-          <div className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-1">{row.category?.name || 'Chưa phân loại'}</div>
+          <div className="font-bold text-txt-primary">{val}</div>
+          <div className="text-[11px] text-txt-placeholder line-clamp-1">{row.category?.name || 'Chưa phân loại'}</div>
         </div>
       )
     },
@@ -268,7 +268,7 @@ export const PublicAssetList: React.FC = () => {
       render: (val: string, row: PublicAsset) => {
         const user = row.custodian?.name || val || '—';
         return (
-          <div className="text-sm text-slate-700 dark:text-slate-300 line-clamp-2">{user}</div>
+          <div className="text-sm text-txt-secondary line-clamp-2">{user}</div>
         );
       }
     },
@@ -278,7 +278,7 @@ export const PublicAssetList: React.FC = () => {
       sortable: true,
       align: 'right' as const,
       width: '13%',
-      render: (val: number) => <span className="font-bold text-slate-700 dark:text-slate-300">{formatCurrency(val)}</span>
+      render: (val: number) => <span className="font-bold text-txt-secondary">{formatCurrency(val)}</span>
     },
     {
       key: 'remaining_value',
@@ -289,7 +289,7 @@ export const PublicAssetList: React.FC = () => {
       render: (val: number, row: PublicAsset) => (
         <div>
           <div className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(val)}</div>
-          <div className="text-[10px] text-slate-400 dark:text-slate-500">Hao mòn: {formatCurrency(row.accumulated_depreciation)}</div>
+          <div className="text-[10px] text-txt-placeholder">Hao mòn: {formatCurrency(row.accumulated_depreciation)}</div>
         </div>
       )
     },
@@ -300,7 +300,7 @@ export const PublicAssetList: React.FC = () => {
       width: '10%',
       render: (_: any, row: PublicAsset) => {
         const b = (row as any).branch;
-        return <div className="font-medium text-slate-700 dark:text-slate-300 text-xs">{b || '—'}</div>;
+        return <div className="font-medium text-txt-secondary text-xs">{b || '—'}</div>;
       }
     },
     {
@@ -309,7 +309,7 @@ export const PublicAssetList: React.FC = () => {
       sortable: true,
       width: '11%',
       render: (val: string) => (
-        <div className="text-xs text-slate-500 dark:text-slate-400">{val || '—'}</div>
+        <div className="text-xs text-txt-muted">{val || '—'}</div>
       )
     },
     {
@@ -342,14 +342,14 @@ export const PublicAssetList: React.FC = () => {
           <button
             onClick={() => handleViewHistory(row)}
             title="Lịch sử biến động"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
           >
             <History className="w-4 h-4" />
           </button>
           <button
             onClick={() => { setEditingAsset(row); setIsFormOpen(true); }}
             title="Chỉnh sửa"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
+            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
@@ -357,7 +357,7 @@ export const PublicAssetList: React.FC = () => {
             <button
               onClick={() => handleQuickLiquidation(row)}
               title="Đề xuất thanh lý"
-              className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+              className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
             >
               <AlertTriangle className="w-4 h-4" />
             </button>
@@ -365,7 +365,7 @@ export const PublicAssetList: React.FC = () => {
           <button
             onClick={() => handleDeleteAsset(row.id, row.asset_name)}
             title="Xóa tài sản"
-            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -378,7 +378,7 @@ export const PublicAssetList: React.FC = () => {
     `flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
       activeTab === tab
         ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+        : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
     }`;
 
   return (
@@ -407,15 +407,15 @@ export const PublicAssetList: React.FC = () => {
       ) : (
         <>
           {/* ══════════ STATS STRIP ══════════ */}
-          <div className="flex items-center gap-1 flex-wrap bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm px-2 py-1.5">
+          <div className="flex items-center gap-1 flex-wrap bg-bg-surface rounded-xl border border-border shadow-sm px-2 py-1.5">
             {/* Đang dùng */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-blue-50/60 dark:hover:bg-blue-500/10 transition-colors">
               <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10">
                 <Landmark className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{totalStats.count}</span>
-                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Đang dùng</span>
+                <span className="text-lg font-black text-txt-primary tabular-nums">{totalStats.count}</span>
+                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Đang dùng</span>
               </div>
               {totalStats.pendingCount > 0 && (
                 <span className="text-[10px] text-amber-500 font-bold bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded ml-1">
@@ -432,8 +432,8 @@ export const PublicAssetList: React.FC = () => {
                 <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{formatCurrency(totalStats.original)}</span>
-                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Nguyên giá</span>
+                <span className="text-lg font-black text-txt-primary tabular-nums">{formatCurrency(totalStats.original)}</span>
+                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Nguyên giá</span>
               </div>
             </div>
 
@@ -445,8 +445,8 @@ export const PublicAssetList: React.FC = () => {
                 <Activity className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{formatCurrency(totalStats.dep)}</span>
-                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Hao mòn lũy kế</span>
+                <span className="text-lg font-black text-txt-primary tabular-nums">{formatCurrency(totalStats.dep)}</span>
+                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Hao mòn lũy kế</span>
               </div>
             </div>
 
@@ -459,7 +459,7 @@ export const PublicAssetList: React.FC = () => {
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{formatCurrency(totalStats.remaining)}</span>
-                <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Còn lại</span>
+                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Còn lại</span>
               </div>
             </div>
           </div>
@@ -475,7 +475,7 @@ export const PublicAssetList: React.FC = () => {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                   >
                     <option value="">Tất cả phân loại</option>
                     {categories.map((cat) => (
@@ -491,7 +491,7 @@ export const PublicAssetList: React.FC = () => {
                   <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                   >
                     <option value="">Tất cả trạng thái</option>
                     <option value="active">Đang hoạt động</option>
@@ -508,7 +508,7 @@ export const PublicAssetList: React.FC = () => {
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                   >
                     <option value="">Tất cả chi nhánh</option>
                     {branches.map((b) => (
@@ -524,7 +524,7 @@ export const PublicAssetList: React.FC = () => {
                   <select
                     value={selectedDept}
                     onChange={(e) => setSelectedDept(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
                   >
                     <option value="">Tất cả phòng ban</option>
                     {departments.map((dept) => (
@@ -597,14 +597,14 @@ export const PublicAssetList: React.FC = () => {
       {/* Quick Liquidation Dialog */}
       {isLiquidationDialogOpen && liquidationAsset && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+          <div className="bg-bg-surface rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-amber-50 dark:bg-amber-950/30 rounded-xl flex items-center justify-center">
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Đề xuất thanh lý tài sản</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{liquidationAsset.asset_name} ({liquidationAsset.asset_code})</p>
+                <h3 className="text-base font-bold text-txt-primary">Đề xuất thanh lý tài sản</h3>
+                <p className="text-xs text-txt-muted mt-0.5">{liquidationAsset.asset_name} ({liquidationAsset.asset_code})</p>
               </div>
             </div>
 
@@ -617,14 +617,14 @@ export const PublicAssetList: React.FC = () => {
             <div className="space-y-3 mb-6">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Giá trị còn lại</label>
-                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{formatCurrency(liquidationAsset.remaining_value)}</div>
+                <div className="text-sm font-bold text-txt-secondary">{formatCurrency(liquidationAsset.remaining_value)}</div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Lý do đề nghị thanh lý <span className="text-red-500">*</span></label>
                 <select
                   value={liquidationReason}
                   onChange={e => setLiquidationReason(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option>Hết giá trị khấu hao</option>
                   <option>Hỏng hóc, không sửa chữa được</option>
@@ -638,7 +638,7 @@ export const PublicAssetList: React.FC = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => { setIsLiquidationDialogOpen(false); setLiquidationAsset(null); }}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm"
+                className="px-4 py-2 border border-border rounded-xl text-txt-secondary font-medium hover:bg-bg-hover-row transition-colors text-sm"
               >
                 Hủy
               </button>
@@ -660,12 +660,12 @@ export const PublicAssetList: React.FC = () => {
         <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
           if (e.target === e.currentTarget) setIsHistoryOpen(false);
         }}>
-          <div className="bg-white dark:bg-slate-900 shadow-2xl w-full max-w-xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="bg-bg-surface shadow-2xl w-full max-w-xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
             
             {/* Panel Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg-subtle">
               <div>
-                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                <h2 className="text-sm font-bold text-txt-primary flex items-center gap-1.5">
                   <History className="w-4 h-4 text-primary-500" />
                   Lịch sử biến động tài sản công
                 </h2>
@@ -673,7 +673,7 @@ export const PublicAssetList: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsHistoryOpen(false)}
-                className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-400"
+                className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full text-txt-placeholder"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -681,7 +681,7 @@ export const PublicAssetList: React.FC = () => {
 
             {/* Panel Content (Timeline list of transactions) */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6 space-y-6">
+              <div className="relative border-l-2 border-border-subtle ml-3 pl-6 space-y-6">
                 {assetHistory.map((tx) => (
                   <div key={tx.id} className="relative">
                     {/* Circle icon marker on line */}
@@ -705,17 +705,17 @@ export const PublicAssetList: React.FC = () => {
                         </span>
                       </div>
                       
-                      <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">{tx.description}</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Lý do: {tx.reason}</p>
+                      <h4 className="text-xs font-bold text-txt-primary mt-1">{tx.description}</h4>
+                      <p className="text-[11px] text-txt-muted mt-0.5">Lý do: {tx.reason}</p>
                       
                       {tx.decision_number && (
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                        <p className="text-[10px] text-txt-placeholder">
                           Quyết định: {tx.decision_number} {tx.decision_date ? `ngày ${new Date(tx.decision_date).toLocaleDateString('vi-VN')}` : ''}
                         </p>
                       )}
 
                       {/* Cost Changes details */}
-                      <div className="mt-2 grid grid-cols-2 gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800 text-[10px]">
+                      <div className="mt-2 grid grid-cols-2 gap-2 p-2 bg-bg-subtle rounded-lg border border-border-subtle text-[10px]">
                         <div>
                           <span className="text-slate-400 block">Biến động nguyên giá</span>
                           <span className={`font-bold ${(tx.cost_change || 0) > 0 ? 'text-emerald-600' : (tx.cost_change || 0) < 0 ? 'text-red-500' : 'text-slate-500'}`}>
@@ -740,11 +740,11 @@ export const PublicAssetList: React.FC = () => {
             </div>
 
             {/* Panel Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end">
+            <div className="px-6 py-4 border-t border-border bg-bg-subtle flex justify-end">
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen(false)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs"
+                className="px-4 py-2 border border-border rounded-xl text-txt-secondary font-semibold hover:bg-bg-muted transition-colors text-xs"
               >
                 Đóng
               </button>

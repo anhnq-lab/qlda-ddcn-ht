@@ -62,21 +62,17 @@
 .dark [class~="border-[#ece7de]"],
 .dark [class~="border-[#e5dfd4]"] { border-color: #1e293b !important; }
 
-/* ── 5. TABLE ────────────────────────────────────────────────────────────── */
-.dark thead { background-color: #151d2e !important; }
-.dark thead th { color: #94a3b8 !important; border-color: #293548 !important; }
-.dark tbody td { color: #cbd5e1 !important; border-color: #293548 !important; }
+/* ── 5. TABLE — moved to base.css (theme-aware via CSS variables).
+   Only weight-emphasis text remain here. ─────────────────────────────────── */
 .dark tbody td strong,
 .dark tbody td b,
 .dark tbody td.font-medium,
 .dark tbody td.font-semibold { color: #e2e8f0 !important; }
 .dark tbody td.font-bold { color: #f1f5f9 !important; }
 .dark tbody tr:nth-child(even):not([class*="bg-"]) { background-color: rgba(30,41,59,0.5) !important; }
-.dark tbody tr:hover { background-color: rgba(51,65,85,0.4) !important; }
 .dark tr.bg-gray-50, .dark tr.bg-slate-50,
 .dark tr[class~="bg-[#F5EFE6]"],
 .dark tr[class*="bg-slate-100"] { background-color: #151d2e !important; color: #94a3b8 !important; }
-.dark tfoot td, .dark tfoot th { color: #cbd5e1 !important; }
 
 /* ── 6. STRUCTURAL ────────────────────────────────────────────────────────── */
 .dark .section-card { background-color: #151d2e !important; border-color: #293548 !important; }
@@ -88,21 +84,8 @@
 .dark header { background-color: rgba(15,23,42,0.97) !important; border-bottom-color: #1e293b !important; }
 .dark hr { border-color: #293548 !important; }
 
-/* ── 7. FORM — legacy inputs without CSS variables ──────────────────────── */
-.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="bg-[var"]),
-.dark select:not([class*="bg-[var"]) {
-    background-color: #151d2e !important;
-    border-color: #293548 !important;
-    color: #e2e8f0 !important;
-}
-.dark textarea:not([class*="bg-[var"]) {
-    background-color: #151d2e !important;
-    border-color: #293548 !important;
-    color: #e2e8f0 !important;
-}
-.dark input::placeholder, .dark textarea::placeholder {
-    color: #475569 !important;
-}
+/* ── 7. FORM — moved to base.css (theme-aware via CSS variables).
+   Only label color override remains. ─────────────────────────────────────── */
 .dark label:not([class*="text-"]) { color: #94a3b8 !important; }
 
 /* ── 8. DROPDOWN & LISTBOX ───────────────────────────────────────────────── */
@@ -149,17 +132,7 @@
 .dark h4:not([class*="text-"]) { color: #e2e8f0 !important; }
 .dark h5:not([class*="text-"]) { color: #cbd5e1 !important; }
 
-/* ── 11. RECHARTS ────────────────────────────────────────────────────────── */
-.dark .recharts-cartesian-grid-horizontal line,
-.dark .recharts-cartesian-grid-vertical line { stroke: #1e293b !important; }
-.dark .recharts-text,
-.dark .recharts-cartesian-axis-tick-value { fill: #94a3b8 !important; }
-.dark .recharts-legend-item-text { color: #94a3b8 !important; }
-.dark .recharts-default-tooltip {
-    background-color: #151d2e !important;
-    border-color: #293548 !important;
-    color: #e2e8f0 !important;
-}
+/* ── 11. RECHARTS — moved to third-party.css (theme-aware via CSS variables) ── */
 
 /* ── 12. TABS ────────────────────────────────────────────────────────────── */
 .dark button[role="tab"]:not([class*="text-white"]):not([class*="dark:text-"]) { color: #64748b; }

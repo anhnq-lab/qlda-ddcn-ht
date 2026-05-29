@@ -22,7 +22,7 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
 
             {/* ── QĐ điều chỉnh + thời gian ── */}
             <div>
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-500" /> Quyết định phê duyệt điều chỉnh dự án
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -57,13 +57,13 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             </div>
 
             {/* ── Thời gian điều chỉnh & thực tế ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-violet-500" /> Thời gian thực hiện dự án
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
-                        <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Sau điều chỉnh</p>
+                        <p className="text-xs font-semibold text-txt-muted uppercase tracking-wide">Sau điều chỉnh</p>
                         <div>
                             <label className={labelClass}>Khởi công (sau ĐC)</label>
                             <div className="relative">
@@ -86,7 +86,7 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
                         </div>
                     </div>
                     <div className="space-y-3">
-                        <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Thực tế</p>
+                        <p className="text-xs font-semibold text-txt-muted uppercase tracking-wide">Thực tế</p>
                         <div>
                             <label className={labelClass}>Khởi công thực tế</label>
                             <div className="relative">
@@ -112,8 +112,8 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             </div>
 
             {/* ── Hiện trạng dự án ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-emerald-500" /> Hiện trạng dự án
                 </h4>
                 <div className="relative">
@@ -134,8 +134,8 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             </div>
 
             {/* ── Tình hình thanh tra kiểm toán ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <ClipboardList className="w-4 h-4 text-warning-500" /> Tình hình thanh tra, kiểm toán
                 </h4>
                 <textarea
@@ -148,8 +148,8 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             </div>
 
             {/* ── Chậm tiến độ ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-red-500" /> Chậm tiến độ
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,8 +197,8 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
             </div>
 
             {/* ── Ghi chú ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-gray-400" /> Ghi chú
                 </h4>
                 <textarea

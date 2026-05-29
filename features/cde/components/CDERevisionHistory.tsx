@@ -35,8 +35,8 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
         <div className="space-y-3 animate-in fade-in duration-300">
             <div className="flex items-center gap-2 mb-3">
                 <History className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider">Lịch sử phiên bản</h4>
-                <span className="text-[9px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 px-2 py-0.5 rounded-full">{displayRevisions.length} versions</span>
+                <h4 className="text-[10px] font-black text-txt-muted uppercase tracking-wider">Lịch sử phiên bản</h4>
+                <span className="text-[9px] font-bold bg-bg-muted text-gray-500 px-2 py-0.5 rounded-full">{displayRevisions.length} versions</span>
             </div>
 
             <div className="relative pl-5 space-y-0 before:absolute before:left-[7px] before:top-3 before:bottom-3 before:w-0.5 before:bg-gray-100 dark:before:bg-slate-700">
@@ -54,14 +54,14 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
 
                             <div className={`p-3.5 rounded-xl border transition-all ml-1 mb-2 ${isCurrent
                                 ? 'bg-blue-50/70 dark:bg-blue-900/15 border-blue-100 dark:border-blue-800'
-                                : 'bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
+                                : 'bg-bg-surface border-border-subtle hover:border-gray-200 dark:hover:border-slate-600'
                                 }`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2.5">
                                         <span className={`text-xs font-black font-mono px-2 py-0.5 rounded-md ${isCurrent
                                             ? 'bg-primary-600 text-white'
                                             : isPublished ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                                                : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
+                                                : 'bg-bg-muted text-txt-muted'
                                             }`}>
                                             v{rev.version}
                                         </span>
@@ -78,9 +78,9 @@ const CDERevisionHistory: React.FC<CDERevisionHistoryProps> = ({
                                     )}
                                 </div>
                                 <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
-                                    <div><span className="text-gray-400 dark:text-slate-400">Ngày:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.date}</span></div>
-                                    <div><span className="text-gray-400 dark:text-slate-400">Người tạo:</span> <span className="font-semibold text-gray-600 dark:text-slate-300">{rev.author}</span></div>
-                                    <div className="col-span-2"><span className="text-gray-400 dark:text-slate-400">Lý do:</span> <span className="font-medium text-gray-500 dark:text-slate-400 italic">{rev.reason}</span></div>
+                                    <div><span className="text-txt-placeholder">Ngày:</span> <span className="font-semibold text-txt-muted">{rev.date}</span></div>
+                                    <div><span className="text-txt-placeholder">Người tạo:</span> <span className="font-semibold text-txt-muted">{rev.author}</span></div>
+                                    <div className="col-span-2"><span className="text-txt-placeholder">Lý do:</span> <span className="font-medium text-txt-muted italic">{rev.reason}</span></div>
                                 </div>
                             </div>
                         </div>

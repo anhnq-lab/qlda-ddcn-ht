@@ -97,8 +97,8 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                 {isFiltered ? (
                     <>
                         <Search className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-1">Không tìm thấy gói thầu phù hợp</p>
-                        <p className="text-xs text-gray-400 dark:text-slate-400 mb-3">
+                        <p className="text-sm text-txt-placeholder mb-1">Không tìm thấy gói thầu phù hợp</p>
+                        <p className="text-xs text-txt-placeholder mb-3">
                             Có {allPlanPackages.length} gói trong nhóm này nhưng không khớp bộ lọc
                         </p>
                         <button onClick={onClearFilter}
@@ -109,10 +109,10 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                 ) : (
                     <>
                         <FileText className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">Chưa có gói thầu trong nhóm này</p>
+                        <p className="text-sm text-txt-placeholder mb-3">Chưa có gói thầu trong nhóm này</p>
                         <div className="flex justify-center gap-2">
                             <button onClick={onOpenImport}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 transition-colors">
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-bg-surface border border-primary-300 dark:border-primary-600 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-50 transition-colors">
                                 <Upload size={13} /> Import Excel
                             </button>
                             <button onClick={onOpenCreate}
@@ -131,31 +131,31 @@ export const PackageTable: React.FC<PackageTableProps> = ({
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                    <tr className="text-slate-500 dark:text-slate-400">
-                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-1 py-3 text-center w-8" />
-                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-10">
+                <thead className="sticky top-0 z-20 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                    <tr className="text-txt-muted">
+                        <th rowSpan={2} className="border border-border px-1 py-3 text-center w-8" />
+                        <th rowSpan={2} className="border border-border px-2 py-3 text-center w-10">
                             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                 checked={allChecked}
                                 onChange={e => onSelectAll(packages, e.target.checked)} />
                         </th>
-                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-10">TT</th>
-                        <th colSpan={visibleColumns.description ? 2 : 1} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Tên gói thầu</th>
-                        {visibleColumns.price && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[110px]">Giá gói thầu<br />(Đồng)</th>}
-                        {visibleColumns.fundingSource && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center min-w-[100px]">Nguồn vốn</th>}
-                        {visibleColumns.selectionMethod && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Hình thức<br />lựa chọn<br />nhà thầu</th>}
-                        {visibleColumns.selectionProcedure && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Phương thức<br />lựa chọn<br />nhà thầu</th>}
-                        {visibleColumns.selectionDuration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />tổ chức<br />LCNT</th>}
-                        {visibleColumns.selectionStartDate && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />LCNT</th>}
-                        {visibleColumns.contractType && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center">Loại<br />hợp đồng</th>}
-                        {visibleColumns.duration && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
-                        {visibleColumns.hasOption && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
-                        {visibleColumns.status && <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-[90px]">Trạng thái</th>}
-                        <th rowSpan={2} className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center w-12 sticky right-0 bg-slate-50 dark:bg-slate-800 z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
+                        <th rowSpan={2} className="border border-border px-2 py-3 text-center w-10">TT</th>
+                        <th colSpan={visibleColumns.description ? 2 : 1} className="border border-border px-2 py-3 text-center">Tên gói thầu</th>
+                        {visibleColumns.price && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[110px]">Giá gói thầu<br />(Đồng)</th>}
+                        {visibleColumns.fundingSource && <th rowSpan={2} className="border border-border px-2 py-3 text-center min-w-[100px]">Nguồn vốn</th>}
+                        {visibleColumns.selectionMethod && <th rowSpan={2} className="border border-border px-2 py-3 text-center">Hình thức<br />lựa chọn<br />nhà thầu</th>}
+                        {visibleColumns.selectionProcedure && <th rowSpan={2} className="border border-border px-2 py-3 text-center">Phương thức<br />lựa chọn<br />nhà thầu</th>}
+                        {visibleColumns.selectionDuration && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[90px]">Thời gian<br />tổ chức<br />LCNT</th>}
+                        {visibleColumns.selectionStartDate && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />LCNT</th>}
+                        {visibleColumns.contractType && <th rowSpan={2} className="border border-border px-2 py-3 text-center">Loại<br />hợp đồng</th>}
+                        {visibleColumns.duration && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>}
+                        {visibleColumns.hasOption && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[60px]">Tùy chọn<br />mua thêm</th>}
+                        {visibleColumns.status && <th rowSpan={2} className="border border-border px-2 py-3 text-center w-[90px]">Trạng thái</th>}
+                        <th rowSpan={2} className="border border-border px-2 py-3 text-center w-12 sticky right-0 bg-bg-subtle z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">Thao tác</th>
                     </tr>
-                    <tr className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400">
-                        <th className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
-                        {visibleColumns.description && <th className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>}
+                    <tr className="text-[10px] uppercase font-black tracking-widest text-txt-muted">
+                        <th className="border border-border px-2 py-2 text-center min-w-[120px]">Tên gói thầu</th>
+                        {visibleColumns.description && <th className="border border-border px-2 py-2 text-center min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -171,37 +171,37 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                             onClick={() => onView(pkg)}
                         >
                             {/* Grip */}
-                            <td className="border border-slate-200 dark:border-slate-700 px-1 py-2 text-center cursor-grab" onClick={e => e.stopPropagation()}>
+                            <td className="border border-border px-1 py-2 text-center cursor-grab" onClick={e => e.stopPropagation()}>
                                 <GripVertical className="w-3.5 h-3.5 text-gray-400 mx-auto" />
                             </td>
                             {/* Checkbox */}
-                            <td className="border border-slate-200 dark:border-slate-700 px-2 py-2 text-center" onClick={e => e.stopPropagation()}>
+                            <td className="border border-border px-2 py-2 text-center" onClick={e => e.stopPropagation()}>
                                 <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                     checked={selectedPackageIds.has(pkg.PackageID)}
                                     onChange={e => onSelectOne(pkg.PackageID, e.target.checked)} />
                             </td>
-                            <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center font-bold text-slate-500 dark:text-slate-400 align-top">{index + 1}</td>
+                            <td className="border border-border px-2 py-3 text-center font-bold text-txt-muted align-top">{index + 1}</td>
                             {/* Package name */}
-                            <td className="border border-slate-200 dark:border-slate-700 px-3 py-3 align-top" title={pkg.PackageName}>
-                                <div className="font-semibold text-slate-800 dark:text-slate-200 leading-snug">{pkg.PackageName}</div>
+                            <td className="border border-border px-3 py-3 align-top" title={pkg.PackageName}>
+                                <div className="font-semibold text-txt-primary leading-snug">{pkg.PackageName}</div>
                                 {pkg.NotificationCode && (
                                     <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-mono text-blue-600 dark:text-blue-400">
                                         <Bell className="w-2.5 h-2.5" />{pkg.NotificationCode}
                                     </span>
                                 )}
                             </td>
-                            {visibleColumns.description && <td className="border border-slate-200 dark:border-slate-700 px-3 py-3 text-slate-600 dark:text-slate-300 align-top leading-snug">{pkg.Description || '-'}</td>}
-                            {visibleColumns.price && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-right font-bold tabular-nums text-slate-800 dark:text-slate-200 align-top">{formatCurrency(pkg.Price)}</td>}
-                            {visibleColumns.fundingSource && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.FundingSource || '-'}</td>}
-                            {visibleColumns.selectionMethod && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{SELECTION_METHOD_LABELS[pkg.SelectionMethod as string] || pkg.SelectionMethod || '-'}</td>}
-                            {visibleColumns.selectionProcedure && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{SELECTION_PROCEDURE_LABELS[pkg.SelectionProcedure as string] || pkg.SelectionProcedure || pkg.BidType || '-'}</td>}
-                            {visibleColumns.selectionDuration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionDuration || '45 ngày'}</td>}
-                            {visibleColumns.selectionStartDate && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.SelectionStartDate || '-'}</td>}
-                            {visibleColumns.contractType && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{CONTRACT_TYPE_LABELS[pkg.ContractType as string] || pkg.ContractType || '-'}</td>}
-                            {visibleColumns.duration && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">{pkg.Duration || '-'}</td>}
-                            {visibleColumns.hasOption && <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">{pkg.HasOption ? 'Có' : 'Không'}</td>}
+                            {visibleColumns.description && <td className="border border-border px-3 py-3 text-txt-muted align-top leading-snug">{pkg.Description || '-'}</td>}
+                            {visibleColumns.price && <td className="border border-border px-2 py-3 text-right font-bold tabular-nums text-txt-primary align-top">{formatCurrency(pkg.Price)}</td>}
+                            {visibleColumns.fundingSource && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{pkg.FundingSource || '-'}</td>}
+                            {visibleColumns.selectionMethod && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{SELECTION_METHOD_LABELS[pkg.SelectionMethod as string] || pkg.SelectionMethod || '-'}</td>}
+                            {visibleColumns.selectionProcedure && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{SELECTION_PROCEDURE_LABELS[pkg.SelectionProcedure as string] || pkg.SelectionProcedure || pkg.BidType || '-'}</td>}
+                            {visibleColumns.selectionDuration && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{pkg.SelectionDuration || '45 ngày'}</td>}
+                            {visibleColumns.selectionStartDate && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{pkg.SelectionStartDate || '-'}</td>}
+                            {visibleColumns.contractType && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{CONTRACT_TYPE_LABELS[pkg.ContractType as string] || pkg.ContractType || '-'}</td>}
+                            {visibleColumns.duration && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top font-medium">{pkg.Duration || '-'}</td>}
+                            {visibleColumns.hasOption && <td className="border border-border px-2 py-3 text-center text-txt-secondary align-top">{pkg.HasOption ? 'Có' : 'Không'}</td>}
                             {visibleColumns.status && (
-                                <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
+                                <td className="border border-border px-2 py-3 text-center align-top">
                                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold ${STATUS_COLORS[pkg.Status] || STATUS_COLORS[PackageStatus.Selection]}`}>
                                         {pkg.Status === PackageStatus.Selection && <Clock className="w-2.5 h-2.5 animate-pulse" />}
                                         {pkg.Status === PackageStatus.Execution && <AlertTriangle className="w-2.5 h-2.5" />}
@@ -211,7 +211,7 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                                 </td>
                             )}
                             {/* Action dropdown */}
-                            <td className="border border-slate-200 dark:border-slate-700 px-1 py-2 text-center sticky right-0 bg-white dark:bg-slate-900 z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]" onClick={e => e.stopPropagation()}>
+                            <td className="border border-border px-1 py-2 text-center sticky right-0 bg-bg-surface z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]" onClick={e => e.stopPropagation()}>
                                 <ActionDropdown
                                     pkg={pkg}
                                     isOpen={openDropdownId === pkg.PackageID}
@@ -228,16 +228,16 @@ export const PackageTable: React.FC<PackageTableProps> = ({
                 </tbody>
                 {packages.length > 0 && (
                     <tfoot>
-                        <tr className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-t-2 border-slate-200 dark:border-slate-700/50">
-                            <td colSpan={4 + (visibleColumns.description ? 1 : 0)} className="border border-slate-200 dark:border-slate-800 px-3 py-2 text-right text-xs uppercase tracking-wider">
+                        <tr className="bg-bg-subtle text-txt-secondary font-bold border-t-2 border-border">
+                            <td colSpan={4 + (visibleColumns.description ? 1 : 0)} className="border border-border px-3 py-2 text-right text-xs uppercase tracking-wider">
                                 Tổng ({packages.length} gói):
                             </td>
                             {visibleColumns.price && (
-                                <td className="border border-slate-200 dark:border-slate-800 px-2 py-2 text-right text-slate-900 dark:text-slate-100 tabular-nums text-sm">
+                                <td className="border border-border px-2 py-2 text-right text-txt-primary tabular-nums text-sm">
                                     {formatCurrency(planTotal)}
                                 </td>
                             )}
-                            <td colSpan={Object.values(visibleColumns).filter(Boolean).length - (visibleColumns.price ? 1 : 0) - (visibleColumns.description ? 1 : 0) + 2} className="border border-slate-200 dark:border-slate-800" />
+                            <td colSpan={Object.values(visibleColumns).filter(Boolean).length - (visibleColumns.price ? 1 : 0) - (visibleColumns.description ? 1 : 0) + 2} className="border border-border" />
                         </tr>
                     </tfoot>
                 )}

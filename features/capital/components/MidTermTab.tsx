@@ -53,13 +53,13 @@ export const MidTermTab: React.FC<MidTermTabProps> = ({
                 return (
                     <div key={period} className="space-y-2">
                         <div className="flex items-center justify-between px-1">
-                            <h2 className="text-base font-black text-gray-800 dark:text-slate-100 flex items-center gap-2">
+                            <h2 className="text-base font-black text-txt-primary flex items-center gap-2">
                                 <Calendar className="w-4 h-4 text-blue-600" /> Giai đoạn {period}
                             </h2>
                             <div className="flex items-center gap-3 text-[10px] font-bold text-gray-500">
                                 <span>Tổng: <span className="text-blue-700">{fmtB(total)}</span></span>
                                 <span>GN: <span className={rate >= 50 ? 'text-emerald-600' : 'text-warning-600'}>{rate.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%</span></span>
-                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 rounded-full">{grpPlans.length} DA</span>
+                                <span className="px-2 py-0.5 bg-bg-muted rounded-full">{grpPlans.length} DA</span>
                             </div>
                         </div>
                         {grpPlans.map((plan: any) => {
@@ -70,16 +70,16 @@ export const MidTermTab: React.FC<MidTermTabProps> = ({
                             const linked = annualPlans.filter((a: any) => a.project_id === plan.project_id && a.year >= plan.period_start && a.year <= plan.period_end);
 
                             return (
-                                <div key={plan.plan_id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                                <div key={plan.plan_id} className="bg-bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
                                     <div className="px-5 py-3 cursor-pointer hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors" onClick={() => setExpandedPlan(isExp ? null : plan.plan_id)}>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 {isExp ? <ChevronDown className="w-4 h-4 text-blue-600" /> : <ChevronRight className="w-4 h-4 text-blue-600" />}
                                                 <div>
-                                                    <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 flex items-center gap-1.5">
+                                                    <h3 className="text-sm font-black text-txt-primary flex items-center gap-1.5">
                                                         <Building2 className="w-3.5 h-3.5 text-gray-400" /> {plan.project_name}
                                                     </h3>
-                                                    <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 ml-5">{plan.decision_number} • {plan.date_assigned} • <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold ${(SOURCE_LABELS[plan.source] || SOURCE_LABELS['NSĐP']).color}`}>{(SOURCE_LABELS[plan.source] || SOURCE_LABELS['NSĐP']).label}</span></p>
+                                                    <p className="text-[10px] text-txt-muted mt-0.5 ml-5">{plan.decision_number} • {plan.date_assigned} • <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold ${(SOURCE_LABELS[plan.source] || SOURCE_LABELS['NSĐP']).color}`}>{(SOURCE_LABELS[plan.source] || SOURCE_LABELS['NSĐP']).label}</span></p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ export const MidTermTab: React.FC<MidTermTabProps> = ({
                                     </div>
 
                                     {isExp && (
-                                        <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                                        <div className="px-5 py-4 border-t border-border bg-bg-subtle">
                                             <div className="grid grid-cols-4 gap-3 mb-4">
                                                 {[
                                                     { label: 'Tổng KH trung hạn', value: formatCurrency(Number(plan.amount)), cls: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700' },
@@ -107,20 +107,20 @@ export const MidTermTab: React.FC<MidTermTabProps> = ({
                                                     { label: 'Chưa phân bổ', value: formatCurrency(Math.max(0, Number(plan.amount) - linked.reduce((s:number, a:any) => s + Number(a.amount), 0))), cls: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600' },
                                                 ].map(kpi => (
                                                     <div key={kpi.label} className={`p-3 rounded-lg ${kpi.cls.split(' ').slice(0,2).join(' ')}`}>
-                                                        <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">{kpi.label}</p>
+                                                        <p className="text-[10px] text-txt-muted font-bold uppercase">{kpi.label}</p>
                                                         <p className={`text-sm font-black mt-1 ${kpi.cls.split(' ').pop()}`}>{kpi.value}</p>
                                                     </div>
                                                 ))}
                                             </div>
-                                            {plan.notes && <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg mb-3 text-xs text-gray-600 dark:text-slate-300 italic border border-gray-100 dark:border-slate-600 flex items-start gap-1.5"><FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" /><span>{plan.notes}</span></div>}
+                                            {plan.notes && <div className="bg-bg-surface p-2.5 rounded-lg mb-3 text-xs text-txt-muted italic border border-gray-100 dark:border-slate-600 flex items-start gap-1.5"><FileText className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" /><span>{plan.notes}</span></div>}
                                             {linked.length > 0 && (
                                                 <>
                                                     <h5 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Phân bổ theo năm ({linked.length} KH)</h5>
                                                     <table className="w-full text-xs mb-3">
-                                                        <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                                                            <tr className="text-slate-500 dark:text-slate-400"><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">Năm</th><th className="px-3 py-1.5 text-left border-b border-slate-200 dark:border-slate-700">QĐ</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Vốn giao</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Đã GN</th><th className="px-3 py-1.5 text-right border-b border-slate-200 dark:border-slate-700">Tỷ lệ</th></tr>
+                                                        <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                                                            <tr className="text-txt-muted"><th className="px-3 py-1.5 text-left border-b border-border">Năm</th><th className="px-3 py-1.5 text-left border-b border-border">QĐ</th><th className="px-3 py-1.5 text-right border-b border-border">Vốn giao</th><th className="px-3 py-1.5 text-right border-b border-border">Đã GN</th><th className="px-3 py-1.5 text-right border-b border-border">Tỷ lệ</th></tr>
                                                         </thead>
-                                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                                        <tbody className="divide-y divide-border-subtle">
                                                             {linked.sort((a:any,b:any) => a.year - b.year).map((ap: any) => {
                                                                 const r = Number(ap.amount) > 0 ? (Number(ap.disbursed_amount) / Number(ap.amount)) * 100 : 0;
                                                                 return (
@@ -137,7 +137,7 @@ export const MidTermTab: React.FC<MidTermTabProps> = ({
                                                     </table>
                                                 </>
                                             )}
-                                            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-slate-700">
+                                            <div className="flex items-center justify-between pt-2 border-t border-border">
                                                 <div className="text-[10px] text-gray-500">{plan.approved_by && <span>Phê duyệt: <strong>{plan.approved_by}</strong> • {plan.approved_date}</span>}</div>
                                                 <button onClick={() => navigate(`/projects/${plan.project_id}`)} className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-[10px] font-bold rounded-lg flex items-center gap-1 transition-all"><ArrowRight className="w-3 h-3" /> Xem dự án</button>
                                             </div>

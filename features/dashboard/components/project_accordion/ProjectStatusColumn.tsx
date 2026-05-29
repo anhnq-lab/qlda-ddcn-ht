@@ -16,16 +16,16 @@ export const ProjectStatusColumn: React.FC<Props> = ({ proj }) => (
         <div className="bg-bg-surface p-3 rounded-lg border border-border space-y-2.5 shadow-sm">
             <div>
                 <span className="text-[10px] text-txt-muted font-bold">Trạng thái dự án</span>
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">{proj.statusLabel}</p>
+                <p className="text-xs font-bold text-txt-primary mt-0.5">{proj.statusLabel}</p>
             </div>
             {proj.projectId !== 'internal_admin' && (
                 <div>
                     <span className="text-[10px] text-txt-muted font-bold">Tiến độ hoàn thành</span>
                     <div className="flex items-center gap-2 mt-0.5">
-                        <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full flex-1 overflow-hidden">
+                        <div className="h-2 bg-bg-muted rounded-full flex-1 overflow-hidden">
                             <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${proj.progress}%` }} />
                         </div>
-                        <span className="text-[11px] font-black text-slate-700 dark:text-slate-300">{proj.progress}%</span>
+                        <span className="text-[11px] font-black text-txt-secondary">{proj.progress}%</span>
                     </div>
                 </div>
             )}

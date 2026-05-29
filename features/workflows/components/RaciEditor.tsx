@@ -103,11 +103,11 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <div className="pb-3 border-b border-border">
+                <h4 className="text-sm font-semibold text-txt-primary">
                     Ma trận RACI
                 </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-txt-muted mt-0.5">
                     {nodeName}
                 </p>
             </div>
@@ -124,8 +124,8 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
                         <col className="w-[60px]" />
                     </colgroup>
                     <thead>
-                        <tr className="border-b border-gray-200 dark:border-gray-700">
-                            <th colSpan={2} className="text-left py-2 px-2 font-medium text-gray-500 dark:text-gray-400">
+                        <tr className="border-b border-border">
+                            <th colSpan={2} className="text-left py-2 px-2 font-medium text-txt-muted">
                                 Bên liên quan
                             </th>
                             {RACI_TYPES.map(type => {
@@ -150,7 +150,7 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
                                 <tr>
                                     <td
                                         colSpan={6}
-                                        className="pt-3 pb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                                        className="pt-3 pb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-txt-placeholder"
                                     >
                                         {StakeholderService.getCategoryLabel(category)}
                                     </td>
@@ -160,15 +160,15 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
                                     return (
                                         <tr
                                             key={stakeholder.code}
-                                            className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                            className="border-b border-border-subtle hover:bg-bg-hover-row/50 transition-colors"
                                         >
                                             <td className="py-1.5 px-2 align-middle">
-                                                <span className="inline-block bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded font-mono text-[9px] border border-slate-200 dark:border-slate-700/50">
+                                                <span className="inline-block bg-bg-muted text-txt-muted px-1.5 py-0.5 rounded font-mono text-[9px] border border-border">
                                                     {stakeholder.code}
                                                 </span>
                                             </td>
                                             <td className="py-1.5 px-2 align-middle">
-                                                <span className="font-medium text-gray-700 dark:text-gray-300">{stakeholder.name}</span>
+                                                <span className="font-medium text-txt-secondary">{stakeholder.name}</span>
                                             </td>
                                             {RACI_TYPES.map(type => {
                                                 const isChecked = selected.has(type);
@@ -182,7 +182,7 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
                                                                 className={`w-7 h-7 rounded-md border-2 transition-all duration-150 flex items-center justify-center ${
                                                                     isChecked
                                                                         ? `${color.bg} ${color.border} ${color.text} shadow-sm`
-                                                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                                                        : 'border-border hover:border-gray-300 dark:hover:border-gray-600'
                                                                 }`}
                                                             >
                                                                 {isChecked && (
@@ -205,11 +205,11 @@ export const RaciEditor: React.FC<RaciEditorProps> = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="px-3 py-1.5 text-xs font-medium text-txt-muted hover:text-gray-800 dark:hover:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     disabled={isSaving}
                 >
                     Hủy

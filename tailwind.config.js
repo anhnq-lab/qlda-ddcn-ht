@@ -128,11 +128,15 @@ export default {
 
                 // Theme-aware background tokens — thay đổi theo theme CSS variable
                 bg: {
-                    app:      'var(--bg-app)',       // App background
-                    surface:  'var(--bg-surface)',   // Card / Panel
-                    subtle:   'var(--bg-subtle)',    // Table header, sidebar
-                    muted:    'var(--bg-muted)',     // Hover, alt rows
-                    elevated: 'var(--bg-elevated)',  // Modal, tooltip
+                    app:       'var(--bg-app)',         // App background
+                    surface:   'var(--bg-surface)',     // Card / Panel
+                    subtle:    'var(--bg-subtle)',      // Table header, sidebar
+                    muted:     'var(--bg-muted)',       // Hover, alt rows
+                    elevated:  'var(--bg-elevated)',    // Modal, tooltip
+                    'hover-row':  'var(--bg-hover-row)',
+                    'active-row': 'var(--bg-active-row)',
+                    stripe:    'var(--bg-stripe)',
+                    overlay:   'var(--bg-overlay)',
                 },
 
                 // Theme-aware border tokens
@@ -147,6 +151,13 @@ export default {
                     secondary:   'var(--text-secondary)',
                     muted:       'var(--text-muted)',
                     placeholder: 'var(--text-placeholder)',
+                },
+
+                // Brand surface (light theme sidebar/header)
+                'brand-on': {
+                    surface:        'var(--brand-on-surface)',
+                    'surface-muted':  'var(--brand-on-surface-muted)',
+                    'surface-subtle': 'var(--brand-on-surface-subtle)',
                 },
 
                 content: {
@@ -228,10 +239,19 @@ export default {
                 'inner-sm':     'inset 0 1px 2px 0 rgb(0 0 0 / 0.05)',
                 'button':       '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
                 'button-hover': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                'card':         '0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06)',
-                'card-hover':   '0 8px 20px -4px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08)',
-                'dropdown':     '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-                'modal':        '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                // Theme-aware shadows — đọc CSS variable theo theme hiện tại
+                'card':         'var(--shadow-card)',
+                'card-hover':   'var(--shadow-card-hover)',
+                'dropdown':     'var(--shadow-dropdown)',
+                'modal':        'var(--shadow-modal)',
+            },
+
+            ringColor: {
+                focus: 'var(--ring-focus)',
+            },
+
+            ringOffsetColor: {
+                focus: 'var(--ring-focus-offset)',
             },
 
             animation: {

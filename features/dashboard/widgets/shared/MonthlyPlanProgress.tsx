@@ -37,7 +37,7 @@ export const MonthlyPlanProgress: React.FC<MonthlyPlanProgressProps> = ({
             {stats.total === 0 ? (
                 <div className="p-6 text-center">
                     <Target className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400 dark:text-slate-500 font-medium">Chưa có kế hoạch tháng</p>
+                    <p className="text-sm text-txt-placeholder font-medium">Chưa có kế hoạch tháng</p>
                 </div>
             ) : (
                 <div className="p-4 space-y-4">
@@ -58,7 +58,7 @@ export const MonthlyPlanProgress: React.FC<MonthlyPlanProgressProps> = ({
                                     strokeLinecap="round"
                                 />
                             </svg>
-                            <span className="absolute inset-0 flex items-center justify-center text-lg font-black text-gray-800 dark:text-slate-100">
+                            <span className="absolute inset-0 flex items-center justify-center text-lg font-black text-txt-primary">
                                 {stats.rate}%
                             </span>
                         </div>
@@ -67,19 +67,19 @@ export const MonthlyPlanProgress: React.FC<MonthlyPlanProgressProps> = ({
                                 <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                                     <CheckCircle2 className="w-3.5 h-3.5" /> Hoàn thành
                                 </span>
-                                <span className="font-bold text-gray-800 dark:text-slate-100">{stats.completed}/{stats.total}</span>
+                                <span className="font-bold text-txt-primary">{stats.completed}/{stats.total}</span>
                             </div>
                             <div className="flex items-center justify-between text-xs">
                                 <span className="flex items-center gap-1.5 text-warning-600 dark:text-warning-400">
                                     <Clock className="w-3.5 h-3.5" /> Chưa báo cáo
                                 </span>
-                                <span className="font-bold text-gray-800 dark:text-slate-100">{stats.planned}</span>
+                                <span className="font-bold text-txt-primary">{stats.planned}</span>
                             </div>
                             <div className="flex items-center justify-between text-xs">
                                 <span className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
                                     <AlertTriangle className="w-3.5 h-3.5" /> Chưa hoàn thành
                                 </span>
-                                <span className="font-bold text-gray-800 dark:text-slate-100">{stats.incomplete}</span>
+                                <span className="font-bold text-txt-primary">{stats.incomplete}</span>
                             </div>
                         </div>
                     </div>

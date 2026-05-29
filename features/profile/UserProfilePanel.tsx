@@ -188,8 +188,8 @@ export const UserProfilePanel: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900 overflow-hidden">
-            <div className="flex border-b border-border bg-white dark:bg-slate-800 shrink-0">
+        <div className="flex flex-col h-full bg-bg-subtle overflow-hidden">
+            <div className="flex border-b border-border bg-bg-surface shrink-0">
                 <button
                     onClick={() => setActiveTab('info')}
                     className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
@@ -230,12 +230,12 @@ export const UserProfilePanel: React.FC = () => {
                                 ringColor="ring-primary-100 dark:ring-primary-900/50"
                             />
                             <div className="flex-1">
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ảnh đại diện (URL)</label>
+                                <label className="block text-xs font-medium text-txt-muted mb-1">Ảnh đại diện (URL)</label>
                                 <input
                                     type="text"
                                     value={avatarUrl}
                                     onChange={(e) => setAvatarUrl(e.target.value)}
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -244,30 +244,30 @@ export const UserProfilePanel: React.FC = () => {
                         {/* Read-only fields */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="sm:col-span-2">
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Tên đăng nhập</label>
+                                <label className="block text-xs font-medium text-txt-muted mb-1">Tên đăng nhập</label>
                                 <input
                                     type="text"
                                     value={currentUser?.Username || currentUser?.Email || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed font-mono text-sm"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-muted text-txt-muted cursor-not-allowed font-mono text-sm"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Họ và tên</label>
+                                <label className="block text-xs font-medium text-txt-muted mb-1">Họ và tên</label>
                                 <input
                                     type="text"
                                     value={currentUser?.FullName || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-muted text-txt-muted cursor-not-allowed"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Chức vụ</label>
+                                <label className="block text-xs font-medium text-txt-muted mb-1">Chức vụ</label>
                                 <input
                                     type="text"
                                     value={currentUser?.Department || ''}
                                     disabled
-                                    className="w-full px-3 py-2 border border-border rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-border rounded-lg bg-bg-muted text-txt-muted cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -275,7 +275,7 @@ export const UserProfilePanel: React.FC = () => {
                         {/* Editable fields */}
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                                <label className="block text-xs font-medium text-txt-muted mb-1">
                                     Email đăng nhập
                                     <span className="text-red-500 ml-1">*</span>
                                 </label>
@@ -288,14 +288,14 @@ export const UserProfilePanel: React.FC = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                        className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                                     />
                                 </div>
                                 <p className="text-[10px] text-slate-400 mt-1">Lưu ý: Thay đổi email sẽ áp dụng cho lần đăng nhập tiếp theo.</p>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                                <label className="block text-xs font-medium text-txt-muted mb-1">
                                     Số điện thoại
                                 </label>
                                 <div className="relative">
@@ -306,7 +306,7 @@ export const UserProfilePanel: React.FC = () => {
                                         type="tel"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
-                                        className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                        className="w-full pl-10 pr-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                                     />
                                 </div>
                             </div>
@@ -327,7 +327,7 @@ export const UserProfilePanel: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                            <label className="block text-xs font-medium text-txt-muted mb-1">
                                 Mật khẩu hiện tại <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -335,12 +335,12 @@ export const UserProfilePanel: React.FC = () => {
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                className="w-full px-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                            <label className="block text-xs font-medium text-txt-muted mb-1">
                                 Mật khẩu mới <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -349,12 +349,12 @@ export const UserProfilePanel: React.FC = () => {
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
                                 minLength={6}
-                                className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                className="w-full px-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                            <label className="block text-xs font-medium text-txt-muted mb-1">
                                 Xác nhận mật khẩu mới <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -363,29 +363,29 @@ export const UserProfilePanel: React.FC = () => {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
                                 minLength={6}
-                                className="w-full px-3 py-2 border border-border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
+                                className="w-full px-3 py-2 border border-border rounded-lg bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                             />
                         </div>
 
                         {/* ── MFA TOTP Section ── */}
-                        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+                        <div className="mt-6 pt-5 border-t border-border">
                             <div className="flex items-start gap-3 mb-3">
                                 <div className="p-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg shrink-0">
                                     <KeyRound className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2">
-                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Xác thực 2 yếu tố (TOTP)</h4>
+                                        <h4 className="text-sm font-semibold text-txt-primary">Xác thực 2 yếu tố (TOTP)</h4>
                                         {mfaEnrolled === true && (
                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
                                                 <ShieldCheck className="w-3 h-3" /> Đã bật
                                             </span>
                                         )}
                                         {mfaEnrolled === false && (
-                                            <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full">Chưa bật</span>
+                                            <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-bg-muted text-txt-muted rounded-full">Chưa bật</span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    <p className="text-xs text-txt-muted mt-0.5">
                                         Yêu cầu nhập mã từ ứng dụng xác thực mỗi lần đăng nhập.
                                     </p>
                                 </div>
@@ -408,7 +408,7 @@ export const UserProfilePanel: React.FC = () => {
                                             <button type="button" onClick={handleMfaUnenroll} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
                                                 <Trash2 className="w-4 h-4" /> Xác nhận tắt
                                             </button>
-                                            <button type="button" onClick={() => setMfaUnenrollConfirm(false)} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">Hủy</button>
+                                            <button type="button" onClick={() => setMfaUnenrollConfirm(false)} className="px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors">Hủy</button>
                                         </div>
                                     )}
                                 </div>
@@ -435,7 +435,7 @@ export const UserProfilePanel: React.FC = () => {
                                     )}
                                     {mfaStep === 'scan' && (
                                         <div className="space-y-3">
-                                            <p className="text-xs text-slate-600 dark:text-slate-400">
+                                            <p className="text-xs text-txt-muted">
                                                 1. Mở <strong>Google Authenticator</strong> hoặc <strong>Authy</strong>, quét mã QR bên dưới.
                                             </p>
                                             {mfaQr && (
@@ -443,10 +443,10 @@ export const UserProfilePanel: React.FC = () => {
                                                     dangerouslySetInnerHTML={{ __html: mfaQr }}
                                                 />
                                             )}
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                Hoặc nhập thủ công: <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs break-all">{mfaSecret}</code>
+                                            <p className="text-xs text-txt-muted">
+                                                Hoặc nhập thủ công: <code className="font-mono bg-bg-muted px-1.5 py-0.5 rounded text-xs break-all">{mfaSecret}</code>
                                             </p>
-                                            <p className="text-xs text-slate-600 dark:text-slate-400">
+                                            <p className="text-xs text-txt-muted">
                                                 2. Nhập mã 6 chữ số hiển thị trong ứng dụng để xác nhận.
                                             </p>
                                             {mfaError && (
@@ -460,7 +460,7 @@ export const UserProfilePanel: React.FC = () => {
                                                     value={mfaCode}
                                                     onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
                                                     placeholder="000000"
-                                                    className="w-32 text-center font-mono tracking-widest px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                                    className="w-32 text-center font-mono tracking-widest px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
                                                 />
                                                 <button
                                                     type="button"
@@ -470,7 +470,7 @@ export const UserProfilePanel: React.FC = () => {
                                                 >
                                                     <ShieldCheck className="w-4 h-4" /> Xác nhận
                                                 </button>
-                                                <button type="button" onClick={() => { setMfaStep('idle'); setMfaCode(''); setMfaError(''); }} className="px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Hủy</button>
+                                                <button type="button" onClick={() => { setMfaStep('idle'); setMfaCode(''); setMfaError(''); }} className="px-3 py-2 text-sm text-slate-500 hover:bg-bg-muted rounded-lg">Hủy</button>
                                             </div>
                                         </div>
                                     )}
@@ -487,14 +487,14 @@ export const UserProfilePanel: React.FC = () => {
                         </div>
 
                         {/* Sign out all devices */}
-                        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+                        <div className="mt-6 pt-5 border-t border-border">
                             <div className="flex items-start gap-3 mb-3">
                                 <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg shrink-0">
                                     <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Đăng xuất tất cả thiết bị</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    <h4 className="text-sm font-semibold text-txt-primary">Đăng xuất tất cả thiết bị</h4>
+                                    <p className="text-xs text-txt-muted mt-0.5">
                                         Kết thúc mọi phiên đang hoạt động, kể cả thiết bị hiện tại. Bạn sẽ cần đăng nhập lại.
                                     </p>
                                 </div>
@@ -526,7 +526,7 @@ export const UserProfilePanel: React.FC = () => {
                                         type="button"
                                         onClick={() => setSignOutAllConfirm(false)}
                                         disabled={signOutAllLoading}
-                                        className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                        className="px-4 py-2 text-sm font-medium text-txt-muted hover:bg-bg-muted rounded-lg transition-colors"
                                     >
                                         Hủy
                                     </button>
@@ -537,11 +537,11 @@ export const UserProfilePanel: React.FC = () => {
                 )}
             </div>
 
-            <div className="p-4 border-t border-border bg-slate-50 dark:bg-slate-800 shrink-0 flex justify-end gap-3">
+            <div className="p-4 border-t border-border bg-bg-subtle shrink-0 flex justify-end gap-3">
                 <button
                     type="button"
                     onClick={() => closePanel()}
-                    className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+                    className="px-4 py-2 text-sm font-medium text-txt-muted hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
                 >
                     Hủy
                 </button>

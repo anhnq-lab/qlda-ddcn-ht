@@ -138,7 +138,7 @@ export const BimElementSearchPanel: React.FC<Props> = ({ onClose }) => {
                                         <span className="text-[10px] font-mono text-slate-400">#{h.expressId}</span>
                                     </div>
                                     <div className="flex items-center gap-1 mt-0.5">
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-muted text-txt-muted font-mono">
                                             {h.type}
                                         </span>
                                         {h.path && (

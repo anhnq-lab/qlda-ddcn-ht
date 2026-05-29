@@ -37,7 +37,7 @@ class BimErrorBoundary extends React.Component<BimEBProps, BimEBState> {
             return (
                 <div className="flex flex-col items-center justify-center h-96 gap-4 text-center p-4">
                     <div className="text-red-500 dark:text-red-400 text-lg font-bold">⚠️ BIM Viewer Error</div>
-                    <div className="text-gray-600 dark:text-slate-400 text-sm max-w-lg">
+                    <div className="text-txt-muted text-sm max-w-lg">
                         {this.state.error?.message || 'Unknown error'}
                     </div>
                     <button
@@ -70,23 +70,23 @@ const BimViewerSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
 );
 
 // ─── Constants ───
-const DISCIPLINE_LABELS: Record<string, { label: string; color: string; darkColor: string }> = {
-    ARCH: { label: 'Kiến trúc', color: 'bg-blue-100 text-blue-700', darkColor: 'bg-blue-500/20 text-blue-300' },
-    STRU: { label: 'Kết cấu', color: 'bg-warning-100 text-warning-700', darkColor: 'bg-warning-500/20 text-warning-300' },
-    MEP: { label: 'MEP', color: 'bg-green-100 text-green-700', darkColor: 'bg-green-500/20 text-green-300' },
-    ELEC: { label: 'Điện', color: 'bg-warning-100 text-primary-700', darkColor: 'bg-warning-500/20 text-warning-300' },
-    HVAC: { label: 'HVAC', color: 'bg-cyan-100 text-cyan-700', darkColor: 'bg-cyan-500/20 text-cyan-300' },
-    PLUM: { label: 'Cấp thoát nước', color: 'bg-teal-100 text-teal-700', darkColor: 'bg-teal-500/20 text-teal-300' },
-    FIRE: { label: 'PCCC', color: 'bg-red-100 text-red-700', darkColor: 'bg-red-500/20 text-red-300' },
-    LAND: { label: 'Cảnh quan', color: 'bg-emerald-100 text-emerald-700', darkColor: 'bg-emerald-500/20 text-emerald-300' },
-    COMBINE: { label: 'Tổng hợp', color: 'bg-purple-100 text-purple-700', darkColor: 'bg-purple-500/20 text-purple-300' },
+const DISCIPLINE_LABELS: Record<string, { label: string; color: string; darkColor?: string }> = {
+    ARCH: { label: 'Kiến trúc', color: 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300' },
+    STRU: { label: 'Kết cấu', color: 'bg-warning-100 dark:bg-warning-500/20 text-warning-700 dark:text-warning-300' },
+    MEP: { label: 'MEP', color: 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300' },
+    ELEC: { label: 'Điện', color: 'bg-warning-100 dark:bg-warning-500/20 text-primary-700 dark:text-warning-300' },
+    HVAC: { label: 'HVAC', color: 'bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300' },
+    PLUM: { label: 'Cấp thoát nước', color: 'bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-300' },
+    FIRE: { label: 'PCCC', color: 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' },
+    LAND: { label: 'Cảnh quan', color: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' },
+    COMBINE: { label: 'Tổng hợp', color: 'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300' },
 };
 
-const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string; darkColor: string }> = {
-    ready: { label: 'Sẵn sàng', icon: CheckCircle2, color: 'text-green-600', darkColor: 'text-green-400' },
-    converting: { label: 'Đang xử lý', icon: Clock, color: 'text-primary-600', darkColor: 'text-primary-400' },
-    uploading: { label: 'Đang tải lên', icon: Loader2, color: 'text-blue-600', darkColor: 'text-blue-400' },
-    error: { label: 'Lỗi', icon: AlertCircle, color: 'text-red-600', darkColor: 'text-red-400' },
+const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string; darkColor?: string }> = {
+    ready: { label: 'Sẵn sàng', icon: CheckCircle2, color: 'text-green-600 dark:text-green-400' },
+    converting: { label: 'Đang xử lý', icon: Clock, color: 'text-primary-600 dark:text-primary-400' },
+    uploading: { label: 'Đang tải lên', icon: Loader2, color: 'text-blue-600 dark:text-blue-400' },
+    error: { label: 'Lỗi', icon: AlertCircle, color: 'text-red-600 dark:text-red-400' },
 };
 
 function formatFileSize(bytes: number | null): string {
@@ -309,7 +309,7 @@ const BimPage: React.FC = () => {
                         }}
                     >
                         {/* Header bar */}
-                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-white dark:bg-slate-800'}`}>
+                        <div className={`shrink-0 flex items-center gap-3 px-4 py-2 border-b ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-bg-surface'}`}>
                             <button onClick={handleBack} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isDark ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
                                 <ArrowLeft className="w-4 h-4" />Quay lại
                             </button>
@@ -392,7 +392,7 @@ const BimPage: React.FC = () => {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border transition-all ${isDark
                                         ? 'bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-cyan-500/50'
-                                        : 'bg-white dark:bg-slate-800 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
+                                        : 'bg-bg-surface border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-400'}`}
                                 />
                             </div>
 
@@ -476,7 +476,7 @@ const BimPage: React.FC = () => {
                                                     className={`group flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-200
                                                         ${isDark
                                                             ? 'bg-slate-50 border-slate-700/40 hover:border-slate-600 hover:bg-slate-50'
-                                                            : 'bg-slate-50 dark:bg-slate-800 border-gray-200 hover:border-gray-300 hover:bg-white dark:bg-slate-800'
+                                                            : 'bg-bg-subtle border-gray-200 hover:border-gray-300 hover:bg-bg-surface'
                                                         }
                                                     `}
                                                 >
@@ -538,7 +538,7 @@ const BimProjectCard: React.FC<{
             className={`group relative w-full text-left rounded-2xl border transition-all duration-300 overflow-hidden
                 ${isDark
                     ? 'bg-slate-50 border-slate-700/50 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-0.5'
-                    : 'bg-white dark:bg-slate-800 border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
+                    : 'bg-bg-surface border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-0.5'
                 }
             `}
         >
@@ -610,7 +610,7 @@ const BimProjectCard: React.FC<{
                         {summary.disciplines.map(d => {
                             const cfg = DISCIPLINE_LABELS[d];
                             return (
-                                <span key={d} className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${isDark ? cfg?.darkColor || 'bg-slate-700 text-slate-300' : cfg?.color || 'bg-gray-100 text-gray-600'}`}>
+                                <span key={d} className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${cfg?.color || 'bg-bg-muted text-txt-muted'}`}>
                                     {cfg?.label || d}
                                 </span>
                             );

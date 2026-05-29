@@ -473,22 +473,22 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            <div className="bg-white dark:bg-slate-900 shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="bg-bg-surface shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
+                <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
                     <div>
-                        <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                             <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             {isEditMode ? 'Chỉnh sửa dự án' : 'Thêm mới dự án'}
                         </h2>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                        <p className="text-xs text-txt-muted mt-1">
                             {isEditMode ? 'Cập nhật thông tin dự án' : 'Theo mẫu Phụ lục I (NĐ 175/2024) • Hệ thống tự động tạo mã dự án'}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-gray-400 dark:text-slate-400 transition-colors"
+                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-txt-placeholder transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -496,7 +496,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                 {/* ── AI Image Import Zone (only in create mode) ── */}
                 {!isEditMode && (
-                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700">
+                    <div className="px-6 py-3 border-b border-border">
                         <div
                             className={`relative rounded-xl border-2 border-dashed transition-all cursor-pointer
                                 ${aiStatus === 'extracting' ? 'border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' : ''}
@@ -540,11 +540,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <div className="flex-1 min-w-0">
                                     {aiStatus === 'idle' && (
                                         <>
-                                            <p className="text-sm font-bold text-gray-700 dark:text-slate-200 flex items-center gap-1.5">
+                                            <p className="text-sm font-bold text-txt-secondary flex items-center gap-1.5">
                                                 <Sparkles className="w-3.5 h-3.5 text-violet-500" />
                                                 Nhập liệu bằng AI
                                             </p>
-                                            <p className="text-[11px] text-gray-400 dark:text-slate-400">
+                                            <p className="text-[11px] text-txt-placeholder">
                                                 Dán ảnh chụp màn hình (Ctrl+V) hoặc click để chọn ảnh — AI sẽ tự điền thông tin
                                             </p>
                                         </>
@@ -587,7 +587,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 {/* Action icon */}
                                 {aiStatus !== 'extracting' && (
                                     <div className="flex-shrink-0">
-                                        <ImagePlus className="w-5 h-5 text-gray-400 dark:text-slate-400" />
+                                        <ImagePlus className="w-5 h-5 text-txt-placeholder" />
                                     </div>
                                 )}
                             </div>
@@ -596,7 +596,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 )}
 
                 {/* Tabs Navigation */}
-                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 gap-y-2 gap-x-1">
+                <div className="flex flex-wrap px-6 pt-3 pb-1 border-b border-border bg-bg-subtle gap-y-2 gap-x-1">
                     {PROJ_TABS.map(tab => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -609,7 +609,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 className={`relative flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                                     isActive
                                         ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
+                                        : 'border-transparent text-gray-500 hover:text-txt-secondary dark:hover:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
                                 }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -670,15 +670,15 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     </div>
 
                     {/* Footer */}
-                    <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex justify-between items-center rounded-b-2xl">
-                        <p className="text-[11px] text-gray-400 dark:text-slate-400">
+                    <div className="px-6 py-4 border-t border-border bg-bg-subtle flex justify-between items-center rounded-b-2xl">
+                        <p className="text-[11px] text-txt-placeholder">
                             Các trường không bắt buộc có thể bổ sung sau
                         </p>
                         <div className="flex gap-3">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 rounded-lg text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                                className="px-4 py-2 rounded-lg text-txt-muted font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                                 disabled={isLoading}
                             >
                                 Hủy bỏ

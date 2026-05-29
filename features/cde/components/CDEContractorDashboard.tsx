@@ -69,13 +69,13 @@ const CDEContractorDashboard: React.FC<CDEContractorDashboardProps> = ({
             </div>
 
             {/* Recent Submissions */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-wider">Hồ sơ gần đây</h3>
+                        <h3 className="text-sm font-black text-txt-primary uppercase tracking-wider">Hồ sơ gần đây</h3>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">{docs.length} hồ sơ</span>
+                    <span className="text-[10px] font-bold text-gray-400 bg-bg-muted px-2.5 py-1 rounded-lg">{docs.length} hồ sơ</span>
                 </div>
 
                 {recentDocs.length === 0 ? (
@@ -98,15 +98,15 @@ const CDEContractorDashboard: React.FC<CDEContractorDashboardProps> = ({
                                         <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-bold text-gray-800 dark:text-slate-100 truncate">{doc.doc_name}</p>
-                                        <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">
+                                        <p className="text-sm font-bold text-txt-primary truncate">{doc.doc_name}</p>
+                                        <p className="text-[10px] text-txt-placeholder mt-0.5">
                                             {doc.discipline || '—'} • {doc.upload_date ? new Date(doc.upload_date).toLocaleDateString('vi-VN') : '—'}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2.5 shrink-0">
                                         <div className="flex items-center gap-1.5">
                                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColor }} />
-                                            <span className="text-[11px] font-semibold text-gray-600 dark:text-slate-300">{getStatusLabel(doc.cde_status || 'S0')}</span>
+                                            <span className="text-[11px] font-semibold text-txt-muted">{getStatusLabel(doc.cde_status || 'S0')}</span>
                                         </div>
                                         <ArrowRight className="w-4 h-4 text-gray-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>

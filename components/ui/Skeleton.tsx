@@ -112,7 +112,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
     lines = 2,
 }) => {
     return (
-        <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 p-6 ${className}`}>
+        <div className={`bg-bg-surface rounded-2xl border border-border-subtle p-6 ${className}`}>
             {hasImage && (
                 <Skeleton
                     variant="rounded"
@@ -152,9 +152,9 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({
     className = '',
 }) => {
     return (
-        <div className={`overflow-hidden rounded-xl border border-gray-200 ${className}`}>
+        <div className={`overflow-hidden rounded-xl border border-border-subtle ${className}`}>
             {/* Header */}
-            <div className="bg-slate-50 dark:bg-slate-800 px-4 py-3 flex gap-4 border-b border-gray-200">
+            <div className="bg-bg-subtle px-4 py-3 flex gap-4 border-b border-border-subtle">
                 {Array.from({ length: columns }).map((_, i) => (
                     <Skeleton key={`header-${i}`} variant="text" height={14} className="flex-1" />
                 ))}
@@ -164,7 +164,7 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({
             {Array.from({ length: rows }).map((_, rowIdx) => (
                 <div
                     key={`row-${rowIdx}`}
-                    className="px-4 py-3 flex gap-4 border-b border-gray-200 last:border-0"
+                    className="px-4 py-3 flex gap-4 border-b border-border-subtle last:border-0"
                 >
                     {Array.from({ length: columns }).map((_, colIdx) => (
                         <Skeleton
@@ -186,7 +186,7 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({
 export const SkeletonStatCard: React.FC<{ className?: string; compact?: boolean }> = ({ className = '', compact = false }) => {
     if (compact) {
         return (
-            <div className={`bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-3.5 h-[98px] ${className}`}>
+            <div className={`bg-bg-surface rounded-xl border border-border-subtle p-3.5 h-[98px] ${className}`}>
                 <div className="flex justify-between items-start mb-2">
                     <Skeleton variant="rounded" width={32} height={32} />
                     <Skeleton variant="rounded" width={40} height={16} />
@@ -197,7 +197,7 @@ export const SkeletonStatCard: React.FC<{ className?: string; compact?: boolean 
         );
     }
     return (
-        <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 p-6 h-36 ${className}`}>
+        <div className={`bg-bg-surface rounded-2xl border border-border-subtle p-6 h-36 ${className}`}>
             <div className="flex justify-between items-start mb-4">
                 <Skeleton variant="rounded" width={44} height={44} />
                 <Skeleton variant="rounded" width={60} height={24} />
@@ -231,7 +231,7 @@ export const SkeletonAvatarGroup: React.FC<SkeletonAvatarGroupProps> = ({
                     variant="circular"
                     width={size}
                     height={size}
-                    className="border-2 border-white"
+                    className="border-2 border-bg-surface"
                 />
             ))}
         </div>

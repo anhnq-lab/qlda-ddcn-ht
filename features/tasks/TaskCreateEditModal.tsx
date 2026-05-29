@@ -110,12 +110,12 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5 dark:ring-slate-700">
 
                 {/* ── Modal Header ── */}
-                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 sticky top-0 z-10">
+                <div className="px-6 py-4 border-b border-border-subtle flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800 sticky top-0 z-10">
                     <div>
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                        <h3 className="text-lg font-bold text-txt-primary">
                             {isEditMode ? 'Cập nhật công việc' : 'Tạo công việc mới'}
                         </h3>
                         <p className="text-xs text-slate-400 mt-0.5">
@@ -124,7 +124,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                        className="p-2 hover:bg-bg-muted rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -134,7 +134,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
                     {/* Tên công việc */}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                             Tên công việc <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -149,7 +149,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
                     {/* Mô tả / Nội dung */}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                             Nội dung / Kết quả yêu cầu <span className="text-red-500">*</span>
                         </label>
                         <textarea
@@ -165,7 +165,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Người thực hiện + Người giao */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Người thực hiện <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -181,7 +181,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Người phê duyệt
                             </label>
                             <select
@@ -200,7 +200,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Ngày bắt đầu + Hạn chót */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Ngày bắt đầu <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -212,7 +212,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Hạn chót <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -238,7 +238,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Trạng thái + Ưu tiên */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Trạng thái</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">Trạng thái</label>
                             <select
                                 value={formData.Status || TaskStatus.Todo}
                                 onChange={e => setFormData({ ...formData, Status: e.target.value as TaskStatus })}
@@ -250,7 +250,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Ưu tiên</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">Ưu tiên</label>
                             <select
                                 value={formData.Priority || TaskPriority.Medium}
                                 onChange={e => setFormData({ ...formData, Priority: e.target.value as TaskPriority })}
@@ -266,7 +266,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Phân loại công việc & Cấp thực hiện (Điều 17) */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Phân loại <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -282,7 +282,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                                 Cấp thực hiện
                             </label>
                             <select
@@ -299,7 +299,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Kết quả thực hiện — hiện khi done hoặc in_progress */}
                     {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress) && (
                         <div className="p-4 rounded-xl border bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800">
-                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-txt-muted">
                                 Kết quả thực hiện {formData.Status === TaskStatus.Done && <span className="text-red-500">*</span>}
                             </label>
                             <textarea
@@ -307,7 +307,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                                 rows={2}
                                 value={formData.CompletionResult || ''}
                                 onChange={e => setFormData({ ...formData, CompletionResult: e.target.value })}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                                className="w-full px-3 py-2 bg-bg-surface border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
                                 placeholder="Mô tả kết quả đã đạt được: VD Đã phê duyệt tại QĐ số..."
                             />
                         </div>
@@ -316,7 +316,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     {/* Lý do chưa hoàn thành — hiện khi incomplete */}
                     {formData.Status === TaskStatus.Incomplete && (
                         <div className="p-4 rounded-xl border bg-rose-50 border-rose-200 dark:bg-rose-900/20 dark:border-rose-800">
-                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider text-txt-muted">
                                 Lý do chưa hoàn thành <span className="text-red-500">*</span>
                             </label>
                             <textarea
@@ -324,7 +324,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                                 rows={2}
                                 value={formData.IncompleteReason || ''}
                                 onChange={e => setFormData({ ...formData, IncompleteReason: e.target.value })}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                                className="w-full px-3 py-2 bg-bg-surface border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
                                 placeholder="Lý do chưa hoàn thành, vướng mắc cần giải quyết..."
                             />
                         </div>
@@ -332,7 +332,7 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
 
                     {/* Ghi chú */}
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                        <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
                             Ghi chú
                         </label>
                         <textarea
@@ -345,9 +345,9 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     </div>
 
                     {/* Dự án */}
-                    <div className="pt-1 border-t border-slate-100 dark:border-slate-700">
+                    <div className="pt-1 border-t border-border-subtle">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider mt-3">Dự án liên kết</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider mt-3">Dự án liên kết</label>
                             <select
                                 value={formData.ProjectID || ''}
                                 onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
@@ -364,11 +364,11 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                    <div className="flex justify-end gap-3 pt-3 border-t border-border-subtle">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                            className="px-5 py-2.5 text-sm font-medium text-txt-muted hover:bg-bg-muted rounded-xl transition-colors"
                         >
                             Hủy
                         </button>

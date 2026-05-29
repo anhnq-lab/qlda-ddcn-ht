@@ -52,8 +52,8 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
                     flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold
                     border transition-all duration-150 cursor-pointer select-none whitespace-nowrap
                     ${isActive
-                        ? 'bg-white dark:bg-slate-800 border-primary-500 dark:border-primary-500 text-primary-700 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/20'
-                        : 'bg-white dark:bg-slate-800 border-border dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                        ? 'bg-bg-surface border-primary-500 dark:border-primary-500 text-primary-700 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/20'
+                        : 'bg-bg-surface border-border dark:border-slate-600 text-txt-secondary hover:bg-bg-hover-row'
                     }
                 `}
             >
@@ -67,7 +67,7 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
             {open && (
                 <div className="
                     absolute top-full left-0 mt-1.5 min-w-[180px] max-h-72 overflow-y-auto
-                    bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700
+                    bg-bg-surface rounded-xl shadow-xl border border-border
                     py-1.5 z-[9999] animate-in fade-in slide-in-from-top-2 duration-150
                 ">
                     {options.map(opt => {
@@ -82,7 +82,7 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
                                     transition-colors
                                     ${selected
                                         ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                        : 'text-txt-secondary hover:bg-bg-hover-row'
                                     }
                                 `}
                             >
@@ -91,7 +91,7 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
                                 )}
                                 <span className="flex-1 truncate">{opt.label}</span>
                                 {count !== undefined && count > 0 && (
-                                    <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-semibold tabular-nums">
+                                    <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-bg-muted text-txt-muted font-semibold tabular-nums">
                                         {count}
                                     </span>
                                 )}
@@ -168,7 +168,7 @@ export const ProjectFilters: React.FC = () => {
         <div className="flex items-center gap-1.5 mr-2">
             {/* Icon indicator */}
             <div className="flex items-center gap-1 mr-0.5">
-                <SlidersHorizontal className={`w-3.5 h-3.5 ${hasActiveFilters ? 'text-primary-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                <SlidersHorizontal className={`w-3.5 h-3.5 ${hasActiveFilters ? 'text-primary-500' : 'text-txt-placeholder'}`} />
                 {activeCount > 0 && (
                     <span className="w-4 h-4 rounded-full bg-primary-500 text-white text-[9px] font-bold flex items-center justify-center">
                         {activeCount}

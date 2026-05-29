@@ -16,7 +16,7 @@ import { useEmployees } from '../../hooks/useEmployees';
 
 // ─── Status config ────────────────────────────────────────────
 const STATUS_CONFIG: Record<MonthlyTaskStatus, { label: string; icon: React.ReactNode; variant: BadgeVariant; topBar: string; bg: string; color: string; ring: string }> = {
-    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-400 dark:bg-slate-600', bg: 'bg-slate-100 dark:bg-slate-805', color: 'text-slate-600 dark:text-slate-400', ring: 'ring-slate-500/15' },
+    planned:    { label: 'Chưa báo cáo', icon: <Clock className="w-3.5 h-3.5" />,        variant: 'neutral', topBar: 'bg-slate-400 dark:bg-slate-600', bg: 'bg-slate-100 dark:bg-slate-805', color: 'text-txt-muted', ring: 'ring-slate-500/15' },
     completed:  { label: 'Hoàn thành',   icon: <CheckCircle2 className="w-3.5 h-3.5" />, variant: 'success', topBar: 'bg-emerald-500',  bg: 'bg-emerald-50 dark:bg-emerald-500/10', color: 'text-emerald-600 dark:text-emerald-400', ring: 'ring-emerald-500/20' },
     incomplete: { label: 'Chưa HT',      icon: <XCircle className="w-3.5 h-3.5" />,      variant: 'danger',  topBar: 'bg-red-500',      bg: 'bg-rose-50 dark:bg-rose-500/10',       color: 'text-rose-600 dark:text-rose-400',       ring: 'ring-rose-500/20' },
     partial:    { label: 'Một phần',     icon: <AlertCircle className="w-3.5 h-3.5" />,  variant: 'warning', topBar: 'bg-warning-500',  bg: 'bg-amber-50 dark:bg-amber-500/10',    color: 'text-amber-700 dark:text-amber-450',    ring: 'ring-amber-500/20' },
@@ -166,7 +166,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
     return (
         <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900 overflow-hidden animate-in fade-in duration-300">
             {/* Header Card */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0 overflow-hidden">
+            <div className="bg-bg-surface border-b border-border-subtle shadow-sm shrink-0 overflow-hidden">
                 {/* Top accent */}
                 <div className={`h-1 ${cfg.topBar}`} />
 
@@ -179,17 +179,17 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                     {cfg.icon} {MONTHLY_STATUS_LABELS[item.status]}
                                 </span>
                                 {item.source_type && item.source_type !== 'manual' && (
-                                    <span className="text-[10px] font-bold text-slate-550 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2 py-1 rounded-md">
+                                    <span className="text-[10px] font-bold text-slate-550 bg-bg-muted dark:text-slate-400 px-2 py-1 rounded-md">
                                         {SOURCE_TYPE_CONFIG[item.source_type]?.label ?? item.source_type}
                                     </span>
                                 )}
-                                <span className="text-[10px] font-mono text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                <span className="text-[10px] font-mono text-slate-400 bg-bg-subtle px-2 py-1 rounded-md">
                                     Tháng {month}/{year}
                                 </span>
                             </div>
 
                             {/* Title */}
-                            <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">
+                            <h1 className="text-lg md:text-xl font-black text-txt-primary leading-tight mb-2">
                                 {item.task_name}
                             </h1>
                         </div>
@@ -204,7 +204,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     </div>
 
                     {/* Action buttons row */}
-                    <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex gap-2 mt-4 pt-3 border-t border-border-subtle">
                         <button
                             onClick={onEdit}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-400 dark:hover:bg-primary-500/20 rounded-xl transition-all border border-primary-100 dark:border-primary-500/20 active:scale-[0.98]"
@@ -232,8 +232,8 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         
                         {/* Description / Deliverables */}
                         {(item.deliverable || item.notes) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
-                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
+                                <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest mb-2 flex items-center gap-2">
                                     <ClipboardList className="w-4 h-4 text-slate-400" /> Nội dung chi tiết
                                 </h3>
                                 
@@ -247,7 +247,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 )}
                                 
                                 {item.notes && (
-                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-800">
+                                    <div className="bg-bg-subtle rounded-xl p-3 border border-border-subtle">
                                         <p className="text-[10px] uppercase font-bold text-slate-450 dark:text-slate-500 mb-1 tracking-wider">Ghi chú thêm</p>
                                         <p className="text-sm text-slate-650 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">{item.notes}</p>
                                     </div>
@@ -256,8 +256,8 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         )}
 
                         {/* Linked Execution Tasks */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
-                            <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
+                            <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
                                 <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
                                     <CheckSquare className="w-4 h-4 text-slate-400" />
                                     Công việc thực tế ({tasks.length})
@@ -276,7 +276,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                     Đang tải công việc...
                                 </div>
                             ) : tasks.length === 0 ? (
-                                <div className="text-center py-8 px-4 border border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-800 space-y-2">
+                                <div className="text-center py-8 px-4 border border-dashed border-border-subtle rounded-xl bg-slate-50/50 dark:bg-slate-800 space-y-2">
                                     <ClipboardList className="w-8 h-8 text-slate-350 dark:text-slate-600 mx-auto" />
                                     <p className="text-xs text-slate-550 dark:text-slate-455 font-medium">Chưa có công việc thực tế nào được liên kết.</p>
                                     <button
@@ -289,7 +289,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                             ) : (
                                 <div className="space-y-4">
                                     {/* Summary Progress Bar */}
-                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3.5 space-y-2 border border-slate-100 dark:border-slate-800">
+                                    <div className="bg-bg-subtle rounded-xl p-3.5 space-y-2 border border-border-subtle">
                                         <div className="flex justify-between items-center text-xs">
                                             <span className="font-bold text-slate-550 dark:text-slate-400 flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
                                                 <BarChart3 className="w-3.5 h-3.5 text-slate-400" /> Tiến độ thực tế trung bình
@@ -311,7 +311,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                             const isInProgress = task.status === 'in_progress';
                                             const isReview = task.status === 'review';
                                             
-                                            let statusColor = 'text-slate-400 bg-slate-100 dark:bg-slate-800';
+                                            let statusColor = 'text-slate-400 bg-bg-muted';
                                             let statusIcon = <Circle className="w-4 h-4 text-slate-400" />;
                                             if (isDone) {
                                                 statusColor = 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30';
@@ -328,19 +328,19 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                                 <div
                                                     key={task.id}
                                                     onClick={() => handleEditTask(task.id)}
-                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 rounded-xl border border-slate-100/50 hover:border-slate-200 dark:border-slate-800/80 dark:hover:border-slate-700/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
+                                                    className="group flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-slate-50 hover:bg-bg-surface dark:hover:bg-slate-800 rounded-xl border border-slate-100/50 hover:border-border dark:hover:border-slate-700/80 shadow-none hover:shadow-sm transition-all duration-200 cursor-pointer gap-3 md:gap-0"
                                                 >
                                                     <div className="flex items-center gap-3 min-w-0 md:w-1/2">
                                                         <div className={`p-1.5 rounded-lg shrink-0 ${statusColor}`}>
                                                             {statusIcon}
                                                         </div>
-                                                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 truncate transition-colors">
+                                                        <span className="text-sm font-semibold text-txt-secondary group-hover:text-primary-600 dark:group-hover:text-primary-400 truncate transition-colors">
                                                             {task.title}
                                                         </span>
                                                     </div>
 
-                                                    <div className="flex flex-wrap items-center justify-between md:justify-end gap-4 text-xs text-slate-500 dark:text-slate-400 shrink-0">
-                                                        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-750/80 px-2 py-1 rounded-md font-semibold text-slate-600 dark:text-slate-300">
+                                                    <div className="flex flex-wrap items-center justify-between md:justify-end gap-4 text-xs text-txt-muted shrink-0">
+                                                        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-750/80 px-2 py-1 rounded-md font-semibold text-txt-muted">
                                                             <User className="w-3.5 h-3.5 text-slate-400" />
                                                              <span>{getAssigneeName(task.assignee_id || task.metadata?.assignee_role)}</span>
                                                         </div>
@@ -359,7 +359,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                                                     style={{ width: `${task.progress || 0}%` }}
                                                                 />
                                                             </div>
-                                                            <span className="font-bold text-slate-600 dark:text-slate-300 w-8 text-right">{task.progress || 0}%</span>
+                                                            <span className="font-bold text-txt-muted w-8 text-right">{task.progress || 0}%</span>
                                                         </div>
 
                                                         <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-400 dark:group-hover:text-slate-400 group-hover:translate-x-0.5 transition-all" />
@@ -377,7 +377,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                     <div className="space-y-6">
                         {/* Origin / Links */}
                         {(project || annualItem) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
                                 <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest mb-2 flex items-center gap-2">
                                     <Link2 className="w-4 h-4 text-slate-400" /> Nguồn gốc liên kết
                                 </h3>
@@ -405,20 +405,20 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         )}
                         
                         {/* Timeline / Dates */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
                             <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-slate-400" /> Thời gian
                             </h3>
                             <div className="space-y-4">
                                 {item.deadline_note && (
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 block tracking-wider">Thời hạn báo cáo</p>
-                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-800 inline-block">{item.deadline_note}</p>
+                                        <p className="text-[10px] uppercase font-bold text-txt-placeholder mb-1.5 block tracking-wider">Thời hạn báo cáo</p>
+                                        <p className="text-sm font-bold text-txt-secondary bg-bg-subtle px-3 py-2 rounded-xl border border-border-subtle inline-block">{item.deadline_note}</p>
                                     </div>
                                 )}
                                 {item.due_date && (
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 block tracking-wider">Ngày cụ thể</p>
+                                        <p className="text-[10px] uppercase font-bold text-txt-placeholder mb-1.5 block tracking-wider">Ngày cụ thể</p>
                                         <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-355">
                                             <Calendar className="w-4 h-4 text-slate-400" />
                                             {new Date(item.due_date).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
@@ -429,7 +429,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                         </div>
 
                         {/* Executing Unit / Departments */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
                             <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest mb-2 flex items-center gap-2">
                                 <Users className="w-4 h-4 text-slate-400" /> Đơn vị thực hiện
                             </h3>
@@ -439,7 +439,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                         <Building2 className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                                        <p className="text-sm font-bold text-txt-primary leading-snug">
                                             {departmentCode ? `${departmentCode} - ${DEPARTMENT_NAMES[departmentCode] ?? ''}` : 'Chưa xác định'}
                                         </p>
                                         <p className="text-[10px] uppercase font-bold text-primary-500 tracking-wider mt-0.5">Đơn vị chủ trì</p>
@@ -447,14 +447,14 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
                                 </div>
 
                                 {((item.collaborating_dept_codes && item.collaborating_dept_codes.length > 0) || item.collaborating_text) && (
-                                    <div className="flex items-start gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                    <div className="flex items-start gap-3 pt-3 border-t border-border-subtle">
                                         <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/50">
                                             <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-bold text-slate-800 dark:text-slate-200 space-y-1.5">
+                                            <div className="text-sm font-bold text-txt-primary space-y-1.5">
                                                 {item.collaborating_dept_codes?.map(code => (
-                                                    <div key={code} className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                    <div key={code} className="text-xs font-bold text-txt-secondary">
                                                         • {code} - {DEPARTMENT_NAMES[code as DepartmentCode] ?? code}
                                                     </div>
                                                 ))}
@@ -473,7 +473,7 @@ const MonthlyPlanItemDetail: React.FC<Props> = (props) => {
 
                         {/* Report Results */}
                         {(item.completion_result || item.incomplete_reason) && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4 space-y-4">
+                            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
                                 <h3 className="text-xs font-black text-slate-400 dark:text-slate-455 uppercase tracking-widest flex items-center gap-2">
                                     <Briefcase className="w-4 h-4 text-slate-400" /> Báo cáo thực hiện
                                 </h3>

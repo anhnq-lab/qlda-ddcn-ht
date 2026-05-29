@@ -96,7 +96,7 @@ export const ProjectCapitalKPIDashboard: React.FC<ProjectCapitalKPIDashboardProp
                 value={formatCurrency(summary.totalInvestment)}
                 sub={`Đã bố trí: ${summary.totalInvestment > 0 ? Math.round((summary.totalAllocated / summary.totalInvestment) * 100) : 0}%`}
                 icon={<Coins className="w-5 h-5" />}
-                iconBg="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                iconBg="bg-bg-muted text-txt-muted"
             />
             <KPICard
                 label="KH vốn lũy kế"

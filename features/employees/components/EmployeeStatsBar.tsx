@@ -17,15 +17,15 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
     setFilterRole,
 }) => {
     return (
-        <div className="flex items-center gap-1 flex-wrap bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm px-2 py-1.5">
+        <div className="flex items-center gap-1 flex-wrap bg-bg-surface rounded-xl border border-border shadow-sm px-2 py-1.5">
             {/* Total */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-blue-50/60 dark:hover:bg-blue-500/10 transition-colors">
                 <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10">
                     <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.total || 0}</span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Nhân sự</span>
+                    <span className="text-lg font-black text-txt-primary tabular-nums">{stats?.total || 0}</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Nhân sự</span>
                 </div>
             </div>
 
@@ -37,8 +37,8 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
                     <UserCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.active || 0}</span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Hoạt động</span>
+                    <span className="text-lg font-black text-txt-primary tabular-nums">{stats?.active || 0}</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Hoạt động</span>
                 </div>
             </div>
 
@@ -50,10 +50,10 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
                     <Users className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">
+                    <span className="text-lg font-black text-txt-primary tabular-nums">
                         {stats?.male || 0}<span className="text-slate-300 dark:text-slate-600 mx-0.5">/</span>{stats?.female || 0}
                     </span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Nam / Nữ</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Nam / Nữ</span>
                 </div>
             </div>
 
@@ -65,8 +65,8 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
                     <Building2 className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{departments.length}</span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Phòng ban</span>
+                    <span className="text-lg font-black text-txt-primary tabular-nums">{departments.length}</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Phòng ban</span>
                 </div>
             </div>
 
@@ -81,8 +81,8 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
                     <Shield className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.byRole?.[Role.Admin] || 0}</span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">QT.Viên</span>
+                    <span className="text-lg font-black text-txt-primary tabular-nums">{stats?.byRole?.[Role.Admin] || 0}</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">QT.Viên</span>
                 </div>
             </button>
 
@@ -97,8 +97,8 @@ const EmployeeStatsBar: React.FC<EmployeeStatsBarProps> = ({
                     <TrendingUp className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-800 dark:text-white tabular-nums">{stats?.byRole?.[Role.Manager] || 0}</span>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Quản lý</span>
+                    <span className="text-lg font-black text-txt-primary tabular-nums">{stats?.byRole?.[Role.Manager] || 0}</span>
+                    <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Quản lý</span>
                 </div>
             </button>
         </div>

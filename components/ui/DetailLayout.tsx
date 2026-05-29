@@ -51,7 +51,7 @@ export const TabNav: React.FC<TabNavProps> = ({
                             font-medium border-b-2 transition-all duration-150
                             ${activeTab === tab.id
                                 ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                                : 'border-transparent text-txt-muted dark:text-slate-400 hover:text-txt-secondary dark:hover:text-slate-300 hover:border-border-DEFAULT dark:hover:border-slate-600'
+                                : 'border-transparent text-txt-muted hover:text-txt-secondary hover:border-border'
                             }
                             ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         `}
@@ -79,7 +79,7 @@ export const TabNav: React.FC<TabNavProps> = ({
                             font-medium transition-all duration-150
                             ${activeTab === tab.id
                                 ? 'bg-primary-100 dark:bg-primary-500/20 text-primary-700 dark:text-primary-300'
-                                : 'text-txt-muted dark:text-slate-400 hover:bg-bg-muted dark:hover:bg-slate-700'
+                                : 'text-txt-muted hover:bg-bg-muted'
                             }
                             ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         `}
@@ -95,7 +95,7 @@ export const TabNav: React.FC<TabNavProps> = ({
 
     // Button variant
     return (
-        <div className={`inline-flex items-center gap-0.5 p-1 bg-slate-50 dark:bg-slate-800 rounded-lg ${className}`}>
+        <div className={`inline-flex items-center gap-0.5 p-1 bg-bg-subtle rounded-lg ${className}`}>
             {visibleTabs.map((tab) => (
                 <button
                     key={tab.id}
@@ -106,8 +106,8 @@ export const TabNav: React.FC<TabNavProps> = ({
                         ${size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-sm'}
                         font-medium transition-all duration-150
                         ${activeTab === tab.id
-                            ? 'bg-white dark:bg-slate-800 text-txt-primary dark:text-white shadow-sm'
-                            : 'text-txt-muted dark:text-slate-400 hover:text-txt-secondary dark:hover:text-slate-300'
+                            ? 'bg-bg-surface text-txt-primary shadow-card'
+                            : 'text-txt-muted hover:text-txt-secondary'
                         }
                         ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                     `}
@@ -168,7 +168,7 @@ export const DetailLayout: React.FC<DetailLayoutProps> = ({
 
             {/* Tabs */}
             {tabs && (
-                <div className="shrink-0 px-6 border-b border-border-DEFAULT dark:border-slate-700/60 bg-white dark:bg-slate-800">
+                <div className="shrink-0 px-6 border-b border-border bg-bg-surface">
                     {tabs}
                 </div>
             )}
@@ -182,7 +182,7 @@ export const DetailLayout: React.FC<DetailLayoutProps> = ({
                             {children}
                         </div>
                         {/* Sidebar */}
-                        <div className={`${sidebarWidth} shrink-0 border-l border-border-DEFAULT dark:border-slate-700/60 overflow-auto bg-white dark:bg-slate-800`}>
+                        <div className={`${sidebarWidth} shrink-0 border-l border-border overflow-auto bg-bg-surface`}>
                             {sidebar}
                         </div>
                     </div>

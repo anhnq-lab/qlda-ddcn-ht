@@ -88,7 +88,7 @@ function TemplateCell({
                     <span className="font-medium truncate">{formsStr || 'Biểu mẫu'}</span>
                 </a>
             ) : (
-                <span className="text-slate-500 dark:text-slate-400 italic text-[9.5px] truncate block max-w-full">
+                <span className="text-txt-muted italic text-[9.5px] truncate block max-w-full">
                     {formsStr || (isAdmin ? 'Chưa có biểu mẫu' : '')}
                 </span>
             )}
@@ -106,7 +106,7 @@ function TemplateCell({
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="inline-flex items-center gap-0.5 text-[9px] font-medium text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 bg-slate-100 dark:bg-slate-800 hover:bg-primary-50 dark:hover:bg-primary-900/30 px-1 py-0.5 rounded transition-colors disabled:opacity-50 mt-0.5 cursor-pointer"
+                        className="inline-flex items-center gap-0.5 text-[9px] font-medium text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 bg-bg-muted hover:bg-primary-50 dark:hover:bg-primary-900/30 px-1 py-0.5 rounded transition-colors disabled:opacity-50 mt-0.5 cursor-pointer"
                     >
                         {isUploading ? <Loader2 size={8} className="animate-spin" /> : <Upload size={8} />}
                         <span>Tải lên</span>
@@ -311,12 +311,12 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     // ─── Loading state ───────────────────────────────────────
     if (isLoading) {
         return (
-            <div className="flex flex-col h-full bg-white dark:bg-slate-800 p-6">
+            <div className="flex flex-col h-full bg-bg-surface p-6">
                 <div className="animate-pulse space-y-4">
                     <div className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl w-2/3" />
                     <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/2" />
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg" />
+                        <div key={i} className="h-10 bg-bg-muted rounded-lg" />
                     ))}
                 </div>
             </div>
@@ -330,7 +330,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
     return (
         <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-900 relative print:bg-white">
             {/* ── HEADER ── */}
-            <div className="px-5 py-2.5 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 print:border-b-2 print:border-slate-300 flex-shrink-0">
+            <div className="px-5 py-2.5 bg-bg-surface border-b border-border print:border-b-2 print:border-slate-300 flex-shrink-0">
                 {/* Title row */}
                 <div className="flex items-start justify-between gap-4 mb-1.5">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -338,7 +338,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                             <LayoutList size={20} className="text-primary-600 dark:text-primary-400" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-lg font-black text-slate-800 dark:text-white leading-tight font-display truncate">
+                            <h2 className="text-lg font-black text-txt-primary leading-tight font-display truncate">
                                 {workflow.name}
                             </h2>
                             <p className="text-xs font-mono text-slate-400 mt-0.5">
@@ -356,13 +356,13 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                         )}
                         {isAdmin && onEdit && (
                             <button onClick={onEdit}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs transition"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-txt-muted hover:bg-bg-muted font-bold text-xs transition"
                                 title="Chỉnh sửa cài đặt">
                                 <PenLine size={13} /> Cài đặt
                             </button>
                         )}
                         <button onClick={handlePrint}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs transition"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-txt-muted hover:bg-bg-muted font-bold text-xs transition"
                             title="In bảng quy trình">
                             <Printer size={13} /> In
                         </button>
@@ -371,7 +371,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                 
                 {/* Description */}
                 {workflow.description && (
-                    <p className="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-4xl">
+                    <p className="text-[13px] text-txt-muted leading-relaxed max-w-4xl">
                         {workflow.description}
                     </p>
                 )}
@@ -380,37 +380,37 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             {/* ── TABLE BODY ── */}
             <div className="flex-1 overflow-auto custom-scrollbar print:overflow-visible">
                 <table className="w-full text-left text-[11px] border-collapse table-fixed min-w-[1000px]">
-                    <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-[5] shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50 print:bg-slate-200">
-                        <tr className="text-[9.5px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                            <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 text-center w-12">TT</th>
+                    <thead className="bg-bg-subtle sticky top-0 z-[5] shadow-sm shadow-slate-200/20 dark:shadow-slate-900/50 print:bg-slate-200">
+                        <tr className="text-[9.5px] font-black uppercase tracking-widest text-txt-muted">
+                            <th className="px-2 py-2 border-b border-border text-center w-12">TT</th>
                             {isInternalWorkflow ? (
                                 <>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[30%]">Nội dung công việc</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[14%]">Đơn vị thực hiện</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[14%]">Đơn vị phối hợp</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[16%]">Thời gian</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[16%]">Biểu mẫu</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[10%]">Ghi chú</th>
+                                    <th className="px-2 py-2 border-b border-border w-[30%]">Nội dung công việc</th>
+                                    <th className="px-2 py-2 border-b border-border w-[14%]">Đơn vị thực hiện</th>
+                                    <th className="px-2 py-2 border-b border-border w-[14%]">Đơn vị phối hợp</th>
+                                    <th className="px-2 py-2 border-b border-border w-[16%]">Thời gian</th>
+                                    <th className="px-2 py-2 border-b border-border w-[16%]">Biểu mẫu</th>
+                                    <th className="px-2 py-2 border-b border-border w-[10%]">Ghi chú</th>
                                 </>
                             ) : (
                                 <>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-14 text-center">SLA</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[30%]">Nội dung thực hiện</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[6%] text-center">R</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[6%] text-center">A</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[6%] text-center">C</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[6%] text-center">I</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[15%]">Đầu ra</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[13%]">Biểu mẫu</th>
-                                    <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 w-[18%]">Cơ sở pháp lý</th>
+                                    <th className="px-2 py-2 border-b border-border w-14 text-center">SLA</th>
+                                    <th className="px-2 py-2 border-b border-border w-[30%]">Nội dung thực hiện</th>
+                                    <th className="px-2 py-2 border-b border-border w-[6%] text-center">R</th>
+                                    <th className="px-2 py-2 border-b border-border w-[6%] text-center">A</th>
+                                    <th className="px-2 py-2 border-b border-border w-[6%] text-center">C</th>
+                                    <th className="px-2 py-2 border-b border-border w-[6%] text-center">I</th>
+                                    <th className="px-2 py-2 border-b border-border w-[15%]">Đầu ra</th>
+                                    <th className="px-2 py-2 border-b border-border w-[13%]">Biểu mẫu</th>
+                                    <th className="px-2 py-2 border-b border-border w-[18%]">Cơ sở pháp lý</th>
                                 </>
                             )}
                             {isAdmin && (
-                                <th className="px-2 py-2 border-b border-slate-200 dark:border-slate-700 text-center w-16 print:hidden">Thao tác</th>
+                                <th className="px-2 py-2 border-b border-border text-center w-16 print:hidden">Thao tác</th>
                             )}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+                    <tbody className="divide-y divide-border text-txt-secondary">
                         {groupedPhases.map((group) => {
                             const phaseKey = group.phase;
                             const phaseConf = group.config;
@@ -425,14 +425,14 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                         onClick={() => togglePhase(phaseKey)}
                                     >
                                         <td colSpan={isAdmin ? colCount + 1 : colCount}
-                                            className="px-3 py-1 font-black text-slate-800 dark:text-white uppercase tracking-wide text-[10.5px] border-b border-slate-300 dark:border-slate-600">
+                                            className="px-3 py-1 font-black text-txt-primary uppercase tracking-wide text-[10.5px] border-b border-slate-300 dark:border-slate-600">
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-slate-500 dark:text-slate-400 print:hidden">
+                                                <span className="text-txt-muted print:hidden">
                                                     {isPhaseExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                                                 </span>
                                                 <span className="text-sm print:hidden">{phaseConf.icon}</span>
                                                 <span>{phaseConf.title}</span>
-                                                <span className="text-slate-500 dark:text-slate-400 font-medium text-[9px] normal-case ml-1.5">
+                                                <span className="text-txt-muted font-medium text-[9px] normal-case ml-1.5">
                                                     ({phaseNodeCount} bước)
                                                 </span>
                                             </div>
@@ -476,45 +476,45 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                     return (
                                                         <React.Fragment key={node.id}>
                                                             {/* Main step row */}
-                                                            <tr className="bg-white dark:bg-slate-800 group border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 transition-colors">
+                                                            <tr className="bg-bg-surface group border-b border-border hover:bg-blue-50/30 dark:hover:bg-slate-800 transition-colors">
                                                                 {/* TT */}
-                                                                <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-center font-black text-slate-500 dark:text-slate-400 align-top">
+                                                                <td className="px-1.5 py-1 border-r border-border text-center font-black text-txt-muted align-top">
                                                                     {displayIndex}
                                                                 </td>
 
                                                                 {isInternalWorkflow ? (
                                                                     <>
                                                                         {/* Nội dung (Internal) */}
-                                                                        <td className="px-2 py-1 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
+                                                                        <td className="px-2 py-1 border-r border-border cursor-pointer align-top"
                                                                             onClick={() => openNodePanel(node)}>
                                                                             <div className="font-bold text-[12px] text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
-                                                                            {meta.description && <div className="text-[9.5px] text-slate-500 dark:text-slate-400 mt-0.5 whitespace-pre-wrap">{meta.description}</div>}
+                                                                            {meta.description && <div className="text-[9.5px] text-txt-muted mt-0.5 whitespace-pre-wrap">{meta.description}</div>}
                                                                         </td>
                                                                         {/* Đơn vị thực hiện */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[10px] whitespace-pre-wrap align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[10px] whitespace-pre-wrap align-top">
                                                                             {node.assignee_role}
                                                                         </td>
                                                                         {/* Đơn vị phối hợp */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[10px] whitespace-pre-wrap align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[10px] whitespace-pre-wrap align-top">
                                                                             {meta.coordinating_role}
                                                                         </td>
                                                                         {/* Thời gian */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[10px] align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[10px] align-top">
                                                                             {meta.sla_regulated && (
                                                                                 <div className="mb-1">
-                                                                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy định:</span><br/>
+                                                                                    <span className="font-semibold text-txt-muted">Theo quy định:</span><br/>
                                                                                     <span className="whitespace-pre-wrap block leading-snug">{meta.sla_regulated}</span>
                                                                                 </div>
                                                                             )}
                                                                             {node.sla_formula && (
                                                                                 <div>
-                                                                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Theo quy trình:</span><br/>
+                                                                                    <span className="font-semibold text-txt-muted">Theo quy trình:</span><br/>
                                                                                     <span className="whitespace-pre-wrap block leading-snug">{node.sla_formula}</span>
                                                                                 </div>
                                                                             )}
                                                                         </td>
                                                                         {/* Biểu mẫu (Internal) */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[9.5px] align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[9.5px] align-top">
                                                                             <TemplateCell 
                                                                                 node={node}
                                                                                 initialForms={meta.template_forms || ''}
@@ -524,44 +524,44 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                             />
                                                                         </td>
                                                                         {/* Ghi chú */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[9.5px] whitespace-pre-wrap leading-snug align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[9.5px] whitespace-pre-wrap leading-snug align-top">
                                                                             {meta.notes}
                                                                         </td>
                                                                     </>
                                                                 ) : (
                                                                     <>
                                                                         {/* SLA */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-center align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-center align-top">
                                                                             <SlaBadge sla={node.sla_formula} />
                                                                         </td>
                                                                         {/* Nội dung (Project) */}
-                                                                        <td className="px-2 py-1 border-r border-slate-200 dark:border-slate-700 cursor-pointer align-top"
+                                                                        <td className="px-2 py-1 border-r border-border cursor-pointer align-top"
                                                                             onClick={() => openNodePanel(node)}>
                                                                             <div className="font-bold text-[11px] text-primary-700 dark:text-primary-400 whitespace-pre-wrap leading-snug">{node.name}</div>
-                                                                            {meta.description && <div className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{meta.description}</div>}
+                                                                            {meta.description && <div className="text-[9px] text-txt-muted mt-0.5 line-clamp-2">{meta.description}</div>}
                                                                         </td>
                                                                         {/* R */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 align-top text-center">
+                                                                        <td className="px-1.5 py-1 border-r border-border align-top text-center">
                                                                             <RaciInline summary={raciMap.get(node.id)} type="R" getStakeholderName={getStakeholderName} />
                                                                         </td>
                                                                         {/* A */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 align-top text-center">
+                                                                        <td className="px-1.5 py-1 border-r border-border align-top text-center">
                                                                             <RaciInline summary={raciMap.get(node.id)} type="A" getStakeholderName={getStakeholderName} />
                                                                         </td>
                                                                         {/* C */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 align-top text-center">
+                                                                        <td className="px-1.5 py-1 border-r border-border align-top text-center">
                                                                             <RaciInline summary={raciMap.get(node.id)} type="C" getStakeholderName={getStakeholderName} />
                                                                         </td>
                                                                         {/* I */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 align-top text-center">
+                                                                        <td className="px-1.5 py-1 border-r border-border align-top text-center">
                                                                             <RaciInline summary={raciMap.get(node.id)} type="I" getStakeholderName={getStakeholderName} />
                                                                         </td>
                                                                         {/* Đầu ra */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[9.5px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[9.5px] text-txt-muted whitespace-pre-wrap align-top">
                                                                             {meta.output}
                                                                         </td>
                                                                         {/* Biểu mẫu */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border align-top">
                                                                             <TemplateCell 
                                                                                 node={node}
                                                                                 initialForms={meta.template_forms || ''}
@@ -571,7 +571,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                                                                             />
                                                                         </td>
                                                                         {/* CSPL */}
-                                                                        <td className="px-1.5 py-1 border-r border-slate-200 dark:border-slate-700 text-[9.5px] align-top">
+                                                                        <td className="px-1.5 py-1 border-r border-border text-[9.5px] align-top">
                                                                             {meta.legal_basis ? (
                                                                                 <button
                                                                                     type="button"
@@ -632,11 +632,11 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
             </div>
 
             {/* ── FOOTER ── */}
-            <div className="px-5 py-3 bg-white dark:bg-slate-800 dark:bg-slate-800 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
-                <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400 font-medium">
+            <div className="px-5 py-3 bg-bg-surface dark:bg-slate-800 backdrop-blur-md border-t border-border flex items-center justify-between text-xs flex-shrink-0 print:bg-slate-100 print:border-t-2">
+                <div className="flex items-center gap-4 text-txt-muted font-medium">
                     <span className="flex items-center gap-1.5">
                         <LayoutList size={13} />
-                        <strong className="text-slate-700 dark:text-slate-200">{stats.totalSteps}</strong> bước
+                        <strong className="text-txt-secondary">{stats.totalSteps}</strong> bước
                     </span>
 
                     {stats.totalSla && (
@@ -648,7 +648,7 @@ const WorkflowProcessTable: React.FC<WorkflowProcessTableProps> = ({
                     )}
                 </div>
                 <button onClick={onClose}
-                    className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700 print:hidden">
+                    className="px-4 py-2 rounded-xl text-sm font-bold text-txt-muted hover:bg-bg-muted transition border border-border print:hidden">
                     Đóng
                 </button>
             </div>

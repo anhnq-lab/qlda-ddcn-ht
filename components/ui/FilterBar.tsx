@@ -128,8 +128,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className={`
             flex flex-col sm:flex-row items-start sm:items-center gap-3
             px-4 py-3
-            bg-slate-50 dark:bg-slate-800
-            border-b border-border-DEFAULT dark:border-slate-700/60
+            bg-bg-subtle
+            border-b border-border
             ${className}
         `}>
             {/* Search input */}
@@ -137,7 +137,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 <div className="relative flex-1 min-w-0 max-w-xs">
                     <Search
                         size={15}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-placeholder dark:text-slate-400 pointer-events-none"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-placeholder pointer-events-none"
                     />
                     <input
                         type="text"
@@ -146,19 +146,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         placeholder={searchPlaceholder}
                         className="
                             w-full pl-8 pr-8 py-2 text-sm
-                            bg-white dark:bg-slate-800
-                            border border-border-DEFAULT dark:border-slate-600
+                            bg-bg-surface
+                            border border-border
                             rounded-lg
-                            text-txt-primary dark:text-slate-200
-                            placeholder-txt-placeholder dark:placeholder-slate-500
-                            focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400
+                            text-txt-primary
+                            placeholder-txt-placeholder
+                            focus:outline-none focus:ring-2 focus:ring-focus/50 focus:border-primary-400
                             transition-colors
                         "
                     />
                     {searchValue && (
                         <button
                             onClick={handleSearchClear}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-txt-muted dark:text-slate-400 hover:text-txt-primary dark:hover:text-slate-200 transition-colors"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-txt-muted hover:text-txt-primary transition-colors"
                         >
                             <X size={13} />
                         </button>
@@ -175,11 +175,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         onChange={(e) => filter.onChange(e.target.value)}
                         className="
                             appearance-none pl-3 pr-8 py-2 text-sm
-                            bg-white dark:bg-slate-800
-                            border border-border-DEFAULT dark:border-slate-600
+                            bg-bg-surface
+                            border border-border
                             rounded-lg
-                            text-txt-secondary dark:text-slate-300
-                            focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400
+                            text-txt-secondary
+                            focus:outline-none focus:ring-2 focus:ring-focus/50 focus:border-primary-400
                             cursor-pointer transition-colors
                         "
                     >
@@ -192,7 +192,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                     </select>
                     <ChevronDown
                         size={13}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-muted dark:text-slate-400 pointer-events-none"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-muted pointer-events-none"
                     />
                 </div>
             ))}
@@ -205,11 +205,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         onChange={(e) => onSortChange(e.target.value)}
                         className="
                             appearance-none pl-3 pr-8 py-2 text-sm
-                            bg-white dark:bg-slate-800
-                            border border-border-DEFAULT dark:border-slate-600
+                            bg-bg-surface
+                            border border-border
                             rounded-lg
-                            text-txt-secondary dark:text-slate-300
-                            focus:outline-none focus:ring-2 focus:ring-primary-500/50
+                            text-txt-secondary
+                            focus:outline-none focus:ring-2 focus:ring-focus/50
                             cursor-pointer transition-colors
                         "
                     >
@@ -219,7 +219,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                     </select>
                     <ChevronDown
                         size={13}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-muted dark:text-slate-400 pointer-events-none"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-muted pointer-events-none"
                     />
                 </div>
             )}
@@ -241,7 +241,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
             {/* Result count */}
             {resultCount !== undefined && (
-                <span className="text-xs text-txt-muted dark:text-slate-400 whitespace-nowrap shrink-0">
+                <span className="text-xs text-txt-muted whitespace-nowrap shrink-0">
                     {resultCount}
                     {totalCount !== undefined && totalCount !== resultCount && (
                         <span> / {totalCount}</span>

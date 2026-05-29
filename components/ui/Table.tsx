@@ -5,7 +5,7 @@ const TableContainer = React.forwardRef<
     React.HTMLAttributes<HTMLDivElement> & { maxHeight?: string }
 >(({ className, maxHeight, ...props }, ref) => (
     <div
-        className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden ${className || ""}`}
+        className={`bg-bg-surface rounded-2xl border border-border-subtle shadow-card overflow-hidden ${className || ""}`}
     >
         <div
             ref={ref}
@@ -47,7 +47,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <tbody
         ref={ref}
-        className={`divide-y divide-gray-100 dark:divide-slate-700/70 ${className || ""}`}
+        className={`divide-y divide-border-subtle ${className || ""}`}
         {...props}
     />
 ))
@@ -59,7 +59,7 @@ const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <tfoot
         ref={ref}
-        className={`bg-slate-50 dark:bg-slate-800 font-medium ${className || ""}`}
+        className={`bg-bg-subtle font-medium ${className || ""}`}
         {...props}
     />
 ))
@@ -73,8 +73,8 @@ const TableRow = React.forwardRef<
         ref={ref}
         className={
             isHeader
-                ? `bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest ${className || ""}`
-                : `group transition-all ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800'} ${className || ""}`
+                ? `bg-bg-subtle text-[10px] font-black uppercase tracking-widest ${className || ""}`
+                : `group transition-all ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'hover:bg-bg-hover-row'} ${className || ""}`
         }
         {...props}
     />
@@ -89,8 +89,8 @@ const TableHead = React.forwardRef<
         ref={ref}
         className={`
       ${compact ? 'px-3 py-2.5' : 'px-4 py-3'} 
-      border-b border-slate-200 dark:border-slate-700 
-      text-slate-500 dark:text-slate-400 
+      border-b border-border
+      text-txt-muted
       text-left align-middle 
       ${className || ""}
     `}
@@ -107,7 +107,7 @@ const TableCell = React.forwardRef<
         ref={ref}
         className={`
       ${compact ? 'px-3 py-2' : 'px-4 py-3.5'} 
-      text-sm text-slate-700 dark:text-slate-300 
+      text-sm text-txt-secondary
       align-middle 
       ${className || ""}
     `}
@@ -144,19 +144,19 @@ export const TablePagination: React.FC<LegacyTablePaginationProps> = ({
     const endItem = Math.min(currentPage * pageSize, totalItems);
 
     return (
-        <div className={`flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-t border-border-DEFAULT dark:border-slate-700/60 ${className}`}>
-            <div className="text-sm text-txt-muted dark:text-slate-400">
+        <div className={`flex items-center justify-between px-4 py-3 bg-bg-surface border-t border-border ${className}`}>
+            <div className="text-sm text-txt-muted">
                 Hiển thị <span className="font-medium">{startItem}</span> - <span className="font-medium">{endItem}</span> trong <span className="font-medium">{totalItems}</span> kết quả
             </div>
 
             <div className="flex items-center gap-4">
                 {onPageSizeChange && (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm text-txt-muted dark:text-slate-400">Hiển thị</span>
+                        <span className="text-sm text-txt-muted">Hiển thị</span>
                         <select
                             value={pageSize}
                             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                            className="px-2 py-1 text-sm border border-border-DEFAULT dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-txt-primary dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            className="px-2 py-1 text-sm border border-border rounded-lg bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-focus"
                         >
                             {pageSizeOptions.map((size) => (
                                 <option key={size} value={size}>{size}</option>
@@ -169,25 +169,25 @@ export const TablePagination: React.FC<LegacyTablePaginationProps> = ({
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-lg hover:bg-bg-muted dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         aria-label="Trang trước"
                     >
-                        <svg className="w-4 h-4 text-txt-muted dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-txt-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
 
-                    <span className="px-3 py-1 text-sm font-medium text-txt-secondary dark:text-slate-300">
+                    <span className="px-3 py-1 text-sm font-medium text-txt-secondary">
                         {currentPage} / {totalPages}
                     </span>
 
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-lg hover:bg-bg-muted dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         aria-label="Trang sau"
                     >
-                        <svg className="w-4 h-4 text-txt-muted dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-txt-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>

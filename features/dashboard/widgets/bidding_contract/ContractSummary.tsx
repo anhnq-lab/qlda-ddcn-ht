@@ -64,10 +64,10 @@ export const ContractSummary: React.FC = () => {
                     <div key={c.contract_id} onClick={() => navigate(`/contracts`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                         <div className="flex items-center justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{c.contract_number || 'Chưa có số'}</p>
-                                <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5 truncate">{c.contractor_name}</p>
+                                <p className="text-xs font-bold text-txt-secondary truncate">{c.contract_number || 'Chưa có số'}</p>
+                                <p className="text-[10px] text-txt-placeholder mt-0.5 truncate">{c.contractor_name}</p>
                             </div>
-                            <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 shrink-0 tabular-nums">
+                            <span className="text-[10px] font-bold text-txt-muted shrink-0 tabular-nums">
                                 {formatShortCurrency(c.contract_value || 0)}
                             </span>
                         </div>

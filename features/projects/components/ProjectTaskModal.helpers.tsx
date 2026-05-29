@@ -80,12 +80,12 @@ export const DateInputVN: React.FC<{
     };
 
     return (
-        <div className={`relative flex items-center w-full rounded-xl border bg-white dark:bg-slate-800 group transition-all duration-200 focus-within:ring-2 focus-within:ring-primary-500/30 ${borderClass}`}>
-            <Calendar className="absolute left-3.5 w-4 h-4 text-gray-400 dark:text-slate-400 pointer-events-none group-focus-within:text-primary-500 transition-colors" />
+        <div className={`relative flex items-center w-full rounded-xl border bg-bg-surface group transition-all duration-200 focus-within:ring-2 focus-within:ring-primary-500/30 ${borderClass}`}>
+            <Calendar className="absolute left-3.5 w-4 h-4 text-txt-placeholder pointer-events-none group-focus-within:text-primary-500 transition-colors" />
             <input
                 type="text"
                 placeholder="DD/MM/YYYY"
-                className="w-full flex-1 bg-transparent py-2.5 pl-10 pr-10 text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
+                className="w-full flex-1 bg-transparent py-2.5 pl-10 pr-10 text-sm text-txt-primary placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
                 value={localValue}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
@@ -156,6 +156,6 @@ export const getPriorityConfig = (p?: TaskPriority) => {
         case TaskPriority.Low:
             return { label: 'Thấp', color: 'text-slate-500 bg-slate-50 ring-1 ring-slate-300/20' };
         default:
-            return { label: 'N/A', color: 'text-slate-400 bg-slate-50 dark:bg-slate-800' };
+            return { label: 'N/A', color: 'text-slate-400 bg-bg-subtle' };
     }
 };

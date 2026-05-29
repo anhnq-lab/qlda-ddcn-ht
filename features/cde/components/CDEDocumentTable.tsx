@@ -47,15 +47,15 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
     }, [docs, searchQuery]);
 
     return (
-        <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden min-w-0">
+        <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-border flex flex-col overflow-hidden min-w-0">
             {/* Toolbar */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
-                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 min-w-0">
+            <div className="px-5 py-3 border-b border-border flex justify-between items-center bg-bg-subtle">
+                <div className="flex items-center gap-2 text-sm text-txt-muted min-w-0">
                     {breadcrumbs.map((f, i) => (
                         <React.Fragment key={f.id}>
                             {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-slate-600 shrink-0" />}
                             <span
-                                className={`truncate ${i === breadcrumbs.length - 1 ? 'font-bold text-gray-800 dark:text-slate-100' : 'hover:text-blue-600 cursor-pointer text-xs'}`}
+                                className={`truncate ${i === breadcrumbs.length - 1 ? 'font-bold text-txt-primary' : 'hover:text-blue-600 cursor-pointer text-xs'}`}
                                 onClick={() => onFolderClick(f.id)}
                             >
                                 {f.name}
@@ -71,10 +71,10 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                             placeholder="Tìm kiếm..."
                             value={searchQuery}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            className="pl-8 pr-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg text-xs w-48 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200"
+                            className="pl-8 pr-3 py-1.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg text-xs w-48 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200"
                         />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">
+                    <span className="text-[10px] font-bold text-txt-placeholder bg-bg-muted px-2.5 py-1 rounded-lg">
                         {filteredDocs.length} tài liệu
                     </span>
                 </div>
@@ -88,11 +88,11 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                     </div>
                 ) : filteredDocs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full p-4 text-gray-400">
-                        <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
+                        <div className="w-20 h-20 bg-bg-subtle dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
                             <FolderOpen className="w-10 h-10 text-gray-200 dark:text-slate-400" />
                         </div>
-                        <h3 className="text-base font-bold text-gray-600 dark:text-slate-300 mb-1">Thư mục trống</h3>
-                        <p className="text-sm text-gray-400 dark:text-slate-400 mb-4">
+                        <h3 className="text-base font-bold text-txt-muted mb-1">Thư mục trống</h3>
+                        <p className="text-sm text-txt-placeholder mb-4">
                             {searchQuery ? 'Không tìm thấy tài liệu phù hợp' : 'Tải lên tài liệu đầu tiên vào thư mục này'}
                         </p>
                         {!searchQuery && (
@@ -107,7 +107,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                 ) : (
                     <table className="w-full text-left text-xs whitespace-nowrap">
                         <thead className="sticky top-0 z-10">
-                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                            <tr className="border-b border-border bg-bg-subtle">
                                 {onToggleSelect && (
                                     <th className="px-3 py-3 w-10 text-center">
                                         <input
@@ -129,7 +129,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        <tbody className="divide-y divide-border-subtle">
                             {filteredDocs.map((doc) => {
                                 const fileInfo = getFileIcon(doc.doc_name);
                                 const FileTypeIcon = fileInfo.icon;
@@ -160,30 +160,30 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                     <FileTypeIcon className={`w-5 h-5 ${fileInfo.color}`} />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="font-bold text-gray-800 dark:text-slate-100 text-sm truncate">{doc.doc_name}</p>
-                                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 font-medium mt-0.5">
+                                                    <p className="font-bold text-txt-primary text-sm truncate">{doc.doc_name}</p>
+                                                    <p className="text-[10px] text-txt-placeholder font-medium mt-0.5">
                                                         <span className="font-mono tracking-tight">{doc.size || '—'}</span> {doc.discipline ? `• ${doc.discipline}` : ''}
                                                     </p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-5 py-3.5 text-center">
-                                            <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full font-mono tracking-tight">
+                                            <span className="text-[11px] font-bold text-txt-muted bg-bg-muted px-2.5 py-1 rounded-full font-mono tracking-tight">
                                                 {doc.version || 'P01.01'}
                                             </span>
                                         </td>
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: statusColor }} />
-                                                <span className="text-xs font-semibold text-gray-600 dark:text-slate-300">
+                                                <span className="text-xs font-semibold text-txt-muted">
                                                     {getStatusLabel(doc.cde_status || 'S0')}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-3.5 text-xs text-gray-600 dark:text-slate-400 font-medium truncate max-w-[120px]">
+                                        <td className="px-5 py-3.5 text-xs text-txt-muted font-medium truncate max-w-[120px]">
                                             {doc.submitted_by || doc.uploaded_by || '—'}
                                         </td>
-                                        <td className="px-5 py-3.5 text-xs text-gray-500 dark:text-slate-400 font-medium">
+                                        <td className="px-5 py-3.5 text-xs text-txt-muted font-medium">
                                             {doc.upload_date ? new Date(doc.upload_date).toLocaleDateString('vi-VN') : '—'}
                                         </td>
                                         <td className="px-5 py-3.5 text-right">
@@ -206,7 +206,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                 )}
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onDownload(doc); }}
-                                                    className="p-1.5 text-gray-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                                    className="p-1.5 text-gray-400 hover:bg-bg-subtle dark:hover:bg-slate-700 rounded-lg transition-colors"
                                                     title="Tải xuống"
                                                 >
                                                     <Download className="w-4 h-4" />

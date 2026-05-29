@@ -155,7 +155,7 @@ const UserAccountManager: React.FC = () => {
 
     if (!isAdmin) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-slate-400">
+            <div className="flex flex-col items-center justify-center py-20 text-txt-muted">
                 <ShieldCheck className="w-16 h-16 mb-4 text-gray-300 dark:text-slate-600" />
                 <h2 className="text-xl font-semibold mb-2">Không có quyền truy cập</h2>
                 <p>Chỉ Admin mới có thể quản lý tài khoản người dùng.</p>
@@ -170,11 +170,11 @@ const UserAccountManager: React.FC = () => {
                 <div className="bg-bg-surface border border-border rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all duration-200">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-600/50">
-                            <Users className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                            <Users className="w-6 h-6 text-txt-muted" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Tổng tài khoản</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{accounts.length}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Tổng tài khoản</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{accounts.length}</p>
                         </div>
                     </div>
                 </div>
@@ -184,8 +184,8 @@ const UserAccountManager: React.FC = () => {
                             <ToggleRight className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đang hoạt động</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{accounts.filter(a => a.is_active).length}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Đang hoạt động</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{accounts.filter(a => a.is_active).length}</p>
                         </div>
                     </div>
                 </div>
@@ -195,8 +195,8 @@ const UserAccountManager: React.FC = () => {
                             <ToggleLeft className="w-6 h-6 text-red-600 dark:text-red-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Đã tắt</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">{accounts.filter(a => !a.is_active).length}</p>
+                            <p className="text-sm font-semibold text-txt-muted">Đã tắt</p>
+                            <p className="text-2xl font-bold text-txt-primary mt-0.5">{accounts.filter(a => !a.is_active).length}</p>
                         </div>
                     </div>
                 </div>
@@ -220,7 +220,7 @@ const UserAccountManager: React.FC = () => {
                         placeholder="Tìm theo tên, username, email, SĐT..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100"
+                        className="w-full pl-12 pr-4 py-3 bg-bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-txt-primary"
                     />
                 </div>
                 <button

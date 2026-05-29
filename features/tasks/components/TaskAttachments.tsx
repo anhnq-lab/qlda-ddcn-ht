@@ -58,14 +58,14 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
             <div className="h-0.5 bg-gradient-to-r from-violet-400 to-primary-500" />
             <div className="p-4">
                 <div className="flex justify-between items-center mb-5">
-                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest flex items-center gap-2">
                         <Paperclip className="w-4 h-4" /> Tài liệu công việc
                     </h3>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 px-2 py-1 rounded-lg">
+                    <span className="text-[10px] font-bold text-txt-placeholder bg-bg-subtle dark:bg-slate-700 px-2 py-1 rounded-lg">
                         {templates.length} mẫu • {(task.Attachments || []).length} đã tải
                     </span>
                 </div>
@@ -86,11 +86,11 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
                                             <FileIcon className={`w-4 h-4 ${ftc.text}`} />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                            <p className="text-xs font-semibold text-txt-secondary flex items-center gap-2">
                                                 {tpl.name}
                                                 <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${ftc.bg} ${ftc.text}`}>{tpl.fileType}</span>
                                             </p>
-                                            <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5 line-clamp-1">{tpl.description}</p>
+                                            <p className="text-[10px] text-txt-placeholder mt-0.5 line-clamp-1">{tpl.description}</p>
                                             {tpl.legalBasis && (
                                                 <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-0.5 flex items-center gap-1">
                                                     <Scale className="w-2.5 h-2.5" /> {tpl.legalBasis}
@@ -116,7 +116,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
                 )}
 
                 {templates.length === 0 && (
-                    <div className="text-center py-5 mb-4 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
+                    <div className="text-center py-5 mb-4 border-2 border-dashed border-border-subtle rounded-xl">
                         <FileText className="w-6 h-6 text-slate-200 dark:text-slate-600 mx-auto mb-1.5" />
                         <p className="text-[10px] text-slate-300 dark:text-slate-600 italic">Chưa có mẫu cho bước này</p>
                     </div>
@@ -131,14 +131,14 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ task, updateTa
                         <div className="space-y-1.5">
                             {(task.Attachments || []).map((att) => (
                                 <div key={att.id} className="flex items-center gap-3 p-3 bg-emerald-50/40 dark:bg-emerald-900/10 rounded-xl ring-1 ring-emerald-100 dark:ring-emerald-900/30 hover:ring-emerald-200 dark:hover:ring-emerald-800 transition-all group/att">
-                                    <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
+                                    <div className="p-2 bg-bg-surface rounded-xl shadow-sm ring-1 ring-emerald-100 dark:ring-slate-600 shrink-0">
                                         <FileText className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 truncate block transition-colors">
+                                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-txt-secondary hover:text-blue-600 dark:hover:text-blue-400 truncate block transition-colors">
                                             {att.name}
                                         </a>
-                                        <p className="text-[10px] text-slate-400 dark:text-slate-400">{att.size} • {att.uploadDate}</p>
+                                        <p className="text-[10px] text-txt-placeholder">{att.size} • {att.uploadDate}</p>
                                     </div>
                                     <div className="flex items-center gap-1 shrink-0">
                                         <a href={att.url} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Tải xuống">

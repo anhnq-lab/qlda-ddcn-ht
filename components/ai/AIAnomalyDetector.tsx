@@ -13,14 +13,14 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
     const [expanded, setExpanded] = useState<string | null>(null);
 
     return (
-        <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className={`bg-bg-surface rounded-xl border border-border shadow-lg overflow-hidden ${className}`}>
+            <div className="px-4 py-3 bg-bg-subtle border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center">
                         <ScanSearch size={14} className="text-white" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Phát hiện Bất thường AI</h3>
+                        <h3 className="text-sm font-bold text-txt-secondary">Phát hiện Bất thường AI</h3>
                         <p className="text-[10px] text-slate-400">
                             {report ? `${report.anomalies.length} bất thường (${report.totalChecked} DA)` : 'Nhấn để quét'}
                         </p>
@@ -81,7 +81,7 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
                             <div className="flex items-center gap-2.5 p-2.5">
                                 <Icon size={14} className={config.iconClass} />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{anomaly.title}</p>
+                                    <p className="text-xs font-bold text-txt-secondary truncate">{anomaly.title}</p>
                                     <p className="text-[10px] text-slate-400 truncate">{anomaly.projectName}</p>
                                 </div>
                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${config.badge}`}>
@@ -92,15 +92,15 @@ export const AIAnomalyDetector: React.FC<{ className?: string }> = ({ className 
 
                             {isExpanded && (
                                 <div className="px-2.5 pb-2.5 border-t border-slate-200/50 dark:border-slate-700/50 pt-2 space-y-1.5">
-                                    <p className="text-[11px] text-slate-600 dark:text-slate-300">{anomaly.description}</p>
+                                    <p className="text-[11px] text-txt-muted">{anomaly.description}</p>
                                     {anomaly.expectedValue && (
                                         <div className="flex gap-4 text-[10px]">
-                                            <span className="text-slate-400">Kỳ vọng: <b className="text-slate-600 dark:text-slate-300">{anomaly.expectedValue}</b></span>
+                                            <span className="text-slate-400">Kỳ vọng: <b className="text-txt-muted">{anomaly.expectedValue}</b></span>
                                             <span className="text-slate-400">Thực tế: <b className="text-red-600 dark:text-red-400">{anomaly.actualValue}</b></span>
                                         </div>
                                     )}
                                     {anomaly.suggestion && (
-                                        <div className="p-1.5 bg-white/60 dark:bg-slate-700 rounded text-[10px] text-slate-600 dark:text-slate-300">
+                                        <div className="p-1.5 bg-white/60 dark:bg-slate-700 rounded text-[10px] text-txt-muted">
                                             💡 {anomaly.suggestion}
                                         </div>
                                     )}

@@ -8,7 +8,7 @@ const getRoleInfo = (role: Role) => {
     switch (role) {
         case Role.Admin: return { label: 'Q.Trị', color: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 ring-1 ring-primary-500/20', dot: 'bg-primary-500' };
         case Role.Manager: return { label: 'Q.Lý', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20', dot: 'bg-emerald-500' };
-        default: return { label: 'N.Viên', color: 'bg-slate-50 text-slate-600 dark:text-slate-400 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+        default: return { label: 'N.Viên', color: 'bg-slate-50 text-txt-muted ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
     }
 };
 
@@ -32,7 +32,7 @@ const EmployeeGridView: React.FC<EmployeeGridViewProps> = ({
                     <div
                         key={emp.EmployeeID}
                         onClick={() => onView(emp)}
-                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
+                        className="bg-bg-surface rounded-2xl border border-border-subtle hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
                     >
                         {/* Header gradient */}
                         <div className="h-20 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-b-[3px] border-primary-500 relative">
@@ -59,7 +59,7 @@ const EmployeeGridView: React.FC<EmployeeGridViewProps> = ({
 
                         {/* Info */}
                         <div className="px-5 pt-3 pb-5">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition-colors">{emp.FullName}</h3>
+                            <h3 className="text-lg font-bold text-txt-primary group-hover:text-blue-600 transition-colors">{emp.FullName}</h3>
                             <p className="text-sm text-blue-600 font-medium">{emp.Position}</p>
                             <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{emp.Department}</p>
 
@@ -77,13 +77,13 @@ const EmployeeGridView: React.FC<EmployeeGridViewProps> = ({
                             <div className="flex gap-2 mt-4">
                                 <button
                                     onClick={(e) => { e.stopPropagation(); }}
-                                    className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                    className="flex-1 py-2.5 bg-bg-subtle dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-txt-muted rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Mail className="w-3 h-3" /> Email
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); }}
-                                    className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                    className="flex-1 py-2.5 bg-bg-subtle dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-txt-muted rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Phone className="w-3 h-3" /> Gọi
                                 </button>

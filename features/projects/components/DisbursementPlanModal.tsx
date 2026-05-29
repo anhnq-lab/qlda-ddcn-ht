@@ -119,17 +119,17 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
             <div
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-5xl mx-4 border border-gray-200 dark:border-slate-700 animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]"
+                className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-5xl mx-4 border border-border animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
                             <CalendarRange className="w-5 h-5 text-violet-600 dark:text-violet-400" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-3">
+                            <h2 className="text-lg font-bold text-txt-primary flex items-center gap-3">
                                 Lập kế hoạch 12 tháng
                                 {annualLimit > 0 && (
                                     <span className="text-xs font-medium px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full border border-blue-200 dark:border-blue-800">
@@ -139,16 +139,16 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                             </h2>
                         </div>
                     </div>
-                    <button type="button" onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <button type="button" onClick={onClose} className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
                         <X className="w-5 h-5 text-gray-400" />
                     </button>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-                    <div className="p-4 shrink-0 border-b border-gray-100 dark:border-slate-700/50">
+                    <div className="p-4 shrink-0 border-b border-border-subtle">
                         <div className="w-48">
-                            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">
                                 Kế hoạch Năm <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -156,7 +156,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                                 value={year}
                                 onChange={e => handleYearChange(Number(e.target.value))}
                                 min={2020} max={2035}
-                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-800 dark:text-slate-100 text-sm font-bold focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
+                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-txt-primary text-sm font-bold focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
                                 required
                             />
                         </div>
@@ -164,7 +164,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
 
                     <div className="flex-1 overflow-y-auto p-4">
                         <table className="w-full text-sm text-left">
-                            <thead className="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800 dark:text-slate-400 rounded-lg border-b border-slate-200 dark:border-slate-700">
+                            <thead className="text-xs text-slate-500 bg-bg-subtle dark:text-slate-400 rounded-lg border-b border-border">
                                 <tr>
                                     <th className="py-3 px-4 rounded-tl-lg rounded-bl-lg w-24">Tháng</th>
                                     <th className="py-3 px-4 w-1/5">Kế hoạch (VNĐ)</th>
@@ -185,8 +185,8 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                                         : '';
 
                                     return (
-                                        <tr key={e.month} className="border-b border-gray-100 dark:border-slate-700/50 last:border-0 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-800 transition-colors">
-                                            <td className="py-2.5 px-4 font-medium text-gray-700 dark:text-slate-300">
+                                        <tr key={e.month} className="border-b border-border-subtle last:border-0 hover:bg-bg-subtle dark:hover:bg-slate-800 transition-colors">
+                                            <td className="py-2.5 px-4 font-medium text-txt-secondary">
                                                 Tháng {e.month}
                                             </td>
                                             <td className="py-2.5 px-4">
@@ -194,12 +194,12 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                                                     type="text"
                                                     value={e.plannedAmount ? Number(e.plannedAmount).toLocaleString('vi-VN') : ''}
                                                     onChange={ev => handleChange(e.month, 'plannedAmount', ev.target.value)}
-                                                    className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm font-mono focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
+                                                    className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-bg-surface text-txt-primary text-sm font-mono focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
                                                     placeholder="0"
                                                 />
                                             </td>
                                             <td className="py-2.5 px-4">
-                                                <span className="text-emerald-700 dark:text-emerald-400 font-mono font-medium block w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 rounded-lg border border-transparent">
+                                                <span className="text-emerald-700 dark:text-emerald-400 font-mono font-medium block w-full px-3 py-1.5 bg-bg-subtle dark:bg-slate-700 rounded-lg border border-transparent">
                                                     {formatCurrency(Number(e.actualAmount) || 0)}
                                                 </span>
                                             </td>
@@ -212,7 +212,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                                                             </span>
                                                         ))}
                                                         {tasksInMonth.length > 3 && (
-                                                            <span className="inline-block px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 text-[11px] font-medium rounded-md" title={tasksInMonth.slice(3).join(', ')}>
+                                                            <span className="inline-block px-2 py-0.5 bg-bg-muted text-txt-muted text-[11px] font-medium rounded-md" title={tasksInMonth.slice(3).join(', ')}>
                                                                 +{tasksInMonth.length - 3} việc
                                                             </span>
                                                         )}
@@ -226,7 +226,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                                 })}
                                 {/* Tổng cộng footer */}
                                 <tr className="bg-gray-50 dark:bg-slate-700 font-bold border-t border-gray-200 dark:border-slate-600">
-                                    <td className="py-3 px-4 text-gray-800 dark:text-slate-200">Tổng cộng</td>
+                                    <td className="py-3 px-4 text-txt-primary">Tổng cộng</td>
                                     <td className="py-3 px-4 text-violet-700 dark:text-violet-400 font-mono">
                                         {formatCurrency(totalPlanned)}
                                     </td>
@@ -240,7 +240,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-slate-700 shrink-0 bg-gray-50 dark:bg-slate-800 rounded-b-2xl">
+                    <div className="flex justify-between items-center px-6 py-4 border-t border-border shrink-0 bg-bg-subtle rounded-b-2xl">
                         <div>
                             {totalPlanned > annualLimit && (
                                 <p className="text-red-500 font-medium tracking-tight text-sm bg-red-50 dark:bg-red-900/20 px-3 py-1.5 border border-red-200 dark:border-red-800/50 rounded-lg shadow-sm">
@@ -252,7 +252,7 @@ export const DisbursementPlanModal: React.FC<DisbursementPlanModalProps> = ({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-txt-muted bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors"
                             >
                                 Hủy
                             </button>

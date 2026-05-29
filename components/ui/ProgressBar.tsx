@@ -34,7 +34,7 @@ const colorStyles: Record<Exclude<ProgressBarColor, 'auto'>, string> = {
     blue: 'bg-gradient-to-r from-blue-400 to-blue-500',
     primary: 'bg-gradient-to-r from-primary-400 to-primary-500',
     red: 'bg-gradient-to-r from-red-400 to-red-500',
-    slate: 'bg-slate-300 dark:bg-slate-50 dark:bg-slate-800',
+    slate: 'bg-bg-muted',
 };
 
 function getAutoColor(value: number): string {
@@ -56,14 +56,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 
     return (
         <div className={`flex items-center gap-2 ${className}`}>
-            <div className={`flex-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden ${sizeStyles[size]}`}>
+            <div className={`flex-1 bg-bg-muted rounded-full overflow-hidden ${sizeStyles[size]}`}>
                 <div
                     className={`h-full rounded-full transition-all duration-700 ease-out ${fillColor}`}
                     style={{ width: `${clampedValue}%` }}
                 />
             </div>
             {(showLabel || label) && (
-                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">
+                <span className="text-[10px] font-bold text-txt-muted tabular-nums whitespace-nowrap">
                     {label || `${clampedValue.toFixed(0)}%`}
                 </span>
             )}

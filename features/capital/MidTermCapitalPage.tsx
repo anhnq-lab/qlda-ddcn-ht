@@ -197,7 +197,7 @@ const CapitalPlanningPage: React.FC = () => {
 
     if (loadingPlans) {
         return (
-            <div className="p-4 text-center text-gray-500 dark:text-slate-400">
+            <div className="p-4 text-center text-txt-muted">
                 <CalendarRange className="w-10 h-10 mx-auto mb-3 opacity-30 animate-pulse" />
                 Đang tải dữ liệu...
             </div>
@@ -213,16 +213,16 @@ const CapitalPlanningPage: React.FC = () => {
                         <div className="p-2.5 rounded-xl shadow-sm bg-gradient-to-br from-primary-500 to-primary-600">
                             <Landmark className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-gray-800 dark:text-slate-100">Kế hoạch Vốn & Giải ngân</span>
+                        <span className="text-txt-primary">Kế hoạch Vốn & Giải ngân</span>
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 ml-14">
+                    <p className="text-sm text-txt-muted mt-1 ml-14">
                         Luật ĐTC 58/2024/QH15 • Quản lý tổng hợp tất cả dự án
                     </p>
                 </div>
             </div>
 
             {/* ───── Toolbar & Stats ───── */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 {/* Stats Badges */}
                 <div className="flex flex-wrap items-center gap-2.5">
                     {[
@@ -262,7 +262,7 @@ const CapitalPlanningPage: React.FC = () => {
                         <select
                             value={sourceFilter}
                             onChange={e => setSourceFilter(e.target.value)}
-                            className="filter-primary px-3 py-1.5 text-xs bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
+                            className="filter-primary px-3 py-1.5 text-xs bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
                         >
                             <option value="all">Tất cả nguồn</option>
                             <option value="NSĐP">NS Địa phương</option>
@@ -272,11 +272,11 @@ const CapitalPlanningPage: React.FC = () => {
                     </div>
                     {/* Year filter */}
                     <div className="flex items-center gap-1.5">
-                        <label className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Năm:</label>
+                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider">Năm:</label>
                         <select
                             value={yearFilter}
                             onChange={e => setYearFilter(Number(e.target.value))}
-                            className="filter-primary px-3 py-1.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
+                            className="filter-primary px-3 py-1.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
                         >
                             {Array.from({ length: 8 }, (_, i) => new Date().getFullYear() + 2 - i).map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
@@ -320,14 +320,14 @@ const CapitalPlanningPage: React.FC = () => {
                         {slowDisbursementAlerts.map((p: any) => {
                             const rate = Math.round((Number(p.disbursed_amount) / Number(p.amount)) * 100);
                             return (
-                                <div key={p.plan_id} className="bg-white dark:bg-slate-800 rounded-lg p-3 shadow-sm border border-rose-100 dark:border-rose-800/50 flex flex-col justify-between cursor-pointer hover:border-rose-300 transition-colors" onClick={() => navigate(`/projects/${p.project_id}?tab=capital`)}>
-                                    <p className="text-[11px] font-bold text-gray-800 dark:text-slate-200 line-clamp-2 mb-2" title={p.project_name || p.project_id}>
+                                <div key={p.plan_id} className="bg-bg-surface rounded-lg p-3 shadow-sm border border-rose-100 dark:border-rose-800/50 flex flex-col justify-between cursor-pointer hover:border-rose-300 transition-colors" onClick={() => navigate(`/projects/${p.project_id}?tab=capital`)}>
+                                    <p className="text-[11px] font-bold text-txt-primary line-clamp-2 mb-2" title={p.project_name || p.project_id}>
                                         {p.project_name || p.project_id}
                                     </p>
                                     <div className="flex justify-between items-end mt-auto">
                                         <div>
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400">Đã GN / Kế hoạch</p>
-                                            <p className="text-[11px] font-mono font-bold text-gray-700 dark:text-slate-300">
+                                            <p className="text-[10px] text-txt-muted">Đã GN / Kế hoạch</p>
+                                            <p className="text-[11px] font-mono font-bold text-txt-secondary">
                                                 {fmtB(Number(p.disbursed_amount))} / {fmtB(Number(p.amount))}
                                             </p>
                                         </div>
@@ -337,7 +337,7 @@ const CapitalPlanningPage: React.FC = () => {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden">
+                                    <div className="w-full bg-bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
                                         <div className={`h-1.5 rounded-full ${rate < 30 ? 'bg-red-500' : 'bg-rose-400'}`} style={{ width: `${Math.max(2, rate)}%` }}></div>
                                     </div>
                                 </div>
@@ -349,11 +349,11 @@ const CapitalPlanningPage: React.FC = () => {
 
             {/* ───── Overview Chart ───── */}
             <div className="section-card p-4">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-blue-500" />
                     Tổng quan Kế hoạch vs Giải ngân (5 năm)
                 </h3>
-                <React.Suspense fallback={<div className="h-48 bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />}>
+                <React.Suspense fallback={<div className="h-48 bg-bg-subtle rounded-xl animate-pulse" />}>
                     <CapitalOverviewChart chartData={chartData} />
                 </React.Suspense>
             </div>
@@ -371,7 +371,7 @@ const CapitalPlanningPage: React.FC = () => {
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                                     isActive
                                         ? 'text-white shadow-md'
-                                        : 'text-gray-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700'
                                 }`}
                                 style={isActive ? { background: tabColors[t.color] } : undefined}
                             >

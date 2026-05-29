@@ -19,8 +19,8 @@ export const CapitalAlertBanner: React.FC<CapitalAlertBannerProps> = ({ alerts }
     if (alerts.length === 0) return null;
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-            <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-warning-50/50 dark:bg-warning-900/20">
+        <div className="bg-bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="px-6 py-3 border-b border-border bg-warning-50/50 dark:bg-warning-900/20">
                 <h3 className="text-sm font-bold text-warning-800 dark:text-warning-400 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4" />
                     Cảnh báo giải ngân

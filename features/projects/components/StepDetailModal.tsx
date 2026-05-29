@@ -79,10 +79,10 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
             />
 
             {/* Slide Panel */}
-            <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-white dark:bg-slate-900 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-bg-surface shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
+                <div className="px-6 py-4 border-b border-border bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 min-w-0">
                             {/* Status Icon */}
@@ -98,10 +98,10 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                 )}
                             </div>
                             <div className="min-w-0">
-                                <h2 className="text-base font-bold text-gray-900 dark:text-slate-100 truncate">
+                                <h2 className="text-base font-bold text-txt-primary truncate">
                                     Bước {item.id}. {item.title}
                                 </h2>
-                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                                <p className="text-xs text-txt-muted mt-0.5">
                                     Kế hoạch thực hiện — Chi tiết bước công việc
                                 </p>
                             </div>
@@ -110,7 +110,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                             {linkedTasks.length > 0 ? (
                                 <button
                                     onClick={() => onEditTask(linkedTasks.find(t => !(t as any).ParentID) || linkedTasks[0])}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-700 hover:bg-warning-50 dark:hover:bg-warning-900/30 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:text-warning-700 dark:hover:text-warning-400 border border-gray-200 dark:border-slate-600 hover:border-warning-200 dark:hover:border-warning-700 rounded-lg shadow-sm transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface hover:bg-warning-50 dark:hover:bg-warning-900/30 text-xs font-semibold text-txt-secondary hover:text-warning-700 dark:hover:text-warning-400 border border-gray-200 dark:border-slate-600 hover:border-warning-200 dark:hover:border-warning-700 rounded-lg shadow-sm transition-colors"
                                 >
                                     <Edit3 className="w-3.5 h-3.5" />
                                     Sửa nội dung kế hoạch
@@ -126,7 +126,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                             )}
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0"
+                                className="p-2 hover:bg-bg-muted rounded-lg transition-colors shrink-0"
                             >
                                 <X className="w-5 h-5 text-gray-500" />
                             </button>
@@ -151,7 +151,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                         type="text"
                                         value={roleValue}
                                         onChange={(e) => setRoleValue(e.target.value)}
-                                        className="flex-1 text-sm font-semibold bg-white dark:bg-slate-800 border border-warning-300 dark:border-warning-700 rounded px-2 py-0.5 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-warning-400"
+                                        className="flex-1 text-sm font-semibold bg-bg-surface border border-warning-300 dark:border-warning-700 rounded px-2 py-0.5 text-txt-primary focus:ring-1 focus:ring-warning-400"
                                         autoFocus
                                         onKeyDown={(e) => e.key === 'Enter' && handleSaveRole()}
                                     />
@@ -219,11 +219,11 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                     {/* Progress */}
                     {stepAgg && stepAgg.childCount > 0 && (
                         <div className="px-6 pb-3">
-                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800 rounded-xl p-3 border border-gray-200 dark:border-slate-700">
+                            <div className="flex items-center gap-3 bg-bg-subtle rounded-xl p-3 border border-border">
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-xs font-medium text-gray-700 dark:text-slate-300">Tiến độ tổng thể</span>
-                                        <span className="text-xs font-bold text-gray-900 dark:text-slate-100">{stepAgg.progress}%</span>
+                                        <span className="text-xs font-medium text-txt-secondary">Tiến độ tổng thể</span>
+                                        <span className="text-xs font-bold text-txt-primary">{stepAgg.progress}%</span>
                                     </div>
                                     <div className="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-2">
                                         <div
@@ -238,7 +238,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                         />
                                     </div>
                                 </div>
-                                <span className="text-xs text-gray-500 dark:text-slate-400 shrink-0">
+                                <span className="text-xs text-txt-muted shrink-0">
                                     {completedCount}/{linkedTasks.length} việc
                                 </span>
                             </div>
@@ -248,7 +248,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                     {/* Task List */}
                     <div className="px-6 pb-6">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-txt-primary flex items-center gap-2">
                                 <Layers className="w-4 h-4 text-gray-400" />
                                 Danh sách công việc ({linkedTasks.length})
                             </h3>
@@ -262,12 +262,12 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         </div>
 
                         {linkedTasks.length === 0 ? (
-                            <div className="text-center py-10 bg-gray-50 dark:bg-slate-800 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+                            <div className="text-center py-10 bg-bg-subtle rounded-xl border border-dashed border-border">
                                 <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
-                                <p className="text-sm text-gray-500 dark:text-slate-400">
+                                <p className="text-sm text-txt-muted">
                                     Chưa có công việc nào trong bước này
                                 </p>
-                                <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">
+                                <p className="text-xs text-txt-placeholder mt-1">
                                     Bấm &quot;Thêm công việc&quot; để bắt đầu
                                 </p>
                             </div>
@@ -281,12 +281,12 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                         <div
                                             key={task.TaskID}
                                             onClick={() => onEditTask(task)}
-                                            className={`group/task bg-white dark:bg-slate-800 border rounded-xl p-3 cursor-pointer transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 ${
+                                            className={`group/task bg-bg-surface border rounded-xl p-3 cursor-pointer transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 ${
                                                 overdueFlag
                                                     ? 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10'
                                                     : task.Status === TaskStatus.Done
                                                         ? 'border-emerald-200 dark:border-emerald-800'
-                                                        : 'border-gray-200 dark:border-slate-700'
+                                                        : 'border-border'
                                             }`}
                                         >
                                             <div className="flex items-start gap-3">
@@ -312,10 +312,10 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                     <div className="flex items-center gap-2 flex-wrap">
                                                         <span className={`text-sm font-medium ${
                                                             task.Status === TaskStatus.Done
-                                                                ? 'text-gray-400 dark:text-slate-400'
+                                                                ? 'text-txt-placeholder'
                                                                 : overdueFlag
                                                                     ? 'text-red-700 dark:text-red-400'
-                                                                    : 'text-gray-800 dark:text-slate-200'
+                                                                    : 'text-txt-primary'
                                                         }`}>
                                                             {task.Title}
                                                         </span>
@@ -333,7 +333,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                         </span>
 
                                                         {/* Assignee */}
-                                                        <span className="inline-flex items-center gap-1 text-[10px] text-gray-500 dark:text-slate-400">
+                                                        <span className="inline-flex items-center gap-1 text-[10px] text-txt-muted">
                                                             <User className="w-3 h-3 text-gray-400" />
                                                             {task.AssigneeID && employeeNameMap[task.AssigneeID] ? (
                                                                 employeeNameMap[task.AssigneeID]
@@ -345,7 +345,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                                                         {/* Date */}
                                                         {task.DueDate && (
                                                             <span className={`inline-flex items-center gap-1 text-[10px] ${
-                                                                overdueFlag ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-400 dark:text-slate-400'
+                                                                overdueFlag ? 'text-red-600 dark:text-red-400 font-bold' : 'text-txt-placeholder'
                                                             }`}>
                                                                 <Calendar className="w-3 h-3" />
                                                                 {formatDateShort(task.StartDate)} → {formatDateShort(task.DueDate)}
@@ -385,8 +385,8 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center justify-between">
-                    <span className="text-xs text-gray-400 dark:text-slate-400">
+                <div className="px-6 py-3 border-t border-border bg-bg-subtle flex items-center justify-between">
+                    <span className="text-xs text-txt-placeholder">
                         Mã bước: {item.code.substring(0, 8)}...
                     </span>
                     <div className="flex items-center gap-2">
@@ -399,7 +399,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
                         </button>
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 rounded-lg border border-gray-300 dark:border-slate-600 transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-txt-muted bg-bg-surface hover:bg-gray-50 dark:hover:bg-slate-600 rounded-lg border border-gray-300 dark:border-slate-600 transition-colors"
                         >
                             Đóng
                         </button>

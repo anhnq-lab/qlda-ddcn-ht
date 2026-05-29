@@ -163,7 +163,7 @@ export const DisbursementDetailPanel: React.FC<DisbursementDetailPanelProps> = (
                                                 </p>
                                             </div>
                                             {proj.member_role && (
-                                                <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-txt-secondary rounded-md border border-border">
+                                                <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 bg-bg-muted text-txt-secondary rounded-md border border-border">
                                                     <HardHat size={10} />
                                                     {proj.member_role}
                                                 </span>
@@ -222,7 +222,7 @@ export const DisbursementDetailPanel: React.FC<DisbursementDetailPanelProps> = (
                                                     <span>Tiến độ giải ngân</span>
                                                     <span>{proj.adjusted_rate}%</span>
                                                 </div>
-                                                <div className="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div className="h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                                     <div 
                                                         className={`h-full rounded-full ${
                                                             Number(proj.adjusted_rate) >= 85 ? 'bg-emerald-500' :

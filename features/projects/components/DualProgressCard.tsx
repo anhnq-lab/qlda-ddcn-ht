@@ -76,14 +76,14 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                                 bgColor={ringBg}
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-sm font-black text-gray-800 dark:text-slate-100 tabular-nums">
+                                <span className="text-sm font-black text-txt-primary tabular-nums">
                                     {physicalProgress.toFixed(0)}%
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-1 mt-1.5">
                             <TrendingUp className="w-3 h-3 text-primary-600" />
-                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-400">{physicalLabel}</span>
+                            <span className="text-[10px] font-bold text-txt-muted">{physicalLabel}</span>
                         </div>
                     </div>
 
@@ -99,14 +99,14 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                                 bgColor={ringBg}
                             />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-sm font-black text-gray-800 dark:text-slate-100 tabular-nums">
+                                <span className="text-sm font-black text-txt-primary tabular-nums">
                                     {financialProgress.toFixed(0)}%
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-1 mt-1.5">
                             <TrendingUp className="w-3 h-3 text-primary-600" />
-                            <span className="text-[10px] font-bold text-gray-600 dark:text-slate-400">{financialLabel}</span>
+                            <span className="text-[10px] font-bold text-txt-muted">{financialLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                 {/* Summary Bar */}
                 <div className="bg-gray-50 dark:bg-slate-700 rounded-lg px-2.5 py-1.5">
                     <div className="flex items-center justify-between text-[10px]">
-                        <span className="text-gray-500 dark:text-slate-400 font-medium">Trung bình tiến độ</span>
+                        <span className="text-txt-muted font-medium">Trung bình tiến độ</span>
                         <span className={`font-black tabular-nums ${avgProgress >= 50 ? 'text-emerald-600' : avgProgress > 20 ? 'text-primary-600' : 'text-red-600'}`}>
                             {avgProgress.toFixed(1)}%
                         </span>

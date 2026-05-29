@@ -48,27 +48,27 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
     }, []);
 
     return (
-        <header className="layout-header h-16 bg-white dark:bg-slate-900 backdrop-blur-md border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-colors duration-200">
+        <header className="layout-header h-16 bg-bg-surface backdrop-blur-md border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-colors duration-200">
             {/* Left: Mobile menu + Search */}
             <div className="flex items-center gap-2 sm:gap-4 flex-1">
                 <button
                     onClick={onMenuClick}
                     aria-label="Mở menu điều hướng"
-                    className="lg:hidden p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    className="lg:hidden p-2 text-txt-muted hover:text-txt-primary hover:bg-bg-muted rounded-lg transition-colors cursor-pointer"
                 >
                     <Menu size={20} />
                 </button>
 
                 <div className="relative flex-1 max-w-md hidden sm:flex">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-4 w-4 text-slate-400" />
+                        <Search className="h-4 w-4 text-txt-placeholder" />
                     </div>
                     <button
                         onClick={onOpenSearch}
-                        className="block w-full pl-10 pr-3 py-2 text-left border border-border rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-white dark:bg-slate-850 dark:hover:bg-slate-700 text-sm text-slate-500 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all cursor-pointer group shadow-lg"
+                        className="block w-full pl-10 pr-3 py-2 text-left border border-border rounded-xl bg-bg-subtle hover:bg-bg-muted text-sm text-txt-muted focus:outline-none focus:ring-2 focus:ring-focus/50 focus:border-primary-500 transition-all cursor-pointer group shadow-card"
                     >
                         Tìm kiếm dự án, dữ liệu...
-                        <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-400 dark:text-slate-300 rounded border border-border">
+                        <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 bg-bg-surface text-[10px] font-bold text-txt-muted rounded border border-border">
                             Ctrl+K
                         </kbd>
                     </button>
@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                 <button
                     onClick={onOpenSearch}
                     aria-label="Tìm kiếm"
-                    className="sm:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    className="sm:hidden p-2 text-txt-muted hover:bg-bg-muted rounded-lg transition-colors cursor-pointer"
                 >
                     <Search size={20} />
                 </button>
@@ -90,13 +90,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                 {/* Notifications */}
                 <NotificationBell />
 
-                <div className="h-6 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+                <div className="h-6 w-[1px] bg-border mx-1 hidden sm:block"></div>
 
                 {/* User Menu */}
                 <div className="relative" ref={menuRef}>
                     <button
                         onClick={() => setShowUserMenu(!showUserMenu)}
-                        className="flex items-center gap-2.5 p-1.5 pr-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                        className="flex items-center gap-2.5 p-1.5 pr-2 hover:bg-bg-muted rounded-xl transition-colors cursor-pointer"
                     >
                         <Avatar
                             name={displayUser?.FullName || 'User'}
@@ -105,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                             ringColor={isImpersonating ? "ring-amber-500 animate-pulse" : "ring-primary-100 dark:ring-primary-900/50"}
                         />
                         <div className="hidden sm:block text-left max-w-[120px]">
-                            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight flex items-center gap-1">
+                            <p className="text-xs font-bold text-txt-primary truncate leading-tight flex items-center gap-1">
                                 {displayUser?.FullName || 'Khách'}
                                 {isImpersonating && (
                                     <span className="inline-block px-1 py-0.5 text-[8px] font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded border border-amber-200 dark:border-amber-900/50 shrink-0">
@@ -113,17 +113,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                     </span>
                                 )}
                             </p>
-                            <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate leading-tight mt-0.5">
+                            <p className="text-[10px] font-medium text-txt-muted truncate leading-tight mt-0.5">
                                 {displayUser?.Department || 'Chức vụ'}
                             </p>
                         </div>
-                        <ChevronDown size={14} className={`hidden sm:block text-slate-400 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={14} className={`hidden sm:block text-txt-muted transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Dropdown Menu */}
                     {showUserMenu && (
-                        <div className="user-dropdown absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+                        <div className="user-dropdown absolute right-0 top-full mt-2 w-72 bg-bg-elevated rounded-xl shadow-dropdown border border-border py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                            <div className="px-4 py-3 border-b border-border-subtle">
                                 <div className="flex items-center gap-3">
                                     <Avatar
                                         name={displayUser?.FullName || 'User'}
@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                         ringColor={isImpersonating ? "ring-amber-500 animate-pulse" : ""}
                                     />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate flex items-center gap-1.5 animate-pulse-once">
+                                        <p className="text-sm font-semibold text-txt-primary truncate flex items-center gap-1.5 animate-pulse-once">
                                             {displayUser?.FullName || 'Người dùng'}
                                             {isImpersonating && (
                                                 <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded border border-amber-200 dark:border-amber-900/50 shrink-0">
@@ -140,14 +140,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                                 </span>
                                             )}
                                         </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                        <p className="text-xs text-txt-muted truncate mt-0.5">
                                             {displayUser?.Email || 'user@company.com'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="px-2 py-2 border-b border-slate-100 dark:border-slate-700">
+                            <div className="px-2 py-2 border-b border-border-subtle">
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
@@ -157,25 +157,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                             width: '50vw'
                                         });
                                     }}
-                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                                    className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-txt-secondary hover:bg-bg-muted rounded-lg transition-colors cursor-pointer"
                                 >
                                     <User size={16} />
                                     Hồ sơ cá nhân
                                 </button>
                             </div>
 
-                            <div className="px-2 py-2 border-b border-slate-100 dark:border-slate-700">
+                            <div className="px-2 py-2 border-b border-border-subtle">
                                 {/* Theme Toggle */}
                                 <div className="px-2 py-2 flex items-center justify-between">
-                                    <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Giao diện</span>
-                                    <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                                    <span className="text-xs font-medium text-txt-secondary">Giao diện</span>
+                                    <div className="flex items-center gap-1 p-0.5 bg-bg-muted rounded-lg">
                                         <button
                                             onClick={() => setTheme('light')}
                                             title="Sáng"
                                             className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'light'
-                                                    ? 'bg-white text-primary-600 shadow-lg border border-slate-200'
-                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                    ? 'bg-bg-surface text-primary-600 shadow-card border border-border'
+                                                    : 'text-txt-muted hover:text-txt-primary'
                                             }`}
                                         >
                                             <Sun size={16} />
@@ -185,8 +185,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                             title="Bảo vệ mắt"
                                             className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'nature'
-                                                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-lg border border-border dark:border-transparent'
-                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                    ? 'bg-bg-surface text-emerald-600 dark:text-emerald-400 shadow-card border border-border'
+                                                    : 'text-txt-muted hover:text-txt-primary'
                                             }`}
                                         >
                                             <Leaf size={16} />
@@ -196,8 +196,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                                             title="Tối"
                                             className={`flex items-center justify-center p-2 rounded-md transition-all cursor-pointer ${
                                                 theme === 'dark'
-                                                    ? 'bg-slate-800 dark:bg-slate-700 text-primary-400 shadow-lg'
-                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                    ? 'bg-slate-800 text-primary-300 shadow-card'
+                                                    : 'text-txt-muted hover:text-txt-primary'
                                             }`}
                                         >
                                             <Moon size={16} />
@@ -207,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => 
                             </div>
 
                             {isImpersonating && (
-                                <div className="px-2 py-1.5 border-b border-slate-100 dark:border-slate-700">
+                                <div className="px-2 py-1.5 border-b border-border-subtle">
                                     <button
                                         onClick={() => {
                                             setShowUserMenu(false);

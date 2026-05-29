@@ -53,7 +53,7 @@ const Settings: React.FC = () => {
 
     if (!isAdmin) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500 dark:text-slate-400">
+            <div className="flex flex-col items-center justify-center py-20 text-txt-muted">
                 <ShieldCheck className="w-16 h-16 mb-4 text-slate-300 dark:text-slate-600" />
                 <h2 className="text-xl font-semibold mb-2">Không có quyền truy cập</h2>
                 <p>Chỉ Admin mới có thể truy cập cài đặt hệ thống.</p>
@@ -66,13 +66,13 @@ const Settings: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 px-6 lg:px-8 pt-8 pb-2">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-txt-primary flex items-center gap-3">
                         <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm shadow-primary-500/20">
                             <ShieldCheck className="w-6 h-6 text-white" />
                         </div>
                         Cài đặt hệ thống
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                    <p className="text-sm text-txt-muted mt-2 font-medium">
                         Quản trị tài khoản, phân quyền, nhật ký và công cụ hệ thống
                     </p>
                 </div>
@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
                                     rounded-lg transition-all duration-200
                                     ${isActive
                                         ? 'text-primary-700 dark:text-white bg-white dark:bg-primary-600 shadow-sm ring-1 ring-black/5 dark:ring-primary-500/50'
-                                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700'
                                     }
                                 `}
                             >
@@ -146,14 +146,14 @@ const Settings: React.FC = () => {
                     )}
                     {activeTab === 'tools' && (
                         <div className="p-6 lg:p-8 max-w-2xl">
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                                <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                            <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
+                                <div className="p-4 border-b border-border flex items-center gap-3">
                                     <div className="p-2 bg-warning-50 dark:bg-warning-900/30 rounded-xl">
                                         <Users className="w-5 h-5 text-warning-600 dark:text-warning-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Giả làm người dùng</h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">Test phân quyền bằng cách đăng nhập với vai trò khác</p>
+                                        <h3 className="text-sm font-bold text-txt-primary">Giả làm người dùng</h3>
+                                        <p className="text-xs text-txt-muted">Test phân quyền bằng cách đăng nhập với vai trò khác</p>
                                     </div>
                                 </div>
                                 <div className="p-4">

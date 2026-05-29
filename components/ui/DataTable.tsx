@@ -261,12 +261,12 @@ function DataTable<T extends Record<string, any>>({
 
     const getSortIcon = (key: string) => {
         if (sortConfig.key !== key)
-            return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-400 shrink-0" />;
+            return <ChevronsUpDown size={12} className="text-txt-muted shrink-0" />;
         if (sortConfig.direction === 'asc')
             return <ChevronUp size={12} className="text-primary-500 shrink-0" />;
         if (sortConfig.direction === 'desc')
             return <ChevronDown size={12} className="text-primary-500 shrink-0" />;
-        return <ChevronsUpDown size={12} className="text-slate-400 dark:text-slate-400 shrink-0" />;
+        return <ChevronsUpDown size={12} className="text-txt-muted shrink-0" />;
     };
 
     const groupedData = useMemo(() => {
@@ -302,7 +302,7 @@ function DataTable<T extends Record<string, any>>({
                     ${onRowClick ? 'cursor-pointer' : ''}
                     ${isSelected
                         ? 'bg-primary-50 dark:bg-primary-900/20'
-                        : 'hover:bg-slate-50/80 dark:hover:bg-slate-700'
+                        : 'hover:bg-bg-hover-row'
                     }
                     ${rowClassName?.(row, index) || ''}
                 `}
@@ -313,7 +313,7 @@ function DataTable<T extends Record<string, any>>({
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleSelectRow(key)}
-                            className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
+                            className="w-4 h-4 rounded border-border-subtle text-primary-500 focus:ring-primary-500"
                         />
                     </td>
                 )}
@@ -331,7 +331,7 @@ function DataTable<T extends Record<string, any>>({
                             }}
                             className={`
                                 ${tdPad}
-                                text-sm text-slate-700 dark:text-slate-300
+                                text-sm text-txt-secondary
                                 ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
                                 ${col.className || ''}
                             `}
@@ -360,9 +360,9 @@ function DataTable<T extends Record<string, any>>({
             {/* ── TABLE CARD ── */}
             <div
                 className={`
-                    bg-white dark:bg-slate-800
-                    rounded-2xl border border-slate-100 dark:border-slate-700
-                    shadow-sm overflow-hidden
+                    bg-bg-surface
+                    rounded-2xl border border-border-subtle
+                    shadow-card overflow-hidden
                     ${className}
                 `}
             >
@@ -373,14 +373,14 @@ function DataTable<T extends Record<string, any>>({
                     <table className="w-full">
                         {/* ── HEADER ── */}
                         <thead className={stickyHeader ? 'sticky top-0 z-10 shadow-sm' : ''}>
-                            <tr className="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
                                 {selectable && (
-                                    <th className={`${thPad} w-10 border-b border-slate-200 dark:border-slate-700 text-center`}>
+                                    <th className={`${thPad} w-10 border-b border-border text-center`}>
                                         <input
                                             type="checkbox"
                                             checked={selectedKeys.length === data.length && data.length > 0}
                                             onChange={handleSelectAll}
-                                            className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500"
+                                            className="w-4 h-4 rounded border-border-subtle text-primary-500 focus:ring-primary-500"
                                         />
                                     </th>
                                 )}
@@ -395,8 +395,8 @@ function DataTable<T extends Record<string, any>>({
                                         }}
                                         className={`
                                             ${thPad}
-                                            border-b border-slate-200 dark:border-slate-700
-                                            text-slate-500 dark:text-slate-400
+                                            border-b border-border
+                                            text-txt-muted
                                             ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'}
                                             ${sortable && col.sortable ? 'cursor-pointer select-none hover:text-primary-600 dark:hover:text-primary-400 transition-colors' : ''}
                                             ${col.headerClassName || ''}
@@ -412,20 +412,20 @@ function DataTable<T extends Record<string, any>>({
                         </thead>
 
                         {/* ── BODY ── */}
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
+                        <tbody className="divide-y divide-border-subtle bg-bg-surface">
                             {isLoading ? (
                                 // Skeleton rows
                                 Array.from({ length: loadingRows }).map((_, i) => (
                                     <tr key={`skel-${i}`}>
                                         {selectable && (
                                             <td className={thPad}>
-                                                <div className="h-4 w-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                                                <div className="h-4 w-4 bg-bg-muted rounded animate-pulse" />
                                             </td>
                                         )}
                                         {columns.map((col, j) => (
                                             <td key={`skel-${i}-${j}`} className={tdPad}>
                                                 <div
-                                                    className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"
+                                                    className="h-4 bg-bg-muted rounded animate-pulse"
                                                     style={{ width: j === 0 ? '60%' : j === 1 ? '80%' : '50%' }}
                                                 />
                                             </td>
@@ -437,7 +437,7 @@ function DataTable<T extends Record<string, any>>({
                                 <tr>
                                     <td colSpan={totalCols} className="px-4 py-16 text-center">
                                         {emptyState || (
-                                            <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-400">
+                                            <div className="flex flex-col items-center gap-3 text-txt-muted">
                                                 {emptyIcon || (
                                                     <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}
@@ -459,9 +459,9 @@ function DataTable<T extends Record<string, any>>({
                                             {renderGroupHeader ? (
                                                 renderGroupHeader(groupName, groupItems, isExpanded, toggle)
                                             ) : (
-                                                <tr className="bg-slate-50 dark:bg-slate-800 border-y border-slate-100 dark:border-slate-700/50" onClick={toggle}>
+                                                <tr className="bg-bg-subtle border-y border-border-subtle" onClick={toggle}>
                                                     <td colSpan={totalCols} className="px-4 py-2 cursor-pointer select-none">
-                                                        <div className="flex items-center gap-2 font-medium text-sm text-slate-700 dark:text-slate-300">
+                                                        <div className="flex items-center gap-2 font-medium text-sm text-txt-secondary">
                                                             <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                                                             {groupName} ({groupItems.length})
                                                         </div>
@@ -482,21 +482,21 @@ function DataTable<T extends Record<string, any>>({
 
             {/* ── FOOTER (Pagination / Counter) ── */}
             {shouldShowFooter && !isLoading && (
-                <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-border-subtle shadow-sm">
                     {/* Left: count info */}
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-txt-muted">
                         {pagination ? (
                             <>
                                 Hiển thị{' '}
-                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                <span className="font-bold text-txt-secondary">
                                     {((pagination.currentPage - 1) * pagination.pageSize) + 1}
                                 </span>
                                 {' '}–{' '}
-                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                <span className="font-bold text-txt-secondary">
                                     {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}
                                 </span>
                                 {' '}trong{' '}
-                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                <span className="font-bold text-txt-secondary">
                                     {pagination.totalItems}
                                 </span>
                                 {' '}{pagination.label || footerLabel}
@@ -504,7 +504,7 @@ function DataTable<T extends Record<string, any>>({
                         ) : (
                             <>
                                 Hiển thị{' '}
-                                <span className="font-bold text-slate-700 dark:text-slate-200">
+                                <span className="font-bold text-txt-secondary">
                                     {sortedData.length}
                                 </span>
                                 {' '}{footerLabel}
@@ -519,11 +519,11 @@ function DataTable<T extends Record<string, any>>({
                         {/* Page size */}
                         {pagination?.onPageSizeChange && (
                             <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-slate-400 dark:text-slate-400">Hiển thị</span>
+                                <span className="text-xs text-txt-muted">Hiển thị</span>
                                 <select
                                     value={pagination.pageSize}
                                     onChange={e => pagination.onPageSizeChange!(Number(e.target.value))}
-                                    className="px-2 py-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 cursor-pointer"
+                                    className="px-2 py-1 text-xs border border-border rounded-lg bg-bg-surface text-txt-secondary focus:outline-none focus:ring-2 focus:ring-focus/30 cursor-pointer"
                                 >
                                     {(pagination.pageSizeOptions || [10, 20, 50, 100]).map(s => (
                                         <option key={s} value={s}>{s}</option>
@@ -538,18 +538,18 @@ function DataTable<T extends Record<string, any>>({
                                 <button
                                     onClick={() => pagination.onPageChange(1)}
                                     disabled={pagination.currentPage <= 1}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    <svg className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-3.5 h-3.5 text-txt-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                                     </svg>
                                 </button>
                                 <button
                                     onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
                                     disabled={pagination.currentPage <= 1}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    <ChevronLeft size={14} className="text-slate-500 dark:text-slate-400" />
+                                    <ChevronLeft size={14} className="text-txt-muted" />
                                 </button>
 
                                 {(() => {
@@ -573,7 +573,7 @@ function DataTable<T extends Record<string, any>>({
                                                 w-7 h-7 rounded-lg text-xs font-medium transition-colors
                                                 ${cur === p
                                                     ? 'bg-primary-500 text-white shadow-sm'
-                                                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    : 'text-txt-muted hover:bg-bg-muted'
                                                 }
                                             `}
                                         >
@@ -585,16 +585,16 @@ function DataTable<T extends Record<string, any>>({
                                 <button
                                     onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
                                     disabled={pagination.currentPage >= pagination.totalPages}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    <ChevronRight size={14} className="text-slate-500 dark:text-slate-400" />
+                                    <ChevronRight size={14} className="text-txt-muted" />
                                 </button>
                                 <button
                                     onClick={() => pagination.onPageChange(pagination.totalPages)}
                                     disabled={pagination.currentPage >= pagination.totalPages}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    <svg className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-3.5 h-3.5 text-txt-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                                     </svg>
                                 </button>

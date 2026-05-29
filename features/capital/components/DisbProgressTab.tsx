@@ -54,14 +54,14 @@ export const DisbProgressTab: React.FC<DisbProgressTabProps> = ({
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                        <tr className="text-slate-500 dark:text-slate-400">
-                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-slate-200 dark:border-slate-700" style={{ background: 'inherit' }}>Dự án</th>
-                            <th className="px-3 py-2 text-center min-w-[50px] border-b border-slate-200 dark:border-slate-700">Loại</th>
-                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700">KHV</th>
-                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-slate-200 dark:border-slate-700 ${i + 1 === currentMonth ? 'bg-emerald-100/40 dark:bg-emerald-900/20' : ''}`}>{m}</th>)}
-                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-slate-200 dark:border-slate-700">Tổng</th>
-                            <th className="px-3 py-2 text-center min-w-[60px] border-b border-slate-200 dark:border-slate-700">Tỷ lệ</th>
+                    <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                        <tr className="text-txt-muted">
+                            <th className="px-3 py-2 text-left sticky left-0 z-10 min-w-[200px] border-b border-border" style={{ background: 'inherit' }}>Dự án</th>
+                            <th className="px-3 py-2 text-center min-w-[50px] border-b border-border">Loại</th>
+                            <th className="px-3 py-2 text-right min-w-[80px] border-b border-border">KHV</th>
+                            {MONTHS.map((m, i) => <th key={m} className={`px-2 py-2 text-right min-w-[80px] border-b border-border ${i + 1 === currentMonth ? 'bg-emerald-100/40 dark:bg-emerald-900/20' : ''}`}>{m}</th>)}
+                            <th className="px-3 py-2 text-right min-w-[90px] border-b border-border">Tổng</th>
+                            <th className="px-3 py-2 text-center min-w-[60px] border-b border-border">Tỷ lệ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,7 +90,7 @@ export const DisbProgressTab: React.FC<DisbProgressTabProps> = ({
                                     {/* Row KH (planned) */}
                                     <tr className="border-t border-gray-200 dark:border-slate-600 bg-blue-50/20 dark:bg-blue-900/5">
                                         <td className="px-3 py-1.5 sticky left-0 bg-blue-50/20 dark:bg-blue-900/5 z-10" rowSpan={2}>
-                                            <p className="font-bold text-gray-800 dark:text-slate-100 truncate">{pName}</p>
+                                            <p className="font-bold text-txt-primary truncate">{pName}</p>
                                         </td>
                                         <td className="px-3 py-1.5 text-center"><span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 text-[9px] font-bold rounded">KH</span></td>
                                         <td className="px-3 py-1.5 text-right font-mono text-blue-600 dark:text-blue-300" rowSpan={2}>{khv > 0 ? fmtB(khv) : '—'}</td>
@@ -106,7 +106,7 @@ export const DisbProgressTab: React.FC<DisbProgressTabProps> = ({
                                         </td>
                                     </tr>
                                     {/* Row TT (actual) */}
-                                    <tr className="bg-emerald-50/20 dark:bg-emerald-900/5 border-b border-gray-200 dark:border-slate-700">
+                                    <tr className="bg-emerald-50/20 dark:bg-emerald-900/5 border-b border-border">
                                         <td className="px-3 py-1.5 text-center"><span className="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 text-[9px] font-bold rounded">TT</span></td>
                                         {MONTHS.map((_, i) => {
                                             const vActual = actualMap.get(i + 1) || 0;
@@ -126,7 +126,7 @@ export const DisbProgressTab: React.FC<DisbProgressTabProps> = ({
                     </tbody>
                     <tfoot className="bg-emerald-50/30 dark:bg-emerald-900/10 font-bold border-t-2 border-emerald-200 dark:border-emerald-800">
                         <tr>
-                            <td className="px-3 py-2 sticky left-0 bg-emerald-50/30 dark:bg-emerald-900/10 z-10 font-black text-gray-800 dark:text-slate-100">TỔNG</td>
+                            <td className="px-3 py-2 sticky left-0 bg-emerald-50/30 dark:bg-emerald-900/10 z-10 font-black text-txt-primary">TỔNG</td>
                             <td className="px-3 py-2 text-center text-[9px] font-bold text-blue-600">KH</td>
                             <td className="px-3 py-2 text-right font-mono text-blue-600 dark:text-blue-300">{fmtB(projectIds.reduce((s: number, pid: string) => { const ap = annualPlans.find((a:any) => a.project_id === pid && a.year === yearFilter); return s + (ap ? Number(ap.amount) : 0); }, 0))}</td>
                             {MONTHS.map((_, i) => {
@@ -156,7 +156,7 @@ export const DisbProgressTab: React.FC<DisbProgressTabProps> = ({
                 </table>
             </div>
             {/* Legend */}
-            <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-700 flex items-center gap-4 text-[10px] text-gray-500">
+            <div className="px-4 py-2 bg-gray-50 dark:bg-slate-700 border-t border-border flex items-center gap-4 text-[10px] text-gray-500">
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-blue-100 rounded" /> KH = Kế hoạch</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-emerald-100 rounded" /> TT = Thực tế</span>
                 <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3 text-red-500" /> Đỏ = Thấp hơn KH</span>

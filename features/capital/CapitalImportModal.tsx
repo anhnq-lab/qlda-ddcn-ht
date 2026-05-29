@@ -247,12 +247,12 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-bg-surface w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
+                <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg-subtle">
                     <div>
-                        <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                             <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                             Import Kế hoạch vốn {currentYear}
                         </h2>
@@ -266,7 +266,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                 </div>
 
                 {/* Body */}
-                <div className="flex-1 overflow-auto p-6 bg-white dark:bg-slate-900">
+                <div className="flex-1 overflow-auto p-6 bg-bg-surface">
                     {!file && !isParsing && (
                         <div 
                             className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center transition-colors cursor-pointer
@@ -287,7 +287,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                             <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center mb-4">
                                 <Upload className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <p className="text-sm font-semibold text-gray-700 dark:text-slate-200">
+                            <p className="text-sm font-semibold text-txt-secondary">
                                 Kéo thả file Excel vào đây hoặc click để chọn file
                             </p>
                             <p className="text-xs text-gray-500 mt-2">
@@ -299,14 +299,14 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                     {isParsing && (
                         <div className="flex flex-col items-center justify-center py-20">
                             <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
-                            <p className="text-sm text-gray-600 dark:text-slate-400">Đang đọc file Excel...</p>
+                            <p className="text-sm text-txt-muted">Đang đọc file Excel...</p>
                         </div>
                     )}
 
                     {previewData.length > 0 && (
                         <div className="flex flex-col h-full">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-gray-800 dark:text-slate-200">
+                                <h3 className="font-semibold text-txt-primary">
                                     Dữ liệu chuẩn bị Import ({previewData.length} dự án)
                                 </h3>
                                 <button onClick={reset} className="text-sm text-blue-600 hover:underline">
@@ -314,10 +314,10 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                                 </button>
                             </div>
 
-                            <div className="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden flex-1">
+                            <div className="border border-border rounded-lg overflow-hidden flex-1">
                                 <div className="overflow-x-auto max-h-[400px]">
                                     <table className="w-full text-sm text-left">
-                                        <thead className="bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 sticky top-0 z-10 shadow-sm">
+                                        <thead className="bg-bg-subtle text-txt-muted sticky top-0 z-10 shadow-sm">
                                             <tr>
                                                 <th className="px-4 py-3 font-medium">Trạng thái</th>
                                                 <th className="px-4 py-3 font-medium">Mã DA</th>
@@ -326,7 +326,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                                                 <th className="px-4 py-3 font-medium text-right">Giải ngân (Tr.đ)</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                                        <tbody className="divide-y divide-border-subtle">
                                             {previewData.map((row, idx) => (
                                                 <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-50">
                                                     <td className="px-4 py-2">
@@ -365,11 +365,11 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex justify-end gap-3">
+                <div className="px-6 py-4 border-t border-border bg-bg-subtle flex justify-end gap-3">
                     <button 
                         onClick={onClose} 
                         disabled={isImporting}
-                        className="px-4 py-2 rounded-lg text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                        className="px-4 py-2 rounded-lg text-txt-muted font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                     >
                         {importStats.total > 0 && importStats.total === (importStats.success + importStats.error) ? 'Đóng' : 'Hủy bỏ'}
                     </button>

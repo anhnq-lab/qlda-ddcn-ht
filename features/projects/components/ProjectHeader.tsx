@@ -22,7 +22,7 @@ const getGroupBadge = (group: ProjectGroup) => {
         case ProjectGroup.A: return { label: 'Nhóm A', bg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800' };
         case ProjectGroup.B: return { label: 'Nhóm B', bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' };
         case ProjectGroup.C: return { label: 'Nhóm C', bg: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800' };
-        default: return { label: group, bg: 'bg-slate-50 dark:bg-slate-800 text-gray-700 border-gray-200' };
+        default: return { label: group, bg: 'bg-bg-subtle text-gray-700 border-gray-200' };
     }
 };
 
@@ -31,7 +31,7 @@ const getStatusConfig = (status: ProjectStatus) => {
         case ProjectStatus.Preparation: return { label: 'CHUẨN BỊ DỰ ÁN', bg: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' };
         case ProjectStatus.Execution: return { label: 'ĐANG TRIỂN KHAI', bg: 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400 border border-warning-100 dark:border-warning-800' };
         case ProjectStatus.Completion: return { label: 'ĐÃ KẾT THÚC', bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' };
-        default: return { label: 'N/A', bg: 'bg-slate-50 dark:bg-slate-800 text-gray-700' };
+        default: return { label: 'N/A', bg: 'bg-bg-subtle text-gray-700' };
     }
 };
 

@@ -91,7 +91,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
     }, [generatedItems, maxItems]);
 
     const defaultSeparator = (
-        <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+        <ChevronRight className="w-4 h-4 text-border shrink-0" />
     );
 
     return (
@@ -103,7 +103,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
                         <li>
                             <Link
                                 to="/"
-                                className="flex items-center gap-1 px-2 py-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 text-txt-muted hover:text-txt-primary hover:bg-bg-muted rounded-lg transition-colors"
                             >
                                 <Home className="w-4 h-4" />
                                 <span className="sr-only">Trang chủ</span>
@@ -124,12 +124,12 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
                             {item.href ? (
                                 <Link
                                     to={item.href}
-                                    className="px-2 py-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors line-clamp-1"
+                                    className="px-2 py-1 text-txt-muted hover:text-txt-primary hover:bg-bg-muted rounded-lg transition-colors line-clamp-1"
                                 >
                                     {item.label}
                                 </Link>
                             ) : (
-                                <span className="px-2 py-1 text-gray-800 font-medium line-clamp-1">
+                                <span className="px-2 py-1 text-txt-primary font-medium line-clamp-1">
                                     {item.label}
                                 </span>
                             )}

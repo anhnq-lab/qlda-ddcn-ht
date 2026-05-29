@@ -111,7 +111,7 @@ const COLOR_MAP: Record<StatCardColor, string> = {
     indigo:  'text-primary-600 bg-primary-50 dark:bg-primary-900/30 dark:text-primary-400',
     orange:  'text-warning-600 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
     purple:  'text-warning-600 bg-warning-50 dark:bg-warning-900/30 dark:text-warning-400',
-    slate:   'text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-400',
+    slate:   'text-slate-600 bg-bg-subtle dark:text-slate-400',
     gray:    'text-gray-600 bg-gray-50 dark:bg-gray-500 dark:text-gray-400',
 };
 

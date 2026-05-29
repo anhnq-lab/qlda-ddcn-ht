@@ -410,26 +410,7 @@
   color: rgb(251 146 60);
 }
 
-/* ── Form Controls ── */
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark select,
-.dark textarea {
-  background-color: rgb(30 41 59);
-  color: rgb(226 232 240);
-  border-color: #2c3143;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: rgb(100 116 139);
-}
-
-.dark input:focus,
-.dark select:focus,
-.dark textarea:focus {
-  border-color: rgb(59 130 246);
-  box-shadow: 0 0 0 2px rgb(30 58 138 / 0.3);
-}
+/* ── Form Controls — moved to base.css (theme-aware via CSS variables) ── */
 
 /* ── Ring overrides ── */
 .dark .ring-slate-100 {
@@ -440,13 +421,7 @@
   --tw-ring-color: rgb(148 163 184 / 0.1);
 }
 
-/* Ensure map container always shows a light bg so tiles are readable */
-.custom-map-container {
-  background-color: #e5e7eb;
-}
-.dark .custom-map-container {
-  background-color: #cbd5e1; /* slate-300 — light enough for tiles to pop */
-}
+/* Map container — moved to third-party.css (theme-aware via CSS variables) */
 
 /* THEME-NATURE OVERRIDES
    Tăng độ tương phản cho các header và border trong theme cát
@@ -474,6 +449,12 @@
    ============================================================ */
 
 /* Nature Theme (Cát ấm) */
+/* ────────────────────────────────────────────────────────────────────────
+   Legacy Tailwind hardcoded class overrides (still needed for unmigrated files).
+   When a component still uses bg-white / bg-slate-50 / etc directly, these
+   rules ensure the theme-leak is mapped to the active theme.
+   Form, table, scrollbar rules MOVED to base.css (use CSS variables instead).
+   ──────────────────────────────────────────────────────────────────────── */
 .theme-nature .bg-white, .theme-nature [class~="bg-white"] { background-color: #FCF9F2 !important; }
 .theme-nature .bg-gray-50, .theme-nature [class~="bg-gray-50"] { background-color: #F5EFE6 !important; }
 .theme-nature .bg-gray-100, .theme-nature [class~="bg-gray-100"] { background-color: #EDE8DF !important; }
@@ -481,21 +462,14 @@
 .theme-nature .bg-slate-100, .theme-nature [class~="bg-slate-100"] { background-color: #EDE8DF !important; }
 .theme-nature .border-gray-100, .theme-nature .border-gray-200,
 .theme-nature .border-slate-100, .theme-nature .border-slate-200 { border-color: #ece7de !important; }
-.theme-nature input:not([type="checkbox"]):not([type="radio"]),
-.theme-nature textarea, .theme-nature select { background-color: #FCF9F2 !important; border-color: #ece7de !important; }
 .theme-nature [role="menu"], .theme-nature [role="listbox"], .theme-nature [role="dialog"] { background-color: #FCF9F2 !important; }
-.theme-nature thead tr, .theme-nature th { background-color: #E6E0D4 !important; color: #4a3426 !important; }
-.theme-nature tbody tr:hover { background-color: #F5EFE6 !important; }
 .theme-nature .text-slate-900, .theme-nature .text-gray-900 { color: #1d1c1c !important; }
 .theme-nature .text-slate-800, .theme-nature .text-gray-800 { color: #1d1c1c !important; }
 .theme-nature .text-slate-700, .theme-nature .text-gray-700 { color: #4a3426 !important; }
 .theme-nature .text-slate-600, .theme-nature .text-slate-500, .theme-nature .text-gray-500 { color: #78716c !important; }
 .theme-nature .text-slate-400, .theme-nature .text-gray-400 { color: #a8a29e !important; }
 
-/* Light Theme (Sáng thuần) */
-.theme-light thead tr, .theme-light th { background-color: #f8fafc !important; }
-
-/* Dark Theme (Navy slate) */
+/* Dark Theme (Navy slate) — structural chrome (sidebar/header) */
 .dark aside, .dark aside > div, .dark aside > div > * { background-color: #0f172a !important; border-color: #1e293b !important; }
 .dark header { background-color: rgba(15,23,42,0.97) !important; border-bottom-color: #1e293b !important; }
 .dark .bg-white, .dark [class~="bg-white"] { background-color: #1f2332 !important; }
@@ -503,18 +477,9 @@
 .dark .bg-gray-100, .dark [class~="bg-gray-100"] { background-color: #252a3b !important; }
 .dark .bg-slate-50, .dark [class~="bg-slate-50"] { background-color: #1a1e2e !important; }
 .dark .bg-slate-100, .dark [class~="bg-slate-100"] { background-color: #252a3b !important; }
-.dark thead tr, .dark th { background-color: #0f172a !important; color: #94a3b8 !important; }
-.dark tbody tr { background-color: #1f2332 !important; }
-.dark tbody tr:hover { background-color: #252a3b !important; }
-.dark td { color: #cbd5e1 !important; border-color: #2e3348 !important; }
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea, .dark select { background-color: #1a1e2e !important; border-color: #2e3348 !important; color: #f1f5f9 !important; }
 .dark [role="menu"], .dark [role="listbox"], .dark [role="dialog"] { background-color: #1f2332 !important; border-color: #2e3348 !important; }
 .dark .text-gray-900, .dark .text-slate-900 { color: #f1f5f9 !important; }
 .dark .text-gray-700, .dark .text-slate-700 { color: #cbd5e1 !important; }
 .dark .text-gray-600, .dark .text-slate-600 { color: #94a3b8 !important; }
 .dark .border-gray-100, .dark .border-gray-200, .dark .border-slate-100, .dark .border-slate-200 { border-color: #2e3348 !important; }
-.dark ::-webkit-scrollbar { width: 6px; height: 6px; }
-.dark ::-webkit-scrollbar-track { background: #0f172a; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+/* Scrollbar — moved to base.css */

@@ -134,14 +134,14 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="bg-bg-surface rounded-2xl w-full max-w-lg p-6 shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl">
                         <UserPlus className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">Tạo tài khoản nhà thầu</h3>
-                        <p className="text-xs text-gray-500 dark:text-slate-400">Gán tài khoản đăng nhập cho nhân sự nhà thầu</p>
+                        <h3 className="text-lg font-bold text-txt-primary">Tạo tài khoản nhà thầu</h3>
+                        <p className="text-xs text-txt-muted">Gán tài khoản đăng nhập cho nhân sự nhà thầu</p>
                     </div>
                 </div>
 
@@ -154,13 +154,13 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Contractor select */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-sm font-semibold text-txt-secondary mb-1.5">
                             Đơn vị nhà thầu <span className="text-red-500">*</span>
                         </label>
                         <select
                             value={selectedContractor}
                             onChange={e => setSelectedContractor(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
+                            className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-txt-primary"
                             required
                         >
                             <option value="">-- Chọn nhà thầu --</option>
@@ -172,14 +172,14 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
 
                     {/* Display name */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-sm font-semibold text-txt-secondary mb-1.5">
                             Họ tên nhân sự <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             value={displayName}
                             onChange={e => setDisplayName(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-slate-100"
+                            className="w-full px-4 py-3 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-txt-primary"
                             placeholder="Nguyễn Văn A"
                             required
                         />
@@ -188,26 +188,26 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                     {/* Email & Phone */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 dark:text-slate-400 mb-1 flex items-center gap-1">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1 flex items-center gap-1">
                                 <Mail className="w-3 h-3" /> Email
                             </label>
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
+                                className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary"
                                 placeholder="abc@email.com" />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 dark:text-slate-400 mb-1 flex items-center gap-1">
+                            <label className="block text-xs font-semibold text-txt-muted mb-1 flex items-center gap-1">
                                 <Phone className="w-3 h-3" /> Điện thoại
                             </label>
                             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100"
+                                className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary"
                                 placeholder="0901234567" />
                         </div>
                     </div>
 
                     {/* Username & Password */}
-                    <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
-                        <p className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                    <div className="border-t border-border-subtle pt-4">
+                        <p className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3 flex items-center gap-1">
                             <Key className="w-3 h-3" /> Thông tin đăng nhập
                         </p>
                         <div className="grid grid-cols-2 gap-3">
@@ -216,7 +216,7 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                     Username <span className="text-red-500">*</span>
                                 </label>
                                 <input type="text" value={username} onChange={e => setUsername(e.target.value)}
-                                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
+                                    className="w-full px-3.5 py-2.5 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-txt-primary"
                                     placeholder="nguyenvana" required />
                             </div>
                             <div>
@@ -228,7 +228,7 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        className="w-full px-3.5 py-2.5 pr-20 bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-gray-900 dark:text-slate-100"
+                                        className="w-full px-3.5 py-2.5 pr-20 bg-bg-subtle dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono text-txt-primary"
                                         required
                                     />
                                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
@@ -248,8 +248,8 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                     </div>
 
                     {/* Project assignment */}
-                    <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
-                        <p className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                    <div className="border-t border-border-subtle pt-4">
+                        <p className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3 flex items-center gap-1">
                             <FolderOpen className="w-3 h-3" /> Gán dự án ({selectedProjects.length})
                         </p>
                         <div className="max-h-40 overflow-y-auto space-y-1.5 bg-gray-50 dark:bg-slate-700 rounded-xl p-2">
@@ -262,7 +262,7 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                                         onClick={() => toggleProject(proj.project_id)}
                                         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-left transition-all ${isSelected
                                             ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-800 dark:text-primary-300 font-medium'
-                                            : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'
+                                            : 'text-txt-muted hover:bg-bg-muted'
                                             }`}
                                     >
                                         <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${isSelected
@@ -280,7 +280,7 @@ export const CreateContractorAccountModal: React.FC<CreateModalProps> = ({
                     {/* Actions */}
                     <div className="flex gap-3 pt-2">
                         <button type="button" onClick={onClose}
-                            className="flex-1 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+                            className="flex-1 py-2.5 bg-bg-muted text-txt-secondary rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
                             Hủy
                         </button>
                         <button type="submit" disabled={submitting || !selectedContractor || !displayName || !username || !password}

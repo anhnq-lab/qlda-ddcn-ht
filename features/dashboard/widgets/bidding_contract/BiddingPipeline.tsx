@@ -13,7 +13,7 @@ const STALE_5M = 5 * 60 * 1000;
 
 // Bidding status mapping
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-    'Draft': { label: 'Nháp', color: 'text-gray-600 dark:text-slate-400', bgColor: 'bg-gray-100 dark:bg-slate-700' },
+    'Draft': { label: 'Nháp', color: 'text-txt-muted', bgColor: 'bg-bg-muted' },
     'Planning': { label: 'Lập kế hoạch', color: 'text-blue-700 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-900/30' },
     'Approved': { label: 'Đã duyệt', color: 'text-emerald-700 dark:text-emerald-400', bgColor: 'bg-emerald-50 dark:bg-emerald-900/30' },
     'Bidding': { label: 'Đang đấu thầu', color: 'text-warning-700 dark:text-warning-400', bgColor: 'bg-warning-50 dark:bg-warning-900/30' },
@@ -103,7 +103,7 @@ export const BiddingPipeline: React.FC = () => {
                         <div key={pkg.package_id} onClick={() => navigate(`/bidding/${pkg.package_id}`)} className="p-3 hover:bg-bg-app dark:hover:bg-slate-700 cursor-pointer transition-colors">
                             <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{pkg.package_name}</p>
+                                    <p className="text-sm font-medium text-txt-primary truncate">{pkg.package_name}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${cfg.bgColor} ${cfg.color}`}>
                                             {cfg.label}
@@ -116,7 +116,7 @@ export const BiddingPipeline: React.FC = () => {
                                     </div>
                                 </div>
                                 {bidDate && (
-                                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 shrink-0 flex items-center gap-1">
+                                    <span className="text-[10px] font-bold text-txt-placeholder shrink-0 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
                                         {bidDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                     </span>

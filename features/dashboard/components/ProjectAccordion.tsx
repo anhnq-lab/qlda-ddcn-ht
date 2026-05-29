@@ -99,11 +99,11 @@ export const ProjectAccordion: React.FC<ProjectAccordionProps> = React.memo(({
                             >
                                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                     <ChevronRight
-                                        className={`w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90 text-primary-500' : ''}`}
+                                        className={`w-4 h-4 text-txt-placeholder shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-90 text-primary-500' : ''}`}
                                         aria-hidden="true"
                                     />
                                     <div className="min-w-0 flex-1">
-                                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm leading-snug hover:text-primary-600 transition-colors truncate">
+                                        <h4 className="font-bold text-txt-primary text-sm leading-snug hover:text-primary-600 transition-colors truncate">
                                             {proj.projectName}
                                         </h4>
                                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
@@ -129,7 +129,7 @@ export const ProjectAccordion: React.FC<ProjectAccordionProps> = React.memo(({
                             {isExpanded && (
                                 <div
                                     id={`proj-content-${proj.projectId}`}
-                                    className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/10 p-3 lg:p-4"
+                                    className="border-t border-border-subtle bg-slate-50/30 dark:bg-slate-900/10 p-3 lg:p-4"
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
                                         {/* Col 1: Status & Disbursement */}

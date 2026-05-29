@@ -139,21 +139,21 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                     w-full flex items-center justify-between gap-2 px-3 py-2
                     border rounded-lg text-sm text-left transition-all
                     ${disabled
-                        ? 'bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed'
+                        ? 'bg-bg-muted border-border text-txt-placeholder cursor-not-allowed'
                         : isOpen
-                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-[#151d2e] dark:border-primary-400'
-                            : 'border-slate-200 dark:border-[#293548] bg-white dark:bg-[#151d2e] hover:border-slate-300 dark:hover:border-slate-500'
+                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-bg-surface dark:border-primary-400'
+                            : 'border-border bg-bg-surface hover:border-border-subtle'
                     }
                 `}
             >
-                <span className={`flex-1 truncate ${!currentLabel ? 'text-slate-400 dark:text-slate-400' : 'text-slate-800 dark:text-slate-100'}`}>
+                <span className={`flex-1 truncate ${!currentLabel ? 'text-txt-placeholder' : 'text-txt-primary'}`}>
                     {currentLabel || placeholder}
                 </span>
                 <div className="flex items-center gap-1 shrink-0">
                     {clearable && value && !disabled && (
                         <span
                             onClick={handleClear}
-                            className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-400 cursor-pointer"
+                            className="p-0.5 rounded hover:bg-bg-muted text-txt-muted cursor-pointer"
                         >
                             <X className="w-3 h-3" />
                         </span>
@@ -164,9 +164,9 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-xl overflow-hidden">
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-bg-elevated border border-border rounded-xl shadow-dropdown overflow-hidden">
                     {/* Search */}
-                    <div className="p-2 border-b border-slate-100 dark:border-slate-700">
+                    <div className="p-2 border-b border-border-subtle">
                         <div className="relative">
                             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                             <input
@@ -175,7 +175,7 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                                 value={search}
                                 onChange={e => { setSearch(e.target.value); setHighlightIdx(0); }}
                                 placeholder="Tìm kiếm..."
-                                className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 dark:text-slate-200"
+                                className="w-full pl-8 pr-3 py-1.5 text-sm bg-bg-subtle border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus/30 focus:border-primary-400 text-txt-primary"
                             />
                         </div>
                     </div>
@@ -188,9 +188,9 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                         className="max-h-56 overflow-y-auto py-1"
                     >
                         {loading ? (
-                            <li className="px-3 py-3 text-center text-sm text-slate-400">Đang tải...</li>
+                            <li className="px-3 py-3 text-center text-sm text-txt-muted">Đang tải...</li>
                         ) : filtered.length === 0 ? (
-                            <li className="px-3 py-3 text-center text-sm text-slate-400">
+                            <li className="px-3 py-3 text-center text-sm text-txt-muted">
                                 {allowCustom && search.trim()
                                     ? <span>Nhấn <kbd className="px-1 bg-slate-100 rounded text-xs">Enter</kbd> để dùng "<b>{search}</b>"</span>
                                     : 'Không tìm thấy kết quả'}
@@ -205,7 +205,7 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                                     className={`
                                         flex items-center gap-3 px-3 py-2 cursor-pointer select-none transition-colors
                                         ${opt.disabled ? 'opacity-40 cursor-not-allowed' : ''}
-                                        ${idx === highlightIdx ? 'bg-primary-50 dark:bg-primary-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-700'}
+                                        ${idx === highlightIdx ? 'bg-primary-50 dark:bg-primary-900/30' : 'hover:bg-bg-hover-row'}
                                     `}
                                 >
                                     {opt.avatar && (
@@ -218,11 +218,11 @@ const ComboboxSelect: React.FC<ComboboxSelectProps> = ({
                                         />
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-sm truncate ${idx === highlightIdx ? 'text-primary-700 dark:text-primary-300 font-medium' : 'text-slate-800 dark:text-slate-200'}`}>
+                                        <p className={`text-sm truncate ${idx === highlightIdx ? 'text-primary-700 dark:text-primary-300 font-medium' : 'text-txt-primary'}`}>
                                             {opt.label}
                                         </p>
                                         {opt.sublabel && (
-                                            <p className="text-xs text-slate-400 dark:text-slate-400 truncate">{opt.sublabel}</p>
+                                            <p className="text-xs text-txt-muted truncate">{opt.sublabel}</p>
                                         )}
                                     </div>
                                     {opt.value === value && (

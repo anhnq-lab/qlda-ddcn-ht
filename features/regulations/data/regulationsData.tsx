@@ -22,7 +22,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 1",
                 title: "Phạm vi điều chỉnh và đối tượng áp dụng",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Phạm vi điều chỉnh</p>
                         <p>Quy chế này quy định nguyên tắc làm việc; chức năng, nhiệm vụ các phòng; quyền hạn, trách nhiệm, cách thức giải quyết công việc; chế độ làm việc; mối quan hệ công tác; trình tự giải quyết công việc của Ban QLDA đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh (sau đây gọi tắt là Ban QLDA).</p>
                         <p>2\. Đối tượng áp dụng</p>
@@ -36,7 +36,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 2",
                 title: "Nguyên tắc làm việc",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Ban QLDA làm việc theo nguyên tắc tập trung dân chủ, thực hiện chế độ thủ trưởng, đảm bảo sự chỉ đạo, điều hành thống nhất của Giám đốc đối với các lĩnh vực công tác của Ban QLDA, phát huy quyền làm chủ của VC, NLĐ gắn với sự lãnh đạo của Đảng và phát huy vai trò của các tổ chức đoàn thể trong cơ quan. Mọi hoạt động của Ban QLDA tỉnh đều phải tuân thủ quy định của pháp luật và Quy chế này. VC, NLĐ thuộc Ban QLDA phải xử lý và giải quyết công việc đúng phạm vi trách nhiệm, thẩm quyền;</p>
                         <p>2\. Chấp hành nghiêm túc sự chỉ đạo của Giám đốc và Phó Giám đốc phụ trách. Khi giải quyết, xử lý công việc, đơn vị trình trực tiếp Phó Giám đốc phụ trách. Trường hợp Phó Giám đốc phụ trách đi vắng thì đơn vị trình Giám đốc (hoặc Phó Giám đốc được Giám đốc phân công) xem xét xử lý và đơn vị đó phải báo cáo kết quả xử lý cho Phó Giám đốc phụ trách khi Phó Giám đốc phụ trách có mặt ở cơ quan;</p>
                         <p>3\. Trong phân công công việc, mỗi việc chỉ được giao một đơn vị, một cá nhân phụ trách và chịu trách nhiệm chính. Đơn vị, người đứng đầu đơn vị được giao công việc phải chịu trách nhiệm về tiến độ và kết quả công việc được phân công. Cấp trên không làm thay công việc của cấp dưới, tập thể không làm thay công việc của cá nhân và ngược lại;</p>
@@ -59,7 +59,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 3",
                 title: "Cơ cấu tổ chức Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>Theo Quyết định của UBND tỉnh: Số 1865/QĐ-UBND ngày 22/7/2025 về việc thành lập Ban Quản lý dự án đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh và Ban Quản lý dự án đầu tư xây dựng công trình Nông nghiệp và Phát triển nông thôn tỉnh Hà Tĩnh trên cơ sở tách Ban Quản lý dự án đầu tư xây dựng công trình Nông nghiệp và Dân dụng tỉnh Hà Tĩnh, tổ chức bộ máy của Ban QLDA gồm:</p>
                         <p>\- Ban Giám đốc gồm có: Giám đốc và 03 Phó Giám đốc;</p>
                         <p>\- Các Phòng trực thuộc có 07 phòng: Hành chính – Tổng hợp, Kế hoạch – Đấu thầu, Kỹ thuật – Thẩm định, Quản lý dự án 1, Quản lý dự án 2, Quản lý dự án 3 và Phát triển dịch vụ.</p>
@@ -71,7 +71,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 4",
                 title: "Chức năng, nhiệm vụ và quyền hạn của Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>Chức năng, nhiệm vụ và quyền hạn của Ban QLDA thực hiện theo Quyết định số 2760/QĐ-UBND ngày 06/11/2025 của UBND tỉnh Hà Tinh về việc Quy định Chức năng, nhiệm vụ và quyền hạn của Ban QLDA.</p>
                     </div>
                 )
@@ -81,7 +81,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 5",
                 title: "Chức năng nhiệm vụ của các phòng trực thuộc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1. **Phòng Hành chính – Tổng hợp**</p>
                         <p>1.1. Chức năng của phòng Hành chính – Tổng hợp</p>
                         <p>Tham mưu, giúp Giám đốc Ban chỉ đạo, điều hành công việc và duy trì</p>
@@ -218,7 +218,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 6",
                 title: "Quyền hạn, trách nhiệm của Giám đốc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Là người đứng đầu, phụ trách chung, lãnh đạo, chỉ đạo, điều hành và quản lý toàn diện mọi hoạt động của Ban QLDA theo chức năng, nhiệm vụ, quyền hạn; chịu trách nhiệm trước UBND tỉnh, Chủ tịch UBND tỉnh và trước pháp luật về toàn bộ hoạt động thuộc thẩm quyền của Ban;</p>
                         <p>2\. Chỉ đạo tổ chức triển khai tất cả các dự án được cấp có thẩm quyền giao cho Ban QLDA làm Chủ đầu tư hoặc của các Chủ đầu tư khác thông qua hợp đồng tư vấn quản lý dự án;</p>
                         <p>3\. Ban hành Quy chế làm việc, quy định cụ thể chức năng, nhiệm vụ, quyền hạn của các phòng trực thuộc, mối liên hệ công tác giữa các phòng và các quy chế khác đảm bảo công tác quản lý điều hành;</p>
@@ -246,7 +246,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 7",
                 title: "Quyền hạn, trách nhiệm của Phó Giám đốc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Tham mưu, giúp việc cho Giám đốc, được Giám đốc phân công phụ trách một số lĩnh vực công tác và phụ trách các phòng chuyên môn theo Quyết định phân công nhiệm vụ các thành viên Ban Giám đốc; thay mặt Giám đốc giải quyết công việc trong phạm vi được giao và chịu trách nhiệm trước Giám đốc, UBND tỉnh, Chủ tịch UBND tỉnh và trước pháp luật về kết quả thực hiện nhiệm vụ theo lĩnh vực được giao; đồng thời, cùng chịu trách nhiệm về các nội dung tập thể do lãnh đạo Ban quyết định;</p>
                         <p>2\. Chủ động phân công nhiệm vụ, bố trí viên chức, người lao động thực hiện các nhiệm vụ chuyên môn đối với các phòng được giao phụ trách; tham mưu, đề xuất về việc điều chuyển, bãi nhiệm, miễn nhiệm, xử lý kỷ luật viên chức, người lao động thuộc lĩnh vực phụ trách khi để xảy ra vi phạm ảnh hưởng nghiêm trọng đến tiến độ, chất lượng công việc chung;</p>
                         <p>3\. Các Phó Giám đốc khi được giao QLDA chủ trì, chỉ đạo phòng Quản lý dự án 1, 2, 3 đề xuất nhân sự Tổ thực hiện công trình/dự án (nếu cần thiết) và phòng Kế hoạch \- Đấu thầu đề xuất nhân sự Tổ chuyên gia đấu thầu trình Giám đốc Ban QLDA thành lập;</p>
@@ -265,7 +265,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 8",
                 title: "Trách nhiệm, quyền hạn của Trưởng phòng các phòng trực thuộc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Chủ động tổ chức thực hiện công việc thuộc chức năng, nhiệm vụ, quyền hạn của Phòng; chịu trách nhiệm trước Giám đốc, Phó Giám đốc phụ trách và pháp luật về kết quả và tiến độ thực hiện công việc được giao bao gồm cả nhiệm vụ phân công cho cấp dưới. Thực hiện đầy đủ chế độ thông tin, báo cáo theo quy định của pháp luật và của Ban QLDA;</p>
                         <p>2\. Những việc phát sinh vượt quá thẩm quyền phải kịp thời báo cáo Phó Giám đốc phụ trách hoặc Giám đốc Ban QLDA khi Phó giám đốc phụ trách đi vắng, xin ý kiến chỉ đạo giải quyết; không chuyển công việc thuộc nhiệm vụ, thẩm quyền của phòng mình sang phòng khác hoặc lên lãnh đạo Ban; không giải quyết công việc thuộc nhiệm vụ, thẩm quyền của phòng khác khi chưa có chỉ đạo của lãnh đạo Ban;</p>
                         <p>3\. Chủ trì tham mưu xây dựng, góp ý văn bản quy phạm pháp luật, chính sách, kế hoạch chiến lược thuộc lĩnh vực được giao phụ trách;</p>
@@ -285,7 +285,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 9",
                 title: "Trách nhiệm, quyền hạn của Phó Trưởng phòng các phòng chuyên môn thuộc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Phó Trưởng phòng trực tiếp thực hiện nhiệm vụ chuyên môn được phân công; giúp Trưởng phòng phụ trách, chỉ đạo, quản lý một số công tác, lĩnh vực công việc cụ thể theo sự phân công của Trưởng phòng; chịu trách nhiệm trước Trưởng phòng, Phó giám đốc phụ trách, Giám đốc Ban và pháp luật về thực hiện nhiệm vụ được giao;</p>
                         <p>2\. Thực hiện trách nhiệm, quyền hạn của Trưởng phòng khi được ủy quyền;</p>
                         <p>3\. Theo sự phân công của Trưởng phòng, tham gia tổ chức quản lý, điều hành các công tác của phòng; phân công, hỗ trợ, đôn đốc các nhân viên thuộc đơn vị thực hiện hoàn thành các nhiệm vụ được giao; Báo cáo Trưởng phòng kết quả thực hiện nhiệm vụ được phân công, ủy quyền;</p>
@@ -299,7 +299,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 10",
                 title: "Quyền hạn và trách nhiệm của Kế toán trưởng",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Tổ chức bộ máy kế toán, thực hiện nhiệm vụ, quyền hạn theo Luật Kế toán, theo các các Nghị định của Chính phủ, các thông tư hướng dẫn của Bộ Tài chính và các quy định hiện hành; trực tiếp phân công nhiệm vụ cho các kế toán viên; chịu trách nhiệm chuyên môn về công tác kế toán;</p>
                         <p>2\. Được bảo đảm về điều kiện làm việc, được đào tạo nâng cao trình độ chuyên môn, nghiệp vụ và được hưởng các quyền lợi theo quy định của pháp luật;</p>
                         <p>3\. Chịu sự quản lý, giám sát, phân công công việc của Lãnh đạo phòng Hành chính \- Tổng hợp (trừ các công việc chuyên môn thuộc thẩm quyền của Kế toán trưởng); chịu trách nhiệm trước Giám đốc, Chủ tịch Ủy ban nhân dân tỉnh và trước pháp luật về nhiệm vụ được giao.</p>
@@ -311,7 +311,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 11",
                 title: "Quyền, nghĩa vụ, trách nhiệm của viên chức, người lao động:",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Được bảo đảm về điều kiện làm việc, được đào tạo nâng cao trình độ chuyên môn nghiệp vụ và được hưởng các quyền lợi theo quy định pháp luật;</p>
                         <p>2\. Có quyền đề xuất đóng góp ý kiến, các biện pháp để thực hiện hiệu quả nhiệm vụ được giao;</p>
                         <p>3\. Có trách nhiệm thực hiện và hoàn thành nhiệm vụ được giao, chấp hành nghiêm quy định pháp luật, chính sách hiện hành và quy chế làm việc của Ban QLDA;</p>
@@ -339,7 +339,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 12",
                 title: "Cách thức giải quyết công việc",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Giám đốc và các Phó Giám đốc điều hành công việc trên cơ sở chương trình, kế hoạch công tác của Ban QLDA; tình hình thực tế; yêu cầu chỉ đạo của UBND tỉnh, các sở, ban, ngành; và các nhiệm vụ đột xuất (nếu có);</p>
                         <p>2\. Giám đốc, Phó Giám đốc chủ trì họp, làm việc với lãnh đạo các cơ quan, tổ chức có liên quan để tham khảo ý kiến trước khi quyết định những vấn đề quan trọng hoặc còn vướng mắc chưa xử lý được ngay;</p>
                         <p>3\. Khi trình hồ sơ giải quyết công việc cho Lãnh đạo Ban, cán bộ thụ lý hồ sơ phải có Tờ trình/Văn bản và đầy đủ hồ sơ kèm theo; đồng thời thực hiện xử lý công việc thông qua phần mềm hồ sơ quản lý công việc (TDO);</p>
@@ -352,7 +352,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 13",
                 title: "Trách nhiệm của các phòng trực thuộc trong việc trình Lãnh đạo Ban QLDA giải quyết hồ sơ công việc",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Các phòng trực thuộc chỉ trình Giám đốc, Phó Giám đốc những vấn đề thuộc phạm vi giải quyết của Giám đốc, Phó Giám đốc khi có đủ các hồ sơ theo quy định.</p>
                         <p>2\. Khi trình Giám đốc, Phó Giám đốc, các phòng trực thuộc có nhiệm vụ:</p>
                         <p>a) Thẩm định về mặt thủ tục: Nếu hồ sơ công việc trình không đúng theo quy định, phải hướng dẫn ngay cho cá nhân, đơn vị đã nộp hồ sơ để bổ sung thủ tục đầy đủ. Đối với những vấn đề cần giải quyết gấp, các phòng trực thuộc làm phiếu báo cho đơn vị trình bổ sung thêm hồ sơ, đồng thời báo cho Giám đốc, Phó Giám đốc phụ trách được biết;</p>
@@ -379,7 +379,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 14",
                 title: "Tiếp nhận, xử lý và ban hành văn bản",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Quy trình tiếp nhận, xử lý và ban hành văn bản phải tuân thủ theo quy định pháp luật về công tác văn thư và Quy định tiếp nhận, xử lý, ban hành văn bản tại Ban QLDA;</p>
                         <p>2\. Các phòng chuyên môn, cán bộ Ban QLDA phải kiểm tra và chịu trách nhiệm về độ chính xác của văn bản; Đối với dự toán/dự toán điều chỉnh, báo cáo, … có file excel đính kèm, thì bắt buộc phải gửi file pdf để ban hành kèm theo;	3\. Trưởng bộ phận chuyên môn phải kiểm tra và chịu trách nhiệm về hình thức, thể thức, kỹ thuật trình bày và thủ tục ban hành văn bản theo đúng quy định của pháp luật, đồng thời phải ký nháy vào văn bản tham mưu ban hành.</p>
                     </div>
@@ -390,7 +390,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 15",
                 title: "Quy định về sử dụng dấu của cơ quan",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Việc quản lý, sử dụng con dấu được thực hiện theo quy định của pháp luật về quản lý và sử dụng con dấu.</p>
                         <p>2\. Nhân viên văn thư có trách nhiệm bảo quản, sử dụng con dấu theo đúng quy định và có trách nhiệm.</p>
                         <p>a) Không giao con dấu cho người khác khi chưa được phép bằng văn bản của người có thẩm quyền;</p>
@@ -412,7 +412,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 16",
                 title: "Quan hệ công tác giữa Ban QLDA với UBND tỉnh, Chủ tịch UBND tỉnh",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Chịu sự chỉ đạo, kiểm tra, giám sát trực tiếp của UBND tỉnh, Chủ tịch UBND tỉnh về thực hiện chức năng, nhiệm vụ được giao;</p>
                         <p>2\. Trình cấp quyết định đầu tư phê duyệt các nội dung thuộc trách nhiệm của chủ đầu tư theo nhiệm vụ được giao và theo quy định của pháp luật;</p>
                         <p>3\. Báo cáo định kỳ hoặc đột xuất về tình hình triển khai thực hiện các dự án được giao quản lý; đề xuất biện pháp xử lý những vấn đề vượt quá thẩm quyền giải quyết của mình;</p>
@@ -426,7 +426,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 17",
                 title: "Quan hệ công tác giữa Ban QLDA với các Sở, ban ngành thuộc tỉnh",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Khi giải quyết vấn đề thuộc thẩm quyền của mình nhưng có liên quan đến chức năng của các Sở, ban, ngành khác thì chủ động tham khảo ý kiến các cơ quan đó;</p>
                         <p>2\. Đối với các vấn đề vượt thẩm quyền và khả năng giải quyết của Ban QLDA tỉnh hoặc những vấn đề đã được bàn bạc nhưng còn có ý kiến khác nhau giữa các sở, ban ngành, UBND các phường/xã thì báo cáo Chủ tịch/Phó Chủ tịch UBND tỉnh (trưởng Ban chỉ đạo dự án) phụ trách lĩnh vực giải quyết.</p>
                         <p>3\. Báo cáo, giải trình về tình hình thực hiện quản lý dự án khi được yêu cầu, về sự cố công trình, an toàn trong xây dựng với cơ quan nhà nước có thẩm quyền và đề xuất biện pháp phối hợp xử lý những vấn đề vượt quá thẩm quyền;</p>
@@ -439,7 +439,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 18",
                 title: "Quan hệ công tác giữa Ban QLDA với UBND các phường/xã.",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Giám đốc Ban QLDA làm việc trực tiếp với Chủ tịch UBND các phường/xã để giải quyết các vấn đề cụ thể của phường/xã có liên quan đến chức năng của Ban QLDA. Khi Giám đốc ủy quyền cho các Phó Giám đốc, Trưởng/Phụ trách các phònglàm việc với Chủ tịch UBND các phường/xã thì những ý kiến của người được ủy quyền được coi là ý kiến của Giám đốc;</p>
                         <p>2\. Trường hợp đề nghị của UBND các phường/xã liên quan đến nhiều ngành, thì Ban QLDA phải chủ động phối hợp với các sở, ban, ngành liên quan để xử lý. Trường hợp các cơ quan không thống nhất hoặc còn có ý kiến khác nhau thì báo cáo Chủ tịch/Phó Chủ tịch UBND tỉnh (trưởng Ban chỉ đạo dự án) phụ trách lĩnh vực giải quyết;</p>
                         <p>3\. Phối hợp với UBND cấp xã trong việc thực hiện công tác bồi thường, giải phóng mặt bằng, tái định cư khi dự án có yêu cầu về thu hồi đất để xây dựng; quản lý hành chính, bảo đảm an ninh, trật tự, an toàn của cộng đồng trong quá trình thực hiện dự án và bàn giao công trình vào khai thác, sử dụng.</p>
@@ -451,7 +451,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 19",
                 title: "Quan hệ công tác giữa Ban QLDA với chủ đầu tư các dự án thực hiện quản lý dự án, chủ quản lý sử dụng công trình",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Thực hiện các quyền, nghĩa vụ đối với các chủ đầu tư, chịu sự kiểm tra, giám sát của chủ đầu tư trong quá trình thực hiện quản lý các dự án theo hợp đồng ký kết và theo quy định của pháp luật có liên quan;</p>
                         <p>2\. Phối hợp với chủ quản lý sử dụng công trình khi lập, phê duyệt nhiệm vụ thiết kế xây dựng công trình, trong quá trình tổ chức thực hiện dự án, nghiệm thu, bàn giao công trình xây dựng hoàn thành vào vận hành, sử dụng (kể cả việc thực hiện bảo hành công trình theo quy định);</p>
                         <p>3\. Bàn giao công trình xây dựng hoàn thành cho chủ đầu tư hoặc chủ quản lý sử dụng theo quy định của pháp luật; quản lý công trình xây dựng hoàn thành trong thời gian chưa xác định được đơn vị quản lý sử dụng công trình theo yêu cầu của người quyết định đầu tư;</p>
@@ -464,7 +464,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 20",
                 title: "Quan hệ công tác giữa Ban QLDA với nhà thầu",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Tổ chức lựa chọn nhà thầu thực hiện các gói thầu thuộc dự án do mình làm chủ đầu tư hoặc được thuê làm tư vấn quản lý dự án; đàm phán, ký kết và thực hiện hợp đồng với nhà thầu được lựa chọn theo quy định của pháp luật;</p>
                         <p>2\. Thực hiện các quyền, nghĩa vụ của chủ đầu tư đối với nhà thầu xây dựng theo quy định của hợp đồng xây dựng và quy định của pháp luật có liên quan;</p>
                         <p>3\. Tiếp nhận, xử lý theo thẩm quyền hoặc kiến nghị cấp có thẩm quyền giải quyết các đề xuất, vướng mắc của nhà thầu trong quá trình thực hiện.</p>
@@ -476,7 +476,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 21",
                 title: "Quan hệ công tác giữa Ban QLDA với các đơn vị tiếp nhận tài sản, hưởng lợi",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Phối hợp với Các đơn vị tiếp nhận tài sản, hưởng lợi tham gia vào quá trình thực hiện dự án bao gồm công tác giải phóng mặt bằng (nếu có), chuẩn bị dự án, giám sát quá trình thực hiện, tiếp nhận và duy tu bảo dưỡng, vận hành công trình. Giám đốc Ban QLDA có thẩm quyền ra quyết định thành lập các ban, tổ công tác gồm các thành phần trên để phối hợp trong quá trình triển khai thực hiện dự án và sử dụng, duy tu bảo dưỡng, vận hành công trình;</p>
                         <p>2\. Các chế độ, chính sách liên quan (nếu có) của các cán bộ đơn vị hưởng lợi thực hiện theo quy định của pháp luật và quy chế của dự án.</p>
                     </div>
@@ -487,7 +487,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 22",
                 title: "Quan hệ giữa Lãnh đạo Ban QLDA đối với các phòng thuộc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Giám đốc, Phó Giám đốc phụ trách lĩnh vực/các phòng, định kỳ hoặc đột xuất họp với lãnh đạo các phòng hoặc làm việc với từng phòng, để trực tiếp nghe báo cáo tình hình, chỉ đạo việc thực hiện chương trình, kế hoạch công tác của các phòng thuộc Ban QLDA;</p>
                         <p>2\. Trưởng/phụ trách các phòng có trách nhiệm báo cáo kịp thời với Ban Giám đốc Ban QLDA về kết quả thực hiện, kiến nghị các vấn đề cần giải quyết liên quan đến hoạt động của phòng mình và những khó khăn vướng mắc cần tháo gỡ, kiến nghị với cấp có thẩm quyền về sửa đổi, điều chỉnh cơ chế chính sách.</p>
                     </div>
@@ -498,7 +498,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 23",
                 title: "Quan hệ giữa các phòng trực thuộc Ban QLDA",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Trưởng các phòng được giao chủ trì giải quyết các vấn đề có liên quan với các phòng khác phải trao đổi ý kiến với các phòng đó. Trưởng/phụ trách các phòng được xin ý kiến có trách nhiệm trả lời theo đúng yêu cầu của phòng chủ trì;</p>
                         <p>2\. Theo phân công của Ban Giám đốc Ban QLDA, Trưởng/phụ trách các phòng có trách nhiệm phối hợp thực hiện các dự án, chương trình của Ban QLDA. Đối với những vấn đề liên quan đến nhiều phòng mà vượt quá thẩm quyền giải quyết hoặc không đủ điều kiện thì Trưởng/Phụ trách phòng chủ trì báo cáo, đề xuất với lãnh đạo Ban QLDA xem xét quyết định;</p>
                         <p>3\. Thực hiện theo nguyên tắc: Công việc thuộc phạm vi chức năng, nhiệm vụ của phòng nào thì phòng đó chủ trì, tham mưu; chủ động phối hợp với các phòng có liên quan để thực hiện chức năng, nhiệm vụ, quyền hạn được giao. Các phòng liên quan có trách nhiệm phối hợp, trường hợp có ý kiến khác nhau thì phòng chủ trì báo cáo Ban Giám đốc xem xét, quyết định;</p>
@@ -512,7 +512,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 24",
                 title: "Các mối quan hệ khác",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Quan hệ làm việc giữa Giám đốc Ban QLDA với các Bộ, ngành Trung ương, Tỉnh ủy, Hội đồng nhân dân, Ủy ban nhân dân tỉnh, các cơ quan tổ chức chính trị \- xã hội, tổ chức xã hội nghề nghiệp thuộc ngành lĩnh vực thực hiện theo quy định của pháp luật và các quy định có liên quan;</p>
                         <p>2\. Quan hệ giữa Lãnh đạo Ban QLDA tỉnh với Đảng ủy Ban QLDA tỉnh thực hiện theo quy định của Đảng và Quy chế làm việc của Ban Chấp hành Đảng bộ Ban QLDA;</p>
                         <p>3\. Quan hệ giữa Lãnh đạo Ban QLDA tỉnh với Công đoàn Ban QLDA tỉnh được thực hiện theo Quy chế phối hợp giữa Ban Giám đốc với Công đoàn Ban QLDA tỉnh;</p>
@@ -535,7 +535,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 25",
                 title: "Chế độ hội họp",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Chế độ họp, giao ban nội bộ</p>
                         <p>a) Chế độ họp với UBND tỉnh, Chủ tịch UBND tỉnh: Thực hiện theo quy định chung của tỉnh;</p>
                         <p>b) Chế độ họp với các cơ quan, đơn vị liên quan: Trong trường hợp cần thiết, Ban QLDA tổ chức họp với các cơ quan, đơn vị có liên quan để thống nhất các vấn đề, nội dung cần giải quyết;</p>
@@ -552,7 +552,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 26",
                 title: "Chế độ báo cáo",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Ban QLDA thực hiện chế độ báo cáo định kỳ và đột xuất với UBND tỉnh, Chủ tịch UBND tỉnh và theo yêu cầu của các cơ quan có thẩm quyền;</p>
                         <p>2\. Chế độ báo cáo trong nội bộ Ban QLDA</p>
                         <p>a) Phó Giám đốc báo cáo giám đốc:</p>
@@ -576,7 +576,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 27",
                 title: "Chế độ kiểm tra, giám sát",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Chế độ kiểm tra, giám sát đầu tư đối với dự án được giao Chủ đầu tư</p>
                         <p>a) Tổ chức thực hiện theo dõi, kiểm tra toàn bộ quá trình đầu tư dự án theo nội dung và chỉ tiêu được phê duyệt nhằm đảm bảo mục tiêu và hiệu quả đầu tư;</p>
                         <p>b) Nội dung kiểm tra, giám sát đầu tư bao gồm: Lập kế hoạch tổng thể và kế hoạch chi tiết thực hiện dự án; tình hình điều chỉnh và thực hiện kế hoạch; tiến độ thực hiện; khối lượng và giá trị khối lượng thực hiện; chất lượng công việc; các biến động trong quá trình thực hiện dự án; huy động vốn cho dự án; giải ngân (tạm ứng, thu hồi tạm ứng, thanh toán); quyết toán vốn dự án hoàn thành; nợ đọng xây dựng cơ bản (nếu có);</p>
@@ -594,7 +594,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 28",
                 title: "Cung cấp thông tin hoạt động trong nội bộ Ban QLDA tỉnh",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>Lãnh đạo Ban QLDA tỉnh và các phòng liên quan có trách nhiệm thông báo bằng hình thức thích hợp, thuận tiện để cán bộ Ban QLDA tỉnh nắm được những thông tin:</p>
                         <p>1\. Chủ trương, chính sách của Đảng, Nhà nước, UBND tỉnh liên quan đến công việc của Ban QLDA tỉnh;</p>
                         <p>2\. Tuyển dụng, đào tạo, khen thưởng, kỷ luật, nâng bậc lương, nâng ngạch, bổ nhiệm cán bộ;</p>
@@ -608,7 +608,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 29",
                 title: "Thời gian làm việc, chế độ nghỉ phép, nghỉ việc riêng",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Thời gian làm việc</p>
                         <p>Cán bộ, viên chức, người lao động có trách nhiệm:</p>
                         <p>a) Thực hiện nghiêm túc thời gian làm việc theo Luật Lao động và giờ hành chính theo thông báo của UBND tỉnh; giữ gìn vệ sinh nơi làm việc, bảo quản tài sản chung của cơ quan và tài sản được giao sử dụng; sẵn sàng đáp ứng mọi yêu cầu để hoàn thành tốt nhiệm vụ được giao;</p>
@@ -624,7 +624,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 30",
                 title: "Đi công tác trong và ngoài nước",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Khi Lãnh đạo Ban đi công tác, các phòng liên quan có trách nhiệm chuẩn bị nội dung, tài liệu phục vụ; Phòng Hành chính – Tổng hợp chuẩn bị điều kiện cần thiết và công tác hậu cần cho chuyến công tác;</p>
                         <p>2\. Cán bộ, viên chức, người lao động đi công tác phải xây dựng chương trình, kế hoạch, trong đó ghi rõ nội dung, địa điểm (trong nước hoặc quốc gia/vùng lãnh thổ đến), thời gian công tác, trình Trưởng/Phụ trách phòng báo cáo Giám đốc xem xét, quyết định;</p>
                         <p>3\. Trường hợp tham gia đoàn công tác liên ngành hoặc đoàn công tác của tỉnh, việc cử cán bộ, viên chức, người lao động tham gia phải đúng thành phần theo yêu cầu;</p>
@@ -638,7 +638,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 31",
                 title: "Khen thưởng, kỷ luật, giải quyết khiếu nại, tố cáo liên quan cán bộ, viên chức, người lao động; công tác phòng chống tham nhũng",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Khen thưởng, kỷ luật</p>
                         <p>a) Chế độ khen thưởng thường xuyên, đột xuất hàng năm thực hiện theo Quy chế thi đua, khen thưởng của Ban QLDA và theo quy định của pháp luật;</p>
                         <p>b) Việc xử lý kỷ luật đối với cán bộ, viên chức, người lao động tuân thủ theo các quy định của Nhà nước về xử lý kỷ luật.</p>
@@ -664,7 +664,7 @@ const quyCheLamViecChapters: RegChapter[] = [
                 code: "Điều 32",
                 title: "Hiệu lực thi hành",
                 content: (
-                    <div className="space-y-4 text-sm leading-relaxed text-gray-700 dark:text-slate-300 text-justify">
+                    <div className="space-y-4 text-sm leading-relaxed text-txt-secondary text-justify">
                         <p>1\. Quy chế làm việc có hiệu lực từ ngày ban hành. Quy chế này được phổ biến, quán triệt đến toàn thể cán bộ, viên chức và người lao động thuộc Ban QLDA tỉnh để thực hiện.</p>
                         <p>2\. Giám đốc, Phó Giám đốc, các phòng trực thuộc, các viên chức, người lao động Ban QLDA có trách nhiệm thực hiện Quy chế này. Giám đốc Ban QLDA có trách nhiệm phân công nhiệm vụ cụ thể cho các Phó Giám đốc, các phòng trực thuộc và viên chức, người lao động phù hợp với thực tiễn hoạt động của Ban QLDA đảm bảo đúng quy định của pháp luật và các quy định tại Quy chế này.</p>
                         <p>3\. Trong quá trình tổ chức thực hiện, trường hợp các quy định tại Quy chế này có thay đổi do văn bản pháp luật mới ban hành hoặc có nội dung khác với quy định của cấp có thẩm quyền, thì thực hiện theo quy định của pháp luật hiện hành; hoặc nếu có vấn đề vướng mắc trưởng/phụ trách các phòng kịp thời báo cáo Lãnh đạo Ban QLDA (qua phòng Hành chính \- Tổng hợp) để nghiên cứu sửa đổi, bổ sung cho phù hợp./.</p>

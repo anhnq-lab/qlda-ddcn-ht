@@ -36,9 +36,9 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ resetTar
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-6 shadow-xl" onClick={e => e.stopPropagation()}>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100 mb-1">Reset mật khẩu</h3>
-                <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
+            <div className="bg-bg-surface rounded-2xl w-full max-w-md p-6 shadow-xl" onClick={e => e.stopPropagation()}>
+                <h3 className="text-lg font-bold text-txt-primary mb-1">Reset mật khẩu</h3>
+                <p className="text-sm text-txt-muted mb-4">
                     Đặt mật khẩu mới cho <strong>{resetTarget.full_name}</strong> ({resetTarget.username})
                 </p>
 
@@ -54,7 +54,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ resetTar
                             type={showNewPassword ? 'text' : 'password'}
                             value={newPassword}
                             onChange={e => setNewPassword(e.target.value)}
-                            className="w-full px-4 py-3 pr-24 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-gray-900 dark:text-slate-100"
+                            className="w-full px-4 py-3 pr-24 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-txt-primary"
                             placeholder="Mật khẩu mới"
                         />
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -91,7 +91,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ resetTar
                     <button
                         onClick={onClose}
                         disabled={submitting}
-                        className="flex-1 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+                        className="flex-1 py-2.5 bg-bg-muted text-txt-secondary rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
                     >
                         Hủy
                     </button>

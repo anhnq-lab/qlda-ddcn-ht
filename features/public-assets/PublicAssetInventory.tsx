@@ -158,15 +158,15 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
       <div className="lg:col-span-1 space-y-6">
         
         {/* Create new inventory widget */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-4">
+        <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-txt-primary flex items-center gap-2 mb-4">
             <Plus className="w-4 h-4 text-primary-500" />
             Tạo đợt kiểm kê mới
           </h3>
           
           <form onSubmit={handleCreateInventory} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">
+              <label className="block text-xs font-bold text-txt-muted uppercase mb-1.5">
                 Tên đợt kiểm kê <span className="text-red-500">*</span>
               </label>
               <input
@@ -175,12 +175,12 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Ví dụ: Kiểm kê cuối năm 2026..."
-                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">
+              <label className="block text-xs font-bold text-txt-muted uppercase mb-1.5">
                 Ngày kiểm kê
               </label>
               <input
@@ -188,12 +188,12 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 required
                 value={newDate}
                 onChange={(e) => setNewDate(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">
+              <label className="block text-xs font-bold text-txt-muted uppercase mb-1.5">
                 Ghi chú/Mô tả
               </label>
               <textarea
@@ -201,7 +201,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 onChange={(e) => setNewNotes(e.target.value)}
                 placeholder="Ghi chú đợt kiểm kê..."
                 rows={2}
-                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
 
@@ -217,8 +217,8 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
         </div>
 
         {/* Previous Inventories List */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 shadow-sm">
-          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-4">
+        <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-txt-primary flex items-center gap-2 mb-4">
             <Calendar className="w-4 h-4 text-primary-500" />
             Lịch sử các đợt kiểm kê
           </h3>
@@ -231,12 +231,12 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                 className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between
                   ${activeInventory?.id === inv.id 
                     ? 'border-primary-500 bg-primary-50/20 dark:bg-primary-950/20' 
-                    : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'}
+                    : 'border-border-subtle hover:bg-bg-hover-row'}
                 `}
               >
                 <div>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{inv.title}</h4>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                  <h4 className="text-xs font-bold text-txt-primary line-clamp-1">{inv.title}</h4>
+                  <p className="text-[10px] text-txt-placeholder mt-1">
                     Ngày: {new Date(inv.inventory_date).toLocaleDateString('vi-VN')}
                   </p>
                 </div>
@@ -263,13 +263,13 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
       {/* Right panel: Active Inventory Session Details */}
       <div className="lg:col-span-2">
         {activeInventory ? (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 shadow-sm flex flex-col h-full">
+          <div className="bg-bg-surface rounded-2xl border border-border-subtle p-6 shadow-sm flex flex-col h-full">
             
             {/* Header of session */}
             <div className="flex justify-between items-start border-b pb-4 mb-4 dark:border-slate-700">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">{activeInventory.title}</h3>
+                  <h3 className="text-base font-bold text-txt-primary">{activeInventory.title}</h3>
                   <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold
                     ${activeInventory.status === 'completed' 
                       ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30' 
@@ -289,7 +289,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                   <button
                     onClick={handleSaveDetails}
                     disabled={isLoading}
-                    className="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1"
+                    className="px-3 py-1.5 border border-border text-txt-secondary hover:bg-bg-hover-row rounded-xl text-xs font-semibold flex items-center gap-1"
                   >
                     <Save className="w-3.5 h-3.5" />
                     Lưu nháp
@@ -307,10 +307,10 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
             </div>
 
             {/* Table detail list */}
-            <div className="overflow-x-auto border border-slate-100 dark:border-slate-700 rounded-xl">
+            <div className="overflow-x-auto border border-border-subtle rounded-xl">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-bold uppercase border-b dark:border-slate-700">
+                  <tr className="bg-bg-subtle/80 text-txt-muted font-bold uppercase border-b dark:border-slate-700">
                     <th className="p-3">Tài sản công</th>
                     <th className="p-3 text-center w-20">Sổ sách</th>
                     <th className="p-3 text-center w-24">Thực tế</th>
@@ -319,11 +319,11 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                     <th className="p-3">Ghi chú</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                <tbody className="divide-y divide-border-subtle">
                   {details.map((d) => (
                     <tr key={d.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
                       <td className="p-3">
-                        <div className="font-bold text-slate-800 dark:text-slate-200">
+                        <div className="font-bold text-txt-primary">
                           {d.asset?.asset_name || 'Tài sản đã xóa'}
                         </div>
                         <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
@@ -331,7 +331,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                         </div>
                       </td>
                       
-                      <td className="p-3 text-center font-bold text-slate-600 dark:text-slate-400">
+                      <td className="p-3 text-center font-bold text-txt-muted">
                         {d.book_quantity}
                       </td>
                       
@@ -342,7 +342,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                             min="0"
                             value={d.actual_quantity ?? ''}
                             onChange={(e) => handleDetailChange(d.id, 'actual_quantity', Number(e.target.value))}
-                            className="w-16 px-1.5 py-1 text-center border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-lg focus:outline-none"
+                            className="w-16 px-1.5 py-1 text-center border border-border bg-bg-surface text-txt-primary rounded-lg focus:outline-none"
                           />
                         ) : (
                           <span className="font-bold">{d.actual_quantity}</span>
@@ -364,14 +364,14 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                           <select
                             value={d.condition || 'good'}
                             onChange={(e) => handleDetailChange(d.id, 'condition', e.target.value)}
-                            className="w-full px-1.5 py-1 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-lg text-xs"
+                            className="w-full px-1.5 py-1 border border-border bg-bg-surface text-txt-primary rounded-lg text-xs"
                           >
                             <option value="good">Tốt / Bình thường</option>
                             <option value="damaged">Hỏng hóc</option>
                             <option value="need_repair">Cần sửa chữa</option>
                           </select>
                         ) : (
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="font-semibold text-txt-secondary">
                             {d.condition === 'good' ? 'Tốt' : d.condition === 'damaged' ? 'Hỏng' : 'Cần sửa'}
                           </span>
                         )}
@@ -384,7 +384,7 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
                             value={d.notes || ''}
                             onChange={(e) => handleDetailChange(d.id, 'notes', e.target.value)}
                             placeholder="Ghi chú nhanh..."
-                            className="w-full px-2 py-1 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-lg text-xs"
+                            className="w-full px-2 py-1 border border-border bg-bg-surface text-txt-primary rounded-lg text-xs"
                           />
                         ) : (
                           <span className="text-slate-500">{d.notes || '—'}</span>
@@ -415,10 +415,10 @@ export const PublicAssetInventory: React.FC<PublicAssetInventoryProps> = ({ asse
             )}
           </div>
         ) : (
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+          <div className="bg-bg-subtle rounded-2xl border-2 border-dashed border-border p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
             <ClipboardList className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
-            <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">Chưa chọn đợt kiểm kê</h4>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-sm">
+            <h4 className="text-sm font-bold text-txt-secondary">Chưa chọn đợt kiểm kê</h4>
+            <p className="text-xs text-txt-placeholder mt-1 max-w-sm">
               Chọn một đợt kiểm kê từ danh sách bên trái hoặc tạo đợt kiểm kê mới để thực hiện đối chiếu thực tế với sổ sách.
             </p>
           </div>

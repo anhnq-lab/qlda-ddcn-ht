@@ -37,8 +37,8 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-4xl h-[80vh] rounded-3xl shadow-sm flex flex-col overflow-hidden border border-gray-200 animate-in zoom-in-95">
-                <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+            <div className="bg-bg-surface w-full max-w-4xl h-[80vh] rounded-3xl shadow-sm flex flex-col overflow-hidden border border-gray-200 animate-in zoom-in-95">
+                <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-bg-subtle">
                     <h3 className="text-lg font-black text-gray-800 flex items-center gap-3">
                         <Users className="w-5 h-5 text-blue-600" /> Quản lý nhân sự dự án
                     </h3>
@@ -49,7 +49,7 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
 
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left: Current Members */}
-                    <div className="flex-1 border-r border-gray-200 flex flex-col bg-white dark:bg-slate-800">
+                    <div className="flex-1 border-r border-gray-200 flex flex-col bg-bg-surface">
                         <div className="p-4 bg-blue-50/30 border-b border-blue-50">
                             <h4 className="text-xs font-bold text-blue-800 uppercase tracking-widest mb-1">Danh sách hiện tại ({activeMembers.length})</h4>
                             <p className="text-[10px] text-blue-600/70">Thành viên đang tham gia dự án</p>
@@ -82,7 +82,7 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
                     </div>
 
                     {/* Right: Add New */}
-                    <div className="w-[400px] flex flex-col bg-slate-50 dark:bg-slate-800">
+                    <div className="w-[400px] flex flex-col bg-bg-subtle">
                         <div className="p-4 border-b border-gray-200">
                             <h4 className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-3">Thêm thành viên mới</h4>
                             <div className="relative">
@@ -92,13 +92,13 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
                                     placeholder="Tìm tên, chức vụ..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-9 pr-3 py-2 bg-bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-2">
                             {availableEmployees.map((emp) => (
-                                <div key={emp.EmployeeID} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 hover:border-blue-300 transition-all shadow-sm">
+                                <div key={emp.EmployeeID} className="flex items-center gap-3 p-3 bg-bg-surface rounded-xl border border-gray-200 hover:border-blue-300 transition-all shadow-sm">
                                     <Avatar name={emp.FullName} imageUrl={emp.AvatarUrl} size="sm" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs font-bold text-gray-800 truncate">{emp.FullName}</p>

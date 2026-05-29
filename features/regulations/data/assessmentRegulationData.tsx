@@ -10,7 +10,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-chung-dieu-1", code: "chuong-chung-dieu-1",
         title: "Điều 1. Ban hành kèm theo Quyết định này Quy chế Đánh giá, xếp loại hàng tháng đối với cán bộ, viên chức, người lao động thuộc Ban Quản lý dự án đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh.",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
           </div>
         )
       },
@@ -18,7 +18,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-chung-dieu-2", code: "chuong-chung-dieu-2",
         title: "Điều 2. Quyết định này có hiệu lực kể từ ngày ban hành.",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
           </div>
         )
       },
@@ -26,7 +26,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-chung-dieu-3", code: "chuong-chung-dieu-3",
         title: "Điều 3. Trưởng các phòng: Hành chính \- Tổng hợp, Quản lý dự án 1, Quản lý dự án 2, Quản lý dự án 3, Kế hoạch \- Đấu thầu, Kỹ thuật \- Thẩm định, Phát triển dịch vụ và các tổ chức, cá nhân có liên quan chịu trách nhiệm thi hành Quyết định này./.",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>| *Nơi nhận:*		         	     	 - Như điều 2; - Giám đốc, các Phó Giám đốc; - Lưu VT, HC-TH./.  | GIÁM ĐỐC Nguyễn Quang Linh  |</p>
             <p>| :---- | ----- |</p>
             <p>| UBND TỈNH HÀ TĨNH BAN QLDA ĐẦU TƯ XÂY DỰNG CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC  | CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự do - Hạnh phúc  |</p>
@@ -49,7 +49,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-1", code: "chuong-i-dieu-1",
         title: "Điều 1. Phạm vi điều chỉnh và đối tượng áp dụng",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Phạm vi điều chỉnh: Quy chế này quy định việc đánh giá, xếp loại hàng tháng lấy cơ sở đánh giá, xếp loại hàng năm và chi thu nhập tăng thêm đối với các phòng; cán bộ, viên chức, người lao động thuộc Ban Quản lý dự án đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh (Ban QLDA).</p>
             <p>2. Đối tượng áp dụng: Viên chức, người lao động và các phòng chuyên môn thuộc Ban QLDA.</p>
           </div>
@@ -59,7 +59,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-2", code: "chuong-i-dieu-2",
         title: "Điều 2. Mục đích",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Tiêu chí đánh giá, xếp loại hàng tháng của viên chức, người lao động Ban QLDA là căn cứ để bình xét khen thưởng, chi trả thu nhập tăng thêm hàng năm; là căn cứ để đánh giá, xếp loại thi đua; đồng thời là cơ sở để bố trí, sử dụng, quy hoạch, đề bạt, đào tạo, bồi dưỡng và thực hiện chính sách đối với cán bộ, viên chức, người lao động theo quy định và theo yêu cầu nhiệm vụ của cơ quan.</p>
             <p>2. Đánh giá xếp loại hàng tháng đối với cán bộ, viên chức, người lao động nhằm phát huy vai trò, trách nhiệm của người đứng đầu trong công tác lãnh đạo, quản lý, siết chặt kỷ luật, kỷ cương, chuẩn hóa, xây dựng phong cách làm việc chuyên nghiệp; nâng cao ý thức trách nhiệm, tính tự giác trong thực thi công vụ của cán bộ, viên chức, người lao động; tạo môi trường sáng tạo, đổi mới, phát triển, nâng cao chất lượng, hiệu quả hoạt động của cơ quan.</p>
           </div>
@@ -69,7 +69,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-3", code: "chuong-i-dieu-3",
         title: "Điều 3. Yêu cầu",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Căn cứ vào Kế hoạch khung hàng năm của Ban QLDA, nhiệm vụ chuyên môn của các phòng và khối lượng công việc tồn đọng, các phòng thuộc Ban QLDA phải xây dựng kế hoạch công tác tháng, quý, năm; phân công cụ thể (cán bộ trực tiếp phụ trách, lãnh đạo phòng trực tiếp quản lý, lãnh đạo Ban phụ trách); nội dung công việc được giao; tiến độ, thời gian thực hiện, hoàn thành; xác định kết quả đầu ra của mỗi nhiệm vụ được giao. Trên cơ sở kế hoạch công tác của phòng, cá nhân xây dựng kế hoạch thực hiện tháng, quý, năm.</p>
             <p>2. Việc đánh giá, xếp loại hàng tháng đối với cán bộ, viên chức, lao động phải thực hiện theo nguyên tắc tập trung dân chủ, chính xác, khách quan, công bằng, đúng thực chất và đúng trình tự quy định. Phải thực hiện đánh giá đa chiều, liên tục, lượng hóa được kết quả thực hiện nhiệm vụ của từng cán bộ, viên chức, người lao động gắn với kết quả công tác của từng bộ phận, từng phòng chuyên môn (trên cơ sở phân tích về tổng khối lượng và tính chất, mức độ của công việc).</p>
           </div>
@@ -79,7 +79,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-4", code: "chuong-i-dieu-4",
         title: "Điều 4. Nguyên tắc đánh giá, xếp loại chất lượng",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Trưởng các phòng trực tiếp lãnh đạo, giao nhiệm vụ, đồng thời là người thực hiện nhận xét, đánh giá, xếp loại viên chức và người lao động thuộc đơn vị mình. Giám đốc Ban QLDA là người đứng đầu cơ quan quyết định việc xếp loại, đánh giá cán bộ, viên chức, người lao động theo phân cấp quản lý và chịu trách nhiệm về quyết định của mình.</p>
             <p>2. Việc đánh giá, xếp loại phải căn cứ vào chức trách, nhiệm vụ được giao và kết quả thực hiện nhiệm vụ. Việc đánh giá cần làm rõ ưu điểm, khuyết điểm, tồn tại, hạn chế về phẩm chất, năng lực, trình độ của cán bộ, viên chức, người lao động.</p>
             <p>3. Bảo đảm dân chủ, khách quan, chính xác, công khai, minh bạch, xuyên suốt, liên tục, đa chiều.</p>
@@ -92,7 +92,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-5", code: "chuong-i-dieu-5",
         title: "Điều 5. Thời hạn định kỳ đánh giá, xếp loại",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Đối với Ban QLDA tỉnh và các phòng chuyên môn: Thực hiện hằng quý/năm.</p>
             <p>2. Đối với viên chức, người lao động: Thực hiện hàng tháng làm cơ sở để đánh giá, xếp loại chất lượng hàng năm.</p>
             <p>Đối với Giám đốc, Phó giám đốc Ban QLDA được đánh giá xếp loại hàng quý. Căn cứ vào kết quả đánh giá, xếp loại hàng quý các phòng được giao phụ trách của các Phó Giám đốc và kết quả đánh giá, xếp loại hàng quý của Ban QLDA tỉnh để đề xuất UBND tỉnh đánh giá xếp loại Giám đốc, Phó giám đốc.</p>
@@ -103,7 +103,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-i-dieu-6", code: "chuong-i-dieu-6",
         title: "Điều 6. Mức đánh giá, xếp loại chất lượng",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>Cán bộ, viên chức, người lao động được đánh giá, xếp loại chất lượng theo 4 mức:</p>
             <p>a) Hoàn thành xuất sắc nhiệm vụ (Loại A1);</p>
             <p>b) Hoàn thành tốt nhiệm vụ (Loại A);</p>
@@ -122,7 +122,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-7", code: "chuong-ii-dieu-7",
         title: "Điều 7. Thẩm quyền đánh giá, xếp loại chất lượng",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>- UBND tỉnh xếp loại đối với Giám đốc, Phó Giám đốc trên cơ sở nhận xét, đánh giá của Hội đồng thi đua khen thưởng, đánh giá, xếp loại Ban QLDA.</p>
             <p>- Hội đồng thi đua khen thưởng, đánh giá, xếp loại Ban QLDA xem xét, quyết định kết quả đánh giá, xếp loại viên chức, người lao động; tổ chức nhận xét, đánh giá xếp loại các trưởng phòng, tập thể các phòng; nhận xét, đánh giá Giám đốc, Phó Giám đốc, tập thể Ban QLDA làm cơ sở đề xuất UBND tỉnh xếp loại.</p>
             <p>- Trưởng phòng đánh giá, xếp loại hàng tháng đối với phó phòng, viên chức và người lao động thuộc đơn vị.</p>
@@ -134,7 +134,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-8", code: "chuong-ii-dieu-8",
         title: "Điều 8. Tiêu chí đánh giá, xếp loại (Thang điểm 100\)",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Ý thức tổ chức kỷ luật, phẩm chất đạo đức lối sống **(tối đa 20 điểm)**</p>
             <p>- Ý thức tổ chức kỷ luật; phẩm chất đạo đức, lối sống, tác phong, lề lối làm việc chuẩn mực **(tối đa 6 điểm).**</p>
             <p>- Đoàn kết, thực hiện nguyên tắc tập trung dân chủ trong cơ quan **(tối đa 5 điểm).**</p>
@@ -186,7 +186,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-9", code: "chuong-ii-dieu-9",
         title: "Điều 9. Mức xếp loại",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Đối với cán bộ, viên chức, người lao động:</p>
             <p>- Hoàn thành xuất sắc nhiệm vụ (xếp loại A1): Đạt từ 91 đến 100 điểm.</p>
             <p>- Hoàn thành tốt nhiệm vụ (xếp loại A): Đạt từ 71 đến dưới 90 điểm.</p>
@@ -199,7 +199,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-10", code: "chuong-ii-dieu-10",
         title: "Điều 10. Một số trường hợp cụ thể trong đánh giá, xếp loại",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Không đánh giá, xếp loại trong tháng với cán bộ, viên chức, người lao động trong thời gian ký hợp đồng thử việc; nghỉ thai sản; nghỉ ốm, nghỉ do bị tai nạn lao động quá 20/22 ngày làm việc trong tháng; nghỉ việc riêng không hưởng lương quá 15/22 ngày làm việc trong tháng (kể cả nghỉ phép).</p>
             <p>2. Đối với cán bộ, viên chức, người lao động có thời gian nghỉ việc từ trên 12 ngày làm việc trong tháng vì lý do ốm đau... thì mức xếp loại của tháng tối đa là hoàn thành nhiệm vụ (xếp loại B).</p>
             <p>3. Đối với trường hợp cán bộ, viên chức, người lao động được cử đi đào tạo, bồi dưỡng (hệ không tập trung) mà thời gian làm việc thực tế trong tháng chưa đạt trên 50% số ngày làm việc của tháng thì vẫn thực hiện đánh giá nhưng mức xếp loại tối đa là hoàn thành nhiệm vụ (xếp loại B).</p>
@@ -214,7 +214,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-11", code: "chuong-ii-dieu-11",
         title: "Điều 11. Quy trình, các bước thực hiện đánh giá, xếp loại",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>Trên cơ sở chức năng nhiệm vụ của đơn vị, khuyến khích Lãnh đạo phòng xây dựng, sửa đổi, bổ sung, điều chỉnh Phiếu đánh giá, xếp loại hàng tháng dành cho cán bộ lãnh đạo quản lý; Phiếu đánh giá, xếp loại hàng tháng dành cho viên chức, người lao động đảm bảo phù hợp, sát với thực tế công tác chuyên môn của đơn vị nhằm đánh giá, xếp loại chính xác, khách quan, công bằng, đúng thực chất gắn với kết quả công tác chuyên môn của từng cá nhân.</p>
             <p>- Bước 1: Viên chức, người lao động tự kiểm điểm, nhận mức xếp loại hàng tháng.</p>
             <p>- Bước 2: Các phòng chuyên môn tổ chức nhận xét, đánh giá xếp loại viên chức, người lao động hàng tháng trên cơ sở tự xếp loại của các cá nhân. Tiến hành bỏ phiếu kín xếp loại để khẳng định sự tín nhiệm tại cuộc họp chuyên môn của phòng sau lễ chào cờ hàng tháng.</p>
@@ -230,7 +230,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-12", code: "chuong-ii-dieu-12",
         title: "Điều 12. Khiếu nại, kiến nghị về kết quả xếp loại chất lượng.",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Khi có cơ sở cho rằng kết quả xếp loại chất lượng không đúng quy định của pháp luật hoặc quy chế đánh giá của đơn vị, viên chức có quyền kiến nghị về kết quả xếp loại chất lượng đối với mình bằng văn bản đến Giám đốc Ban QLDA. Văn bản kiến nghị phải nêu rõ căn cứ kiến nghị, nội dung kiến nghị và đề xuất.</p>
             <p>2. Thời hạn kiến nghị là 05 ngày kể từ ngày công khai kết quả xếp loại chất lượng.</p>
             <p>3. Cấp có thẩm quyền có trách nhiệm giải quyết kiến nghị bằng hình thức đối thoại hoặc bằng văn bản trong thời hạn 10 ngày làm việc kể từ ngày nhận được kiến nghị.</p>
@@ -242,7 +242,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-13", code: "chuong-ii-dieu-13",
         title: "Điều 13. Sử dụng kết quả đánh giá, xếp loại hàng tháng để đánh giá xếp loại đối với cán bộ, viên chức, người lao động hằng năm.",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>Kết quả đánh giá xếp loại cả năm là kết quả của các tháng được xếp loại chia cho 12 tháng (tổng số điểm của các tháng xếp loại trong năm/12).</p>
           </div>
         )
@@ -251,7 +251,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-ii-dieu-14", code: "chuong-ii-dieu-14",
         title: "Điều 14. Biểu mẫu",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>- Phụ lục 01: Phiếu đánh giá, xếp loại hàng tháng dành cho viên chức lãnh đạo, quản lý.</p>
             <p>- Phụ lục 02: Phiếu đánh giá, xếp loại hàng tháng dành cho viên chức, người lao động.</p>
             <p>- Phụ lục 03: Biên bản họp đánh giá, xếp loại hàng tháng của phòng chuyên môn.</p>
@@ -274,7 +274,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-iii-dieu-15", code: "chuong-iii-dieu-15",
         title: "Điều 15. Trách nhiệm của viên chức, người lao động",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Thực hiện nghiêm các quy định về đánh giá, xếp loại viên chức, người lao động. Phản ánh kịp thời việc thực hiện đánh giá, xếp loại tại các phòng chuyên môn chưa đúng hoặc chưa nghiêm túc với Ban Giám đốc Ban QLDA tỉnh.</p>
             <p>2. Được quyền bảo lưu ý kiến về kết quả đánh giá, xếp loại hàng tháng của mình và có quyền phản ánh với Lãnh đạo Ban QLDA trong trường hợp không đồng ý với quyết định mức xếp loại đối với bản thân, nhưng phải chấp hành kết luận, nhận xét, đánh giá của cấp có thẩm quyền.</p>
             <p>3. Xây dựng kế hoạch thực hiện hàng tháng, quý, cả năm; báo cáo kết quả thực hiện trong tháng. Nộp kế hoạch năm trong quý I; kế hoạch tháng trước ngày 05 của tháng; báo cáo kết quả thực hiện trong tháng trước ngày 25 hàng tháng qua Lãnh đạo phòng để tập hợp gửi phòng Kế hoạch - Đâu thầu tổng hợp, tham mưu báo cáo Ban QLDA.</p>
@@ -285,7 +285,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-iii-dieu-16", code: "chuong-iii-dieu-16",
         title: "Điều 16. Trách nhiệm của các phòng chuyên môn",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Trưởng phòng có trách nhiệm:</p>
             <p>1) Phổ biến đến toàn thể viên chức, người lao động và thực hiện đúng các quy định tại Quy chế. Chịu trách nhiệm trước Giám đốc Ban QLDA tỉnh về toàn bộ quá trình thực hiện và kết quả đánh giá, xếp loại chất lượng của viên chức, người lao động thuộc thẩm quyền quản lý, phụ trách trực tiếp. Lập kế hoạch công tác hàng tháng, quý, năm của phòng trên cơ sở Kế hoạch khung hàng năm của Ban QLDA, nhiệm vụ chuyên môn của phòng và khối lượng công việc tồn đọng.</p>
             <p>2) Yêu cầu viên chức, người lao động lập kế hoạch thực hiện hàng tháng, quý, năm; báo cáo kết quả thực hiện công việc hàng tháng theo quy định; thực hiện đánh giá, xếp loại viên chức, người lao động theo phân công, phân cấp bảo đảm công khai, minh bạch trong toàn đơn vị.</p>
@@ -298,7 +298,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-iii-dieu-17", code: "chuong-iii-dieu-17",
         title: "Điều 17. Trách nhiệm của phòng Hành chính \- Tổng hợp",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Tổng hợp thông tin, kết quả chấm điểm thi đua, xếp loại cán bộ, viên chức, người lao động tham mưu, báo cáo, trình Hội đồng thi đua, khen thưởng, đánh giá, xếp loại Ban QLDA xem xét, quyết định. Thông báo công khai kết quả xếp loại tại Hội nghị viên chức, người lao động hoặc qua hệ thống thông tin nội bộ.</p>
             <p>2. Phòng Hành chính – Tổng hợp căn cứ kết quả xếp loại hàng năm thực hiện tham mưu chế độ tiền thưởng, chi thu nhập tăng thêm cho viên chức, người lao động theo đúng quy định hiện hành.</p>
             <p>3. Lưu trữ đầy đủ hồ sơ, tài liệu về đánh giá, xếp loại theo quy định.</p>
@@ -309,7 +309,7 @@ export const assessmentRegulationChapters: RegChapter[] = [
         id: "chuong-iii-dieu-18", code: "chuong-iii-dieu-18",
         title: "Điều 18. Điều khoản thi hành",
         content: (
-          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+          <div className="space-y-3 text-txt-secondary">
             <p>1. Lãnh đạo các phòng và cán bộ, viên chức, người lao động thuộc Ban quản lý dự án có trách nhiệm triển khai, tổ chức thực hiện Quy chế này kể từ ngày có hiệu lực.</p>
             <p>2. Trong quá trình tổ chức thực hiện, nếu có vấn đề vướng mắc trưởng các phòng kịp thời tổng hợp, báo cáo lãnh đạo Ban quan lý dự án (qua phòng Hành chính - Tổng hợp) để kịp thời xem xét, điều chỉnh, bổ sung cho phù hợp./.</p>
             <p>|  | BAN QLDA ĐẦU TƯ XÂY DỰNG  CÔNG TRÌNH DÂN DỤNG  VÀ HẠ TẦNG KHU VỰC |</p>

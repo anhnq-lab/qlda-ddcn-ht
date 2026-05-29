@@ -332,18 +332,18 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
     return (
         <div className="flex flex-col h-full bg-transparent space-y-4">
             {/* Header / Actions */}
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 shrink-0">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2.5 shrink-0">
                 {leftElement ? (
                     <div className="flex items-center gap-2">
                         {leftElement}
                     </div>
                 ) : (
                     <div className="flex flex-col">
-                        <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                        <h2 className="text-lg font-black text-txt-primary flex items-center gap-2">
                             <FileText className="w-5 h-5 text-primary-500" />
                             Báo cáo kết quả công việc {MONTH_NAMES[month]}/{year}
                         </h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-txt-muted">
                             Tổng hợp tiến độ và kết quả từ module Công việc
                         </p>
                     </div>
@@ -355,7 +355,7 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                         <button
                             onClick={() => handleSeedTasks(userDept as DepartmentCode)}
                             disabled={seeding || loading || exporting}
-                            className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-350 text-xs font-bold transition-all bg-white dark:bg-slate-800 disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg hover:bg-bg-hover-row text-slate-650 dark:text-slate-350 text-xs font-bold transition-all bg-bg-surface disabled:opacity-50"
                         >
                             <RefreshCw className={`w-3.5 h-3.5 ${seeding ? 'animate-spin' : ''}`} />
                             Đồng bộ công việc tuần
@@ -407,14 +407,14 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-auto min-h-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
+            <div className="flex-1 overflow-auto min-h-0 bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4">
                 {loading && summaries.length === 0 ? (
-                    <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-500 text-sm">
+                    <div className="flex items-center justify-center h-48 text-txt-placeholder text-sm">
                         <RefreshCw className="w-5 h-5 animate-spin mr-2" />
                         Đang tải báo cáo...
                     </div>
                 ) : summaries.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-48 gap-2 text-slate-400 dark:text-slate-500">
+                    <div className="flex flex-col items-center justify-center h-48 gap-2 text-txt-placeholder">
                         <AlertTriangle className="w-8 h-8 opacity-40 text-warning-500" />
                         <p className="text-xs">Chưa có công việc nào được lập cho tháng này.</p>
                         {isDeptHead && (
@@ -429,9 +429,9 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                 ) : (
                     <div className="space-y-4">
                         {/* Summary table */}
-                        <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+                        <div className="border border-border-subtle rounded-xl overflow-hidden shadow-sm">
                             <table className="w-full text-sm">
-                                <thead className="bg-slate-50 dark:bg-slate-800/80 text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+                                <thead className="bg-bg-subtle/80 text-[10px] font-black uppercase tracking-wider text-txt-muted border-b border-border-subtle">
                                     <tr>
                                         <th className="w-8"></th>
                                         <th className="px-4 py-3 text-left">Phòng ban / Đơn vị</th>
@@ -468,7 +468,7 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                                     <td className="text-center py-3 pl-2">
                                                         <button
                                                             onClick={() => toggleDeptExpand(s.department_code)}
-                                                            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors text-slate-400"
+                                                            className="p-1 hover:bg-bg-muted rounded transition-colors text-slate-400"
                                                         >
                                                             {isExpanded ? (
                                                                 <ChevronDown className="w-4 h-4" />
@@ -479,7 +479,7 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                                     </td>
                                                     <td className="px-4 py-3 text-left">
                                                         <div className="flex flex-col">
-                                                            <span className="font-bold text-slate-900 dark:text-white">
+                                                            <span className="font-bold text-txt-primary">
                                                                 {DEPARTMENT_NAMES[s.department_code] || s.department_code}
                                                             </span>
                                                             <span className="text-[10px] text-slate-400 font-normal">
@@ -560,7 +560,7 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                                     <tr>
                                                         <td colSpan={10} className="bg-slate-50/30 dark:bg-slate-900/60 p-4">
                                                             <div className="space-y-4">
-                                                                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                                                                <div className="flex items-center justify-between border-b border-border-subtle pb-2">
                                                                     <h4 className="text-xs font-bold text-slate-800 dark:text-slate-300 uppercase tracking-wide">
                                                                         Chi tiết công việc — {DEPARTMENT_NAMES[s.department_code]}
                                                                     </h4>
@@ -628,7 +628,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
                 const label = TASK_CATEGORY_LABELS[cat] || TASK_CATEGORY_LABELS.khac;
 
                 return (
-                    <div key={cat} className="space-y-2 border border-slate-100 dark:border-slate-800 rounded-lg p-3 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow">
+                    <div key={cat} className="space-y-2 border border-border-subtle rounded-lg p-3 bg-bg-surface shadow-sm transition-all hover:shadow">
                         <div className="flex items-center gap-2 mb-2">
                             <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border ${color.bg} ${color.text} ${color.border}`}>
                                 {label}
@@ -640,7 +640,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-xs">
-                                <thead className="text-[10px] text-slate-500 dark:text-slate-400 font-bold border-b border-slate-100 dark:border-slate-800">
+                                <thead className="text-[10px] text-txt-muted font-bold border-b border-border-subtle">
                                     <tr>
                                         <th className="pb-1 text-left w-12">STT</th>
                                         <th className="pb-1 text-left">Nội dung công việc</th>
@@ -650,7 +650,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
                                         <th className="pb-1 text-left">Kết quả / Lý do chưa HT</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-650 dark:text-slate-350">
+                                <tbody className="divide-y divide-border-subtle text-slate-650 dark:text-slate-350">
                                     {catTasks.map((t, idx) => {
                                         const statusCfg = STATUS_CONFIG[t.status] || { label: t.status, icon: null, variant: 'neutral' };
                                         return (
@@ -664,7 +664,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
                                                 </td>
                                                 <td className="py-2.5 pr-4">
                                                     <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                        <span className="font-bold text-txt-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                             {t.title}
                                                         </span>
                                                         {t.description && (
@@ -679,7 +679,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="py-2.5 pr-2 font-bold text-slate-700 dark:text-slate-300">
+                                                <td className="py-2.5 pr-2 font-bold text-txt-secondary">
                                                     {t.assignee_name || 'Chưa phân công'}
                                                 </td>
                                                 <td className="py-2.5 pr-2 text-center text-slate-500 font-mono">
@@ -696,7 +696,7 @@ const DeptTasksList: React.FC<DeptTasksListProps> = ({ deptTasks, onTaskClick })
                                                 </td>
                                                 <td className="py-2.5">
                                                     {t.status === 'done' && (
-                                                        <div className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                                                        <div className="text-[11px] text-txt-muted font-medium">
                                                             <span className="text-emerald-600 dark:text-emerald-500 font-bold mr-1">KQ:</span>
                                                             {t.completion_result || 'Đã hoàn thành'}
                                                             {t.is_on_time === false && (

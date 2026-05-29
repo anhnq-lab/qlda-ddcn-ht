@@ -172,7 +172,7 @@ function getNodeVisualConfig(
     if (isCompleted) return { icon: <CheckCircle2 size={20} />, shape, bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', border: 'border-emerald-400 dark:border-emerald-700', glow: 'shadow-emerald-500/10' };
     if (isActive) return { icon: <Clock size={20} className="animate-spin-slow" />, shape, bg: 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400', border: 'border-warning-400 dark:border-warning-600 ring-4 ring-warning-400/30', glow: 'shadow-warning-500/40 shadow-sm scale-105' };
 
-    return { icon: <CircleDashed size={20} />, shape, bg: 'bg-white dark:bg-slate-800 text-slate-600 dark:bg-slate-800 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700', glow: '' };
+    return { icon: <CircleDashed size={20} />, shape, bg: 'bg-bg-surface text-slate-600 dark:bg-slate-800 dark:text-slate-300', border: 'border-border', glow: '' };
 }
 
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────
@@ -255,14 +255,14 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
     }, []);
 
     return (
-        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden relative">
+        <div className="flex flex-col h-full bg-[#FAFAF8] dark:bg-slate-800 rounded-2xl border border-border overflow-hidden relative">
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="absolute top-0 left-0 right-0 z-10 px-5 py-3 bg-white/80 dark:bg-slate-800 backdrop-blur-md border-b border-border-subtle flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                         <Network size={18} className="text-primary-600 dark:text-primary-400" />
                     </div>
-                    <h3 className="font-bold text-gray-800 dark:text-white text-sm tracking-wide">
+                    <h3 className="font-bold text-txt-primary text-sm tracking-wide">
                         {workflowName}
                     </h3>
                 </div>
@@ -295,7 +295,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                     elementsSelectable={false}
                     minZoom={0.3}
                     maxZoom={2}
-                    className="bg-slate-50 dark:bg-slate-800"
+                    className="bg-bg-subtle"
                 >
                     <Background color="#cbd5e1" gap={16} size={1.5} />
                     <Controls className="!mb-6 !mr-6 shadow-sm border-none" showInteractive={false} />
@@ -303,7 +303,7 @@ const FlowchartViewer: React.FC<FlowchartViewerProps> = ({
                         nodeStrokeColor="#94a3b8"
                         nodeColor="#e2e8f0"
                         maskColor="rgba(0,0,0,0.08)"
-                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate-50 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700"
+                        className="!bottom-2 !right-2 !bg-white/90 dark:!bg-slate-50 rounded-lg shadow-lg border border-border"
                         pannable
                         zoomable
                     />

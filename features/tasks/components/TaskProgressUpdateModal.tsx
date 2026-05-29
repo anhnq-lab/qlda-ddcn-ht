@@ -57,10 +57,10 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
-                <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div className="bg-bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
+                <div className="p-5 border-b border-border-subtle flex justify-between items-center">
                     <div>
-                        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                        <h2 className="text-lg font-bold text-txt-primary">
                             {targetStatus ? 'Chuyển trạng thái công việc' : 'Cập nhật tiến độ'}
                         </h2>
                         <p className="text-sm text-slate-500 mt-1 line-clamp-1">{task.Title}</p>
@@ -85,7 +85,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
 
                     {/* Phân loại lý do nếu chọn Chưa hoàn thành */}
                     {targetStatus === TaskStatus.Incomplete && (
-                        <div className="space-y-2 bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-xl border border-slate-150 dark:border-slate-800">
+                        <div className="space-y-2 bg-bg-subtle/40 p-3.5 rounded-xl border border-slate-150 dark:border-slate-800">
                             <label className="text-xs font-black uppercase tracking-wider text-slate-550 dark:text-slate-400 block mb-1">
                                 Phân loại lý do <span className="text-red-500">*</span>
                             </label>
@@ -120,7 +120,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
 
                     {/* Khó khăn / Vướng mắc — hiển thị mọi trạng thái */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                        <label className="text-sm font-bold text-txt-secondary flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
                             Khó khăn / Vướng mắc
                             <span className="text-xs font-normal text-slate-400">(nếu có — hiển thị trong báo cáo giao ban)</span>
@@ -130,12 +130,12 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                             onChange={(e) => setObstacles(e.target.value)}
                             rows={2}
                             placeholder="Mô tả các khó khăn, vướng mắc cần tháo gỡ trong quá trình thực hiện..."
-                            className="w-full p-3 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/10 focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                            className="w-full p-3 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/10 focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all text-sm text-txt-primary placeholder-slate-400"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                        <label className="text-sm font-bold text-txt-secondary flex items-center gap-2">
                             <MessageSquare className="w-4 h-4 text-emerald-500" />
                             {targetStatus === TaskStatus.Done ? 'Kết quả thực hiện' :
                              targetStatus === TaskStatus.Incomplete ? 'Giải trình chi tiết' :
@@ -150,7 +150,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                                 : targetStatus === TaskStatus.Incomplete
                                 ? 'Giải trình chi tiết lý do chưa hoàn thành, các vướng mắc...'
                                 : 'Nhập nội dung cập nhật, kết quả đạt được, hoặc vướng mắc...'}
-                            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-slate-800 dark:text-slate-100"
+                            className="w-full p-3 rounded-xl border border-border bg-bg-surface focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-txt-primary"
                             required={targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete}
                         />
                         {(targetStatus === TaskStatus.Review || targetStatus === TaskStatus.Done || targetStatus === TaskStatus.Incomplete) && (
@@ -164,7 +164,7 @@ export function TaskProgressUpdateModal({ task, targetStatus, onClose, onSubmit,
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                            className="px-5 py-2.5 rounded-xl text-sm font-bold text-txt-muted bg-bg-muted hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                         >
                             Hủy
                         </button>

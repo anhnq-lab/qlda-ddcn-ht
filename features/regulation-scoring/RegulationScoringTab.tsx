@@ -259,13 +259,13 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
       />
 
       {/* Sub tabs selectors */}
-      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2 flex-wrap gap-2">
-        <div className="flex bg-slate-100 dark:bg-slate-800/80 rounded-xl p-0.5">
+      <div className="flex items-center justify-between border-b border-border-subtle pb-2 flex-wrap gap-2">
+        <div className="flex bg-bg-muted/80 rounded-xl p-0.5">
           <button
             onClick={() => setActiveSubTab('department')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
               activeSubTab === 'department'
-                ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white'
+                ? 'bg-bg-surface shadow-sm text-txt-primary'
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-300'
             }`}
           >
@@ -276,7 +276,7 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
             onClick={() => setActiveSubTab('individual')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
               activeSubTab === 'individual'
-                ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white'
+                ? 'bg-bg-surface shadow-sm text-txt-primary'
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-300'
             }`}
           >
@@ -287,7 +287,7 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
             onClick={() => setActiveSubTab('annual')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
               activeSubTab === 'annual'
-                ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white'
+                ? 'bg-bg-surface shadow-sm text-txt-primary'
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-300'
             }`}
           >
@@ -299,12 +299,12 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
         {/* Dept dropdown filter for Individual subtab */}
         {activeSubTab === 'individual' && (
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Chọn phòng ban:</span>
+            <span className="text-xs font-bold text-txt-muted">Chọn phòng ban:</span>
             <select
               value={selectedDept === 'All' && isDeptHead ? userDept : selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
               disabled={isDeptHead} // DeptHead only sees own dept
-              className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold"
+              className="px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs font-bold"
             >
               {isDirector && <option value="All">-- Chọn phòng ban --</option>}
               {deptList.map(dept => (
@@ -324,7 +324,7 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
       ) : activeSubTab === 'department' ? (
         <div className="space-y-4">
           {deptScores.length === 0 ? (
-            <div className="text-center py-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-400 text-xs italic">
+            <div className="text-center py-10 bg-bg-surface rounded-2xl border border-border-subtle text-slate-400 text-xs italic">
               Chưa có bảng tính điểm cho tháng này. Vui lòng bấm "Tính điểm tự động" để khởi tạo.
             </div>
           ) : (
@@ -338,7 +338,7 @@ export const RegulationScoringTab: React.FC<RegulationScoringTabProps> = ({ mont
       ) : activeSubTab === 'individual' ? (
         <div className="space-y-4">
           {indivScores.length === 0 ? (
-            <div className="text-center py-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-400 text-xs italic">
+            <div className="text-center py-10 bg-bg-surface rounded-2xl border border-border-subtle text-slate-400 text-xs italic">
               Chưa có bảng đánh giá cá nhân phòng này.
             </div>
           ) : (

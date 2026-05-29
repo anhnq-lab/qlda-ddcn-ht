@@ -91,7 +91,7 @@ export const PaymentPipeline: React.FC = () => {
                                         <p className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-500/70">Đã giải ngân / Kế hoạch</p>
                                         <p className="text-lg font-black text-emerald-700 dark:text-emerald-400 tabular-nums">
                                             {formatShortCurrency(disbStats.totalDisbursed)}
-                                            <span className="text-xs font-bold text-gray-400 dark:text-slate-500 ml-1">/ {formatShortCurrency(disbStats.totalPlanned)}</span>
+                                            <span className="text-xs font-bold text-txt-placeholder ml-1">/ {formatShortCurrency(disbStats.totalPlanned)}</span>
                                         </p>
                                     </div>
                                     <div className="text-right">
@@ -109,16 +109,16 @@ export const PaymentPipeline: React.FC = () => {
                             <div className="px-4 pb-3">
                                 <div className="flex items-center gap-1 mb-2">
                                     <Calendar className="w-3 h-3 text-gray-400" />
-                                    <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">Giải ngân theo tháng gần nhất</span>
+                                    <span className="text-[10px] font-bold text-txt-muted">Giải ngân theo tháng gần nhất</span>
                                 </div>
                                 <div className="space-y-1.5">
                                     {disbStats.monthlyBreakdown.map(m => (
                                         <div key={m.month} className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 w-8 shrink-0">T{m.month}</span>
-                                            <div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <span className="text-[10px] font-bold text-txt-muted w-8 shrink-0">T{m.month}</span>
+                                            <div className="flex-1 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-primary-500 rounded-full" style={{ width: `${Math.min((m.amount / (disbStats.totalPlanned / 12)) * 100, 100)}%` }} />
                                             </div>
-                                            <span className="text-[9px] font-bold text-gray-400 dark:text-slate-500 shrink-0 tabular-nums w-12 text-right">{formatShortCurrency(m.amount)}</span>
+                                            <span className="text-[9px] font-bold text-txt-placeholder shrink-0 tabular-nums w-12 text-right">{formatShortCurrency(m.amount)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -143,8 +143,8 @@ export const PaymentPipeline: React.FC = () => {
                         <div key={p.payment_id} className="p-3">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{p.description || 'Thanh toán'}</p>
-                                    <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">
+                                    <p className="text-xs font-bold text-txt-secondary truncate">{p.description || 'Thanh toán'}</p>
+                                    <p className="text-[10px] text-txt-placeholder mt-0.5">
                                         {p.payment_date ? new Date(p.payment_date).toLocaleDateString('vi-VN') : '—'}
                                     </p>
                                 </div>

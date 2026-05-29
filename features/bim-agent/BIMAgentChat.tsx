@@ -174,7 +174,7 @@ Properties: ${JSON.stringify(selectedElement.propertySets)}]\n\nQuestion: ${inpu
                         </div>
                         {msg.role === 'user' && (
                             <div className="shrink-0 w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                                <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                                <User className="w-4 h-4 text-txt-muted" />
                             </div>
                         )}
                     </div>

@@ -73,6 +73,7 @@ export interface CDEStats {
     shared: number;
     published: number;
     archived: number;
+    rejected?: number;
 }
 
 export interface CDEWorkflowStepDef {
@@ -166,11 +167,12 @@ export type InternalWorkflowInstanceStatus =
     | 'on_hold';     // Tạm dừng
 
 export type InternalStepStatus =
-    | 'waiting'    // Chờ bước trước hoàn thành
-    | 'pending'    // Đến lượt, chờ xử lý
-    | 'done'       // Đã xử lý — chuyển tiếp
-    | 'rejected'   // Trả lại / từ chối
-    | 'skipped';   // Bỏ qua (không áp dụng)
+    | 'waiting'       // Chờ bước trước hoàn thành
+    | 'pending'       // Đến lượt, chờ xử lý
+    | 'done'          // Đã xử lý — chuyển tiếp
+    | 'rejected'      // Từ chối toàn bộ quy trình
+    | 'returned'      // Trả lại bước trước
+    | 'skipped';      // Bỏ qua (không áp dụng)
 
 export interface InternalWorkflowStepDef {
     step_no: number;

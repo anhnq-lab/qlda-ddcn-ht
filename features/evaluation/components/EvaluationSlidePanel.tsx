@@ -38,8 +38,8 @@ const ScoreRow: React.FC<{
                         onChange={e => { const v = +e.target.value; if (!isNaN(v)) onChange(Math.min(max, Math.max(0, v))); }}
                         className={`w-10 text-center border rounded px-1 py-0.5 focus:outline-none text-xs font-bold
                             ${isManager 
-                                ? 'bg-white dark:bg-slate-800 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-400 focus:ring-1 focus:ring-primary-500' 
-                                : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300'} 
+                                ? 'bg-bg-surface border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-400 focus:ring-1 focus:ring-primary-500' 
+                                : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-txt-secondary'} 
                             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`} />
                     <span className="text-[10px] text-slate-400">/{max}</span>
                 </div>
@@ -48,9 +48,9 @@ const ScoreRow: React.FC<{
     }
 
     return (
-        <div className="flex items-start gap-3 py-3 border-b border-slate-100 dark:border-slate-700 last:border-0">
+        <div className="flex items-start gap-3 py-3 border-b border-border-subtle last:border-0">
             {code && <span className="text-[10px] font-bold text-slate-400 w-7 shrink-0 mt-1">{code}</span>}
-            <p className="text-xs text-slate-600 dark:text-slate-300 flex-1 leading-snug mt-1">{label}</p>
+            <p className="text-xs text-txt-muted flex-1 leading-snug mt-1">{label}</p>
             <div className="flex items-start gap-2 shrink-0">
                 {renderScoreBox(selfValue, onSelfChange, disabledSelf, false)}
                 {showManager && managerValue !== undefined && renderScoreBox(managerValue, onManagerChange, disabledManager, true)}
@@ -74,17 +74,17 @@ const Section: React.FC<{
     const selfPct = Math.min(100, (selfScore / maxScore) * 100);
     
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden mb-3">
+        <div className="bg-bg-surface rounded-xl border border-border overflow-hidden mb-3">
             <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-50">
                 <div className="flex-1 text-left">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{title}</span>
+                        <span className="text-sm font-bold text-txt-primary">{title}</span>
                         {subtitle && <span className="text-xs text-slate-400">{subtitle}</span>}
                     </div>
                     <div className="flex items-center gap-4 mt-1.5">
                         <div className="flex items-center gap-1.5">
                             <span className="text-[10px] text-slate-400 uppercase">Tự chấm:</span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{selfScore}/{maxScore}</span>
+                            <span className="text-xs font-bold text-txt-secondary">{selfScore}/{maxScore}</span>
                         </div>
                         {showManager && managerScore !== undefined && (
                             <div className="flex items-center gap-1.5">
@@ -397,19 +397,19 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
     return(
         <div className="flex flex-col h-full">
             {/* Header meta */}
-            <div className="px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800 space-y-3">
+            <div className="px-5 pt-4 pb-3 border-b border-border-subtle space-y-3">
                 {!existingForm&&(
                     <>
                         <div className="grid grid-cols-2 gap-2">
                             <div>
                                 <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Tháng</label>
-                                <select value={month} onChange={e=>setMonth(+e.target.value)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                <select value={month} onChange={e=>setMonth(+e.target.value)} className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
                                     {MONTHS_VI.map((m,i)=><option key={i} value={i+1}>{m}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Năm</label>
-                                <select value={year} onChange={e=>setYear(+e.target.value)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                <select value={year} onChange={e=>setYear(+e.target.value)} className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
                                     {[2024,2025,2026,2027].map(y=><option key={y} value={y}>{y}</option>)}
                                 </select>
                             </div>
@@ -417,14 +417,14 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="grid grid-cols-2 gap-2">
                             <div>
                                 <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Loại phiếu</label>
-                                <select value={formType} onChange={e=>setFormType(e.target.value as FormType)} className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
+                                <select value={formType} onChange={e=>setFormType(e.target.value as FormType)} className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400">
                                     <option value="staff">PL02 — Viên chức, người lao động</option>
                                     <option value="leader">PL01 — Cán bộ lãnh đạo, quản lý</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">{formType==='leader'?'Chức vụ':'Vị trí việc làm'}</label>
-                                <input value={chucVu} onChange={e=>setChucVu(e.target.value)} placeholder="Nhập chức vụ..." className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400"/>
+                                <input value={chucVu} onChange={e=>setChucVu(e.target.value)} placeholder="Nhập chức vụ..." className="w-full text-sm bg-bg-subtle border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400"/>
                             </div>
                         </div>
                     </>
@@ -492,8 +492,8 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                                 </svg>
                             </div>
                             <div>
-                                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Gợi ý từ kết quả công việc tháng</h4>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                <h4 className="text-xs font-bold text-txt-primary">Gợi ý từ kết quả công việc tháng</h4>
+                                <p className="text-[11px] text-txt-muted mt-0.5">
                                     {taskRecommendation.count > 0 ? (
                                         <>Hoàn thành <b>{taskRecommendation.rate}%</b> từ {taskRecommendation.count} công việc. Đề xuất: <b className="text-primary-600 dark:text-primary-400">Mức {taskRecommendation.level} ({taskRecommendation.score} điểm)</b></>
                                     ) : (
@@ -521,10 +521,10 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="space-y-1.5 pt-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tự đánh giá</label>
                             {COMPLETION_LEVELS.map(lv=>(
-                                <label key={`self_${lv.level}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${scores.g2_2.level===lv.level?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <label key={`self_${lv.level}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${scores.g2_2.level===lv.level?'border-slate-400 bg-bg-muted':'border-border'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
                                     <input type="radio" name="self_completion" value={lv.level??''} checked={scores.g2_2.level===lv.level} disabled={!isSelfEditable} onChange={()=>setG2_2Level(lv.level??'')} className="accent-slate-500"/>
-                                    <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{lv.label}</span>
-                                    <span className="text-xs font-black text-slate-600 dark:text-slate-400">{lv.score} đ</span>
+                                    <span className="flex-1 text-xs text-txt-secondary">{lv.label}</span>
+                                    <span className="text-xs font-black text-txt-muted">{lv.score} đ</span>
                                 </label>
                             ))}
                         </div>
@@ -533,9 +533,9 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                             <div className="space-y-1.5 pt-1">
                                 <label className="text-[10px] font-bold text-primary-500 uppercase block mb-2">Quản lý phê duyệt</label>
                                 {COMPLETION_LEVELS.map(lv=>(
-                                    <label key={`mgr_${lv.level}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${managerScores.g2_2.level===lv.level?'border-primary-400 bg-primary-50 dark:bg-primary-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                    <label key={`mgr_${lv.level}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${managerScores.g2_2.level===lv.level?'border-primary-400 bg-primary-50 dark:bg-primary-900/20':'border-border'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
                                         <input type="radio" name="mgr_completion" value={lv.level??''} checked={managerScores.g2_2.level===lv.level} disabled={!isManagerEditable} onChange={()=>setManagerG2_2Level(lv.level??'')} className="accent-primary-500"/>
-                                        <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{lv.label}</span>
+                                        <span className="flex-1 text-xs text-txt-secondary">{lv.label}</span>
                                         <span className="text-xs font-black text-primary-600 dark:text-primary-400">{lv.score} đ</span>
                                     </label>
                                 ))}
@@ -543,20 +543,20 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         )}
                     </div>
                     {/* Danh sách công việc trong tháng */}
-                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div className="mt-4 pt-4 border-t border-border-subtle">
                         <label className="text-[10px] font-bold text-slate-400 uppercase block mb-3">Danh sách công việc đã thực hiện trong tháng</label>
                         {loadingTasks ? (
                             <div className="text-xs text-slate-400 italic">Đang tải danh sách công việc...</div>
                         ) : employeeTasks.length === 0 ? (
-                            <div className="text-xs text-slate-400 italic p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 text-center">
+                            <div className="text-xs text-slate-400 italic p-4 bg-bg-subtle rounded-lg border border-dashed border-border text-center">
                                 Không có công việc nào được ghi nhận trong tháng {month}/{year}
                             </div>
                         ) : (
                             <div className="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
                                 {employeeTasks.map(t => (
-                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-50 transition-colors">
+                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-50 transition-colors">
                                         <div className="flex items-start justify-between gap-3">
-                                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 leading-snug flex-1">{t.title}</p>
+                                            <p className="text-sm font-semibold text-txt-primary line-clamp-2 leading-snug flex-1">{t.title}</p>
                                             <span className={`shrink-0 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                                                 t.status === 'done' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
                                                 t.status === 'in_progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
@@ -581,7 +581,7 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
 
                                         {/* Result note can be fetched from monthly_plan_items if needed, but for now we rely on task description or notes if available */}
                                         {(t as any).description && (
-                                            <div className="mt-1 p-2 bg-white dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400 italic line-clamp-2">
+                                            <div className="mt-1 p-2 bg-bg-surface rounded border border-border-subtle text-xs text-txt-muted italic line-clamp-2">
                                                 Ghi chú: {(t as any).description}
                                             </div>
                                         )}
@@ -598,9 +598,9 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="space-y-1.5 pt-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tự đánh giá</label>
                             {[{k:'bonus1',label:'Được Ban giám đốc tuyên dương',pts:3},{k:'bonus2',label:'Tham mưu đột phá; tham mưu ≥10 văn bản',pts:2}].map(b=>(
-                                <label key={`self_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g3 as unknown as Record<string,boolean>)[b.k]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <label key={`self_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g3 as unknown as Record<string,boolean>)[b.k]?'border-slate-400 bg-bg-muted':'border-border'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
                                     <input type="checkbox" checked={(scores.g3 as unknown as Record<string,boolean>)[b.k]} disabled={!isSelfEditable} onChange={e=>setG3(b.k,e.target.checked)} className="accent-slate-500"/>
-                                    <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{b.label}</span>
+                                    <span className="flex-1 text-xs text-txt-secondary">{b.label}</span>
                                     <span className="text-xs font-black text-slate-600">+{b.pts} đ</span>
                                 </label>
                             ))}
@@ -609,9 +609,9 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                             <div className="space-y-1.5 pt-1">
                                 <label className="text-[10px] font-bold text-emerald-500 uppercase block mb-2">Quản lý phê duyệt</label>
                                 {[{k:'bonus1',label:'Được Ban giám đốc tuyên dương',pts:3},{k:'bonus2',label:'Tham mưu đột phá; tham mưu ≥10 văn bản',pts:2}].map(b=>(
-                                    <label key={`mgr_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g3 as unknown as Record<string,boolean>)[b.k]?'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                    <label key={`mgr_${b.k}`} className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g3 as unknown as Record<string,boolean>)[b.k]?'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20':'border-border'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
                                         <input type="checkbox" checked={(managerScores.g3 as unknown as Record<string,boolean>)[b.k]} disabled={!isManagerEditable} onChange={e=>setManagerG3(b.k,e.target.checked)} className="accent-emerald-500"/>
-                                        <span className="flex-1 text-xs text-slate-700 dark:text-slate-300">{b.label}</span>
+                                        <span className="flex-1 text-xs text-txt-secondary">{b.label}</span>
                                         <span className="text-xs font-black text-emerald-600">+{b.pts} đ</span>
                                     </label>
                                 ))}
@@ -626,9 +626,9 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         <div className="space-y-1.5 pt-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tự đánh giá</label>
                             {g4items.map(d=>(
-                                <label key={`self_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g4 as unknown as Record<string,boolean>)[d.key]?'border-slate-400 bg-slate-100 dark:bg-slate-700':'border-slate-200 dark:border-slate-800'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                <label key={`self_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(scores.g4 as unknown as Record<string,boolean>)[d.key]?'border-slate-400 bg-bg-muted':'border-border'} ${!isSelfEditable?'opacity-50 cursor-not-allowed':''}`}>
                                     <input type="checkbox" checked={(scores.g4 as unknown as Record<string,boolean>)[d.key]} disabled={!isSelfEditable} onChange={e=>setG4(d.key,e.target.checked)} className="accent-slate-500 mt-0.5"/>
-                                    <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 leading-snug">{d.label}</span>
+                                    <span className="flex-1 text-xs text-txt-secondary leading-snug">{d.label}</span>
                                     <span className="text-xs font-black text-slate-600 shrink-0">-{d.points} đ</span>
                                 </label>
                             ))}
@@ -637,9 +637,9 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                             <div className="space-y-1.5 pt-1">
                                 <label className="text-[10px] font-bold text-red-500 uppercase block mb-2">Quản lý phê duyệt</label>
                                 {g4items.map(d=>(
-                                    <label key={`mgr_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g4 as unknown as Record<string,boolean>)[d.key]?'border-red-400 bg-red-50 dark:bg-red-900/20':'border-slate-200 dark:border-slate-800'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
+                                    <label key={`mgr_${d.key}`} className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${(managerScores.g4 as unknown as Record<string,boolean>)[d.key]?'border-red-400 bg-red-50 dark:bg-red-900/20':'border-border'} ${!isManagerEditable?'opacity-50 cursor-not-allowed':''}`}>
                                         <input type="checkbox" checked={(managerScores.g4 as unknown as Record<string,boolean>)[d.key]} disabled={!isManagerEditable} onChange={e=>setManagerG4(d.key,e.target.checked)} className="accent-red-500 mt-0.5"/>
-                                        <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 leading-snug">{d.label}</span>
+                                        <span className="flex-1 text-xs text-txt-secondary leading-snug">{d.label}</span>
                                         <span className="text-xs font-black text-red-600 shrink-0">-{d.points} đ</span>
                                     </label>
                                 ))}
@@ -649,20 +649,20 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                 </Section>
 
                 {/* Ghi chú */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-3">
-                    <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-2 block">Nhận xét cá nhân</label>
+                <div className="bg-bg-surface rounded-xl border border-border p-4 mb-3">
+                    <label className="text-xs font-bold text-txt-muted uppercase mb-2 block">Nhận xét cá nhân</label>
                     <textarea rows={3} value={notes} disabled={!isSelfEditable} onChange={e=>setNotes(e.target.value)}
                         placeholder="Kết quả công việc nổi bật, khó khăn trong tháng..."
-                        className="w-full text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50"/>
+                        className="w-full text-sm text-txt-secondary bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50"/>
                 </div>
 
                 {/* Manager Notes */}
                 {(isManagerEditable || (showManager && existingForm?.manager_notes)) && (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-800 p-4 mb-3">
+                    <div className="bg-bg-surface rounded-xl border border-primary-200 dark:border-primary-800 p-4 mb-3">
                         <label className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase mb-2 block">Nhận xét của Quản lý / Lãnh đạo</label>
                         <textarea rows={3} value={managerNotes} disabled={!isManagerEditable} onChange={e=>setManagerNotes(e.target.value)}
                             placeholder={isManagerEditable ? "Đánh giá, nhận xét dành cho nhân sự này (Bắt buộc nếu Từ chối)..." : ""}
-                            className="w-full text-sm text-slate-700 dark:text-slate-300 bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-700 rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50"/>
+                            className="w-full text-sm text-txt-secondary bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-700 rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400 disabled:opacity-50"/>
                     </div>
                 )}
 
@@ -679,12 +679,12 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="px-5 py-4 border-t border-border-subtle space-y-2">
                 {error&&<div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg text-xs text-red-600"><AlertTriangle size={12}/>{error}</div>}
                 {success&&<div className="flex items-center gap-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-700"><CheckCircle2 size={12}/>{success}</div>}
                 {isSelfEditable ? (
                     <div className="flex gap-2">
-                        <button onClick={()=>persist(false)} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50">
+                        <button onClick={()=>persist(false)} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold text-txt-secondary bg-bg-muted hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50">
                             <Save size={14}/>{saving?'Đang lưu...':'Lưu nháp'}
                         </button>
                         <button onClick={()=>persist(true)} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 shadow-lg shadow-primary-500/20">

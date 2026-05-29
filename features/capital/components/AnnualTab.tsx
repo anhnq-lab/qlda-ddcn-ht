@@ -37,18 +37,18 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
         <div className="section-card">
             <div className="overflow-x-auto">
                 <table className="w-full text-xs" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
-                        <tr className="text-slate-500 dark:text-slate-400">
-                            <th className="px-4 py-3 text-left w-8 border-b border-slate-200 dark:border-slate-700">STT</th>
-                            <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">Dự án</th>
-                            <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">QĐ giao vốn</th>
-                            <th className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">Nguồn</th>
-                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">KHV {yearFilter}</th>
-                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Lũy kế Nghiệm thu</th>
-                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Đã giải ngân</th>
-                            <th className="px-4 py-3 text-right border-b border-slate-200 dark:border-slate-700">Còn lại</th>
-                            <th className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ GN</th>
-                            <th className="px-4 py-3 text-center w-16 border-b border-slate-200 dark:border-slate-700"></th>
+                    <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
+                        <tr className="text-txt-muted">
+                            <th className="px-4 py-3 text-left w-8 border-b border-border">STT</th>
+                            <th className="px-4 py-3 text-left border-b border-border">Dự án</th>
+                            <th className="px-4 py-3 text-left border-b border-border">QĐ giao vốn</th>
+                            <th className="px-4 py-3 border-b border-border">Nguồn</th>
+                            <th className="px-4 py-3 text-right border-b border-border">KHV {yearFilter}</th>
+                            <th className="px-4 py-3 text-right border-b border-border">Lũy kế Nghiệm thu</th>
+                            <th className="px-4 py-3 text-right border-b border-border">Đã giải ngân</th>
+                            <th className="px-4 py-3 text-right border-b border-border">Còn lại</th>
+                            <th className="px-4 py-3 text-center border-b border-border">Tỷ lệ GN</th>
+                            <th className="px-4 py-3 text-center w-16 border-b border-border"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -63,7 +63,7 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                                             slidePanel.openPanel({
                                                 title: `Vốn & Giải ngân: ${p.project_name}`,
                                                 component: (
-                                                    <React.Suspense fallback={<div className="p-8 text-center text-gray-500 dark:text-slate-400"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2" />Đang tải dữ liệu vốn...</div>}>
+                                                    <React.Suspense fallback={<div className="p-8 text-center text-txt-muted"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2" />Đang tải dữ liệu vốn...</div>}>
                                                         <ProjectCapitalTab projectID={p.project_id} />
                                                     </React.Suspense>
                                                 ),
@@ -77,18 +77,18 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                                 >
                                     <td className="px-4 py-2.5 text-gray-400 font-mono">{idx + 1}</td>
                                     <td className="px-4 py-2.5">
-                                        <p className="font-bold text-gray-800 dark:text-slate-100">{p.project_name}</p>
+                                        <p className="font-bold text-txt-primary">{p.project_name}</p>
                                         <p className="text-[10px] text-gray-400 mt-0.5">{p.project_id}</p>
                                     </td>
                                     <td className="px-4 py-2.5">
-                                        <p className="text-gray-700 dark:text-slate-300 font-medium">{p.decision_number || '—'}</p>
+                                        <p className="text-txt-secondary font-medium">{p.decision_number || '—'}</p>
                                         <p className="text-[10px] text-gray-400">{p.date_assigned}</p>
                                     </td>
                                     <td className="px-4 py-2.5 text-center"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${(SOURCE_LABELS[normalizeSource(p.source)] || SOURCE_LABELS['NSĐP']).color}`}>{(SOURCE_LABELS[normalizeSource(p.source)] || SOURCE_LABELS['NSĐP']).label}</span></td>
                                     <td className="px-4 py-2.5 text-right font-mono font-bold text-blue-600 dark:text-blue-300">{formatCurrency(Number(p.amount))}</td>
                                     <td className="px-4 py-2.5 text-right font-mono text-amber-600 dark:text-amber-400">{formatCurrency(Number(p.luy_ke_nghiem_thu))}</td>
                                     <td className="px-4 py-2.5 text-right font-mono text-emerald-600 dark:text-emerald-400">{formatCurrency(Number(p.disbursed_amount))}</td>
-                                    <td className="px-4 py-2.5 text-right font-mono text-gray-600 dark:text-slate-300">{formatCurrency(remaining)}</td>
+                                    <td className="px-4 py-2.5 text-right font-mono text-txt-muted">{formatCurrency(remaining)}</td>
                                     <td className="px-4 py-2.5 text-center">
                                         <div className="flex items-center justify-center gap-1.5">
                                             <div className="w-14 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
@@ -108,11 +108,11 @@ export const AnnualTab: React.FC<AnnualTabProps> = ({
                     </tbody>
                     <tfoot className="bg-blue-50/50 dark:bg-blue-900/20 font-bold border-t-2 border-blue-200 dark:border-blue-800">
                         <tr>
-                            <td className="px-4 py-2.5" colSpan={4}><span className="text-gray-800 dark:text-slate-100">TỔNG CỘNG</span></td>
+                            <td className="px-4 py-2.5" colSpan={4}><span className="text-txt-primary">TỔNG CỘNG</span></td>
                             <td className="px-4 py-2.5 text-right font-mono text-blue-600 dark:text-blue-300">{formatCurrency(totalAlloc)}</td>
                             <td className="px-4 py-2.5 text-right font-mono text-amber-600 dark:text-amber-400">{formatCurrency(totalNghiemThu)}</td>
                             <td className="px-4 py-2.5 text-right font-mono text-emerald-700 dark:text-emerald-400">{formatCurrency(totalDisb)}</td>
-                            <td className="px-4 py-2.5 text-right font-mono text-gray-600 dark:text-slate-300">{formatCurrency(totalAlloc - totalDisb)}</td>
+                            <td className="px-4 py-2.5 text-right font-mono text-txt-muted">{formatCurrency(totalAlloc - totalDisb)}</td>
                             <td className="px-4 py-2.5 text-center text-xs font-bold text-blue-600 dark:text-blue-300">{totalAlloc > 0 ? ((totalDisb/totalAlloc)*100).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : 0}%</td>
                             <td className="px-4 py-2.5"></td>
                         </tr>

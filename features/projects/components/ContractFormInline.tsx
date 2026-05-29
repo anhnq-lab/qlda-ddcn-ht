@@ -141,24 +141,24 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
     };
 
     const inputClass = (field: keyof FormData) =>
-        `w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border rounded-lg outline-none transition-colors
+        `w-full px-3 py-2 text-sm bg-bg-surface border rounded-lg outline-none transition-colors
         ${errors[field]
             ? 'border-red-300 dark:border-red-600 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
             : 'border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
-        } text-gray-800 dark:text-slate-200`;
+        } text-txt-primary`;
 
-    const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
+    const labelClass = "block text-xs font-medium text-txt-muted mb-1";
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
+                <h4 className="font-semibold text-txt-primary flex items-center gap-2">
                     <FileSignature className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     {isEditing ? 'Chỉnh sửa hợp đồng' : 'Tạo hợp đồng mới'}
                 </h4>
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <button type="button" onClick={onCancel} className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
                         <X className="w-4 h-4 text-gray-400" />
                     </button>
                 )}
@@ -168,18 +168,18 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
             <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm space-y-1.5">
                 <div className="flex items-center gap-2">
                     <Building2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                    <span className="text-gray-600 dark:text-slate-400">Nhà thầu:</span>
-                    <span className="font-medium text-gray-800 dark:text-slate-200">{contractorName || pkg.WinningContractorID || 'Chưa chọn'}</span>
+                    <span className="text-txt-muted">Nhà thầu:</span>
+                    <span className="font-medium text-txt-primary">{contractorName || pkg.WinningContractorID || 'Chưa chọn'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <Banknote className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                    <span className="text-gray-600 dark:text-slate-400">Giá trúng thầu:</span>
+                    <span className="text-txt-muted">Giá trúng thầu:</span>
                     <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(pkg.WinningPrice || 0)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <FileText className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                    <span className="text-gray-600 dark:text-slate-400">Loại HĐ:</span>
-                    <span className="font-medium text-gray-800 dark:text-slate-200">{CONTRACT_TYPE_LABELS[pkg.ContractType] || pkg.ContractType}</span>
+                    <span className="text-txt-muted">Loại HĐ:</span>
+                    <span className="font-medium text-txt-primary">{CONTRACT_TYPE_LABELS[pkg.ContractType] || pkg.ContractType}</span>
                 </div>
             </div>
 
@@ -337,12 +337,12 @@ export const ContractFormInline: React.FC<ContractFormInlineProps> = ({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
                 {onCancel && (
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors"
                     >
                         Hủy
                     </button>

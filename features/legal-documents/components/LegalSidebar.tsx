@@ -25,20 +25,20 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
     setExpandedChapters, setShowPdfViewer, setShowDeepSearch
 }) => {
     return (
-        <div className={`${readingMode ? 'hidden' : 'w-80'} bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden`}>
+        <div className={`${readingMode ? 'hidden' : 'w-80'} bg-bg-surface rounded-3xl shadow-sm border border-border flex flex-col overflow-hidden`}>
             {/* Sidebar Header with tabs */}
-            <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+            <div className="px-5 py-3 border-b border-border bg-bg-subtle">
                 <div className="flex items-center gap-2">
                     <button onClick={() => setShowBookmarks(false)}
-                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-primary-600 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-primary-600 text-white' : 'text-txt-placeholder hover:bg-bg-muted'}`}>
                         <FileText className="w-4 h-4 inline" /> Văn bản ({filteredDocs.length})
                     </button>
                     <button onClick={() => setShowBookmarks(true)}
-                        className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-primary-500 text-white' : 'text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-primary-500 text-white' : 'text-txt-placeholder hover:bg-bg-muted'}`}>
                         <Bookmark className="w-4 h-4" /> Đánh dấu ({bookmarks.length})
                     </button>
                     {recentlyViewed.length > 0 && (
-                        <span className="ml-auto flex items-center gap-1 text-[9px] font-bold text-gray-400 dark:text-slate-400">
+                        <span className="ml-auto flex items-center gap-1 text-[9px] font-bold text-txt-placeholder">
                             <Clock className="w-3 h-3" />
                             {recentlyViewed.length}
                         </span>
@@ -51,7 +51,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                     bookmarks.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Bookmark className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
-                            <p className="text-sm font-bold text-gray-400 dark:text-slate-400">Chưa có mục đánh dấu</p>
+                            <p className="text-sm font-bold text-txt-placeholder">Chưa có mục đánh dấu</p>
                             <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">Nhấn nút <Bookmark className="w-3 h-3 inline" /> trên điều khoản để đánh dấu</p>
                         </div>
                     ) : (
@@ -61,7 +61,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                                     onClick={() => { setSelectedDocId(bm.docId); setShowBookmarks(false); if ((bm as any).chapterId) scrollToArticle(bm.articleId, (bm as any).chapterId); }}
                                     className="w-full text-left p-3 rounded-xl border border-primary-100 dark:border-primary-900/30 bg-primary-50/50 dark:bg-primary-900/10 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all">
                                     <p className="text-[9px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-wider">{(bm as any).docShortTitle || 'Văn bản đã lưu'}</p>
-                                    <p className="text-xs font-bold text-gray-700 dark:text-slate-300 mt-0.5">
+                                    <p className="text-xs font-bold text-txt-secondary mt-0.5">
                                         <span className="text-gray-400 font-mono text-[10px] mr-1">{(bm as any).articleCode || ''}</span>
                                         {(bm as any).articleTitle || 'Điều khoản đã lưu'}
                                     </p>
@@ -73,7 +73,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                     filteredDocs.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Search className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
-                            <p className="text-sm font-bold text-gray-400 dark:text-slate-400">Không tìm thấy văn bản</p>
+                            <p className="text-sm font-bold text-txt-placeholder">Không tìm thấy văn bản</p>
                             <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">Thử tìm với từ khóa khác</p>
                         </div>
                     ) : filteredDocs.map(doc => (

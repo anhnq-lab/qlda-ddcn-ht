@@ -169,8 +169,8 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
   const meta = (node.metadata as any) || {};
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-800">
-      <div className="p-4 border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-800 sticky top-0 z-10">
+    <div className="flex flex-col h-full bg-bg-surface border-l border-border">
+      <div className="p-4 border-b border-border bg-bg-surface sticky top-0 z-10">
         <div className="flex items-start gap-4">
           <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${
             isApprovalNode ? 'bg-violet-600' : 'bg-primary-600'
@@ -181,7 +181,7 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
             <h2 className="text-xl font-bold dark:text-slate-100">{node.name}</h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs font-medium text-gray-500">{(instance as any)?.workflow?.name || 'Workflow Template'}</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800">{task?.status || 'Active'}</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-bg-muted">{task?.status || 'Active'}</span>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-gray-700 dark:text-slate-300">Chưa có mô tả.</p>
+                <p className="text-sm text-txt-secondary">Chưa có mô tả.</p>
               )}
             </Section>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,10 +240,10 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
               <Section title="Chi tiết các công việc thành phần" icon={CheckSquare} color="emerald">
                 <ul className="space-y-3">
                   {meta.sub_tasks.map((st: any) => (
-                    <li key={st.id} className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                    <li key={st.id} className="flex items-start gap-3 p-3 bg-bg-subtle rounded-xl border border-border-subtle">
                       <div className="mt-0.5"><CheckCircle size={16} className="text-slate-300 dark:text-slate-600" /></div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">{st.name}</p>
+                        <p className="text-sm font-medium text-txt-secondary leading-snug">{st.name}</p>
                         <div className="flex items-center gap-1.5 mt-1.5">
                           <Users size={12} className="text-slate-400" />
                           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">{st.assignee_role || node.assignee_role}</span>
@@ -262,7 +262,7 @@ export const WorkflowStepDetailPanel: React.FC<WorkflowStepDetailPanelProps> = (
         )}
 
         {activeTab === 'actions' && (
-          <div className="p-4 text-center bg-white dark:bg-slate-800 rounded-2xl border border-slate-100">
+          <div className="p-4 text-center bg-bg-surface rounded-2xl border border-slate-100">
              <AlertCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
              <h3 className="font-bold mb-2">Thông tin Nghiệp vụ</h3>
              <p className="text-sm text-slate-500">Mục thực hiện này chỉ khả dụng khi quy trình được khởi chạy trong dự án cụ thể.</p>
@@ -288,7 +288,7 @@ const Section: React.FC<{ title: string; icon: React.ElementType; children: Reac
         <div className={`p-1.5 rounded-lg ${colorMap[color]}`}><Icon size={14} /></div>
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</h3>
       </div>
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">{children}</div>
+      <div className="bg-bg-surface p-4 rounded-xl border border-border-subtle shadow-sm">{children}</div>
     </div>
   );
 };

@@ -23,16 +23,16 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
     const content = (
         <div className="flex flex-col items-center justify-center gap-3">
-            <Loader2 className={`${sizeClasses[size]} animate-spin text-blue-500`} />
+            <Loader2 className={`${sizeClasses[size]} animate-spin text-primary-500`} />
             {text && (
-                <p className="text-sm text-gray-500 animate-pulse">{text}</p>
+                <p className="text-sm text-txt-muted animate-pulse">{text}</p>
             )}
         </div>
     );
 
     if (fullScreen) {
         return (
-            <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-bg-surface/80 backdrop-blur-sm flex items-center justify-center z-50">
                 {content}
             </div>
         );
@@ -54,22 +54,22 @@ export const CardSkeleton: React.FC<{ count?: number }> = ({ count = 1 }) => {
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 p-6 animate-pulse"
+                    className="bg-bg-surface rounded-2xl shadow-card border border-border p-6 animate-pulse"
                 >
                     <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-gray-200 rounded-xl" />
+                        <div className="w-16 h-16 bg-bg-muted rounded-xl" />
                         <div className="flex-1 space-y-3">
-                            <div className="h-5 bg-gray-200 rounded w-3/4" />
-                            <div className="h-4 bg-gray-200 rounded w-1/2" />
+                            <div className="h-5 bg-bg-muted rounded w-3/4" />
+                            <div className="h-4 bg-bg-muted rounded w-1/2" />
                         </div>
                     </div>
                     <div className="mt-4 space-y-2">
-                        <div className="h-3 bg-gray-200 rounded w-full" />
-                        <div className="h-3 bg-gray-200 rounded w-4/5" />
+                        <div className="h-3 bg-bg-muted rounded w-full" />
+                        <div className="h-3 bg-bg-muted rounded w-4/5" />
                     </div>
                     <div className="mt-4 flex gap-2">
-                        <div className="h-8 bg-gray-200 rounded-full w-20" />
-                        <div className="h-8 bg-gray-200 rounded-full w-16" />
+                        <div className="h-8 bg-bg-muted rounded-full w-20" />
+                        <div className="h-8 bg-bg-muted rounded-full w-16" />
                     </div>
                 </div>
             ))}
@@ -90,7 +90,7 @@ export const TableRowSkeleton: React.FC<{ rows?: number; columns?: number }> = (
                 <tr key={rowIndex} className="animate-pulse">
                     {Array.from({ length: columns }).map((_, colIndex) => (
                         <td key={colIndex} className="px-6 py-4">
-                            <div className="h-4 bg-gray-200 rounded w-full" />
+                            <div className="h-4 bg-bg-muted rounded w-full" />
                         </td>
                     ))}
                 </tr>

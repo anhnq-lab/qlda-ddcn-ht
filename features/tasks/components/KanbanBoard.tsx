@@ -16,7 +16,7 @@ interface KanbanBoardProps {
 }
 
 const STATUS_COLUMNS = [
-    { id: TaskStatus.Todo,       title: 'Công việc mới',     bg: 'bg-slate-100 dark:bg-slate-800',       border: 'border-slate-200 dark:border-slate-700',       icon: <Target className="w-4 h-4 text-slate-500" /> },
+    { id: TaskStatus.Todo,       title: 'Công việc mới',     bg: 'bg-bg-muted',       border: 'border-border',       icon: <Target className="w-4 h-4 text-slate-500" /> },
     { id: TaskStatus.InProgress, title: 'Đang thực hiện',    bg: 'bg-blue-50 dark:bg-blue-900/10',           border: 'border-blue-200 dark:border-blue-800/50',      icon: <Play className="w-4 h-4 text-blue-500" /> },
     { id: TaskStatus.Done,       title: 'Hoàn thành',        bg: 'bg-emerald-50 dark:bg-emerald-900/10',     border: 'border-emerald-200 dark:border-emerald-800/50',icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" /> },
     { id: TaskStatus.Incomplete, title: 'Chưa hoàn thành',   bg: 'bg-rose-50 dark:bg-rose-900/10',           border: 'border-rose-200 dark:border-rose-800/50',      icon: <XCircle className="w-4 h-4 text-rose-500" /> },
@@ -139,7 +139,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, bg, border, tasks, onTaskCli
         <div className={`flex flex-col w-[320px] shrink-0 rounded-2xl border ${border} ${bg} overflow-hidden shadow-sm`}>
             {/* Column Header */}
             <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-slate-800 backdrop-blur-sm shrink-0">
-                <h3 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <h3 className="font-bold text-txt-secondary flex items-center gap-2">
                     {colConfig?.icon}
                     {title}
                     <span className="text-xs font-bold text-slate-500 bg-slate-50 dark:bg-slate-700 px-2 py-0.5 rounded-full">
@@ -178,10 +178,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging, onClick, getAssig
     return (
         <div 
             onClick={onClick}
-            className={`bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col gap-3 group cursor-grab active:cursor-grabbing hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all ${isDragging ? 'opacity-80 rotate-2 scale-[1.02] shadow-xl ring-2 ring-blue-500' : ''}`}
+            className={`bg-bg-surface p-4 rounded-xl shadow-sm border border-border flex flex-col gap-3 group cursor-grab active:cursor-grabbing hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all ${isDragging ? 'opacity-80 rotate-2 scale-[1.02] shadow-xl ring-2 ring-blue-500' : ''}`}
         >
             <div className="flex items-start justify-between gap-2">
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h4 className="text-sm font-bold text-txt-primary line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {task.Title?.replace(/^(?:Phòng|Ban)\s+[^-]+-\s*/i, '')}
                 </h4>
             </div>
@@ -203,7 +203,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging, onClick, getAssig
             </div>
 
             {assignee && (
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-subtle">
                     <div className="flex items-center gap-1.5">
                         <Avatar 
                             name={assignee.FullName}
@@ -211,10 +211,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging, onClick, getAssig
                             size="xs"
                             className="ring-2 ring-white dark:ring-slate-800"
                         />
-                        <span className="text-[10px] font-medium text-slate-600 dark:text-slate-300 truncate max-w-[100px]">{assignee.FullName}</span>
+                        <span className="text-[10px] font-medium text-txt-muted truncate max-w-[100px]">{assignee.FullName}</span>
                     </div>
                     {assignee.Department && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 truncate max-w-[80px]">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-bg-muted text-txt-muted truncate max-w-[80px]">
                             {assignee.Department.replace('Phòng ', '')}
                         </span>
                     )}

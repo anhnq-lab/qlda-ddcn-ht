@@ -125,19 +125,19 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-5xl max-h-[90vh] overflow-hidden animate-scale-in">
+            <div className="relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-5xl max-h-[90vh] overflow-hidden animate-scale-in">
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
                             <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                            <h2 className="text-lg font-bold text-txt-primary">
                                 Import gói thầu từ Excel
                             </h2>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">
+                            <p className="text-xs text-txt-muted">
                                 {step === 'upload' && 'Bước 1/3 — Chọn file'}
                                 {step === 'preview' && 'Bước 2/3 — Xem trước dữ liệu'}
                                 {step === 'done' && 'Hoàn tất'}
@@ -146,14 +146,14 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                     </div>
                     <button
                         onClick={handleClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 hover:bg-bg-muted rounded-lg transition-colors"
                     >
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
                 </div>
 
                 {/* Step Progress */}
-                <div className="flex items-center gap-2 px-6 py-3 bg-slate-50 dark:bg-slate-800 dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 px-6 py-3 bg-bg-subtle dark:bg-slate-750 border-b border-border">
                     {['upload', 'preview', 'done'].map((s, i) => (
                         <React.Fragment key={s}>
                             {i > 0 && <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />}
@@ -187,15 +187,15 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                 {isParsing ? (
                                     <div className="flex flex-col items-center gap-3">
                                         <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                                        <p className="text-sm text-gray-600 dark:text-slate-300">Đang đọc file...</p>
+                                        <p className="text-sm text-txt-muted">Đang đọc file...</p>
                                     </div>
                                 ) : (
                                     <>
                                         <Upload className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3 group-hover:text-blue-400 transition-colors" />
-                                        <p className="text-gray-600 dark:text-slate-300 font-medium">
+                                        <p className="text-txt-muted font-medium">
                                             Kéo thả file Excel vào đây
                                         </p>
-                                        <p className="text-sm text-gray-400 dark:text-slate-400 mt-1">
+                                        <p className="text-sm text-txt-placeholder mt-1">
                                             hoặc click để chọn file (.xlsx, .xls)
                                         </p>
                                         {file && (
@@ -246,10 +246,10 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                         <div className="space-y-4">
                             {/* Summary */}
                             <div className="flex items-center gap-4">
-                                <span className="text-sm font-bold text-gray-700 dark:text-slate-200">
+                                <span className="text-sm font-bold text-txt-secondary">
                                     📊 Tìm thấy {importResult.packages.length} gói thầu
                                 </span>
-                                <span className="text-sm text-gray-500 dark:text-slate-400">
+                                <span className="text-sm text-txt-muted">
                                     Đã chọn: {selectedRows.size}/{importResult.packages.length}
                                 </span>
                                 {importResult.warnings.length > 0 && (
@@ -269,10 +269,10 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                             )}
 
                             {/* Preview Table */}
-                            <div className="overflow-x-auto border border-gray-200 dark:border-slate-700 rounded-lg">
+                            <div className="overflow-x-auto border border-border rounded-lg">
                                 <table className="w-full text-xs">
                                     <thead>
-                                        <tr className="bg-gray-100 dark:bg-slate-700">
+                                        <tr className="bg-bg-muted">
                                             <th className="px-2 py-2 text-center w-8">
                                                 <input
                                                     type="checkbox"
@@ -281,24 +281,24 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                                     onChange={toggleAll}
                                                 />
                                             </th>
-                                            <th className="px-2 py-2 text-center w-10 font-bold text-slate-700 dark:text-slate-200">STT</th>
-                                            <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 min-w-[200px]">Tên gói thầu</th>
-                                            <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 min-w-[150px]">Tóm tắt công việc</th>
-                                            <th className="px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Lĩnh vực</th>
-                                            <th className="px-2 py-2 text-right font-bold text-slate-700 dark:text-slate-200 min-w-[120px]">Giá gói thầu</th>
-                                            <th className="px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Hình thức</th>
-                                            <th className="px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Phương thức</th>
-                                            <th className="px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Loại HĐ</th>
-                                            <th className="px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">TG thực hiện</th>
+                                            <th className="px-2 py-2 text-center w-10 font-bold text-txt-secondary">STT</th>
+                                            <th className="px-2 py-2 text-left font-bold text-txt-secondary min-w-[200px]">Tên gói thầu</th>
+                                            <th className="px-2 py-2 text-left font-bold text-txt-secondary min-w-[150px]">Tóm tắt công việc</th>
+                                            <th className="px-2 py-2 text-center font-bold text-txt-secondary">Lĩnh vực</th>
+                                            <th className="px-2 py-2 text-right font-bold text-txt-secondary min-w-[120px]">Giá gói thầu</th>
+                                            <th className="px-2 py-2 text-center font-bold text-txt-secondary">Hình thức</th>
+                                            <th className="px-2 py-2 text-center font-bold text-txt-secondary">Phương thức</th>
+                                            <th className="px-2 py-2 text-center font-bold text-txt-secondary">Loại HĐ</th>
+                                            <th className="px-2 py-2 text-center font-bold text-txt-secondary">TG thực hiện</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {importResult.packages.map((pkg, idx) => (
                                             <tr
                                                 key={idx}
-                                                className={`border-t border-gray-200 dark:border-slate-700 ${selectedRows.has(idx)
-                                                    ? 'bg-white dark:bg-slate-800'
-                                                    : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-800 opacity-50'
+                                                className={`border-t border-border ${selectedRows.has(idx)
+                                                    ? 'bg-bg-surface'
+                                                    : 'bg-bg-subtle dark:bg-slate-800 opacity-50'
                                                     } hover:bg-blue-50 dark:hover:bg-slate-750 transition-colors`}
                                             >
                                                 <td className="px-2 py-2 text-center">
@@ -309,50 +309,50 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                                         onChange={() => toggleRow(idx)}
                                                     />
                                                 </td>
-                                                <td className="px-2 py-2 text-center font-medium text-slate-600 dark:text-slate-300">
+                                                <td className="px-2 py-2 text-center font-medium text-txt-muted">
                                                     {pkg.PackageNumber || idx + 1}
                                                 </td>
-                                                <td className="px-2 py-2 text-slate-800 dark:text-slate-200 font-medium">
+                                                <td className="px-2 py-2 text-txt-primary font-medium">
                                                     {pkg.PackageName}
                                                 </td>
-                                                <td className="px-2 py-2 text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-txt-muted">
                                                     {pkg.Description || '-'}
                                                 </td>
-                                                <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-center text-txt-muted">
                                                     {pkg.Field === 'Consultancy' ? 'Tư vấn' :
                                                         pkg.Field === 'Construction' ? 'Xây lắp' :
                                                             pkg.Field === 'Goods' ? 'Hàng hóa' : pkg.Field || '-'}
                                                 </td>
-                                                <td className="px-2 py-2 text-right font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                                                <td className="px-2 py-2 text-right font-bold text-txt-primary tabular-nums">
                                                     {formatCurrency(pkg.Price)}
                                                 </td>
-                                                <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-center text-txt-muted">
                                                     {pkg.SelectionMethod === 'Appointed' ? 'CĐT' :
                                                         pkg.SelectionMethod === 'AppointedSimplified' ? 'CĐT RG' :
                                                             pkg.SelectionMethod === 'OpenBidding' ? 'ĐTRR' :
                                                                 pkg.SelectionMethod || '-'}
                                                 </td>
-                                                <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-center text-txt-muted">
                                                     {pkg.SelectionProcedure === 'Reduced' ? 'Rút gọn' :
                                                         pkg.SelectionProcedure === 'OneStageOneEnvelope' ? '1GĐ1THS' :
                                                             pkg.SelectionProcedure === 'OneStageTwoEnvelope' ? '1GĐ2THS' :
                                                                 pkg.SelectionProcedure || '-'}
                                                 </td>
-                                                <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-center text-txt-muted">
                                                     {pkg.ContractType === 'LumpSum' ? 'Trọn gói' : pkg.ContractType || '-'}
                                                 </td>
-                                                <td className="px-2 py-2 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-2 py-2 text-center text-txt-muted">
                                                     {pkg.Duration || '-'}
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-750 font-bold border-t border-gray-200 dark:border-slate-600">
-                                            <td colSpan={5} className="px-2 py-2 text-right text-slate-700 dark:text-slate-200">
+                                        <tr className="bg-bg-subtle dark:bg-slate-750 font-bold border-t border-gray-200 dark:border-slate-600">
+                                            <td colSpan={5} className="px-2 py-2 text-right text-txt-secondary">
                                                 Tổng ({selectedRows.size} gói đã chọn):
                                             </td>
-                                            <td className="px-2 py-2 text-right text-slate-900 dark:text-slate-100 tabular-nums">
+                                            <td className="px-2 py-2 text-right text-txt-primary tabular-nums">
                                                 {formatCurrency(
                                                     importResult.packages
                                                         .filter((_, i) => selectedRows.has(i))
@@ -373,10 +373,10 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
                                 <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100">
+                            <h3 className="text-xl font-bold text-txt-primary">
                                 Import thành công!
                             </h3>
-                            <p className="text-gray-500 dark:text-slate-400 mt-2">
+                            <p className="text-txt-muted mt-2">
                                 Đã thêm {selectedRows.size} gói thầu vào dự án
                             </p>
                         </div>
@@ -384,10 +384,10 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:bg-slate-750">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-bg-subtle dark:bg-slate-750">
                     <div>
                         {file && step !== 'done' && (
-                            <span className="text-xs text-gray-500 dark:text-slate-400">
+                            <span className="text-xs text-txt-muted">
                                 📄 {file.name} ({(file.size / 1024).toFixed(1)} KB)
                             </span>
                         )}
@@ -396,7 +396,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                         {step === 'upload' && (
                             <button
                                 onClick={handleClose}
-                                className="px-4 py-2 text-sm text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                className="px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors"
                             >
                                 Hủy
                             </button>
@@ -411,7 +411,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                         setImportResult(null);
                                         if (fileInputRef.current) fileInputRef.current.value = '';
                                     }}
-                                    className="flex items-center gap-1 px-4 py-2 text-sm text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                    className="flex items-center gap-1 px-4 py-2 text-sm text-txt-muted hover:bg-bg-muted rounded-lg transition-colors"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                     Chọn file khác

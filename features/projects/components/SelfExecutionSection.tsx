@@ -31,8 +31,8 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Self-execution info card */}
-            <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-primary-500" />
                     Đơn vị tự thực hiện
                 </h4>
@@ -52,8 +52,8 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Workflow info */}
-            <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-warning-500" />
                     Quy trình tự thực hiện (Điều 81 NĐ 24/2024)
                 </h4>
@@ -69,15 +69,15 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
                             <span className="w-5 h-5 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                                 {idx + 1}
                             </span>
-                            <span className="text-gray-700 dark:text-slate-300">{step}</span>
+                            <span className="text-txt-secondary">{step}</span>
                         </li>
                     ))}
                 </ol>
             </div>
 
             {/* Documents */}
-            <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-green-500" />
                     Hồ sơ tự thực hiện
                 </h4>
@@ -88,9 +88,9 @@ export const SelfExecutionSection: React.FC<SelfExecutionSectionProps> = ({ pack
             </div>
 
             {/* Note */}
-            <div className="flex items-start gap-2 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+            <div className="flex items-start gap-2 p-3 bg-bg-subtle rounded-lg">
                 <AlertCircle className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <p className="text-xs text-txt-muted">
                     Gói thầu tự thực hiện không qua quy trình LCNT nên không có thông tin nhà thầu tham gia,
                     chấm điểm hay xếp hạng. Chuyển sang Tab "Hợp đồng" để quản lý thỏa thuận giao việc.
                 </p>

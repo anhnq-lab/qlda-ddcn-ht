@@ -32,6 +32,7 @@ import { FolderOpen, BarChart3, Shield, ClipboardList, ScrollText, GitBranch } f
 import { useContracts } from '../../hooks/useContracts';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import CDEInternalWorkflowPanel from './components/CDEInternalWorkflowPanel';
+import CDETransmittalsList from './components/CDETransmittalsList';
 import { useCDEInternalWorkflowInstances, useCreateInternalWorkflow, useProcessInternalWorkflowStep } from '../../hooks/useCDE';
 import { CDE_INTERNAL_WORKFLOW_TEMPLATES } from './constants';
 import type { InternalDepartment } from './types';
@@ -125,14 +126,15 @@ const CDEPage: React.FC = () => {
         setToast({ message: 'Đã khởi tạo quy trình nội bộ', type: 'success' });
     };
 
-    const handleProcessInternalStep = async (instanceId: string, stepNo: number, action: 'done' | 'rejected', comment: string) => {
+    const handleProcessInternalStep = async (instanceId: string, stepNo: number, action: 'done' | 'rejected' | 'return_to_prev', comment: string) => {
         const instance = internalInstances.find(i => i.id === instanceId);
         if (!instance) return;
         const template = CDE_INTERNAL_WORKFLOW_TEMPLATES.find(t => t.id === instance.template_id);
         if (!template) return;
         const currentStepDef = template.steps.find(s => s.step_no === stepNo);
-        const nextStepDef = action === 'done' ? template.steps.find(s => s.step_no === stepNo + 1) : undefined;
         if (!currentStepDef) return;
+        const nextStepDef = action === 'done' ? template.steps.find(s => s.step_no === stepNo + 1) : undefined;
+        const prevStepDef = action === 'return_to_prev' ? template.steps.find(s => s.step_no === stepNo - 1) : undefined;
         await processWorkflowStepMutation.mutateAsync({
             instanceId,
             stepNo,
@@ -144,15 +146,26 @@ const CDEPage: React.FC = () => {
             comment,
             actorId: currentUser?.EmployeeID || '',
             actorName: currentUser?.FullName || '',
+            instanceTitle: instance.title,
             nextStepDef: nextStepDef ? {
                 step_no: nextStepDef.step_no,
                 code: nextStepDef.code,
                 name: nextStepDef.name,
                 department: nextStepDef.department,
                 department_label: nextStepDef.department_label,
+                sla_days: nextStepDef.sla_days,
+            } : undefined,
+            prevStepDef: prevStepDef ? {
+                step_no: prevStepDef.step_no,
+                code: prevStepDef.code,
+                name: prevStepDef.name,
+                department: prevStepDef.department,
+                department_label: prevStepDef.department_label,
+                sla_days: prevStepDef.sla_days,
             } : undefined,
         });
-        setToast({ message: action === 'done' ? 'Đã chuyển bước tiếp theo' : 'Đã trả lại hồ sơ', type: 'success' });
+        const labels: Record<string, string> = { done: 'Đã chuyển bước tiếp theo', rejected: 'Đã từ chối hồ sơ', return_to_prev: 'Đã trả lại bước trước' };
+        setToast({ message: labels[action] || 'Hoàn thành', type: action === 'rejected' ? 'error' : 'success' });
     };
 
     // Toast state
@@ -292,10 +305,21 @@ const CDEPage: React.FC = () => {
         });
     }, [selectedDoc, getNextStep, workflowMutation, currentUser]);
 
+    // Determine the correct workflow step for a doc based on its current cde_status
+    const getStepForDoc = useCallback((docId: number) => {
+        const STATUS_ORDER = ['S0', 'S1', 'S2', 'S3', 'A1'];
+        const doc = (hasActiveFilters ? filteredDocs : docs).find(d => d.doc_id === docId);
+        const currentStatusIdx = STATUS_ORDER.indexOf(doc?.cde_status || 'S0');
+        return CDE_WORKFLOW_STEPS.find(s => {
+            const stepTargetIdx = STATUS_ORDER.indexOf(s.nextStatus);
+            return stepTargetIdx > currentStatusIdx;
+        }) || CDE_WORKFLOW_STEPS[0];
+    }, [docs, filteredDocs, hasActiveFilters]);
+
     // Batch handlers
     const handleBatchApprove = useCallback((ids: number[]) => {
         ids.forEach(docId => {
-            const step = CDE_WORKFLOW_STEPS[0]; // simplified
+            const step = getStepForDoc(docId);
             workflowMutation.mutate({
                 docId, stepName: step.name, stepCode: step.code,
                 actorId: currentUser?.EmployeeID || '', actorName: currentUser?.FullName || '',
@@ -303,11 +327,11 @@ const CDEPage: React.FC = () => {
             });
         });
         setSelectedIds([]);
-    }, [workflowMutation, currentUser]);
+    }, [getStepForDoc, workflowMutation, currentUser]);
 
     const handleBatchReject = useCallback((ids: number[]) => {
         ids.forEach(docId => {
-            const step = CDE_WORKFLOW_STEPS[0];
+            const step = getStepForDoc(docId);
             workflowMutation.mutate({
                 docId, stepName: step.name, stepCode: step.code,
                 actorId: currentUser?.EmployeeID || '', actorName: currentUser?.FullName || '',
@@ -315,19 +339,43 @@ const CDEPage: React.FC = () => {
             });
         });
         setSelectedIds([]);
-    }, [workflowMutation, currentUser]);
+    }, [getStepForDoc, workflowMutation, currentUser]);
+
+    const handleBatchMove = useCallback(async (ids: number[], targetFolderId: string) => {
+        try {
+            await Promise.all(ids.map(docId =>
+                CDEService.moveDocument(docId, targetFolderId, currentUser?.EmployeeID, currentUser?.FullName, selectedProjectId)
+            ));
+            setSelectedIds([]);
+            setToast({ message: `Đã di chuyển ${ids.length} tài liệu`, type: 'success' });
+        } catch (err: any) {
+            setToast({ message: `Di chuyển thất bại: ${err.message}`, type: 'error' });
+        }
+    }, [currentUser, selectedProjectId]);
 
     // Toggle doc selection
     const toggleDocSelect = useCallback((docId: number) => {
         setSelectedIds(prev => prev.includes(docId) ? prev.filter(id => id !== docId) : [...prev, docId]);
     }, []);
 
+    // Count workflow instances pending current user's action
+    const pendingForMe = useMemo(() =>
+        internalInstances.filter(inst => {
+            if (inst.status !== 'in_progress' || !currentUserDept) return false;
+            const template = CDE_INTERNAL_WORKFLOW_TEMPLATES.find(t => t.id === inst.template_id);
+            const stepDef = template?.steps.find(s => s.step_no === inst.current_step_no);
+            return stepDef?.department === currentUserDept;
+        }).length,
+        [internalInstances, currentUserDept]
+    );
+
     const TABS = [
-        { key: 'explorer' as const, label: 'Quản lý', icon: FolderOpen },
-        { key: 'analytics' as const, label: 'Thống kê', icon: BarChart3 },
-        { key: 'internal-workflow' as const, label: 'Quy trình', icon: GitBranch },
-        { key: 'permissions' as const, label: 'Phân quyền', icon: Shield },
-        { key: 'audit' as const, label: 'Nhật ký', icon: ScrollText },
+        { key: 'explorer' as const, label: 'Quản lý', icon: FolderOpen, badge: 0 },
+        { key: 'analytics' as const, label: 'Thống kê', icon: BarChart3, badge: 0 },
+        { key: 'internal-workflow' as const, label: 'Quy trình', icon: GitBranch, badge: pendingForMe },
+        { key: 'transmittals' as const, label: 'Phiếu C/G', icon: ClipboardList, badge: 0 },
+        { key: 'permissions' as const, label: 'Phân quyền', icon: Shield, badge: 0 },
+        { key: 'audit' as const, label: 'Nhật ký', icon: ScrollText, badge: 0 },
     ];
 
     const selectedProject = projects.find(p => p.ProjectID === selectedProjectId);
@@ -354,21 +402,19 @@ const CDEPage: React.FC = () => {
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.key
-                                ? 'bg-white dark:bg-slate-700 border-gray-200/30 dark:border-slate-650/40 text-gray-800 dark:text-slate-100 shadow-sm'
-                                : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800/50'
+                                ? 'bg-bg-surface border-gray-200/30 dark:border-slate-650/40 text-txt-primary shadow-sm'
+                                : 'border-transparent text-txt-muted hover:text-gray-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800/50'
                                 }`}
                         >
                             <tab.icon className="w-3.5 h-3.5" />
                             {tab.label}
+                            {tab.badge > 0 && (
+                                <span className="bg-warning-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center ml-0.5">
+                                    {tab.badge}
+                                </span>
+                            )}
                         </button>
                     ))}
-                    <button
-                        onClick={() => setShowTransmittal(true)}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all ml-1"
-                    >
-                        <ClipboardList className="w-3.5 h-3.5" />
-                        Chuyển giao
-                    </button>
                 </div>
             )}
 
@@ -380,9 +426,10 @@ const CDEPage: React.FC = () => {
                     <CDEBatchActions
                         selectedIds={selectedIds}
                         docs={filteredDocs}
+                        folders={folders}
                         onApprove={handleBatchApprove}
                         onReject={handleBatchReject}
-                        onMove={() => { }}
+                        onMove={handleBatchMove}
                         onClearSelection={() => setSelectedIds([])}
                     />
 
@@ -459,6 +506,16 @@ const CDEPage: React.FC = () => {
                 </div>
             )}
 
+            {/* Tab: Transmittals — Phiếu chuyển giao tài liệu */}
+            {activeTab === 'transmittals' && (
+                <div className="flex-1 overflow-y-auto">
+                    <CDETransmittalsList
+                        projectId={selectedProjectId}
+                        onNewTransmittal={() => setShowTransmittal(true)}
+                    />
+                </div>
+            )}
+
             {/* Tab: Permissions */}
             {activeTab === 'permissions' && (
                 <div className="flex-1 overflow-y-auto">
@@ -482,7 +539,7 @@ const CDEPage: React.FC = () => {
                         isLoading={instancesLoading}
                         currentUserDept={currentUserDept}
                         onCreateInstance={handleCreateInternalWorkflow}
-                        onStepAction={handleProcessInternalStep}
+                        onStepAction={(id, no, action, comment) => handleProcessInternalStep(id, no, action as 'done' | 'rejected' | 'return_to_prev', comment)}
                     />
                 </div>
             )}

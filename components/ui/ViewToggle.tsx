@@ -19,11 +19,11 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
     onChange,
     className = '',
 }) => {
-    const activeClass = 'bg-white dark:bg-slate-800 dark:bg-slate-600 shadow-lg text-primary-600 dark:text-primary-400';
-    const inactiveClass = 'text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300';
+    const activeClass = 'bg-bg-surface shadow-card text-primary-600 dark:text-primary-400';
+    const inactiveClass = 'text-txt-muted hover:text-txt-secondary';
 
     return (
-        <div className={`flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 ${className}`}>
+        <div className={`flex items-center bg-bg-muted rounded-xl p-1 ${className}`}>
             <button
                 type="button"
                 onClick={() => onChange('list')}

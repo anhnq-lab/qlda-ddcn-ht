@@ -17,7 +17,7 @@ export const SectionHeader: React.FC<{ expandAll: boolean; onToggleAll: () => vo
         <button
             id="btn-toggle-all-projects"
             onClick={onToggleAll}
-            className="btn btn-outline text-xs px-3 py-1.5 font-bold flex items-center gap-1.5 border-slate-200 dark:border-slate-800 text-txt-secondary hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="btn btn-outline text-xs px-3 py-1.5 font-bold flex items-center gap-1.5 border-border text-txt-secondary hover:bg-bg-hover-row"
             aria-label={expandAll ? 'Thu gọn tất cả dự án' : 'Mở rộng tất cả dự án'}
         >
             {expandAll ? 'Thu gọn tất cả' : 'Mở rộng tất cả'}
@@ -43,8 +43,8 @@ export const StatusBadge: React.FC<{ proj: ProjectBriefingData }> = ({ proj }) =
 
 export const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
     <div className="flex items-center gap-1 text-[11px] text-txt-muted">
-        <span className="font-bold text-slate-700 dark:text-slate-300">Tiến độ:</span>
-        <div className="w-12 md:w-16 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden inline-block align-middle">
+        <span className="font-bold text-txt-secondary">Tiến độ:</span>
+        <div className="w-12 md:w-16 h-1.5 bg-bg-muted rounded-full overflow-hidden inline-block align-middle">
             <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${progress}%` }} />
         </div>
         <span className="font-bold text-emerald-600 dark:text-emerald-400">{progress}%</span>

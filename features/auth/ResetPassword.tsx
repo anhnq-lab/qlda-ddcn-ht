@@ -73,7 +73,7 @@ const ResetPassword: React.FC = () => {
     // Đang kiểm tra session
     if (hasSession === null) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+            <div className="min-h-screen flex items-center justify-center bg-bg-subtle">
                 <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -82,13 +82,13 @@ const ResetPassword: React.FC = () => {
     // Session không hợp lệ (link hết hạn hoặc đã dùng)
     if (!hasSession) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+            <div className="min-h-screen flex items-center justify-center bg-bg-subtle p-4">
+                <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
                     <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <AlertCircle className="w-8 h-8" />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Liên kết không hợp lệ</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    <h2 className="text-xl font-bold text-txt-primary mb-2">Liên kết không hợp lệ</h2>
+                    <p className="text-sm text-txt-muted mb-6">
                         Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được sử dụng. Vui lòng yêu cầu liên kết mới.
                     </p>
                     <button
@@ -103,17 +103,17 @@ const ResetPassword: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-bg-subtle p-4">
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
                 {/* Header */}
-                <div className="px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-700">
+                <div className="px-8 pt-8 pb-6 border-b border-border-subtle">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm shadow-primary-500/20">
                             <Lock className="w-5 h-5 text-white" />
                         </div>
-                        <h1 className="text-xl font-bold text-slate-800 dark:text-white">Đặt mật khẩu mới</h1>
+                        <h1 className="text-xl font-bold text-txt-primary">Đặt mật khẩu mới</h1>
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-txt-muted">
                         Tạo mật khẩu mới cho tài khoản của bạn.
                     </p>
                 </div>
@@ -124,10 +124,10 @@ const ResetPassword: React.FC = () => {
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <CheckCircle className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+                            <h3 className="text-lg font-semibold text-txt-primary mb-2">
                                 Đặt lại mật khẩu thành công!
                             </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-txt-muted">
                                 Đang chuyển về trang đăng nhập...
                             </p>
                         </div>
@@ -143,7 +143,7 @@ const ResetPassword: React.FC = () => {
 
                             {/* New password */}
                             <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                <label className="text-sm font-semibold text-txt-secondary">
                                     Mật khẩu mới <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
@@ -151,7 +151,7 @@ const ResetPassword: React.FC = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        className="block w-full px-4 py-3 pr-12 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm"
+                                        className="block w-full px-4 py-3 pr-12 border border-border rounded-xl bg-bg-surface text-txt-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm"
                                         placeholder="Nhập mật khẩu mới"
                                         required
                                         autoFocus
@@ -174,7 +174,7 @@ const ResetPassword: React.FC = () => {
                                             { ok: /[a-z]/.test(password), text: 'Có chữ thường (a-z)' },
                                             { ok: /[0-9]/.test(password), text: 'Có chữ số (0-9)' },
                                         ].map(({ ok, text }) => (
-                                            <li key={text} className={`flex items-center gap-1.5 ${ok ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                                            <li key={text} className={`flex items-center gap-1.5 ${ok ? 'text-green-600 dark:text-green-400' : 'text-txt-placeholder'}`}>
                                                 <span className="text-base leading-none">{ok ? '✓' : '○'}</span>
                                                 {text}
                                             </li>
@@ -185,7 +185,7 @@ const ResetPassword: React.FC = () => {
 
                             {/* Confirm password */}
                             <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                <label className="text-sm font-semibold text-txt-secondary">
                                     Xác nhận mật khẩu <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
@@ -193,10 +193,10 @@ const ResetPassword: React.FC = () => {
                                         type={showConfirm ? 'text' : 'password'}
                                         value={confirm}
                                         onChange={e => setConfirm(e.target.value)}
-                                        className={`block w-full px-4 py-3 pr-12 border rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm ${
+                                        className={`block w-full px-4 py-3 pr-12 border rounded-xl bg-bg-surface text-txt-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm ${
                                             confirm.length > 0 && confirm !== password
                                                 ? 'border-red-300 dark:border-red-700'
-                                                : 'border-slate-200 dark:border-slate-700'
+                                                : 'border-border'
                                         }`}
                                         placeholder="Nhập lại mật khẩu"
                                         required
@@ -235,7 +235,7 @@ const ResetPassword: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => navigate('/login', { replace: true })}
-                                className="w-full py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                                className="w-full py-2 text-sm text-txt-muted hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
                             >
                                 ← Quay về trang đăng nhập
                             </button>

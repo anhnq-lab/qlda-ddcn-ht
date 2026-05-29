@@ -25,10 +25,10 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md border border-gray-200 dark:border-slate-700 max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                <div className="p-5 border-b border-gray-200 dark:border-slate-700">
-                    <h2 className="text-lg font-black text-gray-900 dark:text-white">Xử lý bước quy trình</h2>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{node.step_name}</p>
+            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md border border-border max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="p-5 border-b border-border">
+                    <h2 className="text-lg font-black text-txt-primary">Xử lý bước quy trình</h2>
+                    <p className="text-sm text-txt-muted mt-1">{node.step_name}</p>
                 </div>
                 
                 <div className="p-5 overflow-y-auto space-y-4">
@@ -80,11 +80,11 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                     {/* File Upload Mock/Logic */}
                     {action === 'submit' && (
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Đính kèm tài liệu kết quả</label>
-                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 hover:border-primary-500 dark:border-slate-600 rounded-xl cursor-pointer bg-white dark:bg-slate-800 transition-colors">
+                            <label className="block text-sm font-bold text-txt-secondary mb-2">Đính kèm tài liệu kết quả</label>
+                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 hover:border-primary-500 dark:border-slate-600 rounded-xl cursor-pointer bg-bg-surface transition-colors">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <Upload className="w-6 h-6 mb-2 text-gray-400" />
-                                    <p className="text-xs text-gray-500 dark:text-slate-400">Click hoặc kéo thả file vào đây</p>
+                                    <p className="text-xs text-txt-muted">Click hoặc kéo thả file vào đây</p>
                                 </div>
                                 <input 
                                     type="file" 
@@ -102,7 +102,7 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                                 <div className="mt-3 space-y-2">
                                     {files.map((file, idx) => (
                                         <div key={idx} className="flex justify-between items-center bg-gray-50 dark:bg-slate-700 p-2 rounded-lg text-sm border border-gray-100 dark:border-slate-600">
-                                            <span className="truncate text-gray-700 dark:text-gray-300 pr-2">{file.name}</span>
+                                            <span className="truncate text-txt-secondary pr-2">{file.name}</span>
                                             <button 
                                                 onClick={() => setFiles(files.filter((_, i) => i !== idx))}
                                                 className="text-red-500 hover:text-red-700"
@@ -119,11 +119,11 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                     {/* Comment Area */}
                     {action && (
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Ghi chú / Ý kiến</label>
+                            <label className="block text-sm font-bold text-txt-secondary mb-2">Ghi chú / Ý kiến</label>
                             <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                className="w-full text-sm border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 p-3 min-h-[80px]"
+                                className="w-full text-sm border-gray-300 dark:border-slate-600 rounded-xl bg-bg-surface p-3 min-h-[80px]"
                                 placeholder={action === 'reject' ? "Ghi rõ lý do từ chối để nhân sự làm lại..." : "Nhập ý kiến (tuỳ chọn)"}
                                 required={action === 'reject'}
                             />
@@ -131,7 +131,7 @@ export const ApprovalActions: React.FC<ApprovalActionsProps> = ({ node, onClose,
                     )}
                 </div>
                 
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-2 bg-gray-50 dark:bg-slate-800 rounded-b-2xl">
+                <div className="p-4 border-t border-border flex justify-end gap-2 bg-bg-subtle rounded-b-2xl">
                     <button onClick={onClose} className="px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         Hủy
                     </button>

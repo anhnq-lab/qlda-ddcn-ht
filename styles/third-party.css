@@ -1,0 +1,76 @@
+/* ────────────────────────────────────────────────────────────────────────
+   Third-party library theme overrides
+   Extracted from dark-contrast.css to keep that file scoped to legacy
+   component-level overrides only.
+
+   Libraries covered here:
+   - Recharts (charts in dashboards, reports)
+   - React Big Calendar (RBC) — see components.css for the @apply-based parts;
+     this file holds the pure CSS rules
+   - Leaflet (map tiles container)
+   - React Quill (rich-text editor)
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* ─── RECHARTS ─────────────────────────────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border-default);
+}
+
+.recharts-text,
+.recharts-cartesian-axis-tick-value {
+  fill: var(--text-muted);
+}
+
+.recharts-legend-item-text {
+  color: var(--text-muted) !important;
+}
+
+.recharts-default-tooltip {
+  background-color: var(--bg-elevated) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: var(--shadow-dropdown) !important;
+}
+
+.recharts-tooltip-item {
+  color: var(--text-secondary) !important;
+}
+
+/* ─── LEAFLET ──────────────────────────────────────────────────────────── */
+.custom-map-container {
+  background-color: #e5e7eb;
+}
+.dark .custom-map-container {
+  /* Light enough that tiles remain readable while still feeling dark */
+  background-color: #cbd5e1;
+}
+
+/* ─── REACT QUILL ──────────────────────────────────────────────────────── */
+.ql-container,
+.ql-editor {
+  font-family: var(--font-sans) !important;
+  color: var(--text-primary);
+}
+
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+  border-color: var(--border-default) !important;
+}
+
+.ql-editor.ql-blank::before {
+  color: var(--text-placeholder) !important;
+  font-style: normal;
+}
+
+.dark .ql-toolbar .ql-stroke {
+  stroke: var(--text-muted);
+}
+.dark .ql-toolbar .ql-fill {
+  fill: var(--text-muted);
+}
+.dark .ql-toolbar button:hover .ql-stroke,
+.dark .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--text-primary);
+}

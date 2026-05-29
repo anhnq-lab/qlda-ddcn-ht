@@ -56,7 +56,7 @@ export const ContractorAccordionList: React.FC<ContractorAccordionListProps> = (
                         className="bg-bg-surface rounded-2xl border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] overflow-hidden transition-all duration-200">
                         {/* Org Header */}
                         <div
-                            className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors select-none"
+                            className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-bg-hover-row transition-colors select-none"
                             onClick={() => onToggleExpand(group.contractor_id)}
                         >
                             {isExpanded
@@ -67,8 +67,8 @@ export const ContractorAccordionList: React.FC<ContractorAccordionListProps> = (
                                 <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900 dark:text-slate-100 truncate">{group.contractor_name}</p>
-                                <p className="text-[10px] text-gray-400 dark:text-slate-400 mt-0.5">
+                                <p className="text-sm font-bold text-txt-primary truncate">{group.contractor_name}</p>
+                                <p className="text-[10px] text-txt-placeholder mt-0.5">
                                     {group.representative || group.contractor_id} · {group.accounts.length} tài khoản · {group.activeCount} hoạt động
                                 </p>
                             </div>
@@ -88,17 +88,17 @@ export const ContractorAccordionList: React.FC<ContractorAccordionListProps> = (
 
                         {/* Expanded — Staff List */}
                         {isExpanded && (
-                            <div className="border-t border-gray-100 dark:border-slate-700">
+                            <div className="border-t border-border-subtle">
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="bg-gray-50/80 dark:bg-slate-700">
-                                            <th className="text-left px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 w-8">#</th>
-                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Nhân sự</th>
-                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Username</th>
-                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Liên hệ</th>
-                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Dự án</th>
-                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Trạng thái</th>
-                                            <th className="text-right px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Hành động</th>
+                                            <th className="text-left px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted w-8">#</th>
+                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Nhân sự</th>
+                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Username</th>
+                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Liên hệ</th>
+                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Dự án</th>
+                                            <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Trạng thái</th>
+                                            <th className="text-right px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-txt-muted">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50 dark:divide-slate-700/40">
@@ -112,15 +112,15 @@ export const ContractorAccordionList: React.FC<ContractorAccordionListProps> = (
                                                             <div className="w-7 h-7 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-[10px] font-bold text-blue-700 dark:text-blue-300">
                                                                 {acc.display_name.charAt(0).toUpperCase()}
                                                             </div>
-                                                            <span className="font-medium text-gray-800 dark:text-slate-200 text-xs">{acc.display_name}</span>
+                                                            <span className="font-medium text-txt-primary text-xs">{acc.display_name}</span>
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-2.5">
-                                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 rounded font-mono text-[11px] text-gray-600 dark:text-slate-400">
+                                                        <span className="px-2 py-0.5 bg-bg-muted rounded font-mono text-[11px] text-txt-muted">
                                                             {acc.username}
                                                         </span>
                                                     </td>
-                                                    <td className="px-4 py-2.5 text-[11px] text-gray-500 dark:text-slate-400">
+                                                    <td className="px-4 py-2.5 text-[11px] text-txt-muted">
                                                         {acc.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{acc.email}</span>}
                                                         {acc.phone && <span className="flex items-center gap-1 mt-0.5"><Phone className="w-3 h-3" />{acc.phone}</span>}
                                                         {!acc.email && !acc.phone && '—'}

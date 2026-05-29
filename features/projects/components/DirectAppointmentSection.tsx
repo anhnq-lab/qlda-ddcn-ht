@@ -222,8 +222,8 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
             {showForm ? (
                 <div className="space-y-4">
                     {/* Step 1: Chọn nhà thầu */}
-                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                    <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                        <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                             <UserCheck className="w-4 h-4 text-blue-500" />
                             Nhà thầu được chỉ định
                         </h4>
@@ -257,12 +257,12 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                         onFocus={() => setShowContractorList(true)}
                                         placeholder="Tìm nhà thầu (tên hoặc MST)..."
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm 
-                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200
+                                                   bg-bg-surface text-txt-primary
                                                    focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
                                 {showContractorList && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg shadow-sm max-h-72 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-1 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-lg shadow-sm max-h-72 overflow-y-auto">
                                         {filteredContractors.length > 0 ? (
                                             <>
                                                 {filteredContractors.map((c: Contractor) => (
@@ -271,11 +271,11 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                                         onClick={() => selectContractor(c)}
                                                         className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors border-b border-gray-100 dark:border-slate-600 last:border-b-0"
                                                     >
-                                                        <div className="font-medium text-gray-800 dark:text-slate-200">{c.FullName}</div>
+                                                        <div className="font-medium text-txt-primary">{c.FullName}</div>
                                                         {c.TaxCode && <div className="text-xs text-gray-500">MST: {c.TaxCode}</div>}
                                                     </button>
                                                 ))}
-                                                <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                                <div className="sticky bottom-0 bg-bg-surface border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
                                                     <button
                                                         onClick={() => {
                                                             setShowContractorList(false);
@@ -293,7 +293,7 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                                             </>
                                         ) : (
                                             <div className="px-3 py-4 text-center">
-                                                <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
+                                                <p className="text-sm text-txt-placeholder mb-3">
                                                     {contractorSearch ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
                                                 </p>
                                                 <button
@@ -318,8 +318,8 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                     </div>
 
                     {/* Step 2: Giá và thương thảo */}
-                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                    <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                        <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                             <DollarSign className="w-4 h-4 text-green-500" />
                             Giá đề xuất & thương thảo
                         </h4>
@@ -333,28 +333,28 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                             )}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Giá đề xuất (VNĐ)</label>
+                                    <label className="block text-xs text-txt-muted mb-1">Giá đề xuất (VNĐ)</label>
                                     <input
                                         type="number"
                                         value={formData.proposed_price || ''}
                                         onChange={(e) => setFormData(prev => ({ ...prev, proposed_price: parseFloat(e.target.value) || null }))}
                                         placeholder="0"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                     />
                                     {formData.proposed_price && (
                                         <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(formData.proposed_price)}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Giá sau thương thảo (VNĐ)</label>
+                                    <label className="block text-xs text-txt-muted mb-1">Giá sau thương thảo (VNĐ)</label>
                                     <input
                                         type="number"
                                         value={formData.negotiated_price || ''}
                                         onChange={(e) => setFormData(prev => ({ ...prev, negotiated_price: parseFloat(e.target.value) || null }))}
                                         placeholder="0"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                     />
                                     {formData.negotiated_price && (
                                         <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(formData.negotiated_price)}</p>
@@ -365,20 +365,20 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                     </div>
 
                     {/* Step 3: Căn cứ pháp lý */}
-                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                    <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                        <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                             <FileText className="w-4 h-4 text-purple-500" />
                             Căn cứ pháp lý & Quyết định
                         </h4>
 
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Căn cứ chỉ định thầu</label>
+                                <label className="block text-xs text-txt-muted mb-1">Căn cứ chỉ định thầu</label>
                                 <select
                                     value={formData.legal_basis}
                                     onChange={(e) => setFormData(prev => ({ ...prev, legal_basis: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                 >
                                     <option value="">-- Chọn căn cứ pháp lý --</option>
                                     {LEGAL_BASIS_OPTIONS.map(opt => (
@@ -389,76 +389,76 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Số QĐ chỉ định thầu</label>
+                                    <label className="block text-xs text-txt-muted mb-1">Số QĐ chỉ định thầu</label>
                                     <input
                                         type="text"
                                         value={formData.decision_number}
                                         onChange={(e) => setFormData(prev => ({ ...prev, decision_number: e.target.value }))}
                                         placeholder="VD: 123/QĐ-BQL"
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                                   bg-bg-surface text-txt-primary"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Ngày QĐ</label>
+                                    <label className="block text-xs text-txt-muted mb-1">Ngày QĐ</label>
                                     <input
                                         type="date"
                                         value={formData.decision_date}
                                         onChange={(e) => setFormData(prev => ({ ...prev, decision_date: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                                   bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                                   bg-bg-surface text-txt-primary"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Lý do chỉ định thầu</label>
+                                <label className="block text-xs text-txt-muted mb-1">Lý do chỉ định thầu</label>
                                 <textarea
                                     value={formData.appointment_reason}
                                     onChange={(e) => setFormData(prev => ({ ...prev, appointment_reason: e.target.value }))}
                                     placeholder="Mô tả lý do chỉ định thầu..."
                                     rows={2}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 resize-none"
+                                               bg-bg-surface text-txt-primary resize-none"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Step 4: Hồ sơ & Đánh giá */}
-                    <div className="p-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl">
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+                    <div className="p-4 bg-bg-surface border border-border rounded-xl">
+                        <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-warning-500" />
                             Hồ sơ yêu cầu & Đánh giá
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Ngày phát hành HSYC</label>
+                                <label className="block text-xs text-txt-muted mb-1">Ngày phát hành HSYC</label>
                                 <input
                                     type="date"
                                     value={formData.hsyc_date}
                                     onChange={(e) => setFormData(prev => ({ ...prev, hsyc_date: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Ngày nhận HSĐX</label>
+                                <label className="block text-xs text-txt-muted mb-1">Ngày nhận HSĐX</label>
                                 <input
                                     type="date"
                                     value={formData.hsdx_date}
                                     onChange={(e) => setFormData(prev => ({ ...prev, hsdx_date: e.target.value }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Kết quả đánh giá năng lực</label>
+                                <label className="block text-xs text-txt-muted mb-1">Kết quả đánh giá năng lực</label>
                                 <select
                                     value={formData.evaluation_result}
                                     onChange={(e) => setFormData(prev => ({ ...prev, evaluation_result: e.target.value as any }))}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-sm
-                                               bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200"
+                                               bg-bg-surface text-txt-primary"
                                 >
                                     <option value="pending">⏳ Chưa đánh giá</option>
                                     <option value="qualified">✅ Đạt yêu cầu — Đề nghị chỉ định</option>
@@ -540,44 +540,44 @@ export const DirectAppointmentSection: React.FC<DirectAppointmentSectionProps> =
                     <div className="grid grid-cols-2 gap-x-6 gap-y-2 px-1 text-sm">
                         {formData.legal_basis && (
                             <div className="col-span-2">
-                                <span className="text-gray-500 dark:text-slate-400">Căn cứ pháp lý:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200 font-medium">{formData.legal_basis}</span>
+                                <span className="text-txt-muted">Căn cứ pháp lý:</span>
+                                <span className="ml-2 text-txt-primary font-medium">{formData.legal_basis}</span>
                             </div>
                         )}
                         {formData.decision_number && (
                             <div>
-                                <span className="text-gray-500 dark:text-slate-400">Số QĐ:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200">{formData.decision_number}</span>
+                                <span className="text-txt-muted">Số QĐ:</span>
+                                <span className="ml-2 text-txt-primary">{formData.decision_number}</span>
                             </div>
                         )}
                         {formData.decision_date && (
                             <div>
-                                <span className="text-gray-500 dark:text-slate-400">Ngày QĐ:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200">{formData.decision_date}</span>
+                                <span className="text-txt-muted">Ngày QĐ:</span>
+                                <span className="ml-2 text-txt-primary">{formData.decision_date}</span>
                             </div>
                         )}
                         {formData.negotiated_price && (
                             <div>
-                                <span className="text-gray-500 dark:text-slate-400">Giá thương thảo:</span>
+                                <span className="text-txt-muted">Giá thương thảo:</span>
                                 <span className="ml-2 text-green-600 dark:text-green-400 font-semibold">{formatCurrency(formData.negotiated_price)}</span>
                             </div>
                         )}
                         {formData.appointment_reason && (
                             <div className="col-span-2">
-                                <span className="text-gray-500 dark:text-slate-400">Lý do:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200">{formData.appointment_reason}</span>
+                                <span className="text-txt-muted">Lý do:</span>
+                                <span className="ml-2 text-txt-primary">{formData.appointment_reason}</span>
                             </div>
                         )}
                         {formData.hsyc_date && (
                             <div>
-                                <span className="text-gray-500 dark:text-slate-400">Ngày HSYC:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200">{formData.hsyc_date}</span>
+                                <span className="text-txt-muted">Ngày HSYC:</span>
+                                <span className="ml-2 text-txt-primary">{formData.hsyc_date}</span>
                             </div>
                         )}
                         {formData.hsdx_date && (
                             <div>
-                                <span className="text-gray-500 dark:text-slate-400">Ngày HSĐX:</span>
-                                <span className="ml-2 text-gray-800 dark:text-slate-200">{formData.hsdx_date}</span>
+                                <span className="text-txt-muted">Ngày HSĐX:</span>
+                                <span className="ml-2 text-txt-primary">{formData.hsdx_date}</span>
                             </div>
                         )}
                     </div>

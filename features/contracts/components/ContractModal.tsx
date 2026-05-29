@@ -165,13 +165,13 @@ export const ContractModal: React.FC<ContractModalProps> = ({
     });
 
     const inputClass = (hasError: boolean) =>
-        `w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border rounded-lg outline-none transition-colors
+        `w-full px-3 py-2 text-sm bg-bg-surface border rounded-lg outline-none transition-colors
         ${hasError
             ? 'border-red-300 dark:border-red-600 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
             : 'border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
-        } text-gray-800 dark:text-slate-200`;
+        } text-txt-primary`;
 
-    const labelClass = "block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1";
+    const labelClass = "block text-xs font-medium text-txt-muted mb-1";
 
     if (!isOpen) return null;
 
@@ -185,14 +185,14 @@ export const ContractModal: React.FC<ContractModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 dark:bg-slate-900 backdrop-blur-sm overflow-hidden p-4">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 shrink-0">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+                    <h3 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                         <FileSignature className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         {isEditing ? 'Chỉnh sửa Hợp đồng' : 'Tạo Hợp đồng mới'}
                     </h3>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-bg-muted rounded-xl transition-colors">
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
                 </div>
@@ -201,8 +201,8 @@ export const ContractModal: React.FC<ContractModalProps> = ({
                 <div className="flex-1 overflow-y-auto p-4">
                     <form id="contract-form" onSubmit={onSubmit} className="space-y-6">
                         {/* Association Fields (Project, Package, Contractor) */}
-                        <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
-                            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Thông tin liên kết</h4>
+                        <div className="p-4 bg-bg-subtle rounded-xl border border-border space-y-4">
+                            <h4 className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-2">Thông tin liên kết</h4>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -267,7 +267,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
 
                         {/* Contract Core Info */}
                         <div className="space-y-4">
-                            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 border-b border-gray-100 dark:border-slate-800 pb-2">Chi tiết Hợp đồng</h4>
+                            <h4 className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-2 border-b border-border-subtle pb-2">Chi tiết Hợp đồng</h4>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -411,11 +411,11 @@ export const ContractModal: React.FC<ContractModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex justify-end gap-3 shrink-0 rounded-b-2xl">
+                <div className="px-6 py-4 border-t border-border bg-bg-subtle flex justify-end gap-3 shrink-0 rounded-b-2xl">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-txt-secondary bg-bg-surface border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-bg-subtle dark:hover:bg-slate-700 transition-colors"
                     >
                         Hủy bỏ
                     </button>

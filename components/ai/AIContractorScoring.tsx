@@ -13,14 +13,14 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
     };
 
     return (
-        <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden ${className}`}>
-            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className={`bg-bg-surface rounded-xl border border-border shadow-lg overflow-hidden ${className}`}>
+            <div className="px-4 py-3 bg-bg-subtle border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-warning-500 flex items-center justify-center">
                         <Award size={14} className="text-white" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">Đánh giá Nhà thầu AI</h3>
+                        <h3 className="text-sm font-bold text-txt-secondary">Đánh giá Nhà thầu AI</h3>
                         <p className="text-[10px] text-slate-400">
                             {ranking ? `${ranking.rankings.length} nhà thầu đã phân tích` : 'Nhấn để phân tích'}
                         </p>
@@ -54,21 +54,21 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
                 {ranking?.rankings.map((score, idx) => (
                     <div
                         key={score.contractorId}
-                        className="rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all cursor-pointer"
+                        className="rounded-lg border border-border hover:border-primary-300 dark:hover:border-primary-600 transition-all cursor-pointer"
                         onClick={() => setExpanded(expanded === score.contractorId ? null : score.contractorId)}
                     >
                         <div className="flex items-center gap-2.5 p-2.5">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${idx < 3 ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${idx < 3 ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300' : 'bg-bg-muted text-slate-500'
                                 }`}>
                                 {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{score.contractorName}</p>
+                                <p className="text-xs font-bold text-txt-secondary truncate">{score.contractorName}</p>
                                 <p className="text-[10px] text-slate-400">{score.contractCount} HĐ • {(score.totalContractValue / 1e9).toFixed(1)} tỷ</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="text-right">
-                                    <span className="text-sm font-black text-slate-700 dark:text-slate-200">{score.overallScore}</span>
+                                    <span className="text-sm font-black text-txt-secondary">{score.overallScore}</span>
                                     <span className="text-[9px] text-slate-400">/100</span>
                                 </div>
                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${riskColors[score.riskLevel]}`}>
@@ -79,7 +79,7 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
                         </div>
 
                         {expanded === score.contractorId && (
-                            <div className="px-2.5 pb-2.5 border-t border-slate-100 dark:border-slate-700/50 pt-2 space-y-2">
+                            <div className="px-2.5 pb-2.5 border-t border-border-subtle pt-2 space-y-2">
                                 {/* Score bars */}
                                 {[
                                     { label: 'Tiến độ', value: score.dimensions.deliveryScore },
@@ -90,10 +90,10 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
                                 ].map(d => (
                                     <div key={d.label} className="flex items-center gap-2">
                                         <span className="text-[10px] text-slate-500 w-16">{d.label}</span>
-                                        <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                        <div className="flex-1 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                             <div className={`h-full rounded-full ${d.value >= 70 ? 'bg-emerald-500' : d.value >= 45 ? 'bg-primary-500' : 'bg-red-500'}`} style={{ width: `${d.value}%` }} />
                                         </div>
-                                        <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 w-8 text-right">{Math.round(d.value)}</span>
+                                        <span className="text-[10px] font-bold text-txt-muted w-8 text-right">{Math.round(d.value)}</span>
                                     </div>
                                 ))}
                                 {score.highlights.length > 0 && (
@@ -102,7 +102,7 @@ export const AIContractorScoring: React.FC<{ className?: string }> = ({ classNam
                                 {score.concerns.length > 0 && (
                                     <div className="text-[10px] text-red-500 dark:text-red-400">⚠️ {score.concerns.join(' • ')}</div>
                                 )}
-                                <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">💡 {score.recommendation}</p>
+                                <p className="text-[10px] text-txt-muted italic">💡 {score.recommendation}</p>
                             </div>
                         )}
                     </div>

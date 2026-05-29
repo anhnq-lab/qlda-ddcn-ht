@@ -22,7 +22,7 @@ const ContractorDetail: React.FC = () => {
     // Find Contracts
     const contracts = allContracts.filter(c => c.ContractorID === id);
 
-    if (!contractor) return <div className="p-4 text-center text-gray-500 dark:text-slate-400">Không tìm thấy nhà thầu.</div>;
+    if (!contractor) return <div className="p-4 text-center text-txt-muted">Không tìm thấy nhà thầu.</div>;
 
     // Derived Stats
     const totalWonValue = wonPackages.reduce((sum, p) => sum + (p.WinningPrice || 0), 0);
@@ -44,29 +44,29 @@ const ContractorDetail: React.FC = () => {
     ];
 
     return (
-        <div className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-900 min-h-screen p-4 animate-in fade-in duration-300">
+        <div className="bg-bg-subtle dark:bg-slate-900 min-h-screen p-4 animate-in fade-in duration-300">
             {/* Header */}
             <div className="max-w-6xl mx-auto mb-8">
-                <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-colors mb-4">
+                <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-txt-muted hover:text-gray-800 dark:hover:text-slate-200 transition-colors mb-4">
                     <ArrowLeft className="w-4 h-4" /> Quay lại danh sách
                 </button>
 
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-border p-4">
                     <div className="flex flex-col md:flex-row justify-between gap-8">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase ${contractor.IsForeign ? 'bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300' : 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300'}`}>
                                     {contractor.IsForeign ? 'Nhà thầu quốc tế' : 'Nhà thầu trong nước'}
                                 </span>
-                                <span className="text-gray-400 dark:text-slate-400 font-mono text-sm">#{contractor.ContractorID}</span>
+                                <span className="text-txt-placeholder font-mono text-sm">#{contractor.ContractorID}</span>
                             </div>
-                            <h1 className="text-3xl font-black text-gray-800 dark:text-slate-100 mb-4">{contractor.FullName}</h1>
+                            <h1 className="text-3xl font-black text-txt-primary mb-4">{contractor.FullName}</h1>
 
                             <div className="space-y-2.5">
                                 {infoItems.map(item => (
-                                    <p key={item.label} className="flex items-center gap-2 text-gray-600 dark:text-slate-300">
-                                        <item.icon className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
-                                        <span className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase w-28 shrink-0">{item.label}:</span>
+                                    <p key={item.label} className="flex items-center gap-2 text-txt-muted">
+                                        <item.icon className="w-4 h-4 text-txt-placeholder shrink-0" />
+                                        <span className="text-xs font-bold text-txt-placeholder uppercase w-28 shrink-0">{item.label}:</span>
                                         {item.link ? (
                                             <a href={item.link} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center gap-1">
                                                 {item.value} <Globe className="w-3 h-3" />
@@ -83,7 +83,7 @@ const ContractorDetail: React.FC = () => {
                             {statCards.map(stat => (
                                 <div key={stat.label} className={`${stat.color} p-5 rounded-2xl min-w-[180px]`}>
                                     <p className={`text-xs font-bold ${stat.textColor} uppercase mb-1`}>{stat.label}</p>
-                                    <p className="text-2xl font-black text-gray-800 dark:text-slate-100">{stat.value}</p>
+                                    <p className="text-2xl font-black text-txt-primary">{stat.value}</p>
                                 </div>
                             ))}
                         </div>
@@ -93,13 +93,13 @@ const ContractorDetail: React.FC = () => {
 
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Won Packages List */}
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-border p-4">
+                    <h3 className="text-xl font-bold text-txt-primary mb-6 flex items-center gap-2">
                         <Award className="w-6 h-6 text-warning-500" /> Lịch sử đấu thầu & Trúng thầu
                     </h3>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm text-gray-600 dark:text-slate-300">
-                            <thead className="bg-slate-50 dark:bg-slate-800 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                        <table className="w-full text-left text-sm text-txt-muted">
+                            <thead className="bg-bg-subtle text-xs uppercase font-bold text-txt-muted border-b border-border">
                                 <tr>
                                     <th className="px-4 py-3 rounded-tl-xl">Mã gói thầu</th>
                                     <th className="px-4 py-3">Tên gói thầu</th>
@@ -108,11 +108,11 @@ const ContractorDetail: React.FC = () => {
                                     <th className="px-4 py-3 text-center rounded-tr-xl">Trạng thái</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                            <tbody className="divide-y divide-border-subtle">
                                 {wonPackages.map(pkg => (
-                                    <tr key={pkg.PackageID} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                                    <tr key={pkg.PackageID} className="hover:bg-bg-hover-row transition-colors">
                                         <td className="px-4 py-3 font-mono text-xs">{pkg.PackageNumber}</td>
-                                        <td className="px-4 py-3 font-medium text-gray-800 dark:text-slate-200 max-w-md truncate" title={pkg.PackageName}>{pkg.PackageName}</td>
+                                        <td className="px-4 py-3 font-medium text-txt-primary max-w-md truncate" title={pkg.PackageName}>{pkg.PackageName}</td>
                                         <td className="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
                                             {pkg.WinningPrice ? pkg.WinningPrice.toLocaleString('vi-VN') : '-'}
                                         </td>
@@ -124,7 +124,7 @@ const ContractorDetail: React.FC = () => {
                                 ))}
                                 {wonPackages.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-slate-400 italic">Chưa có dữ liệu trúng thầu.</td>
+                                        <td colSpan={5} className="px-4 py-8 text-center text-txt-placeholder italic">Chưa có dữ liệu trúng thầu.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -133,27 +133,27 @@ const ContractorDetail: React.FC = () => {
                 </div>
 
                 {/* Contracts List */}
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-3xl shadow-sm border border-border p-4">
+                    <h3 className="text-xl font-bold text-txt-primary mb-6 flex items-center gap-2">
                         <FileText className="w-6 h-6 text-blue-500" /> Hợp đồng đã ký ({contracts.length})
                     </h3>
                     {contracts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {contracts.map(c => (
-                                <div key={c.ContractID} onClick={() => navigate(`/contracts/${c.ContractID}`)} className="p-4 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition-all">
+                                <div key={c.ContractID} onClick={() => navigate(`/contracts/${c.ContractID}`)} className="p-4 border border-border rounded-2xl hover:bg-bg-hover-row cursor-pointer transition-all">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-lg text-xs font-bold font-mono">{c.ContractID}</span>
-                                        <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${c.Status === 1 ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'}`}>
+                                        <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${c.Status === 1 ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-bg-muted text-txt-muted'}`}>
                                             {c.Status === 1 ? 'Đang thực hiện' : 'Đã kết thúc'}
                                         </span>
                                     </div>
-                                    <p className="font-bold text-gray-800 dark:text-slate-200 mb-1">Giá trị: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(c.Value)}</p>
-                                    <p className="text-xs text-gray-500 dark:text-slate-400">Ngày ký: {c.SignDate}</p>
+                                    <p className="font-bold text-txt-primary mb-1">Giá trị: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(c.Value)}</p>
+                                    <p className="text-xs text-txt-muted">Ngày ký: {c.SignDate}</p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center text-gray-400 dark:text-slate-400 italic py-8">Chưa có hợp đồng nào.</p>
+                        <p className="text-center text-txt-placeholder italic py-8">Chưa có hợp đồng nào.</p>
                     )}
                 </div>
             </div>

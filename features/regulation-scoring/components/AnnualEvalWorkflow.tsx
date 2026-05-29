@@ -215,11 +215,11 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
   const currentIndex = getStepIndex(currentStep);
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 space-y-8 shadow-sm">
+    <div className="bg-bg-surface border border-border-subtle rounded-2xl p-6 space-y-8 shadow-sm">
       
       {/* ── Steps Progress Bar ── */}
       <div className="relative">
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 z-0" />
+        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-bg-muted -translate-y-1/2 z-0" />
         <div 
           className="absolute top-1/2 left-0 h-0.5 bg-primary-500 -translate-y-1/2 z-0 transition-all duration-500" 
           style={{ width: `${isPublished ? 100 : (currentIndex / (steps.length - 1)) * 100}%` }}
@@ -239,13 +239,13 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
                       ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/10' 
                       : isActive 
                         ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/15'
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
+                        : 'bg-bg-surface border-border text-slate-400'
                   }`}
                 >
                   {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                 </div>
                 <div className="max-w-[120px]">
-                  <p className={`text-[11px] font-black ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                  <p className={`text-[11px] font-black ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-txt-secondary'}`}>
                     {s.label}
                   </p>
                   <p className="text-[9px] text-slate-400 mt-0.5">{s.desc}</p>
@@ -257,10 +257,10 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
       </div>
 
       {/* ── Status Banner ── */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+      <div className="p-4 bg-bg-subtle/40 rounded-xl border border-border-subtle flex items-center justify-between">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Đang đánh giá cán bộ</span>
-          <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 mt-0.5">{employeeName}</h3>
+          <h3 className="text-sm font-black text-txt-primary mt-0.5">{employeeName}</h3>
           <p className="text-[11px] text-slate-500 mt-1">
             Trung bình điểm 12 tháng: <strong className="text-primary-600 dark:text-primary-400 font-extrabold">{monthlyAvg} điểm</strong> ({monthlyScoresCount}/12 tháng có điểm)
           </p>
@@ -285,16 +285,16 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
         <div className={`p-5 rounded-2xl border transition-all ${
           currentStep === 'self_eval' && !isPublished
             ? 'bg-primary-50/20 dark:bg-primary-900/10 border-primary-200/50 dark:border-primary-800/50 shadow-sm'
-            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-75'
+            : 'bg-bg-surface border-border-subtle opacity-75'
         }`}>
-          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-4">
-            <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] flex items-center justify-center font-bold">1</span>
+          <h4 className="text-xs font-black text-txt-secondary flex items-center gap-1.5 mb-4">
+            <span className="w-5 h-5 rounded-full bg-bg-muted text-[10px] flex items-center justify-center font-bold">1</span>
             Cá nhân tự đánh giá & chấm điểm
           </h4>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Tự chấm điểm B/C tổng hợp</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Tự chấm điểm B/C tổng hợp</label>
               <input
                 type="number"
                 min="0"
@@ -302,18 +302,18 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
                 value={selfScore}
                 onChange={(e) => setSelfScore(e.target.value)}
                 disabled={currentStep !== 'self_eval' || isPublished || !isSelf}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
                 placeholder="Nhập tổng điểm tự đánh giá..."
               />
             </div>
             
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Tự đề xuất xếp loại</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Tự đề xuất xếp loại</label>
               <select
                 value={selfClass}
                 onChange={(e: any) => setSelfClass(e.target.value)}
                 disabled={currentStep !== 'self_eval' || isPublished || !isSelf}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
               >
                 <option value="xuat_sac">Hoàn thành xuất sắc</option>
                 <option value="tot">Hoàn thành tốt</option>
@@ -323,20 +323,20 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Ghi chú tự đánh giá thành tích nổi bật</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Ghi chú tự đánh giá thành tích nổi bật</label>
               <textarea
                 value={selfNotes}
                 onChange={(e) => setSelfNotes(e.target.value)}
                 disabled={currentStep !== 'self_eval' || isPublished || !isSelf}
                 rows={3}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
                 placeholder="Nêu tóm tắt sáng kiến, thành tích xuất sắc đạt được trong năm..."
               />
             </div>
           </div>
 
           {currentStep === 'self_eval' && isSelf && !isPublished && (
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border-subtle">
               <button
                 onClick={handleSaveDraft}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded-lg text-[10px] font-bold transition-all"
@@ -359,40 +359,40 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
         <div className={`p-5 rounded-2xl border transition-all ${
           currentStep === 'dept_meeting' && !isPublished
             ? 'bg-primary-50/20 dark:bg-primary-900/10 border-primary-200/50 dark:border-primary-800/50 shadow-sm'
-            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-75'
+            : 'bg-bg-surface border-border-subtle opacity-75'
         }`}>
-          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-4">
-            <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] flex items-center justify-center font-bold">2</span>
+          <h4 className="text-xs font-black text-txt-secondary flex items-center gap-1.5 mb-4">
+            <span className="w-5 h-5 rounded-full bg-bg-muted text-[10px] flex items-center justify-center font-bold">2</span>
             Họp bình xét phòng
           </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Ngày họp bình xét</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Ngày họp bình xét</label>
               <input
                 type="date"
                 value={deptMeetingDate}
                 onChange={(e) => setDeptMeetingDate(e.target.value)}
                 disabled={currentStep !== 'dept_meeting' || isPublished || (!isDeptHead && !isDirector)}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
               />
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Tóm tắt ý kiến đóng góp của tập thể</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Tóm tắt ý kiến đóng góp của tập thể</label>
               <textarea
                 value={deptMeetingNotes}
                 onChange={(e) => setDeptMeetingNotes(e.target.value)}
                 disabled={currentStep !== 'dept_meeting' || isPublished || (!isDeptHead && !isDirector)}
                 rows={3}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
                 placeholder="Ghi nhận các ý kiến đóng góp của tập thể phòng tại biên bản họp..."
               />
             </div>
           </div>
 
           {currentStep === 'dept_meeting' && (isDeptHead || isDirector) && !isPublished && (
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border-subtle">
               <button
                 onClick={handleSaveDraft}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded-lg text-[10px] font-bold transition-all"
@@ -415,10 +415,10 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
         <div className={`p-5 rounded-2xl border transition-all ${
           currentStep === 'head_proposal' && !isPublished
             ? 'bg-primary-50/20 dark:bg-primary-900/10 border-primary-200/50 dark:border-primary-800/50 shadow-sm'
-            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-75'
+            : 'bg-bg-surface border-border-subtle opacity-75'
         }`}>
-          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-4">
-            <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] flex items-center justify-center font-bold">3</span>
+          <h4 className="text-xs font-black text-txt-secondary flex items-center gap-1.5 mb-4">
+            <span className="w-5 h-5 rounded-full bg-bg-muted text-[10px] flex items-center justify-center font-bold">3</span>
             Trưởng phòng đề xuất xếp loại
           </h4>
 
@@ -440,12 +440,12 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Trưởng phòng đề xuất loại</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Trưởng phòng đề xuất loại</label>
               <select
                 value={headProposedClass}
                 onChange={(e: any) => setHeadProposedClass(e.target.value)}
                 disabled={currentStep !== 'head_proposal' || isPublished || (!isDeptHead && !isDirector)}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
               >
                 <option value="xuat_sac">Hoàn thành xuất sắc</option>
                 <option value="tot">Hoàn thành tốt</option>
@@ -455,20 +455,20 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Lý do/Ghi chú của Trưởng phòng</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Lý do/Ghi chú của Trưởng phòng</label>
               <textarea
                 value={headProposalNotes}
                 onChange={(e) => setHeadProposalNotes(e.target.value)}
                 disabled={currentStep !== 'head_proposal' || isPublished || (!isDeptHead && !isDirector)}
                 rows={3}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
                 placeholder="Nhận xét cụ thể của Trưởng phòng về năng lực, kết quả hoàn thành nhiệm vụ..."
               />
             </div>
           </div>
 
           {currentStep === 'head_proposal' && (isDeptHead || isDirector) && !isPublished && (
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border-subtle">
               <button
                 onClick={handleSaveDraft}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded-lg text-[10px] font-bold transition-all"
@@ -491,21 +491,21 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
         <div className={`p-5 rounded-2xl border transition-all ${
           (currentStep === 'leadership_final' || isPublished)
             ? 'bg-primary-50/20 dark:bg-primary-900/10 border-primary-200/50 dark:border-primary-800/50 shadow-sm'
-            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-75'
+            : 'bg-bg-surface border-border-subtle opacity-75'
         }`}>
-          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-4">
-            <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] flex items-center justify-center font-bold">4</span>
+          <h4 className="text-xs font-black text-txt-secondary flex items-center gap-1.5 mb-4">
+            <span className="w-5 h-5 rounded-full bg-bg-muted text-[10px] flex items-center justify-center font-bold">4</span>
             Lãnh đạo Ban phê duyệt & Công bố
           </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Lãnh đạo quyết định loại</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Lãnh đạo quyết định loại</label>
               <select
                 value={leadershipClass}
                 onChange={(e: any) => setLeadershipClass(e.target.value)}
                 disabled={(currentStep !== 'leadership_final' && !isPublished) || isPublished || !isDirector}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
               >
                 <option value="xuat_sac">Hoàn thành xuất sắc</option>
                 <option value="tot">Hoàn thành tốt</option>
@@ -515,20 +515,20 @@ export const AnnualEvalWorkflow: React.FC<AnnualEvalWorkflowProps> = ({
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Nhận xét / Ý kiến chỉ đạo của Lãnh đạo</label>
+              <label className="block text-[11px] font-bold text-txt-muted mb-1.5">Nhận xét / Ý kiến chỉ đạo của Lãnh đạo</label>
               <textarea
                 value={leadershipNotes}
                 onChange={(e) => setLeadershipNotes(e.target.value)}
                 disabled={(currentStep !== 'leadership_final' && !isPublished) || isPublished || !isDirector}
                 rows={3}
-                className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                className="w-full px-3 py-1.5 bg-bg-surface border border-border rounded-lg text-xs"
                 placeholder="Ý kiến chỉ đạo, kết luận của Giám đốc Ban..."
               />
             </div>
           </div>
 
           {currentStep === 'leadership_final' && isDirector && !isPublished && (
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border-subtle">
               <button
                 onClick={handleSaveDraft}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded-lg text-[10px] font-bold transition-all"

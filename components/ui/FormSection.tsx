@@ -50,7 +50,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
     const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
 
     return (
-        <div className={`${divider ? 'border-b border-border-DEFAULT dark:border-slate-700/60 pb-6 mb-6 last:border-0 last:mb-0 last:pb-0' : ''} ${className}`}>
+        <div className={`${divider ? 'border-b border-border pb-6 mb-6 last:border-0 last:mb-0 last:pb-0' : ''} ${className}`}>
             {/* Section header */}
             <div
                 className={`flex items-start justify-between mb-4 ${collapsible ? 'cursor-pointer select-none' : ''}`}
@@ -63,11 +63,11 @@ export const FormSection: React.FC<FormSectionProps> = ({
                         </span>
                     )}
                     <div>
-                        <h3 className="text-sm font-bold text-txt-primary dark:text-white uppercase tracking-wider">
+                        <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wider">
                             {title}
                         </h3>
                         {description && (
-                            <p className="text-xs text-txt-muted dark:text-slate-400 mt-0.5 font-normal normal-case tracking-normal">
+                            <p className="text-xs text-txt-muted mt-0.5 font-normal normal-case tracking-normal">
                                 {description}
                             </p>
                         )}
@@ -77,7 +77,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
                     {action && <div className="shrink-0">{action}</div>}
                     {collapsible && (
                         <svg
-                            className={`w-4 h-4 text-txt-muted dark:text-slate-400 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
+                            className={`w-4 h-4 text-txt-muted transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
                             fill="none" viewBox="0 0 24 24" stroke="currentColor"
                         >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -90,7 +90,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
             {!collapsed && (
                 <div className={`
                     grid ${GRID_COLS[columns]} gap-4
-                    ${contentPadding ? 'p-4 bg-slate-50 dark:bg-slate-800 rounded-xl' : ''}
+                    ${contentPadding ? 'p-4 bg-bg-subtle rounded-xl' : ''}
                 `}>
                     {children}
                 </div>
@@ -129,7 +129,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         <div className={`${fullWidth ? 'col-span-full' : ''} ${className}`}>
             <label
                 htmlFor={htmlFor}
-                className="block text-xs font-semibold text-txt-secondary dark:text-slate-300 mb-1.5 uppercase tracking-wide"
+                className="block text-xs font-semibold text-txt-secondary mb-1.5 uppercase tracking-wide"
             >
                 {label}
                 {required && <span className="text-danger-500 ml-0.5">*</span>}
@@ -139,7 +139,7 @@ export const FormField: React.FC<FormFieldProps> = ({
                 <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{error}</p>
             )}
             {hint && !error && (
-                <p className="mt-1 text-xs text-txt-placeholder dark:text-slate-400">{hint}</p>
+                <p className="mt-1 text-xs text-txt-placeholder">{hint}</p>
             )}
         </div>
     );

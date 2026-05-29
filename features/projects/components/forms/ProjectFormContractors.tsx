@@ -60,8 +60,8 @@ export const ProjectFormContractors: React.FC<ProjectFormContractorsProps> = ({
             </div>
 
             {/* ── Nhà thầu tư vấn ── */}
-            <div className="pt-4 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-4 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <Search className="w-4 h-4 text-blue-500" /> Nhà thầu tư vấn
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -99,8 +99,8 @@ export const ProjectFormContractors: React.FC<ProjectFormContractorsProps> = ({
             </div>
 
             {/* ── Đơn vị thực hiện ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <Building className="w-4 h-4 text-violet-500" /> Đơn vị thực hiện (Nhà thầu thi công)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,8 +188,8 @@ export const ProjectFormContractors: React.FC<ProjectFormContractorsProps> = ({
             </div>
 
             {/* ── Quản lý dự án (nội bộ) ── */}
-            <div className="pt-5 border-t border-gray-100 dark:border-slate-700/50">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <div className="pt-5 border-t border-border-subtle">
+                <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
                     <Users className="w-4 h-4 text-emerald-500" /> Nhân sự quản lý dự án (nội bộ)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

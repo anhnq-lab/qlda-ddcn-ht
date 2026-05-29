@@ -15,12 +15,12 @@ export const WeightDonut: React.FC<WeightDonutProps> = ({ weights, title }) => {
   ].filter(d => d.value > 0);
 
   return (
-    <div className="flex flex-col p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm w-full h-full justify-between min-h-[220px]">
+    <div className="flex flex-col p-4 bg-bg-surface rounded-2xl border border-border-subtle shadow-sm w-full h-full justify-between min-h-[220px]">
       <div>
         <h4 className="text-xs font-black uppercase tracking-wider text-slate-450 dark:text-slate-400 mb-1">
           {title}
         </h4>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Cấu trúc tỷ trọng điểm tối đa (Tổng 100 điểm)</p>
+        <p className="text-[10px] text-txt-placeholder font-medium">Cấu trúc tỷ trọng điểm tối đa (Tổng 100 điểm)</p>
       </div>
 
       <div className="flex items-center gap-4 flex-1 mt-2">

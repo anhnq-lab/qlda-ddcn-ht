@@ -41,20 +41,20 @@ const OrgChart = () => {
                 <div className="relative z-10 mb-4 group">
                     <div className="text-white px-10 py-3 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center relative cursor-default hover:scale-105 transition-transform bg-gradient-to-br from-warning-500 to-warning-600">
                         <h4 className="font-black text-sm uppercase tracking-tight">Giám đốc Ban</h4>
-                        <div className="w-2 h-2 bg-white dark:bg-slate-800 rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
+                        <div className="w-2 h-2 bg-bg-surface rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
                     <div className="absolute top-full left-1/2 w-px h-5 bg-gray-300 dark:bg-slate-700 -translate-x-1/2"></div>
                 </div>
 
                 {/* Level 2: Phó GĐ + Kế toán trưởng */}
                 <div className="relative z-10 mb-6 flex justify-center gap-5">
-                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
+                    <div className="bg-bg-surface border border-border px-6 py-2 rounded-lg shadow-sm text-center">
                         <h4 className="font-bold text-xs uppercase text-warning-700 dark:text-warning-500">Phó Giám đốc Ban</h4>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
+                    <div className="bg-bg-surface border border-border px-6 py-2 rounded-lg shadow-sm text-center">
                         <h4 className="font-bold text-xs uppercase text-warning-700 dark:text-warning-500">Phó Giám đốc Ban</h4>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 px-6 py-2 rounded-lg shadow-sm text-center">
+                    <div className="bg-bg-surface border border-border px-6 py-2 rounded-lg shadow-sm text-center">
                         <h4 className="font-bold text-xs uppercase text-blue-700">Kế toán trưởng</h4>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ const SubmissionProcessChart = () => {
             actor: "Chuyên viên / Phòng CM",
             desc: "Chuẩn bị hồ sơ đầy đủ, dự thảo văn bản, tờ trình.",
             icon: PenTool,
-            color: "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700"
+            color: "bg-bg-muted text-txt-muted border-border"
         },
         {
             id: 2,
@@ -180,12 +180,12 @@ const SubmissionProcessChart = () => {
                             )}
 
                             {/* Content Bubble */}
-                            <div className="ml-6 flex-1 bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow relative">
+                            <div className="ml-6 flex-1 bg-bg-surface p-4 rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative">
                                 {/* Triangle pointer */}
-                                <div className="absolute top-6 -left-2 w-4 h-4 bg-white dark:bg-slate-800 border-l border-b border-gray-200 dark:border-slate-700 transform rotate-45"></div>
+                                <div className="absolute top-6 -left-2 w-4 h-4 bg-bg-surface border-l border-b border-border transform rotate-45"></div>
 
                                 <div className="flex justify-between items-start mb-1">
-                                    <h5 className="font-bold text-gray-800 dark:text-slate-200 text-sm">{step.title}</h5>
+                                    <h5 className="font-bold text-txt-primary text-sm">{step.title}</h5>
                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-50 px-2 py-0.5 rounded text-gray-500">{step.actor}</span>
                                 </div>
                                 <p className="text-xs text-gray-500">{step.desc}</p>
@@ -221,7 +221,7 @@ const RelationshipMap = () => {
                         <Landmark className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 dark:text-slate-200 uppercase">UBND TP.HCM</p>
+                        <p className="text-[10px] font-bold text-txt-primary uppercase">UBND TP.HCM</p>
                         <p className="text-[8px] text-gray-500">Chỉ đạo & Giám sát</p>
                     </div>
                     {/* Connector */}
@@ -235,7 +235,7 @@ const RelationshipMap = () => {
                         <Network className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 dark:text-slate-200 uppercase">Sở KH-ĐT / Sở TC</p>
+                        <p className="text-[10px] font-bold text-txt-primary uppercase">Sở KH-ĐT / Sở TC</p>
                         <p className="text-[8px] text-gray-500">Thẩm định & Phối hợp</p>
                     </div>
                     {/* Connector */}
@@ -248,7 +248,7 @@ const RelationshipMap = () => {
                         <HardHat className="w-6 h-6" />
                     </div>
                     <div className="mb-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 dark:text-slate-200 uppercase">Nhà thầu / Đối tác</p>
+                        <p className="text-[10px] font-bold text-txt-primary uppercase">Nhà thầu / Đối tác</p>
                         <p className="text-[8px] text-gray-500">Hợp đồng kinh tế</p>
                     </div>
                     {/* Connector */}
@@ -261,7 +261,7 @@ const RelationshipMap = () => {
                         <Map className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 dark:text-slate-200 uppercase">Đơn vị sử dụng</p>
+                        <p className="text-[10px] font-bold text-txt-primary uppercase">Đơn vị sử dụng</p>
                         <p className="text-[8px] text-gray-500">Bàn giao & Vận hành</p>
                     </div>
                     {/* Connector */}
@@ -276,7 +276,7 @@ const RelationshipMap = () => {
 const ResponsibilityList: React.FC<{ items: (string | React.ReactNode)[] }> = ({ items }) => (
     <ul className="space-y-4">
         {items.map((item, idx) => (
-            <li key={idx} className="flex gap-4 text-sm text-gray-700 dark:text-slate-300 leading-relaxed text-justify group">
+            <li key={idx} className="flex gap-4 text-sm text-txt-secondary leading-relaxed text-justify group">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center text-[10px] font-bold mt-0.5 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors shadow-sm">
                     {idx + 1}
                 </span>
@@ -327,7 +327,7 @@ const Article2Visual = () => {
                     {/* Default State: Summary */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-90">
                         <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-xl font-black text-blue-600 mb-4 border border-blue-50">{p.idx}</div>
-                        <h5 className="font-bold text-gray-800 dark:text-slate-200 text-sm uppercase tracking-tight leading-relaxed px-4">{p.title}</h5>
+                        <h5 className="font-bold text-txt-primary text-sm uppercase tracking-tight leading-relaxed px-4">{p.title}</h5>
                         <p className="text-[10px] text-gray-400 mt-4 italic flex items-center gap-1">
                             <Info className="w-3 h-3" /> Rê chuột để xem chi tiết
                         </p>
@@ -374,14 +374,14 @@ const DeptTasksLayout: React.FC<{
                 <h4 className={`font-bold ${c.text} text-sm mb-3 flex items-center gap-2`}>
                     <CheckCircle2 className="w-4 h-4" /> 1. Chức năng
                 </h4>
-                <ul className="space-y-3 text-sm text-gray-700 dark:text-slate-300 list-disc pl-5 leading-relaxed">
+                <ul className="space-y-3 text-sm text-txt-secondary list-disc pl-5 leading-relaxed">
                     {functionContent.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
             </div>
 
             {/* Nhiệm vụ chi tiết - Interactive Layout */}
             <div>
-                <h4 className="font-bold text-gray-800 dark:text-slate-200 text-sm mb-4 px-1 flex items-center gap-2">
+                <h4 className="font-bold text-txt-primary text-sm mb-4 px-1 flex items-center gap-2">
                     2. Nhiệm vụ cụ thể
                     <span className="text-[10px] font-normal text-gray-400 italic bg-gray-50 px-2 py-0.5 rounded">(Rê chuột vào các mục bên dưới để xem chi tiết)</span>
                 </h4>
@@ -418,7 +418,7 @@ const DeptTasksLayout: React.FC<{
                                     <div className={`w-1 h-6 ${c.active.replace('bg-', 'bg-')} rounded-full`}></div>
                                     {task.title}
                                 </h4>
-                                <div className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-line text-justify font-medium">
+                                <div className="text-sm text-txt-secondary leading-relaxed whitespace-pre-line text-justify font-medium">
                                     {task.full}
                                 </div>
                             </div>

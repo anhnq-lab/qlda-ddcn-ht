@@ -72,7 +72,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     const getFilterStyle = (filter: { id: TaskFilter; color: string }, isActive: boolean) => {
-        if (!isActive) return 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700';
+        if (!isActive) return 'bg-bg-surface text-txt-muted border-gray-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700';
 
         switch (filter.color) {
             case 'blue': return 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-800';
@@ -81,12 +81,12 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             case 'emerald': return 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700 ring-1 ring-emerald-200 dark:ring-emerald-800';
             case 'purple': return 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400 border-warning-300 dark:border-warning-700 ring-1 ring-warning-200 dark:ring-warning-800';
             case 'indigo': return 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 border-primary-300 dark:border-primary-700 ring-1 ring-primary-200 dark:ring-primary-800';
-            default: return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200 border-gray-300 dark:border-slate-600 ring-1 ring-gray-200 dark:ring-slate-500';
+            default: return 'bg-bg-muted text-txt-primary border-gray-300 dark:border-slate-600 ring-1 ring-gray-200 dark:ring-slate-500';
         }
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-2.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-bg-surface rounded-xl shadow-sm border border-border p-2.5 flex flex-wrap items-center justify-between gap-3">
             {/* Left Row: Filters */}
             <div className="flex items-center gap-2 flex-wrap">
                 {filters.map(filter => {
@@ -120,7 +120,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             {/* Right Row: View Toggle + Adjust Button */}
             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-1 sm:flex-initial">
                 {/* View Toggle */}
-                <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
+                <div className="flex items-center bg-bg-muted rounded-lg p-1">
                     {views.map(view => {
                         const isActive = currentView === view.id;
                         const Icon = view.icon;
@@ -131,7 +131,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 onClick={() => onViewChange(view.id)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isActive
                                     ? 'bg-white dark:bg-slate-600 text-primary-700 dark:text-primary-400 shadow-sm'
-                                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+                                    : 'text-txt-muted hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                                 title={view.label}
                             >

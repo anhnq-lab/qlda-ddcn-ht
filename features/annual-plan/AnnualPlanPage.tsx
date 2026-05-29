@@ -21,11 +21,11 @@ import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 const CURRENT_YEAR = new Date().getFullYear();
 
 const FREQ_BADGE: Record<PlanFrequency, { label: string; color: string }> = {
-    one_time:  { label: 'Một lần',      color: 'bg-blue-100 text-blue-700' },
-    monthly:   { label: 'Hàng tháng',   color: 'bg-green-100 text-green-700' },
-    quarterly: { label: 'Hàng quý',     color: 'bg-purple-100 text-purple-700' },
-    daily:     { label: 'Hàng ngày',    color: 'bg-warning-100 text-warning-700' },
-    as_needed: { label: 'Phát sinh',    color: 'bg-slate-100 text-slate-600' },
+    one_time:  { label: 'Một lần',      color: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' },
+    monthly:   { label: 'Hàng tháng',   color: 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' },
+    quarterly: { label: 'Hàng quý',     color: 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400' },
+    daily:     { label: 'Hàng ngày',    color: 'bg-warning-100 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400' },
+    as_needed: { label: 'Phát sinh',    color: 'bg-bg-muted text-txt-muted' },
 };
 
 interface AnnualPlanPageProps {
@@ -279,7 +279,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             minWidth: '280px',
             render: (_, item) => (
                 <div className="flex flex-col">
-                    <span className="font-medium text-slate-800 dark:text-slate-200 leading-snug">{item.task_name}</span>
+                    <span className="font-medium text-txt-primary leading-snug">{item.task_name}</span>
                     {item.project_id && (
                         <span className="mt-1 text-[10px] text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded inline-flex w-fit items-center gap-0.5 font-medium border border-blue-100 dark:border-blue-500/20">
                             Dự án
@@ -295,7 +295,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             minWidth: '180px',
             maxWidth: '180px',
             className: 'w-[180px] min-w-[180px]',
-            render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.deliverable ?? '—'}</span>
+            render: (_, item) => <span className="text-xs text-txt-muted leading-snug">{item.deliverable ?? '—'}</span>
         },
         {
             key: 'start_period',
@@ -305,7 +305,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             maxWidth: '90px',
             align: 'center',
             className: 'w-[90px] min-w-[90px] max-w-[90px]',
-            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.start_period)}</span>
+            render: (_, item) => <span className="text-xs text-txt-muted">{formatPeriod(item.start_period)}</span>
         },
         {
             key: 'end_period',
@@ -315,7 +315,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             maxWidth: '90px',
             align: 'center',
             className: 'w-[90px] min-w-[90px] max-w-[90px]',
-            render: (_, item) => <span className="text-xs text-slate-600 dark:text-slate-400">{formatPeriod(item.end_period)}</span>
+            render: (_, item) => <span className="text-xs text-txt-muted">{formatPeriod(item.end_period)}</span>
         },
         {
             key: 'frequency',
@@ -364,7 +364,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             minWidth: '180px',
             maxWidth: '180px',
             className: 'w-[180px] min-w-[180px]',
-            render: (_, item) => <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.notes ?? '—'}</span>
+            render: (_, item) => <span className="text-xs text-txt-muted leading-snug">{item.notes ?? '—'}</span>
         },
         {
             key: 'actions',
@@ -406,24 +406,24 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             case 'rejected':
                 return <span className="px-2.5 py-1 text-[10px] font-bold bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400 rounded-full border border-red-200 dark:border-red-900/50">Bị từ chối</span>;
             default:
-                return <span className="px-2.5 py-1 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">Bản nháp</span>;
+                return <span className="px-2.5 py-1 text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-border">Bản nháp</span>;
         }
     };
 
     return (
         <div className="flex flex-col h-full bg-transparent">
             {/* ── Thanh công cụ 1 hàng tối giản ── */}
-            <div className="px-0 py-2.5 bg-transparent border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <div className="px-0 py-2.5 bg-transparent border-b border-border-subtle flex flex-wrap items-center justify-between gap-3 shrink-0">
                 {/* Trái: Tìm kiếm + Dropdown phòng ban */}
                 <div className="flex items-center gap-2 flex-wrap flex-1">
                     {/* Tìm kiếm */}
                     <div className="relative w-full max-w-[200px]">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-txt-placeholder pointer-events-none" />
                         <input
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                             placeholder="Tìm nhiệm vụ..."
-                            className="w-full pl-8 pr-3 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all placeholder-slate-400 dark:placeholder-slate-500"
+                            className="w-full pl-8 pr-3 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all placeholder-slate-400 dark:placeholder-slate-500"
                         />
                     </div>
 
@@ -434,7 +434,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                             <select
                                 value={activeDept}
                                 onChange={e => setActiveDept(e.target.value as DepartmentCode)}
-                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
                             >
                                 {DEPARTMENT_CODES.map(code => (
                                     <option key={code} value={code}>{code}</option>
@@ -447,7 +447,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
 
                 {/* Phải: Thống kê nhiệm vụ phòng + Chọn năm + Nút Thêm */}
                 <div className="flex items-center gap-3 shrink-0">
-                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-txt-muted font-medium">
                         <Building2 className="w-3.5 h-3.5 text-slate-400" />
                         <span className="font-semibold text-slate-750 dark:text-slate-350">{activeDept === 'All' ? 'Tất cả phòng ban' : DEPARTMENT_NAMES[activeDept as DepartmentCode]}</span>
                         <span>·</span>
@@ -462,7 +462,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                         <select
                             value={year}
                             onChange={e => setYear(Number(e.target.value))}
-                            className="text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                            className="text-xs font-bold border border-border rounded-lg px-2.5 py-1 bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
                         >
                             {[CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1].map(y => (
                                 <option key={y} value={y}>Năm {y}</option>
@@ -525,11 +525,11 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             {/* ── Nội dung ── */}
             <div className="flex-1 px-0 py-4 flex flex-col min-h-0">
                 {loading ? (
-                    <div className="flex items-center justify-center h-40 text-slate-400 dark:text-slate-500 text-sm">
+                    <div className="flex items-center justify-center h-40 text-txt-placeholder text-sm">
                         Đang tải...
                     </div>
                 ) : groups.size === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-40 gap-3 text-slate-400 dark:text-slate-500">
+                    <div className="flex flex-col items-center justify-center h-40 gap-3 text-txt-placeholder">
                         <BookOpen className="w-10 h-10 opacity-30" />
                         <p className="text-sm">Chưa có nhiệm vụ nào trong kế hoạch khung năm {year}</p>
                         <button
@@ -551,16 +551,16 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                         defaultExpandedGroups={true}
                         renderGroupHeader={(groupName, groupItems, isExpanded, toggle) => (
                             <tr
-                                className="bg-slate-50/80 dark:bg-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border-b border-slate-200 dark:border-slate-800"
+                                className="bg-slate-50/80 dark:bg-slate-800 cursor-pointer hover:bg-bg-muted transition-colors border-b border-border"
                                 onClick={toggle}
                             >
-                                <td colSpan={9} className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800">
+                                <td colSpan={9} className="px-4 py-2.5 border-t border-border">
                                     <div className="flex items-center gap-2">
                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                        <span className="text-sm font-semibold text-txt-primary">
                                             {groupName}
                                         </span>
-                                        <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full font-medium">
+                                        <span className="text-xs text-txt-muted bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full font-medium">
                                             {groupItems.length}
                                         </span>
                                     </div>
@@ -574,13 +574,13 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
             {/* Month Selection Modal */}
             {monthSelectOpen && selectedAnnualItem && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl rounded-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-bg-surface border border-border-subtle shadow-2xl rounded-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
                             <h3 className="font-bold text-slate-850 dark:text-slate-100 text-base">Chọn tháng lập kế hoạch</h3>
                             <button 
                                 onClick={() => setMonthSelectOpen(false)}
-                                className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                                className="p-1 rounded-lg text-slate-400 hover:bg-bg-muted hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -589,7 +589,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                         {/* Modal Body */}
                         <div className="p-5 space-y-4">
                             <div>
-                                <p className="text-xs text-slate-400 dark:text-slate-500 uppercase font-black tracking-wider mb-1">Nhiệm vụ khung năm</p>
+                                <p className="text-xs text-txt-placeholder uppercase font-black tracking-wider mb-1">Nhiệm vụ khung năm</p>
                                 <p className="text-sm font-bold text-slate-750 dark:text-slate-200 leading-snug">{selectedAnnualItem.task_name}</p>
                             </div>
                             
@@ -601,7 +601,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                             )}
 
                             <div>
-                                <p className="text-xs text-slate-400 dark:text-slate-500 uppercase font-black tracking-wider mb-3">Chọn tháng áp dụng</p>
+                                <p className="text-xs text-txt-placeholder uppercase font-black tracking-wider mb-3">Chọn tháng áp dụng</p>
                                 <div className="grid grid-cols-4 gap-2">
                                     {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => {
                                         const isSelected = targetMonth === m;
@@ -627,7 +627,7 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                                                         ? 'bg-primary-600 text-white shadow-sm ring-2 ring-primary-500/20'
                                                         : inPeriod
                                                             ? 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 dark:bg-slate-805 dark:border-slate-750 dark:text-slate-300 dark:hover:bg-slate-750'
-                                                            : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500 dark:hover:bg-slate-800'
+                                                            : 'bg-white border border-slate-100 text-slate-400 hover:bg-bg-subtle dark:border-slate-800 dark:text-slate-500 dark:hover:bg-slate-800'
                                                 }`}
                                             >
                                                 T. {m}
@@ -642,11 +642,11 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-805 flex justify-end gap-2">
+                        <div className="px-5 py-4 border-t border-border-subtle bg-slate-50 dark:bg-slate-805 flex justify-end gap-2">
                             <button
                                 type="button"
                                 onClick={() => setMonthSelectOpen(false)}
-                                className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
+                                className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-bg-muted rounded-xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
                             >
                                 Hủy
                             </button>

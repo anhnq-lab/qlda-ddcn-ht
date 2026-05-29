@@ -105,16 +105,16 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
     const totalItems = schema.checklist?.length ?? 0;
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-sm">
+        <div className="bg-bg-surface rounded-xl border border-border overflow-hidden text-sm">
             {/* Header */}
-            <div className="px-5 py-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <div className="px-5 py-4 bg-bg-subtle border-b border-border">
                 <div className="flex items-start justify-between gap-3">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <FileText size={15} className="text-primary-500 flex-shrink-0" />
                             <span className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400">{schema.code}</span>
                         </div>
-                        <h3 className="font-bold text-slate-800 dark:text-white text-base">{schema.title}</h3>
+                        <h3 className="font-bold text-txt-primary text-base">{schema.title}</h3>
                         {schema.description && (
                             <p className="text-xs text-slate-500 mt-1">{schema.description}</p>
                         )}
@@ -130,7 +130,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
 
             {/* Project info header */}
             {(projectName || packageName || location || officer) && (
-                <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-x-4 gap-y-1">
+                <div className="px-5 py-3 border-b border-border-subtle grid grid-cols-2 gap-x-4 gap-y-1">
                     {projectName && <InfoRow label="Dự án" value={projectName} />}
                     {packageName && <InfoRow label="Hạng mục/Gói thầu" value={packageName} />}
                     {location   && <InfoRow label="Địa điểm" value={location} />}
@@ -140,8 +140,8 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
 
             {/* Checklist */}
             {schema.checklist && schema.checklist.length > 0 && (
-                <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                    <div className="px-5 py-2 bg-slate-50 dark:bg-slate-900 grid grid-cols-[1fr_auto_auto] gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <div className="divide-y divide-border-subtle">
+                    <div className="px-5 py-2 bg-bg-subtle grid grid-cols-[1fr_auto_auto] gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                         <span>Nội dung kiểm tra</span>
                         <span className="w-14 text-center">Đạt</span>
                         <span className="w-20 text-center">Không đạt</span>
@@ -154,7 +154,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                                 <div className="grid grid-cols-[1fr_auto_auto] gap-4 items-start">
                                     <div>
                                         <span className="text-slate-400 font-mono mr-2">{idx + 1}.</span>
-                                        <span className="text-slate-700 dark:text-slate-200">
+                                        <span className="text-txt-secondary">
                                             {item.label}
                                             {item.required && <span className="text-red-500 ml-1">*</span>}
                                         </span>
@@ -185,7 +185,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                                         placeholder="Ghi chú / yêu cầu chỉnh sửa..."
                                         value={note}
                                         onChange={e => handleNote(item.id, e.target.value)}
-                                        className="mt-2 ml-6 w-[calc(100%-1.5rem)] text-xs rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2.5 py-1.5 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                                        className="mt-2 ml-6 w-[calc(100%-1.5rem)] text-xs rounded-md border border-slate-200 dark:border-slate-600 bg-bg-surface px-2.5 py-1.5 text-txt-secondary placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
                                     />
                                 )}
                                 {(val === false || note) && readOnly && note && (
@@ -199,13 +199,13 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
 
             {/* Table (single optional table per form) */}
             {schema.table && (
-                <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700">
+                <div className="px-5 py-4 border-t border-border">
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs border-collapse">
                             <thead>
                                 <tr className="bg-slate-100 dark:bg-slate-900">
                                     {schema.table.columns.map((col: { key: string; label: string }) => (
-                                        <th key={col.key} className="px-3 py-2 text-left font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                        <th key={col.key} className="px-3 py-2 text-left font-semibold text-txt-muted border border-border">
                                             {col.label}
                                         </th>
                                     ))}
@@ -215,7 +215,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                                 {Array.from({ length: schema.table.defaultRows }).map((_, ri) => (
                                     <tr key={ri} className="even:bg-slate-50/50 dark:even:bg-slate-800/50">
                                         {schema.table!.columns.map((col: { key: string; label: string }) => (
-                                            <td key={col.key} className="px-3 py-2 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 min-w-[80px]">
+                                            <td key={col.key} className="px-3 py-2 text-txt-placeholder border border-border min-w-[80px]">
                                                 &nbsp;
                                             </td>
                                         ))}
@@ -228,7 +228,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
             )}
 
             {/* Conclusion + general note */}
-            <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
+            <div className="px-5 py-4 border-t border-border space-y-3">
                 <div className="flex flex-wrap gap-4">
                     <label className={`flex items-center gap-2 cursor-pointer text-sm font-medium ${readOnly ? 'cursor-default' : ''}`}>
                         <input
@@ -258,21 +258,21 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                         placeholder="Ghi chú chung / ý kiến kết luận..."
                         value={formData.generalNote}
                         onChange={e => setFormData(p => ({ ...p, generalNote: e.target.value }))}
-                        className="w-full text-xs rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary-400 resize-none"
+                        className="w-full text-xs rounded-md border border-slate-200 dark:border-slate-600 bg-bg-surface px-3 py-2 text-txt-secondary placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary-400 resize-none"
                     />
                 )}
                 {readOnly && formData.generalNote && (
-                    <p className="text-xs text-slate-600 dark:text-slate-300 italic">{formData.generalNote}</p>
+                    <p className="text-xs text-txt-muted italic">{formData.generalNote}</p>
                 )}
             </div>
 
             {/* Signature blocks */}
             {schema.signature_blocks.length > 0 && (
-                <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700">
+                <div className="px-5 py-4 border-t border-border">
                     <div className="grid grid-cols-2 gap-6">
                         {schema.signature_blocks.map((sig, i) => (
                             <div key={i} className="text-center border border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-4 bg-slate-50/50 dark:bg-slate-900">
-                                <p className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-8">{SIG_LABELS[sig] ?? sig}</p>
+                                <p className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-8">{SIG_LABELS[sig] ?? sig}</p>
                                 <p className="text-xs text-slate-400">(Ký, ghi rõ họ tên)</p>
                             </div>
                         ))}
@@ -282,7 +282,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
 
             {/* Actions */}
             {!readOnly && onSave && (
-                <div className="px-5 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex justify-between">
+                <div className="px-5 py-3 bg-bg-subtle border-t border-border flex justify-between">
                     <button
                         onClick={handleReset}
                         className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
@@ -304,8 +304,8 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
 
 const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
     <div className="text-xs">
-        <span className="text-slate-400 dark:text-slate-500">{label}: </span>
-        <span className="font-medium text-slate-700 dark:text-slate-200">{value}</span>
+        <span className="text-txt-placeholder">{label}: </span>
+        <span className="font-medium text-txt-secondary">{value}</span>
     </div>
 );
 

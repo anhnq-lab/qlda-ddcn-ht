@@ -82,7 +82,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
     const getWorkloadBg = (allocation: number) => {
         if (allocation > 100) return 'bg-red-50 border-red-200';
         if (allocation > 80) return 'bg-warning-50 border-warning-200';
-        return 'bg-white dark:bg-slate-800 border-gray-200';
+        return 'bg-bg-surface border-gray-200';
     };
 
     const isOverdue = (task: Task) => {
@@ -95,14 +95,14 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
         <div className="space-y-4">
             {/* Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-4">
+                <div className="bg-bg-surface rounded-xl border border-gray-200 p-4">
                     <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
                         <User className="w-4 h-4" />
                         Người được giao
                     </div>
                     <div className="text-2xl font-black text-gray-800">{resourceData.length}</div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-4">
+                <div className="bg-bg-surface rounded-xl border border-gray-200 p-4">
                     <div className="flex items-center gap-2 text-warning-500 text-xs mb-1">
                         <Clock className="w-4 h-4" />
                         Đang thực hiện
@@ -111,7 +111,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                         {resourceData.reduce((sum, r) => sum + r.inProgressTasks, 0)}
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-4">
+                <div className="bg-bg-surface rounded-xl border border-gray-200 p-4">
                     <div className="flex items-center gap-2 text-red-500 text-xs mb-1">
                         <AlertTriangle className="w-4 h-4" />
                         Quá tải (&gt;100%)
@@ -120,7 +120,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                         {resourceData.filter(r => r.overloadWarning).length}
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-4">
+                <div className="bg-bg-surface rounded-xl border border-gray-200 p-4">
                     <div className="flex items-center gap-2 text-emerald-500 text-xs mb-1">
                         <CheckCircle2 className="w-4 h-4" />
                         Đã hoàn thành
@@ -177,7 +177,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                         </div>
 
                         {/* Task Summary */}
-                        <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-800 text-xs">
+                        <div className="flex items-center justify-between px-4 py-2 bg-bg-subtle text-xs">
                             <div className="flex items-center gap-4">
                                 <span className="text-gray-500">
                                     <strong className="text-gray-700">{empTasks.length}</strong> công việc
@@ -204,7 +204,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                                         <div
                                             key={task.TaskID}
                                             onClick={() => onTaskClick(task)}
-                                            className={`flex items-center justify-between p-2 bg-white dark:bg-slate-800 rounded-lg border cursor-pointer hover:shadow-lg transition-all ${isOverdue(task) ? 'border-red-200 bg-red-50/50' : 'border-gray-200'
+                                            className={`flex items-center justify-between p-2 bg-bg-surface rounded-lg border cursor-pointer hover:shadow-lg transition-all ${isOverdue(task) ? 'border-red-200 bg-red-50/50' : 'border-gray-200'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 min-w-0">
@@ -242,7 +242,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
 
                 {/* Empty State */}
                 {resourceData.length === 0 && (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 p-12 text-center">
+                    <div className="bg-bg-surface rounded-xl border border-gray-200 p-12 text-center">
                         <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                         <h4 className="text-gray-500 font-medium mb-1">Chưa có phân công</h4>
                         <p className="text-gray-400 text-sm">

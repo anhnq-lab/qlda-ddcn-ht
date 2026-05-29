@@ -86,7 +86,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
             render: (_, item) => (
                 <div className="flex flex-col gap-1 py-1">
                     <span className="text-sm font-medium text-slate-850 dark:text-slate-200 leading-snug">{item.task_name}</span>
-                    {item.deliverable && <span className="text-xs text-slate-500 dark:text-slate-400 leading-snug">{item.deliverable}</span>}
+                    {item.deliverable && <span className="text-xs text-txt-muted leading-snug">{item.deliverable}</span>}
                     {viewMode === 'report' && item.status === 'incomplete' && item.incomplete_reason && (
                         <p className="text-xs text-red-600 dark:text-red-400 mt-1 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded inline-block">
                             Lý do: {item.incomplete_reason}
@@ -137,7 +137,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                 const text = item.collaborating_text;
                 if (codes.length === 0 && !text) return <span className="text-slate-400">—</span>;
                 return (
-                    <div className="flex flex-col gap-0.5 text-xs text-slate-700 dark:text-slate-300">
+                    <div className="flex flex-col gap-0.5 text-xs text-txt-secondary">
                         {codes.length > 0 && (
                             <span className="font-bold text-slate-750 dark:text-slate-200">
                                 {codes.join(', ')}
@@ -167,7 +167,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                         <select
                             value={item.status}
                             onChange={e => handleStatusChange(item, e.target.value as MonthlyTaskStatus)}
-                            className="text-xs px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/30 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer w-full"
+                            className="text-xs px-2.5 py-1 rounded-lg border border-border font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/30 bg-bg-surface text-txt-primary cursor-pointer w-full"
                             onClick={e => e.stopPropagation()}
                         >
                             {Object.entries(MONTHLY_STATUS_LABELS).map(([v, l]) => (
@@ -262,7 +262,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
         <>
         <div className="flex flex-col h-full bg-transparent">
             {/* ── Thanh công cụ 1 hàng tối giản ── */}
-            <div className="px-0 py-2.5 bg-transparent border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <div className="px-0 py-2.5 bg-transparent border-b border-border-subtle flex flex-wrap items-center justify-between gap-3 shrink-0">
                 {/* Trái: Segmented control Plan/Report + Dropdown chọn phòng ban */}
                 <div className="flex items-center gap-2 flex-wrap flex-1">
                     {leftElement}
@@ -275,8 +275,8 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                                     onClick={() => setViewMode(mode)}
                                     className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${
                                         viewMode === mode 
-                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' 
-                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-305'
+                                            ? 'bg-bg-surface text-txt-primary shadow-sm' 
+                                            : 'text-txt-muted hover:text-slate-700 dark:hover:text-slate-305'
                                     }`}
                                 >
                                     {mode === 'plan' ? 'Kế hoạch' : 'Báo cáo'}
@@ -292,7 +292,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                             <select
                                 value={activeDept}
                                 onChange={e => setActiveDept(e.target.value as DepartmentCode)}
-                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
+                                className="pl-[26px] pr-7 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-xs text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px] font-bold"
                             >
                                 {DEPARTMENT_CODES.map(code => (
                                     <option key={code} value={code}>{code}</option>
@@ -330,7 +330,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                             finally { setExporting(false); }
                         }}
                         disabled={exporting}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 hover:text-emerald-700 text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-border rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 hover:text-emerald-700 text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-bg-surface"
                         title="Xuất Excel"
                     >
                         <Download className="w-3.5 h-3.5" />
@@ -343,7 +343,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                             <button
                                 onClick={handleOpenStepPicker}
                                 disabled={stepPickerLoading || loading}
-                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-violet-200 dark:border-violet-850 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 text-slate-655 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-violet-200 dark:border-violet-850 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-700 dark:hover:text-violet-400 hover:border-violet-300 text-slate-655 dark:text-slate-350 disabled:opacity-50 transition-colors bg-bg-surface"
                                 title="Sinh từ Dự án"
                             >
                                 <FolderSync className={`w-3.5 h-3.5 ${stepPickerLoading ? 'animate-spin' : ''}`} />
@@ -354,7 +354,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                             <button
                                 onClick={handleSeedFromAnnual}
                                 disabled={seedLoading || loading}
-                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-white dark:bg-slate-800"
+                                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold border border-border rounded-lg hover:bg-bg-hover-row text-slate-650 dark:text-slate-350 disabled:opacity-50 transition-colors bg-bg-surface"
                                 title="Sinh từ KH khung"
                             >
                                 <RefreshCw className={`w-3.5 h-3.5 ${seedLoading ? 'animate-spin' : ''}`} />
@@ -376,10 +376,10 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
 
             {/* ── Thống kê tiến độ tinh gọn ── */}
             {viewMode === 'plan' && items.length > 0 && (
-                <div className="px-4 py-2 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 mt-2">
+                <div className="px-4 py-2 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 mt-2">
                     <div className="flex flex-wrap items-center gap-3">
                         <span className="font-semibold text-slate-550 dark:text-slate-400">
-                            Tổng NV: <strong className="text-slate-800 dark:text-white font-black">{stats.total}</strong>
+                            Tổng NV: <strong className="text-txt-primary font-black">{stats.total}</strong>
                         </span>
                         <span className="text-slate-200 dark:text-slate-700">|</span>
                         <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -397,9 +397,9 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                     </div>
                     
                     {stats.total > 0 && (
-                        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-150 dark:border-slate-700/80 w-full sm:w-auto self-stretch sm:self-auto shadow-sm">
+                        <div className="flex items-center gap-2 bg-bg-surface px-2 py-1 rounded-lg border border-slate-150 dark:border-slate-700/80 w-full sm:w-auto self-stretch sm:self-auto shadow-sm">
                             <span className="font-medium text-slate-550 dark:text-slate-400">Tiến độ</span>
-                            <div className="flex-1 sm:w-28 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="flex-1 sm:w-28 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                                     style={{ width: `${Math.round((stats.completed / stats.total) * 100)}%` }}
@@ -416,7 +416,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
             {/* ── Nội dung ── */}
             <div className="flex-1 min-h-0 py-3 flex flex-col">
                 {viewMode === 'report' ? (
-                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0 bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
                         <div className="px-4 py-2.5 border-b border-slate-150 dark:border-slate-750 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
                             <h3 className="text-xs font-bold text-slate-750 dark:text-slate-200 uppercase tracking-wider">
                                 Tổng hợp kết quả {MONTH_NAMES[month]}/{year} — Toàn Ban
@@ -424,22 +424,22 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                         </div>
                         <div className="flex-1 overflow-auto custom-scrollbar">
                             <table className="w-full text-sm">
-                                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 backdrop-blur text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm">
-                                    <tr className="text-slate-500 dark:text-slate-400">
-                                        <th className="px-4 py-2.5 text-left border-b border-slate-200 dark:border-slate-700">Phòng/Ban</th>
-                                        <th className="px-4 py-2.5 text-center border-b border-slate-200 dark:border-slate-700">Tổng</th>
-                                        <th className="px-4 py-2.5 text-center text-emerald-600 dark:text-emerald-500 border-b border-slate-200 dark:border-slate-700">Hoàn thành</th>
-                                        <th className="px-4 py-2.5 text-center text-warning-550 dark:text-warning-400 border-b border-slate-200 dark:border-slate-700">Một phần</th>
-                                        <th className="px-4 py-2.5 text-center text-red-550 dark:text-red-400 border-b border-slate-200 dark:border-slate-700">Chưa HT</th>
-                                        <th className="px-4 py-2.5 text-center text-blue-550 dark:text-blue-450 border-b border-slate-200 dark:border-slate-700">Chuyển tháng</th>
-                                        <th className="px-4 py-2.5 text-center border-b border-slate-200 dark:border-slate-700">Tỷ lệ HT</th>
+                                <thead className="sticky top-0 z-10 bg-bg-subtle/90 backdrop-blur text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
+                                    <tr className="text-txt-muted">
+                                        <th className="px-4 py-2.5 text-left border-b border-border">Phòng/Ban</th>
+                                        <th className="px-4 py-2.5 text-center border-b border-border">Tổng</th>
+                                        <th className="px-4 py-2.5 text-center text-emerald-600 dark:text-emerald-500 border-b border-border">Hoàn thành</th>
+                                        <th className="px-4 py-2.5 text-center text-warning-550 dark:text-warning-400 border-b border-border">Một phần</th>
+                                        <th className="px-4 py-2.5 text-center text-red-550 dark:text-red-400 border-b border-border">Chưa HT</th>
+                                        <th className="px-4 py-2.5 text-center text-blue-550 dark:text-blue-450 border-b border-border">Chuyển tháng</th>
+                                        <th className="px-4 py-2.5 text-center border-b border-border">Tỷ lệ HT</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                <tbody className="divide-y divide-border-subtle">
                                     {summaries.map(s => (
-                                        <tr key={s.department_code} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-xs">
-                                            <td className="px-4 py-2.5 font-bold text-slate-700 dark:text-slate-200">{s.department_name}</td>
-                                            <td className="px-4 py-2.5 text-center text-slate-500 dark:text-slate-400">{s.total_tasks}</td>
+                                        <tr key={s.department_code} className="hover:bg-bg-hover-row/50 transition-colors text-xs">
+                                            <td className="px-4 py-2.5 font-bold text-txt-secondary">{s.department_name}</td>
+                                            <td className="px-4 py-2.5 text-center text-txt-muted">{s.total_tasks}</td>
                                             <td className="px-4 py-2.5 text-center text-emerald-600 dark:text-emerald-450 font-bold bg-emerald-500/5 dark:bg-emerald-500/10">{s.completed}</td>
                                             <td className="px-4 py-2.5 text-center text-warning-600 dark:text-warning-400 font-medium">{s.partial}</td>
                                             <td className="px-4 py-2.5 text-center text-red-600 dark:text-red-450 font-medium bg-red-500/5 dark:bg-red-500/10">{s.incomplete}</td>
@@ -454,7 +454,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                                     ))}
                                     {summaries.length === 0 && (
                                         <tr>
-                                            <td colSpan={7} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500 text-xs italic">
+                                            <td colSpan={7} className="px-4 py-8 text-center text-txt-placeholder text-xs italic">
                                                 Chưa có dữ liệu báo cáo
                                             </td>
                                         </tr>
@@ -464,11 +464,11 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                         </div>
                     </div>
                 ) : (
-                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0 bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
                         {loading ? (
-                            <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">Đang tải...</div>
+                            <div className="flex-1 flex items-center justify-center text-txt-placeholder text-sm">Đang tải...</div>
                         ) : items.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400 dark:text-slate-500">
+                            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-txt-placeholder">
                                 <CalendarDays className="w-10 h-10 opacity-30" />
                                 <p className="text-xs">Chưa có nhiệm vụ nào trong tháng này</p>
                                 <div className="flex flex-wrap gap-2 text-xs justify-center mt-2">
@@ -496,17 +496,17 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                                 renderGroupHeader={(groupName, groupItems, isExpanded, toggle) => {
                                     if (groupName === 'Công việc khác') return null;
                                     return (
-                                        <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/50">
+                                        <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-border">
                                             <td colSpan={6} className="px-2 py-2">
                                                 <button
                                                     onClick={toggle}
-                                                    className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                                    className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-bg-muted rounded-lg transition-colors"
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                                                         <FolderOpen className="w-4 h-4 text-primary-500" />
                                                         <span className="text-sm font-semibold text-slate-800 dark:text-slate-250">{groupName}</span>
-                                                        <span className="text-[10px] font-bold bg-slate-250 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                                                        <span className="text-[10px] font-bold bg-slate-250 dark:bg-slate-700 text-txt-muted px-2 py-0.5 rounded-full">
                                                             {groupItems.length}
                                                         </span>
                                                     </div>

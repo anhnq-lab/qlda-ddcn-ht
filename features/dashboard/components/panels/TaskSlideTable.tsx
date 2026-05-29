@@ -34,7 +34,7 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
             width: '40%',
             render: (value, row) => (
                 <div>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-2" title={value}>{value}</p>
+                    <p className="font-semibold text-txt-primary line-clamp-2" title={value}>{value}</p>
                     {row.ProjectName && <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest truncate">{row.ProjectName}</p>}
                 </div>
             )
@@ -66,7 +66,7 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
                 const date = new Date(value);
                 const isOverdue = date < new Date() && statusName === 'Quá hạn';
                 return (
-                    <span className={`text-xs ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
+                    <span className={`text-xs ${isOverdue ? 'text-red-600 font-bold' : 'text-txt-muted'}`}>
                         {date.toLocaleDateString('vi-VN')}
                     </span>
                 );
@@ -76,7 +76,7 @@ const TaskSlideTable: React.FC<TaskSlideTableProps> = ({ statusName }) => {
             key: 'AssigneeID',
             header: 'Người PT',
             width: '20%',
-            render: (value) => <span className="text-xs text-slate-600 dark:text-slate-400">{value || '—'}</span>
+            render: (value) => <span className="text-xs text-txt-muted">{value || '—'}</span>
         }
     ];
 

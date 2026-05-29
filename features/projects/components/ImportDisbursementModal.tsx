@@ -102,33 +102,33 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-border-subtle bg-bg-subtle">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-xl">
                             <FileSpreadsheet className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Import Giải Ngân Hằng Ngày</h2>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">Nhập danh sách giải ngân từ phần mềm kế toán</p>
+                            <h2 className="text-lg font-bold text-txt-primary">Import Giải Ngân Hằng Ngày</h2>
+                            <p className="text-xs text-txt-muted">Nhập danh sách giải ngân từ phần mềm kế toán</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-bg-muted rounded-full transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white dark:bg-slate-800">
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-bg-surface">
                     {!file && !importSuccess && (
                         <div
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-50'}`}
+                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-border hover:bg-slate-50 dark:hover:bg-slate-50'}`}
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <input
@@ -139,15 +139,15 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                 className="hidden"
                             />
                             <UploadCloud className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-primary-500' : 'text-slate-400'}`} />
-                            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Kéo thả file Excel vào đây</h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">hoặc click để chọn file từ máy tính</p>
+                            <h3 className="text-sm font-bold text-txt-secondary mb-1">Kéo thả file Excel vào đây</h3>
+                            <p className="text-xs text-txt-muted">hoặc click để chọn file từ máy tính</p>
                         </div>
                     )}
 
                     {isParsing && (
                         <div className="text-center py-10">
                             <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Đang phân tích dữ liệu...</p>
+                            <p className="text-sm font-medium text-txt-muted">Đang phân tích dữ liệu...</p>
                         </div>
                     )}
 
@@ -165,14 +165,14 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                     {parsedData.length > 0 && !importSuccess && (
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                <h3 className="text-sm font-bold text-txt-secondary">
                                     Dữ liệu hợp lệ ({parsedData.length} bản ghi)
                                 </h3>
                                 <button onClick={reset} className="text-xs text-primary-600 hover:text-primary-700 font-medium">Chọn file khác</button>
                             </div>
-                            <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                            <div className="border border-border rounded-xl overflow-hidden">
                                 <table className="w-full text-xs text-left">
-                                    <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+                                    <thead className="bg-bg-subtle border-b border-border text-txt-muted">
                                         <tr>
                                             <th className="px-4 py-2">Ngày</th>
                                             <th className="px-4 py-2">Loại</th>
@@ -181,7 +181,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                             <th className="px-4 py-2">Diễn giải</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    <tbody className="divide-y divide-border-subtle">
                                         {parsedData.slice(0, 10).map((row, idx) => (
                                             <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-50">
                                                 <td className="px-4 py-2">{new Date(row.Date).toLocaleDateString('vi-VN')}</td>
@@ -194,7 +194,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                     </tbody>
                                 </table>
                                 {parsedData.length > 10 && (
-                                    <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 text-center text-xs text-slate-500 italic">
+                                    <div className="px-4 py-2 bg-bg-subtle text-center text-xs text-slate-500 italic">
                                         ...và {parsedData.length - 10} bản ghi khác
                                     </div>
                                 )}
@@ -207,13 +207,13 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                             <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Import thành công!</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Đã lưu {parsedData.length} bản ghi giải ngân vào hệ thống.</p>
+                            <h3 className="text-lg font-bold text-txt-primary mb-2">Import thành công!</h3>
+                            <p className="text-sm text-txt-muted">Đã lưu {parsedData.length} bản ghi giải ngân vào hệ thống.</p>
                         </div>
                     )}
                 </div>
 
-                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-bg-subtle border-t border-border-subtle flex justify-end gap-3">
                     {!importSuccess && (
                         <>
                             <button

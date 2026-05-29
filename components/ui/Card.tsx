@@ -20,19 +20,19 @@ export interface CardProps {
 // Dùng CSS variables (--bg-surface, --border-default) thay hardcoded colors
 const variantStyles: Record<CardVariant, string> = {
     default: `
-        bg-bg-surface border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]
+        bg-bg-surface border border-border shadow-card
     `,
     outlined: `
         bg-bg-surface border-2 border-border
     `,
     elevated: `
-        bg-bg-surface border border-border-subtle shadow-[0_8px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]
+        bg-bg-surface border border-border-subtle shadow-card-hover
     `,
     glass: `
-        bg-bg-surface/70 backdrop-blur-xl border border-border-subtle shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+        bg-bg-surface/70 backdrop-blur-xl border border-border-subtle shadow-card
     `,
     gradient: `
-        bg-gradient-to-br from-bg-surface to-bg-subtle border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)]
+        bg-gradient-to-br from-bg-surface to-bg-subtle border border-border shadow-card
     `,
 };
 
@@ -64,7 +64,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         `;
 
         const hoverStyles = hover || clickable ? `
-            hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] 
+            hover:shadow-card-hover
             hover:-translate-y-0.5 cursor-pointer
         ` : '';
 
@@ -170,7 +170,7 @@ export const CardFooter: React.FC<CardFooterProps> = ({
     return (
         <div className={`
             mt-4 pt-4 
-            ${divider ? 'border-t border-border-DEFAULT dark:border-slate-700/60' : ''} 
+            ${divider ? 'border-t border-border' : ''}
             ${className}
         `}>
             {children}

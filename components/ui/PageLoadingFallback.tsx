@@ -26,7 +26,7 @@ const PageLoadingFallback: React.FC = () => {
             </div>
 
             {/* Content Area */}
-            <div className="bg-white dark:bg-slate-800 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-bg-surface rounded-2xl border border-border p-6">
                 {/* Toolbar */}
                 <div className="flex items-center gap-3 mb-6">
                     <Skeleton variant="rounded" width={200} height={38} />
@@ -38,7 +38,7 @@ const PageLoadingFallback: React.FC = () => {
                 {/* Table skeleton */}
                 <div className="space-y-3">
                     {/* Table header */}
-                    <div className="flex gap-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex gap-4 pb-3 border-b border-border">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <Skeleton key={i} variant="text" height={14} className="flex-1" />
                         ))}

@@ -215,24 +215,24 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 {/* ── Info Row — Contact + Stats ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Contact */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-border p-4">
+                        <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <User className="w-3 h-3" /> Liên hệ
                         </h3>
                         <div className="space-y-2.5">
                             <div className="flex items-center gap-2.5">
                                 <div className="p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Mail className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /></div>
                                 <div className="min-w-0">
-                                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">{employee.Email}</p>
+                                    <p className="text-xs font-medium text-txt-secondary truncate">{employee.Email}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2.5">
                                 <div className="p-1.5 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg"><Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /></div>
-                                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{employee.Phone || '—'}</p>
+                                <p className="text-xs font-medium text-txt-secondary">{employee.Phone || '—'}</p>
                             </div>
                             <div className="flex items-center gap-2.5">
                                 <div className="p-1.5 bg-violet-50 dark:bg-violet-900/30 rounded-lg"><Calendar className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" /></div>
-                                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                <p className="text-xs font-medium text-txt-secondary">
                                     {employee.JoinDate ? new Date(employee.JoinDate).toLocaleDateString('vi-VN') : '—'}
                                 </p>
                             </div>
@@ -240,13 +240,13 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                     </div>
 
                     {/* Mini Stats */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-border p-4">
+                        <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <ClipboardList className="w-3 h-3" /> Thống kê
                         </h3>
                         <div className="grid grid-cols-2 gap-2">
                             <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-2.5 text-center">
-                                <p className="text-xl font-black text-slate-800 dark:text-slate-200">{empTasks.length}</p>
+                                <p className="text-xl font-black text-txt-primary">{empTasks.length}</p>
                                 <p className="text-[9px] text-slate-400 font-medium mt-0.5">Tổng CV</p>
                             </div>
                             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-2.5 text-center">
@@ -268,26 +268,26 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 {/* ── Additional HR Info Row ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Background & Education */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-border p-4">
+                        <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <Sparkles className="w-3 h-3" /> Lý lịch & Trình độ
                         </h3>
                         <div className="space-y-2.5">
                             <div className="flex items-start gap-2.5">
-                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Ngày sinh:</div>
-                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                <div className="text-xs font-semibold text-txt-placeholder shrink-0 w-24">Ngày sinh:</div>
+                                <div className="text-xs font-medium text-txt-secondary">
                                     {employee.DateOfBirth ? new Date(employee.DateOfBirth).toLocaleDateString('vi-VN') : '—'}
                                 </div>
                             </div>
                             <div className="flex items-start gap-2.5">
-                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Chuyên môn:</div>
-                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                <div className="text-xs font-semibold text-txt-placeholder shrink-0 w-24">Chuyên môn:</div>
+                                <div className="text-xs font-medium text-txt-secondary">
                                     {employee.Specialty || '—'}
                                 </div>
                             </div>
                             <div className="flex items-start gap-2.5">
-                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">LL chính trị:</div>
-                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                <div className="text-xs font-semibold text-txt-placeholder shrink-0 w-24">LL chính trị:</div>
+                                <div className="text-xs font-medium text-txt-secondary">
                                     {employee.PoliticalTheory || '—'}
                                 </div>
                             </div>
@@ -295,20 +295,20 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                     </div>
 
                     {/* Residence & Tenure */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <div className="bg-bg-surface rounded-xl border border-border p-4">
+                        <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-3 flex items-center gap-1.5">
                             <Briefcase className="w-3 h-3" /> Cư trú & Công tác
                         </h3>
                         <div className="space-y-2.5">
                             <div className="flex items-start gap-2.5">
-                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Thường trú:</div>
-                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-normal">
+                                <div className="text-xs font-semibold text-txt-placeholder shrink-0 w-24">Thường trú:</div>
+                                <div className="text-xs font-medium text-txt-secondary leading-normal">
                                     {employee.PermanentAddress || '—'}
                                 </div>
                             </div>
                             <div className="flex items-start gap-2.5">
-                                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 shrink-0 w-24">Thời gian công tác:</div>
-                                <div className="text-xs font-medium text-slate-700 dark:text-slate-300 leading-normal whitespace-pre-line">
+                                <div className="text-xs font-semibold text-txt-placeholder shrink-0 w-24">Thời gian công tác:</div>
+                                <div className="text-xs font-medium text-txt-secondary leading-normal whitespace-pre-line">
                                     {employee.TenureInfo || '—'}
                                 </div>
                             </div>
@@ -320,15 +320,15 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg px-3 py-2">
                         <FolderOpen className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
-                        <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{empProjects.length} Dự án</span>
+                        <span className="text-xs font-medium text-txt-muted">{empProjects.length} Dự án</span>
                     </div>
                     <div className="flex items-center gap-2 bg-sky-50 dark:bg-sky-900/20 rounded-lg px-3 py-2">
                         <ClipboardList className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                        <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{empTasks.length} Công việc</span>
+                        <span className="text-xs font-medium text-txt-muted">{empTasks.length} Công việc</span>
                     </div>
                     <div className="flex items-center gap-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg px-3 py-2">
                         <FileText className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
-                        <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{empContracts.length} Hợp đồng</span>
+                        <span className="text-xs font-medium text-txt-muted">{empContracts.length} Hợp đồng</span>
                     </div>
                     {chartData.length > 0 && (
                         <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg px-3 py-2">
@@ -342,28 +342,28 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                 {(employee.JobContent || employee.CompletionCriteria) && (
                     <div className="grid grid-cols-1 gap-4">
                         {employee.JobContent && (
-                            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <div className="bg-bg-surface rounded-xl border border-border p-4">
+                                <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-2 flex items-center gap-1.5">
                                     <ClipboardList className="w-3 h-3" /> Nội dung công việc
                                 </h3>
-                                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.JobContent}</p>
+                                <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line">{employee.JobContent}</p>
                             </div>
                         )}
                         {employee.CompletionCriteria && (
-                            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <div className="bg-bg-surface rounded-xl border border-border p-4">
+                                <h3 className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest mb-2 flex items-center gap-1.5">
                                     <Target className="w-3 h-3" /> Tiêu chí đánh giá hoàn thành
                                 </h3>
-                                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{employee.CompletionCriteria}</p>
+                                <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line">{employee.CompletionCriteria}</p>
                             </div>
                         )}
                     </div>
                 )}
 
                 {/* ══════════ TABS ══════════ */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="bg-bg-surface rounded-xl border border-border overflow-hidden">
                     {/* Tab Navigation */}
-                    <div className="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4">
+                    <div className="border-b border-border-subtle bg-bg-subtle px-4">
                         <div className="flex gap-1">
                             {[
                                 { key: 'tasks' as const, label: 'Công việc', icon: <ClipboardList className="w-3.5 h-3.5" />, count: empTasks.length },
@@ -375,12 +375,12 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                     onClick={() => setActiveTab(tab.key)}
                                     className={`flex items-center gap-1.5 px-3 py-3 text-xs font-medium border-b-2 transition-all -mb-px ${activeTab === tab.key
                                         ? 'border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400'
-                                        : 'border-transparent text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                                        : 'border-transparent text-txt-placeholder hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                 >
                                     {tab.icon}
                                     <span>{tab.label}</span>
-                                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400'
+                                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400' : 'bg-bg-muted text-txt-placeholder'
                                         }`}>{tab.count}</span>
                                 </button>
                             ))}
@@ -403,7 +403,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                             return (
                                                 <div
                                                     key={task.TaskID}
-                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-700 group ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''}`}
+                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-bg-hover-row group ${isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : ''}`}
                                                 >
                                                     {/* Status icon */}
                                                     <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${statusInfo.bg}/10 ${statusInfo.color}`}>
@@ -413,7 +413,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                                     {/* Task info */}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-1.5">
-                                                            <h4 className={`text-xs font-semibold truncate ${task.Status === TaskStatus.Done ? 'text-slate-400 line-through' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>
+                                                            <h4 className={`text-xs font-semibold truncate ${task.Status === TaskStatus.Done ? 'text-slate-400 line-through' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-txt-primary'}`}>
                                                                 {task.Title}
                                                             </h4>
                                                             {task.IsCritical && <span className="shrink-0 text-[7px] font-black text-red-600 bg-red-100 px-1 py-0.5 rounded uppercase">Găng</span>}
@@ -428,7 +428,7 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
 
                                                     {/* Progress */}
                                                     <div className="flex items-center gap-1.5 shrink-0 w-16">
-                                                        <div className="flex-1 h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                        <div className="flex-1 h-1 bg-bg-muted rounded-full overflow-hidden">
                                                             <div
                                                                 className={`h-full rounded-full bg-gradient-to-r ${getProgressGradient(progress)}`}
                                                                 style={{ width: `${progress}%` }}
@@ -470,13 +470,13 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                                 <div
                                                     key={project.ProjectID}
                                                     onClick={() => navigate(`/projects/${project.ProjectID}`)}
-                                                    className="flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-700 group"
+                                                    className="flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition-all hover:bg-bg-hover-row group"
                                                 >
                                                     <div className="p-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg shrink-0">
                                                         <Briefcase className="w-4 h-4 text-white" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-primary-600 transition-colors">
+                                                        <h4 className="text-xs font-semibold text-txt-primary truncate group-hover:text-primary-600 transition-colors">
                                                             {project.ProjectName}
                                                         </h4>
                                                         <div className="flex items-center gap-2 mt-1">
@@ -511,19 +511,19 @@ const EmployeeSlideContent: React.FC<EmployeeSlideContentProps> = ({ employeeId,
                                         {empContracts.map(contract => (
                                             <div
                                                 key={contract.ContractID}
-                                                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-bg-hover-row transition-colors"
                                             >
                                                 <div className="p-1.5 bg-primary-50 dark:bg-primary-900/20 rounded-lg shrink-0">
                                                     <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{contract.ContractID}</p>
+                                                    <p className="text-xs font-semibold text-txt-primary truncate">{contract.ContractID}</p>
                                                     <p className="text-[10px] text-slate-400 mt-0.5">
                                                         {contract.SignDate ? new Date(contract.SignDate).toLocaleDateString('vi-VN') : '—'}
                                                     </p>
                                                 </div>
                                                 <div className="text-right shrink-0">
-                                                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                                                    <p className="text-xs font-bold text-txt-primary">
                                                         {(contract.Value || 0).toLocaleString('vi-VN')} đ
                                                     </p>
                                                     <span className="inline-flex text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mt-0.5">

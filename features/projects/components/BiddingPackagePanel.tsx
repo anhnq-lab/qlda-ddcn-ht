@@ -451,9 +451,9 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
     ] as const;
 
     return (
-        <form onSubmit={onFormSubmit} className="flex flex-col h-full bg-white dark:bg-slate-800">
+        <form onSubmit={onFormSubmit} className="flex flex-col h-full bg-bg-surface">
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 dark:border-slate-700 px-6 shrink-0 overflow-x-auto">
+            <div className="flex border-b border-border px-6 shrink-0 overflow-x-auto">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -464,7 +464,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 border-b-2 transition-colors -mb-px
                                 ${activeTab === tab.id
                                     ? 'text-primary-600 border-primary-600'
-                                    : 'text-gray-500 dark:text-slate-400 border-transparent hover:text-gray-700 dark:hover:text-slate-200'}
+                                    : 'text-txt-muted border-transparent hover:text-gray-700 dark:hover:text-slate-200'}
                             `}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -482,7 +482,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                         {activeTab === 'basic' && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Số hiệu gói thầu <span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -497,7 +497,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Trạng thái <span className="text-red-500">*</span>
                                     </label>
                                     <select
@@ -511,7 +511,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Tên gói thầu <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
@@ -526,7 +526,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Giá gói thầu (VNĐ) <span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -547,7 +547,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-slate-700 dark:text-slate-100 ${errors.Price ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
                                     />
                                     {watchPrice && (
-                                        <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
+                                        <p className="mt-1 text-xs text-txt-muted">
                                             {formatCurrency(parseFormattedNumber(watchPrice) || 0)}
                                         </p>
                                     )}
@@ -557,7 +557,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Thời gian thực hiện <span className="text-red-500">*</span>
                                     </label>
                                     <input
@@ -573,7 +573,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                 {/* Tóm tắt công việc */}
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Tóm tắt công việc chính
                                     </label>
                                     <textarea
@@ -587,7 +587,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 {/* Nguồn vốn */}
                                 <div className="space-y-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Nguồn vốn (Luật ĐTC số 58/2024/QH15)
                                         </label>
                                         <select
@@ -609,7 +609,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     </div>
                                     {fundingSourceSelect === 'Khác' && (
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-500 dark:text-slate-400 mb-1">
+                                            <label className="block text-xs font-medium text-txt-muted mb-1">
                                                 Nhập nguồn vốn khác *
                                             </label>
                                             <input
@@ -628,7 +628,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                 {/* Tùy chọn mua thêm */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-txt-secondary mb-1">
                                         Tùy chọn mua thêm
                                     </label>
                                     <select
@@ -647,7 +647,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Lĩnh vực
                                         </label>
                                         <select
@@ -661,7 +661,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Hình thức lựa chọn nhà thầu
                                         </label>
                                         <select
@@ -677,7 +677,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Phương thức lựa chọn
                                         </label>
                                         <select
@@ -691,7 +691,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Đấu thầu qua mạng
                                         </label>
                                         <select
@@ -705,7 +705,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                     </div>
 
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Loại hợp đồng
                                         </label>
                                         <select
@@ -720,7 +720,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                     {/* Phạm vi đấu thầu */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Phạm vi đấu thầu
                                         </label>
                                         <select
@@ -734,7 +734,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                     {/* Số nhà thầu nộp HSDT */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Số NTh nộp HSDT/HSĐX
                                         </label>
                                         <input
@@ -748,7 +748,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
 
                                     {/* Số nhà thầu vào đánh giá tài chính */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-txt-secondary mb-1">
                                             Số NTh vào đánh giá TC
                                         </label>
                                         <input
@@ -769,10 +769,10 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                 {/* TBMT Section */}
                                 {/* TBMT Section */}
                                 <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl">
-                                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Thông báo mời thầu (E-TBMT)</h4>
+                                    <h4 className="font-semibold text-txt-primary mb-3">Thông báo mời thầu (E-TBMT)</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Mã TBMT
                                             </label>
                                             <input
@@ -783,7 +783,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Ngày đăng tải
                                             </label>
                                             <input
@@ -793,7 +793,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Thời điểm đóng thầu
                                             </label>
                                             <input
@@ -803,7 +803,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Thời điểm mở thầu
                                             </label>
                                             <input
@@ -821,10 +821,10 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                         {activeTab === 'result' && (
                             <div className="space-y-4">
                                 <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-xl">
-                                    <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-3">Kết quả lựa chọn nhà thầu</h4>
+                                    <h4 className="font-semibold text-txt-primary mb-3">Kết quả lựa chọn nhà thầu</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Nhà thầu trúng thầu
                                             </label>
                                             <select
@@ -840,7 +840,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Giá trúng thầu (VNĐ)
                                             </label>
                                             <input
@@ -867,7 +867,7 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                                             )}
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-txt-secondary mb-1">
                                                 Ngày phê duyệt KQLCNT
                                             </label>
                                             <input
@@ -883,11 +883,11 @@ export const BiddingPackagePanel: React.FC<BiddingPackagePanelProps> = ({
                     </div>
 
             {/* Footer */}
-            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+            <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-border bg-bg-subtle">
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    className="px-4 py-2 text-txt-muted hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 >
                     Hủy
                 </button>

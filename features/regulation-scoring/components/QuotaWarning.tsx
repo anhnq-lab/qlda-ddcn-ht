@@ -46,13 +46,13 @@ export const QuotaWarning: React.FC<QuotaWarningProps> = ({
             {isOverLimit ? 'Cảnh báo hạn ngạch xếp loại xuất sắc' : 'Đảm bảo hạn ngạch xếp loại'}
           </h4>
           
-          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-            Tỷ lệ "Hoàn thành xuất sắc" hiện tại: <span className="font-black text-slate-800 dark:text-white">{ratio.toFixed(1)}%</span> ({excellentCount}/{total} nhân sự).
+          <p className="text-xs text-txt-muted font-medium">
+            Tỷ lệ "Hoàn thành xuất sắc" hiện tại: <span className="font-black text-txt-primary">{ratio.toFixed(1)}%</span> ({excellentCount}/{total} nhân sự).
             Hạn ngạch quy định tối đa là <span className="font-bold">{limitPercent}%</span> (Điều 18.3).
           </p>
 
           <div className="flex items-center gap-4 pt-1 flex-wrap">
-            <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <div className="flex items-center gap-3 text-[10px] font-bold text-txt-muted uppercase tracking-wider">
               <span>XS: {excellentCount}</span>
               <span>•</span>
               <span>Tốt: {goodCount}</span>

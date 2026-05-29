@@ -254,28 +254,28 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
             <div className="space-y-4">
 
                     {/* Table */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="bg-bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
                         <table className="w-full text-left">
-                            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest border-b border-slate-200 dark:border-slate-700 shadow-sm shadow-slate-200/20">
+                            <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
                                 <tr>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-10">STT</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-1/3">Tài liệu</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-32">Số công văn</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-28">Ngày ban hành</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400">Cơ quan ban hành</th>
-                                    <th className="px-3 py-2.5 text-slate-500 dark:text-slate-400 w-20 text-center">Thao tác</th>
+                                    <th className="px-3 py-2.5 text-txt-muted w-10">STT</th>
+                                    <th className="px-3 py-2.5 text-txt-muted w-1/3">Tài liệu</th>
+                                    <th className="px-3 py-2.5 text-txt-muted w-32">Số công văn</th>
+                                    <th className="px-3 py-2.5 text-txt-muted w-28">Ngày ban hành</th>
+                                    <th className="px-3 py-2.5 text-txt-muted">Cơ quan ban hành</th>
+                                    <th className="px-3 py-2.5 text-txt-muted w-20 text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredDocuments.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-slate-400">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-txt-muted">
                                             <div className="flex flex-col items-center justify-center">
-                                                <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 flex items-center justify-center mb-4">
+                                                <div className="w-16 h-16 rounded-full bg-bg-subtle border-2 border-dashed border-border flex items-center justify-center mb-4">
                                                     <FileText className="w-8 h-8 text-gray-300 dark:text-slate-500" />
                                                 </div>
-                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-1">Chưa có tài liệu nào</p>
-                                                <p className="text-xs text-gray-500 dark:text-slate-400">Bảng dữ liệu đang trống, vui lòng tải tài liệu lên để hệ thống ghi nhận.</p>
+                                                <p className="text-sm font-medium text-txt-primary mb-1">Chưa có tài liệu nào</p>
+                                                <p className="text-xs text-txt-muted">Bảng dữ liệu đang trống, vui lòng tải tài liệu lên để hệ thống ghi nhận.</p>
                                                 <button
                                                     onClick={() => handleUpload()}
                                                     className="mt-4 flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 text-sm font-bold rounded-lg transition-colors"

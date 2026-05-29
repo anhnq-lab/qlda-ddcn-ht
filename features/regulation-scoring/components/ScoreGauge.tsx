@@ -26,7 +26,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score, maxScore = 100, c
       case 'khong_hoan_thanh':
         return { label: 'Không hoàn thành', color: 'text-rose-500 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/20', border: 'border-rose-200 dark:border-rose-900/50' };
       default:
-        return { label: 'Chưa đánh giá', color: 'text-slate-400 dark:text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800', border: 'border-slate-200 dark:border-slate-700' };
+        return { label: 'Chưa đánh giá', color: 'text-txt-placeholder', bg: 'bg-bg-subtle', border: 'border-border' };
     }
   };
 
@@ -41,7 +41,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score, maxScore = 100, c
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm w-full">
+    <div className="flex flex-col items-center justify-center p-5 bg-bg-surface rounded-2xl border border-border-subtle shadow-sm w-full">
       <div className="relative w-40 h-24 flex items-end justify-center overflow-hidden">
         <svg className="w-36 h-36 transform -rotate-180" viewBox="0 0 100 100">
           {/* Background circle */}
@@ -74,7 +74,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({ score, maxScore = 100, c
           <span className="text-3xl font-black text-slate-850 dark:text-white tabular-nums">
             {score.toFixed(1)}
           </span>
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+          <span className="text-[10px] font-bold text-txt-placeholder uppercase tracking-widest">
             Điểm số
           </span>
         </div>

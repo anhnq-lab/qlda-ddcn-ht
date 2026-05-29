@@ -164,22 +164,22 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
       if (e.target === e.currentTarget) onClose();
     }}>
-      <div className="bg-white dark:bg-slate-900 shadow-2xl w-full max-w-3xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+      <div className="bg-bg-surface shadow-2xl w-full max-w-3xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg-subtle">
           <div>
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
               <Landmark className="w-5 h-5 text-primary-500" />
               {isEditMode ? 'Chỉnh sửa tài sản công' : 'Thêm mới tài sản công'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-txt-muted mt-1">
               Quản lý tài sản công theo Thông tư 23/2023/TT-BTC
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-400 transition-colors"
+            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full text-txt-placeholder transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -189,14 +189,14 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Section 1: General Information */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
+            <h3 className="text-sm font-semibold text-txt-primary mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
               <FileText className="w-4 h-4 text-primary-500" />
               Thông tin chung
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Mã tài sản <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -205,12 +205,12 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   value={assetCode}
                   onChange={(e) => setAssetCode(e.target.value)}
                   placeholder="Ví dụ: TSC-001, OTO-02"
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Tên tài sản <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -219,19 +219,19 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   value={assetName}
                   onChange={(e) => setAssetName(e.target.value)}
                   placeholder="Tên tài sản công..."
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Phân loại tài sản <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
                   value={categoryId}
                   onChange={(e) => handleCategoryChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option value="" disabled>-- Chọn phân loại tài sản --</option>
                   {categories.map((cat) => (
@@ -244,18 +244,18 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                     Đơn vị tính
                   </label>
                   <input
                     type="text"
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                     Số lượng
                   </label>
                   <input
@@ -263,14 +263,14 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                     min="1"
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   />
                 </div>
               </div>
             </div>
 
             <div className="mt-4">
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                 Mô tả chi tiết / Thông số kỹ thuật
               </label>
               <textarea
@@ -278,27 +278,27 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Nhập thông số kỹ thuật, xuất xứ, nhãn hiệu..."
                 rows={2}
-                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
           </div>
 
           {/* Section 2: Management & Status */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
+            <h3 className="text-sm font-semibold text-txt-primary mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
               <Shield className="w-4 h-4 text-primary-500" />
               Bộ phận quản lý & Bàn giao
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Chi nhánh / Văn phòng
                 </label>
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option value="">-- Chọn chi nhánh --</option>
                   {['Trụ sở chính', 'Can Lộc', 'Thạch Hà', 'Hương Khê', 'Cẩm xuyên', 'Đức Thọ', 'Vũ Quang'].map(b => (
@@ -308,13 +308,13 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Phòng ban nội bộ
                 </label>
                 <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option value="">-- Chọn phòng ban --</option>
                   {[
@@ -332,13 +332,13 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Người chịu trách nhiệm / Custodian
                 </label>
                 <select
                   value={custodianId}
                   onChange={(e) => setCustodianId(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option value="">-- Không có / Chưa bàn giao --</option>
                   {employees.map((emp) => (
@@ -350,13 +350,13 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Dự án liên quan (Nếu mua cho dự án)
                 </label>
                 <select
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 >
                   <option value="">-- Không thuộc dự án cụ thể --</option>
                   {projects.map((proj) => (
@@ -368,7 +368,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Vị trí lắp đặt/Bảo quản
                 </label>
                 <input
@@ -376,7 +376,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Ví dụ: Phòng họp tầng 2, Nhà kho..."
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
             </div>
@@ -384,38 +384,38 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
 
           {/* Section 3: Time & Depreciation */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
+            <h3 className="text-sm font-semibold text-txt-primary mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
               <Calendar className="w-4 h-4 text-primary-500" />
               Thời gian sử dụng & Khấu hao/Hao mòn
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Ngày mua/nhận bàn giao
                 </label>
                 <input
                   type="date"
                   value={purchaseDate}
                   onChange={(e) => setPurchaseDate(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Ngày bắt đầu sử dụng/Ghi tăng
                 </label>
                 <input
                   type="date"
                   value={useDate}
                   onChange={(e) => setUseDate(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Tỷ lệ hao mòn (% / năm)
                 </label>
                 <div className="flex gap-2 items-center">
@@ -426,10 +426,10 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                     max="100"
                     value={depreciationRate}
                     onChange={(e) => setDepreciationRate(Number(e.target.value))}
-                    className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    className="flex-1 px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   />
                   {depreciationRate > 0 && (
-                    <div className="px-3 py-2 text-sm border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 whitespace-nowrap font-semibold">
+                    <div className="px-3 py-2 text-sm border border-border-subtle rounded-xl bg-bg-subtle text-txt-muted whitespace-nowrap font-semibold">
                       {Math.round(100 / depreciationRate)} năm
                     </div>
                   )}
@@ -437,7 +437,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Hao mòn lũy kế đầu kỳ (VNĐ)
                 </label>
                 <input
@@ -445,7 +445,7 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   min="0"
                   value={accumulatedDepreciation}
                   onChange={(e) => setAccumulatedDepreciation(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
             </div>
@@ -453,14 +453,14 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
 
           {/* Section 4: Cost Structure */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
+            <h3 className="text-sm font-semibold text-txt-primary mb-3 flex items-center gap-2 border-b pb-1 dark:border-slate-800">
               <Cpu className="w-4 h-4 text-primary-500" />
               Nguyên giá tài sản (Cơ cấu nguồn vốn)
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Nguồn Ngân sách (VNĐ)
                 </label>
                 <input
@@ -468,12 +468,12 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   min="0"
                   value={fundingBudgetCost}
                   onChange={(e) => setFundingBudgetCost(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Nguồn khác (VNĐ)
                 </label>
                 <input
@@ -481,15 +481,15 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
                   min="0"
                   value={fundingOtherCost}
                   onChange={(e) => setFundingOtherCost(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                   Tổng Nguyên giá (Tự tính)
                 </label>
-                <div className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                <div className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-subtle text-txt-secondary font-bold">
                   {formatCurrency(originalCost)}
                 </div>
               </div>
@@ -499,13 +499,13 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
           {/* Status field */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5">
                 Trạng thái tài sản
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
-                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               >
                 <option value="active">Đang hoạt động / Sử dụng</option>
                 <option value="pending_liquidation">Đang chờ thanh lý</option>
@@ -517,11 +517,11 @@ export const PublicAssetForm: React.FC<PublicAssetFormProps> = ({
         </form>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end gap-3">
+        <div className="px-6 py-4 border-t border-border bg-bg-subtle flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="px-4 py-2 border border-border rounded-xl text-txt-secondary font-medium hover:bg-bg-muted transition-colors"
           >
             Hủy
           </button>

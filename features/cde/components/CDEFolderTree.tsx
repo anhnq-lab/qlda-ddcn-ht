@@ -42,7 +42,7 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
             .sort((a, b) => a.sort_order - b.sort_order);
         if (subs.length === 0) return null;
         return (
-            <div className="ml-5 pl-3 border-l-2 border-gray-200 dark:border-slate-700 space-y-0.5">
+            <div className="ml-5 pl-3 border-l-2 border-border space-y-0.5">
                 {subs.map(folder => {
                     const isActive = folder.id === activeFolderId;
                     const colors = CONTAINER_COLORS[folder.container_type];
@@ -50,11 +50,11 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
                         <div key={folder.id} onClick={() => onSelectFolder(folder.id)}
                             className={`flex items-center gap-2.5 py-2 px-3 rounded-xl cursor-pointer transition-all text-sm ${isActive
                                 ? `${colors.lightBg} ${colors.text} font-bold shadow-sm ${colors.border} border`
-                                : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
-                            <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? colors.text : 'text-gray-400 dark:text-slate-400'}`} />
+                                : 'text-txt-muted hover:bg-bg-hover-row'}`}>
+                            <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? colors.text : 'text-txt-placeholder'}`} />
                             <span className="truncate flex-1 text-[12px]">{folder.name}</span>
                             {folder.doc_count != null && folder.doc_count > 0 && (
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? colors.badge : 'bg-gray-100 dark:bg-slate-700 text-gray-500'}`}>
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? colors.badge : 'bg-bg-muted text-gray-500'}`}>
                                     {folder.doc_count}
                                 </span>
                             )}
@@ -84,7 +84,7 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
             return (
                 <div key={root.id} className="mb-1">
                     <div onClick={() => toggleContainer(root.id)}
-                        className={`flex items-center gap-2.5 py-2.5 px-3 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-all`}>
+                        className={`flex items-center gap-2.5 py-2.5 px-3 rounded-xl cursor-pointer hover:bg-bg-hover-row transition-all`}>
                         {isCollapsed ? <ChevronRight className="w-3 h-3 text-gray-400" /> : <ChevronDown className="w-3 h-3 text-gray-400" />}
                         <div className={`w-6 h-6 rounded-lg ${colors.bg} flex items-center justify-center`}>
                             <ContainerIcon className="w-3.5 h-3.5 text-white" />
@@ -99,9 +99,9 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
     };
 
     return (
-        <div className="w-[280px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden shrink-0">
+        <div className="w-[280px] bg-bg-surface rounded-2xl shadow-sm border border-border flex flex-col overflow-hidden shrink-0">
             {/* Phase tabs */}
-            <div className="px-3 py-2.5 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+            <div className="px-3 py-2.5 border-b border-border bg-bg-subtle">
                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
                     <FileStack className="w-3 h-3" /> Giai đoạn dự án
                 </p>
@@ -111,7 +111,7 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
                         const isActive = activePhase === phase.id;
                         return (
                             <button key={phase.id} onClick={() => onChangePhase?.(phase.id)}
-                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all ${isActive ? phaseColors[phase.id] + ' shadow-sm' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
+                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all ${isActive ? phaseColors[phase.id] + ' shadow-sm' : 'text-gray-400 hover:bg-bg-muted'}`}
                                 title={phase.description}>
                                 <PhaseIcon className="w-3 h-3" />
                                 <span className="truncate">{phase.label.replace(/^\d+\.\s*/, '')}</span>
@@ -131,8 +131,8 @@ const CDEFolderTree: React.FC<CDEFolderTreeProps> = ({ folders, activeFolderId, 
                     renderContainers()
                 )}
             </div>
-            <div className="px-4 py-2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/80 dark:bg-slate-800">
-                <p className="text-[9px] text-gray-400 dark:text-slate-400 text-center font-bold uppercase tracking-wider">
+            <div className="px-4 py-2 border-t border-border bg-gray-50/80 dark:bg-slate-800">
+                <p className="text-[9px] text-txt-placeholder text-center font-bold uppercase tracking-wider">
                     NĐ 175/2024 · ISO 19650
                 </p>
             </div>

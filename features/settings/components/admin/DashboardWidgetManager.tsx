@@ -85,16 +85,16 @@ export const DashboardWidgetManager: React.FC = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col h-full overflow-hidden">
-            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
+        <div className="bg-bg-surface rounded-2xl border border-border shadow-sm flex flex-col h-full overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-border bg-slate-50/50 dark:bg-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                         <div className="p-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg">
                             <LayoutDashboard className="w-5 h-5" />
                         </div>
                         Cấu hình Widget Dashboard
                     </h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-sm text-txt-muted mt-1">
                         Tùy chỉnh hiển thị các widget nghiệp vụ trên trang tổng quan theo từng nhóm quyền.
                     </p>
                 </div>
@@ -103,7 +103,7 @@ export const DashboardWidgetManager: React.FC = () => {
                     <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="h-10 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none w-48 transition-shadow"
+                        className="h-10 px-3 py-2 bg-bg-surface border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-txt-secondary focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none w-48 transition-shadow"
                     >
                         {SYSTEM_ROLES.map(role => (
                             <option key={role.id} value={role.id}>
@@ -138,22 +138,22 @@ export const DashboardWidgetManager: React.FC = () => {
                                     onClick={() => handleToggle(widget.id)}
                                     className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                                         isActive 
-                                            ? 'bg-white dark:bg-slate-800 border-primary-500 shadow-sm shadow-primary-500/10' 
-                                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500'
+                                            ? 'bg-bg-surface border-primary-500 shadow-sm shadow-primary-500/10' 
+                                            : 'bg-bg-subtle/80 border-border hover:border-slate-300 dark:hover:border-slate-500'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-3 mb-2">
-                                        <h3 className={`text-sm font-bold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                                        <h3 className={`text-sm font-bold ${isActive ? 'text-txt-primary' : 'text-txt-muted'}`}>
                                             {widget.name}
                                         </h3>
                                         <div className={`w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300 ${isActive ? 'bg-primary-500' : 'bg-slate-300 dark:bg-slate-600'}`}>
                                             <div className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform duration-300 ${isActive ? 'translate-x-5' : 'translate-x-0'}`} />
                                         </div>
                                     </div>
-                                    <p className={`text-xs leading-relaxed ${isActive ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                    <p className={`text-xs leading-relaxed ${isActive ? 'text-txt-muted' : 'text-txt-muted'}`}>
                                         {widget.description}
                                     </p>
-                                    <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-md text-[10px] font-mono ${isActive ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'bg-slate-200/50 dark:bg-slate-900/80 text-slate-500 dark:text-slate-400'}`}>
+                                    <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-md text-[10px] font-mono ${isActive ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'bg-slate-200/50 dark:bg-slate-900/80 text-txt-muted'}`}>
                                         {widget.id}
                                     </div>
                                 </div>

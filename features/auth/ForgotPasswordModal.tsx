@@ -42,12 +42,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-700">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">Khôi phục mật khẩu</h2>
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between p-6 border-b border-border-subtle">
+                    <h2 className="text-xl font-bold text-txt-primary">Khôi phục mật khẩu</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-bg-muted rounded-full transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -59,27 +59,27 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <CheckCircle className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+                            <h3 className="text-lg font-semibold text-txt-primary mb-2">
                                 Kiểm tra email của bạn
                             </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                            <p className="text-sm text-txt-muted mb-6">
                                 Chúng tôi đã gửi một liên kết đặt lại mật khẩu đến <strong>{email}</strong>. Vui lòng kiểm tra hộp thư đến hoặc thư mục spam.
                             </p>
                             <button
                                 onClick={onClose}
-                                className="w-full py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-medium rounded-xl transition-colors"
+                                className="w-full py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-txt-primary font-medium rounded-xl transition-colors"
                             >
                                 Đóng
                             </button>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-txt-muted">
                                 Nhập email liên kết với tài khoản của bạn. Chúng tôi sẽ gửi một liên kết để bạn có thể đặt lại mật khẩu mới.
                             </p>
 
                             <div className="space-y-1">
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <label className="text-sm font-medium text-txt-secondary">
                                     Địa chỉ Email
                                 </label>
                                 <div className="relative">
@@ -90,7 +90,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all sm:text-sm"
+                                        className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-bg-surface text-txt-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all sm:text-sm"
                                         placeholder="vidu@email.com"
                                         required
                                     />

@@ -202,30 +202,30 @@ const EmployeeDetail: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
                 {/* Contact Info Card */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
-                    <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5">
+                    <h3 className="text-xs font-bold text-txt-placeholder uppercase tracking-widest mb-4 flex items-center gap-2">
                         <User className="w-3.5 h-3.5" /> Thông tin liên hệ
                     </h3>
                     <div className="space-y-3">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"><Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" /></div>
                             <div className="min-w-0">
-                                <p className="text-[10px] text-slate-400 dark:text-slate-400">Email</p>
-                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{employee.Email}</p>
+                                <p className="text-[10px] text-txt-placeholder">Email</p>
+                                <p className="text-sm font-medium text-txt-secondary truncate">{employee.Email}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg"><Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /></div>
                             <div>
-                                <p className="text-[10px] text-slate-400 dark:text-slate-400">Điện thoại</p>
-                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{employee.Phone || '—'}</p>
+                                <p className="text-[10px] text-txt-placeholder">Điện thoại</p>
+                                <p className="text-sm font-medium text-txt-secondary">{employee.Phone || '—'}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-violet-50 dark:bg-violet-900/30 rounded-lg"><Calendar className="w-4 h-4 text-violet-600 dark:text-violet-400" /></div>
                             <div>
-                                <p className="text-[10px] text-slate-400 dark:text-slate-400">Ngày vào làm</p>
-                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <p className="text-[10px] text-txt-placeholder">Ngày vào làm</p>
+                                <p className="text-sm font-medium text-txt-secondary">
                                     {employee.JoinDate ? new Date(employee.JoinDate).toLocaleDateString('vi-VN') : '—'}
                                 </p>
                             </div>
@@ -234,33 +234,33 @@ const EmployeeDetail: React.FC = () => {
                 </div>
 
                 {/* Task Stats Card */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
-                    <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5">
+                    <h3 className="text-xs font-bold text-txt-placeholder uppercase tracking-widest mb-4 flex items-center gap-2">
                         <ClipboardList className="w-3.5 h-3.5" /> Thống kê công việc
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-3 text-center">
-                            <p className="text-2xl font-black text-slate-800 dark:text-slate-200">{empTasks.length}</p>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Tổng</p>
+                            <p className="text-2xl font-black text-txt-primary">{empTasks.length}</p>
+                            <p className="text-[10px] text-txt-placeholder font-medium mt-1">Tổng</p>
                         </div>
                         <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-3 text-center">
                             <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{activeTasks.length}</p>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Đang thực hiện</p>
+                            <p className="text-[10px] text-txt-placeholder font-medium mt-1">Đang thực hiện</p>
                         </div>
                         <div className="bg-emerald-50 dark:bg-emerald-900/30 rounded-xl p-3 text-center">
                             <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{completedTasks.length}</p>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Hoàn thành</p>
+                            <p className="text-[10px] text-txt-placeholder font-medium mt-1">Hoàn thành</p>
                         </div>
-                        <div className={`rounded-xl p-3 text-center ${overdueTasks.length > 0 ? 'bg-red-50' : 'bg-slate-50 dark:bg-slate-800'}`}>
+                        <div className={`rounded-xl p-3 text-center ${overdueTasks.length > 0 ? 'bg-red-50' : 'bg-bg-subtle'}`}>
                             <p className={`text-2xl font-black ${overdueTasks.length > 0 ? 'text-red-600' : 'text-slate-400'}`}>{overdueTasks.length}</p>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium mt-1">Quá hạn</p>
+                            <p className="text-[10px] text-txt-placeholder font-medium mt-1">Quá hạn</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Workload Donut Chart */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
-                    <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5">
+                    <h3 className="text-xs font-bold text-txt-placeholder uppercase tracking-widest mb-2 flex items-center gap-2">
                         <Target className="w-3.5 h-3.5" /> Phân bổ công việc
                     </h3>
                     {chartData.length > 0 ? (
@@ -286,15 +286,15 @@ const EmployeeDetail: React.FC = () => {
                                     </PieChart>
                                 </ResponsiveContainer>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-lg font-black text-slate-800 dark:text-slate-200">{completionRate}%</span>
+                                    <span className="text-lg font-black text-txt-primary">{completionRate}%</span>
                                 </div>
                             </div>
                             <div className="flex-1 space-y-1.5">
                                 {chartData.map(d => (
                                     <div key={d.name} className="flex items-center gap-2 text-xs">
                                         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-                                        <span className="text-slate-500 dark:text-slate-400 flex-1 truncate">{d.name}</span>
-                                        <span className="font-bold text-slate-700 dark:text-slate-300">{d.value}</span>
+                                        <span className="text-txt-muted flex-1 truncate">{d.name}</span>
+                                        <span className="font-bold text-txt-secondary">{d.value}</span>
                                     </div>
                                 ))}
                             </div>
@@ -305,29 +305,29 @@ const EmployeeDetail: React.FC = () => {
                 </div>
 
                 {/* Cross-Module Summary */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
-                    <h3 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5">
+                    <h3 className="text-xs font-bold text-txt-placeholder uppercase tracking-widest mb-4 flex items-center gap-2">
                         <TrendingUp className="w-3.5 h-3.5" /> Tổng quan kết nối
                     </h3>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between bg-primary-50 dark:bg-primary-900/20 rounded-xl px-4 py-3">
                             <div className="flex items-center gap-2.5">
                                 <FolderOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Dự án</span>
+                                <span className="text-sm font-medium text-txt-secondary">Dự án</span>
                             </div>
                             <span className="text-lg font-black text-primary-600">{empProjects.length}</span>
                         </div>
                         <div className="flex items-center justify-between bg-sky-50 dark:bg-sky-900/20 rounded-xl px-4 py-3">
                             <div className="flex items-center gap-2.5">
                                 <ClipboardList className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Công việc</span>
+                                <span className="text-sm font-medium text-txt-secondary">Công việc</span>
                             </div>
                             <span className="text-lg font-black text-sky-600">{empTasks.length}</span>
                         </div>
                         <div className="flex items-center justify-between bg-primary-50 dark:bg-primary-900/20 rounded-xl px-4 py-3">
                             <div className="flex items-center gap-2.5">
                                 <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Hợp đồng</span>
+                                <span className="text-sm font-medium text-txt-secondary">Hợp đồng</span>
                             </div>
                             <span className="text-lg font-black text-primary-600">{empContracts.length}</span>
                         </div>
@@ -336,9 +336,9 @@ const EmployeeDetail: React.FC = () => {
             </div>
 
             {/* ══════════ TABS ══════════ */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm overflow-hidden">
                 {/* Tab Navigation */}
-                <div className="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-5">
+                <div className="border-b border-border-subtle bg-bg-subtle px-5">
                     <div className="flex gap-1">
                         {[
                             { key: 'tasks' as const, label: 'Công việc', icon: <ClipboardList className="w-4 h-4" />, count: empTasks.length },
@@ -350,12 +350,12 @@ const EmployeeDetail: React.FC = () => {
                                 onClick={() => setActiveTab(tab.key)}
                                 className={`flex items-center gap-2 px-4 py-3.5 text-sm font-medium border-b-2 transition-all -mb-px ${activeTab === tab.key
                                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                                    : 'border-transparent text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:border-slate-200 dark:hover:border-slate-600'
+                                    : 'border-transparent text-txt-placeholder hover:text-slate-600 dark:hover:text-slate-300 hover:border-slate-200 dark:hover:border-slate-600'
                                     }`}
                             >
                                 {tab.icon}
                                 <span>{tab.label}</span>
-                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${activeTab === tab.key ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400'
+                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${activeTab === tab.key ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : 'bg-bg-muted text-txt-placeholder'
                                     }`}>{tab.count}</span>
                             </button>
                         ))}
@@ -372,13 +372,13 @@ const EmployeeDetail: React.FC = () => {
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
                                         <thead>
-                                            <tr className="border-b border-slate-100 dark:border-slate-700">
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider w-10"></th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider">Công việc</th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider hidden md:table-cell">Dự án</th>
-                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider w-24">Tiến độ</th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell w-28">Hạn chót</th>
-                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider w-24">Ưu tiên</th>
+                                            <tr className="border-b border-border-subtle">
+                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-txt-placeholder uppercase tracking-wider w-10"></th>
+                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-txt-placeholder uppercase tracking-wider">Công việc</th>
+                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-txt-placeholder uppercase tracking-wider hidden md:table-cell">Dự án</th>
+                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-txt-placeholder uppercase tracking-wider w-24">Tiến độ</th>
+                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-txt-placeholder uppercase tracking-wider hidden sm:table-cell w-28">Hạn chót</th>
+                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-txt-placeholder uppercase tracking-wider w-24">Ưu tiên</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
@@ -402,7 +402,7 @@ const EmployeeDetail: React.FC = () => {
                                                         </td>
                                                         <td className="px-4 py-3.5">
                                                             <div className="flex items-center gap-2 mb-0.5">
-                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400 dark:text-slate-400' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>
+                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-txt-placeholder' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-txt-primary'}`}>
                                                                     {task.Title}
                                                                 </h4>
                                                                 {task.IsCritical && <span className="shrink-0 text-[8px] font-black text-red-600 bg-red-100 px-1.5 py-0.5 rounded-md uppercase">Găng</span>}
@@ -416,7 +416,7 @@ const EmployeeDetail: React.FC = () => {
                                                         </td>
                                                         <td className="px-4 py-3.5">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                                <div className="flex-1 h-1.5 bg-bg-muted rounded-full overflow-hidden">
                                                                     <div
                                                                         className={`h-full rounded-full bg-gradient-to-r ${getProgressGradient(progress)} transition-all duration-500`}
                                                                         style={{ width: `${progress}%` }}
@@ -470,7 +470,7 @@ const EmployeeDetail: React.FC = () => {
                                             <div
                                                 key={project.ProjectID}
                                                 onClick={() => navigate(`/projects/${project.ProjectID}`)}
-                                                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-md transition-all cursor-pointer group p-5"
+                                                className="bg-bg-surface rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-md transition-all cursor-pointer group p-5"
                                             >
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
@@ -478,9 +478,9 @@ const EmployeeDetail: React.FC = () => {
                                                             <div className="p-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg">
                                                                 <Briefcase className="w-5 h-5 text-white" />
                                                             </div>
-                                                            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-400">{project.ProjectID}</span>
+                                                            <span className="text-[10px] font-mono text-txt-placeholder">{project.ProjectID}</span>
                                                         </div>
-                                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mt-2">
+                                                        <h4 className="text-sm font-semibold text-txt-primary line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mt-2">
                                                             {project.ProjectName}
                                                         </h4>
                                                     </div>
@@ -528,7 +528,7 @@ const EmployeeDetail: React.FC = () => {
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
                                         <thead>
-                                            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                                            <tr className="border-b border-border bg-bg-subtle">
                                                 <th className="px-4 py-2.5 text-left text-[10px] font-black uppercase tracking-widest">Mã HĐ</th>
                                                 <th className="px-4 py-2.5 text-left text-[10px] font-black uppercase tracking-widest">Gói thầu</th>
                                                 <th className="px-4 py-2.5 text-right text-[10px] font-black uppercase tracking-widest">Giá trị</th>
@@ -536,17 +536,17 @@ const EmployeeDetail: React.FC = () => {
                                                 <th className="px-4 py-2.5 text-center text-[10px] font-black uppercase tracking-widest">Trạng thái</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                        <tbody className="divide-y divide-border-subtle">
                                             {empContracts.map(contract => (
-                                                <tr key={contract.ContractID} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                                                <tr key={contract.ContractID} className="hover:bg-bg-hover-row transition-colors">
                                                     <td className="px-4 py-3.5">
-                                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{contract.ContractID}</span>
+                                                        <span className="text-sm font-semibold text-txt-primary">{contract.ContractID}</span>
                                                     </td>
                                                     <td className="px-4 py-3.5">
                                                         <span className="text-xs text-slate-500 font-mono">{contract.PackageID}</span>
                                                     </td>
                                                     <td className="px-4 py-3.5 text-right">
-                                                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                                                        <span className="text-sm font-bold text-txt-primary">
                                                             {(contract.Value || 0).toLocaleString('vi-VN')} đ
                                                         </span>
                                                     </td>

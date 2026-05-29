@@ -87,8 +87,8 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         {icon}
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-3">{displayTitle}</h2>
-                    <p className="text-gray-500 mb-6">{message}</p>
+                    <h2 className="text-2xl font-bold text-txt-primary mb-3">{displayTitle}</h2>
+                    <p className="text-txt-muted mb-6">{message}</p>
                     {onRetry && (
                         <button
                             onClick={onRetry}
@@ -144,13 +144,13 @@ export const EmptyState: React.FC<{
     return (
         <div className={`text-center py-12 px-4 ${className}`}>
             {icon && (
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     {icon}
                 </div>
             )}
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+            <h3 className="text-lg font-semibold text-txt-primary mb-2">{title}</h3>
             {description && (
-                <p className="text-gray-500 text-sm max-w-md mx-auto mb-4">{description}</p>
+                <p className="text-txt-muted text-sm max-w-md mx-auto mb-4">{description}</p>
             )}
             {action && (
                 <button

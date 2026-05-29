@@ -40,28 +40,28 @@ export const UserAccountTable: React.FC<UserAccountTableProps> = ({
                     Đang tải...
                 </div>
             ) : filtered.length === 0 ? (
-                <div className="p-4 text-center text-gray-400 dark:text-slate-400">
+                <div className="p-4 text-center text-txt-placeholder">
                     <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     {search ? 'Không tìm thấy kết quả' : 'Chưa có tài khoản nào'}
                 </div>
             ) : (
                 <div className="overflow-auto flex-1">
                     <table className="w-full text-sm relative">
-                        <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 backdrop-blur-md z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)]">
+                        <thead className="sticky top-0 bg-bg-subtle/80 backdrop-blur-md z-10 shadow-[inset_0_-1px_0_0_rgba(226,232,240,1)] dark:shadow-[inset_0_-1px_0_0_rgba(51,65,85,1)]">
                             <tr>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">#</th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Nhân viên</th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Username</th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">#</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Nhân viên</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Username</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">
                                     <div className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Email</div>
                                 </th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">
                                     <div className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> SĐT</div>
                                 </th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Vai trò</th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Trạng thái</th>
-                                <th className="text-left px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Đăng nhập lần cuối</th>
-                                <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Hành động</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Vai trò</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Trạng thái</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Đăng nhập lần cuối</th>
+                                <th className="text-right px-4 py-3 text-[11px] font-bold text-txt-muted uppercase tracking-wider">Hành động</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-slate-700/50">
@@ -69,7 +69,7 @@ export const UserAccountTable: React.FC<UserAccountTableProps> = ({
                                 <tr 
                                     key={account.account_id} 
                                     onClick={() => onSetViewingAccount(account)}
-                                    className="group transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-700/50 cursor-pointer"
+                                    className="group transition-all duration-200 hover:bg-bg-hover-row border-b border-border-subtle cursor-pointer"
                                 >
                                     <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
                                     <td className="px-4 py-3">
@@ -80,18 +80,18 @@ export const UserAccountTable: React.FC<UserAccountTableProps> = ({
                                                 size="sm"
                                             />
                                             <div>
-                                                <p className="font-medium text-gray-900 dark:text-slate-100">{account.full_name || '—'}</p>
-                                                <p className="text-xs text-gray-500 dark:text-slate-400">{account.department || ''}</p>
+                                                <p className="font-medium text-txt-primary">{account.full_name || '—'}</p>
+                                                <p className="text-xs text-txt-muted">{account.department || ''}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className="px-2 py-1 bg-gray-100 dark:bg-slate-700 rounded-md font-mono text-xs text-gray-700 dark:text-slate-300">
+                                        <span className="px-2 py-1 bg-bg-muted rounded-md font-mono text-xs text-txt-secondary">
                                             {account.username}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{account.email || '—'}</td>
-                                    <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{account.phone || '—'}</td>
+                                    <td className="px-4 py-3 text-txt-muted text-xs">{account.email || '—'}</td>
+                                    <td className="px-4 py-3 text-txt-muted text-xs">{account.phone || '—'}</td>
                                     <td className="px-4 py-3">
                                         {(() => {
                                             const sysRole = resolveSystemRole(account.role || 'Staff', account.position || '');
@@ -115,7 +115,7 @@ export const UserAccountTable: React.FC<UserAccountTableProps> = ({
                                             {account.is_active ? 'Hoạt động' : 'Đã tắt'}
                                         </button>
                                     </td>
-                                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-slate-400">
+                                    <td className="px-4 py-3 text-xs text-txt-muted">
                                         {formatDate(account.last_login)}
                                     </td>
                                     <td className="px-4 py-3 text-right" onClick={e => e.stopPropagation()}>

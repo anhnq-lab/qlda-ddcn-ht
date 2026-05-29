@@ -76,14 +76,14 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
     };
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-bg-surface">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-between items-center sticky top-0 z-10">
+            <div className="px-6 py-4 border-b border-border-subtle bg-bg-subtle flex justify-between items-center sticky top-0 z-10">
                 <div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                    <h3 className="text-lg font-bold text-txt-primary">
                         {editMode === 'create' ? 'Thêm nhân sự mới' : 'Cập nhật thông tin'}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-txt-muted mt-1">
                         {editMode === 'create' ? 'Điền đầy đủ thông tin để tạo tài khoản' : 'Chỉnh sửa thông tin nhân sự'}
                     </p>
                 </div>
@@ -96,22 +96,22 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                     <SectionHeader title="Thông tin cơ bản" icon={<User className="w-4 h-4" />} size="sm" />
                     <div className="grid grid-cols-2 gap-5 mt-4">
                         <div className="col-span-2">
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Họ và tên *</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Họ và tên *</label>
                             <input
                                 {...form.register('FullName')}
-                                className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.FullName ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl focus:outline-none focus:ring-2 text-sm dark:text-slate-200 font-medium transition-all`}
+                                className={`w-full px-4 py-2.5 bg-bg-subtle border ${form.formState.errors.FullName ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl focus:outline-none focus:ring-2 text-sm dark:text-slate-200 font-medium transition-all`}
                                 placeholder="Nguyễn Văn A"
                             />
                             {form.formState.errors.FullName && <p className="text-red-500 text-xs mt-1">{form.formState.errors.FullName.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Phòng ban *</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Phòng ban *</label>
                             <div className="relative">
                                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <select
                                     disabled={!canManageUsers && editMode === 'edit'}
                                     {...form.register('Department')}
-                                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Department ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                    className={`w-full pl-10 pr-8 py-2.5 bg-bg-subtle border ${form.formState.errors.Department ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
                                 >
                                     {departments.map(d => <option key={d} value={d}>{d}</option>)}
                                 </select>
@@ -120,13 +120,13 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                             {form.formState.errors.Department && <p className="text-red-500 text-xs mt-1">{form.formState.errors.Department.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Chức danh *</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Chức danh *</label>
                             <div className="relative">
                                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <select
                                     disabled={!canManageUsers && editMode === 'edit'}
                                     {...form.register('Position')}
-                                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Position ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                    className={`w-full pl-10 pr-8 py-2.5 bg-bg-subtle border ${form.formState.errors.Position ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
                                 >
                                     <option value="Giám đốc Ban">Giám đốc Ban</option>
                                     <option value="Phó Giám đốc Ban">Phó Giám đốc Ban</option>
@@ -153,33 +153,33 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                     </div>
                 </div>
 
-                <hr className="border-slate-100 dark:border-slate-800" />
+                <hr className="border-border-subtle" />
 
                 {/* Section: Liên hệ */}
                 <div>
                     <SectionHeader title="Thông tin liên hệ" icon={<Mail className="w-4 h-4" />} size="sm" />
                     <div className="grid grid-cols-2 gap-5 mt-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Email *</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Email *</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <input
                                     type="email"
                                     {...form.register('Email')}
-                                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Email ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                    className={`w-full pl-10 pr-4 py-2.5 bg-bg-subtle border ${form.formState.errors.Email ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                                     placeholder="email@example.com"
                                 />
                             </div>
                             {form.formState.errors.Email && <p className="text-red-500 text-xs mt-1">{form.formState.errors.Email.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Số điện thoại</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Số điện thoại</label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <input
                                     type="tel"
                                     {...form.register('Phone')}
-                                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Phone ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                    className={`w-full pl-10 pr-4 py-2.5 bg-bg-subtle border ${form.formState.errors.Phone ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                                     placeholder="0912345678"
                                 />
                             </div>
@@ -188,20 +188,20 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                     </div>
                 </div>
 
-                <hr className="border-slate-100 dark:border-slate-800" />
+                <hr className="border-border-subtle" />
 
                 {/* Section: Tài khoản & Quyền */}
                 <div>
                     <SectionHeader title="Tài khoản & Phân quyền" icon={<Lock className="w-4 h-4" />} size="sm" />
                     <div className="grid grid-cols-2 gap-5 mt-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Tên đăng nhập</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Tên đăng nhập</label>
                             <div className="relative">
                                 <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <input
                                     type="text"
                                     {...form.register('Username')}
-                                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Username ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                    className={`w-full pl-10 pr-4 py-2.5 bg-bg-subtle border ${form.formState.errors.Username ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                                     placeholder="username"
                                 />
                             </div>
@@ -209,13 +209,13 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                         </div>
                         {editMode === 'create' && (
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Mật khẩu</label>
+                                <label className="block text-xs font-semibold text-txt-muted mb-1.5">Mật khẩu</label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                     <input
                                         type="password"
                                         {...form.register('Password')}
-                                        className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Password ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                        className={`w-full pl-10 pr-4 py-2.5 bg-bg-subtle border ${form.formState.errors.Password ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                                         placeholder="••••••"
                                     />
                                 </div>
@@ -223,13 +223,13 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                             </div>
                         )}
                         <div className={editMode === 'edit' ? 'col-span-2' : ''}>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Vai trò *</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Vai trò *</label>
                             <div className="relative">
                                 <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                                 <select
                                     disabled={!canManageUsers}
                                     {...form.register('Role')}
-                                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Role ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                    className={`w-full pl-10 pr-8 py-2.5 bg-bg-subtle border ${form.formState.errors.Role ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
                                 >
                                     <option value={Role.Staff}>Nhân viên</option>
                                     <option value={Role.Manager}>Quản lý</option>
@@ -242,27 +242,27 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                     </div>
                 </div>
 
-                <hr className="border-slate-100 dark:border-slate-800" />
+                <hr className="border-border-subtle" />
 
                 {/* Section: Lý lịch & Trình độ */}
                 <div>
                     <SectionHeader title="Lý lịch & Trình độ" icon={<Sparkles className="w-4 h-4" />} size="sm" />
                     <div className="grid grid-cols-2 gap-5 mt-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ngày sinh</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Ngày sinh</label>
                             <input
                                 type="date"
                                 {...form.register('DateOfBirth')}
-                                className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.DateOfBirth ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                className={`w-full px-4 py-2.5 bg-bg-subtle border ${form.formState.errors.DateOfBirth ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                             />
                             {form.formState.errors.DateOfBirth && <p className="text-red-500 text-xs mt-1">{form.formState.errors.DateOfBirth.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Lý luận chính trị</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Lý luận chính trị</label>
                             <div className="relative">
                                 <select
                                     {...form.register('PoliticalTheory')}
-                                    className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.PoliticalTheory ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                    className={`w-full px-4 py-2.5 bg-bg-subtle border ${form.formState.errors.PoliticalTheory ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
                                 >
                                     <option value="">Không</option>
                                     <option value="Sơ cấp">Sơ cấp</option>
@@ -274,57 +274,57 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                             {form.formState.errors.PoliticalTheory && <p className="text-red-500 text-xs mt-1">{form.formState.errors.PoliticalTheory.message}</p>}
                         </div>
                         <div className="col-span-2">
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Chuyên môn / Học vị</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Chuyên môn / Học vị</label>
                             <input
                                 type="text"
                                 {...form.register('Specialty')}
-                                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
+                                className="w-full px-4 py-2.5 bg-bg-subtle border border-border rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
                                 placeholder="Ví dụ: Kỹ sư xây dựng, Thạc sỹ QLDA..."
                             />
                         </div>
                         <div className="col-span-2">
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Nơi thường trú</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Nơi thường trú</label>
                             <input
                                 type="text"
                                 {...form.register('PermanentAddress')}
-                                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
+                                className="w-full px-4 py-2.5 bg-bg-subtle border border-border rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
                                 placeholder="Nhập địa chỉ đăng ký thường trú..."
                             />
                         </div>
                         <div className="col-span-2">
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Thời gian công tác</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Thời gian công tác</label>
                             <textarea
                                 {...form.register('TenureInfo')}
                                 rows={2}
-                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
+                                className="w-full px-4 py-3 bg-bg-subtle border border-border rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
                                 placeholder="Quá trình công tác / Thời gian giữ chức vụ..."
                             />
                         </div>
                     </div>
                 </div>
 
-                <hr className="border-slate-100 dark:border-slate-800" />
+                <hr className="border-border-subtle" />
 
                 {/* Section: Thời gian & Trạng thái */}
                 <div>
                     <SectionHeader title="Thời gian & Trạng thái" icon={<Calendar className="w-4 h-4" />} size="sm" />
                     <div className="grid grid-cols-2 gap-5 mt-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ngày vào làm</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Ngày vào làm</label>
                             <input
                                 type="date"
                                 {...form.register('JoinDate')}
-                                className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.JoinDate ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
+                                className={`w-full px-4 py-2.5 bg-bg-subtle border ${form.formState.errors.JoinDate ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all`}
                             />
                             {form.formState.errors.JoinDate && <p className="text-red-500 text-xs mt-1">{form.formState.errors.JoinDate.message}</p>}
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Trạng thái</label>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5">Trạng thái</label>
                             <div className="relative">
                                 <select
                                     disabled={!canManageUsers}
                                     {...form.register('Status', { valueAsNumber: true })}
-                                    className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border ${form.formState.errors.Status ? 'border-red-500 focus:ring-red-500/30' : 'border-slate-200 dark:border-slate-700 focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
+                                    className={`w-full px-4 py-2.5 bg-bg-subtle border ${form.formState.errors.Status ? 'border-red-500 focus:ring-red-500/30' : 'border-border focus:ring-primary-500/30'} rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 transition-all appearance-none`}
                                 >
                                     <option value={EmployeeStatus.Active}>Đang làm việc</option>
                                     <option value={EmployeeStatus.Inactive}>Đã nghỉ việc</option>
@@ -339,21 +339,21 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
                 {/* Nội dung công việc & Tiêu chí */}
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Nội dung công việc</label>
+                        <label className="block text-xs font-semibold text-txt-muted mb-1.5">Nội dung công việc</label>
                         <textarea
                             {...form.register('JobContent')}
                             rows={3}
                             placeholder="Mô tả nội dung công việc..."
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
+                            className="w-full px-4 py-3 bg-bg-subtle border border-border rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Tiêu chí đánh giá hoàn thành</label>
+                        <label className="block text-xs font-semibold text-txt-muted mb-1.5">Tiêu chí đánh giá hoàn thành</label>
                         <textarea
                             {...form.register('CompletionCriteria')}
                             rows={3}
                             placeholder="Tiêu chí đánh giá..."
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
+                            className="w-full px-4 py-3 bg-bg-subtle border border-border rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all resize-none"
                         />
                     </div>
                 </div>
@@ -363,11 +363,11 @@ const EmployeeFormPanel: React.FC<EmployeeFormPanelProps> = ({ editMode, employe
             </form>
 
             {/* Actions */}
-            <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-end gap-3 sticky bottom-0">
+            <div className="px-6 py-4 border-t border-border-subtle bg-bg-surface flex justify-end gap-3 sticky bottom-0">
                 <button
                     type="button"
                     onClick={() => closePanel(editMode === 'create' ? '/employees/new' : `/employees/edit/${employeeId}`)}
-                    className="px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    className="px-5 py-2.5 text-sm font-medium text-txt-muted hover:bg-bg-muted rounded-xl transition-colors"
                 >
                     Hủy bỏ
                 </button>

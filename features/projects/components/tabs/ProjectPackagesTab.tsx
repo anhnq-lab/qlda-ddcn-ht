@@ -271,7 +271,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
         setDragOverPkgId(null);
     };
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500 dark:text-slate-400 font-sans"><Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />Đang tải dữ liệu...</div>;
+    if (isLoading) return <div className="p-8 text-center text-txt-muted font-sans"><Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />Đang tải dữ liệu...</div>;
     
     if (error && (!packages || packages.length === 0)) return (
         <div className="flex flex-col items-center justify-center p-12 bg-bg-surface rounded-2xl border border-border font-sans">
@@ -443,14 +443,14 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                              setActiveDropdownPkgId(null);
                                                          }}
                                                      />
-                                                     <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-1.5 z-20 text-left animate-in fade-in slide-in-from-top-1 duration-150">
-                                                         <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                                                     <div className="absolute right-4 mt-2 w-48 bg-bg-surface rounded-xl shadow-xl border border-border py-1.5 z-20 text-left animate-in fade-in slide-in-from-top-1 duration-150">
+                                                         <div className="px-3 py-1.5 text-[10px] font-bold text-txt-placeholder uppercase tracking-wider">
                                                              Chuyển trạng thái nhanh
                                                          </div>
                                                          {[
                                                              { value: PackageStatus.Selection, label: 'Lựa chọn nhà thầu', color: 'text-blue-500 hover:bg-blue-500/5 dark:hover:bg-blue-500/10' },
                                                              { value: PackageStatus.Execution, label: 'Đang thực hiện', color: 'text-emerald-500 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10' },
-                                                             { value: PackageStatus.Completed, label: 'Kết thúc', color: 'text-gray-500 dark:text-slate-400 hover:bg-slate-500/5 dark:hover:bg-slate-500' }
+                                                             { value: PackageStatus.Completed, label: 'Kết thúc', color: 'text-txt-muted hover:bg-slate-500/5 dark:hover:bg-slate-500' }
                                                          ].map((item) => (
                                                              <button
                                                                  key={item.value}

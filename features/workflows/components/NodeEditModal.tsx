@@ -70,19 +70,19 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800">
+                <div className="px-6 py-4 border-b border-border-subtle flex items-center justify-between bg-bg-subtle">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                             <FileText size={20} className="text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <h3 className="text-base font-bold text-slate-800 dark:text-white leading-tight">Chỉnh sửa bước nghiệp vụ</h3>
+                            <h3 className="text-base font-bold text-txt-primary leading-tight">Chỉnh sửa bước nghiệp vụ</h3>
                             <p className="text-xs text-slate-500 font-mono mt-0.5">{(node as any).code}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-bg-muted rounded-xl transition-colors">
                         <X size={20} />
                     </button>
                 </div>
@@ -93,12 +93,12 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
                         <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
                             <label className="text-xs font-bold text-inherit">Tên nội dung thực hiện (Bước)</label>
                             <input type="text" value={name} onChange={e => setName(e.target.value)}
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors" />
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors" />
                         </div>
                         <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
                             <label className="text-xs font-bold text-inherit flex items-center gap-1.5">Phân loại bước</label>
                             <select value={type} onChange={e => setType(e.target.value)}
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors cursor-pointer appearance-none">
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors cursor-pointer appearance-none">
                                 <option value="start">Khởi xướng (Start)</option>
                                 <option value="input">Lập hồ sơ / Thực thi (Input)</option>
                                 <option value="approval">Phê duyệt (Approval)</option>
@@ -113,7 +113,7 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
                             <BookOpen size={14} className="text-blue-500" /> Giai đoạn dự án
                         </label>
                         <select value={phase} onChange={e => setPhase(e.target.value)}
-                            className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors cursor-pointer appearance-none">
+                            className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors cursor-pointer appearance-none">
                             <option value="preparation">I. Giai đoạn Chuẩn bị dự án</option>
                             <option value="execution">II. Giai đoạn Thực hiện dự án</option>
                             <option value="completion">III. Giai đoạn Kết thúc xây dựng</option>
@@ -122,28 +122,28 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                            <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                                 <Shield size={14} className="text-blue-500" /> Đơn vị thực hiện
                             </label>
                             <input type="text" value={assigneeRole} onChange={e => setAssigneeRole(e.target.value)}
                                 placeholder="VD: Chủ đầu tư, BQLDA..."
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm text-txt-primary focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                            <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                                 <Clock size={14} className="text-warning-500" /> Thời gian (SLA)
                             </label>
-                            <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all">
+                            <div className="flex bg-bg-subtle border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all">
                                 <input type="number" 
                                     value={slaValue} 
                                     onChange={e => setSlaValue(e.target.value)}
                                     placeholder="0"
                                     min="0"
-                                    className="w-16 flex-1 h-11 bg-transparent px-4 text-sm font-bold text-center border-r border-slate-200 dark:border-slate-700 focus:outline-none text-slate-800 dark:text-white" />
+                                    className="w-16 flex-1 h-11 bg-transparent px-4 text-sm font-bold text-center border-r border-border focus:outline-none text-txt-primary" />
                                 <select 
                                     value={slaUnit} 
                                     onChange={e => setSlaUnit(e.target.value)}
-                                    className="min-w-[100px] h-11 bg-slate-100 dark:bg-slate-800 px-3 text-xs font-semibold focus:outline-none text-slate-700 dark:text-slate-300 border-none cursor-pointer">
+                                    className="min-w-[100px] h-11 bg-bg-muted px-3 text-xs font-semibold focus:outline-none text-txt-secondary border-none cursor-pointer">
                                     <option value="d">Ngày lịch</option>
                                     <option value="wd">Ngày làm việc</option>
                                     <option value="h">Giờ (Hours)</option>
@@ -153,35 +153,35 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({ isOpen, onClose, node, on
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <BookOpen size={14} className="text-emerald-500" /> Căn cứ pháp lý
                         </label>
                         <textarea value={legalBasis} onChange={e => setLegalBasis(e.target.value)} rows={2}
                             placeholder="VD: Điều 29 Luật ĐTC 58/2024"
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[13px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none" />
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-[13px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none" />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400">Mô tả công việc chi tiết</label>
+                        <label className="text-xs font-bold text-txt-muted">Mô tả công việc chi tiết</label>
                         <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
                             placeholder="Lập hồ sơ, trình phê duyệt..."
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-[13px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none leading-relaxed" />
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-[13px] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-none leading-relaxed" />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <Target size={14} className="text-rose-500" /> Sản phẩm đầu ra (Hồ sơ)
                         </label>
                         <input type="text" value={output} onChange={e => setOutput(e.target.value)}
                             placeholder="VD: Quyết định phê duyệt, Tờ trình..."
-                            className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
+                            className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors" />
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end gap-3">
+                <div className="px-6 py-4 border-t border-border-subtle bg-bg-subtle flex justify-end gap-3">
                     <button onClick={onClose}
-                        className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                        className="px-5 py-2.5 rounded-xl font-bold text-sm text-txt-muted hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
                         Hủy
                     </button>
                     <button onClick={handleSave} disabled={isSaving}

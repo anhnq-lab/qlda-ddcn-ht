@@ -128,7 +128,7 @@ const DateInput: React.FC<DateInputProps> = ({
 
     return (
         <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300">
+            <label className="block text-xs font-semibold text-txt-secondary">
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
             <div className="relative flex items-center">
@@ -139,7 +139,7 @@ const DateInput: React.FC<DateInputProps> = ({
                     onBlur={handleTextBlur}
                     placeholder="DD/MM/YYYY"
                     maxLength={10}
-                    className={`w-full pl-3 pr-10 py-2.5 text-sm border rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 transition-shadow ${
+                    className={`w-full pl-3 pr-10 py-2.5 text-sm border rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 transition-shadow ${
                         !isValid
                             ? 'border-red-400 focus:ring-red-300 dark:focus:ring-red-700'
                             : `border-gray-300 dark:border-slate-600 ${colorClass}`
@@ -302,21 +302,21 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+            <div className="relative bg-bg-surface rounded-2xl shadow-sm w-full max-w-md border border-border animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-t-2xl">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 rounded-t-2xl">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-gray-900 dark:text-slate-100 text-sm leading-tight">{title}</h3>
+                            <h3 className="font-bold text-txt-primary text-sm leading-tight">{title}</h3>
                             {description && (
-                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{description}</p>
+                                <p className="text-xs text-txt-muted mt-0.5">{description}</p>
                             )}
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
                         <X className="w-4 h-4 text-gray-400" />
                     </button>
                 </div>
@@ -326,13 +326,13 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
                     {/* Workflow Template Selection */}
                     {showWorkflowOption && (
                         <div className="space-y-1.5">
-                            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300">
+                            <label className="block text-xs font-semibold text-txt-secondary">
                                 Quy trình dự án <span className="text-red-500">*</span>
                             </label>
                             <select
                                 value={selectedWorkflowId}
                                 onChange={(e) => setSelectedWorkflowId(e.target.value)}
-                                className="w-full pl-3 pr-10 py-2.5 text-sm border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700 transition-shadow appearance-none cursor-pointer"
+                                className="w-full pl-3 pr-10 py-2.5 text-sm border border-gray-300 dark:border-slate-600 rounded-xl bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700 transition-shadow appearance-none cursor-pointer"
                             >
                                 <option value="" disabled>-- Chọn quy trình --</option>
                                 {workflows.map(wf => (
@@ -380,10 +380,10 @@ export const PlanDateRangeModal: React.FC<PlanDateRangeModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 rounded-b-2xl">
+                <div className="flex justify-end gap-2 px-6 py-4 border-t border-border bg-bg-subtle rounded-b-2xl">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-txt-muted hover:bg-bg-muted rounded-xl transition-colors"
                     >
                         Hủy
                     </button>

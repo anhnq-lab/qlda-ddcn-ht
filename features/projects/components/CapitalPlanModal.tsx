@@ -200,7 +200,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                                 </p>
                             );
                             if (numAmount > 0 && maxAllowable < Infinity) return (
-                                <p className="mt-1 text-[10px] text-gray-400 dark:text-slate-400">Hạn mức còn lại: {Number(maxAllowable).toLocaleString('vi-VN')} đ</p>
+                                <p className="mt-1 text-[10px] text-txt-placeholder">Hạn mức còn lại: {Number(maxAllowable).toLocaleString('vi-VN')} đ</p>
                             );
                             return null;
                         })()}

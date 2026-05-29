@@ -44,7 +44,7 @@ function renderGuidelines(raw: string): React.ReactNode {
         const trimmed = line.trim().replace(/^- /, '');
         const formatted = trimmed.replace(/\*\*(.+?)\*\*/g, (_, m) => `<strong>${m}</strong>`);
         return (
-            <li key={i} className="text-[12px] text-gray-600 dark:text-slate-300 leading-relaxed list-none"
+            <li key={i} className="text-[12px] text-txt-muted leading-relaxed list-none"
                 dangerouslySetInnerHTML={{ __html: formatted }} />
         );
     });
@@ -271,7 +271,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
         return (
             <div className="flex items-center justify-center h-64 gap-3">
                 <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
-                <span className="text-sm text-gray-600 dark:text-slate-300">Đang tải quy trình...</span>
+                <span className="text-sm text-txt-muted">Đang tải quy trình...</span>
             </div>
         );
     }
@@ -281,21 +281,21 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
     const progress = Math.round((currentIdx / steps.length) * 100);
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-900">
+        <div className="flex flex-col h-full bg-bg-surface">
 
             {/* ── Sub-header: dự án + bước ── */}
-            <div className="shrink-0 px-5 py-3 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-primary-50 to-white dark:from-slate-800 dark:to-slate-900">
+            <div className="shrink-0 px-5 py-3 border-b border-border-subtle bg-gradient-to-r from-primary-50 to-white dark:from-slate-800 dark:to-slate-900">
                 <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                         <p className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest">{instance.workflow_code}</p>
-                        <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate max-w-[340px]">{projectName}</p>
+                        <p className="text-xs font-bold text-txt-secondary truncate max-w-[340px]">{projectName}</p>
                     </div>
-                    <span className="shrink-0 text-[11px] font-black text-gray-500 dark:text-slate-400">
+                    <span className="shrink-0 text-[11px] font-black text-txt-muted">
                         Bước {currentIdx + 1}/{steps.length}
                     </span>
                 </div>
                 {/* Progress bar */}
-                <div className="mt-2 h-1 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="mt-2 h-1 bg-bg-muted rounded-full overflow-hidden">
                     <div className="h-1 bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-500"
                         style={{ width: `${progress}%` }} />
                 </div>
@@ -305,7 +305,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
             <div className="flex flex-1 min-h-0">
 
                 {/* Sidebar: Timeline */}
-                <div className="w-48 shrink-0 border-r border-gray-100 dark:border-slate-700 overflow-y-auto bg-gray-50 dark:bg-slate-800 py-2">
+                <div className="w-48 shrink-0 border-r border-border-subtle overflow-y-auto bg-bg-subtle py-2">
                     {steps.map((step, idx) => {
                         const record = stepRecords.find(r => r.step_index === idx);
                         const isActive = idx === currentIdx;
@@ -335,8 +335,8 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                 </div>
                                 <p className={`text-[10px] leading-tight ${
                                     isActive ? 'font-black text-primary-700 dark:text-primary-400' :
-                                    isDone ? 'font-semibold text-gray-500 dark:text-slate-400' :
-                                    'text-gray-400 dark:text-slate-500'
+                                    isDone ? 'font-semibold text-txt-muted' :
+                                    'text-txt-placeholder'
                                 }`}>
                                     {step.name}
                                 </p>
@@ -359,7 +359,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                     </span>
                                 )}
                                 {currentStep.sla && (
-                                    <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500">
+                                    <span className="flex items-center gap-1 text-[10px] text-txt-placeholder">
                                         <Clock className="w-3 h-3" /> SLA: {currentStep.sla}
                                     </span>
                                 )}
@@ -392,8 +392,8 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                     </span>
                                 )}
                             </div>
-                            <h3 className="text-sm font-black text-gray-900 dark:text-white leading-snug">{currentStep.name}</h3>
-                            <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Chủ trì: {currentStep.role}</p>
+                            <h3 className="text-sm font-black text-txt-primary leading-snug">{currentStep.name}</h3>
+                            <p className="text-[11px] text-txt-muted mt-0.5">Chủ trì: {currentStep.role}</p>
                         </div>
 
                         {/* Guidelines */}
@@ -411,18 +411,18 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
 
                         {/* Sub-tasks */}
                         {currentMeta?.sub_tasks?.length > 0 && (
-                            <div className="bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+                            <div className="bg-bg-subtle rounded-xl border border-border p-4">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <ListChecks className="w-3.5 h-3.5 text-gray-500 dark:text-slate-400" />
-                                    <span className="text-[10px] font-black text-gray-600 dark:text-slate-300 uppercase tracking-wider">Công việc cụ thể</span>
+                                    <ListChecks className="w-3.5 h-3.5 text-txt-muted" />
+                                    <span className="text-[10px] font-black text-txt-muted uppercase tracking-wider">Công việc cụ thể</span>
                                 </div>
                                 <ul className="space-y-2">
                                     {currentMeta.sub_tasks.map((st: any, i: number) => (
                                         <li key={i} className="flex items-start gap-2">
                                             <span className="mt-0.5 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-[9px] font-black text-gray-500 shrink-0">{i + 1}</span>
                                             <div>
-                                                <p className="text-[11px] text-gray-700 dark:text-slate-300">{st.name}</p>
-                                                <p className="text-[10px] text-gray-400 dark:text-slate-500">👤 {st.assignee_role}</p>
+                                                <p className="text-[11px] text-txt-secondary">{st.name}</p>
+                                                <p className="text-[10px] text-txt-placeholder">👤 {st.assignee_role}</p>
                                             </div>
                                         </li>
                                     ))}
@@ -431,12 +431,12 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                         )}
 
                         {/* Form kết luận */}
-                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 space-y-3">
-                            <p className="text-[10px] font-black text-gray-600 dark:text-slate-300 uppercase tracking-wider">Kết quả bước này</p>
+                        <div className="bg-bg-surface rounded-xl border border-border p-4 space-y-3">
+                            <p className="text-[10px] font-black text-txt-muted uppercase tracking-wider">Kết quả bước này</p>
 
                             {formCode ? (
                                 <div>
-                                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mb-2">
+                                    <p className="text-[11px] text-txt-muted mb-2">
                                         Hoàn thành biểu mẫu{' '}
                                         <button onClick={handleOpenFormChecklist} className="font-black text-amber-600 dark:text-amber-400 hover:underline">
                                             {formCode} ↗
@@ -465,7 +465,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                                 onClick={() => setConclusion(conclusion === opt.val ? null : opt.val)}
                                                 disabled={opt.val === 'pass' && currentFormTotal > 0 && !isFormAllDone}
                                                 className={`flex-1 text-[11px] font-bold py-2 px-2 rounded-lg border-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
-                                                    conclusion === opt.val ? opt.cls + ' ring-2 ring-offset-1 ring-current' : 'border-gray-200 dark:border-slate-600 text-gray-400 dark:text-slate-500 hover:border-gray-300'
+                                                    conclusion === opt.val ? opt.cls + ' ring-2 ring-offset-1 ring-current' : 'border-gray-200 dark:border-slate-600 text-txt-placeholder hover:border-gray-300'
                                                 }`}
                                             >
                                                 {opt.label}
@@ -479,7 +479,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                     )}
                                 </div>
                             ) : (
-                                <p className="text-[11px] text-gray-400 dark:text-slate-500 italic">
+                                <p className="text-[11px] text-txt-placeholder italic">
                                     Bước này không có biểu mẫu bắt buộc. Ghi chú (tuỳ chọn) và chuyển bước tiếp theo.
                                 </p>
                             )}
@@ -489,17 +489,17 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                                 onChange={e => setNotes(e.target.value)}
                                 placeholder="Ghi chú bổ sung (tuỳ chọn)..."
                                 rows={2}
-                                className="w-full text-[12px] rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-3 py-2 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
+                                className="w-full text-[12px] rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-3 py-2 text-txt-secondary placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
                             />
                         </div>
                     </div>
 
                     {/* ── Footer ── */}
-                    <div className="shrink-0 flex items-center justify-between gap-3 px-5 py-3 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/60">
+                    <div className="shrink-0 flex items-center justify-between gap-3 px-5 py-3 border-t border-border bg-bg-subtle/60">
                         <button
                             onClick={handleGoBack}
                             disabled={currentIdx === 0 || saving}
-                            className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold text-txt-muted hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <ChevronLeft className="w-4 h-4" /> Quay lại
                         </button>
@@ -508,7 +508,7 @@ export const WorkflowRunnerPanel: React.FC<Props> = ({ instanceId, projectName, 
                             <button
                                 onClick={handleSaveDraft}
                                 disabled={saving}
-                                className="px-3 py-2 text-[11px] font-bold text-gray-600 dark:text-slate-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-40"
+                                className="px-3 py-2 text-[11px] font-bold text-txt-muted border border-gray-300 dark:border-slate-600 hover:bg-bg-muted rounded-lg transition-colors disabled:opacity-40"
                             >
                                 Lưu nháp
                             </button>

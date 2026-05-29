@@ -130,7 +130,7 @@ export const CapitalPlanSection: React.FC<CapitalPlanSectionProps> = memo(({
                         <div className="p-4 space-y-3">
                             {midTermPlans.length === 0 ? (
                                 <EmptyState
-                                    icon={<CalendarRange className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
+                                    icon={<CalendarRange className="w-12 h-12 text-txt-placeholder" />}
                                     title="Chưa có KH vốn trung hạn"
                                     description={'Nhấn "Nhập KH trung hạn" để tạo giai đoạn 5 năm'}
                                     className="border border-dashed border-border rounded-2xl"

@@ -15,7 +15,7 @@ const STATUS_COLORS: Record<string, { bar: string; bg: string; text: string }> =
     done: { bar: 'bg-emerald-500 dark:bg-emerald-400', bg: 'bg-emerald-50/80 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-300' },
     in_progress: { bar: 'bg-blue-500 dark:bg-blue-400', bg: 'bg-blue-50/80 dark:bg-blue-950/40', text: 'text-blue-700 dark:text-blue-300' },
     review: { bar: 'bg-amber-500 dark:bg-amber-400', bg: 'bg-amber-50/80 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-300' },
-    todo: { bar: 'bg-slate-300 dark:bg-slate-500', bg: 'bg-slate-100 dark:bg-slate-900', text: 'text-slate-600 dark:text-slate-300' },
+    todo: { bar: 'bg-slate-300 dark:bg-slate-500', bg: 'bg-slate-100 dark:bg-slate-900', text: 'text-txt-muted' },
     overdue: { bar: 'bg-red-500 dark:bg-red-400', bg: 'bg-red-50/80 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300' },
 };
 
@@ -296,7 +296,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
 
     if (processedTasks.length === 0) {
         return (
-            <div className="py-12 text-center text-gray-400 italic bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+            <div className="py-12 text-center text-gray-400 italic bg-bg-subtle rounded-xl border border-dashed border-border">
                 Chưa có dữ liệu tiến độ để hiển thị biểu đồ.
             </div>
         );
@@ -306,17 +306,17 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
     const todayPos = ((Date.now() - timelineStart.getTime()) / totalDuration) * 100;
 
     return (
-        <div className="overflow-x-auto pb-4 rounded-xl border border-gray-200 dark:border-slate-700">
+        <div className="overflow-x-auto pb-4 rounded-xl border border-border">
             <div style={{ minWidth: `${320 + totalWidth}px` }}>
                 {/* Year Header */}
-                <div className="flex bg-slate-50 dark:bg-slate-800" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                <div className="flex bg-bg-subtle" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <div className="w-[320px] shrink-0" />
                     <div className="flex">
                         {yearGroups.map(yg => (
                             <div
                                 key={yg.year}
                                 style={{ width: `${yg.months.length * COL_WIDTH}px`, borderLeft: '1px solid var(--border-subtle)' }}
-                                className="text-center py-1.5 text-[10px] font-black text-slate-500 dark:text-slate-400 border-l uppercase tracking-widest"
+                                className="text-center py-1.5 text-[10px] font-black text-txt-muted border-l uppercase tracking-widest"
                             >
                                 {yg.year}
                             </div>
@@ -325,12 +325,12 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                 </div>
 
                 {/* Month Header */}
-                <div className="flex bg-slate-50 dark:bg-slate-800 sticky top-0 z-10" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    <div className="w-[320px] shrink-0 px-4 py-2 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <div className="flex bg-bg-subtle sticky top-0 z-10" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div className="w-[320px] shrink-0 px-4 py-2 text-[10px] font-bold text-txt-muted uppercase tracking-wider flex items-center justify-between">
                         <span>Hạng mục công việc / Bước quy trình</span>
                         <button 
                             onClick={handleToggleAllExpand}
-                            className="text-[9px] font-bold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 normal-case px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded transition-colors"
+                            className="text-[9px] font-bold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 normal-case px-1.5 py-0.5 bg-bg-muted rounded transition-colors"
                         >
                             {isAllCollapsed ? "Mở tất cả" : "Thu gọn tất cả"}
                         </button>
@@ -341,7 +341,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                                 key={idx}
                                 style={{ width: `${COL_WIDTH}px`, borderLeft: '1px solid var(--border-subtle)' }}
                                 title={`Tháng ${m.month} năm ${m.year}`}
-                                className="text-center py-2 text-[9px] font-black text-gray-400 dark:text-slate-400 border-l cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                                className="text-center py-2 text-[9px] font-black text-txt-placeholder border-l cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
                             >
                                 {m.label}
                             </div>
@@ -350,7 +350,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                 </div>
 
                 {/* Body - Hierarchical tasks */}
-                <div className="bg-white dark:bg-slate-800 relative">
+                <div className="bg-bg-surface relative">
                     {/* Grid Lines Layer (Nét liền mạch, làm mờ tối đa) */}
                     <div className="absolute inset-0 flex pointer-events-none z-10 opacity-[0.06]">
                         <div className="w-[320px] shrink-0 border-r" style={{ borderRight: '1px solid var(--border-subtle)' }} />
@@ -451,7 +451,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
 
                                         {/* Duration text */}
                                         {width > 6 && (
-                                            <span className="absolute inset-0 flex items-center justify-center text-[8px] text-slate-700 dark:text-slate-300 font-bold whitespace-nowrap overflow-hidden px-1">
+                                            <span className="absolute inset-0 flex items-center justify-center text-[8px] text-txt-secondary font-bold whitespace-nowrap overflow-hidden px-1">
                                                 {task.progress}%
                                             </span>
                                         )}
@@ -479,35 +479,35 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                     }}
                 >
                     {/* Header */}
-                    <div className="flex items-start justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-1.5">
-                        <span className="font-bold text-slate-800 dark:text-slate-100 line-clamp-2 flex-1">
+                    <div className="flex items-start justify-between gap-2 border-b border-border pb-1.5">
+                        <span className="font-bold text-txt-primary line-clamp-2 flex-1">
                             {hoveredTask.title}
                         </span>
                         <div className="shrink-0 flex items-center gap-1">
                             <StatusIcon status={hoveredTask.status} className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-txt-muted">
                                 {hoveredTask.status}
                             </span>
                         </div>
                     </div>
 
                     {/* Info list */}
-                    <div className="space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
+                    <div className="space-y-1 text-[11px] text-txt-muted">
                         <div className="flex justify-between">
-                            <span className="text-slate-400 dark:text-slate-500">Bắt đầu:</span>
-                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                            <span className="text-txt-placeholder">Bắt đầu:</span>
+                            <span className="font-medium text-txt-secondary">
                                 {hoveredTask.startDate ? new Date(hoveredTask.startDate).toLocaleDateString('vi-VN') : '-'}
                             </span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-slate-400 dark:text-slate-500">Kết thúc:</span>
-                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                            <span className="text-txt-placeholder">Kết thúc:</span>
+                            <span className="font-medium text-txt-secondary">
                                 {hoveredTask.endDate ? new Date(hoveredTask.endDate).toLocaleDateString('vi-VN') : '-'}
                             </span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-slate-400 dark:text-slate-500">Thời gian thực hiện:</span>
-                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                            <span className="text-txt-placeholder">Thời gian thực hiện:</span>
+                            <span className="font-medium text-txt-secondary">
                                 {hoveredTask.startDate && hoveredTask.endDate 
                                     ? `${Math.max(1, Math.ceil((new Date(hoveredTask.endDate).getTime() - new Date(hoveredTask.startDate).getTime()) / (1000 * 60 * 60 * 24)))} ngày` 
                                     : '-'}
@@ -517,14 +517,14 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                         {/* Đơn vị chủ trì / Người thực hiện */}
                         {hoveredTask.isStep ? (
                             <div className="flex justify-between">
-                                <span className="text-slate-400 dark:text-slate-500">Đơn vị chủ trì:</span>
+                                <span className="text-txt-placeholder">Đơn vị chủ trì:</span>
                                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                                     {hoveredTask.assigneeRole || 'Chưa xác định'}
                                 </span>
                             </div>
                         ) : (
                             <div className="flex justify-between">
-                                <span className="text-slate-400 dark:text-slate-500">Người thực hiện:</span>
+                                <span className="text-txt-placeholder">Người thực hiện:</span>
                                 <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                                     {(() => {
                                         if (!hoveredTask.assigneeId) return 'Chưa gán';
@@ -537,10 +537,10 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({
                     </div>
 
                     {/* Progress bar */}
-                    <div className="space-y-1 pt-1 border-t border-slate-200 dark:border-slate-800">
+                    <div className="space-y-1 pt-1 border-t border-border">
                         <div className="flex justify-between text-[10px]">
-                            <span className="text-slate-400 dark:text-slate-500 font-bold">TIẾN ĐỘ THỰC HIỆN</span>
-                            <span className="font-black text-slate-700 dark:text-slate-200">{hoveredTask.progress}%</span>
+                            <span className="text-txt-placeholder font-bold">TIẾN ĐỘ THỰC HIỆN</span>
+                            <span className="font-black text-txt-secondary">{hoveredTask.progress}%</span>
                         </div>
                         <div className="h-1 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden">
                             <div 

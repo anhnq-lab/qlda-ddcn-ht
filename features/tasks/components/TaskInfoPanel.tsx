@@ -15,10 +15,10 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
     return (
         <div className="space-y-6">
             {/* Assignee Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-                <h3 className="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-5">Phân công</h3>
+            <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4">
+                <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest mb-5">Phân công</h3>
 
-                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
+                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-border-subtle">
                     <div className="relative">
                         <Avatar
                             name={assignee?.FullName || 'User'}
@@ -29,26 +29,26 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
                         <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{assignee?.FullName || "Chưa phân công"}</p>
-                        <p className="text-xs text-slate-400 dark:text-slate-400">{assignee?.Position || assignee?.Department || "N/A"}</p>
+                        <p className="text-sm font-bold text-txt-primary">{assignee?.FullName || "Chưa phân công"}</p>
+                        <p className="text-xs text-txt-placeholder">{assignee?.Position || assignee?.Department || "N/A"}</p>
                     </div>
                 </div>
 
                 <div className="space-y-4">
                     <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
+                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-1.5 flex items-center gap-1 tracking-wider">
                             <Calendar className="w-3 h-3" /> Hạn chót
                         </label>
-                        <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-slate-50 dark:bg-slate-800'}`}>
+                        <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-bg-subtle'}`}>
                             {task.DueDate ? new Date(task.DueDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Chưa có'}
                             {isOverdue && <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />}
                         </p>
                     </div>
                     <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
+                        <label className="text-[10px] uppercase font-bold text-txt-placeholder mb-1.5 flex items-center gap-1 tracking-wider">
                             <User className="w-3 h-3" /> Người phê duyệt
                         </label>
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <p className="text-sm font-medium text-txt-secondary">
                             {approver?.FullName || "Lãnh đạo Ban"}
                         </p>
                     </div>
@@ -57,7 +57,7 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
 
             {/* Monthly Plan Item Link */}
             {monthlyPlanItem && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-primary-100 dark:border-primary-900/40 shadow-sm overflow-hidden">
+                <div className="bg-bg-surface rounded-2xl border border-primary-100 dark:border-primary-900/40 shadow-sm overflow-hidden">
                     <div className="h-0.5 bg-gradient-to-r from-primary-400 to-violet-500" />
                     <div className="p-4">
                         <h3 className="text-xs font-black text-primary-500 dark:text-primary-400 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -76,7 +76,7 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
                                 </div>
                             )}
                             {/* Task name */}
-                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">
+                            <p className="text-sm font-semibold text-txt-primary leading-snug">
                                 {monthlyPlanItem.task_name}
                             </p>
                             {/* Status + deadline note */}
@@ -97,12 +97,12 @@ export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, ap
                                     );
                                 })()}
                                 {monthlyPlanItem.deadline_note && (
-                                    <span className="text-xs text-slate-500 dark:text-slate-400">{monthlyPlanItem.deadline_note}</span>
+                                    <span className="text-xs text-txt-muted">{monthlyPlanItem.deadline_note}</span>
                                 )}
                             </div>
                             {/* Result note */}
                             {monthlyPlanItem.result_note && (
-                                <p className="text-xs text-slate-500 dark:text-slate-400 italic border-t border-slate-100 dark:border-slate-700 pt-2 mt-1">
+                                <p className="text-xs text-txt-muted italic border-t border-border-subtle pt-2 mt-1">
                                     {monthlyPlanItem.result_note}
                                 </p>
                             )}

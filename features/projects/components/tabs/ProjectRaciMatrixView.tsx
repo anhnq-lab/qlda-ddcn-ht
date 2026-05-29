@@ -29,7 +29,7 @@ const RACI_TYPES = [
     { code: 'R', label: 'Responsible (Thực hiện)', bg: 'bg-blue-500 text-white', dot: 'bg-blue-500', hoverBg: 'hover:bg-blue-600', lightBg: 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400' },
     { code: 'A', label: 'Accountable (Phê duyệt)', bg: 'bg-emerald-500 text-white', dot: 'bg-emerald-500', hoverBg: 'hover:bg-emerald-600', lightBg: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400' },
     { code: 'C', label: 'Consulted (Tham vấn)', bg: 'bg-amber-500 text-white', dot: 'bg-amber-500', hoverBg: 'hover:bg-amber-600', lightBg: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400' },
-    { code: 'I', label: 'Informed (Thông báo)', bg: 'bg-gray-500 text-white', dot: 'bg-gray-500', hoverBg: 'hover:bg-gray-600', lightBg: 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400' }
+    { code: 'I', label: 'Informed (Thông báo)', bg: 'bg-gray-500 text-white', dot: 'bg-gray-500', hoverBg: 'hover:bg-gray-600', lightBg: 'bg-bg-muted text-txt-muted' }
 ];
 
 interface ProjectRaciMatrixViewProps {
@@ -82,14 +82,14 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex flex-wrap justify-between items-center gap-3">
+            <div className="p-4 border-b border-border bg-bg-subtle flex flex-wrap justify-between items-center gap-3">
                 <div>
-                    <h4 className="font-bold text-gray-900 dark:text-slate-100 text-sm uppercase flex items-center gap-2">
+                    <h4 className="font-bold text-txt-primary text-sm uppercase flex items-center gap-2">
                         <Users className="w-5 h-5 text-primary-500" /> Ma trận phân công trách nhiệm (RACI)
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-txt-muted mt-1">
                         Nhấp trực tiếp vào ô giao điểm để thay đổi vai trò: <strong>R</strong> (Thực hiện), <strong>A</strong> (Phê duyệt), <strong>C</strong> (Tham vấn), <strong>I</strong> (Thông báo).
                     </p>
                 </div>
@@ -100,7 +100,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
                             <span className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-extrabold ${t.lightBg} border border-current/10`}>
                                 {t.code}
                             </span>
-                            <span className="text-gray-600 dark:text-slate-400 text-[11px]">{t.label}</span>
+                            <span className="text-txt-muted text-[11px]">{t.label}</span>
                         </div>
                     ))}
                 </div>
@@ -110,7 +110,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
             <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left border-collapse table-fixed min-w-[1200px]">
                     <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 text-[10px] uppercase tracking-wider text-gray-500 dark:text-slate-400 font-semibold">
+                        <tr className="bg-bg-subtle border-b border-border text-[10px] uppercase tracking-wider text-txt-muted font-semibold">
                             <th className="p-3 w-12 text-center">TT</th>
                             <th className="p-3 w-80">Nội dung công việc (Bước quy trình)</th>
                             {STAKEHOLDERS.map(s => (
@@ -120,16 +120,16 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-border-subtle">
                         {steps.map((step, idx) => (
                             <tr key={step.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
                                 {/* TT */}
-                                <td className="p-3 text-center font-bold text-gray-400 dark:text-slate-500">
+                                <td className="p-3 text-center font-bold text-txt-placeholder">
                                     {idx + 1}
                                 </td>
                                 
                                 {/* Tên bước */}
-                                <td className="p-3 font-semibold text-gray-700 dark:text-slate-200">
+                                <td className="p-3 font-semibold text-txt-secondary">
                                     <div>{step.task_name}</div>
                                     {step.legal_basis && (
                                         <div className="text-[10px] text-gray-400 font-normal mt-0.5" title="Căn cứ pháp lý">
@@ -146,10 +146,10 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
                                     return (
                                         <td 
                                             key={s.code} 
-                                            className="p-3 text-center relative border-l border-gray-100 dark:border-slate-700/50"
+                                            className="p-3 text-center relative border-l border-border-subtle"
                                         >
                                             {isEditing ? (
-                                                <div className="absolute inset-0 bg-white dark:bg-slate-800 z-10 flex items-center justify-center p-1 gap-0.5 shadow-md rounded">
+                                                <div className="absolute inset-0 bg-bg-surface z-10 flex items-center justify-center p-1 gap-0.5 shadow-md rounded">
                                                     {RACI_TYPES.map(type => (
                                                         <button
                                                             key={type.code}
@@ -173,7 +173,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
                                             ) : (
                                                 <button
                                                     onClick={() => setEditingCell({ stepId: step.id, stakeholderCode: s.code })}
-                                                    className="w-full h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-colors group/cell"
+                                                    className="w-full h-8 flex items-center justify-center rounded-lg hover:bg-bg-muted/50 transition-colors group/cell"
                                                 >
                                                     {raci ? (
                                                         (() => {
@@ -185,7 +185,7 @@ export const ProjectRaciMatrixView: React.FC<ProjectRaciMatrixViewProps> = ({ st
                                                             );
                                                         })()
                                                     ) : (
-                                                        <span className="opacity-0 group-hover/cell:opacity-100 text-[10px] text-gray-400 dark:text-slate-500 font-bold transition-opacity">
+                                                        <span className="opacity-0 group-hover/cell:opacity-100 text-[10px] text-txt-placeholder font-bold transition-opacity">
                                                             +
                                                         </span>
                                                     )}

@@ -55,7 +55,7 @@ const WorkPlanPage: React.FC = () => {
             {/* ══════════ TAB NAVIGATION & FILTERS ══════════ */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0 bg-transparent pb-1">
                 {/* Tabs */}
-                <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit">
+                <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border-subtle w-fit">
                     {TABS.map(({ key, label, icon: Icon }) => (
                         <button
                             key={key}
@@ -64,7 +64,7 @@ const WorkPlanPage: React.FC = () => {
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
                                 active === key
                                     ? 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-md shadow-primary-200/50 dark:shadow-primary-900/30'
-                                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                                    : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                         >
                             <Icon className="w-4 h-4" />
@@ -77,13 +77,13 @@ const WorkPlanPage: React.FC = () => {
                 <div className="flex items-center gap-1.5 shrink-0">
                     {/* Bộ lọc phòng ban dùng chung */}
                     {!(active === 'monthly-report' && subTab === 'report') && (
-                        <div className="flex items-center bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 h-[46px]">
+                        <div className="flex items-center bg-bg-surface p-1 rounded-xl shadow-sm border border-border-subtle h-[46px]">
                             <div className="flex items-center px-2 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-xs font-bold text-slate-650 dark:text-slate-300">
                                 <Users className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
                                 <select
                                     value={dept}
                                     onChange={e => setDept(e.target.value as FilterDeptCode)}
-                                    className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer pr-5 font-bold border-0 p-0 text-xs focus:ring-0"
+                                    className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-5 font-bold border-0 p-0 text-xs focus:ring-0"
                                 >
                                     {active !== 'monthly-report' && (
                                         <option value="All">Tất cả phòng ban</option>
@@ -97,14 +97,14 @@ const WorkPlanPage: React.FC = () => {
                     )}
 
                     {/* Bộ lọc Tháng & Năm */}
-                    <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 h-[46px]">
+                    <div className="flex items-center gap-1.5 bg-bg-surface p-1 rounded-xl shadow-sm border border-border-subtle h-[46px]">
                         {/* Chọn Tháng */}
                         <div className="flex items-center px-2 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-xs font-bold text-slate-650 dark:text-slate-300">
                             <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
                             <select
                                 value={month}
                                 onChange={e => setMonth(e.target.value)}
-                                className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
+                                className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
                             >
                                 <option value="All">Tất cả</option>
                                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
@@ -118,7 +118,7 @@ const WorkPlanPage: React.FC = () => {
                             <select
                                 value={year}
                                 onChange={e => setYear(Number(e.target.value))}
-                                className="bg-transparent text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
+                                className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
                             >
                                 {YEARS.map(y => (
                                     <option key={y} value={y}>{y}</option>
@@ -141,8 +141,8 @@ const WorkPlanPage: React.FC = () => {
                                     onClick={() => setSubTab('plan')}
                                     className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                                         subTab === 'plan'
-                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm'
-                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                            ? 'bg-bg-surface text-txt-primary shadow-sm'
+                                            : 'text-txt-muted hover:text-slate-700 dark:hover:text-slate-300'
                                     }`}
                                 >
                                     Kế hoạch tháng
@@ -151,8 +151,8 @@ const WorkPlanPage: React.FC = () => {
                                     onClick={() => setSubTab('report')}
                                     className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                                         subTab === 'report'
-                                            ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm'
-                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                            ? 'bg-bg-surface text-txt-primary shadow-sm'
+                                            : 'text-txt-muted hover:text-slate-700 dark:hover:text-slate-300'
                                     }`}
                                 >
                                     Báo cáo tháng

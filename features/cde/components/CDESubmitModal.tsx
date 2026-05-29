@@ -65,12 +65,12 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-bg-subtle">
                     <div>
-                        <h2 className="text-lg font-black text-gray-800 dark:text-slate-100">Nộp hồ sơ</h2>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                        <h2 className="text-lg font-black text-txt-primary">Nộp hồ sơ</h2>
+                        <p className="text-xs text-txt-muted mt-0.5">
                             Chọn file, điền thông tin và nộp vào CDE
                         </p>
                     </div>
@@ -83,14 +83,14 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                 <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
                     {/* File Upload */}
                     <div>
-                        <label className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wider mb-1.5 block">
+                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 block">
                             Tệp đính kèm <span className="text-red-500">*</span>
                         </label>
                         {file ? (
                             <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
                                 <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-gray-800 dark:text-slate-100 truncate">{file.name}</p>
+                                    <p className="text-sm font-bold text-txt-primary truncate">{file.name}</p>
                                     <p className="text-[10px] text-gray-500">{formatFileSize(file.size)}</p>
                                 </div>
                                 <button onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = ''; }} className="text-gray-400 hover:text-red-500">
@@ -103,7 +103,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                                 className="border-2 border-dashed border-gray-200 dark:border-slate-600 rounded-xl p-4 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/10 transition-all"
                             >
                                 <Upload className="w-10 h-10 text-gray-300 dark:text-slate-400 mx-auto mb-2" />
-                                <p className="text-sm text-gray-500 dark:text-slate-400 font-medium">Click để chọn file hoặc kéo thả vào đây</p>
+                                <p className="text-sm text-txt-muted font-medium">Click để chọn file hoặc kéo thả vào đây</p>
                                 <p className="text-[10px] text-gray-400 mt-1">PDF, DOCX, DWG, ZIP, hình ảnh — Max 50MB</p>
                             </div>
                         )}
@@ -112,12 +112,12 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
 
                     {/* Folder Select */}
                     <div>
-                        <label className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wider mb-1.5 block">
+                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 block">
                             Thư mục nộp hồ sơ <span className="text-red-500">*</span>
                         </label>
                         <select
                             {...register('folderId')}
-                            className={`w-full px-4 py-2.5 bg-white dark:bg-slate-800 border rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 ${errors.folderId ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
+                            className={`w-full px-4 py-2.5 bg-bg-surface border rounded-xl text-sm font-medium text-txt-primary focus:ring-2 focus:ring-blue-100 focus:border-blue-300 ${errors.folderId ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
                         >
                             <option value="">— Chọn thư mục —</option>
                             {wipFolders.map(f => (
@@ -130,12 +130,12 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                     {/* Discipline + Doc Type */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wider mb-1.5 block">
+                            <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 block">
                                 Lĩnh vực <span className="text-red-500">*</span>
                             </label>
                             <select
                                 {...register('discipline')}
-                                className={`w-full px-3 py-2.5 bg-white dark:bg-slate-800 border rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 ${errors.discipline ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
+                                className={`w-full px-3 py-2.5 bg-bg-surface border rounded-xl text-sm font-medium text-txt-primary ${errors.discipline ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
                             >
                                 <option value="">— Chọn —</option>
                                 {CDE_DISCIPLINES.map(d => (
@@ -145,12 +145,12 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                             {errors.discipline && <p className="text-xs text-red-500 mt-1">{errors.discipline.message}</p>}
                         </div>
                         <div>
-                            <label className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wider mb-1.5 block">
+                            <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 block">
                                 Loại hồ sơ <span className="text-red-500">*</span>
                             </label>
                             <select
                                 {...register('docType')}
-                                className={`w-full px-3 py-2.5 bg-white dark:bg-slate-800 border rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 ${errors.docType ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
+                                className={`w-full px-3 py-2.5 bg-bg-surface border rounded-xl text-sm font-medium text-txt-primary ${errors.docType ? 'border-red-400' : 'border-gray-200 dark:border-slate-600'}`}
                             >
                                 <option value="">— Chọn —</option>
                                 {CDE_DOC_TYPES.map(d => (
@@ -163,14 +163,14 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
 
                     {/* Notes */}
                     <div>
-                        <label className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wider mb-1.5 block">
+                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 block">
                             Ghi chú
                         </label>
                         <textarea
                             {...register('notes')}
                             rows={3}
                             placeholder="Mô tả ngắn gọn về tài liệu, nội dung đính kèm..."
-                            className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-800 dark:text-slate-200 resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
+                            className="w-full px-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-txt-primary resize-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300"
                         />
                     </div>
 
@@ -184,10 +184,10 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50/80 dark:bg-slate-800">
+                <div className="px-6 py-4 border-t border-border flex justify-end gap-3 bg-gray-50/80 dark:bg-slate-800">
                     <button
                         onClick={onClose}
-                        className="px-5 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                        className="px-5 py-2.5 bg-bg-muted text-txt-muted rounded-xl text-sm font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                     >
                         Hủy bỏ
                     </button>

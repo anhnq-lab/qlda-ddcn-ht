@@ -384,7 +384,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                     key={m.contractor_id}
                     className={`flex items-center gap-2 p-2.5 rounded-lg border ${m.role === 'lead'
                         ? 'bg-amber-50/50 dark:bg-amber-950/10 border-amber-200/60 dark:border-amber-900/30 shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
+                        : 'bg-bg-subtle border-border'
                         }`}
                 >
                     <button
@@ -392,7 +392,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                         title={members.length > 1 ? (m.role === 'lead' ? 'Nhà thầu đại diện liên danh' : 'Click để đặt làm nhà thầu đại diện liên danh') : 'Nhà thầu trúng thầu'}
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${m.role === 'lead'
                             ? 'bg-amber-100 dark:bg-amber-900/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 border border-amber-200/50 dark:border-amber-800/40'
-                            : 'bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600'
+                            : 'bg-bg-muted hover:bg-gray-200 dark:hover:bg-slate-600'
                             }`}
                     >
                         {m.role === 'lead' ? (
@@ -402,10 +402,10 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                         )}
                     </button>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-gray-800 dark:text-slate-200 truncate">
+                        <p className="text-xs font-semibold text-txt-primary truncate">
                             {m.contractor?.FullName || m.contractor_id}
                         </p>
-                        <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                        <span className="text-[10px] text-txt-muted">
                             {members.length > 1 ? (
                                 m.role === 'lead' ? (
                                     <span className="inline-flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-medium">
@@ -443,8 +443,8 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
             {/* Search & Add */}
             <div ref={dropdownRef} className="relative">
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-400">
-                    <Search className="w-4 h-4 text-gray-400 dark:text-slate-400 shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-2 bg-bg-surface border border-border rounded-lg focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-400">
+                    <Search className="w-4 h-4 text-txt-placeholder shrink-0" />
                     <input
                         ref={searchRef}
                         type="text"
@@ -455,7 +455,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             setIsDropdownOpen(true);
                         }}
                         onFocus={() => setIsDropdownOpen(true)}
-                        className="flex-1 bg-transparent text-sm text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none"
+                        className="flex-1 bg-transparent text-sm text-txt-primary placeholder-gray-400 dark:placeholder-slate-500 outline-none"
                     />
                     {searchText && (
                         <button onClick={() => { setSearchText(''); setIsDropdownOpen(false); }}>
@@ -466,7 +466,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
                 {/* Dropdown results */}
                 {isDropdownOpen && (
-                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm max-h-48 overflow-y-auto">
+                    <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-bg-surface border border-border rounded-lg shadow-sm max-h-48 overflow-y-auto">
                         {filteredContractors.length > 0 ? (
                             <>
                                 {filteredContractors.map(c => (
@@ -479,13 +479,13 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                             <Building2 className="w-4 h-4 text-blue-500" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-medium text-gray-800 dark:text-slate-200 truncate">{c.FullName}</p>
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400">MST: {c.TaxCode || c.ContractorID}</p>
+                                            <p className="text-xs font-medium text-txt-primary truncate">{c.FullName}</p>
+                                            <p className="text-[10px] text-txt-muted">MST: {c.TaxCode || c.ContractorID}</p>
                                         </div>
                                         <Plus className="w-4 h-4 text-blue-400 shrink-0" />
                                     </button>
                                 ))}
-                                <div className="sticky bottom-0 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+                                <div className="sticky bottom-0 bg-bg-surface border-t border-gray-100 dark:border-slate-750 p-2 flex justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
                                     <button
                                         onClick={() => {
                                             setIsDropdownOpen(false);
@@ -503,7 +503,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             </>
                         ) : (
                             <div className="px-3 py-4 text-center">
-                                <p className="text-sm text-gray-400 dark:text-slate-400 mb-3">
+                                <p className="text-sm text-txt-placeholder mb-3">
                                     {searchText ? 'Không tìm thấy nhà thầu' : 'Nhập tên hoặc MST để tìm kiếm'}
                                 </p>
                                 <button
@@ -529,7 +529,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
             {members.length > 0 && (
                 <div className="space-y-3 mt-3">
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        <label className="text-xs font-semibold text-txt-muted">
                             Giá trúng thầu (VNĐ)
                         </label>
                         <input
@@ -537,12 +537,12 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                             placeholder="Nhập giá trúng thầu..."
                             value={winningPrice}
                             onChange={(e) => setWinningPrice(formatNumberWithDots(e.target.value))}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            className="w-full px-3 py-2 bg-bg-surface border border-border rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
-                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            <label className="text-xs font-semibold text-txt-muted">
                                 QĐ phê duyệt KQLCNT
                             </label>
                             <input
@@ -550,18 +550,18 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                 placeholder="Số quyết định..."
                                 value={decisionNumber}
                                 onChange={(e) => setDecisionNumber(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                className="w-full px-3 py-2 bg-bg-surface border border-border rounded-lg text-sm text-slate-850 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            <label className="text-xs font-semibold text-txt-muted">
                                 Ngày phê duyệt <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="date"
                                 value={approvalDate}
                                 onChange={(e) => setApprovalDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-850 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                className="w-full px-3 py-2 bg-bg-surface border border-border rounded-lg text-sm text-slate-850 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                             />
                         </div>
                     </div>
@@ -575,7 +575,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
             {/* Actions */}
             {(members.length > 0 || !!pkg?.WinningContractorID || (initialMembers && initialMembers.length > 0)) && (
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
                     <button
                         onClick={() => {
                             if (onCancel) {
@@ -584,7 +584,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
                                 onSaved();
                             }
                         }}
-                        className="px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        className="px-3 py-1.5 text-xs text-txt-muted hover:bg-bg-muted rounded-lg transition-colors"
                     >
                         Hủy
                     </button>
@@ -606,7 +606,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
             {/* Empty hint */}
             {members.length === 0 && (
                 <div className="text-center py-2">
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-txt-placeholder mt-1">
                         Tìm và chọn nhà thầu trúng thầu từ danh sách. Hỗ trợ liên danh.
                     </p>
                 </div>

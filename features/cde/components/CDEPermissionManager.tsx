@@ -170,13 +170,12 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                 return;
             }
 
-            // Create contractor_account — store email used for auth
+            // Create contractor_account — store email used for auth (no password stored)
             await supabase.from('contractor_accounts').insert({
                 contractor_id: contractorId, username: staffForm.username,
                 display_name: staffForm.display_name, email: email,
                 phone: staffForm.phone || null, auth_user_id: authUserId,
                 is_active: true, allowed_project_ids: [projectId],
-                current_password: staffForm.password,
             });
 
             // Add CDE permission for this person
@@ -231,7 +230,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                         <Shield className="w-5 h-5 text-red-600" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black text-gray-800 dark:text-slate-100">Phân quyền tham gia dự án</h2>
+                        <h2 className="text-lg font-black text-txt-primary">Phân quyền tham gia dự án</h2>
                         <p className="text-[10px] text-gray-400">Thêm đơn vị, tạo tài khoản đăng nhập cho nhân sự</p>
                     </div>
                 </div>
@@ -245,17 +244,17 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                 <div className="relative max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm đơn vị..."
-                        className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                        className="w-full pl-9 pr-4 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                 </div>
             )}
 
             {/* Org List */}
             {filtered.length === 0 ? (
                 <EmptyState
-                    icon={<Building2 className="w-12 h-12 text-gray-400 dark:text-slate-400" />}
+                    icon={<Building2 className="w-12 h-12 text-txt-placeholder" />}
                     title="Chưa có đơn vị nào tham gia"
                     description={'Bấm "Thêm đơn vị" để mời nhà thầu, tư vấn tham gia dự án'}
-                    className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                    className="bg-bg-surface rounded-2xl border border-dashed border-border"
                 />
             ) : (
                 <div className="space-y-3">
@@ -265,23 +264,23 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                         const isExpanded = expandedOrg === org.id;
                         const orgPerm = perms.find(p => p.user_id === org.id);
                         return (
-                            <div key={org.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                            <div key={org.id} className="bg-bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
                                 {/* Org Header */}
-                                <div className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors" onClick={() => setExpandedOrg(isExpanded ? null : org.id)}>
+                                <div className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-bg-hover-row transition-colors" onClick={() => setExpandedOrg(isExpanded ? null : org.id)}>
                                     <div className="flex items-center gap-3">
                                         {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
                                         <div className="w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
                                             <Building2 className="w-4.5 h-4.5 text-blue-600" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-gray-800 dark:text-slate-100">{org.name}</p>
+                                            <p className="text-sm font-bold text-txt-primary">{org.name}</p>
                                             <p className="text-[10px] text-gray-400">{org.representative || org.id} · {accs.length} tài khoản</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {orgPerm && (
                                             <select value={orgPerm.user_role} onClick={e => e.stopPropagation()} onChange={e => updateRole(orgPerm.id, e.target.value)}
-                                                className="px-2.5 py-1.5 bg-gray-100 dark:bg-slate-700 border-0 rounded-lg text-[10px] font-bold">
+                                                className="px-2.5 py-1.5 bg-bg-muted border-0 rounded-lg text-[10px] font-bold">
                                                 {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                                             </select>
                                         )}
@@ -296,7 +295,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
 
                                 {/* Expanded: Staff List */}
                                 {isExpanded && (
-                                    <div className="px-5 pb-4 border-t border-gray-100 dark:border-slate-700">
+                                    <div className="px-5 pb-4 border-t border-border-subtle">
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-3 mb-2 flex items-center gap-1.5">
                                             <Users className="w-3 h-3" /> Nhân sự ({accs.length})
                                         </p>
@@ -313,7 +312,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                                                 {(acc.display_name || acc.username).charAt(0).toUpperCase()}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="text-xs font-bold text-gray-700 dark:text-slate-200">{acc.display_name}</p>
+                                                                <p className="text-xs font-bold text-txt-secondary">{acc.display_name}</p>
                                                                 <p className="text-[10px] text-gray-400 flex items-center gap-2">
                                                                     <span className="flex items-center gap-0.5"><Key className="w-2.5 h-2.5" />{acc.username}</span>
                                                                     {acc.email && <span className="flex items-center gap-0.5"><Mail className="w-2.5 h-2.5" />{acc.email}</span>}
@@ -337,9 +336,9 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Org */}
             {showAddOrg && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddOrg(false)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
-                        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
-                            <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Thêm đơn vị vào dự án</h3>
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-lg mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+                            <h3 className="text-sm font-black text-txt-primary">Thêm đơn vị vào dự án</h3>
                             <button onClick={() => setShowAddOrg(false)} className="text-gray-400 hover:text-red-500"><X className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 space-y-3">
@@ -354,7 +353,7 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                         className="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center gap-3 group">
                                         <Building2 className="w-5 h-5 text-gray-300 group-hover:text-blue-500 transition-colors" />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate">{org.full_name}</p>
+                                            <p className="text-xs font-bold text-txt-secondary truncate">{org.full_name}</p>
                                             <p className="text-[10px] text-gray-400">{org.contractor_id} {org.representative ? `· ${org.representative}` : ''}</p>
                                         </div>
                                         <Plus className="w-4 h-4 text-gray-300 group-hover:text-blue-500" />
@@ -370,10 +369,10 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
             {/* Modal: Add Staff */}
             {showAddStaff && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowAddStaff(null)}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
-                        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                    <div className="bg-bg-surface rounded-2xl shadow-sm w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                             <div>
-                                <h3 className="text-sm font-black text-gray-800 dark:text-slate-100">Tạo tài khoản nhân sự</h3>
+                                <h3 className="text-sm font-black text-txt-primary">Tạo tài khoản nhân sự</h3>
                                 <p className="text-[10px] text-gray-400 mt-0.5">{contractors.find(c => c.contractor_id === showAddStaff)?.full_name}</p>
                             </div>
                             <button onClick={() => setShowAddStaff(null)} className="text-gray-400 hover:text-red-500"><X className="w-5 h-5" /></button>
@@ -382,32 +381,32 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                             <div>
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Họ tên <span className="text-red-500">*</span></label>
                                 <input value={staffForm.display_name} onChange={e => setStaffForm(f => ({ ...f, display_name: e.target.value }))} placeholder="Nguyễn Văn A"
-                                    className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                    className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Mail className="w-3 h-3" /> Email</label>
                                     <input value={staffForm.email} onChange={e => setStaffForm(f => ({ ...f, email: e.target.value }))} placeholder="abc@email.com"
-                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block flex items-center gap-1"><Phone className="w-3 h-3" /> Điện thoại</label>
                                     <input value={staffForm.phone} onChange={e => setStaffForm(f => ({ ...f, phone: e.target.value }))} placeholder="0901234567"
-                                        className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
+                                        className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm" />
                                 </div>
                             </div>
-                            <div className="border-t border-gray-100 dark:border-slate-700 pt-3.5">
+                            <div className="border-t border-border-subtle pt-3.5">
                                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Lock className="w-3 h-3" /> Thông tin đăng nhập</p>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Tên đăng nhập <span className="text-red-500">*</span></label>
                                         <input value={staffForm.username} onChange={e => setStaffForm(f => ({ ...f, username: e.target.value }))} placeholder="nguyenvana"
-                                            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 mb-1 block">Mật khẩu <span className="text-red-500">*</span></label>
                                         <input type="password" value={staffForm.password} onChange={e => setStaffForm(f => ({ ...f, password: e.target.value }))} placeholder="••••••"
-                                            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
+                                            className="w-full px-3.5 py-2.5 bg-bg-surface border border-gray-200 dark:border-slate-600 rounded-xl text-sm font-mono" />
                                     </div>
                                 </div>
                             </div>
@@ -416,15 +415,15 @@ const CDEPermissionManager: React.FC<{ projectId: string }> = ({ projectId }) =>
                                 <div className="flex gap-2 flex-wrap">
                                     {ROLES.map(r => (
                                         <button key={r.value} onClick={() => setStaffForm(f => ({ ...f, role: r.value }))}
-                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-gray-400 border-transparent'}`}>
+                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${staffForm.role === r.value ? `${r.color} border-current shadow-sm` : 'bg-bg-subtle dark:bg-slate-700 text-gray-400 border-transparent'}`}>
                                             <r.icon className="w-3 h-3" />{r.label}
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         </div>
-                        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50/80 dark:bg-slate-800">
-                            <button onClick={() => setShowAddStaff(null)} className="px-4 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 rounded-xl text-xs font-bold">Hủy</button>
+                        <div className="px-6 py-4 border-t border-border flex justify-end gap-3 bg-gray-50/80 dark:bg-slate-800">
+                            <button onClick={() => setShowAddStaff(null)} className="px-4 py-2.5 bg-bg-muted text-gray-600 rounded-xl text-xs font-bold">Hủy</button>
                             <button onClick={() => createStaffAccount(showAddStaff)} disabled={saving}
                                 className="px-5 py-2.5 text-white rounded-xl text-xs font-bold flex items-center gap-2 disabled:opacity-50 bg-gradient-to-br from-primary-600 to-primary-600">
                                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}

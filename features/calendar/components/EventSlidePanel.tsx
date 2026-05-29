@@ -69,7 +69,7 @@ export const EventSlidePanel: React.FC<EventSlidePanelProps> = ({ event, onEdit,
       image: { icon: Image, color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/30' },
       excel: { icon: FileSpreadsheet, color: 'text-green-500 bg-green-50 dark:bg-green-900/30' },
       word: { icon: FileText, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30' },
-      other: { icon: File, color: 'text-gray-500 bg-slate-50 dark:bg-slate-800' },
+      other: { icon: File, color: 'text-gray-500 bg-bg-subtle' },
     };
     return icons[type] || icons.other;
   };

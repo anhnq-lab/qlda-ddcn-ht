@@ -63,7 +63,7 @@ function getDisciplineColor(d: string | null) {
         HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-warning-500',
         LAND: 'bg-emerald-500', MEP: 'bg-purple-500', COMBINE: 'bg-slate-400',
     };
-    return c[d || ''] || 'bg-slate-50 dark:bg-slate-800';
+    return c[d || ''] || 'bg-bg-subtle';
 }
 
 // ── Component ────────────────────────────────────────
@@ -218,7 +218,7 @@ export const BimModelTree: React.FC = () => {
                                             }}
                                             className={`
                                                 flex items-center gap-2 py-1 px-2 rounded cursor-pointer text-xs truncate
-                                                ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-slate-50 dark:bg-slate-800'}
+                                                ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-bg-subtle'}
                                             `}
                                             title="Double-click to zoom"
                                         >
@@ -318,7 +318,7 @@ export const BimModelTree: React.FC = () => {
     return (
         <div className={`
             ${isMobile ? 'absolute inset-y-0 left-0 z-30 w-72 border-r' : 'w-full h-full'}
-            ${isDarkMode ? 'bg-slate-50 border-slate-700/50' : 'bg-white dark:bg-slate-800 border-gray-200'}
+            ${isDarkMode ? 'bg-slate-50 border-slate-700/50' : 'bg-bg-surface border-gray-200'}
             flex flex-col shrink-0 backdrop-blur-xl
         `}>
             {/* Header */}

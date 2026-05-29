@@ -43,7 +43,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                     onClick={() => setExpandedFilter(isOpen ? null : filterKey)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCount > 0
                         ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300'
-                        : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-gray-300'
+                        : 'bg-bg-surface border-gray-200 dark:border-slate-600 text-txt-muted hover:border-gray-300'
                         }`}
                 >
                     {icon}
@@ -55,7 +55,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                 </button>
 
                 {isOpen && (
-                    <div className="absolute top-full mt-1 left-0 w-56 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm z-30 p-2 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full mt-1 left-0 w-56 bg-bg-surface border border-border rounded-xl shadow-sm z-30 p-2 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
                         {options.map(opt => {
                             const isSelected = (filters as any)[filterKey]?.includes(opt.value);
                             return (
@@ -64,7 +64,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
                                     onClick={() => toggleArrayItem(filterKey as any, opt.value)}
                                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-left transition-all ${isSelected
                                         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold'
-                                        : 'text-gray-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700'
+                                        : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700'
                                         }`}
                                 >
                                     {opt.color && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
@@ -81,7 +81,7 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
 
     return (
         <div className="flex items-center gap-2 flex-wrap" onClick={(e) => { if ((e.target as HTMLElement).closest('[data-filter-dropdown]') === null) setExpandedFilter(null); }}>
-            <div className="flex items-center gap-1.5 text-gray-500 dark:text-slate-400">
+            <div className="flex items-center gap-1.5 text-txt-muted">
                 <Filter className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Bộ lọc</span>
             </div>
@@ -108,22 +108,22 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
 
             {/* Date Range */}
             <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 shadow-sm">
-                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider shrink-0 select-none">Từ:</span>
+                <div className="flex items-center gap-1.5 bg-bg-surface border border-border rounded-lg px-2.5 py-1.5 shadow-sm">
+                    <span className="text-[10px] font-bold text-txt-placeholder uppercase tracking-wider shrink-0 select-none">Từ:</span>
                     <input type="date" value={filters.dateFrom} onChange={e => onChange({ ...filters, dateFrom: e.target.value })}
-                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200 focus:ring-0" />
+                        className="text-[11px] bg-transparent border-none outline-none w-28 text-txt-secondary focus:ring-0" />
                 </div>
                 <span className="text-gray-300 dark:text-slate-600 text-xs select-none">—</span>
-                <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 shadow-sm">
-                    <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider shrink-0 select-none">Đến:</span>
+                <div className="flex items-center gap-1.5 bg-bg-surface border border-border rounded-lg px-2.5 py-1.5 shadow-sm">
+                    <span className="text-[10px] font-bold text-txt-placeholder uppercase tracking-wider shrink-0 select-none">Đến:</span>
                     <input type="date" value={filters.dateTo} onChange={e => onChange({ ...filters, dateTo: e.target.value })}
-                        className="text-[11px] bg-transparent border-none outline-none w-28 text-gray-700 dark:text-slate-200 focus:ring-0" />
+                        className="text-[11px] bg-transparent border-none outline-none w-28 text-txt-secondary focus:ring-0" />
                 </div>
             </div>
 
             {/* Active badges + clear */}
             {activeCount > 0 && (
-                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
                     <span className="text-[10px] font-bold text-gray-400">{resultCount} kết quả</span>
                     <button onClick={onClear} className="flex items-center gap-1 text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors">
                         <X className="w-3 h-3" /> Xóa bộ lọc

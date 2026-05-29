@@ -136,26 +136,26 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
             <div className="flex-1 overflow-auto p-4 custom-scrollbar pb-28 space-y-6">
                 
                 {/* 1. Basic Info */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-border shadow-sm space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors col-span-2">
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400">Tên nội dung thực hiện (Bước)</label>
+                            <label className="text-xs font-bold text-txt-muted">Tên nội dung thực hiện (Bước)</label>
                             <input 
                                 type="text" 
                                 value={name} 
                                 onChange={e => setName(e.target.value)}
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors" 
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors" 
                             />
                         </div>
 
                         <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                            <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                                 Giai đoạn dự án
                             </label>
                             <select 
                                 value={phase} 
                                 onChange={e => setPhase(e.target.value)}
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors cursor-pointer appearance-none"
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors cursor-pointer appearance-none"
                             >
                                 <option value="preparation">I. Giai đoạn Chuẩn bị dự án</option>
                                 <option value="execution">II. Giai đoạn Thực hiện dự án</option>
@@ -164,11 +164,11 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                         </div>
                         
                         <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
-                            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">Phân loại bước</label>
+                            <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">Phân loại bước</label>
                             <select 
                                 value={type} 
                                 onChange={e => setType(e.target.value)}
-                                className="w-full h-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors cursor-pointer appearance-none"
+                                className="w-full h-11 bg-bg-subtle border border-border rounded-xl px-4 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors cursor-pointer appearance-none"
                             >
                                 <option value="start">Khởi xướng (Start)</option>
                                 <option value="input">Lập hồ sơ / Thực thi (Input)</option>
@@ -180,22 +180,22 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <Clock size={14} className="text-warning-500" /> Tổng thời gian (SLA)
                         </label>
-                        <div className="flex bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
+                        <div className="flex bg-bg-subtle border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all w-full max-w-xs">
                             <input 
                                 type="number" 
                                 value={slaValue} 
                                 onChange={e => setSlaValue(e.target.value)}
                                 placeholder="0"
                                 min="0"
-                                className="w-16 flex-1 h-11 bg-transparent px-4 text-sm font-bold text-center border-r border-slate-200 dark:border-slate-700 focus:outline-none text-slate-800 dark:text-white" 
+                                className="w-16 flex-1 h-11 bg-transparent px-4 text-sm font-bold text-center border-r border-border focus:outline-none text-txt-primary" 
                             />
                             <select 
                                 value={slaUnit} 
                                 onChange={e => setSlaUnit(e.target.value)}
-                                className="min-w-[100px] h-11 bg-slate-100 dark:bg-slate-800 px-3 text-xs font-semibold focus:outline-none text-slate-700 dark:text-slate-300 border-none cursor-pointer"
+                                className="min-w-[100px] h-11 bg-bg-muted px-3 text-xs font-semibold focus:outline-none text-txt-secondary border-none cursor-pointer"
                             >
                                 <option value="d">Ngày lịch</option>
                                 <option value="wd">Ngày làm việc</option>
@@ -206,11 +206,11 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                 </div>
 
                 {/* 2. RACI Matrix */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-border shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <Users size={14} className="text-blue-500" />
-                            <h3 className="text-[13px] font-bold text-slate-800 dark:text-white uppercase tracking-wider">Ma trận RACI</h3>
+                            <h3 className="text-[13px] font-bold text-txt-primary uppercase tracking-wider">Ma trận RACI</h3>
                         </div>
                         {!raciEditMode && (
                             <button
@@ -241,16 +241,16 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                     )}
 
                     {!raciSummary && !raciEditMode && (
-                        <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-2">
+                        <p className="text-xs text-txt-placeholder italic mt-2">
                             Chưa có phân công RACI. Nhấn “Chỉnh sửa” để thiết lập.
                         </p>
                     )}
                 </div>
 
                 {/* 3. Detailed Fields (Căn cứ pháp lý, Sản phẩm đầu ra, Mô tả) */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="bg-bg-surface rounded-2xl p-5 border border-border shadow-sm space-y-5">
                     <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <Scale size={14} className="text-indigo-500" /> Căn cứ pháp lý
                         </label>
                         <textarea 
@@ -258,12 +258,12 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                             onChange={e => setLegalBasis(e.target.value)}
                             placeholder="Nhập căn cứ pháp lý quy định (VD: Nghị định 15/2021/NĐ-CP, Luật Xây dựng...)"
                             rows={3}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors resize-none" 
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors resize-none" 
                         />
                     </div>
 
                     <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <FileText size={14} className="text-emerald-500" /> Sản phẩm đầu ra
                         </label>
                         <textarea 
@@ -271,12 +271,12 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                             onChange={e => setOutputDocument(e.target.value)}
                             placeholder="Nhập tên sản phẩm đầu ra (VD: Quyết định phê duyệt dự án, Báo cáo nghiên cứu khả thi...)"
                             rows={3}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors resize-none" 
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors resize-none" 
                         />
                     </div>
 
                     <div className="space-y-1.5 focus-within:text-primary-600 dark:focus-within:text-primary-500 transition-colors">
-                        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <label className="text-xs font-bold text-txt-muted flex items-center gap-1.5">
                             <BookOpen size={14} className="text-amber-500" /> Hướng dẫn chi tiết / Mô tả bước
                         </label>
                         <textarea 
@@ -284,7 +284,7 @@ const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({ node, onSave }) => {
                             onChange={e => setDescription(e.target.value)}
                             placeholder="Nhập hướng dẫn thực hiện, các bước nghiệp vụ cần làm hoặc mô tả chi tiết..."
                             rows={4}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-slate-800 dark:text-white transition-colors resize-none" 
+                            className="w-full bg-bg-subtle border border-border rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-txt-primary transition-colors resize-none" 
                         />
                     </div>
                 </div>

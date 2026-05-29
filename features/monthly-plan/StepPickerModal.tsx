@@ -84,19 +84,19 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div className="relative bg-bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-2xl max-h-[80vh] flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center justify-between p-4 border-b border-border">
                     <div>
-                        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <h2 className="text-base font-bold text-txt-primary flex items-center gap-2">
                             <FolderOpen className="w-5 h-5 text-violet-500" />
                             Chọn bước đưa vào {MONTH_NAMES[month]} {year}
                         </h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-txt-muted mt-0.5">
                             Chọn các bước dự án chưa lên lịch để thêm vào kế hoạch tháng
                         </p>
                     </div>
-                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-bg-muted transition-colors">
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
@@ -119,7 +119,7 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
                             {/* Select all */}
                             <button
                                 onClick={toggleAll}
-                                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-txt-muted hover:bg-bg-hover-row/50 rounded-lg transition-colors"
                             >
                                 {selectedIds.size === steps.length
                                     ? <CheckSquare className="w-4 h-4 text-violet-600" />
@@ -133,7 +133,7 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
 
                             {/* By phase */}
                             {PHASE_ORDER.filter(p => byPhase[p]?.length).map(phase => (
-                                <div key={phase} className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                                <div key={phase} className="border border-border rounded-xl overflow-hidden">
                                     {/* Phase header */}
                                     <button
                                         onClick={() => togglePhase(phase)}
@@ -143,7 +143,7 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
                                             ? <ChevronDown className="w-4 h-4 text-slate-400" />
                                             : <ChevronRight className="w-4 h-4 text-slate-400" />
                                         }
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">
+                                        <span className="text-xs font-bold text-txt-secondary uppercase tracking-wide">
                                             {PHASE_LABELS[phase] ?? phase}
                                         </span>
                                         <span className="ml-auto text-xs text-slate-400 font-normal normal-case">
@@ -153,7 +153,7 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
 
                                     {/* Step rows */}
                                     {expandedPhases[phase] && (
-                                        <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                                        <div className="divide-y divide-border-subtle">
                                             {byPhase[phase].map(step => (
                                                 <button
                                                     key={step.id}
@@ -169,7 +169,7 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
                                                         }
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
+                                                        <p className="text-sm font-medium text-txt-primary truncate">
                                                             {step.task_name}
                                                         </p>
                                                         <div className="flex flex-wrap items-center gap-2 mt-0.5">
@@ -202,14 +202,14 @@ export const StepPickerModal: React.FC<StepPickerModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between gap-3 p-4 border-t border-slate-200 dark:border-slate-700">
-                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-between gap-3 p-4 border-t border-border">
+                    <span className="text-sm text-txt-muted">
                         Đã chọn <strong>{selectedIds.size}</strong> bước
                     </span>
                     <div className="flex gap-2">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-txt-muted border border-border rounded-lg hover:bg-bg-hover-row transition-colors"
                         >
                             Hủy
                         </button>

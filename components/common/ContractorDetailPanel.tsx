@@ -61,7 +61,7 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
                 <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded-lg w-2/3" />
                 <div className="space-y-3 mt-6">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-12 bg-gray-100 dark:bg-slate-700 rounded-lg" />
+                        <div key={i} className="h-12 bg-bg-muted rounded-lg" />
                     ))}
                 </div>
             </div>
@@ -71,7 +71,7 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
     if (!contractor) {
         return (
             <div className="p-4 text-center">
-                <p className="text-gray-500 dark:text-slate-400">Không tìm thấy thông tin nhà thầu</p>
+                <p className="text-txt-muted">Không tìm thấy thông tin nhà thầu</p>
             </div>
         );
     }
@@ -84,21 +84,21 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
     ] as const;
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-800 relative">
+        <div className="flex flex-col h-full bg-bg-surface relative">
             {/* ═══ STICKY HEADER ═══ */}
-            <div className="sticky top-0 z-10 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-800">
+            <div className="sticky top-0 z-10 bg-bg-surface border-b border-border">
                 <div className="p-5 pb-4">
                     <div className="flex items-start gap-4">
                         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-400 to-warning-500 flex items-center justify-center shrink-0 shadow-sm shadow-primary-500/20">
                             <Building2 className="w-7 h-7 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-tight">
+                            <h2 className="text-lg font-bold text-txt-primary leading-tight">
                                 {contractor.full_name}
                             </h2>
                             <div className="flex flex-wrap items-center gap-3 mt-2">
                                 {contractor.tax_code && (
-                                    <p className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1.5 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-medium">
+                                    <p className="text-xs text-txt-muted flex items-center gap-1.5 bg-bg-muted px-2 py-0.5 rounded-md font-medium">
                                         <Hash className="w-3 h-3 text-gray-400" /> MST: {contractor.tax_code}
                                     </p>
                                 )}
@@ -122,10 +122,10 @@ export const ContractorDetailPanel: React.FC<ContractorDetailPanelProps> = ({ co
                                 className={`flex items-center gap-2 pb-3 px-1 border-b-2 font-bold text-sm transition-colors whitespace-nowrap ${
                                     isActive
                                         ? 'border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                                        : 'border-transparent text-gray-500 hover:text-txt-secondary dark:hover:text-slate-200'
                                 }`}
                             >
-                                <Icon className={`w-4 h-4 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-400'}`} />
+                                <Icon className={`w-4 h-4 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-txt-placeholder'}`} />
                                 {tab.label}
                             </button>
                         );
@@ -176,11 +176,11 @@ const OverviewTab: React.FC<{ contractor: ContractorData; contractorId: string; 
                     <p className="text-xl font-black text-warning-700 dark:text-warning-300 mt-1">{stats?.totalPkgs ?? '-'}</p>
                 </div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
-                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 uppercase tracking-wide">Thông tin tổ chức</h3>
+            <div className="bg-bg-surface rounded-xl border border-border overflow-hidden shadow-sm">
+                <div className="px-4 py-3 bg-bg-subtle border-b border-border">
+                    <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wide">Thông tin tổ chức</h3>
                 </div>
-                <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                <div className="divide-y divide-border-subtle">
                     {contractor.representative && <InfoRow icon={User} label="Người đại diện" value={contractor.representative} />}
                     {contractor.address && <InfoRow icon={MapPin} label="Địa chỉ trụ sở" value={contractor.address} />}
                     {contractor.contact_info && <InfoRow icon={Phone} label="Điện thoại liên hệ" value={contractor.contact_info} />}
@@ -188,11 +188,11 @@ const OverviewTab: React.FC<{ contractor: ContractorData; contractorId: string; 
                     {contractor.website && <InfoRow icon={Globe} label="Website" value={contractor.website} />}
                 </div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                <div className="px-4 py-3 bg-slate-50 dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
-                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-200 uppercase tracking-wide">Hồ sơ năng lực & pháp lý</h3>
+            <div className="bg-bg-surface rounded-xl border border-border overflow-hidden shadow-sm">
+                <div className="px-4 py-3 bg-bg-subtle border-b border-border">
+                    <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wide">Hồ sơ năng lực & pháp lý</h3>
                 </div>
-                <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                <div className="divide-y divide-border-subtle">
                     {contractor.cap_cert_code ? <InfoRow icon={Award} label="Mã chứng chỉ năng lực" value={contractor.cap_cert_code} link={contractor.cap_cert_link || undefined} /> : <EmptyRow icon={Award} label="Mã chứng chỉ năng lực" />}
                     {contractor.op_license_no ? <InfoRow icon={FileText} label="Giấy phép kinh doanh/hoạt động" value={contractor.op_license_no} /> : <EmptyRow icon={FileText} label="Giấy phép kinh doanh/hoạt động" />}
                     {contractor.established_year ? <InfoRow icon={Calendar} label="Năm thành lập" value={String(contractor.established_year)} /> : <EmptyRow icon={Calendar} label="Năm thành lập" />}
@@ -227,11 +227,11 @@ const ContractsTab: React.FC<{ contractorId: string; projectId?: string }> = ({ 
             {contracts.map((ct: any) => {
                 const st = CONTRACT_STATUS_MAP[ct.status] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-500' };
                 return (
-                    <div key={ct.contract_id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                    <div key={ct.contract_id} className="bg-bg-surface rounded-xl border border-border p-4 hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start gap-4">
                             <div>
                                 <h4 className="font-bold text-primary-700 dark:text-primary-400 text-sm leading-tight">{ct.contract_name}</h4>
-                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><Building2 className="w-3 h-3" /> {ct.project_name}</p>
+                                <p className="text-xs text-txt-muted mt-1 flex items-center gap-1.5"><Building2 className="w-3 h-3" /> {ct.project_name}</p>
                             </div>
                             <span className={`px-2 py-1 rounded text-[10px] font-bold shrink-0 whitespace-nowrap ${st.color}`}>{st.label}</span>
                         </div>
@@ -239,8 +239,8 @@ const ContractsTab: React.FC<{ contractorId: string; projectId?: string }> = ({ 
                             <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-md flex items-center gap-1">
                                 <CircleDollarSign className="w-3.5 h-3.5" /> {formatShortCurrency(ct.value)}
                             </span>
-                            {ct.contract_type && <span className="text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">{ct.contract_type}</span>}
-                            {ct.sign_date && <span className="text-gray-500 dark:text-slate-400 flex items-center gap-1"><Calendar className="w-3 h-3" /> Ký: {new Date(ct.sign_date).toLocaleDateString('vi-VN')}</span>}
+                            {ct.contract_type && <span className="text-txt-muted bg-bg-muted px-2 py-0.5 rounded-md">{ct.contract_type}</span>}
+                            {ct.sign_date && <span className="text-txt-muted flex items-center gap-1"><Calendar className="w-3 h-3" /> Ký: {new Date(ct.sign_date).toLocaleDateString('vi-VN')}</span>}
                         </div>
                     </div>
                 );
@@ -277,19 +277,19 @@ const PackagesTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
                 <div
                     key={pkg.package_id}
                     onClick={() => openPanel({ title: pkg.package_name, icon: <Package2 className="w-5 h-5 text-primary-500" />, component: (<BiddingPackageDetail isOpen={true} onClose={() => closePanel()} package_data={{ PackageID: pkg.package_id, PackageName: pkg.package_name, PackageNumber: pkg.package_number, Field: pkg.field, Price: pkg.price, Status: pkg.status, SelectionMethod: pkg.selection_method, WinningContractorID: pkg.winning_contractor_id, WinningPrice: pkg.winning_price, NotificationCode: pkg.notification_code } as any} asSlidePanel={true} />) })}
-                    className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 group"
+                    className="bg-bg-surface rounded-xl border border-border p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 group"
                 >
                     <div className="flex justify-between items-start gap-4">
                         <div>
                             <h4 className="font-bold text-gray-900 group-hover:text-primary-600 dark:text-slate-100 dark:group-hover:text-primary-400 text-sm leading-tight transition-colors">{pkg.package_name}</h4>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><Building2 className="w-3 h-3" /> {pkg.project_name}</p>
+                            <p className="text-xs text-txt-muted mt-1 flex items-center gap-1.5"><Building2 className="w-3 h-3" /> {pkg.project_name}</p>
                         </div>
                         <span className="px-2 py-1 rounded text-[10px] font-bold shrink-0 whitespace-nowrap bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">Đã trúng thầu</span>
                     </div>
                     <div className="mt-3 flex flex-wrap items-center gap-3 text-xs">
                         <span className="font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1"><CircleDollarSign className="w-3.5 h-3.5" /> {formatShortCurrency(pkg.price)}</span>
-                        {pkg.field && <span className="text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-md uppercase text-[10px] font-bold">{pkg.field}</span>}
-                        {pkg.selection_method && <span className="text-gray-500 dark:text-slate-400 pt-0.5">{pkg.selection_method}</span>}
+                        {pkg.field && <span className="text-txt-muted bg-bg-muted px-2 py-0.5 rounded-md uppercase text-[10px] font-bold">{pkg.field}</span>}
+                        {pkg.selection_method && <span className="text-txt-muted pt-0.5">{pkg.selection_method}</span>}
                     </div>
                 </div>
             ))}
@@ -320,8 +320,8 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
     if (documents.length === 0) return <EmptyState icon={Files} title="Chưa có tài liệu" message="Chưa có hồ sơ/tài liệu nào được liên kết với nhà thầu này." />;
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-            <div className="divide-y divide-gray-100 dark:divide-slate-700/50">
+        <div className="bg-bg-surface rounded-xl border border-border overflow-hidden">
+            <div className="divide-y divide-border-subtle">
                 {documents.map((doc: any) => (
                     <div key={doc.doc_id} className="p-3 hover:bg-gray-50/80 dark:hover:bg-slate-750 transition-colors flex items-center justify-between group cursor-pointer">
                         <div className="flex items-center gap-3 min-w-0">
@@ -329,11 +329,11 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
                                 <FileText className="w-5 h-5 text-primary-500 dark:text-primary-400" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-sm font-semibold text-gray-800 dark:text-slate-200 truncate">{doc.doc_name}</p>
+                                <p className="text-sm font-semibold text-txt-primary truncate">{doc.doc_name}</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <span className="text-[10px] text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-medium">{doc.project_name}</span>
-                                    {doc.doc_type && <span className="text-[10px] text-gray-400 dark:text-slate-400">• {doc.doc_type}</span>}
-                                    {doc.issue_date && <span className="text-[10px] text-gray-400 dark:text-slate-400">• N/h: {new Date(doc.issue_date).toLocaleDateString('vi-VN')}</span>}
+                                    <span className="text-[10px] text-txt-muted bg-bg-muted px-1.5 py-0.5 rounded font-medium">{doc.project_name}</span>
+                                    {doc.doc_type && <span className="text-[10px] text-txt-placeholder">• {doc.doc_type}</span>}
+                                    {doc.issue_date && <span className="text-[10px] text-txt-placeholder">• N/h: {new Date(doc.issue_date).toLocaleDateString('vi-VN')}</span>}
                                 </div>
                             </div>
                         </div>
@@ -347,18 +347,18 @@ const DocumentsTab: React.FC<{ contractorId: string }> = ({ contractorId }) => {
 
 // ── Utility components ──
 const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string; link?: string }> = ({ icon: Icon, label, value, link }) => (
-    <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-        <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-            <Icon className="w-3.5 h-3.5 text-gray-500 dark:text-slate-400" />
+    <div className="flex items-start gap-3 px-4 py-3 hover:bg-bg-hover-row transition-colors">
+        <div className="w-7 h-7 rounded-lg bg-bg-muted flex items-center justify-center shrink-0 mt-0.5">
+            <Icon className="w-3.5 h-3.5 text-txt-muted" />
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-bold">{label}</p>
+            <p className="text-[10px] text-txt-placeholder uppercase tracking-wide font-bold">{label}</p>
             {link ? (
                 <a href={link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 font-medium mt-0.5 hover:underline flex items-center gap-1" style={{ wordBreak: 'break-word' }}>
                     {value}
                 </a>
             ) : (
-                <p className="text-sm text-gray-800 dark:text-slate-200 font-medium mt-0.5" style={{ wordBreak: 'break-word' }}>{value}</p>
+                <p className="text-sm text-txt-primary font-medium mt-0.5" style={{ wordBreak: 'break-word' }}>{value}</p>
             )}
         </div>
     </div>
@@ -366,28 +366,28 @@ const InfoRow: React.FC<{ icon: React.ElementType; label: string; value: string;
 
 const EmptyRow: React.FC<{ icon: React.ElementType; label: string }> = ({ icon: Icon, label }) => (
     <div className="flex items-center gap-3 px-4 py-3 bg-gray-50/30 dark:bg-slate-800">
-        <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0 opacity-50">
-            <Icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
+        <div className="w-7 h-7 rounded-lg bg-bg-muted flex items-center justify-center shrink-0 opacity-50">
+            <Icon className="w-3.5 h-3.5 text-txt-placeholder" />
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wide font-bold">{label}</p>
-            <p className="text-xs text-gray-400 dark:text-slate-400 italic mt-0.5">Chưa cập nhật</p>
+            <p className="text-[10px] text-txt-placeholder uppercase tracking-wide font-bold">{label}</p>
+            <p className="text-xs text-txt-placeholder italic mt-0.5">Chưa cập nhật</p>
         </div>
     </div>
 );
 
 const EmptyState = ({ icon: Icon, title, message }: { icon: React.ElementType; title: string; message: string }) => (
-    <div className="p-4 text-center flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800 h-64">
-        <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-            <Icon className="w-8 h-8 text-gray-400 dark:text-slate-400" />
+    <div className="p-4 text-center flex flex-col items-center justify-center border-2 border-dashed border-border rounded-2xl bg-bg-subtle h-64">
+        <div className="w-16 h-16 bg-bg-muted rounded-full flex items-center justify-center mb-4">
+            <Icon className="w-8 h-8 text-txt-placeholder" />
         </div>
-        <h3 className="text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">{title}</h3>
-        <p className="text-xs text-gray-500 dark:text-slate-400 max-w-xs">{message}</p>
+        <h3 className="text-sm font-bold text-txt-secondary mb-1">{title}</h3>
+        <p className="text-xs text-txt-muted max-w-xs">{message}</p>
     </div>
 );
 
 const LoadingList = () => (
     <div className="space-y-3">
-        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-50 dark:bg-slate-800 rounded-xl animate-pulse" />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-bg-subtle rounded-xl animate-pulse" />)}
     </div>
 );

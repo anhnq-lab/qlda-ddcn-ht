@@ -50,39 +50,39 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                 <div
                     className={`w-full pl-10 pr-4 py-3 rounded-xl border flex items-center gap-2 transition-all duration-200 ${
                         showMemberDropdown 
-                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-slate-800 dark:border-primary-500/50' 
-                            : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600'
+                            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-bg-surface dark:border-primary-500/50' 
+                            : 'border-border bg-bg-subtle hover:border-gray-300 dark:hover:border-slate-600'
                     }`}
                     onClick={() => setShowMemberDropdown(!showMemberDropdown)}
                 >
-                    <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${showMemberDropdown ? 'text-primary-500' : 'text-gray-400 dark:text-slate-500'}`} />
+                    <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${showMemberDropdown ? 'text-primary-500' : 'text-txt-placeholder'}`} />
                     <input
                         type="text"
                         placeholder={`Tìm kiếm và thêm nhân sự... (${selectedMembers.length} đã chọn)`}
-                        className="flex-1 bg-transparent border-none outline-none text-sm text-gray-800 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                        className="flex-1 bg-transparent border-none outline-none text-sm text-txt-primary placeholder:text-gray-400 dark:placeholder:text-slate-500"
                         value={memberSearch}
                         onChange={e => { setMemberSearch(e.target.value); setShowMemberDropdown(true); }}
                         onFocus={() => setShowMemberDropdown(true)}
                     />
-                    <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-500 transition-transform duration-200 ${showMemberDropdown ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-txt-placeholder transition-transform duration-200 ${showMemberDropdown ? 'rotate-180' : ''}`} />
                 </div>
 
                 {showMemberDropdown && (
                     <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowMemberDropdown(false)} />
-                        <div className="absolute z-20 mt-2 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg dark:shadow-2xl dark:shadow-black/50 max-h-[320px] overflow-y-auto flex flex-col">
+                        <div className="absolute z-20 mt-2 w-full bg-bg-surface border border-border rounded-xl shadow-lg dark:shadow-2xl dark:shadow-black/50 max-h-[320px] overflow-y-auto flex flex-col">
                             {Object.keys(groupedEmployees).length === 0 ? (
                                 <div className="p-8 text-center flex flex-col items-center justify-center">
-                                    <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center mb-3">
-                                        <Search className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+                                    <div className="w-12 h-12 rounded-full bg-bg-subtle flex items-center justify-center mb-3">
+                                        <Search className="w-5 h-5 text-txt-placeholder" />
                                     </div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Không tìm thấy nhân sự</p>
-                                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Vui lòng thử từ khóa khác</p>
+                                    <p className="text-sm font-medium text-txt-muted">Không tìm thấy nhân sự</p>
+                                    <p className="text-xs text-txt-placeholder mt-1">Vui lòng thử từ khóa khác</p>
                                 </div>
                             ) : (
                                 Object.entries(groupedEmployees).map(([dept, emps]: [string, Employee[]]) => (
                                     <div key={dept} className="flex flex-col">
-                                        <div className="px-4 py-2 bg-gray-100 dark:bg-slate-900 text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10 border-y border-gray-200 dark:border-slate-700 first:border-t-0">
+                                        <div className="px-4 py-2 bg-gray-100 dark:bg-slate-900 text-[11px] font-bold text-txt-muted uppercase tracking-wider sticky top-0 z-10 border-y border-border first:border-t-0">
                                             {dept}
                                         </div>
                                         <div className="flex flex-col py-1">
@@ -96,7 +96,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                         className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all ${
                                                             isSelected 
                                                                 ? 'bg-blue-50 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-slate-600' 
-                                                                : 'hover:bg-gray-100 dark:hover:bg-slate-800'
+                                                                : 'hover:bg-bg-muted'
                                                         }`}
                                                     >
                                                         <div className="relative">
@@ -113,10 +113,10 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className={`text-sm font-medium truncate ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-gray-800 dark:text-slate-200'}`}>
+                                                            <p className={`text-sm font-medium truncate ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-txt-primary'}`}>
                                                                 {emp.FullName}
                                                             </p>
-                                                            <p className="text-[11px] text-gray-500 dark:text-slate-400 truncate">
+                                                            <p className="text-[11px] text-txt-muted truncate">
                                                                 {emp.Position || 'Nhân viên'}
                                                             </p>
                                                         </div>
@@ -141,13 +141,13 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
 
             {/* Summary table when members selected */}
             {selectedMembers.length > 0 && (
-                <div className="rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <div className="rounded-xl border border-border-subtle overflow-hidden">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-slate-800">
-                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-slate-400">Nhân sự</th>
-                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-slate-400">Phòng ban</th>
-                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-slate-400">Vai trò trong dự án</th>
+                            <tr className="bg-bg-subtle">
+                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-txt-muted">Nhân sự</th>
+                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-txt-muted">Phòng ban</th>
+                                <th className="text-left px-4 py-2.5 text-xs font-semibold text-txt-muted">Vai trò trong dự án</th>
                                 <th className="px-4 py-2.5"></th>
                             </tr>
                         </thead>
@@ -156,7 +156,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                 const emp = employees.find(e => e.EmployeeID === sm.employeeId);
                                 if (!emp) return null;
                                 return (
-                                    <tr key={sm.employeeId} className="border-t border-gray-100 dark:border-slate-700/50 hover:bg-gray-50/50 dark:hover:bg-slate-50">
+                                    <tr key={sm.employeeId} className="border-t border-border-subtle hover:bg-gray-50/50 dark:hover:bg-slate-50">
                                         <td className="px-4 py-2.5">
                                             <div className="flex items-center gap-2">
                                                 <Avatar
@@ -165,12 +165,12 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                     size="xs"
                                                 />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 dark:text-slate-100">{emp.FullName}</p>
-                                                    <p className="text-[10px] text-gray-400 dark:text-slate-400">{emp.Position}</p>
+                                                    <p className="font-medium text-txt-primary">{emp.FullName}</p>
+                                                    <p className="text-[10px] text-txt-placeholder">{emp.Position}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2.5 text-gray-500 dark:text-slate-400 text-xs">{emp.Department || '—'}</td>
+                                        <td className="px-4 py-2.5 text-txt-muted text-xs">{emp.Department || '—'}</td>
                                         <td className="px-4 py-2.5">
                                             <select
                                                 value={sm.role}

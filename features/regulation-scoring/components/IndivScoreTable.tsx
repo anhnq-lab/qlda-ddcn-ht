@@ -47,10 +47,10 @@ export const IndivScoreTable: React.FC<IndivScoreTableProps> = ({
   };
 
   return (
-    <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-slate-900">
+    <div className="border border-border-subtle rounded-2xl overflow-hidden shadow-sm bg-bg-surface">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 dark:bg-slate-800/80 text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+          <thead className="bg-bg-subtle/80 text-[10px] font-black uppercase tracking-wider text-txt-muted border-b border-border-subtle">
             <tr>
               <th className="px-4 py-3.5 text-left">Nhân viên</th>
               <th className="px-3 py-3.5 text-center w-20">A1 (Tổng)</th>
@@ -78,8 +78,8 @@ export const IndivScoreTable: React.FC<IndivScoreTableProps> = ({
                 >
                   <td className="px-4 py-3.5 text-left">
                     <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 dark:text-white">{s.employee_name}</span>
-                      <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
+                      <span className="font-bold text-txt-primary">{s.employee_name}</span>
+                      <span className="text-[9px] font-bold text-txt-placeholder uppercase tracking-widest mt-0.5">
                         Mã: {s.employee_id} • Phòng: {s.department_code}
                       </span>
                     </div>

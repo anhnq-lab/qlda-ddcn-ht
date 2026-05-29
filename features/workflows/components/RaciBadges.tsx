@@ -21,7 +21,7 @@ const RACI_STYLES: Record<string, { label: string; bg: string; text: string; dot
     R: { label: 'R', bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', dot: 'bg-blue-500' },
     A: { label: 'A', bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500' },
     C: { label: 'C', bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400', dot: 'bg-amber-500' },
-    I: { label: 'I', bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', dot: 'bg-gray-400' },
+    I: { label: 'I', bg: 'bg-bg-subtle', text: 'text-txt-muted', dot: 'bg-gray-400' },
 };
 
 export const RaciBadges: React.FC<RaciBadgesProps> = ({
@@ -78,7 +78,7 @@ export const RaciBadges: React.FC<RaciBadgesProps> = ({
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-[10px] text-gray-400 dark:text-gray-600 italic">—</div>
+                            <div className="text-[10px] text-txt-placeholder italic">—</div>
                         )}
                     </div>
                 );

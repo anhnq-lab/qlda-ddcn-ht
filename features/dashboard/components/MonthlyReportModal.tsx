@@ -249,10 +249,10 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-base font-black text-gray-800 dark:text-slate-100 uppercase tracking-tight">
+                            <h2 className="text-base font-black text-txt-primary uppercase tracking-tight">
                                 Báo cáo Giao ban — Tháng {month}/{year}
                             </h2>
-                            <p className="text-[11px] text-gray-400 dark:text-slate-400 font-medium mt-0.5">
+                            <p className="text-[11px] text-txt-placeholder font-medium mt-0.5">
                                 Chuẩn Nghị định 30/2020/NĐ-CP · Xuất DOCX
                             </p>
                         </div>
@@ -275,10 +275,10 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 <Sparkles className="w-12 h-12 text-primary-500" />
                             </div>
                             <div className="text-center max-w-sm">
-                                <h3 className="text-base font-black text-gray-700 dark:text-slate-200 mb-2">
+                                <h3 className="text-base font-black text-txt-secondary mb-2">
                                     Soạn Báo cáo Giao ban
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">
+                                <p className="text-sm text-txt-muted leading-relaxed">
                                     Tổng hợp dữ liệu thực tế từ hệ thống để lập báo cáo giao ban
                                     đúng chuẩn văn bản hành chính nhà nước. Bạn có thể chọn soạn bằng trí tuệ nhân tạo (AI) hoặc xuất trực tiếp dữ liệu thô.
                                 </p>
@@ -311,8 +311,8 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 </div>
                             </div>
                             <div className="text-center">
-                                <p className="font-bold text-gray-700 dark:text-slate-200">Đang tổng hợp dữ liệu & soạn báo cáo...</p>
-                                <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">Thường mất 15–30 giây. Vui lòng chờ.</p>
+                                <p className="font-bold text-txt-secondary">Đang tổng hợp dữ liệu & soạn báo cáo...</p>
+                                <p className="text-xs text-txt-placeholder mt-1">Thường mất 15–30 giây. Vui lòng chờ.</p>
                             </div>
                             <div className="flex gap-1.5 mt-1">
                                 {['Thu thập dữ liệu', 'Phân tích', 'Soạn thảo'].map((step, i) => (
@@ -330,7 +330,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                    <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
+                                    <span className="text-xs font-bold text-txt-muted uppercase tracking-wide">
                                         Nội dung báo cáo
                                     </span>
                                 </div>
@@ -347,12 +347,12 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-primary-300"
+                                    className="w-full h-[480px] p-4 font-mono text-[13px] leading-relaxed border border-gray-300 dark:border-slate-600 rounded-xl bg-bg-surface text-txt-primary resize-none focus:outline-none focus:ring-2 focus:ring-primary-300"
                                 />
                             ) : (
                                 <div className="bg-bg-subtle border border-border rounded-xl p-6 max-h-[480px] overflow-y-auto">
                                     <div 
-                                        className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-slate-200"
+                                        className="prose prose-sm max-w-none dark:prose-invert text-[13.5px] leading-relaxed whitespace-pre-wrap text-txt-primary"
                                         style={{ fontFamily: '"Times New Roman", Times, serif' }}
                                     >
                                         {content}

@@ -89,13 +89,13 @@ const DeputyNode: React.FC<NodeProps> = ({ data }) => (
     <div className="relative">
         <Handle type="target" position={Position.Top} className="!bg-primary-400" />
         <Handle type="source" position={Position.Bottom} className="!bg-primary-400" />
-        <div className="bg-white dark:bg-slate-800 border-2 border-primary-200 dark:border-primary-700 px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all min-w-[160px] text-center">
+        <div className="bg-bg-surface border-2 border-primary-200 dark:border-primary-700 px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all min-w-[160px] text-center">
             <div className="flex items-center justify-center gap-1.5 mb-0.5">
                 <Award className="w-3.5 h-3.5 text-primary-500" />
                 <span className="text-[11px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-tight">{(data as NodeData).label}</span>
             </div>
             {(data as NodeData).subtitle && (
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">{(data as NodeData).subtitle}</p>
+                <p className="text-[10px] text-txt-muted font-medium">{(data as NodeData).subtitle}</p>
             )}
         </div>
     </div>
@@ -291,8 +291,8 @@ const OrgChartPage: React.FC = () => {
                         <Network className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-slate-800 dark:text-white">Sơ đồ tổ chức</h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <h1 className="text-2xl font-black text-txt-primary">Sơ đồ tổ chức</h1>
+                        <p className="text-sm text-txt-muted">
                             Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh
                         </p>
                     </div>
@@ -304,7 +304,7 @@ const OrgChartPage: React.FC = () => {
                         { label: 'Giám đốc', val: 1, color: 'bg-warning-50 dark:bg-warning-900/20 text-warning-700 dark:text-warning-400 border-warning-200 dark:border-warning-700' },
                         { label: 'Phó Giám đốc', val: leadership.pgds.length, color: 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-700' },
                         { label: 'Phòng/Đơn vị', val: 7, color: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700' },
-                        { label: 'Tổng nhân sự', val: employees.length, color: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' },
+                        { label: 'Tổng nhân sự', val: employees.length, color: 'bg-bg-muted text-txt-secondary border-border' },
                     ].map(s => (
                         <div key={s.label} className={`border rounded-xl px-4 py-2 text-center ${s.color}`}>
                             <p className="text-xl font-black leading-none">{s.val}</p>
@@ -315,15 +315,15 @@ const OrgChartPage: React.FC = () => {
             </div>
 
             {/* ── Tab switcher ── */}
-            <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
+            <div className="flex gap-1 bg-bg-muted p-1 rounded-xl w-fit">
                 {(['flow', 'grid'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === tab
-                                ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm'
-                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                ? 'bg-bg-surface text-txt-primary shadow-sm'
+                                : 'text-txt-muted hover:text-slate-700 dark:hover:text-slate-200'
                         }`}
                     >
                         {tab === 'flow' ? '🔗 Sơ đồ cây' : '👥 Nhân sự theo phòng'}
@@ -333,7 +333,7 @@ const OrgChartPage: React.FC = () => {
 
             {/* ── Tab: Flow ── */}
             {activeTab === 'flow' && (
-                <div className="bg-[#f8f6f1] dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden" style={{ height: 680 }}>
+                <div className="bg-[#f8f6f1] dark:bg-slate-900 rounded-2xl border border-border shadow-sm overflow-hidden" style={{ height: 680 }}>
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
@@ -369,8 +369,8 @@ const OrgChartPage: React.FC = () => {
                     </ReactFlow>
 
                     {/* Legend */}
-                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800 backdrop-blur rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
-                        <p className="text-[9px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Chú giải</p>
+                    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800 backdrop-blur rounded-xl px-4 py-3 border border-border shadow-sm pointer-events-none">
+                        <p className="text-[9px] font-black text-txt-placeholder uppercase tracking-widest mb-2">Chú giải</p>
                         {[
                             { color: 'bg-red-600', label: 'UBND tỉnh Hà Tĩnh' },
                             { color: 'bg-primary-600', label: 'Giám đốc Ban' },
@@ -380,7 +380,7 @@ const OrgChartPage: React.FC = () => {
                         ].map(l => (
                             <div key={l.label} className="flex items-center gap-2 mb-1">
                                 <div className={`w-3 h-3 rounded-full ${l.color}`} />
-                                <span className="text-[10px] text-slate-600 dark:text-slate-300">{l.label}</span>
+                                <span className="text-[10px] text-txt-muted">{l.label}</span>
                             </div>
                         ))}
                     </div>
@@ -416,7 +416,7 @@ const OrgChartPage: React.FC = () => {
                             );
 
                             return (
-                                <div key={dept} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-200 group">
+                                <div key={dept} className="bg-bg-surface rounded-2xl border border-border-subtle overflow-hidden hover:shadow-xl transition-all duration-200 group">
                                     {/* Header */}
                                     <div
                                         className="px-5 py-4 text-white relative overflow-hidden"
@@ -446,7 +446,7 @@ const OrgChartPage: React.FC = () => {
                                             <div
                                                 key={emp.EmployeeID}
                                                 onClick={() => navigate(`/employees/${emp.EmployeeID}`)}
-                                                className="px-5 py-2.5 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors group/row"
+                                                className="px-5 py-2.5 flex items-center gap-3 hover:bg-bg-hover-row cursor-pointer transition-colors group/row"
                                             >
                                                 <Avatar
                                                     name={emp.FullName}
@@ -455,10 +455,10 @@ const OrgChartPage: React.FC = () => {
                                                     className="ring-2 ring-white dark:ring-slate-700 flex-shrink-0"
                                                 />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 transition-colors">
+                                                    <p className="text-sm font-semibold text-txt-secondary truncate group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 transition-colors">
                                                         {emp.FullName}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate">{emp.Position}</p>
+                                                    <p className="text-[10px] text-txt-placeholder truncate">{emp.Position}</p>
                                                 </div>
                                                 <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 opacity-0 group-hover/row:opacity-100 transition-opacity flex-shrink-0" />
                                             </div>
@@ -479,7 +479,7 @@ const OrgChartPage: React.FC = () => {
                                             </div>
                                         )}
                                         {members.length === 0 && (
-                                            <div className="px-5 py-5 text-center text-xs text-slate-400 dark:text-slate-400 italic">
+                                            <div className="px-5 py-5 text-center text-xs text-txt-placeholder italic">
                                                 Chưa có nhân sự
                                             </div>
                                         )}
@@ -490,7 +490,7 @@ const OrgChartPage: React.FC = () => {
                     </div>
 
                     {/* Footer note */}
-                    <p className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-400 italic">
+                    <p className="mt-6 text-center text-[11px] text-txt-placeholder italic">
                         * Theo Quyết định của UBND tỉnh Hà Tĩnh về thành lập Ban QLDA ĐTXD công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh
                     </p>
                 </div>
