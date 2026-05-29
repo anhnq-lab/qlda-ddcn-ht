@@ -86,6 +86,34 @@ export const bimConverterService = {
         }
     },
 
+    /**
+     * Submit an IFC file for server-side IFC → Fragments (.frag) conversion.
+     * Pipeline chính (Phương án A): convert trên server để trình duyệt không
+     * phải parse IFC khi xem. Trả về jobId; dùng pollUntilDone() để theo dõi.
+     */
+    async convertFragments(file: File): Promise<{ jobId: string }> {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${CONVERTER_URL}/convert-fragments`, {
+            method: 'POST',
+            body: fd,
+        });
+        if (!res.ok) {
+            const errText = await res.text().catch(() => res.statusText);
+            throw new Error(`Converter API rejected upload: ${errText}`);
+        }
+        const data = await res.json();
+        if (!data.jobId) throw new Error('Converter API did not return a jobId');
+        return { jobId: data.jobId };
+    },
+
+    /** Tải nội dung .frag đã convert xong về (ArrayBuffer) để upload lên Storage. */
+    async downloadFragments(jobId: string): Promise<ArrayBuffer> {
+        const res = await fetch(`${CONVERTER_URL}/download-fragments/${jobId}`);
+        if (!res.ok) throw new Error(`Fragments download failed: ${res.statusText}`);
+        return await res.arrayBuffer();
+    },
+
     async downloadProperties(jobId: string): Promise<ArrayBuffer> {
         const res = await fetch(`${CONVERTER_URL}/download-properties/${jobId}`);
         if (!res.ok) throw new Error(`Properties download failed: ${res.statusText}`);

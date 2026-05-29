@@ -118,6 +118,97 @@ export class CDEDocumentService {
     }
 
     /**
+     * Tải lên một PHIÊN BẢN MỚI của tài liệu (cùng version_group_id).
+     * - Gán/khởi tạo version_group_id chung cho cả nhóm.
+     * - Đặt is_latest=false cho các bản cũ, bản mới is_latest=true.
+     * - Tự tăng số version (vd P01.01 → P01.02).
+     */
+    static async uploadRevision(params: {
+        baseDoc: CDEDocument;
+        file: File;
+        reason: string;
+        userId: string;
+        userName: string;
+        userOrg: string;
+    }): Promise<CDEDocument> {
+        const { baseDoc, file, reason, userId, userName, userOrg } = params;
+        const projectId = baseDoc.project_id;
+        const folderId = baseDoc.cde_folder_id;
+
+        // 1) Xác định version_group_id chung
+        let groupId = baseDoc.version_group_id as string | undefined;
+        if (!groupId) {
+            groupId = (crypto as any)?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${baseDoc.doc_id}`;
+            // backfill cho bản gốc để cùng nhóm
+            await cde.from('documents').update({ version_group_id: groupId }).eq('doc_id', baseDoc.doc_id);
+        }
+
+        // 2) Hạ cờ is_latest của toàn nhóm
+        await cde.from('documents').update({ is_latest: false }).eq('version_group_id', groupId);
+
+        // 3) Tăng số version
+        const bump = (v?: string): string => {
+            if (!v) return 'P01.02';
+            const m = v.match(/^(.*?)(\d+)$/);
+            if (m) return m[1] + String(Number(m[2]) + 1).padStart(m[2].length, '0');
+            return `${v}.1`;
+        };
+        const nextVersion = bump(baseDoc.version);
+
+        // 4) Tính hash + upload file
+        const fileHash = await calculateFileHash(file);
+        const timestamp = Date.now();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = `cde/${projectId}/${folderId || 'root'}/${timestamp}_${safeName}`;
+        const { error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(storagePath, file, { cacheControl: '3600', upsert: false });
+        if (uploadError) throw new Error(`Upload phiên bản thất bại: ${uploadError.message}`);
+
+        // 5) Chèn bản ghi phiên bản mới
+        const { data, error } = await cde
+            .from('documents')
+            .insert({
+                project_id: projectId,
+                doc_name: baseDoc.doc_name,
+                storage_path: storagePath,
+                size: formatFileSize(file.size),
+                category: 0,
+                version: nextVersion,
+                revision: baseDoc.revision || 'P01',
+                version_group_id: groupId,
+                is_latest: true,
+                cde_folder_id: folderId,
+                cde_status: 'S0',
+                iso_status: 'WIP',
+                uploaded_by: userId,
+                submitted_by: userName,
+                submitted_by_org: userOrg,
+                discipline: baseDoc.discipline,
+                doc_type: baseDoc.doc_type,
+                notes: reason,
+                source: 'cde_revision',
+                upload_date: new Date().toISOString(),
+                file_hash: fileHash,
+            })
+            .select()
+            .single();
+        if (error) throw new Error(`Lưu phiên bản thất bại: ${error.message}`);
+
+        await CDEPermissionService.logAudit({
+            projectId,
+            entityType: 'document',
+            entityId: String((data as any).doc_id),
+            action: 'edit',
+            actorId: userId,
+            actorName: userName,
+            details: { revision_of: baseDoc.doc_id, version: nextVersion, reason },
+        });
+
+        return data as unknown as CDEDocument;
+    }
+
+    /**
      * Move document to a different folder.
      */
     static async moveDocument(docId: number, newFolderId: string, actorId?: string, actorName?: string, projectId?: string): Promise<void> {

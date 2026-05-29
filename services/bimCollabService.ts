@@ -110,6 +110,9 @@ export const bimSavedViewsService = {
 export type BimIssueStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 export type BimIssuePriority = 'low' | 'normal' | 'high' | 'critical';
 
+/** Nguồn issue: 3D (viewpoint trong viewer) hoặc 2D (pin trên tài liệu PDF/ảnh). */
+export type BimIssueSource = 'bim_3d' | 'doc_2d';
+
 export interface BimIssue {
     id: string;
     project_id: string;
@@ -127,6 +130,15 @@ export interface BimIssue {
     created_at: string;
     updated_at: string;
     resolved_at?: string | null;
+    // ── Issues hợp nhất 2D/3D ──
+    source?: BimIssueSource;
+    /** Tài liệu 2D liên quan (documents.doc_id) khi source='doc_2d' */
+    doc_id?: number | null;
+    page?: number | null;
+    /** Toạ độ pin chuẩn hoá 0..1 theo chiều ngang/dọc trang */
+    pin_x?: number | null;
+    pin_y?: number | null;
+    markup?: any | null;
 }
 
 export interface BimIssueComment {
@@ -147,6 +159,17 @@ export const bimIssuesService = {
         if (status) q = q.eq('status', status);
         const { data, error } = await q;
         if (error) { console.warn('[bimIssues] list failed:', error.message); return []; }
+        return (data as BimIssue[]) || [];
+    },
+
+    /** Liệt kê issue gắn với một tài liệu 2D cụ thể (markup/pin trên PDF/ảnh). */
+    async listForDoc(docId: number): Promise<BimIssue[]> {
+        if (!supabase) return [];
+        const { data, error } = await (supabase.from('bim_issues' as any) as any)
+            .select('*')
+            .eq('doc_id', docId)
+            .order('created_at', { ascending: true });
+        if (error) { console.warn('[bimIssues] listForDoc failed:', error.message); return []; }
         return (data as BimIssue[]) || [];
     },
 

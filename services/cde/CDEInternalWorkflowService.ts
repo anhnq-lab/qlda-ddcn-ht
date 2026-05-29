@@ -75,13 +75,15 @@ export class CDEInternalWorkflowService {
         stepName: string;
         department: InternalDepartment;
         departmentLabel: string;
-        action: 'done' | 'rejected';
+        action: 'done' | 'rejected' | 'return_to_prev';
         comment: string;
         actorId: string;
         actorName: string;
-        nextStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string };
+        instanceTitle?: string;
+        nextStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string; sla_days?: number };
+        prevStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string; sla_days?: number };
     }): Promise<void> {
-        const newStepStatus = params.action === 'done' ? 'done' : 'rejected';
+        const newStepStatus = params.action === 'done' ? 'done' : params.action === 'return_to_prev' ? 'rejected' : 'rejected';
 
         const { data: existing } = await CDEInternalWorkflowService.db
             .from('cde_internal_workflow_step_records')
@@ -137,6 +139,22 @@ export class CDEInternalWorkflowService {
                 .from('cde_internal_workflow_instances')
                 .update({ status: 'completed', completed_at: new Date().toISOString() })
                 .eq('id', params.instanceId);
+        } else if (params.action === 'return_to_prev' && params.prevStepDef) {
+            // Trả lại bước trước: đưa instance về bước trước + mở lại bước đó (pending)
+            await CDEInternalWorkflowService.db
+                .from('cde_internal_workflow_instances')
+                .update({ current_step_no: params.prevStepDef.step_no, status: 'in_progress' })
+                .eq('id', params.instanceId);
+
+            await CDEInternalWorkflowService.db.from('cde_internal_workflow_step_records').insert({
+                instance_id: params.instanceId,
+                step_no: params.prevStepDef.step_no,
+                step_code: params.prevStepDef.code,
+                step_name: params.prevStepDef.name,
+                department: params.prevStepDef.department,
+                department_label: params.prevStepDef.department_label,
+                status: 'pending',
+            });
         } else if (params.action === 'rejected') {
             await CDEInternalWorkflowService.db
                 .from('cde_internal_workflow_instances')

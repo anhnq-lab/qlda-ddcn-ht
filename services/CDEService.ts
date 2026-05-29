@@ -58,6 +58,10 @@ export class CDEService {
         return CDEDocumentService.moveDocument(docId, newFolderId, actorId, actorName, projectId);
     }
 
+    static uploadRevision(params: Parameters<typeof CDEDocumentService.uploadRevision>[0]): Promise<CDEDocument> {
+        return CDEDocumentService.uploadRevision(params);
+    }
+
     static downloadDocument(storagePath: string): Promise<string> {
         return CDEDocumentService.downloadDocument(storagePath);
     }
@@ -173,11 +177,13 @@ export class CDEService {
         stepName: string;
         department: InternalDepartment;
         departmentLabel: string;
-        action: 'done' | 'rejected';
+        action: 'done' | 'rejected' | 'return_to_prev';
         comment: string;
         actorId: string;
         actorName: string;
-        nextStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string };
+        instanceTitle?: string;
+        nextStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string; sla_days?: number };
+        prevStepDef?: { step_no: number; code: string; name: string; department: InternalDepartment; department_label: string; sla_days?: number };
     }): Promise<void> {
         return CDEInternalWorkflowService.processInternalWorkflowStep(params);
     }

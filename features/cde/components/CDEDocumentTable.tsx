@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { ChevronRight, Search, FolderOpen, Upload, Eye, Download, Loader2, PenTool } from 'lucide-react';
-import type { CDEFolder, CDEDocument } from '../types';
+import { ChevronRight, Search, FolderOpen, Upload, Eye, Download, Loader2, PenTool, Box, History } from 'lucide-react';
+import type { CDEFolder, CDEDocument, CDEItem } from '../types';
 import { getStatusColor, getStatusLabel } from '../constants';
 import { getFileIcon } from '@/utils/fileIcons';
 
@@ -17,16 +17,21 @@ interface CDEDocumentTableProps {
     onPreview: (doc: CDEDocument) => void;
     onDownload: (doc: CDEDocument) => void;
     onSign?: (doc: CDEDocument) => void;
+    onVersions?: (doc: CDEDocument) => void;
     onUpload: () => void;
     onFolderClick: (folderId: string) => void;
     selectedIds?: number[];
     onToggleSelect?: (docId: number) => void;
+    /** Federation: model BIM nằm trong thư mục này (kind='bim') */
+    bimItems?: CDEItem[];
+    onOpenBim?: (item: CDEItem) => void;
 }
 
 const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
     folders, activeFolder, activeFolderId, docs, isLoading,
-    searchQuery, selectedDocId, onSearchChange, onSelectDoc, onPreview, onDownload, onSign, onUpload, onFolderClick,
+    searchQuery, selectedDocId, onSearchChange, onSelectDoc, onPreview, onDownload, onSign, onVersions, onUpload, onFolderClick,
     selectedIds = [], onToggleSelect,
+    bimItems = [], onOpenBim,
 }) => {
 
     const breadcrumbs = useMemo(() => {
@@ -45,6 +50,14 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
         const q = searchQuery.toLowerCase();
         return docs.filter(d => d.doc_name.toLowerCase().includes(q));
     }, [docs, searchQuery]);
+
+    const filteredBim = useMemo(() => {
+        if (!searchQuery.trim()) return bimItems;
+        const q = searchQuery.toLowerCase();
+        return bimItems.filter(b => b.name.toLowerCase().includes(q));
+    }, [bimItems, searchQuery]);
+
+    const hasRows = filteredDocs.length > 0 || filteredBim.length > 0;
 
     return (
         <div className="flex-1 bg-bg-surface rounded-2xl shadow-sm border border-border flex flex-col overflow-hidden min-w-0">
@@ -75,7 +88,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                         />
                     </div>
                     <span className="text-[10px] font-bold text-txt-placeholder bg-bg-muted px-2.5 py-1 rounded-lg">
-                        {filteredDocs.length} tài liệu
+                        {filteredDocs.length} tài liệu{filteredBim.length > 0 ? ` • ${filteredBim.length} BIM` : ''}
                     </span>
                 </div>
             </div>
@@ -86,7 +99,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                     <div className="flex items-center justify-center h-full text-gray-400">
                         <Loader2 className="w-6 h-6 animate-spin" />
                     </div>
-                ) : filteredDocs.length === 0 ? (
+                ) : !hasRows ? (
                     <div className="flex flex-col items-center justify-center h-full p-4 text-gray-400">
                         <div className="w-20 h-20 bg-bg-subtle dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
                             <FolderOpen className="w-10 h-10 text-gray-200 dark:text-slate-400" />
@@ -130,6 +143,62 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border-subtle">
+                            {filteredBim.map((item) => {
+                                const isReady = item.status === 'ready';
+                                const isError = item.status === 'error';
+                                return (
+                                    <tr
+                                        key={item.item_id}
+                                        onClick={() => onOpenBim?.(item)}
+                                        className="group cursor-pointer transition-all duration-200 hover:bg-cyan-50/70 dark:hover:bg-cyan-900/15"
+                                    >
+                                        {onToggleSelect && <td className="px-3 py-3.5" />}
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 shrink-0">
+                                                    <Box className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-txt-primary text-sm truncate">{item.name}</p>
+                                                    <p className="text-[10px] text-txt-placeholder font-medium mt-0.5">
+                                                        <span className="font-mono tracking-tight">{item.size || '—'}</span>
+                                                        {item.element_count ? ` • ${item.element_count.toLocaleString('vi-VN')} cấu kiện` : ''}
+                                                        {item.discipline ? ` • ${item.discipline}` : ''}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-center">
+                                            <span className="text-[10px] font-black text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900/40 px-2.5 py-1 rounded-full uppercase tracking-wider">BIM</span>
+                                        </td>
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isReady ? 'bg-emerald-500' : isError ? 'bg-red-500' : 'bg-amber-400'}`} />
+                                                <span className="text-xs font-semibold text-txt-muted">
+                                                    {isReady ? 'Sẵn sàng' : isError ? 'Lỗi' : 'Đang xử lý'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-xs text-txt-muted font-medium truncate max-w-[120px]">
+                                            {item.submitted_by_org || item.uploaded_by || '—'}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-xs text-txt-muted font-medium">
+                                            {item.created_at ? new Date(item.created_at).toLocaleDateString('vi-VN') : '—'}
+                                        </td>
+                                        <td className="px-5 py-3.5 text-right">
+                                            <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onOpenBim?.(item); }}
+                                                    className="p-1.5 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 rounded-lg transition-colors"
+                                                    title="Mở mô hình 3D"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                             {filteredDocs.map((doc) => {
                                 const fileInfo = getFileIcon(doc.doc_name);
                                 const FileTypeIcon = fileInfo.icon;
@@ -195,6 +264,15 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                 </button>
+                                                {onVersions && (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onVersions(doc); }}
+                                                        className="p-1.5 text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/30 rounded-lg transition-colors"
+                                                        title="Phiên bản & so sánh"
+                                                    >
+                                                        <History className="w-4 h-4" />
+                                                    </button>
+                                                )}
                                                 {onSign && (
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); onSign(doc); }}

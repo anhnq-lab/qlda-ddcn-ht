@@ -1,7 +1,7 @@
 {
     "name": "ifc-converter-api",
     "version": "1.0.0",
-    "description": "IFC to XKT converter API for xeokit BIM Viewer",
+    "description": "IFC → Fragments (.frag) + properties converter API for the ThatOpen BIM viewer (server-side, QCVN 12 / TT47-friendly, self-hostable)",
     "main": "src/index.js",
     "scripts": {
         "start": "node src/index.js",
@@ -12,17 +12,17 @@
     },
     "keywords": [
         "ifc",
-        "xkt",
+        "fragments",
         "bim",
-        "xeokit",
+        "thatopen",
         "converter"
     ],
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "@gltf-transform/core": "^4.1.0",
-        "@xeokit/xeokit-convert": "^1.1.13",
-        "web-ifc": "^0.0.66",
+        "@thatopen/fragments": "^3.3.6",
+        "three": "^0.183.2",
+        "web-ifc": "^0.0.77",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "multer": "^1.4.5-lts.1",

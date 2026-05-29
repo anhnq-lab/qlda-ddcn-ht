@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import * as tus from 'tus-js-client';
+import { calculateFileHash } from '../utils/cryptoUtils';
 
 export interface BimModel {
     id: string;
@@ -175,11 +176,21 @@ async function resumableUpload(
 export async function uploadIFCFile(
     projectId: string,
     file: File,
-    onProgress?: (percent: number) => void
+    onProgress?: (percent: number) => void,
+    opts?: {
+        cdeFolderId?: string;
+        uploadedBy?: string;
+        submittedByOrg?: string;
+        contractorId?: string;
+        discipline?: string;
+    }
 ): Promise<BimModel> {
     const sb = requireSupabase();
     const storagePath = `${projectId}/${file.name}`;
-    const discipline = detectDiscipline(file.name);
+    const discipline = opts?.discipline || detectDiscipline(file.name);
+
+    // SHA-256 toàn vẹn nội dung IFC (QCVN 12:2026/BCA 2.2.5.4)
+    const fileHash = await calculateFileHash(file);
 
     const { data: record, error: dbError } = await sb
         .from('bim_models')
@@ -190,7 +201,12 @@ export async function uploadIFCFile(
             discipline,
             ifc_path: storagePath,
             status: 'uploading',
-        })
+            file_hash: fileHash,
+            cde_folder_id: opts?.cdeFolderId || null,
+            uploaded_by: opts?.uploadedBy || null,
+            submitted_by_org: opts?.submittedByOrg || null,
+            contractor_id: opts?.contractorId || null,
+        } as any)
         .select()
         .single();
 

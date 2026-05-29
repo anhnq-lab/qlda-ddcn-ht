@@ -282,8 +282,9 @@ export function useBimUpload(
             }
         });
 
-        if (childBoxes.length === 0) return;
-
+        // KHÔNG return sớm khi không có mesh: model .frag stream theo tile nên
+        // thường chưa có mesh ở thời điểm này — để rơi xuống fallback dùng box gốc
+        // (model.box) bên dưới thì model toạ độ khảo sát lớn mới được recenter.
         const box = new THREE.Box3();
         const farBoxes = childBoxes.filter(b => {
             const c = b.getCenter(new THREE.Vector3());
@@ -486,46 +487,83 @@ export function useBimUpload(
             const total = newDisciplineModels.reduce((sum, dm) => sum + (dm.model.element_count || 0), 0);
             setObjectCount(total);
 
-            // Ensure streaming tiles are evaluated, then fit camera to loaded models
+            // Fit camera to loaded models. Fragments v3 streams geometry as tiles,
+            // nên mesh có thể CHƯA tồn tại trong scene graph khi vừa load — nguồn
+            // đáng tin là FragmentsModel.box (bbox cả model từ dữ liệu serialize).
+            // Trước đây code ưu tiên duyệt mesh (rỗng khi stream) → fit hụt → không
+            // thấy model. Giờ ưu tiên .box và retry cho tới khi có box hợp lệ.
             if (worldRef.current && newDisciplineModels.some(dm => dm.visible)) {
                 try {
                     const fragments = componentsRef.current?.get(OBC.FragmentsManager);
-                    if (fragments?.core) {
-                        await fragments.core.update(true);
-                        // Reduced from 300ms → 100ms. Streaming tiles arrive almost
-                        // instantly for cached .frag files; only a short grace period
-                        // is needed for the GPU to flush the first batch of tiles.
-                        await new Promise(r => setTimeout(r, 100));
-                    }
                     const camera = getSafeCamera(worldRef.current);
-                    if (camera) {
-                        const sceneBox = new THREE.Box3();
+
+                    const computeBox = (): THREE.Box3 => {
+                        const box = new THREE.Box3();
                         for (const dm of newDisciplineModels) {
                             if (!dm.visible || !dm.fragModel) continue;
                             const obj = (dm.fragModel as any).object || dm.fragModel;
+                            // 1) Box gốc của cả model (có ngay cả khi tile đang stream).
+                            //    .box là box LOCAL — phải áp matrixWorld để ra toạ độ
+                            //    WORLD (khớp với recenter qua obj.position trong coordinateModel),
+                            //    nếu không camera sẽ fit tới toạ độ khảo sát gốc còn model
+                            //    lại render ở gần gốc → không thấy gì.
+                            const nativeBox = (dm.fragModel as any).box;
+                            if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
+                                if (obj instanceof THREE.Object3D) obj.updateMatrixWorld(true);
+                                const worldBox = nativeBox.clone();
+                                if (obj instanceof THREE.Object3D) worldBox.applyMatrix4(obj.matrixWorld);
+                                if (!worldBox.isEmpty()) box.union(worldBox);
+                                continue;
+                            }
+                            // 2) Fallback: duyệt mesh nếu đã có (setFromObject đã ở world space)
                             if (obj instanceof THREE.Object3D) {
                                 obj.traverse((child: any) => {
                                     if (child.isMesh && child.geometry) {
-                                        const childBox = new THREE.Box3().setFromObject(child);
-                                        if (!childBox.isEmpty()) sceneBox.expandByObject(child);
+                                        const cb = new THREE.Box3().setFromObject(child);
+                                        if (!cb.isEmpty()) box.union(cb);
                                     }
                                 });
                             }
-                            // Fallback: use model's native box
-                            if (sceneBox.isEmpty()) {
-                                const nativeBox = (dm.fragModel as any).box;
-                                if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
-                                    sceneBox.union(nativeBox);
-                                }
+                        }
+                        return box;
+                    };
+
+                    // Retry: update tile + đọc box tới khi hợp lệ (tối đa ~2s)
+                    let box = new THREE.Box3();
+                    for (let attempt = 0; attempt < 12; attempt++) {
+                        if (fragments?.core) await fragments.core.update(true);
+                        box = computeBox();
+                        if (!box.isEmpty()) break;
+                        await new Promise(r => setTimeout(r, 160));
+                    }
+
+                    // ── Chẩn đoán: in box từng model + box tổng ──
+                    try {
+                        for (const dm of newDisciplineModels) {
+                            if (!dm.visible || !dm.fragModel) continue;
+                            const nb = (dm.fragModel as any).box;
+                            if (nb instanceof THREE.Box3 && !nb.isEmpty()) {
+                                const c = nb.getCenter(new THREE.Vector3());
+                                const s = nb.getSize(new THREE.Vector3());
+                                console.log(`[BIM Diag] ${dm.model.file_name} box center=(${c.x.toFixed(0)}, ${c.y.toFixed(0)}, ${c.z.toFixed(0)}) size=(${s.x.toFixed(1)}, ${s.y.toFixed(1)}, ${s.z.toFixed(1)})`);
+                            } else {
+                                console.warn(`[BIM Diag] ${dm.model.file_name} box: EMPTY/none (frag không có hình học?)`);
                             }
                         }
-                        if (!sceneBox.isEmpty()) {
-                            const sphere = new THREE.Sphere();
-                            sceneBox.getBoundingSphere(sphere);
-                            if (isFinite(sphere.radius) && sphere.radius > 0) {
-                                camera.controls.fitToSphere(sphere, true);
-                            }
+                    } catch { /* ignore */ }
+
+                    if (camera && !box.isEmpty()) {
+                        const sphere = new THREE.Sphere();
+                        box.getBoundingSphere(sphere);
+                        const c = box.getCenter(new THREE.Vector3());
+                        console.log(`[BIM Diag] FIT box center=(${c.x.toFixed(0)}, ${c.y.toFixed(0)}, ${c.z.toFixed(0)}) radius=${sphere.radius.toFixed(1)}`);
+                        if (isFinite(sphere.radius) && sphere.radius > 0) {
+                            camera.controls.fitToSphere(sphere, true);
+                            // Nudge fragments stream tile cho góc nhìn mới
+                            if (fragments?.core) await fragments.core.update(true);
                         }
+                    } else {
+                        console.warn('[BimUpload] Bỏ qua fit camera — box model rỗng sau khi retry (frag có thể không chứa hình học)');
                     }
                 } catch (err) {
                     console.warn('[BimUpload] Could not fit camera to loaded models:', err);

@@ -104,7 +104,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                             >
                                 <Upload className="w-10 h-10 text-gray-300 dark:text-slate-400 mx-auto mb-2" />
                                 <p className="text-sm text-txt-muted font-medium">Click để chọn file hoặc kéo thả vào đây</p>
-                                <p className="text-[10px] text-gray-400 mt-1">PDF, DOCX, DWG, ZIP, hình ảnh — Max 50MB</p>
+                                <p className="text-[10px] text-gray-400 mt-1">PDF, DOCX, DWG, IFC (mô hình BIM), ZIP, hình ảnh — Max 50MB</p>
                             </div>
                         )}
                         <input ref={fileRef} type="file" className="hidden" onChange={(e) => { if (e.target.files?.[0]) setFile(e.target.files[0]); }} />

@@ -7,9 +7,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useTabSearchParam } from '@/hooks/useTabSearchParam';
 import { useAuth } from '../../context/AuthContext';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
-import { useCDEFolders, useCDEDocuments, useCDEProjectDocuments, useCDEStats, useCDEWorkflowHistory, useUploadCDE, useProcessWorkflowStep, useDownloadCDE, useCDEUserPermission } from '../../hooks/useCDE';
+import { useCDEFolders, useCDEDocuments, useCDEProjectDocuments, useCDEStats, useCDEWorkflowHistory, useUploadCDE, useProcessWorkflowStep, useDownloadCDE, useCDEUserPermission, useCDEItems, useUploadIFCToCDE } from '../../hooks/useCDE';
+import { useNavigate } from 'react-router-dom';
 import { CDE_WORKFLOW_STEPS, CDE_PROJECT_PHASES } from './constants';
-import type { CDEDocument } from './types';
+import type { CDEDocument, CDEItem } from './types';
 import { CDEService } from '../../services/CDEService';
 
 import CDEHeader from './components/CDEHeader';
@@ -26,8 +27,11 @@ import CDETransmittalForm from './components/CDETransmittalForm';
 import CDEAuditLog from './components/CDEAuditLog';
 import CDEFilePreview from './components/CDEFilePreview';
 import CDEDigitalSign from './components/CDEDigitalSign';
+import CDEIssuesPanel from './components/CDEIssuesPanel';
+import CDEVersionPanel from './components/CDEVersionPanel';
+import CDEReviewPanel from './components/CDEReviewPanel';
 import { supabase } from '../../lib/supabase';
-import { FolderOpen, BarChart3, Shield, ClipboardList, ScrollText, GitBranch } from 'lucide-react';
+import { FolderOpen, BarChart3, Shield, ClipboardList, ScrollText, GitBranch, ClipboardCheck } from 'lucide-react';
 
 import { useContracts } from '../../hooks/useContracts';
 import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
@@ -58,10 +62,11 @@ const CDEPage: React.FC = () => {
     const [showTransmittal, setShowTransmittal] = useState(false);
     const [filters, setFilters] = useState<CDEFilters>(EMPTY_FILTERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [activeTab, setActiveTab] = useTabSearchParam('explorer', ['explorer', 'analytics', 'permissions', 'transmittals', 'audit', 'internal-workflow'] as const);
+    const [activeTab, setActiveTab] = useTabSearchParam('explorer', ['explorer', 'analytics', 'permissions', 'transmittals', 'audit', 'internal-workflow', 'issues', 'reviews'] as const);
     const [activePhase, setActivePhase] = useState('implementation');
     const [previewDoc, setPreviewDoc] = useState<CDEDocument | null>(null);
     const [signDoc, setSignDoc] = useState<CDEDocument | null>(null);
+    const [versionDoc, setVersionDoc] = useState<CDEDocument | null>(null);
 
     // Set default project
     React.useEffect(() => {
@@ -72,13 +77,18 @@ const CDEPage: React.FC = () => {
 
 
 
+    const navigate = useNavigate();
+
     // Queries
     const { data: folders = [], isLoading: foldersLoading } = useCDEFolders(selectedProjectId);
     const { data: docs = [], isLoading: docsLoading } = useCDEDocuments(activeFolderId);
+    const { data: cdeItems = [] } = useCDEItems(activeFolderId);
+    const bimItems = useMemo(() => cdeItems.filter((i) => i.kind === 'bim'), [cdeItems]);
     const { data: workflowHistory = [] } = useCDEWorkflowHistory(selectedDoc?.doc_id || null);
 
     // Mutations & Hooks
     const uploadMutation = useUploadCDE();
+    const ifcUploadMutation = useUploadIFCToCDE();
     const workflowMutation = useProcessWorkflowStep();
     const { data: stats } = useCDEStats(selectedProjectId);
     const { data: projectDocs = [] } = useCDEProjectDocuments(selectedProjectId);
@@ -226,8 +236,35 @@ const CDEPage: React.FC = () => {
         setSignDoc(doc);
     }, []);
 
-    // Upload handler
+    // Open BIM item → standalone BIM viewer for the project
+    const handleOpenBim = useCallback((_item: CDEItem) => {
+        navigate(`/bim/${selectedProjectId}`);
+    }, [navigate, selectedProjectId]);
+
+    // Upload handler — route .ifc files into the BIM federation flow
     const handleSubmit = useCallback((data: { file: File; folderId: string; discipline: string; docType: string; notes: string }) => {
+        const isIFC = data.file.name.toLowerCase().endsWith('.ifc');
+        if (isIFC) {
+            ifcUploadMutation.mutate({
+                file: data.file,
+                projectId: selectedProjectId,
+                folderId: data.folderId,
+                discipline: data.discipline,
+                userId: currentUser?.EmployeeID || '',
+                userName: currentUser?.FullName || '',
+                userOrg: currentUser?.Department || 'Ban QLDA',
+                contractorId: contractorId || undefined,
+            }, {
+                onSuccess: () => {
+                    setShowSubmitModal(false);
+                    setToast({ message: 'Tải lên mô hình BIM thành công! Mở mô hình để xử lý hiển thị.', type: 'success' });
+                },
+                onError: (err: Error) => {
+                    setToast({ message: `Tải lên BIM thất bại: ${err.message}`, type: 'error' });
+                },
+            });
+            return;
+        }
         uploadMutation.mutate({
             file: data.file,
             projectId: selectedProjectId,
@@ -374,6 +411,8 @@ const CDEPage: React.FC = () => {
         { key: 'analytics' as const, label: 'Thống kê', icon: BarChart3, badge: 0 },
         { key: 'internal-workflow' as const, label: 'Quy trình', icon: GitBranch, badge: pendingForMe },
         { key: 'transmittals' as const, label: 'Phiếu C/G', icon: ClipboardList, badge: 0 },
+        { key: 'issues' as const, label: 'Vấn đề', icon: ClipboardList, badge: 0 },
+        { key: 'reviews' as const, label: 'Gói duyệt', icon: ClipboardCheck, badge: 0 },
         { key: 'permissions' as const, label: 'Phân quyền', icon: Shield, badge: 0 },
         { key: 'audit' as const, label: 'Nhật ký', icon: ScrollText, badge: 0 },
     ];
@@ -477,6 +516,9 @@ const CDEPage: React.FC = () => {
                             onFolderClick={setActiveFolderId}
                             selectedIds={selectedIds}
                             onToggleSelect={toggleDocSelect}
+                            onVersions={setVersionDoc}
+                            bimItems={bimItems}
+                            onOpenBim={handleOpenBim}
                         />
 
                         {selectedDoc && (
@@ -530,6 +572,32 @@ const CDEPage: React.FC = () => {
                 </div>
             )}
 
+            {/* Tab: Issues — vấn đề/ghi chú hợp nhất 2D + 3D */}
+            {activeTab === 'issues' && (
+                <div className="flex-1 overflow-y-auto">
+                    <CDEIssuesPanel
+                        projectId={selectedProjectId}
+                        onOpenDoc={(docId) => {
+                            const doc = projectDocs.find((d) => d.doc_id === docId);
+                            if (doc) handlePreview(doc);
+                        }}
+                        onOpenBim={() => navigate(`/bim/${selectedProjectId}`)}
+                    />
+                </div>
+            )}
+
+            {/* Tab: Reviews — gói duyệt nhiều tài liệu */}
+            {activeTab === 'reviews' && (
+                <div className="flex-1 overflow-y-auto">
+                    <CDEReviewPanel
+                        projectId={selectedProjectId}
+                        projectDocs={projectDocs}
+                        user={{ id: currentUser?.EmployeeID, name: currentUser?.FullName }}
+                        onSign={(d) => setSignDoc(d as any)}
+                    />
+                </div>
+            )}
+
             {/* Tab: Internal Workflow — Quy trình nội bộ giữa các phòng ban */}
             {activeTab === 'internal-workflow' && (
                 <div className="flex-1 overflow-hidden">
@@ -551,7 +619,7 @@ const CDEPage: React.FC = () => {
                 folders={folders}
                 onClose={() => setShowSubmitModal(false)}
                 onSubmit={handleSubmit}
-                isPending={uploadMutation.isPending}
+                isPending={uploadMutation.isPending || ifcUploadMutation.isPending}
             />
 
             <CDETransmittalForm
@@ -572,8 +640,21 @@ const CDEPage: React.FC = () => {
                         size: previewDoc.size || '',
                         publicUrl: previewDoc.storage_path,
                     }}
+                    docId={previewDoc.doc_id}
+                    projectId={selectedProjectId}
+                    createdBy={currentUser?.EmployeeID}
                     onClose={() => setPreviewDoc(null)}
                     onDownload={() => handleDownload(previewDoc)}
+                />
+            )}
+
+            {/* Version Panel — lịch sử phiên bản + so sánh */}
+            {versionDoc && (
+                <CDEVersionPanel
+                    doc={versionDoc}
+                    projectId={selectedProjectId}
+                    user={{ id: currentUser?.EmployeeID, name: currentUser?.FullName, org: currentUser?.Department }}
+                    onClose={() => setVersionDoc(null)}
                 />
             )}
 

@@ -58,23 +58,30 @@ const upload = multer({
     }
 });
 
+// web-ifc (Node) — dùng cho /extract-properties (trích thuộc tính + spatial tree).
+const WebIFC = require('web-ifc');
+// IFC → Fragments (.frag) — pipeline chính, cùng định dạng viewer ThatOpen ở client.
+const { convertIfcToFragments } = require('./ifc-to-fragments');
+
+// Store conversion jobs
+const jobs = new Map();
+
 // Health check
 app.get('/', (req, res) => {
     res.json({
         status: 'ok',
-        service: 'IFC Converter API',
-        version: '1.1.0',
+        service: 'IFC → Fragments Converter API',
+        version: '2.0.0',
         endpoints: {
-            convert: 'POST /convert — IFC → XKT (xeokit) [legacy]',
-            extractProperties: 'POST /extract-properties — IFC → properties.json + spatial.json (server-side, for >200 MB files)',
+            convertFragments: 'POST /convert-fragments — IFC → .frag (ThatOpen, pipeline chính)',
+            downloadFragments: 'GET /download-fragments/:jobId — .frag output',
+            extractProperties: 'POST /extract-properties — IFC → properties.json + spatial.json',
             status: 'GET /status/:jobId — poll progress',
-            download: 'GET /download/:jobId — XKT output',
             downloadProperties: 'GET /download-properties/:jobId — properties.json',
             downloadSpatial: 'GET /download-spatial/:jobId — spatial.json',
+            deleteJob: 'DELETE /job/:jobId — cleanup',
         },
-        limits: {
-            maxFileSize: '600 MB',
-        },
+        limits: { maxFileSize: '600 MB' },
     });
 });
 
@@ -82,123 +89,89 @@ app.get('/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// Store conversion jobs
-const jobs = new Map();
-
-// Import xeokit-convert for IFC to XKT conversion
-const { convert2xkt } = require('@xeokit/xeokit-convert');
-// WebIFC is REQUIRED for IFC file conversion per xeokit docs
-// Import from root package - package.json exports handle the node/browser split
-const WebIFC = require('web-ifc');
-// IFC → glTF converter (new pipeline — server-side, replaces browser WASM parsing)
-const { convertIfcToGlb } = require('./ifc-to-glb');
-
-// Convert IFC to XKT using @xeokit/xeokit-convert API
-async function runConvertIFCtoXKT(inputPath, outputPath, jobId, onProgress) {
-    console.log(`[${jobId}] Starting conversion with WebIFC...`);
-
-    if (onProgress) onProgress(20, 'loading_ifc');
-
-    await convert2xkt({
-        WebIFC,  // Required for IFC conversion per xeokit docs
-        source: inputPath,
-        output: outputPath,
-        log: (msg) => {
-            console.log(`[${jobId}] ${msg}`);
-            // Update progress based on log messages
-            if (msg.includes('Converting')) {
-                if (onProgress) onProgress(40, 'converting');
-            } else if (msg.includes('Writing')) {
-                if (onProgress) onProgress(80, 'writing_xkt');
-            }
-        }
-    });
-
-    if (onProgress) onProgress(95, 'finalizing');
-    console.log(`[${jobId}] Conversion completed: ${outputPath}`);
-}
-
-// Convert IFC to XKT
-app.post('/convert', upload.single('file'), async (req, res) => {
+// ─────────────────────────────────────────────────────────────────────
+// /convert-fragments — IFC → .frag (ThatOpen Fragments)
+//
+// Đây là pipeline chính: convert IFC sang .frag trên server (1 lần lúc upload)
+// để trình duyệt KHÔNG phải parse IFC khi xem. .frag dùng cùng định dạng với
+// FragmentsManager ở client nên load trực tiếp được.
+//
+// Front-end nhận .frag rồi tự upload lên Supabase Storage (converter không giữ
+// thông tin storage — giữ service "dumb" về lưu trữ, đúng tinh thần TT47 2.2.16).
+// ─────────────────────────────────────────────────────────────────────
+app.post('/convert-fragments', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No IFC file uploaded' });
     }
 
     const jobId = uuidv4();
     const inputPath = req.file.path;
-    const outputFileName = `${jobId}.xkt`;
-    const outputPath = path.join(OUTPUT_DIR, outputFileName);
-
-    // Store job info with file size
+    const fragPath = path.join(OUTPUT_DIR, `${jobId}.frag`);
     const inputFileSize = req.file.size;
+
     jobs.set(jobId, {
+        kind: 'fragments',
         status: 'processing',
         originalName: req.file.originalname,
         inputFileSize,
         inputPath,
-        outputPath,
+        fragPath,
         startedAt: new Date().toISOString(),
         progress: 0,
-        stage: 'uploading'
+        stage: 'queued',
     });
 
-    console.log(`[${jobId}] File received: ${req.file.originalname} (${(inputFileSize / 1024 / 1024).toFixed(2)} MB)`);
+    console.log(`[${jobId}] /convert-fragments received ${req.file.originalname} (${(inputFileSize / 1024 / 1024).toFixed(1)} MB)`);
 
-    // Return job ID immediately
     res.json({
         jobId,
         status: 'processing',
-        message: 'Conversion started. Use /status/:jobId to check progress.',
+        message: 'Fragment conversion started. Poll /status/:jobId for progress.',
         statusUrl: `/status/${jobId}`,
-        downloadUrl: `/download/${jobId}`
+        downloadUrl: `/download-fragments/${jobId}`,
     });
 
-    // Process in background
-    try {
-        console.log(`[${jobId}] Starting conversion: ${req.file.originalname}`);
-
-        // Progress callback for large files
+    // ── Background conversion ────────────────────────────────
+    (async () => {
         const updateProgress = (progress, stage) => {
             jobs.set(jobId, { ...jobs.get(jobId), progress, stage });
         };
+        try {
+            updateProgress(10, 'loading_wasm');
+            const fragBuffer = await convertIfcToFragments(inputPath, {
+                onProgress: (pct, stage) => updateProgress(pct, stage),
+            });
 
-        updateProgress(10, 'parsing');
+            const fs2 = require('fs/promises');
+            await fs2.writeFile(fragPath, fragBuffer);
 
-        await runConvertIFCtoXKT(inputPath, outputPath, jobId, updateProgress);
-
-        // Verify output exists
-        if (!fs.existsSync(outputPath)) {
-            throw new Error('Output file was not created');
+            jobs.set(jobId, {
+                ...jobs.get(jobId),
+                status: 'completed',
+                progress: 100,
+                stage: 'done',
+                completedAt: new Date().toISOString(),
+                fragSize: fragBuffer.length,
+            });
+            console.log(`[${jobId}] /convert-fragments done — ${(fragBuffer.length / 1024 / 1024).toFixed(2)} MB .frag`);
+        } catch (err) {
+            console.error(`[${jobId}] /convert-fragments failed:`, err);
+            jobs.set(jobId, { ...jobs.get(jobId), status: 'failed', error: err.message });
+        } finally {
+            if (fs.existsSync(inputPath)) { try { fs.unlinkSync(inputPath); } catch { /* ignore */ } }
         }
-
-        // Update job status
-        jobs.set(jobId, {
-            ...jobs.get(jobId),
-            status: 'completed',
-            progress: 100,
-            completedAt: new Date().toISOString(),
-            fileSize: fs.statSync(outputPath).size
-        });
-
-        console.log(`[${jobId}] Conversion completed`);
-
-        // Cleanup input file
-        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-
-    } catch (error) {
-        console.error(`[${jobId}] Conversion failed:`, error);
-        jobs.set(jobId, {
-            ...jobs.get(jobId),
-            status: 'failed',
-            error: error.message
-        });
-
-        // Cleanup
-        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-    }
+    })();
 });
 
-// Check conversion status
+app.get('/download-fragments/:jobId', (req, res) => {
+    const job = jobs.get(req.params.jobId);
+    if (!job || job.kind !== 'fragments') return res.status(404).json({ error: 'Job not found' });
+    if (job.status !== 'completed') return res.status(400).json({ error: 'Not completed', status: job.status });
+    if (!fs.existsSync(job.fragPath)) return res.status(404).json({ error: 'Output missing' });
+    res.download(job.fragPath, `${job.originalName.replace(/\.ifc$/i, '')}.frag`);
+});
+
+// Check conversion status (generic — dùng cho mọi loại job)
 app.get('/status/:jobId', (req, res) => {
     const { jobId } = req.params;
     const job = jobs.get(jobId);
@@ -207,58 +180,31 @@ app.get('/status/:jobId', (req, res) => {
         return res.status(404).json({ error: 'Job not found' });
     }
 
-    // Calculate elapsed time
     const startTime = new Date(job.startedAt).getTime();
     const elapsed = Math.floor((Date.now() - startTime) / 1000);
 
     res.json({
         jobId,
+        kind: job.kind,
         status: job.status,
         progress: job.progress,
         stage: job.stage,
         originalName: job.originalName,
         inputFileSize: job.inputFileSize,
-        outputFileSize: job.fileSize,
+        fragSize: job.fragSize,
+        elementCount: job.elementCount,
         startedAt: job.startedAt,
         completedAt: job.completedAt,
         elapsedSeconds: elapsed,
         error: job.error,
-        downloadUrl: job.status === 'completed' ? `/download/${jobId}` : null
+        downloadUrl: job.status === 'completed' && job.kind === 'fragments' ? `/download-fragments/${jobId}` : null,
     });
-});
-
-// Download converted XKT file
-app.get('/download/:jobId', (req, res) => {
-    const { jobId } = req.params;
-    const job = jobs.get(jobId);
-
-    if (!job) {
-        return res.status(404).json({ error: 'Job not found' });
-    }
-
-    if (job.status !== 'completed') {
-        return res.status(400).json({
-            error: 'Conversion not completed',
-            status: job.status
-        });
-    }
-
-    if (!fs.existsSync(job.outputPath)) {
-        return res.status(404).json({ error: 'Output file not found' });
-    }
-
-    const downloadName = job.originalName.replace('.ifc', '.xkt').replace('.IFC', '.xkt');
-    res.download(job.outputPath, downloadName);
 });
 
 // ─────────────────────────────────────────────────────────────────────
 // /extract-properties — parse IFC server-side and return
 //   { propertiesPath, spatialPath, elementCount }
 // for large files (>200 MB) so the browser doesn't have to do it.
-//
-// The extracted JSON is written to the response so the front-end can upload
-// it to Supabase Storage (we don't bake Supabase service-role creds into this
-// service — keep the converter dumb about storage).
 // ─────────────────────────────────────────────────────────────────────
 app.post('/extract-properties', upload.single('file'), async (req, res) => {
     if (!req.file) {
@@ -308,7 +254,6 @@ app.post('/extract-properties', upload.single('file'), async (req, res) => {
         let modelId = null;
         try {
             updateProgress(10, 'loading_wasm');
-            // web-ifc on Node — reuse the same package the converter already loads
             const data = await fs2.readFile(inputPath);
 
             ifcApi = new WebIFC.IfcAPI();
@@ -317,12 +262,8 @@ app.post('/extract-properties', upload.single('file'), async (req, res) => {
 
             modelId = ifcApi.OpenModel(new Uint8Array(data), { COORDINATE_TO_ORIGIN: false });
 
-            // ── Collect element IDs (limit traversal to common building element types
-            //    + their containing spatial elements; full GetAllLines is too broad). ──
             updateProgress(40, 'enumerating_elements');
             const properties = [];
-            // IfcRoot subtypes — covers virtually every meaningful element
-            // Use IFC2X3 namespace which is widely supported; works across schemas.
             const ROOT_TYPES = [
                 // Spatial
                 103090709, 4097777520, 4031249490, 3124254112,
@@ -347,9 +288,6 @@ app.post('/extract-properties', upload.single('file'), async (req, res) => {
             }
 
             updateProgress(70, 'building_spatial_tree');
-            // Spatial tree — IFC project → site(s) → building(s) → storey(s)
-            // We build a flat list and let the client structure it because IFC
-            // hierarchies are graph-shaped, not strictly tree-shaped.
             const spatial = { properties: properties.slice(0, 500_000) };
 
             updateProgress(85, 'writing_outputs');
@@ -406,11 +344,9 @@ app.delete('/job/:jobId', (req, res) => {
         return res.status(404).json({ error: 'Job not found' });
     }
 
-    // Cleanup files — `outputPath` exists for /convert jobs, `propertiesPath` /
-    // `spatialPath` for /extract-properties jobs. Test each before unlinking.
     const tryUnlink = (p) => { if (p && fs.existsSync(p)) { try { fs.unlinkSync(p); } catch { /* ignore */ } } };
     tryUnlink(job.inputPath);
-    tryUnlink(job.outputPath);
+    tryUnlink(job.fragPath);
     tryUnlink(job.propertiesPath);
     tryUnlink(job.spatialPath);
 
@@ -427,7 +363,7 @@ setInterval(() => {
         const startedAt = new Date(job.startedAt).getTime();
         if (startedAt < oneHourAgo) {
             tryUnlink(job.inputPath);
-            tryUnlink(job.outputPath);
+            tryUnlink(job.fragPath);
             tryUnlink(job.propertiesPath);
             tryUnlink(job.spatialPath);
             jobs.delete(jobId);
@@ -443,7 +379,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 IFC Converter API running on port ${PORT}`);
-    console.log(`   Health: http://localhost:${PORT}/health`);
-    console.log(`   Convert: POST http://localhost:${PORT}/convert`);
+    console.log(`🚀 IFC → Fragments Converter API running on port ${PORT}`);
+    console.log(`   Health:    http://localhost:${PORT}/health`);
+    console.log(`   Fragments: POST http://localhost:${PORT}/convert-fragments`);
 });

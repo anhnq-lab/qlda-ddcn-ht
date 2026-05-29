@@ -4,7 +4,8 @@
 // ═══════════════════════════════════════════════════════════════
 
 import React, { useMemo, useEffect, useState } from 'react';
-import { FileText, Download, X, Box, Image as ImageIcon, Printer, Loader2, AlertCircle } from 'lucide-react';
+import { FileText, Download, X, Box, Image as ImageIcon, Printer, Loader2, AlertCircle, MapPin } from 'lucide-react';
+import CDEMarkup2DLayer from './CDEMarkup2DLayer';
 
 interface PreviewFile {
     doc_name?: string;
@@ -24,6 +25,10 @@ interface CDEFilePreviewProps {
     file: PreviewFile;
     onClose: () => void;
     onDownload?: () => void;
+    /** Bật markup/issue 2D khi mở từ CDE (cần doc_id + project_id) */
+    docId?: number;
+    projectId?: string;
+    createdBy?: string;
 }
 
 // ─── Office viewer hooks ──────────────────────────────────────────────────────
@@ -91,7 +96,8 @@ function useXlsxContent(viewUrl: string | null, isSpreadsheet: boolean) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownload }) => {
+const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownload, docId, projectId, createdBy }) => {
+    const [markupActive, setMarkupActive] = useState(false);
     const fileName = (file.doc_name || file.DocName || file.name || '').toLowerCase();
     const displayName = file.doc_name || file.DocName || file.name || 'Tài liệu';
     const isPDF = fileName.endsWith('.pdf');
@@ -137,6 +143,15 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        {docId && projectId && (isPDF || isImage) && (
+                            <button
+                                className={`px-3 py-2 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 ${markupActive ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30'}`}
+                                title="Ghi chú / Issue trên tài liệu"
+                                onClick={() => setMarkupActive((v) => !v)}
+                            >
+                                <MapPin className="w-4 h-4" /> {markupActive ? 'Đang markup' : 'Markup'}
+                            </button>
+                        )}
                         <button className="p-2.5 text-gray-500 hover:bg-bg-muted rounded-xl transition-all" title="In"
                             onClick={() => window.print()}>
                             <Printer className="w-5 h-5" />
@@ -156,13 +171,16 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                 {/* Content */}
                 <div className="flex-1 overflow-auto p-4 flex justify-center bg-[#525659]">
                     {(isPDF || isImage) && viewUrl ? (
-                        <div className="bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
+                        <div className="relative bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
                             {isPDF ? (
                                 <iframe src={`${viewUrl}#toolbar=0`} className="w-full h-full border-0" title="PDF Viewer" />
                             ) : (
                                 <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
                                     <img src={viewUrl} crossOrigin="anonymous" className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
                                 </div>
+                            )}
+                            {docId && projectId && (
+                                <CDEMarkup2DLayer docId={docId} projectId={projectId} createdBy={createdBy} active={markupActive} />
                             )}
                         </div>
                     ) : isIFC ? (

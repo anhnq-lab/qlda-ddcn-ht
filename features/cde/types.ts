@@ -53,6 +53,88 @@ export interface CDEDocument {
     is_latest?: boolean;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Federation — CDE Item hợp nhất (documents + bim_models qua cde_items_view)
+// ═══════════════════════════════════════════════════════════════
+
+export type CDEItemKind = 'doc' | 'bim';
+
+export interface CDEItem {
+    /** Khóa duy nhất xuyên hai nguồn: 'doc:<doc_id>' | 'bim:<id>' */
+    item_id: string;
+    kind: CDEItemKind;
+    /** ID gốc trong bảng nguồn (doc_id dạng text hoặc bim_models.id) */
+    ref_id: string;
+    project_id: string;
+    cde_folder_id: string | null;
+    name: string;
+    discipline: string | null;
+    doc_type: string | null;
+    status: string | null;
+    iso_status: string | null;
+    version: string | null;
+    revision: string | null;
+    is_latest: boolean;
+    version_group_id: string | null;
+    file_hash: string | null;
+    sensitivity_level: number;
+    is_encrypted: boolean;
+    size: string | null;
+    file_size: number | null;
+    storage_path: string | null;
+    /** Chỉ có với kind='bim' */
+    frag_path: string | null;
+    properties_path: string | null;
+    element_count: number | null;
+    uploaded_by: string | null;
+    submitted_by: string | null;
+    submitted_by_org: string | null;
+    contractor_id: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Reviews — gói duyệt nhiều tài liệu (GĐ4, kiểu Autodesk Docs Reviews)
+// ═══════════════════════════════════════════════════════════════
+
+export type CDEReviewStatus = 'open' | 'approved' | 'rejected' | 'closed';
+export type CDEReviewDecision = 'pending' | 'approved' | 'rejected';
+
+export interface CDEReviewApprover {
+    id: string;
+    review_id: string;
+    approver_id: string | null;
+    approver_name: string;
+    decision: CDEReviewDecision;
+    comment: string | null;
+    signed: boolean;
+    decided_at: string | null;
+    created_at: string;
+}
+
+export interface CDEReviewItem {
+    id: string;
+    review_id: string;
+    doc_id: number;
+    created_at: string;
+}
+
+export interface CDEReview {
+    id: string;
+    project_id: string;
+    title: string;
+    description: string | null;
+    due_date: string | null;
+    status: CDEReviewStatus;
+    created_by: string | null;
+    created_by_name: string | null;
+    created_at: string;
+    updated_at: string;
+    items?: CDEReviewItem[];
+    approvers?: CDEReviewApprover[];
+}
+
 export interface CDEWorkflowEntry {
     id: string;
     doc_id: number;

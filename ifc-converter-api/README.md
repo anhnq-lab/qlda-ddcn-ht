@@ -1,120 +1,62 @@
-# IFC to XKT Converter API
+# IFC → Fragments Converter API
 
-Backend service for converting IFC files to XKT format for xeokit BIM Viewer.
+Dịch vụ Node chuyển **IFC → Fragments (.frag)** cho viewer BIM (ThatOpen) ở phía client, theo **Phương án A**: convert một lần trên server lúc upload để **trình duyệt không phải parse IFC** khi xem (nhanh, không treo tab, không phụ thuộc heap WASM của trình duyệt).
 
-## Features
-- 🔄 Convert IFC to XKT format
-- 📊 Progress tracking for long conversions
-- 🧹 Auto-cleanup of old files (1 hour)
-- 🔒 CORS support for frontend integration
+`.frag` được tạo bằng `@thatopen/fragments` `IfcImporter` — **cùng builder** mà viewer dùng ở client, nên load trực tiếp bằng `FragmentsManager.core.load()`.
 
-## Deploy to Railway
+> An ninh dữ liệu (QCVN 12:2026/BCA · TT47): dịch vụ này chạy Node thuần, **self-host được trong nước** (FPT Cloud), không gửi dữ liệu ra nhà cung cấp nước ngoài. Converter "dumb" về lưu trữ — chỉ trả `.frag`/JSON về cho front-end tự đẩy lên Supabase Storage.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/ZweBXA)
+## Yêu cầu
+- Node.js ≥ 18
+- `@thatopen/fragments` ^3.3.6, `web-ifc` ^0.0.77, `three` ^0.183.2 (khớp phiên bản với app để `.frag` tương thích định dạng).
 
-### Quick Deploy:
-1. Click the button above OR go to [railway.app](https://railway.app)
-2. Sign in with GitHub
-3. Create new project → Deploy from GitHub repo
-4. Select this repository
-5. Railway will auto-detect Node.js and deploy
-
-### Environment Variables (Optional):
-- `PORT` - Server port (default: 3001)
-- `ALLOWED_ORIGINS` - Comma-separated list of allowed origins for CORS
-
-## Deploy to Render
-
-1. Go to [render.com](https://render.com)
-2. Create new Web Service
-3. Connect your GitHub repo
-4. Settings:
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-   - **Instance Type:** Free (512MB RAM)
-
-## API Endpoints
-
-### Health Check
-```
-GET /
-GET /health
-```
-
-### Convert IFC to XKT
-```
-POST /convert
-Content-Type: multipart/form-data
-Body: file=<your.ifc>
-
-Response:
-{
-  "jobId": "uuid",
-  "status": "processing",
-  "statusUrl": "/status/uuid",
-  "downloadUrl": "/download/uuid"
-}
-```
-
-### Check Status
-```
-GET /status/:jobId
-
-Response:
-{
-  "jobId": "uuid",
-  "status": "processing|completed|failed",
-  "progress": 0-100,
-  "downloadUrl": "/download/uuid"
-}
-```
-
-### Download XKT
-```
-GET /download/:jobId
-```
-
-## Local Development
-
+## Chạy local
 ```bash
 cd ifc-converter-api
 npm install
-npm run dev
+npm run dev        # hoặc: npm start
+# Mặc định: http://localhost:3001
+```
+Front-end đọc URL qua biến môi trường `VITE_IFC_CONVERTER_URL` (mặc định `http://localhost:3001`).
+
+## API
+
+### Health
+```
+GET /            → thông tin service
+GET /health      → { status: "healthy" }
 ```
 
-## Usage with Frontend
-
-```javascript
-// Upload IFC file
-const formData = new FormData();
-formData.append('file', ifcFile);
-
-const response = await fetch('https://your-api.railway.app/convert', {
-  method: 'POST',
-  body: formData
-});
-
-const { jobId } = await response.json();
-
-// Poll for status
-const checkStatus = async () => {
-  const status = await fetch(`https://your-api.railway.app/status/${jobId}`);
-  const data = await status.json();
-  
-  if (data.status === 'completed') {
-    // Load XKT in xeokit
-    xktLoader.load({
-      src: `https://your-api.railway.app/download/${jobId}`,
-      id: 'model'
-    });
-  } else if (data.status === 'processing') {
-    setTimeout(checkStatus, 2000);
-  }
-};
-
-checkStatus();
+### Convert IFC → Fragments (pipeline chính)
 ```
+POST /convert-fragments      (multipart: file=<your.ifc>)
+→ { jobId, statusUrl, downloadUrl }
+
+GET  /status/:jobId          → { status, progress, stage, fragSize, ... }
+GET  /download-fragments/:jobId   → tải file .frag
+```
+
+### Trích thuộc tính (tuỳ chọn, cho file lớn)
+```
+POST /extract-properties     (multipart: file=<your.ifc>)
+GET  /download-properties/:jobId  → properties.json
+GET  /download-spatial/:jobId     → spatial.json
+```
+
+### Dọn job
+```
+DELETE /job/:jobId
+```
+
+## Luồng tích hợp với app
+1. App upload IFC lên Supabase Storage + tạo `bim_models` (`lib/bimStorage.uploadIFCFile`).
+2. App gọi `POST /convert-fragments` (qua `services/bimConverterService.convertFragments`).
+3. Poll `/status/:jobId` tới `completed`, tải `.frag`, đẩy lên Storage (`uploadFragments` → set `status='ready'`, `frag_path`).
+4. Khi xem: viewer chỉ `fragments.core.load(.frag)` — **không parse IFC**.
+5. Nếu converter offline → app để `status='converting'`; viewer parse client-side khi mở (đường lui).
+
+## Deploy
+Có thể deploy lên Railway/Render (xem `railway.toml`) hoặc self-host trên FPT Cloud cùng hệ thống (khuyến nghị cho TT47). Đặt `ALLOWED_ORIGINS` để giới hạn CORS theo domain app.
 
 ## License
-
 MIT
