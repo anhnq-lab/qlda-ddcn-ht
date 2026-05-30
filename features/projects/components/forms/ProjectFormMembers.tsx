@@ -156,7 +156,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                 const emp = employees.find(e => e.EmployeeID === sm.employeeId);
                                 if (!emp) return null;
                                 return (
-                                    <tr key={sm.employeeId} className="border-t border-border-subtle hover:bg-gray-50/50 dark:hover:bg-slate-50">
+                                    <tr key={sm.employeeId} className="border-t border-border-subtle hover:bg-bg-hover-row">
                                         <td className="px-4 py-2.5">
                                             <div className="flex items-center gap-2">
                                                 <Avatar

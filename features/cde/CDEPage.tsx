@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { CDE_WORKFLOW_STEPS, CDE_PROJECT_PHASES } from './constants';
 import type { CDEDocument, CDEItem } from './types';
 import { CDEService } from '../../services/CDEService';
+import { CDEItemService } from '../../services/cde/CDEItemService';
 
 import CDEHeader from './components/CDEHeader';
 import CDEFolderTree from './components/CDEFolderTree';
@@ -236,10 +237,31 @@ const CDEPage: React.FC = () => {
         setSignDoc(doc);
     }, []);
 
-    // Open BIM item → standalone BIM viewer for the project
-    const handleOpenBim = useCallback((_item: CDEItem) => {
+    // Open BIM item → standalone BIM viewer + audit log (TT47 2.2.9)
+    const handleOpenBim = useCallback((item: CDEItem) => {
+        if (currentUser?.EmployeeID) {
+            CDEItemService.logBimOpen(item.ref_id, {
+                id: currentUser.EmployeeID,
+                name: currentUser.FullName || '',
+                projectId: selectedProjectId,
+            }).catch(() => {});
+        }
         navigate(`/bim/${selectedProjectId}`);
-    }, [navigate, selectedProjectId]);
+    }, [navigate, selectedProjectId, currentUser]);
+
+    // Sensitivity level update (TT47 2.2.5.3)
+    const handleUpdateSensitivity = useCallback(async (kind: 'doc' | 'bim', refId: string, level: number) => {
+        try {
+            await CDEItemService.updateSensitivity(
+                { kind, ref_id: refId },
+                level,
+                currentUser?.EmployeeID ? { id: currentUser.EmployeeID, name: currentUser.FullName || '', projectId: selectedProjectId } : undefined
+            );
+            setToast({ message: `Đã cập nhật nhãn nhạy cảm`, type: 'success' });
+        } catch (err: any) {
+            setToast({ message: `Lỗi: ${err.message}`, type: 'error' });
+        }
+    }, [currentUser, selectedProjectId]);
 
     // Upload handler — route .ifc files into the BIM federation flow
     const handleSubmit = useCallback((data: { file: File; folderId: string; discipline: string; docType: string; notes: string }) => {
@@ -435,14 +457,14 @@ const CDEPage: React.FC = () => {
 
             {/* Tab Navigation */}
             {userType !== 'contractor' && (
-                <div className="flex items-center gap-1 bg-gray-100/80 dark:bg-slate-900/60 p-1.5 rounded-2xl w-fit border border-gray-200/40 dark:border-slate-800/80 shadow-inner-sm">
+                <div className="flex items-center gap-1 bg-bg-muted p-1.5 rounded-2xl w-fit border border-border shadow-inner-sm">
                     {TABS.map(tab => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${activeTab === tab.key
-                                ? 'bg-bg-surface border-gray-200/30 dark:border-slate-650/40 text-txt-primary shadow-sm'
-                                : 'border-transparent text-txt-muted hover:text-gray-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800/50'
+                                ? 'bg-bg-surface border-border text-txt-primary shadow-sm'
+                                : 'border-transparent text-txt-secondary hover:text-txt-primary hover:bg-bg-hover-row'
                                 }`}
                         >
                             <tab.icon className="w-3.5 h-3.5" />
@@ -519,6 +541,7 @@ const CDEPage: React.FC = () => {
                             onVersions={setVersionDoc}
                             bimItems={bimItems}
                             onOpenBim={handleOpenBim}
+                            onUpdateSensitivity={handleUpdateSensitivity}
                         />
 
                         {selectedDoc && (

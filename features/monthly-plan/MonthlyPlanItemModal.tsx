@@ -313,7 +313,7 @@ const MonthlyPlanItemModal: React.FC<Props> = ({
                                                     className={`px-3 py-2.5 text-sm rounded-xl font-medium transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 border ${
                                                         isSelected
                                                             ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm dark:bg-blue-500/10 dark:border-blue-500 dark:text-blue-400 ring-1 ring-blue-500'
-                                                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-50'
+                                                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700'
                                                     }`}
                                                 >
                                                     <span className="text-base leading-none">{type.icon}</span>

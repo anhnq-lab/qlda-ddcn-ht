@@ -304,7 +304,7 @@ const CDEArchiveView: React.FC<CDEArchiveViewProps> = ({ projectId, projectName 
                             </div>
                         ) : (
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-bg-surface text-[10px] uppercase font-black text-txt-placeholder sticky top-0 z-10 border-b border-border tracking-[0.1em]">
+                                <thead className="bg-bg-subtle text-[10px] uppercase font-black text-txt-muted sticky top-0 z-10 border-b border-border tracking-widest">
                                     <tr>
                                         <th className="px-5 py-4">Tên tài liệu</th>
                                         <th className="px-5 py-4 w-28 text-center">Phiên bản</th>

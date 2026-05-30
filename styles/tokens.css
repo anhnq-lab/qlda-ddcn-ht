@@ -12,8 +12,8 @@
   --color-primary-500: #00668c;
   --color-primary-600: #005273;
   --color-primary-700: #00415a;
-  --color-primary-800: #3b3c3d;
-  --color-primary-900: #1a1b1c;
+  --color-primary-800: #003047;   /* teal đậm — trước đây là xám #3b3c3d (gãy thang) */
+  --color-primary-900: #001f30;   /* teal đậm nhất — trước đây là xám #1a1b1c */
 
   /* Accent Colors — Đỏ cờ (branding) */
   --color-accent-100: #fde3e3;
@@ -59,11 +59,39 @@
   --color-slate-900: #0f172a;
   --color-slate-950: #020617;
 
-  /* Text Colors */
-  --color-text-primary: #1d1c1c;
-  --color-text-secondary: #313d44;
-  --color-text-tertiary: #64748b;
-  --color-text-muted: #94a3b8;
+  /* ─── RGB CHANNELS — cho Tailwind alpha (<alpha-value>) ───
+     Bắt buộc để utility opacity (bg-primary-900/20, dark:bg-slate-800/50…) hoạt động.
+     Nếu chỉ dùng var(--color-*) dạng hex thì modifier /opacity vỡ thành transparent.
+     PHẢI giữ đồng bộ giá trị với các biến hex ở trên. */
+  --color-primary-50-rgb: 242 248 252;
+  --color-primary-100-rgb: 212 234 247;
+  --color-primary-200-rgb: 182 204 216;
+  --color-primary-300-rgb: 113 196 239;
+  --color-primary-400-rgb: 57 149 184;
+  --color-primary-500-rgb: 0 102 140;
+  --color-primary-600-rgb: 0 82 115;
+  --color-primary-700-rgb: 0 65 90;
+  --color-primary-800-rgb: 0 48 71;
+  --color-primary-900-rgb: 0 31 48;
+
+  --color-slate-50-rgb: 248 250 252;
+  --color-slate-100-rgb: 241 245 249;
+  --color-slate-200-rgb: 226 232 240;
+  --color-slate-300-rgb: 203 213 225;
+  --color-slate-400-rgb: 148 163 184;
+  --color-slate-500-rgb: 100 116 139;
+  --color-slate-600-rgb: 71 85 105;
+  --color-slate-700-rgb: 51 65 85;
+  --color-slate-800-rgb: 30 41 59;
+  --color-slate-900-rgb: 15 23 42;
+  --color-slate-950-rgb: 2 6 23;
+
+  /* Text Colors — alias về semantic tokens (theme-aware) để không phân mảnh/trượt contrast.
+     Fallback giữ giá trị cũ cho an toàn nếu semantic chưa định nghĩa. */
+  --color-text-primary: var(--text-primary, #1d1c1c);
+  --color-text-secondary: var(--text-secondary, #313d44);
+  --color-text-tertiary: var(--text-muted, #64748b);
+  --color-text-muted: var(--text-muted, #6d665f);
   --color-text-inverse: #ffffff;
 
   /* Border Colors */
@@ -143,6 +171,24 @@
   /* Focus ring — accent dùng primary, kèm offset cho mọi theme */
   --ring-focus:        #00668c;
   --ring-focus-offset: #FCF9F2;
+
+  /* ─── SEMANTIC TOKENS — STATIC FALLBACK (first-paint, = Nature theme) ───
+     Nguồn chân lý runtime là ThemeContext.tsx (inject per-theme).
+     Khối này chỉ là fallback cho lần vẽ đầu (trước khi JS chạy) → tránh FOUC.
+     PHẢI giữ đồng bộ với THEME_TOKENS.nature trong context/ThemeContext.tsx. */
+  --bg-app:           #F0ECE1;
+  --bg-surface:       #FCF9F2;
+  --bg-subtle:        #F5EFE6;
+  --bg-muted:         #EDE8DF;
+  --bg-elevated:      #FDFAF4;
+  --border-default:   #ece7de;
+  --border-subtle:    #e5dfd4;
+  --text-primary:     #1d1c1c;
+  --text-secondary:   #4a3426;
+  --text-muted:       #6d665f;   /* WCAG AA 4.94:1 on bg-subtle */
+  --text-placeholder: #736b62;   /* WCAG AA 4.6:1 on bg-subtle (đã nâng từ #908880) */
+  --input-bg:         #FCF9F2;
+  --input-border:     #d6cfc4;
 }
 
 /* Dark Mode Variables */
@@ -159,6 +205,19 @@
   --color-slate-800: #1e293b; /* Input BG / Table Header / Hover */
   --color-slate-900: #151d2e; /* Card BG (DISTINCT from 800) */
   --color-slate-950: #0b1120; /* Main BG (DEEPEST) */
+
+  /* RGB channels — dark overrides (đồng bộ với hex dark ở trên) */
+  --color-slate-50-rgb: 248 250 252;
+  --color-slate-100-rgb: 241 245 249;
+  --color-slate-200-rgb: 226 232 240;
+  --color-slate-300-rgb: 203 213 225;
+  --color-slate-400-rgb: 148 163 184;
+  --color-slate-500-rgb: 100 116 139;
+  --color-slate-600-rgb: 71 85 105;
+  --color-slate-700-rgb: 41 53 72;
+  --color-slate-800-rgb: 30 41 59;
+  --color-slate-900-rgb: 21 29 46;
+  --color-slate-950-rgb: 11 17 32;
 
   --color-bg-primary: var(--color-slate-950);
   --color-bg-secondary: var(--color-slate-900);

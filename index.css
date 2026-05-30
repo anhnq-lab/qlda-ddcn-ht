@@ -20,3 +20,4 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* alpha-channel color tokens active (slate/primary support opacity modifiers) */

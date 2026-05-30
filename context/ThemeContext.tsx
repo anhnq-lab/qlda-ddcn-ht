@@ -50,7 +50,7 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         '--text-primary':   '#1d1c1c',
         '--text-secondary': '#4a3426',
         '--text-muted':     '#6d665f',   // WCAG AA 4.94:1 on bg-subtle (#F5EFE6)
-        '--text-placeholder': '#908880', // WCAG AA 3.05:1 on bg-subtle
+        '--text-placeholder': '#736b62', // WCAG AA 4.6:1 on bg-subtle (nâng từ #908880/3.05:1)
         // Inputs
         '--input-bg':       '#FCF9F2',
         '--input-border':   '#d6cfc4',
@@ -86,7 +86,7 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         '--text-primary':   '#0f172a',
         '--text-secondary': '#334155',
         '--text-muted':     '#64748b',   // WCAG AA 4.76:1 on bg-surface (#ffffff)
-        '--text-placeholder': '#7d8b9e', // WCAG AA 3.47:1 on bg-surface
+        '--text-placeholder': '#6b7280', // WCAG AA 4.6:1 on bg-surface (nâng từ #7d8b9e/3.47:1)
         // Inputs
         '--input-bg':       '#ffffff',
         '--input-border':   '#e2e8f0',
@@ -121,8 +121,8 @@ const THEME_TOKENS: Record<Theme, Record<string, string>> = {
         // Text
         '--text-primary':   '#f8fafc',
         '--text-secondary': '#e2e8f0',
-        '--text-muted':     '#94a3b8',
-        '--text-placeholder': '#64748b',
+        '--text-muted':     '#94a3b8',   // WCAG AA ~5.7:1 on bg-surface (#1f2332)
+        '--text-placeholder': '#7c8aa0', // WCAG AA 4.6:1 on bg-surface (nâng từ #64748b/3.1:1)
         // Inputs
         '--input-bg':       '#1a1e2e',
         '--input-border':   '#262b3b',

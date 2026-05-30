@@ -349,8 +349,8 @@ export const FacilityManagementPanel: React.FC = () => {
             {!loading && (
                 <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
                     <table className="w-full text-[11px]">
-                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-bg-surface'}`}>
-                            <tr className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}>
+                        <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border">
+                            <tr className="text-txt-muted">
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Mã TS</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tên tài sản</th>
                                 <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Phân loại</th>

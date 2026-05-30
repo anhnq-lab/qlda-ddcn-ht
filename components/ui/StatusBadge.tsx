@@ -22,10 +22,10 @@ export interface StatusBadgeProps {
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string; ring: string; dot: string }> = {
     success: {
-        bg: 'bg-emerald-50 dark:bg-emerald-900/20',
-        text: 'text-emerald-700 dark:text-emerald-400',
-        ring: 'ring-emerald-100 dark:ring-emerald-900/30',
-        dot: 'bg-emerald-500',
+        bg: 'bg-success-50 dark:bg-success-900/20',
+        text: 'text-success-700 dark:text-success-400',
+        ring: 'ring-success-100 dark:ring-success-900/30',
+        dot: 'bg-success-500',
     },
     warning: {
         bg: 'bg-warning-50 dark:bg-warning-900/20',
@@ -34,16 +34,16 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string; ring: stri
         dot: 'bg-warning-500',
     },
     danger: {
-        bg: 'bg-red-50 dark:bg-red-900/20',
-        text: 'text-red-700 dark:text-red-400',
-        ring: 'ring-red-100 dark:ring-red-900/30',
-        dot: 'bg-red-500',
+        bg: 'bg-danger-50 dark:bg-danger-900/20',
+        text: 'text-danger-700 dark:text-danger-400',
+        ring: 'ring-danger-100 dark:ring-danger-900/30',
+        dot: 'bg-danger-500',
     },
     info: {
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
-        text: 'text-blue-700 dark:text-blue-400',
-        ring: 'ring-blue-100 dark:ring-blue-900/30',
-        dot: 'bg-blue-500',
+        bg: 'bg-info-50 dark:bg-info-900/20',
+        text: 'text-info-700 dark:text-info-400',
+        ring: 'ring-info-100 dark:ring-info-900/30',
+        dot: 'bg-info-500',
     },
     neutral: {
         bg: 'bg-bg-muted',

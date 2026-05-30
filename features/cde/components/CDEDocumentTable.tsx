@@ -4,6 +4,45 @@ import type { CDEFolder, CDEDocument, CDEItem } from '../types';
 import { getStatusColor, getStatusLabel } from '../constants';
 import { getFileIcon } from '@/utils/fileIcons';
 
+const SENSITIVITY_LABELS: Record<number, { label: string; color: string; bg: string }> = {
+    1: { label: 'Công khai', color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-slate-700' },
+    2: { label: 'Nội bộ', color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/30' },
+    3: { label: 'Hạn chế', color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/30' },
+    4: { label: 'Mật', color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-900/30' },
+};
+
+const SensitivityBadge: React.FC<{ level: number; kind: 'doc' | 'bim'; refId: string; onUpdate?: (kind: 'doc' | 'bim', refId: string, level: number) => void }> = ({ level, kind, refId, onUpdate }) => {
+    const [open, setOpen] = React.useState(false);
+    const s = SENSITIVITY_LABELS[level] || SENSITIVITY_LABELS[1];
+    return (
+        <div className="relative inline-block">
+            <button
+                onClick={(e) => { e.stopPropagation(); if (onUpdate) setOpen(v => !v); }}
+                className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${s.color} ${s.bg} ${onUpdate ? 'cursor-pointer hover:ring-1 ring-current' : ''}`}
+                title={onUpdate ? 'Thay đổi nhãn nhạy cảm' : undefined}
+            >
+                {s.label}
+            </button>
+            {open && onUpdate && (
+                <div className="absolute z-30 top-full mt-1 left-1/2 -translate-x-1/2 bg-bg-surface border border-border rounded-xl shadow-lg p-1.5 flex flex-col gap-0.5 min-w-[90px]">
+                    {[1, 2, 3, 4].map(l => {
+                        const opt = SENSITIVITY_LABELS[l];
+                        return (
+                            <button
+                                key={l}
+                                onClick={(e) => { e.stopPropagation(); onUpdate(kind, refId, l); setOpen(false); }}
+                                className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg text-left transition-colors ${l === level ? opt.bg + ' ' + opt.color : 'text-txt-muted hover:bg-bg-muted'}`}
+                            >
+                                {opt.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 interface CDEDocumentTableProps {
     folders: CDEFolder[];
     activeFolder: CDEFolder | undefined;
@@ -25,13 +64,14 @@ interface CDEDocumentTableProps {
     /** Federation: model BIM nằm trong thư mục này (kind='bim') */
     bimItems?: CDEItem[];
     onOpenBim?: (item: CDEItem) => void;
+    onUpdateSensitivity?: (kind: 'doc' | 'bim', refId: string, level: number) => void;
 }
 
 const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
     folders, activeFolder, activeFolderId, docs, isLoading,
     searchQuery, selectedDocId, onSearchChange, onSelectDoc, onPreview, onDownload, onSign, onVersions, onUpload, onFolderClick,
     selectedIds = [], onToggleSelect,
-    bimItems = [], onOpenBim,
+    bimItems = [], onOpenBim, onUpdateSensitivity,
 }) => {
 
     const breadcrumbs = useMemo(() => {
@@ -137,6 +177,7 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Tên tài liệu</th>
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Phiên bản</th>
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Trạng thái</th>
+                                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Nhãn</th>
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Người nộp</th>
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Ngày nộp</th>
                                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Thao tác</th>
@@ -178,6 +219,9 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                     {isReady ? 'Sẵn sàng' : isError ? 'Lỗi' : 'Đang xử lý'}
                                                 </span>
                                             </div>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-center">
+                                            <SensitivityBadge level={item.sensitivity_level} kind="bim" refId={item.ref_id} onUpdate={onUpdateSensitivity} />
                                         </td>
                                         <td className="px-5 py-3.5 text-xs text-txt-muted font-medium truncate max-w-[120px]">
                                             {item.submitted_by_org || item.uploaded_by || '—'}
@@ -248,6 +292,9 @@ const CDEDocumentTable: React.FC<CDEDocumentTableProps> = ({
                                                     {getStatusLabel(doc.cde_status || 'S0')}
                                                 </span>
                                             </div>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-center">
+                                            <SensitivityBadge level={(doc as any).sensitivity_level || 1} kind="doc" refId={String(doc.doc_id)} onUpdate={onUpdateSensitivity} />
                                         </td>
                                         <td className="px-5 py-3.5 text-xs text-txt-muted font-medium truncate max-w-[120px]">
                                             {doc.submitted_by || doc.uploaded_by || '—'}

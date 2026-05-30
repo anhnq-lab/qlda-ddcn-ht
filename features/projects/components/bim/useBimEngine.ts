@@ -170,8 +170,8 @@ export function useBimEngine(
     const cameraQuaternionRef = useRef<THREE.Quaternion>(new THREE.Quaternion());
     const cameraQListenersRef = useRef<Set<CameraQuaternionListener>>(new Set());
     const [initError, setInitError] = useState<string | null>(null);
-    const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(false);
-    const [aoEnabled, setAoEnabled] = useState(false);
+    const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(true);
+    const [aoEnabled, setAoEnabled] = useState(true);
 
     const subscribeCameraQuaternion = useCallback((listener: CameraQuaternionListener) => {
         cameraQListenersRef.current.add(listener);
@@ -254,42 +254,73 @@ export function useBimEngine(
                 );
                 scene.add(hemiLight);
 
-                // Key directional light
+                // Key directional light (shadow-casting for ground contact shadows)
                 const keyLight = new THREE.DirectionalLight(
-                    isDarkMode ? 0xffffff : 0xffffff,
-                    isDarkMode ? 1.2 : 1.0
+                    isDarkMode ? 0xfff5e6 : 0xffffff,
+                    isDarkMode ? 1.3 : 1.1
                 );
-                keyLight.position.set(50, 100, 50);
-                keyLight.castShadow = false;
+                keyLight.position.set(60, 120, 60);
+                keyLight.castShadow = true;
+                keyLight.shadow.mapSize.set(2048, 2048);
+                keyLight.shadow.camera.near = 0.5;
+                keyLight.shadow.camera.far = 500;
+                keyLight.shadow.camera.left = -100;
+                keyLight.shadow.camera.right = 100;
+                keyLight.shadow.camera.top = 100;
+                keyLight.shadow.camera.bottom = -100;
+                keyLight.shadow.bias = -0.0001;
+                keyLight.shadow.radius = 4;
                 scene.add(keyLight);
 
-                // Fill light
+                // Fill light (softer, opposite side)
                 const fillLight = new THREE.DirectionalLight(
-                    isDarkMode ? 0x64748b : 0x94a3b8,
-                    isDarkMode ? 0.4 : 0.3
+                    isDarkMode ? 0x7a9cc6 : 0x94a3b8,
+                    isDarkMode ? 0.5 : 0.4
                 );
-                fillLight.position.set(-50, 50, -50);
+                fillLight.position.set(-60, 40, -40);
                 scene.add(fillLight);
+
+                // Rim/back light for edge definition (Autodesk-style depth separation)
+                const rimLight = new THREE.DirectionalLight(
+                    isDarkMode ? 0x3b82f6 : 0x93c5fd,
+                    isDarkMode ? 0.3 : 0.2
+                );
+                rimLight.position.set(-20, 80, -80);
+                scene.add(rimLight);
+
+                // ── Ground shadow plane (invisible except for shadow reception) ──
+                const groundGeo = new THREE.PlaneGeometry(500, 500);
+                const groundMat = new THREE.ShadowMaterial({ opacity: isDarkMode ? 0.25 : 0.15 });
+                const groundPlane = new THREE.Mesh(groundGeo, groundMat);
+                groundPlane.rotation.x = -Math.PI / 2;
+                groundPlane.position.y = -0.05;
+                groundPlane.receiveShadow = true;
+                groundPlane.name = '__bim_ground_shadow__';
+                scene.add(groundPlane);
 
                 // ── Helpers (Axes & Grid) for visual orientation ──
                 const axesHelper = new THREE.AxesHelper(10);
-                // X (Red), Y (Green), Z (Blue)
                 scene.add(axesHelper);
 
-                const gridHelper = new THREE.GridHelper(50, 50, 0x888888, isDarkMode ? 0x444444 : 0xcccccc);
-                gridHelper.position.y = -0.01; // slightly below 0 to avoid z-fighting
+                const gridHelper = new THREE.GridHelper(200, 100, 0x888888, isDarkMode ? 0x333333 : 0xcccccc);
+                gridHelper.position.y = -0.01;
+                (gridHelper.material as THREE.Material).opacity = isDarkMode ? 0.3 : 0.4;
+                (gridHelper.material as THREE.Material).transparent = true;
                 scene.add(gridHelper);
 
-                // Renderer setup — optimized for performance
+                // Renderer setup — Autodesk-grade quality
                 world.renderer = new OBCF.PostproductionRenderer(components, container);
                 const renderer = (world.renderer as any).three;
-                const MAX_PIXEL_RATIO = 1.5;
+                const MAX_PIXEL_RATIO = 2.0;
                 if (renderer) {
                     renderer.localClippingEnabled = true;
-                    renderer.toneMapping = THREE.NoToneMapping;
+                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                    renderer.toneMappingExposure = isDarkMode ? 1.15 : 1.0;
                     renderer.outputColorSpace = THREE.SRGBColorSpace;
                     renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
                     renderer.sortObjects = true;
+                    renderer.shadowMap.enabled = true;
+                    renderer.shadowMap.type = THREE.VSMShadowMap;
                 }
 
                 // Camera with smooth controls
@@ -307,14 +338,21 @@ export function useBimEngine(
                 if (postproduction) {
                     postproduction.enabled = true;
                     if (postproduction.customEffects) {
-                        postproduction.customEffects.outlineEnabled = false;
-                        postproduction.customEffects.glossEnabled = false;
+                        // Autodesk-style: subtle edge outline + AO on by default
+                        postproduction.customEffects.outlineEnabled = true;
+                        postproduction.customEffects.glossEnabled = true;
                         postproduction.customEffects.gammaEnabled = false;
                     }
                 }
 
                 const camera = world.camera as OBC.SimpleCamera;
                 camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
+
+                // Optimize camera for BIM — narrower FOV for less distortion
+                if (camera.three instanceof THREE.PerspectiveCamera) {
+                    camera.three.fov = 50;
+                    camera.three.updateProjectionMatrix();
+                }
 
                 // Smooth camera controls (optimized for BIM navigation)
                 camera.controls.smoothTime = 0.18;
@@ -371,14 +409,13 @@ export function useBimEngine(
                         const targetObj = model.object || model;
                         if (targetObj) {
                             world.scene.three.add(targetObj);
+                            targetObj.traverse((child: any) => {
+                                if (child.isMesh) child.castShadow = true;
+                            });
                         }
                         if (fragments.core && typeof fragments.core.update === 'function') {
                             fragments.core.update(true);
                         }
-                        // Build BVH after geometry is in place. Spread the work
-                        // across idle frames so the renderer stays responsive even
-                        // for large models. Run twice — once now and once after
-                        // streaming tiles have likely landed.
                         if (targetObj) {
                             scheduleBoundsTreeBuild(targetObj);
                             setTimeout(() => scheduleBoundsTreeBuild(targetObj), 2500);
@@ -466,9 +503,9 @@ export function useBimEngine(
                     },
                 });
 
-                // Hoverer disabled per user request
+                // Hoverer — subtle highlight on mouse-over (Autodesk-style)
                 const hoverer = components.get(OBCF.Hoverer);
-                hoverer.enabled = false;
+                hoverer.enabled = true;
 
                 // Track camera quaternion for ViewCube — pushed via ref + listener subscription
                 // (NOT React state) to avoid a top-level re-render on every camera tick.
@@ -615,26 +652,34 @@ export function useBimEngine(
                 obj.intensity = isDarkMode ? 0.9 : 0.65;
             }
             if (obj instanceof THREE.DirectionalLight) {
-                if (obj.position.x > 0) {
+                if (obj.position.x > 40) {
                     // Key light
-                    obj.color.set(isDarkMode ? 0xffffff : 0xffffff);
-                    obj.intensity = isDarkMode ? 1.2 : 1.0;
+                    obj.color.set(isDarkMode ? 0xfff5e6 : 0xffffff);
+                    obj.intensity = isDarkMode ? 1.3 : 1.1;
                 } else if (obj.position.z < -50) {
                     // Rim light
                     obj.color.set(isDarkMode ? 0x3b82f6 : 0x93c5fd);
-                    obj.intensity = isDarkMode ? 0.35 : 0.25;
+                    obj.intensity = isDarkMode ? 0.3 : 0.2;
                 } else {
                     // Fill light
-                    obj.color.set(isDarkMode ? 0x64748b : 0x94a3b8);
+                    obj.color.set(isDarkMode ? 0x7a9cc6 : 0x94a3b8);
                     obj.intensity = isDarkMode ? 0.5 : 0.4;
                 }
+            }
+            // Update ground shadow opacity
+            if (obj.name === '__bim_ground_shadow__' && obj instanceof THREE.Mesh) {
+                (obj.material as THREE.ShadowMaterial).opacity = isDarkMode ? 0.25 : 0.15;
+            }
+            // Update grid opacity
+            if (obj instanceof THREE.GridHelper) {
+                (obj.material as THREE.Material).opacity = isDarkMode ? 0.3 : 0.4;
             }
         });
 
         // Update renderer tone mapping
         const renderer = (worldRef.current?.renderer as any)?.three;
         if (renderer) {
-            renderer.toneMappingExposure = isDarkMode ? 1.2 : 1.0;
+            renderer.toneMappingExposure = isDarkMode ? 1.15 : 1.0;
         }
     }, [isDarkMode]);
 
@@ -651,31 +696,27 @@ export function useBimEngine(
             for (const [, model] of fragments.list) {
                 const targetObj = (model as any).object || model;
                 if (targetObj instanceof THREE.Object3D) {
-                    const childBoxes: THREE.Box3[] = [];
-                    targetObj.traverse((child: any) => {
-                        if (child.isMesh && child.geometry) {
-                            const childBox = new THREE.Box3().setFromObject(child);
-                            if (!childBox.isEmpty()) {
-                                childBoxes.push(childBox);
-                            }
+                    // Ensure world matrices are up-to-date (coordination offset in obj.position)
+                    targetObj.updateMatrixWorld(true);
+
+                    const modelBox = new THREE.Box3().setFromObject(targetObj);
+                    if (!modelBox.isEmpty()) {
+                        // Filter out infinite/degenerate boxes
+                        const c = modelBox.getCenter(new THREE.Vector3());
+                        const s = modelBox.getSize(new THREE.Vector3());
+                        if (isFinite(c.x) && isFinite(c.z) && s.length() < 100000) {
+                            box.union(modelBox);
+                            hasModels = true;
                         }
-                    });
-                    
-                    if (childBoxes.length > 0) {
-                        // Filter out drift points in local space (drift points now end up far at -offset)
-                        const nearBoxes = childBoxes.filter(b => {
-                            const c = b.getCenter(new THREE.Vector3());
-                            return Math.abs(c.x) < 10000 && Math.abs(c.z) < 10000;
-                        });
-                        const targetBoxes = nearBoxes.length > 0 ? nearBoxes : childBoxes;
-                        for (const b of targetBoxes) {
-                            box.union(b);
-                        }
-                        hasModels = true;
-                    } else {
+                    }
+
+                    if (!hasModels) {
                         const nativeBox = (model as any).box;
                         if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) {
-                            box.union(nativeBox);
+                            // Apply obj.position offset to native box
+                            const offsetBox = nativeBox.clone();
+                            offsetBox.translate(targetObj.position);
+                            box.union(offsetBox);
                             hasModels = true;
                         }
                     }
@@ -724,6 +765,15 @@ export function useBimEngine(
         const sphere = new THREE.Sphere();
         box.getBoundingSphere(sphere);
         if (!isFinite(sphere.radius) || sphere.radius <= 0) return;
+
+        // Dynamically adjust near/far based on model scale + distance from origin
+        const dist = sphere.center.length() + sphere.radius * 3;
+        if (camera.three instanceof THREE.PerspectiveCamera) {
+            camera.three.near = Math.max(0.01, dist * 0.0001);
+            camera.three.far = Math.max(dist * 10, 50000);
+            camera.three.updateProjectionMatrix();
+        }
+
         camera.controls.fitToSphere(sphere, true);
     }, [getModelsBox]);
 

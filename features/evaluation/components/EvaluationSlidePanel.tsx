@@ -75,7 +75,7 @@ const Section: React.FC<{
     
     return (
         <div className="bg-bg-surface rounded-xl border border-border overflow-hidden mb-3">
-            <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-50">
+            <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-bg-hover-row">
                 <div className="flex-1 text-left">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-txt-primary">{title}</span>
@@ -554,7 +554,7 @@ const EvaluationSlidePanel: React.FC<Props> = ({existingForm,defaultMonth,defaul
                         ) : (
                             <div className="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
                                 {employeeTasks.map(t => (
-                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-50 transition-colors">
+                                    <div key={t.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                                         <div className="flex items-start justify-between gap-3">
                                             <p className="text-sm font-semibold text-txt-primary line-clamp-2 leading-snug flex-1">{t.title}</p>
                                             <span className={`shrink-0 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${

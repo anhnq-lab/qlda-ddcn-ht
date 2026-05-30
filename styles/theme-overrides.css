@@ -40,18 +40,51 @@
   color: #ffffff !important;
 }
 
-/* Fix text and icons in Sidebar and Header */
+/* Fix text and icons in Sidebar and Header for perfect contrast (WCAG Compliant) */
 .theme-light .layout-sidebar .text-slate-800,
-.theme-light .layout-sidebar .text-slate-500,
 .theme-light .layout-sidebar .text-slate-900,
 .theme-light .layout-sidebar .text-slate-700,
-.theme-light .layout-sidebar .text-slate-400,
+.theme-light .layout-sidebar .text-txt-primary,
 .theme-light .layout-header .text-slate-800,
-.theme-light .layout-header .text-slate-500,
 .theme-light .layout-header .text-slate-900,
 .theme-light .layout-header .text-slate-700,
-.theme-light .layout-header .text-slate-400 {
-  color: rgba(255, 255, 255, 0.9) !important;
+.theme-light .layout-header .text-txt-primary {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.theme-light .layout-sidebar .text-slate-50,
+.theme-light .layout-sidebar .text-slate-100,
+.theme-light .layout-sidebar .text-slate-200,
+.theme-light .layout-sidebar .text-slate-300,
+.theme-light .layout-header .text-slate-50,
+.theme-light .layout-header .text-slate-100,
+.theme-light .layout-header .text-slate-200,
+.theme-light .layout-header .text-slate-300 {
+  color: #ffffff !important;
+}
+
+.theme-light .layout-sidebar .text-slate-500,
+.theme-light .layout-sidebar .text-slate-400,
+.theme-light .layout-sidebar .text-txt-secondary,
+.theme-light .layout-sidebar .text-txt-tertiary,
+.theme-light .layout-sidebar .text-txt-muted,
+.theme-light .layout-header .text-slate-500,
+.theme-light .layout-header .text-slate-400,
+.theme-light .layout-header .text-txt-secondary,
+.theme-light .layout-header .text-txt-tertiary,
+.theme-light .layout-header .text-txt-muted {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.theme-light .layout-sidebar .text-txt-placeholder,
+.theme-light .layout-header .text-txt-placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Ensure all icons inside sidebar & header adapt to high-contrast colors */
+.theme-light .layout-sidebar svg,
+.theme-light .layout-header svg {
+  color: currentColor !important;
 }
 
 /* Active links in Sidebar */
@@ -62,24 +95,29 @@
   box-shadow: none !important;
 }
 
-/* Hover effects for buttons/links */
+/* Hover effects for buttons/links in Header and Sidebar */
 .theme-light .layout-sidebar a:not(.bg-primary-50):hover,
 .theme-light .layout-sidebar button:not(.bg-primary-50):hover,
 .theme-light .layout-header button.hover\:bg-slate-100:hover,
 .theme-light .layout-header button.hover\:bg-bg-surface:hover,
-.theme-light .layout-header button.hover\:bg-slate-50:hover {
+.theme-light .layout-header button.hover\:bg-slate-50:hover,
+.theme-light .layout-header button.hover\:bg-bg-muted:hover,
+.theme-light .layout-header button:hover {
   background-color: rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
 }
 
 /* Header Search box */
-.theme-light .layout-header .bg-slate-50 {
+.theme-light .layout-header .bg-slate-50,
+.theme-light .layout-header button.bg-bg-subtle {
   background-color: rgba(0, 0, 0, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
-.theme-light .layout-header .bg-slate-50:hover {
+.theme-light .layout-header .bg-slate-50:hover,
+.theme-light .layout-header button.bg-bg-subtle:hover {
   background-color: rgba(0, 0, 0, 0.25) !important;
+  color: #ffffff !important;
 }
 .theme-light .layout-header kbd {
   background-color: rgba(255, 255, 255, 0.2) !important;
@@ -92,21 +130,128 @@
   background: var(--color-primary-600) !important;
 }
 
-/* Dropdown override: Reset colors inside the dropdown */
-.theme-light .user-dropdown {
+/* Dropdown override: Reset ALL colors, hover effects, SVGs and text variables inside dropdowns/popovers rendering in Header & Sidebar */
+.theme-light .layout-header .bg-bg-elevated,
+.theme-light .layout-header .shadow-dropdown,
+.theme-light .layout-header .user-dropdown,
+.theme-light .layout-sidebar .bg-bg-elevated,
+.theme-light .layout-sidebar .shadow-dropdown {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
-  color: #0f172a !important;
+  color: #1d1c1c !important;
 }
-.theme-light .user-dropdown .text-slate-900 { color: #0f172a !important; }
-.theme-light .user-dropdown .text-slate-700 { color: #334155 !important; }
-.theme-light .user-dropdown .text-slate-600 { color: #475569 !important; }
-.theme-light .user-dropdown .text-slate-500 { color: #64748b !important; }
-.theme-light .user-dropdown .text-slate-400 { color: #94a3b8 !important; }
-.theme-light .user-dropdown .bg-slate-100 { background-color: #f1f5f9 !important; }
-.theme-light .user-dropdown .hover\:bg-slate-100:hover { background-color: #f1f5f9 !important; }
-.theme-light .user-dropdown .hover\:bg-red-50:hover { background-color: #fef2f2 !important; }
-.theme-light .user-dropdown .text-red-600 { color: #dc2626 !important; }
+
+/* Reset text colors inside dropdowns/popups to light theme defaults */
+.theme-light .layout-header .bg-bg-elevated .text-txt-primary,
+.theme-light .layout-header .shadow-dropdown .text-txt-primary,
+.theme-light .layout-header .user-dropdown .text-txt-primary,
+.theme-light .layout-header .bg-bg-elevated .text-slate-900,
+.theme-light .layout-header .user-dropdown .text-slate-900,
+.theme-light .layout-sidebar .bg-bg-elevated .text-txt-primary,
+.theme-light .layout-sidebar .shadow-dropdown .text-txt-primary {
+  color: #1d1c1c !important;
+}
+
+.theme-light .layout-header .bg-bg-elevated .text-txt-secondary,
+.theme-light .layout-header .shadow-dropdown .text-txt-secondary,
+.theme-light .layout-header .user-dropdown .text-txt-secondary,
+.theme-light .layout-header .bg-bg-elevated .text-slate-700,
+.theme-light .layout-header .user-dropdown .text-slate-700,
+.theme-light .layout-sidebar .bg-bg-elevated .text-txt-secondary,
+.theme-light .layout-sidebar .shadow-dropdown .text-txt-secondary {
+  color: #313d44 !important;
+}
+
+.theme-light .layout-header .bg-bg-elevated .text-txt-tertiary,
+.theme-light .layout-header .shadow-dropdown .text-txt-tertiary,
+.theme-light .layout-header .user-dropdown .text-txt-tertiary,
+.theme-light .layout-header .bg-bg-elevated .text-slate-600,
+.theme-light .layout-header .user-dropdown .text-slate-600,
+.theme-light .layout-sidebar .bg-bg-elevated .text-txt-tertiary,
+.theme-light .layout-sidebar .shadow-dropdown .text-txt-tertiary {
+  color: #64748b !important;
+}
+
+.theme-light .layout-header .bg-bg-elevated .text-txt-muted,
+.theme-light .layout-header .shadow-dropdown .text-txt-muted,
+.theme-light .layout-header .user-dropdown .text-txt-muted,
+.theme-light .layout-header .bg-bg-elevated .text-slate-500,
+.theme-light .layout-header .user-dropdown .text-slate-500,
+.theme-light .layout-header .bg-bg-elevated .text-slate-400,
+.theme-light .layout-header .user-dropdown .text-slate-400,
+.theme-light .layout-sidebar .bg-bg-elevated .text-txt-muted,
+.theme-light .layout-sidebar .shadow-dropdown .text-txt-muted {
+  color: #94a3b8 !important;
+}
+
+.theme-light .layout-header .bg-bg-elevated .text-txt-placeholder,
+.theme-light .layout-header .shadow-dropdown .text-txt-placeholder,
+.theme-light .layout-header .user-dropdown .text-txt-placeholder {
+  color: #cbd5e1 !important;
+}
+
+/* Reset SVGs inside dropdowns to normal non-white color */
+.theme-light .layout-header .bg-bg-elevated svg,
+.theme-light .layout-header .shadow-dropdown svg,
+.theme-light .layout-header .user-dropdown svg,
+.theme-light .layout-sidebar .bg-bg-elevated svg,
+.theme-light .layout-sidebar .shadow-dropdown svg {
+  color: inherit !important;
+}
+
+/* Reset hover states and background variables inside dropdowns */
+.theme-light .layout-header .bg-bg-elevated a:hover,
+.theme-light .layout-header .shadow-dropdown a:hover,
+.theme-light .layout-header .user-dropdown a:hover,
+.theme-light .layout-header .bg-bg-elevated button:hover,
+.theme-light .layout-header .shadow-dropdown button:hover,
+.theme-light .layout-header .user-dropdown button:hover,
+.theme-light .layout-sidebar .bg-bg-elevated a:hover,
+.theme-light .layout-sidebar .shadow-dropdown a:hover,
+.theme-light .layout-sidebar .bg-bg-elevated button:hover,
+.theme-light .layout-sidebar .shadow-dropdown button:hover {
+  background-color: #f1f5f9 !important;
+  color: #1d1c1c !important;
+}
+
+.theme-light .layout-header .bg-bg-elevated a:hover svg,
+.theme-light .layout-header .shadow-dropdown a:hover svg,
+.theme-light .layout-header .user-dropdown a:hover svg,
+.theme-light .layout-header .bg-bg-elevated button:hover svg,
+.theme-light .layout-header .shadow-dropdown button:hover svg,
+.theme-light .layout-header .user-dropdown button:hover svg {
+  color: #1d1c1c !important;
+}
+
+/* Specific red button (Logout) hover */
+.theme-light .layout-header .bg-bg-elevated .hover\:bg-red-50:hover,
+.theme-light .layout-header .user-dropdown .hover\:bg-red-50:hover {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+.theme-light .layout-header .bg-bg-elevated .hover\:bg-red-50:hover svg,
+.theme-light .layout-header .user-dropdown .hover\:bg-red-50:hover svg {
+  color: #dc2626 !important;
+}
+.theme-light .layout-header .bg-bg-elevated .text-red-600,
+.theme-light .layout-header .user-dropdown .text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* Reset inline elements with slate-100 bgs inside dropdown */
+.theme-light .layout-header .bg-bg-elevated .bg-slate-100,
+.theme-light .layout-header .user-dropdown .bg-slate-100 {
+  background-color: #f1f5f9 !important;
+}
+.theme-light .layout-header .bg-bg-elevated .bg-bg-surface,
+.theme-light .layout-header .user-dropdown .bg-bg-surface {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+.theme-light .layout-header .bg-bg-elevated .text-primary-600,
+.theme-light .layout-header .user-dropdown .text-primary-600 {
+  color: var(--color-primary-500) !important;
+}
 
 /* Inline bg-[#FCF9F2] overrides — attribute selector matches literal class name */
 .theme-light [class*="bg-[#FCF9F2]"] { background-color: #ffffff !important; }
@@ -482,4 +627,41 @@
 .dark .text-gray-700, .dark .text-slate-700 { color: #cbd5e1 !important; }
 .dark .text-gray-600, .dark .text-slate-600 { color: #94a3b8 !important; }
 .dark .border-gray-100, .dark .border-gray-200, .dark .border-slate-100, .dark .border-slate-200 { border-color: #2e3348 !important; }
+
+/* Dark Mode Link & Text overrides to prevent blue-link-pollution in Sidebar & Breadcrumbs */
+.dark a[class~="text-txt-primary"] { color: var(--color-text-primary) !important; }
+.dark a[class~="text-txt-secondary"] { color: var(--color-text-secondary) !important; }
+.dark a[class~="text-txt-tertiary"] { color: var(--color-text-tertiary) !important; }
+.dark a[class~="text-txt-muted"] { color: var(--color-text-muted) !important; }
+
+.dark a[class~="text-txt-muted"]:hover,
+.dark a[class~="text-txt-secondary"]:hover,
+.dark a[class~="text-txt-tertiary"]:hover {
+  color: #ffffff !important;
+}
+
+/* Sidebar links in Dark Mode */
+.dark .layout-sidebar a:not(.bg-primary-50) {
+  color: var(--color-slate-400) !important;
+}
+.dark .layout-sidebar a:not(.bg-primary-50):hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Sidebar active link in Dark Mode */
+.dark .layout-sidebar a.bg-primary-50 {
+  background-color: rgba(0, 102, 140, 0.22) !important;
+  color: #71c4ef !important;
+  border-left-color: #71c4ef !important;
+}
+
+/* Breadcrumb Links in Dark Mode */
+.dark nav[aria-label="Breadcrumb"] a {
+  color: var(--color-slate-400) !important;
+}
+.dark nav[aria-label="Breadcrumb"] a:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
 /* Scrollbar — moved to base.css */

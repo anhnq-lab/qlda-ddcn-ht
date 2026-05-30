@@ -203,7 +203,7 @@ const DesignFormRenderer: React.FC<DesignFormRendererProps> = ({
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs border-collapse">
                             <thead>
-                                <tr className="bg-slate-100 dark:bg-slate-900">
+                                <tr className="bg-bg-subtle text-txt-muted">
                                     {schema.table.columns.map((col: { key: string; label: string }) => (
                                         <th key={col.key} className="px-3 py-2 text-left font-semibold text-txt-muted border border-border">
                                             {col.label}

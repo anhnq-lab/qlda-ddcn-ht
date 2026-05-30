@@ -26,16 +26,16 @@ export default {
                 // ─── BRAND PALETTE (HCMA / Ban DDCN) ─────────────────────────
                 // Primary = Theme Color (được bind từ index.css variable để dễ tùy chỉnh)
                 primary: {
-                    50:  'var(--color-primary-50)',
-                    100: 'var(--color-primary-100)',
-                    200: 'var(--color-primary-200)',
-                    300: 'var(--color-primary-300)',
-                    400: 'var(--color-primary-400)',
-                    500: 'var(--color-primary-500)',
-                    600: 'var(--color-primary-600)',
-                    700: 'var(--color-primary-700)',
-                    800: 'var(--color-primary-800)',
-                    900: 'var(--color-primary-900)',
+                    50:  'rgb(var(--color-primary-50-rgb) / <alpha-value>)',
+                    100: 'rgb(var(--color-primary-100-rgb) / <alpha-value>)',
+                    200: 'rgb(var(--color-primary-200-rgb) / <alpha-value>)',
+                    300: 'rgb(var(--color-primary-300-rgb) / <alpha-value>)',
+                    400: 'rgb(var(--color-primary-400-rgb) / <alpha-value>)',
+                    500: 'rgb(var(--color-primary-500-rgb) / <alpha-value>)',
+                    600: 'rgb(var(--color-primary-600-rgb) / <alpha-value>)',
+                    700: 'rgb(var(--color-primary-700-rgb) / <alpha-value>)',
+                    800: 'rgb(var(--color-primary-800-rgb) / <alpha-value>)',
+                    900: 'rgb(var(--color-primary-900-rgb) / <alpha-value>)',
                 },
 
                 // Accent = Đỏ cờ (branding, tiêu đề tổ chức)
@@ -160,13 +160,9 @@ export default {
                     'surface-subtle': 'var(--brand-on-surface-subtle)',
                 },
 
-                content: {
-                    primary:   '#1d1c1c',
-                    secondary: '#313d44',
-                    tertiary:  '#6b7280',
-                    muted:     '#9ca3af',
-                    inverse:   '#ffffff',
-                },
+                // NOTE: palette `content.*` đã gỡ — không nơi nào dùng và 2 màu
+                // (#9ca3af, #6b7280) là theme-unaware + trượt WCAG trên nền trắng.
+                // Dùng token theme-aware `txt.*` (text-txt-primary/secondary/muted) thay thế.
 
                 // ─── NEUTRAL SCALES (giữ nguyên standard Tailwind) ───────────
                 gray: {
@@ -183,17 +179,17 @@ export default {
                 },
 
                 slate: {
-                    50:  'var(--color-slate-50)',
-                    100: 'var(--color-slate-100)',
-                    200: 'var(--color-slate-200)',
-                    300: 'var(--color-slate-300)',
-                    400: 'var(--color-slate-400)',
-                    500: 'var(--color-slate-500)',
-                    600: 'var(--color-slate-600)',
-                    700: 'var(--color-slate-700)',
-                    800: 'var(--color-slate-800)',
-                    900: 'var(--color-slate-900)',
-                    950: 'var(--color-slate-950)',
+                    50:  'rgb(var(--color-slate-50-rgb) / <alpha-value>)',
+                    100: 'rgb(var(--color-slate-100-rgb) / <alpha-value>)',
+                    200: 'rgb(var(--color-slate-200-rgb) / <alpha-value>)',
+                    300: 'rgb(var(--color-slate-300-rgb) / <alpha-value>)',
+                    400: 'rgb(var(--color-slate-400-rgb) / <alpha-value>)',
+                    500: 'rgb(var(--color-slate-500-rgb) / <alpha-value>)',
+                    600: 'rgb(var(--color-slate-600-rgb) / <alpha-value>)',
+                    700: 'rgb(var(--color-slate-700-rgb) / <alpha-value>)',
+                    800: 'rgb(var(--color-slate-800-rgb) / <alpha-value>)',
+                    900: 'rgb(var(--color-slate-900-rgb) / <alpha-value>)',
+                    950: 'rgb(var(--color-slate-950-rgb) / <alpha-value>)',
                 },
             },
 

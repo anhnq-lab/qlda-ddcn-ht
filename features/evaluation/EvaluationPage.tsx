@@ -264,8 +264,8 @@ export const EvaluationPage: React.FC = () => {
                 ) : (
                     <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-220px)]">
                         <table className="w-full">
-                            <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
-                                <tr className="text-txt-secondary">
+                            <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
+                                <tr className="text-txt-muted">
                                     <th className="px-4 py-3 text-left min-w-[200px] border-b border-border">Nhân sự</th>
                                     <th className="px-4 py-3 text-center w-24 border-b border-border">Loại phiếu</th>
                                     <th className="px-4 py-3 text-center w-24 border-b border-border">Tự chấm</th>

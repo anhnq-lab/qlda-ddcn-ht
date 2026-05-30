@@ -253,7 +253,7 @@ export const FormChecklistPanel: React.FC<Props> = ({
                         <div className="bg-gray-50 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600 overflow-hidden">
                             <table className="w-full text-xs">
                                 <thead>
-                                    <tr className="bg-bg-muted border-b border-gray-200 dark:border-slate-600">
+                                    <tr className="bg-bg-subtle border-b border-border">
                                         <th className="text-left px-3 py-2 font-black text-txt-muted w-8">TT</th>
                                         <th className="text-left px-3 py-2 font-black text-txt-muted">Nội dung cột</th>
                                     </tr>

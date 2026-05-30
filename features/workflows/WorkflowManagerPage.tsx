@@ -541,7 +541,7 @@ const WorkflowManagerPage: React.FC = () => {
                                 </thead>
                                 <tbody className="bg-bg-surface divide-y divide-border-subtle text-sm font-medium">
                                     {filteredWorkflows.map(wf => (
-                                        <tr key={wf.id} onClick={() => handleViewWorkflowOverview(wf)} className="hover:bg-slate-50 dark:hover:bg-slate-50 cursor-pointer transition-colors group">
+                                        <tr key={wf.id} onClick={() => handleViewWorkflowOverview(wf)} className="hover:bg-bg-hover-row cursor-pointer transition-colors group">
                                             <td className="px-6 py-4 whitespace-nowrap text-slate-500 font-mono text-xs">{wf.code}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-txt-primary font-bold group-hover:text-primary-600 transition-colors uppercase font-display">{wf.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">

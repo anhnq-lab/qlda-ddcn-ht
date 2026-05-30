@@ -64,6 +64,50 @@ export class CDEItemService {
     }
 
     /**
+     * Cập nhật mức nhạy cảm (sensitivity_level) cho một CDE item.
+     */
+    static async updateSensitivity(
+        item: Pick<CDEItem, 'kind' | 'ref_id'>,
+        level: number,
+        actor?: { id: string; name: string; projectId: string }
+    ): Promise<void> {
+        const table = item.kind === 'bim' ? 'bim_models' : 'documents';
+        const idCol = item.kind === 'bim' ? 'id' : 'doc_id';
+        const idVal = item.kind === 'bim' ? item.ref_id : Number(item.ref_id);
+        const { error } = await cde.from(table).update({ sensitivity_level: level }).eq(idCol, idVal);
+        if (error) throw new Error(`Cập nhật nhãn nhạy cảm thất bại: ${error.message}`);
+        if (actor) {
+            await CDEPermissionService.logAudit({
+                projectId: actor.projectId,
+                entityType: item.kind === 'bim' ? 'bim_model' : 'document',
+                entityId: item.ref_id,
+                action: 'update_sensitivity',
+                actorId: actor.id,
+                actorName: actor.name,
+                details: { sensitivity_level: level },
+            });
+        }
+    }
+
+    /**
+     * Ghi audit log khi mở xem model BIM (TT47 2.2.9).
+     */
+    static async logBimOpen(
+        bimId: string,
+        actor: { id: string; name: string; projectId: string }
+    ): Promise<void> {
+        await CDEPermissionService.logAudit({
+            projectId: actor.projectId,
+            entityType: 'bim_model',
+            entityId: bimId,
+            action: 'view',
+            actorId: actor.id,
+            actorName: actor.name,
+            details: { action_type: 'open_viewer' },
+        });
+    }
+
+    /**
      * Di chuyển một CDE item bất kỳ sang thư mục khác (doc hoặc bim).
      */
     static async moveItem(

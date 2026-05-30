@@ -225,26 +225,20 @@ export function useBimUpload(
     useEffect(() => {
         let cancelled = false;
 
-        // 1. Optimistic LocalStorage read for instant render on warm reload
-        const cachedStr = localStorage.getItem(`bim_project_offset_${projectID}`);
-        if (cachedStr) {
-            try {
-                const cached = JSON.parse(cachedStr);
-                if (typeof cached.x === 'number' && typeof cached.y === 'number' && typeof cached.z === 'number') {
-                    coordinationOffsetRef.current = new THREE.Vector3(cached.x, cached.y, cached.z);
-                }
-            } catch {
-                /* ignore parse errors */
-            }
-        }
+        // Xoá cache cũ bị sai dấu (bug trước đây) — buộc tính lại từ geometry
+        localStorage.removeItem(`bim_project_offset_${projectID}`);
+        coordinationOffsetRef.current = null;
 
-        // 2. Authoritative DB read overrides LocalStorage if the server has a value
-        (async () => {
-            const remote = await loadProjectCoordOffset(projectID);
-            if (cancelled || !remote) return;
-            coordinationOffsetRef.current = new THREE.Vector3(remote.x, remote.y, remote.z);
-            localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(remote));
-        })();
+        // DB read — bỏ qua offset cũ (có thể bị sai dấu), để coordinateModel
+        // tính lại từ geometry thực tế rồi lưu mới.
+        // Sau khi deploy ổn định, có thể bật lại DB read bằng cách uncomment:
+        // (async () => {
+        //     const remote = await loadProjectCoordOffset(projectID);
+        //     if (cancelled || !remote) return;
+        //     if (Math.abs(remote.x) > 500 || Math.abs(remote.z) > 500) {
+        //         coordinationOffsetRef.current = new THREE.Vector3(remote.x, remote.y, remote.z);
+        //     }
+        // })();
 
         // 3. Start prefetching model data NOW — runs in parallel with engine init.
         // By the time viewerReady=true and loadExistingModels() is called, the
@@ -254,45 +248,35 @@ export function useBimUpload(
         return () => { cancelled = true; };
     }, [projectID]);
 
+    /**
+     * Đặt toạ độ gốc dự án = (0,0,0).
+     * Model IFC thường ở toạ độ UTM (hàng trăm triệu) — WebGL float32
+     * mất precision → model biến mất. Hàm này tính geometry center rồi
+     * dịch Object3D ngược lại để model nằm ở gốc toạ độ.
+     *
+     * Quy ước lưu trữ: `coord_offset` = geometry center thô (số dương lớn).
+     * Áp dụng: `obj.position = -coord_offset`.
+     */
     const coordinateModel = useCallback((model: any) => {
         if (!model) return;
         const obj = (model as any).object || model;
         if (!(obj instanceof THREE.Object3D)) return;
 
-        // If project offset already determined (from DB/localStorage), apply at
-        // the GROUP level and return. This works correctly with streaming fragments
-        // because child tiles inherit the parent's world matrix automatically.
+        // Luôn reset position trước khi tính toán để tránh tích luỹ offset
+        obj.position.set(0, 0, 0);
+        obj.updateMatrixWorld(true);
+
+        // Nếu đã có project origin → áp dụng trực tiếp
         if (coordinationOffsetRef.current) {
-            const offset = coordinationOffsetRef.current;
-            console.log(`[BIM Coordination] Applying stored offset: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
-            obj.position.set(-offset.x, -offset.y, -offset.z);
+            const origin = coordinationOffsetRef.current;
+            obj.position.set(-origin.x, -origin.y, -origin.z);
             obj.updateMatrixWorld(true);
+            console.log(`[BIM Origin] Áp dụng gốc dự án: model dịch (${(-origin.x).toFixed(0)}, ${(-origin.y).toFixed(0)}, ${(-origin.z).toFixed(0)})`);
             return;
         }
 
-        // First model in project: compute offset from mesh bounding boxes.
-        // Only works for IFC-loaded models where meshes exist immediately;
-        // streaming .frag models with no meshes yet will skip (no offset needed
-        // since COORDINATE_TO_ORIGIN: true already centered the data).
-        const childBoxes: THREE.Box3[] = [];
-        obj.traverse((child: any) => {
-            if (child.isMesh && child.geometry) {
-                const childBox = new THREE.Box3().setFromObject(child);
-                if (!childBox.isEmpty()) childBoxes.push(childBox);
-            }
-        });
-
-        // KHÔNG return sớm khi không có mesh: model .frag stream theo tile nên
-        // thường chưa có mesh ở thời điểm này — để rơi xuống fallback dùng box gốc
-        // (model.box) bên dưới thì model toạ độ khảo sát lớn mới được recenter.
-        const box = new THREE.Box3();
-        const farBoxes = childBoxes.filter(b => {
-            const c = b.getCenter(new THREE.Vector3());
-            return Math.abs(c.x) > 1000 || Math.abs(c.z) > 1000;
-        });
-        const targetBoxes = farBoxes.length > 0 ? farBoxes : childBoxes;
-        for (const b of targetBoxes) box.union(b);
-
+        // Model đầu tiên: tính geometry center làm gốc dự án
+        const box = new THREE.Box3().setFromObject(obj);
         if (box.isEmpty()) {
             const nativeBox = (model as any).box;
             if (nativeBox instanceof THREE.Box3 && !nativeBox.isEmpty()) box.copy(nativeBox);
@@ -300,20 +284,22 @@ export function useBimUpload(
         if (box.isEmpty()) return;
 
         const center = box.getCenter(new THREE.Vector3());
-        if ((Math.abs(center.x) > 10000 || Math.abs(center.z) > 10000)) {
-            const offset = { x: center.x, y: center.y, z: center.z };
-            coordinationOffsetRef.current = new THREE.Vector3(offset.x, offset.y, offset.z);
-            localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(offset));
-            void saveProjectCoordOffset(projectID, offset);
-            console.log(`[BIM Coordination] Set global project offset: (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
+        if (Math.abs(center.x) < 500 && Math.abs(center.z) < 500) {
+            console.log('[BIM Origin] Model đã gần gốc toạ độ, không cần dịch');
+            return;
         }
 
-        if (coordinationOffsetRef.current) {
-            const offset = coordinationOffsetRef.current;
-            console.log(`[BIM Coordination] Offsetting model (group-level): (${offset.x.toFixed(0)}, ${offset.y.toFixed(0)}, ${offset.z.toFixed(0)})`);
-            obj.position.set(-offset.x, -offset.y, -offset.z);
-            obj.updateMatrixWorld(true);
-        }
+        // Lưu geometry center làm project origin (số dương = toạ độ thô)
+        const origin = { x: center.x, y: center.y, z: center.z };
+        coordinationOffsetRef.current = new THREE.Vector3(origin.x, origin.y, origin.z);
+        localStorage.setItem(`bim_project_offset_${projectID}`, JSON.stringify(origin));
+        void saveProjectCoordOffset(projectID, origin);
+        console.log(`[BIM Origin] Thiết lập gốc dự án: (${origin.x.toFixed(0)}, ${origin.y.toFixed(0)}, ${origin.z.toFixed(0)})`);
+
+        // Dịch model về gốc
+        obj.position.set(-origin.x, -origin.y, -origin.z);
+        obj.updateMatrixWorld(true);
+        console.log(`[BIM Origin] Model dịch về gốc thành công`);
     }, [projectID]);
 
     // ── File validation ────────────────────────
@@ -391,6 +377,8 @@ export function useBimUpload(
                             || await downloadFile(m.frag_path);
                         const fragModel = await fragments.core.load(new Uint8Array(fragBuffer), { modelId: m.id });
                         coordinateModel(fragModel);
+                        // Streaming tiles arrive after load — re-coordinate khi tiles sẵn sàng
+                        setTimeout(() => coordinateModel(fragModel), 1500);
 
                         console.log(`[BimUpload] Loaded fragment: ${m.file_name} (${(performance.now() - t0).toFixed(0)}ms total)`);
 

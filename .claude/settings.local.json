@@ -181,7 +181,17 @@
       "Bash(findstr /i bim)",
       "Bash(findstr /i \"useBimUpload\")",
       "Bash(findstr /i \"main module exports browser\")",
-      "Bash(echo \"EXIT CODE: $?\")"
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(npx eslint *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Filter \"*.json\" -Name)",
+      "Bash(Select-String -Pattern \"package\\\\.json\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); const all={...p.dependencies,...p.devDependencies}; console.log\\('tailwindcss:', all.tailwindcss\\); console.log\\('@tailwindcss/postcss:', all['@tailwindcss/postcss']\\); console.log\\('@tailwindcss/vite:', all['@tailwindcss/vite']\\); console.log\\('postcss:', all.postcss\\); console.log\\('autoprefixer:', all.autoprefixer\\);\")",
+      "PowerShell($conns = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue; if\\($conns\\){ $conns | ForEach-Object { $pid=$_.OwningProcess; $p=Get-Process -Id $pid -ErrorAction SilentlyContinue; \"PID $pid : $\\($p.ProcessName\\) started $\\($p.StartTime\\)\" } } else { \"nothing listening on 5000\" }; \"---\"; \"Total node procs: \" + \\(Get-Process node -ErrorAction SilentlyContinue\\).Count)",
+      "Bash(npx tailwindcss *)",
+      "Bash(grep -o 'bg-primary-900\\\\\\\\/20[^}]*}' tmp_tw_check.css)",
+      "Bash(grep -o 'bg-slate-800\\\\\\\\/50[^}]*}' tmp_tw_check.css)",
+      "PowerShell($owners = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique; foreach\\($procId in $owners\\){ $pr=Get-Process -Id $procId -ErrorAction SilentlyContinue; if\\($pr -and $pr.ProcessName -eq 'node'\\){ \"Killing node PID $procId\"; Stop-Process -Id $procId -Force } else { \"Port 5000 owner PID $procId = $\\($pr.ProcessName\\) \\(not killing\\)\" } })",
+      "Bash(git reset *)"
     ]
   }
 }

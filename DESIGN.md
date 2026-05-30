@@ -211,7 +211,9 @@ kết hợp **Đỏ cờ (#AE1E23)** cho branding tổ chức nhà nước.
 
 **Nguyên tắc Anti-Patterns:**
 - Không remapping màu (orange=gold, blue=gold, v.v.)
-- Không dùng `opacity hack` cho dark mode (`bg-white/10`)
+- Không dùng `opacity hack` (mẹo độ mờ) cho **nền trung tính** trong dark mode (`bg-white/10`).
+  *Ngoại lệ:* lớp phủ kính (glassmorphism) trên canvas 3D / HUD của BIM (vd `bg-white/10`
+  đè lên viewport 3D) được phép, vì nền dưới không phải màu token.
 - Không hardcode hex trong JSX ngoại trừ Recharts và board colors từ `types/project.types.ts`
 
 ## Typography
@@ -244,13 +246,35 @@ Dùng đúng màu semantic cho từng trạng thái. Không dùng màu brand cho
 Chỉ dùng **Lucide React** SVG icons, size `w-4 h-4` hoặc `w-5 h-5`.
 Không dùng emoji làm icon.
 
+## Token Architecture (Kiến trúc token — 2 tầng)
+
+Hệ thống dùng **2 tầng token** rạch ròi:
+
+1. **Tầng palette (bảng màu tĩnh)** — `styles/tokens.css :root`, namespace `--color-*`
+   (vd `--color-primary-500`, `--color-slate-400`). Đây là các bậc màu cố định,
+   được Tailwind map sang `primary-500`, `slate-400`…
+2. **Tầng semantic (ngữ nghĩa, theme-aware)** — namespace KHÔNG tiền tố:
+   `--bg-surface`, `--bg-subtle`, `--text-primary`, `--text-muted`, `--border-default`…
+   Nguồn chân lý runtime là `context/ThemeContext.tsx` (inject per-theme).
+   `tokens.css :root` chỉ chứa **bản fallback tĩnh** (= Nature theme) để tránh
+   FOUC ở lần vẽ đầu. Tailwind map sang `bg-bg-surface`, `text-txt-muted`…
+
+**Quy tắc dùng:** Component LUÔN dùng token semantic (`bg-bg-surface`, `text-txt-primary`,
+`border-border`) thay cho palette tĩnh hay hex cứng. Namespace `--color-text-*` đã
+được alias về semantic — đừng tạo token chữ mới trong palette.
+
 ## Dark Mode
 
-Dark mode dùng Tailwind `dark:` prefix. Quy tắc:
-- Nền card: `dark:bg-slate-800` (solid, không opacity)
-- Nền trang: `dark:bg-slate-900` / `dark:bg-slate-950`
-- Border: `dark:border-slate-700`
-- Text: `dark:text-slate-100` / `dark:text-slate-400`
+Dark mode kích hoạt bằng class `.dark` trên `<html>`; màu đến từ **tầng semantic**
+(ThemeContext override), KHÔNG hardcode bậc Tailwind. Giá trị thực:
+- Nền trang (app): `--bg-app` = `#0f1117`
+- Nền card/panel: `--bg-surface` = `#1f2332`
+- Nền phụ (table header): `--bg-subtle` = `#1a1e2e`
+- Border: `--border-default` = `#222533`
+- Text chính / mờ: `--text-primary` = `#f8fafc` / `--text-muted` = `#94a3b8`
+
+Khi viết component, dùng `bg-bg-surface dark:` tự động đúng — không cần ghi
+`dark:bg-slate-800`. Tránh opacity hack (`bg-white/10`) cho nền trung tính trong dark.
 
 ## Accessibility
 

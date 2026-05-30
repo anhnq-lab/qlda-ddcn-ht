@@ -29,7 +29,7 @@ import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { TableSkeleton } from '@/components/ui';
-import { Map, LandPlot, Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Receipt, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch } from 'lucide-react';
+import { Map, LandPlot, Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Database, Receipt, Sparkles, Shield, X, ArrowLeft, Pencil, MoreVertical, Trash2, GitBranch, Hammer } from 'lucide-react';
 import { AIReportModal } from './components/AIReportModal';
 import { generateMonthlyReport } from '@/services/aiService';
 import { useToast } from '@/components/ui/Toast';
@@ -45,6 +45,7 @@ const ProjectWorkflowTab = React.lazy(() => import('./components/tabs/ProjectWor
 const ProjectSettlementTab = React.lazy(() => import('./components/tabs/ProjectSettlementTab').then(m => ({ default: m.ProjectSettlementTab })));
 const ProjectInspectionTab = React.lazy(() => import('./components/tabs/ProjectInspectionTab').then(m => ({ default: m.ProjectInspectionTab })));
 const ProjectClearanceTab = React.lazy(() => import('./components/tabs/ProjectClearanceTab').then(m => ({ default: m.ProjectClearanceTab })));
+const ProjectConstructionTab = React.lazy(() => import('./components/tabs/ProjectConstructionTab').then(m => ({ default: m.ProjectConstructionTab })));
 const AISummaryWidget = React.lazy(() => import('@/components/ai/AISummaryWidget').then(m => ({ default: m.AISummaryWidget })));
 const AICompliancePanel = React.lazy(() => import('@/components/ai/AICompliancePanel').then(m => ({ default: m.AICompliancePanel })));
 const AIForecastChart = React.lazy(() => import('@/components/ai/AIForecastChart').then(m => ({ default: m.AIForecastChart })));
@@ -55,6 +56,7 @@ const TAB_DEFINITIONS = [
     { id: 'info', label: 'TỔNG QUAN', icon: Info },
     { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
     { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
+    { id: 'construction', label: 'THI CÔNG', icon: Hammer },
     { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
     { id: 'inspection', label: 'THANH TRA', icon: Shield },
     { id: 'settlement', label: 'QUYẾT TOÁN', icon: Receipt },
@@ -177,6 +179,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     const [settlementMounted, setSettlementMounted] = useState(activeTab === 'settlement');
     const [planMounted, setPlanMounted] = useState(activeTab === 'plan');
     const [packagesMounted, setPackagesMounted] = useState(activeTab === 'packages');
+    const [constructionMounted, setConstructionMounted] = useState(activeTab === 'construction');
     const [capitalMounted, setCapitalMounted] = useState(activeTab === 'capital');
     const [workflowMounted, setWorkflowMounted] = useState(activeTab === 'workflow');
     const [clearanceMounted, setClearanceMounted] = useState(activeTab === 'clearance');
@@ -186,6 +189,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
         if (activeTab === 'settlement' && !settlementMounted) setSettlementMounted(true);
         if (activeTab === 'plan' && !planMounted) setPlanMounted(true);
         if (activeTab === 'packages' && !packagesMounted) setPackagesMounted(true);
+        if (activeTab === 'construction' && !constructionMounted) setConstructionMounted(true);
         if (activeTab === 'capital' && !capitalMounted) setCapitalMounted(true);
         if (activeTab === 'workflow' && !workflowMounted) setWorkflowMounted(true);
         if (activeTab === 'clearance' && !clearanceMounted) setClearanceMounted(true);
@@ -569,6 +573,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         openPackageId={openPackageId}
                         initialDetailTab={initialDetailTab}
                     />
+                    </React.Suspense>
+                    </ErrorBoundary>
+                </div>
+            )}
+            {constructionMounted && (
+                <div
+                    className={`flex-1 min-h-0 overflow-y-auto px-4 py-3 ${activeTab === 'construction' ? '' : 'absolute inset-0 pointer-events-none'}`}
+                    style={activeTab === 'construction' ? undefined : { visibility: 'hidden', zIndex: -1 }}
+                >
+                    <ErrorBoundary>
+                    <React.Suspense fallback={<TableSkeleton columns={5} rows={10} />}>
+                    <ProjectConstructionTab projectID={project.ProjectID} project={project} />
                     </React.Suspense>
                     </ErrorBoundary>
                 </div>

@@ -688,7 +688,7 @@ const WorkflowSlidePanel: React.FC<WorkflowSlidePanelProps> = ({
                                                                                 const stSla = stSlaStr ? parseSla(stSlaStr) : null;
                                                                                 return (
                                                                                 <tr key={st.id || stIdx}
-                                                                                    className="bg-bg-surface hover:bg-blue-50/50 dark:hover:bg-slate-50 transition-colors cursor-pointer"
+                                                                                    className="bg-bg-surface hover:bg-blue-50/50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                                                                                     onClick={() => openPanel({
                                                                                         id: 'subtask-' + (st.id || `${node.id}-${stIdx}`),
                                                                                         title: `Công việc con: ${st.name?.substring(0, 50)}`,

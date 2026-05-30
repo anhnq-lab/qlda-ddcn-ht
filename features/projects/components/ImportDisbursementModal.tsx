@@ -128,7 +128,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer
-                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-border hover:bg-slate-50 dark:hover:bg-slate-50'}`}
+                                ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/10' : 'border-border hover:bg-bg-hover-row'}`}
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <input
@@ -183,7 +183,7 @@ export const ImportDisbursementModal: React.FC<ImportDisbursementModalProps> = (
                                     </thead>
                                     <tbody className="divide-y divide-border-subtle">
                                         {parsedData.slice(0, 10).map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-50">
+                                            <tr key={idx} className="hover:bg-bg-hover-row">
                                                 <td className="px-4 py-2">{new Date(row.Date).toLocaleDateString('vi-VN')}</td>
                                                 <td className="px-4 py-2">{DISBURSEMENT_TYPE_LABELS[row.Type ?? ''] || row.Type}</td>
                                                 <td className="px-4 py-2 text-right font-mono font-medium text-emerald-600">{formatCurrency(row.Amount)}</td>

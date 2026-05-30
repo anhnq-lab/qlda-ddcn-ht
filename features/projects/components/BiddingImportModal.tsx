@@ -272,7 +272,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                             <div className="overflow-x-auto border border-border rounded-lg">
                                 <table className="w-full text-xs">
                                     <thead>
-                                        <tr className="bg-bg-muted">
+                                        <tr className="bg-bg-subtle">
                                             <th className="px-2 py-2 text-center w-8">
                                                 <input
                                                     type="checkbox"

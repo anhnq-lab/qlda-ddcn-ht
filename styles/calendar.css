@@ -424,6 +424,10 @@
 
 /* =============================================================================
    Force dark theme variables inside calendar container
+   Đây là override CÓ CHỦ ĐÍCH: ép token dark cho widget lịch luôn-tối (vd màn
+   hình sảnh) BẤT KỂ theme app. KHÔNG phải bản sao của .dark toàn cục.
+   ⚠️ Giá trị dưới đây phải giữ ĐỒNG BỘ với THEME_TOKENS.dark trong
+      context/ThemeContext.tsx — nếu đổi token dark, cập nhật cả 2 nơi.
    ============================================================================= */
 .calendar-dark-mode-force {
   color-scheme: dark !important;

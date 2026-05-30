@@ -10,6 +10,7 @@ export const CDESubmitFormSchema = z.object({
     discipline: z.string().min(1, 'Vui lòng chọn lĩnh vực'),
     docType: z.string().min(1, 'Vui lòng chọn loại hồ sơ'),
     notes: z.string(),
+    sensitivityLevel: z.number().min(1).max(4).default(1),
 });
 
 export type CDESubmitFormValues = z.infer<typeof CDESubmitFormSchema>;

@@ -102,14 +102,18 @@ const ProjectBimTabContent: React.FC = () => {
         return () => window.removeEventListener('resize', check);
     }, [tools]);
 
-    // ── Load existing models + fit camera ──
+    // ── Load existing models + fit camera (robust: retry until geometry is available) ──
     useEffect(() => {
         if (engine.viewerReady && !modelsLoaded) {
             setModelsLoaded(true);
             (async () => {
                 await upload.loadExistingModels();
-                // Fit camera after models are loaded
-                setTimeout(() => engine.fitAll(), 500);
+                // Progressive fit: try immediately, then retry as streaming tiles arrive
+                const tryFit = (attempt: number) => {
+                    engine.fitAll();
+                    if (attempt < 3) setTimeout(() => tryFit(attempt + 1), 800 * (attempt + 1));
+                };
+                setTimeout(() => tryFit(0), 300);
             })();
         }
     }, [engine.viewerReady, modelsLoaded]);
@@ -129,7 +133,7 @@ const ProjectBimTabContent: React.FC = () => {
         }
     }, [engine.viewerReady]);
 
-    // ── Click to Measure + Section Plane (Single-click with drag filtering) ──
+    // ── Click to Measure + Section Plane + Double-click zoom ──
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -151,14 +155,10 @@ const ProjectBimTabContent: React.FC = () => {
         };
 
         const onClick = async (e: MouseEvent) => {
-            // Ignore if the user was dragging the camera (dragDistance > 5)
             if (dragDistance > 5) return;
-
-            // Ignore clicks on UI overlays or buttons
             const target = e.target as HTMLElement;
             if (target.closest('button') || target.closest('[role="button"]') || target.closest('label') || target.closest('form')) return;
 
-            // Measure tools: click → create()
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -166,7 +166,6 @@ const ProjectBimTabContent: React.FC = () => {
                 return;
             }
 
-            // Section Plane: click → create()
             if (tools.activeTool === 'section-plane') {
                 const components = engine.componentsRef.current;
                 const world = engine.worldRef.current;
@@ -181,7 +180,35 @@ const ProjectBimTabContent: React.FC = () => {
             }
         };
 
-        // Delete/Backspace → delete last measurement
+        // Double-click → zoom to element (Autodesk standard)
+        const onDoubleClick = async (e: MouseEvent) => {
+            if (dragDistance > 5) return;
+            const target = e.target as HTMLElement;
+            if (target.closest('button') || target.closest('[role="button"]')) return;
+            if (tools.activeTool !== 'select' && tools.activeTool !== null) return;
+
+            const components = engine.componentsRef.current;
+            const world = engine.worldRef.current;
+            if (!components || !world) return;
+
+            try {
+                const raycasters = components.get(OBC.Raycasters);
+                const raycaster = raycasters.get(world);
+                const result = await raycaster.castRay();
+                if (result?.object && 'fragment' in result.object) {
+                    const fragment = (result.object as any).fragment;
+                    const expressId = fragment.getItemID(result.faceIndex ?? result.instanceId);
+                    if (expressId != null) {
+                        selection.handleSelectElementFromTree(expressId);
+                        engine.zoomToExpressId(expressId);
+                        tools.toggleRightPanel('properties');
+                    }
+                }
+            } catch (err) {
+                console.warn('[BIM] Double-click zoom error:', err);
+            }
+        };
+
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.code === 'Delete' || e.code === 'Backspace') &&
                 (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area')) {
@@ -192,14 +219,16 @@ const ProjectBimTabContent: React.FC = () => {
         container.addEventListener('mousedown', onMouseDown);
         container.addEventListener('mousemove', onMouseMove);
         container.addEventListener('click', onClick);
+        container.addEventListener('dblclick', onDoubleClick);
         window.addEventListener('keydown', onKeyDown);
         return () => {
             container.removeEventListener('mousedown', onMouseDown);
             container.removeEventListener('mousemove', onMouseMove);
             container.removeEventListener('click', onClick);
+            container.removeEventListener('dblclick', onDoubleClick);
             window.removeEventListener('keydown', onKeyDown);
         };
-    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);
+    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools, selection, engine]);
 
     // ── Render mode switching (with material caching) ──
     useEffect(() => {

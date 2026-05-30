@@ -322,7 +322,7 @@ export const AnnualEvaluationTab: React.FC = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-bg-muted text-[10px] font-black uppercase tracking-wider text-txt-secondary border-b border-border">
+                                <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest text-txt-muted border-b border-border">
                                     <th className="px-5 py-3 text-left">Nhân sự</th>
                                     <th className="px-5 py-3 text-left">Đơn vị & Chức vụ</th>
                                     <th className="px-5 py-3 text-center">Phiếu tháng</th>

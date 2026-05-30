@@ -13,12 +13,12 @@ import { useBimContext } from './context/BimContext';
 
 // Face definitions
 const FACES: Array<{ id: string; label: string; transform: string }> = [
-    { id: 'front', label: 'FRONT', transform: 'translateZ(40px)' },
-    { id: 'back', label: 'BACK', transform: 'rotateY(180deg) translateZ(40px)' },
-    { id: 'right', label: 'RIGHT', transform: 'rotateY(90deg) translateZ(40px)' },
-    { id: 'left', label: 'LEFT', transform: 'rotateY(-90deg) translateZ(40px)' },
-    { id: 'top', label: 'TOP', transform: 'rotateX(90deg) translateZ(40px)' },
-    { id: 'bottom', label: 'BTM', transform: 'rotateX(-90deg) translateZ(40px)' },
+    { id: 'front', label: 'FRONT', transform: 'translateZ(28px)' },
+    { id: 'back', label: 'BACK', transform: 'rotateY(180deg) translateZ(28px)' },
+    { id: 'right', label: 'RIGHT', transform: 'rotateY(90deg) translateZ(28px)' },
+    { id: 'left', label: 'LEFT', transform: 'rotateY(-90deg) translateZ(28px)' },
+    { id: 'top', label: 'TOP', transform: 'rotateX(90deg) translateZ(28px)' },
+    { id: 'bottom', label: 'BTM', transform: 'rotateX(-90deg) translateZ(28px)' },
 ];
 
 // CSS matrix3d from Three.js quaternion (inverse for ViewCube)
@@ -107,8 +107,8 @@ export const BimViewCube: React.FC = () => {
     const faceStyle = (faceId: string): React.CSSProperties => ({
         transform: FACES.find(f => f.id === faceId)?.transform,
         backfaceVisibility: 'hidden' as const,
-        left: '5px',
-        top: '5px',
+        left: '4px',
+        top: '4px',
     });
 
     const baseClasses = isDarkMode
@@ -120,17 +120,17 @@ export const BimViewCube: React.FC = () => {
         : 'bg-gradient-to-br from-blue-100/90 to-cyan-50/80 border-cyan-400/60 text-cyan-700 shadow-[0_0_12px_rgba(6,182,212,0.2)]';
 
     return (
-        <div className="absolute top-14 right-3 z-20 flex flex-col items-center">
+        <div className="absolute top-14 right-2 z-20 flex flex-col items-center">
             {/* Glow backdrop */}
             <div
-                className={`absolute rounded-full blur-2xl transition-opacity duration-500 ${isDarkMode ? 'bg-cyan-500 opacity-15' : 'bg-blue-400 opacity-12'}`}
-                style={{ width: 110, height: 110, top: 8, left: -12 }}
+                className={`absolute rounded-full blur-2xl transition-opacity duration-500 ${isDarkMode ? 'bg-cyan-500 opacity-10' : 'bg-blue-400 opacity-8'}`}
+                style={{ width: 80, height: 80, top: 4, left: -6 }}
             />
 
             {/* Compass Ring */}
             <div
                 className="relative"
-                style={{ width: 110, height: 110 }}
+                style={{ width: 80, height: 80 }}
             >
                 {/* Compass ticks ring */}
                 <svg
@@ -197,9 +197,9 @@ export const BimViewCube: React.FC = () => {
                         left: '50%',
                         top: '50%',
                         transform: 'translate(-50%, -50%)',
-                        perspective: '400px',
-                        width: '90px',
-                        height: '90px',
+                        perspective: '300px',
+                        width: '64px',
+                        height: '64px',
                         cursor: isDragging ? 'grabbing' : 'grab',
                     }}
                     onMouseDown={handleMouseDown}
@@ -220,9 +220,9 @@ export const BimViewCube: React.FC = () => {
                                 onMouseEnter={() => setHoveredFace(face.id)}
                                 onMouseLeave={() => setHoveredFace(null)}
                                 className={`
-                                    absolute w-[80px] h-[80px] flex items-center justify-center
-                                    border text-[9px] font-bold uppercase tracking-wider select-none
-                                    transition-all duration-200 rounded-[6px]
+                                    absolute w-[56px] h-[56px] flex items-center justify-center
+                                    border text-[7px] font-bold uppercase tracking-wider select-none
+                                    transition-all duration-200 rounded-[4px]
                                     ${hoveredFace === face.id ? hoverClasses : baseClasses}
                                 `}
                                 style={faceStyle(face.id)}

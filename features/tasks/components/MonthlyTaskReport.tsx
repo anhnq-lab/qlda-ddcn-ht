@@ -100,8 +100,8 @@ export const MonthlyTaskReport: React.FC<Props> = ({ month, year }) => {
             {selectedDept === 'all' && (
                 <div className="overflow-x-auto border border-slate-200 rounded-xl">
                     <table className="w-full text-sm">
-                        <thead className="bg-slate-50">
-                            <tr className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <thead className="bg-bg-subtle border-b border-border">
+                            <tr className="text-[10px] font-black uppercase tracking-widest text-txt-muted">
                                 <th className="px-4 py-3 text-left">Phòng ban</th>
                                 <th className="px-3 py-3 text-center">Tổng</th>
                                 <th className="px-3 py-3 text-center">HT</th>

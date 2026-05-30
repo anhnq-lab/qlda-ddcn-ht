@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Upload, FileText, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Upload, FileText, AlertCircle, Loader2, ShieldAlert } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CDEFolder } from '../types';
@@ -41,6 +41,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
             discipline: '',
             docType: '',
             notes: '',
+            sensitivityLevel: 1,
         },
     });
 
@@ -158,6 +159,33 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
                                 ))}
                             </select>
                             {errors.docType && <p className="text-xs text-red-500 mt-1">{errors.docType.message}</p>}
+                        </div>
+                    </div>
+
+                    {/* Sensitivity Level (TT47 2.2.5.3) */}
+                    <div>
+                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5" /> Mức nhạy cảm
+                        </label>
+                        <div className="flex gap-2">
+                            {[
+                                { value: 1, label: 'Công khai', color: 'border-gray-300 text-gray-600 bg-gray-50' },
+                                { value: 2, label: 'Nội bộ', color: 'border-blue-300 text-blue-600 bg-blue-50' },
+                                { value: 3, label: 'Hạn chế', color: 'border-amber-300 text-amber-600 bg-amber-50' },
+                                { value: 4, label: 'Mật', color: 'border-red-300 text-red-600 bg-red-50' },
+                            ].map(opt => {
+                                const selected = watch('sensitivityLevel') === opt.value;
+                                return (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => setValue('sensitivityLevel', opt.value)}
+                                        className={`flex-1 px-2 py-2 rounded-xl text-[11px] font-bold border-2 transition-all ${selected ? opt.color + ' ring-2 ring-offset-1 ring-current' : 'border-gray-200 dark:border-slate-600 text-txt-muted bg-bg-surface hover:border-gray-300'}`}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 

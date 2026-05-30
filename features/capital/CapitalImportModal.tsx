@@ -328,7 +328,7 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
                                         </thead>
                                         <tbody className="divide-y divide-border-subtle">
                                             {previewData.map((row, idx) => (
-                                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-50">
+                                                <tr key={idx} className="hover:bg-bg-hover-row">
                                                     <td className="px-4 py-2">
                                                         {row.status === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                                                         {row.status === 'error' && <AlertCircle className="w-5 h-5 text-red-500" {...({title: row.errorMsg} as any)} />}
