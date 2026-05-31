@@ -66,6 +66,7 @@ const CDEPage: React.FC = () => {
     const [activeTab, setActiveTab] = useTabSearchParam('explorer', ['explorer', 'analytics', 'permissions', 'transmittals', 'audit', 'internal-workflow', 'issues', 'reviews'] as const);
     const [activePhase, setActivePhase] = useState('implementation');
     const [previewDoc, setPreviewDoc] = useState<CDEDocument | null>(null);
+    const [previewIntegrity, setPreviewIntegrity] = useState<'valid' | 'mismatch' | 'checking' | null>(null);
     const [signDoc, setSignDoc] = useState<CDEDocument | null>(null);
     const [versionDoc, setVersionDoc] = useState<CDEDocument | null>(null);
 
@@ -223,12 +224,21 @@ const CDEPage: React.FC = () => {
 
     const hasActiveFilters = filters.status.length > 0 || filters.discipline.length > 0 || filters.docType.length > 0 || !!filters.dateFrom || !!filters.dateTo;
 
-    // File preview — open CDEFilePreview modal
+    // File preview — open CDEFilePreview modal + integrity check (TT47 2.2.5.4)
     const handlePreview = useCallback(async (doc: CDEDocument) => {
         if (!doc.storage_path) return;
         const { data } = supabase.storage.from('documents').getPublicUrl(doc.storage_path);
         if (data?.publicUrl) {
             setPreviewDoc({ ...doc, storage_path: data.publicUrl } as CDEDocument);
+            // Async integrity check — show badge in preview header
+            if (doc.file_hash) {
+                setPreviewIntegrity('checking');
+                CDEService.verifyFileIntegrity(doc.storage_path, doc.file_hash)
+                    .then(result => setPreviewIntegrity(result || null))
+                    .catch(() => setPreviewIntegrity(null));
+            } else {
+                setPreviewIntegrity(null);
+            }
         }
     }, []);
 
@@ -264,7 +274,8 @@ const CDEPage: React.FC = () => {
     }, [currentUser, selectedProjectId]);
 
     // Upload handler — route .ifc files into the BIM federation flow
-    const handleSubmit = useCallback((data: { file: File; folderId: string; discipline: string; docType: string; notes: string }) => {
+    const handleSubmit = useCallback((data: { file: File; folderId: string; discipline: string; docType: string; notes: string; sensitivityLevel?: number }) => {
+        const shouldEncrypt = (data.sensitivityLevel || 1) >= 3; // Mã hoá cho level Hạn chế (3) + Mật (4)
         const isIFC = data.file.name.toLowerCase().endsWith('.ifc');
         if (isIFC) {
             ifcUploadMutation.mutate({
@@ -298,6 +309,7 @@ const CDEPage: React.FC = () => {
             userName: currentUser?.FullName || '',
             userOrg: currentUser?.Department || 'Ban QLDA',
             contractorId: contractorId || undefined,
+            isEncrypted: shouldEncrypt,
         }, {
             onSuccess: () => {
                 setShowSubmitModal(false);
@@ -666,7 +678,9 @@ const CDEPage: React.FC = () => {
                     docId={previewDoc.doc_id}
                     projectId={selectedProjectId}
                     createdBy={currentUser?.EmployeeID}
-                    onClose={() => setPreviewDoc(null)}
+                    fileHash={previewDoc.file_hash || undefined}
+                    integrityStatus={previewIntegrity}
+                    onClose={() => { setPreviewDoc(null); setPreviewIntegrity(null); }}
                     onDownload={() => handleDownload(previewDoc)}
                 />
             )}

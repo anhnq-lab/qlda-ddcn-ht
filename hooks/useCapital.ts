@@ -75,6 +75,8 @@ const CAPITAL_QUERY_KEYS = (projectId: string) => [
     ['all-capital-plans'],
     ['all-disb-plans'],
     ['all-disbursements'],
+    ['project-detail', projectId],
+    ['projects-paginated'],
 ];
 
 /** Primary summary query key */

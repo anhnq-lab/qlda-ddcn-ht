@@ -11,6 +11,7 @@
 // implementation module and to this object.
 import * as crud from './task/taskCrud';
 import * as collab from './task/taskCollaboration';
+import * as weekly from './task/taskWeeklyUpdates';
 import * as seed from './task/taskWorkflowSeed';
 
 export type {
@@ -22,6 +23,7 @@ export type {
 } from './task/helpers';
 
 export type { CustomPlanStep } from './task/taskWorkflowSeed';
+export type { WeeklyUpdate, WeeklyUpdateInput } from './task/taskWeeklyUpdates';
 
 export const TaskService = {
   // ── Read ────────────────────────────────────────────────
@@ -48,6 +50,12 @@ export const TaskService = {
   getTaskComments: collab.getTaskComments,
   getTaskActivities: collab.getTaskActivities,
   addComment: collab.addComment,
+
+  // ── Weekly Updates ──────────────────────────────────────
+  getTaskWeeklyUpdates: weekly.getTaskWeeklyUpdates,
+  addWeeklyUpdate: weekly.addWeeklyUpdate,
+  updateWeeklyUpdate: weekly.updateWeeklyUpdate,
+  getCurrentWeekUpdate: weekly.getCurrentWeekUpdate,
 
   // ── Workflow seed ───────────────────────────────────────
   createTasksFromWorkflow: seed.createTasksFromWorkflow,

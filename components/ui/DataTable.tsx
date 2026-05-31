@@ -199,7 +199,7 @@ function DataTable<T extends Record<string, any>>({
     onRowClick,
     rowClassName,
     compact: compactProp,
-    stickyHeader = false,
+    stickyHeader = true,
     maxHeight,
     className = '',
     wrapperClassName = '',
@@ -298,11 +298,11 @@ function DataTable<T extends Record<string, any>>({
                 key={key}
                 onClick={() => onRowClick?.(row, index)}
                 className={`
-                    group transition-all
+                    group transition-all duration-150
                     ${onRowClick ? 'cursor-pointer' : ''}
                     ${isSelected
                         ? 'bg-primary-50 dark:bg-primary-900/20'
-                        : 'hover:bg-bg-hover-row'
+                        : 'hover:bg-slate-50/80 dark:hover:bg-slate-700'
                     }
                     ${rowClassName?.(row, index) || ''}
                 `}
@@ -361,8 +361,8 @@ function DataTable<T extends Record<string, any>>({
             <div
                 className={`
                     bg-bg-surface
-                    rounded-2xl border border-border-subtle
-                    shadow-card overflow-hidden
+                    rounded-2xl border border-border
+                    shadow-sm overflow-hidden
                     ${className}
                 `}
             >
@@ -372,8 +372,8 @@ function DataTable<T extends Record<string, any>>({
                 >
                     <table className="w-full">
                         {/* ── HEADER ── */}
-                        <thead className={stickyHeader ? 'sticky top-0 z-10 shadow-sm' : ''}>
-                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest">
+                        <thead className={stickyHeader ? 'sticky top-0 z-10 bg-bg-subtle border-b border-border shadow-sm shadow-slate-200/10 dark:shadow-none' : ''}>
+                            <tr className="bg-bg-subtle text-[10px] font-black uppercase tracking-widest text-txt-muted">
                                 {selectable && (
                                     <th className={`${thPad} w-10 border-b border-border text-center`}>
                                         <input
@@ -482,7 +482,7 @@ function DataTable<T extends Record<string, any>>({
 
             {/* ── FOOTER (Pagination / Counter) ── */}
             {shouldShowFooter && !isLoading && (
-                <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-border-subtle shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3 bg-bg-surface rounded-xl border border-border shadow-sm">
                     {/* Left: count info */}
                     <p className="text-xs text-txt-muted">
                         {pagination ? (

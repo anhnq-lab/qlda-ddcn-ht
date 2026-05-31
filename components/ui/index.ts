@@ -71,6 +71,9 @@ export type { PageHeaderProps, BreadcrumbItem, PageHeaderAction } from './PageHe
 export { FilterBar } from './FilterBar';
 export type { FilterBarProps, FilterBarFilter, FilterOption } from './FilterBar';
 
+export { FilterChip } from './FilterChip';
+export type { FilterChipProps, FilterChipOption } from './FilterChip';
+
 export { DetailLayout, TabNav } from './DetailLayout';
 export type { DetailLayoutProps, TabNavProps, TabItem } from './DetailLayout';
 

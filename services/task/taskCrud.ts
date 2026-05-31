@@ -185,7 +185,7 @@ export const createTask = async (task: Partial<DbTask>): Promise<DbTask> => {
   return createdTask;
 };
 
-/** Cập nhật task (flat — không còn xử lý sub_tasks) */
+/** Cập nhật task */
 export const updateTask = async (taskId: string, updates: Partial<DbTask>): Promise<DbTask> => {
   const payload: any = { ...updates, updated_at: new Date().toISOString() };
   delete payload.id;
@@ -201,10 +201,7 @@ export const updateTask = async (taskId: string, updates: Partial<DbTask>): Prom
     }
   }
 
-  // Strip sub_tasks nếu vô tình truyền (backward-compat, không còn dùng)
-  if (payload.metadata && payload.metadata.sub_tasks !== undefined) {
-    delete payload.metadata.sub_tasks;
-  }
+
 
   const { data, error } = await supabase
     .from('tasks')

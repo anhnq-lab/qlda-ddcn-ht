@@ -191,7 +191,10 @@
       "Bash(grep -o 'bg-primary-900\\\\\\\\/20[^}]*}' tmp_tw_check.css)",
       "Bash(grep -o 'bg-slate-800\\\\\\\\/50[^}]*}' tmp_tw_check.css)",
       "PowerShell($owners = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique; foreach\\($procId in $owners\\){ $pr=Get-Process -Id $procId -ErrorAction SilentlyContinue; if\\($pr -and $pr.ProcessName -eq 'node'\\){ \"Killing node PID $procId\"; Stop-Process -Id $procId -Force } else { \"Port 5000 owner PID $procId = $\\($pr.ProcessName\\) \\(not killing\\)\" } })",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(git commit *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "mcp__Claude_in_Chrome__read_console_messages"
     ]
   }
 }

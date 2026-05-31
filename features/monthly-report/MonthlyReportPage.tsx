@@ -24,6 +24,9 @@ interface MonthlyReportPageProps {
     month: number;
     year: number;
     leftElement?: React.ReactNode;
+    filterProject?: string;
+    filterTaskType?: string;
+    filterStatus?: string;
 }
 
 interface DeptSummary {
@@ -83,7 +86,14 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; vari
     incomplete:  { label: 'Chưa xong', icon: <XCircle className="w-3.5 h-3.5" />, variant: 'danger' },
 };
 
-const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, leftElement }) => {
+const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ 
+    month, 
+    year, 
+    leftElement,
+    filterProject = 'All',
+    filterTaskType = 'All',
+    filterStatus = 'All'
+}) => {
     const { currentUser } = useAuth();
     const { openPanel } = useSlidePanel();
 
@@ -186,20 +196,30 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
         });
     };
 
+    // Lọc công việc theo bộ lọc dùng chung
+    const filteredTasks = useMemo(() => {
+        return tasks.filter(t => {
+            // Lọc theo dự án dùng chung
+            const matchProject = filterProject === 'All' || t.project_id === filterProject;
+
+            // Lọc theo loại công việc dùng chung
+            const matchTaskType = filterTaskType === 'All' || t.task_type === filterTaskType;
+
+            // Lọc theo trạng thái dùng chung
+            const matchStatus = filterStatus === 'All' || t.status === filterStatus;
+
+            return matchProject && matchTaskType && matchStatus;
+        });
+    }, [tasks, filterProject, filterTaskType, filterStatus]);
+
     // Aggregate statistics
     const stats = useMemo(() => {
-        let total = 0;
-        let done = 0;
-        let inProgress = 0;
-        let incomplete = 0;
-        summaries.forEach(s => {
-            total += Number(s.total_tasks);
-            done += Number(s.done_tasks);
-            inProgress += Number(s.in_progress_tasks);
-            incomplete += Number(s.incomplete_tasks);
-        });
+        const total = filteredTasks.length;
+        const done = filteredTasks.filter(t => t.status === 'done').length;
+        const inProgress = filteredTasks.filter(t => t.status === 'in_progress').length;
+        const incomplete = filteredTasks.filter(t => t.status === 'incomplete' || t.status === 'todo').length;
         return { total, done, inProgress, incomplete };
-    }, [summaries]);
+    }, [filteredTasks]);
 
     // Seed tasks from Annual / Project plans
     const handleSeedTasks = async (deptCode: DepartmentCode) => {
@@ -451,6 +471,17 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                         const planState = plans[s.department_code] || { report_status: 'open' };
                                         const isOwnDept = userDept === s.department_code;
 
+                                        // Tính động các chỉ số của phòng ban dựa trên danh sách công việc đã lọc
+                                        const deptTasksList = filteredTasks.filter(t => t.department_code === s.department_code);
+                                        const totalDept = deptTasksList.length;
+                                        const doneDept = deptTasksList.filter(t => t.status === 'done').length;
+                                        const inProgressDept = deptTasksList.filter(t => t.status === 'in_progress').length;
+                                        const incompleteDept = deptTasksList.filter(t => t.status === 'incomplete' || t.status === 'todo').length;
+                                        const onTimeDoneDept = deptTasksList.filter(t => t.status === 'done' && t.is_on_time !== false).length;
+
+                                        const completionRate = totalDept > 0 ? Math.round((doneDept / totalDept) * 100) : 0;
+                                        const onTimeRate = totalDept > 0 ? Math.round((onTimeDoneDept / totalDept) * 100) : 0;
+
                                         // Status design variant
                                         let statusLabel = 'Đang mở';
                                         let statusVariant: 'neutral' | 'warning' | 'success' = 'neutral';
@@ -488,27 +519,27 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3 text-center text-slate-550 dark:text-slate-400 font-mono">
-                                                        {s.total_tasks}
+                                                        {totalDept}
                                                     </td>
                                                     <td className="px-4 py-3 text-center text-emerald-600 dark:text-emerald-450 font-mono bg-emerald-500/5 dark:bg-emerald-500/10">
-                                                        {s.done_tasks}
+                                                        {doneDept}
                                                     </td>
                                                     <td className="px-4 py-3 text-center text-blue-600 dark:text-blue-450 font-mono">
-                                                        {s.in_progress_tasks}
+                                                        {inProgressDept}
                                                     </td>
                                                     <td className="px-4 py-3 text-center text-red-600 dark:text-red-450 font-mono bg-red-500/5 dark:bg-red-500/10">
-                                                        {s.incomplete_tasks}
+                                                        {incompleteDept}
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
                                                         <StatusBadge
-                                                            variant={s.completion_rate >= 90 ? 'success' : s.completion_rate >= 70 ? 'warning' : 'danger'}
-                                                            label={`${s.completion_rate}%`}
+                                                            variant={completionRate >= 90 ? 'success' : completionRate >= 70 ? 'warning' : 'danger'}
+                                                            label={`${completionRate}%`}
                                                         />
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
                                                         <StatusBadge
-                                                            variant={s.on_time_rate >= 90 ? 'success' : s.on_time_rate >= 70 ? 'warning' : 'danger'}
-                                                            label={`${s.on_time_rate}%`}
+                                                            variant={onTimeRate >= 90 ? 'success' : onTimeRate >= 70 ? 'warning' : 'danger'}
+                                                            label={`${onTimeRate}%`}
                                                         />
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
@@ -565,12 +596,12 @@ const MonthlyReportPage: React.FC<MonthlyReportPageProps> = ({ month, year, left
                                                                         Chi tiết công việc — {DEPARTMENT_NAMES[s.department_code]}
                                                                     </h4>
                                                                     <span className="text-[10px] text-slate-400">
-                                                                        {tasks.filter(t => t.department_code === s.department_code).length} công việc
+                                                                        {deptTasksList.length} công việc
                                                                     </span>
                                                                 </div>
 
                                                                 <DeptTasksList
-                                                                    deptTasks={tasks.filter(t => t.department_code === s.department_code)}
+                                                                    deptTasks={deptTasksList}
                                                                     onTaskClick={(id, title) => openTaskDetail(id, title)}
                                                                 />
                                                             </div>

@@ -18,7 +18,7 @@ import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Skeleton } from '../../components/ui/Skeleton';
-import { StatusBadge, ProgressBar, StatCard } from '../../components/ui';
+import { StatusBadge, ProgressBar, StatCard, FilterChip } from '../../components/ui';
 import { ContractModal } from './components/ContractModal';
 
 // Helper: xuất danh sách hợp đồng ra CSV đơn giản
@@ -260,19 +260,20 @@ const ContractList: React.FC<{ projectFilter?: string }> = ({ projectFilter = 'a
                     </div>
 
                     {/* Filter loại HĐ */}
-                    <select
+                    <FilterChip
+                        label="Loại HĐ"
                         value={contractTypeFilter}
-                        onChange={e => setContractTypeFilter(e.target.value)}
-                        className="px-3 py-2 text-xs font-semibold border border-border rounded-xl bg-bg-surface text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    >
-                        <option value="all">Tất cả loại HĐ</option>
-                        <option value="LumpSum">Trọn gói</option>
-                        <option value="UnitPrice">Đơn giá CĐ</option>
-                        <option value="AdjustableUnitPrice">Đơn giá ĐC</option>
-                        <option value="TimeBased">Theo thời gian</option>
-                        <option value="Percentage">Theo %</option>
-                        <option value="Mixed">Hỗn hợp</option>
-                    </select>
+                        onChange={setContractTypeFilter}
+                        options={[
+                            { value: 'all', label: 'Tất cả loại HĐ' },
+                            { value: 'LumpSum', label: 'Trọn gói' },
+                            { value: 'UnitPrice', label: 'Đơn giá CĐ' },
+                            { value: 'AdjustableUnitPrice', label: 'Đơn giá ĐC' },
+                            { value: 'TimeBased', label: 'Theo thời gian' },
+                            { value: 'Percentage', label: 'Theo %' },
+                            { value: 'Mixed', label: 'Hỗn hợp' },
+                        ]}
+                    />
 
                     <div className="ml-auto flex items-center gap-3">
                         <span className="text-xs text-txt-muted font-medium hidden lg:inline">

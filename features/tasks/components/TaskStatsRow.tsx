@@ -1,12 +1,13 @@
 import React from 'react';
 import { StatCard } from '../../../components/ui';
 import { SkeletonStatCard } from '../../../components/ui/Skeleton';
-import { Target, TrendingUp, AlertCircle, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { Target, TrendingUp, AlertCircle, CheckCircle2, AlertTriangle, XCircle, ClipboardList } from 'lucide-react';
 import { TaskStatus } from '../../../types';
 
 interface TaskStatsRowProps {
     stats: {
         total: number;
+        todo: number;
         inProgress: number;
         done: number;
         incomplete: number;
@@ -41,26 +42,36 @@ export const TaskStatsRow: React.FC<TaskStatsRowProps> = ({
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <SkeletonStatCard key={i} compact className={i === 0 ? 'col-span-2 lg:col-span-1' : ''} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <SkeletonStatCard key={i} compact className={i === 0 ? 'col-span-2 sm:col-span-1' : ''} />
                 ))}
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {/* Total */}
             <StatCard
                 compact
-                className="col-span-2 lg:col-span-1"
+                className="col-span-2 sm:col-span-1"
                 label="Tổng công việc"
                 value={stats.total}
                 icon={<Target className="w-5 h-5 flex-shrink-0" />}
-                color="blue"
+                color="indigo"
                 progressPercentage={stats.completion}
                 progressLabel="HOÀN THÀNH"
+            />
+
+            {/* Todo */}
+            <StatCard
+                compact
+                label="Công việc mới"
+                value={stats.todo}
+                icon={<ClipboardList className="w-5 h-5 flex-shrink-0" />}
+                color="blue"
+                onClick={() => setFilterStatus(filterStatus === TaskStatus.Todo ? 'All' : TaskStatus.Todo)}
             />
 
             {/* In Progress */}

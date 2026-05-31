@@ -1,7 +1,8 @@
 import React from 'react';
-import { Search, FolderOpen, ChevronDown, Calendar, Layers, Filter, X, AlertTriangle, ListTodo, LayoutGrid, Plus, User, Tag, FileCheck, Clock, Upload, Download, FileSpreadsheet } from 'lucide-react';
+import { X, AlertTriangle, ListTodo, LayoutGrid, Plus, User, FileCheck, Clock, Upload, Download, FileSpreadsheet } from 'lucide-react';
 import PermissionGate from '../../../components/PermissionGate';
 import { TaskStatus } from '../../../types';
+import { FilterChip } from '../../../components/ui';
 
 interface TaskFilterBarProps {
     filterProject: string;
@@ -115,92 +116,33 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                     <span className="whitespace-nowrap">Chờ duyệt đề xuất</span>
                 </button>
 
-                {/* Dự án */}
-                <div className="relative">
-                    <FolderOpen className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                    <select
-                        value={filterProject}
-                        onChange={(e) => setFilterProject(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
-                    >
-                        <option value="All">Tất cả dự án</option>
-                        {projects.map(p => (
-                            <option key={p.ProjectID} value={p.ProjectID} title={p.ProjectName}>
-                                {p.ProjectName.length > 15 ? p.ProjectName.substring(0, 15) + '...' : p.ProjectName}
-                            </option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 w-2.5 h-2.5 pointer-events-none" />
-                </div>
-
                 {/* Tháng (Nếu không bị ẩn) */}
                 {!hideMonthFilter && (
-                    <div className="relative">
-                        <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                        <select
-                            value={filterMonth}
-                            onChange={(e) => setFilterMonth(e.target.value)}
-                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all min-w-[85px]"
-                        >
-                            <option value="All">Tất cả tháng</option>
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                                <option key={month} value={month.toString()}>Tháng {month}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 w-2.5 h-2.5 pointer-events-none" />
-                    </div>
+                    <FilterChip
+                        label="Tháng"
+                        value={filterMonth}
+                        onChange={setFilterMonth}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả tháng' },
+                            ...Array.from({ length: 12 }, (_, i) => i + 1).map(month => ({ value: month.toString(), label: `Tháng ${month}` })),
+                        ]}
+                    />
                 )}
 
                 {/* Phòng ban */}
                 {!hideDepartmentFilter && (
-                    <div className="relative">
-                        <Layers className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                        <select
-                            value={filterDepartment}
-                            onChange={(e) => setFilterDepartment(e.target.value)}
-                            className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
-                        >
-                            <option value="All">Tất cả phòng ban</option>
-                            {departments.map(dept => (
-                                <option key={dept} value={dept}>{dept}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 w-2.5 h-2.5 pointer-events-none" />
-                    </div>
+                    <FilterChip
+                        label="Phòng ban"
+                        value={filterDepartment}
+                        onChange={setFilterDepartment}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả phòng ban' },
+                            ...departments.map(dept => ({ value: dept, label: dept })),
+                        ]}
+                    />
                 )}
-
-                {/* Loại công việc */}
-                <div className="relative">
-                    <Tag className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                    <select
-                        value={filterTaskType}
-                        onChange={(e) => setFilterTaskType(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[120px]"
-                    >
-                        <option value="All">Tất cả loại</option>
-                        <option value="project">📁 Dự án</option>
-                        <option value="management">📋 Điều hành</option>
-                        <option value="internal">🏢 Nội bộ</option>
-                    </select>
-                    <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 w-2.5 h-2.5 pointer-events-none" />
-                </div>
-
-                {/* Trạng thái */}
-                <div className="relative">
-                    <Filter className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
-                    <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="pl-[26px] pr-5 py-1 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-lg text-[10px] text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 appearance-none cursor-pointer transition-all max-w-[140px]"
-                    >
-                        <option value="All">Tất cả trạng thái</option>
-                        <option value={TaskStatus.Todo}>Mới</option>
-                        <option value={TaskStatus.InProgress}>Đang làm</option>
-                        <option value={TaskStatus.Done}>Xong</option>
-                        <option value={TaskStatus.Incomplete}>Chưa xong</option>
-                    </select>
-                    <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 w-2.5 h-2.5 pointer-events-none" />
-                </div>
 
                 {/* Xóa bộ lọc button */}
                 {hasActiveFilters && (

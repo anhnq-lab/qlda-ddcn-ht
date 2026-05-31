@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, ClipboardList, FolderOpen } from 'lucide-react';
+import { Mail, Phone, ClipboardList, FolderOpen, Pencil, Trash2 } from 'lucide-react';
 import { Employee, EmployeeStatus, Role } from '../../../types';
 import { Column } from '../../../components/ui/DataTable';
 import { Avatar } from '../../../components/ui';
@@ -14,7 +14,11 @@ const getRoleInfo = (role: Role) => {
 };
 
 export function getEmployeeColumns(
-    employeeWorkload: Record<string, WorkloadData>
+    employeeWorkload: Record<string, WorkloadData>,
+    onEdit?: (emp: Employee) => void,
+    onDelete?: (id: string) => void,
+    canEdit?: (id: string) => boolean,
+    canManageUsers?: boolean
 ): Column<Employee>[] {
     return [
         {
@@ -119,5 +123,48 @@ export function getEmployeeColumns(
                 />
             ),
         },
+        {
+            key: 'actions',
+            header: 'Thao tác',
+            align: 'right',
+            width: '80px',
+            render: (_: any, emp: Employee) => {
+                const allowedEdit = canEdit?.(emp.EmployeeID);
+                const allowedDelete = canManageUsers;
+                if (!allowedEdit && !allowedDelete) return null;
+                
+                return (
+                    <div 
+                        className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {allowedEdit && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit?.(emp);
+                                }}
+                                className="p-1.5 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors"
+                                title="Chỉnh sửa thông tin"
+                            >
+                                <Pencil className="w-4 h-4" />
+                            </button>
+                        )}
+                        {allowedDelete && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete?.(emp.EmployeeID);
+                                }}
+                                className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
+                                title="Xóa nhân sự"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+                );
+            }
+        }
     ];
 }

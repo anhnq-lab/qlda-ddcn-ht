@@ -9,6 +9,11 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     max-width: 100vw;
+    /* Thu nhỏ toàn bộ giao diện ~20% (tương đương zoom 80%).
+       Dùng font-size gốc (rem-based) thay vì zoom để KHÔNG phá vỡ layout
+       full-height (100vh/h-screen/modal) — zoom làm các phần này hụt 20%.
+       Chỉnh 80% để tăng/giảm cỡ chung toàn app. */
+    font-size: 80%;
   }
 
   /* Smooth theme switch — applies to color/bg/border transitions.
@@ -45,22 +50,23 @@
   /* Fallback (no class yet — happens briefly on first paint) */
   body { background-color: #f1f5f9; }
 
-  /* Fluid responsive: auto-scale when browser zoom ≥ 125% */
+  /* Fluid responsive: auto-scale when browser zoom ≥ 125%
+     (đã nhân ×0.8 để đồng bộ với mức thu nhỏ 20% ở trên) */
   @media (min-resolution: 1.25dppx) {
     :root {
-      font-size: clamp(13px, 1vw, 16px);
+      font-size: clamp(10.4px, 0.8vw, 12.8px);
     }
   }
 
   @media (min-resolution: 1.5dppx) {
     :root {
-      font-size: clamp(12px, 0.9vw, 15px);
+      font-size: clamp(9.6px, 0.72vw, 12px);
     }
   }
 
   @media (min-resolution: 2dppx) {
     :root {
-      font-size: clamp(11px, 0.85vw, 14px);
+      font-size: clamp(8.8px, 0.68vw, 11.2px);
     }
   }
 
@@ -298,3 +304,40 @@
 .animate-bounce-slow {
   animation: bounceSlow 2s ease-in-out infinite;
 }
+
+/* ============================================================================
+   UI SCALE — đồng bộ thu nhỏ chữ
+   Codebase dùng ~1400 chỗ cỡ chữ px tuyệt đối (text-[10px]…) vốn KHÔNG co
+   theo font-size gốc (html{font-size:80%}). Chuyển chúng sang rem tương đương
+   để co đều cùng toàn bộ giao diện. 1rem = 16px → Npx = (N/16)rem.
+   ============================================================================ */
+.text-\[7px\]    { font-size: 0.4375rem !important; }
+.text-\[7\.5px\] { font-size: 0.46875rem !important; }
+.text-\[8px\]    { font-size: 0.5rem !important; }
+.text-\[8\.5px\] { font-size: 0.53125rem !important; }
+.text-\[9px\]    { font-size: 0.5625rem !important; }
+.text-\[9\.5px\] { font-size: 0.59375rem !important; }
+.text-\[10px\]   { font-size: 0.625rem !important; }
+.text-\[10\.5px\]{ font-size: 0.65625rem !important; }
+.text-\[11px\]   { font-size: 0.6875rem !important; }
+.text-\[11\.5px\]{ font-size: 0.71875rem !important; }
+.text-\[12px\]   { font-size: 0.75rem !important; }
+.text-\[12\.5px\]{ font-size: 0.78125rem !important; }
+.text-\[13px\]   { font-size: 0.8125rem !important; }
+.text-\[13\.5px\]{ font-size: 0.84375rem !important; }
+.text-\[14px\]   { font-size: 0.875rem !important; }
+.text-\[15px\]   { font-size: 0.9375rem !important; }
+.text-\[16px\]   { font-size: 1rem !important; }
+.text-\[17px\]   { font-size: 1.0625rem !important; }
+.text-\[18px\]   { font-size: 1.125rem !important; }
+.text-\[19px\]   { font-size: 1.1875rem !important; }
+.text-\[20px\]   { font-size: 1.25rem !important; }
+.text-\[22px\]   { font-size: 1.375rem !important; }
+.text-\[24px\]   { font-size: 1.5rem !important; }
+.text-\[26px\]   { font-size: 1.625rem !important; }
+.text-\[28px\]   { font-size: 1.75rem !important; }
+.text-\[30px\]   { font-size: 1.875rem !important; }
+.text-\[32px\]   { font-size: 2rem !important; }
+.text-\[36px\]   { font-size: 2.25rem !important; }
+.text-\[40px\]   { font-size: 2.5rem !important; }
+.text-\[48px\]   { font-size: 3rem !important; }

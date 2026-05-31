@@ -17,6 +17,7 @@ interface CDESubmitModalProps {
         discipline: string;
         docType: string;
         notes: string;
+        sensitivityLevel?: number;
     }) => void;
     isPending: boolean;
 }
@@ -56,7 +57,7 @@ const CDESubmitModal: React.FC<CDESubmitModalProps> = ({
 
     const onFormSubmit = handleSubmit((data) => {
         if (!file) return;
-        onSubmit({ file, folderId: data.folderId, discipline: data.discipline, docType: data.docType, notes: data.notes ?? '' });
+        onSubmit({ file, folderId: data.folderId, discipline: data.discipline, docType: data.docType, notes: data.notes ?? '', sensitivityLevel: data.sensitivityLevel });
     });
 
     if (!isOpen) return null;

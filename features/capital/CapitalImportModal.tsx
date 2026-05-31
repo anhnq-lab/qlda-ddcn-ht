@@ -235,6 +235,8 @@ export const CapitalImportModal: React.FC<CapitalImportModalProps> = ({ isOpen, 
         setImportStats({ total: updatedPreview.length, success, error: errors });
         setIsImporting(false);
         queryClient.invalidateQueries({ queryKey: ['capitalPlans'] });
+        queryClient.invalidateQueries({ queryKey: ['projects-paginated'] });
+        queryClient.invalidateQueries({ queryKey: ['project-detail'] });
     };
 
     const reset = () => {

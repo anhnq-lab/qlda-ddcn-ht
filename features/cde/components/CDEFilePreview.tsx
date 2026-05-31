@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
 // CDE File Preview Modal
-// PDF / Image: real viewer  |  DOCX: mammoth.js  |  XLSX: SheetJS
+// PDF: pdfjs-dist canvas (markup overlay support)
+// Image: native img | DOCX: mammoth.js | XLSX: SheetJS
 // ═══════════════════════════════════════════════════════════════
 
-import React, { useMemo, useEffect, useState } from 'react';
-import { FileText, Download, X, Box, Image as ImageIcon, Printer, Loader2, AlertCircle, MapPin } from 'lucide-react';
+import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react';
+import { FileText, Download, X, Box, Image as ImageIcon, Printer, Loader2, AlertCircle, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import CDEMarkup2DLayer from './CDEMarkup2DLayer';
 
 interface PreviewFile {
@@ -29,6 +30,107 @@ interface CDEFilePreviewProps {
     docId?: number;
     projectId?: string;
     createdBy?: string;
+    /** Badge toàn vẹn file (TT47 2.2.5.4) */
+    fileHash?: string;
+    integrityStatus?: 'valid' | 'mismatch' | 'checking' | null;
+}
+
+// ─── PDF Viewer using pdfjs-dist (canvas-based for markup overlay) ─────────
+
+function usePdfViewer(viewUrl: string | null, isPDF: boolean) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [pageNum, setPageNum] = useState(1);
+    const [numPages, setNumPages] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const pdfDocRef = useRef<any>(null);
+    const renderTaskRef = useRef<any>(null);
+
+    // Load PDF document
+    useEffect(() => {
+        if (!isPDF || !viewUrl) return;
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+
+        (async () => {
+            try {
+                const pdfjsLib = await import('pdfjs-dist');
+                // Worker — sử dụng inline worker để tránh vấn đề CORS
+                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+                const loadingTask = pdfjsLib.getDocument(viewUrl);
+                const pdf = await loadingTask.promise;
+                if (cancelled) return;
+                pdfDocRef.current = pdf;
+                setNumPages(pdf.numPages);
+                setPageNum(1);
+            } catch (e: any) {
+                if (!cancelled) setError(e.message || 'Không thể đọc file PDF');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+            if (pdfDocRef.current) {
+                pdfDocRef.current.destroy().catch(() => {});
+                pdfDocRef.current = null;
+            }
+        };
+    }, [viewUrl, isPDF]);
+
+    // Render current page
+    useEffect(() => {
+        const pdf = pdfDocRef.current;
+        const canvas = canvasRef.current;
+        if (!pdf || !canvas || pageNum < 1 || pageNum > numPages) return;
+
+        let cancelled = false;
+        (async () => {
+            try {
+                // Cancel previous render
+                if (renderTaskRef.current) {
+                    try { renderTaskRef.current.cancel(); } catch {}
+                }
+
+                const page = await pdf.getPage(pageNum);
+                if (cancelled) return;
+
+                // Scale to fit container width (retina-aware)
+                const container = canvas.parentElement;
+                const containerWidth = container ? container.clientWidth - 32 : 800;
+                const viewport = page.getViewport({ scale: 1 });
+                const scale = Math.min(containerWidth / viewport.width, 2.5);
+                const scaledViewport = page.getViewport({ scale });
+                const dpr = window.devicePixelRatio || 1;
+
+                canvas.width = scaledViewport.width * dpr;
+                canvas.height = scaledViewport.height * dpr;
+                canvas.style.width = `${scaledViewport.width}px`;
+                canvas.style.height = `${scaledViewport.height}px`;
+
+                const ctx = canvas.getContext('2d')!;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const renderTask = page.render({ canvasContext: ctx, viewport: scaledViewport });
+                renderTaskRef.current = renderTask;
+                await renderTask.promise;
+            } catch (e: any) {
+                if (e?.name !== 'RenderingCancelledException' && !cancelled) {
+                    console.warn('[PDF] Render error:', e);
+                }
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [pageNum, numPages]);
+
+    const prevPage = useCallback(() => setPageNum(p => Math.max(1, p - 1)), []);
+    const nextPage = useCallback(() => setPageNum(p => Math.min(numPages, p + 1)), [numPages]);
+
+    return { canvasRef, pageNum, numPages, loading, error, prevPage, nextPage, setPageNum };
 }
 
 // ─── Office viewer hooks ──────────────────────────────────────────────────────
@@ -94,9 +196,28 @@ function useXlsxContent(viewUrl: string | null, isSpreadsheet: boolean) {
     return { html, sheetNames, activeSheet, setActiveSheet, loading, error };
 }
 
+// ─── Integrity Badge (TT47 2.2.5.4) ─────────────────────────────────────────
+
+const IntegrityBadge: React.FC<{ status?: 'valid' | 'mismatch' | 'checking' | null }> = ({ status }) => {
+    if (!status) return null;
+    const config = {
+        checking: { label: 'Đang kiểm tra...', cls: 'text-gray-400 bg-gray-100 dark:bg-slate-700', icon: '⏳' },
+        valid: { label: 'Toàn vẹn ✓', cls: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30', icon: '🔒' },
+        mismatch: { label: 'File bị thay đổi!', cls: 'text-red-600 bg-red-50 dark:bg-red-900/30', icon: '⚠️' },
+    }[status];
+    return (
+        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${config.cls}`}>
+            {config.icon} {config.label}
+        </span>
+    );
+};
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownload, docId, projectId, createdBy }) => {
+const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({
+    file, onClose, onDownload, docId, projectId, createdBy,
+    fileHash, integrityStatus,
+}) => {
     const [markupActive, setMarkupActive] = useState(false);
     const fileName = (file.doc_name || file.DocName || file.name || '').toLowerCase();
     const displayName = file.doc_name || file.DocName || file.name || 'Tài liệu';
@@ -120,6 +241,9 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
     const version = file.version || file.Version || '1.0';
     const size = file.size || file.Size || 'N/A';
 
+    // PDF viewer (canvas-based)
+    const pdf = usePdfViewer(viewUrl, isPDF);
+
     const { html: docxHtml, loading: docxLoading, error: docxError } = useDocxContent(viewUrl, isDocx);
     const { html: xlsxHtml, loading: xlsxLoading, error: xlsxError } = useXlsxContent(viewUrl, isSpreadsheet);
 
@@ -136,9 +260,13 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
                             {isIFC ? <Box className="w-6 h-6" /> : isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                         </div>
                         <div>
-                            <h3 className="text-base font-black text-txt-primary tracking-tight">{displayName}</h3>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-base font-black text-txt-primary tracking-tight">{displayName}</h3>
+                                <IntegrityBadge status={integrityStatus} />
+                            </div>
                             <p className="text-[10px] text-txt-placeholder font-bold uppercase tracking-widest">
                                 {file.isLocal ? 'TÀI LIỆU VỪA TẢI LÊN' : `PHIÊN BẢN: ${version}`} • {size}
+                                {fileHash && <span className="ml-2 font-mono text-[8px] opacity-50">SHA-256: {fileHash.slice(0, 12)}…</span>}
                             </p>
                         </div>
                     </div>
@@ -170,15 +298,55 @@ const CDEFilePreview: React.FC<CDEFilePreviewProps> = ({ file, onClose, onDownlo
 
                 {/* Content */}
                 <div className="flex-1 overflow-auto p-4 flex justify-center bg-[#525659]">
-                    {(isPDF || isImage) && viewUrl ? (
+                    {isPDF && viewUrl ? (
                         <div className="relative bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
-                            {isPDF ? (
-                                <iframe src={`${viewUrl}#toolbar=0`} className="w-full h-full border-0" title="PDF Viewer" />
+                            {/* PDF Canvas Viewer */}
+                            {pdf.loading ? (
+                                <div className="flex-1 flex items-center justify-center">
+                                    <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+                                </div>
+                            ) : pdf.error ? (
+                                <div className="flex-1 flex flex-col items-center justify-center gap-2 text-gray-400">
+                                    <AlertCircle className="w-8 h-8 text-red-400" />
+                                    <p className="text-sm">{pdf.error}</p>
+                                </div>
                             ) : (
-                                <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
-                                    <img src={viewUrl} crossOrigin="anonymous" className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
+                                <div className="flex-1 overflow-auto flex justify-center p-4 bg-gray-100 dark:bg-slate-900">
+                                    <canvas ref={pdf.canvasRef} className="shadow-lg" />
                                 </div>
                             )}
+
+                            {/* PDF Pagination */}
+                            {pdf.numPages > 0 && (
+                                <div className="shrink-0 px-4 py-2 border-t border-border flex items-center justify-center gap-3 bg-bg-surface">
+                                    <button onClick={pdf.prevPage} disabled={pdf.pageNum <= 1}
+                                        className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 transition-all">
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    <span className="text-xs font-bold text-txt-muted">
+                                        Trang <input
+                                            type="number" min={1} max={pdf.numPages} value={pdf.pageNum}
+                                            onChange={e => { const v = parseInt(e.target.value); if (v >= 1 && v <= pdf.numPages) pdf.setPageNum(v); }}
+                                            className="w-10 text-center bg-bg-muted border border-border rounded px-1 py-0.5 text-xs mx-1"
+                                        /> / {pdf.numPages}
+                                    </span>
+                                    <button onClick={pdf.nextPage} disabled={pdf.pageNum >= pdf.numPages}
+                                        className="p-1.5 rounded-lg hover:bg-bg-muted disabled:opacity-30 transition-all">
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Markup overlay */}
+                            {docId && projectId && (
+                                <CDEMarkup2DLayer docId={docId} projectId={projectId} createdBy={createdBy} active={markupActive} />
+                            )}
+                        </div>
+                    ) : isImage && viewUrl ? (
+                        <div className="relative bg-bg-surface w-full h-full rounded-sm shadow-sm overflow-hidden flex flex-col">
+                            <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
+                                <img src={viewUrl} crossOrigin="anonymous" className="max-w-full max-h-full object-contain shadow-sm" alt="Preview" />
+                            </div>
                             {docId && projectId && (
                                 <CDEMarkup2DLayer docId={docId} projectId={projectId} createdBy={createdBy} active={markupActive} />
                             )}

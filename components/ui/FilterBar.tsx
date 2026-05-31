@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Search, X, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { ViewToggle, ViewMode } from './ViewToggle';
+import { FilterChip } from './FilterChip';
 
 // ========================================
 // FILTER BAR - Design System v2.1
@@ -166,35 +167,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 </div>
             )}
 
-            {/* Filter dropdowns */}
+            {/* Filter dropdowns — pill kiểu ChipSelect (đồng bộ với module Quản lý dự án) */}
             {filters.map((filter) => (
-                <div key={filter.id} className="relative">
-                    <select
-                        id={`filter-${filter.id}`}
-                        value={filter.value}
-                        onChange={(e) => filter.onChange(e.target.value)}
-                        className="
-                            appearance-none pl-3 pr-8 py-2 text-sm
-                            bg-bg-surface
-                            border border-border
-                            rounded-lg
-                            text-txt-secondary
-                            focus:outline-none focus:ring-2 focus:ring-focus/50 focus:border-primary-400
-                            cursor-pointer transition-colors
-                        "
-                    >
-                        <option value="all">{filter.allLabel || `Tất cả ${filter.label}`}</option>
-                        {filter.options.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}{opt.count !== undefined ? ` (${opt.count})` : ''}
-                            </option>
-                        ))}
-                    </select>
-                    <ChevronDown
-                        size={13}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-muted pointer-events-none"
-                    />
-                </div>
+                <FilterChip
+                    key={filter.id}
+                    label={filter.label}
+                    value={filter.value}
+                    onChange={filter.onChange}
+                    options={[
+                        { value: 'all', label: filter.allLabel || `Tất cả ${filter.label}` },
+                        ...filter.options.map((opt) => ({
+                            value: opt.value,
+                            label: opt.label,
+                            count: opt.count,
+                            // chỉ nhận màu dạng CSS (hex/rgb), bỏ qua nếu là class Tailwind
+                            color: typeof opt.color === 'string' && /^(#|rgb|hsl)/.test(opt.color) ? opt.color : undefined,
+                        })),
+                    ]}
+                />
             ))}
 
             {/* Sort */}

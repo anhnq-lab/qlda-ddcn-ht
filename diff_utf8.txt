@@ -1,0 +1,933 @@
+﻿diff --git a/features/projects/components/tabs/ProjectPlanTab.tsx b/features/projects/components/tabs/ProjectPlanTab.tsx
+index 5fdeca3..31c2601 100644
+--- a/features/projects/components/tabs/ProjectPlanTab.tsx
++++ b/features/projects/components/tabs/ProjectPlanTab.tsx
+@@ -22,15 +22,20 @@ import { useSlidePanel } from '@/context/SlidePanelContext';
+ import { supabase } from '@/lib/supabase';
+ import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
+ import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
+-import { useWorkflowPhases } from '../../hooks/useWorkflowPhases';
+-import type { PhaseItem } from '../../hooks/useWorkflowPhases';
++import { useProjectSteps, projectStepsKey } from '../../hooks/useProjectSteps';
++import { ProjectStepsService } from '@/services/ProjectStepsService';
++import type { PhaseItem } from '../../hooks/useProjectSteps';
+ import { useTaskFilters } from '../../hooks/useTaskFilters';
+ import { useStepAggregates } from '../../hooks/useStepAggregates';
+ import { usePlanPersist } from '../../hooks/usePlanPersist';
+ import { taskKeys } from '@/hooks/useWorkflowTasks';
++import { workflowTaskToTask, taskToDbTask } from '@/lib/mappers/workflowTaskMappers';
++import { calcProgress, isTaskInStep } from '@/lib/progressCalculator';
+ import { CreateMasterPlanPanel } from '../CreateMasterPlanPanel';
+ import { StepDetailModal } from '../StepDetailModal';
+ import { PlanDateRange } from '../PlanDateRangeModal';
++import { ProjectRaciMatrixView } from './ProjectRaciMatrixView';
++import { HorizontalMilestoneTimeline } from '../HorizontalMilestoneTimeline';
+ 
+ 
+ interface ProjectPlanTabProps {
+@@ -64,8 +69,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+ }) => {
+     const navigate = useNavigate();
+     const queryClient = useQueryClient();
+-    // Dynamic phases from DB workflow templates
+-    const { phases: DECREE_175_PHASES, getGroupLabel, isLoading: isLoadingPhases } = useWorkflowPhases(groupCode, project);
++
++    // Phases tß╗½ MPI steps (sau khi user ─æ├ú tß║ío KH tß╗òng thß╗â)
++    const {
++        phases: DECREE_175_PHASES,
++        steps: projectSteps,
++        isLoading: isLoadingPhases,
++        invalidate: invalidateProjectSteps,
++        unscheduledCount,
++    } = useProjectSteps(projectID);
++
++    const getGroupLabel = (g?: string) => {
++        switch (g) {
++            case 'QN': return 'Quan trß╗ìng QG';
++            case 'A': return 'Nh├│m A';
++            case 'B': return 'Nh├│m B';
++            case 'C': return 'Nh├│m C';
++            default: return 'Nh├│m C';
++        }
++    };
+ 
+     // Employee name lookup map
+     const employeeNameMap = useMemo(() => {
+@@ -74,49 +96,11 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+         return map;
+     }, [employees]);
+ 
+-    // Helper: Map WorkflowTask to Task
++    // Map DbTask[] ΓåÆ Task[] sß╗¡ dß╗Ñng canonical mapper (single source of truth)
+     const mappedTasks = useMemo<Task[]>(() => {
+         return workflowTasks.map((wt: any) => {
+-            // If already a Task object from useProjectTasks
+-            if (wt.TaskID) return wt as Task;
+-
+-            const phase = wt.workflow_nodes?.metadata?.phase || wt.metadata?.phase || wt.metadata?.groupCode || 'KH';
+-            let mappedStatus = TaskStatus.Todo;
+-            if (wt.status === 'in_progress') mappedStatus = TaskStatus.InProgress;
+-            else if (wt.status === 'completed') mappedStatus = TaskStatus.Done;
+-            // Note: If overdue state exists in your legacy Tasks, map it here, otherwise keep as Todo or InProgress.
+-            else if (wt.status === 'overdue') mappedStatus = TaskStatus.InProgress;
+-            
+-            // Restore exact UI status if saved in metadata
+-            if (wt.metadata?.ui_status) {
+-                mappedStatus = wt.metadata.ui_status;
+-            }
+-            
+-            return {
+-                TaskID: wt.id,
+-                ProjectID: projectID || '',
+-                Title: wt.name || 'Untitled Task',
+-                Description: wt.comments || wt.metadata?.description || '',
+-                Status: mappedStatus,
+-                Priority: TaskPriority.Medium,
+-                StartDate: wt.start_date || wt.created_at,
+-                DueDate: wt.due_date || undefined,
+-                AssigneeID: wt.assignee_id || '',
+-                TimelineStep: wt.workflow_node_id || wt.node_id || wt.step_code || wt.metadata?.step_code || '',
+-                StepCode: wt.step_code || wt.metadata?.step_code || wt.workflow_node_id || wt.node_id || '',
+-                LegalBasis: wt.workflow_nodes?.metadata?.legalBasis || '',
+-                DurationDays: wt.metadata?.estimatedDays || 10,
+-                ActualStartDate: wt.metadata?.actualStartDate || wt.started_at,
+-                ActualEndDate: wt.metadata?.actualEndDate || wt.completed_at,
+-                ProgressPercent: wt.progress || 0,
+-                Phase: phase,
+-                SubTasks: wt.metadata?.sub_tasks || [],
+-                Attachments: wt.metadata?.attachments || [],
+-                Dependencies: wt.metadata?.dependencies || [],
+-                EstimatedCost: wt.metadata?.estimated_cost,
+-                ActualCost: wt.metadata?.actual_cost,
+-                Metadata: wt.metadata || {},
+-            } as Task;
++            if (wt.TaskID) return wt as Task; // already mapped
++            return workflowTaskToTask(wt, projectID);
+         });
+     }, [workflowTasks, projectID]);
+ 
+@@ -150,7 +134,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+ 
+         phases.forEach(phase => {
+             const phaseTasks = mappedTasks.filter(t =>
+-                phase.items.some(item => (item.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim())
++                phase.items.some(item => isTaskInStep(t, { id: item.code, code: item.stepCode ?? item.code }))
+             );
+             if (phaseTasks.length === 0) {
+                 initial[phase.id] = false;
+@@ -173,7 +157,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+         });
+         if (!Object.values(initial).some(v => v) && phases.length > 0) {
+             const first = phases.find(p => {
+-                const pt = mappedTasks.filter(t => p.items.some(i => (i.code || '').toLowerCase().trim() === (t.TimelineStep || '').toLowerCase().trim()));
++                const pt = mappedTasks.filter(t => p.items.some(i => isTaskInStep(t, { id: i.code, code: i.stepCode ?? i.code })));
+                 return pt.length === 0 || !pt.every(t => t.Status === TaskStatus.Done);
+             });
+             if (first) initial[first.id] = true;
+@@ -257,7 +241,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+ 
+             // Find the task to get step_code and title for cross-referencing
+             const task = tasks.find(t => t.TaskID === taskId);
+-            const stepCode = (task as any)?.StepCode || (task as any)?.step_code || task?.TimelineStep || '';
++            const stepCode = (task as any)?.StepCode || (task as any)?.step_code || '';
+             const crossRef = stepCode ? findByStepCode(stepCode) : undefined;
+ 
+             // Build enriched doc name for keyword matching in Hß╗ô s╞í tab
+@@ -303,34 +287,35 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+         return allItems
+             .map(item => {
+                 const agg = stepAggregates.get(item.code);
+-                if (!agg || !agg.startDate || !agg.dueDate) return null;
++                const sDate = item.startDate || agg?.startDate;
++                const dDate = item.dueDate || agg?.dueDate;
++                if (!sDate || !dDate) return null;
+ 
+                 return {
+                     TaskID: item.code,
+                     Title: `${item.id}. ${item.title}`,
+                     TaskType: 'project',
+-                    StartDate: agg.startDate,
+-                    DueDate: agg.dueDate,
+-                    Status: agg.status,
++                    StartDate: sDate,
++                    DueDate: dDate,
++                    Status: agg?.status || TaskStatus.Todo,
+                     Priority: TaskPriority.Medium,
+-                    Description: 'Tß╗òng hß╗úp tß╗½ c├íc c├┤ng viß╗çc thuß╗Öc c├íc b╞░ß╗¢c',
++                    Description: 'Kß║┐ hoß║ích thß╗▒c hiß╗çn b╞░ß╗¢c quy tr├¼nh',
+                     AssigneeID: '',
+                     TimelineStep: item.code,
+                     ProjectID: projectID || 'SYNTHETIC',
+-                    ProgressPercent: agg.progress
++                    ProgressPercent: agg?.progress || 0
+                 } as Task;
+             })
+             .filter((t): t is Task => t !== null);
+-    }, [stepAggregates, projectID]);
++    }, [DECREE_175_PHASES, stepAggregates, projectID]);
+ 
+     // 6. Compute Milestone Dates for Timeline
+     const milestoneData = useMemo(() => {
+         const getCompletionDate = (code: string): string | undefined => {
+             const allStepTasks = tasks.filter(t => {
+-                const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
+                 const tStepCode = (t.StepCode || '').toLowerCase().trim();
+                 const sCode = (code || '').toLowerCase().trim();
+-                return tTimelineStep === sCode || tStepCode === sCode;
++                return tStepCode === sCode || t.ProjectPlanItemID === code || t.MonthlyPlanItemID === code;
+             });
+             if (allStepTasks.length === 0) return undefined;
+             // ALL tasks in this step must be Done for the milestone to be considered complete
+@@ -461,9 +446,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+ 
+     const handleUpdateStepMeta = (stepCode: string, updates: { assigneeRole?: string }) => {
+         const masterTask = tasks.find(t => {
+-            const tTimelineStep = (t.TimelineStep || '').toLowerCase().trim();
++            const tStepCode = (t.StepCode || '').toLowerCase().trim();
+             const sCode = (stepCode || '').toLowerCase().trim();
+-            return tTimelineStep === sCode && !(t as any).ParentID;
++            return tStepCode === sCode && !(t as any).ParentID;
+         });
+         if (masterTask) {
+              handleSaveTask({
+@@ -473,56 +458,17 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+         }
+     };
+     const handleSaveTask = async (taskData: Partial<Task>) => {
+-        // ΓöÇΓöÇ Auto-derive status from progress ΓöÇΓöÇ
+-        const progress = taskData.ProgressPercent ?? (taskData as any).Progress ?? 0;
+-        
+-        // ΓöÇΓöÇ Map back to DbTask schema ΓöÇΓöÇ
+-        let mappedDbStatus = 'todo';
+-        switch (taskData.Status) {
+-            case TaskStatus.Todo:       mappedDbStatus = 'todo'; break;
+-            case TaskStatus.InProgress: mappedDbStatus = 'in_progress'; break;
+-            case TaskStatus.Review:     mappedDbStatus = 'review'; break; // Legacy
+-            case TaskStatus.Done:       mappedDbStatus = 'done'; break;
+-            case TaskStatus.Incomplete: mappedDbStatus = 'incomplete'; break;
+-            default: mappedDbStatus = 'todo';
+-        }
+-
++        // D├╣ng canonical mapper ΓÇö single source of truth cho UIΓåÆDB conversion.
++        // Khi task tß║ío mß╗¢i tß╗½ 1 step, bß╗ò sung monthly_plan_item_id = selectedStep.code (MPI step ID).
+         const dbTaskData: any = {
+-            id: taskData.TaskID && !taskData.TaskID.startsWith('NEW_') ? taskData.TaskID : undefined,
+-            title: taskData.Title,
+-            description: taskData.Description,
+-            status: mappedDbStatus,
+-            progress: progress,
+-            priority: (taskData.Priority || 'medium').toLowerCase(),
+-            start_date: taskData.StartDate,
+-            due_date: taskData.DueDate,
+-            actual_start_date: taskData.ActualStartDate,
+-            actual_end_date: taskData.ActualEndDate,
+-            assignee_id: taskData.AssigneeID && !isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : (isDepartmentCode(taskData.AssigneeID) ? null : currentUserId),
+-            project_id: projectID,
+-            task_type: 'project',
+-            workflow_node_id: taskData.TimelineStep || taskData.StepCode || selectedStep?.code || null,
+-            step_code: taskData.TimelineStep || taskData.StepCode || selectedStep?.code || null,
+-            predecessor_task_id: taskData.PredecessorTaskID || null,
+-            estimated_cost: (taskData as any).EstimatedCost || null,
+-            actual_cost: (taskData as any).ActualCost || null,
+-            duration_days: taskData.DurationDays || null,
++            ...taskToDbTask(taskData, projectID),
++            // Tasks tß║ío tß╗½ b╞░ß╗¢c KH dß╗▒ ├ín ΓåÆ project_plan_item_id (kh├┤ng d├╣ng monthly_plan_item_id)
++            project_plan_item_id: taskData.ProjectPlanItemID || selectedStep?.code || null,
+             monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
+-            metadata: {
+-                ui_status: taskData.Status,
+-                assignee_role: taskData.AssigneeID && isDepartmentCode(taskData.AssigneeID) ? taskData.AssigneeID : undefined,
+-                sub_tasks: taskData.SubTasks,
+-                attachments: taskData.Attachments,
+-                dependencies: taskData.Dependencies,
+-                monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
+-            }
++            // predecessor_task_id kh├┤ng c├│ trong taskToDbTask mapper
++            predecessor_task_id: (taskData as any).PredecessorTaskID || null,
+         };
+ 
+-        // Nß║┐u l├á task mß╗¢i ─æ╞░ß╗úc tß║ío tß╗½ n├║t "Th├¬m c├┤ng viß╗çc" trong mß╗Öt Step
+-        if (!dbTaskData.id && selectedStep) {
+-            dbTaskData.task_type = 'project';
+-        }
+-
+         try {
+             const savedTask = await TaskService.saveTask(dbTaskData);
+ 
+@@ -564,10 +510,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+             );
+             
+             showToast(`Γ£à ─É├ú thiß║┐t lß║¡p kß║┐ hoß║ích dß╗▒a tr├¬n quy tr├¼nh mß║½u`, 'success');
+-            // We fetch tasks directly from workflow_tasks based on this new instance
+             queryClient.invalidateQueries({ queryKey: taskKeys.all });
+             queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
+             queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
++            if (projectID) queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
+         } catch (error) {
+             console.error('Failed to bulk create framework tasks:', error);
+             showToast('Γ¥î Tß║ío kß║┐ hoß║ích thß║Ñt bß║íi', 'error');
+@@ -663,7 +609,18 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+         }
+     };
+ 
+-    // Removed Phase Bulk creation since it's now handled by Master Workflow engine
++    // ΓöÇΓöÇ X├│a to├án bß╗Ö KH dß╗▒ ├ín (project_plan_items) ΓöÇΓöÇ
++    const handleDeletePlan = async () => {
++        if (!projectID) return;
++        try {
++            await ProjectStepsService.deleteAllByProject(projectID);
++            queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
++            showToast('≡ƒùæ∩╕Å ─É├ú x├│a to├án bß╗Ö kß║┐ hoß║ích dß╗▒ ├ín', 'info');
++        } catch (err: any) {
++            console.error('Failed to delete project plan:', err);
++            showToast(`Γ¥î Lß╗ùi: ${err?.message || 'Kh├┤ng thß╗â x├│a kß║┐ hoß║ích'}`, 'error');
++        }
++    };
+ 
+     // Priority color helper
+     const getPriorityColor = (priority?: string) => {
+@@ -677,114 +634,253 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+ 
+     // Check if task is overdue
+     const isOverdue = (task: Task) => {
+-        if (task.Status === TaskStatus.Done) return false;
+-        if (!task.DueDate) return false;
+-        const today = new Date();
+-        today.setHours(0, 0, 0, 0);
+-        const dueDate = new Date(task.DueDate);
+-        dueDate.setHours(0, 0, 0, 0);
+-        return dueDate < today;
+-    };
+-
+-
+-    return (
+-        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
+-
+-            {/* 1. Overall Progress & Smart Alerts */}
+-            {(() => {
+-                const total = tasks.length;
+-                const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
+-                const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
+-                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+-
+-                const today = new Date();
+-                today.setHours(0, 0, 0, 0);
+-                const threeDays = new Date(today);
+-                threeDays.setDate(threeDays.getDate() + 3);
++                {/* 1. Overall Dashboard Header: Progress + Milestones & Health Score */}
++            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
++                
++                {/* Left: Overall Progress & Horizontal Milestones (3 cols) */}
++                {(() => {
++                    const stats = calcProgress(tasks);
++                    const { total, done, inProgress, overdue: overdueCount, completionPercent: pct } = stats;
++
++                    const today = new Date();
++                    today.setHours(0, 0, 0, 0);
++                    const threeDays = new Date(today);
++                    threeDays.setDate(threeDays.getDate() + 3);
++
++                    const overdue = tasks.filter(t => {
++                        if (t.Status === TaskStatus.Done || !t.DueDate) return false;
++                        const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
++                        return d < today;
++                    });
++                    const upcoming = tasks.filter(t => {
++                        if (t.Status === TaskStatus.Done || !t.DueDate) return false;
++                        const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
++                        return d >= today && d <= threeDays;
++                    });
++                    const todayDone = tasks.filter(t => {
++                        if (t.Status !== TaskStatus.Done || !t.ActualEndDate) return false;
++                        const d = new Date(t.ActualEndDate); d.setHours(0, 0, 0, 0);
++                        return d.getTime() === today.getTime();
++                    });
++
++                    const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success'; filterVal?: TaskFilter }[] = [];
++                    if (overdue.length > 0) alerts.push({ icon: '≡ƒö┤', text: `${overdue.length} c├┤ng viß╗çc ─æ├ú qu├í hß║ín`, type: 'danger', filterVal: 'overdue' });
++                    if (upcoming.length > 0) alerts.push({ icon: 'ΓÜá∩╕Å', text: `${upcoming.length} c├┤ng viß╗çc sß║»p tß╗¢i hß║ín`, type: 'warn', filterVal: 'this-week' });
++                    if (todayDone.length > 0) alerts.push({ icon: 'Γ£à', text: `${todayDone.length} ho├án th├ánh h├┤m nay`, type: 'success', filterVal: 'completed' });
++
++                    const typeStyles = {
++                        danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40',
++                        warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40',
++                        success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
++                    };
++
++                    // Milestone logic
++                    const milestoneOrder = ['policy_approval', 'project_approval', 'construction_design', 'groundbreaking', 'completion', 'handover'];
++                    const md = milestoneData ?? {};
++                    const dateByMilestone: Record<string, string | undefined> = {
++                        policy_approval: md.policyApprovalDate,
++                        project_approval: md.projectApprovalDate,
++                        construction_design: md.constructionDesignDate,
++                        groundbreaking: md.groundbreakingDate,
++                        completion: md.completionDate,
++                        handover: md.handoverDate,
++                    };
++
++                    const getMilestoneStatus = (milestoneId: string, date?: string): 'pending' | 'current' | 'completed' => {
++                        if (date) return 'completed';
++                        const firstIncomplete = milestoneOrder.find(id => !dateByMilestone[id]);
++                        if (firstIncomplete === milestoneId) return 'current';
++                        return 'pending';
++                    };
++
++                    const milestones = [
++                        { id: 'policy_approval', title: 'Ph├¬ duyß╗çt chß╗º tr╞░╞íng ─ÉT', desc: 'Quyß║┐t ─æß╗ïnh chß╗º tr╞░╞íng ─æß║ºu t╞░', date: md.policyApprovalDate, status: getMilestoneStatus('policy_approval', md.policyApprovalDate) },
++                        { id: 'project_approval', title: 'Ph├¬ duyß╗çt dß╗▒ ├ín', desc: 'Quyß║┐t ─æß╗ïnh ─æß║ºu t╞░ x├óy dß╗▒ng', date: md.projectApprovalDate, status: getMilestoneStatus('project_approval', md.projectApprovalDate) },
++                        { id: 'construction_design', title: 'Thiß║┐t kß║┐ x├óy dß╗▒ng', desc: 'Lß║¡p, thß║⌐m ─æß╗ïnh, ph├¬ duyß╗çt thiß║┐t kß║┐ bß║ún vß║╜ thi c├┤ng', date: md.constructionDesignDate, status: getMilestoneStatus('construction_design', md.constructionDesignDate) },
++                        { id: 'groundbreaking', title: 'Khß╗ƒi c├┤ng', desc: 'Bß║»t ─æß║ºu thi c├┤ng x├óy dß╗▒ng c├┤ng tr├¼nh', date: md.groundbreakingDate, status: getMilestoneStatus('groundbreaking', md.groundbreakingDate) },
++                        { id: 'completion', title: 'Ho├án th├ánh thi c├┤ng', desc: 'Nghiß╗çm thu ho├án th├ánh c├┤ng tr├¼nh', date: md.completionDate, status: getMilestoneStatus('completion', md.completionDate) },
++                        { id: 'handover', title: 'B├án giao sß╗¡ dß╗Ñng', desc: 'Quyß║┐t to├ín v├á b├án giao c├┤ng tr├¼nh ─æ╞░a v├áo sß╗¡ dß╗Ñng', date: md.handoverDate, status: getMilestoneStatus('handover', md.handoverDate) }
++                    ];
++
++                    return (
++                        <div className="lg:col-span-3 bg-bg-surface rounded-2xl border border-border p-5 shadow-sm space-y-4 flex flex-col justify-between">
++                            <div className="space-y-4">
++                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
++                                    <div className="flex flex-wrap items-center gap-3">
++                                        <span className="text-xs font-black text-txt-primary uppercase tracking-wide">Tiß║┐n ─æß╗Ö tß╗òng thß╗â</span>
++                                        {alerts.map((a, i) => (
++                                            <button 
++                                                key={i} 
++                                                onClick={() => a.filterVal && setCurrentFilter(a.filterVal)}
++                                                className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-bold cursor-pointer transition-colors shadow-sm ${typeStyles[a.type]}`}
++                                            >
++                                                <span>{a.icon}</span>
++                                                <span>{a.text}</span>
++                                            </button>
++                                        ))}
++                                    </div>
++                                    <span className="text-sm font-black text-txt-primary">{pct}%</span>
++                                </div>
+ 
+-                const overdue = tasks.filter(t => {
+-                    if (t.Status === TaskStatus.Done) return false;
+-                    if (!t.DueDate) return false;
+-                    const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
+-                    return d < today;
+-                });
+-                const upcoming = tasks.filter(t => {
+-                    if (t.Status === TaskStatus.Done) return false;
+-                    if (!t.DueDate) return false;
+-                    const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
+-                    return d >= today && d <= threeDays;
+-                });
+-                const todayDone = tasks.filter(t => {
+-                    if (t.Status !== TaskStatus.Done) return false;
+-                    if (!t.ActualEndDate) return false;
+-                    const d = new Date(t.ActualEndDate); d.setHours(0, 0, 0, 0);
+-                    return d.getTime() === today.getTime();
+-                });
++                                {/* Progress Bar Container with absolute Milestones */}
++                                <div className="relative py-2.5">
++                                    {/* Progress Bar background & fill */}
++                                    <div className="h-3 bg-bg-muted dark:bg-slate-800 rounded-full overflow-hidden relative border border-gray-200/50 dark:border-slate-700/50 shadow-inner">
++                                        <div
++                                            className="h-full rounded-full transition-all duration-700 ease-out"
++                                            style={{ 
++                                                background: 'linear-gradient(90deg, #fdba74, #fb923c, #10b981)', 
++                                                width: `${pct}%` 
++                                            }}
++                                        />
++                                    </div>
++                                    
++                                    {/* Milestone dots on top of the progress bar */}
++                                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-1 pointer-events-none">
++                                        {milestones.map((milestone, idx) => {
++                                            const leftPct = (idx / 5) * 100;
++                                            
++                                            const isCompleted = milestone.status === 'completed';
++                                            const isCurrent = milestone.status === 'current';
++                                            
++                                            const dotColor = isCompleted 
++                                                ? 'bg-emerald-500 border-white dark:border-slate-900 shadow-[0_0_8px_rgba(16,185,129,0.5)]' 
++                                                : isCurrent 
++                                                    ? 'bg-blue-500 border-white dark:border-slate-900 animate-pulse scale-125 ring-4 ring-blue-500/20 shadow-[0_0_8px_rgba(59,130,246,0.5)]' 
++                                                    : 'bg-gray-300 dark:bg-slate-700 border-white dark:border-slate-900';
++
++                                            return (
++                                                <div 
++                                                    key={milestone.id}
++                                                    className="absolute top-1/2 -translate-y-1/2 group pointer-events-auto cursor-help"
++                                                    style={{ left: `${leftPct}%`, transform: 'translate(-50%, -50%)' }}
++                                                >
++                                                    {/* Dot */}
++                                                    <div className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${dotColor}`} />
++                                                    
++                                                    {/* Tooltip on Hover */}
++                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover:block bg-slate-900 text-white dark:bg-slate-800 dark:border dark:border-slate-700 text-[10.5px] rounded-lg p-2.5 shadow-xl z-50 w-52 pointer-events-none animate-in fade-in slide-in-from-bottom-1 duration-150">
++                                                        <div className="font-bold text-gray-100">{milestone.title}</div>
++                                                        <div className="text-gray-400 mt-0.5 leading-tight text-[9.5px] font-normal">{milestone.desc}</div>
++                                                        <div className="mt-1.5 pt-1.5 border-t border-slate-800 dark:border-slate-700 flex justify-between items-center text-[9px]">
++                                                            <span className="text-gray-400">Trß║íng th├íi:</span>
++                                                            <span className={isCompleted ? 'text-emerald-400 font-bold' : isCurrent ? 'text-blue-400 font-bold animate-pulse' : 'text-gray-500 font-bold'}>
++                                                                {isCompleted ? '─É├ú ho├án th├ánh' : isCurrent ? '─Éang thß╗▒c hiß╗çn' : 'Chß╗¥ thß╗▒c hiß╗çn'}
++                                                            </span>
++                                                        </div>
++                                                        {milestone.date ? (
++                                                            <div className="mt-1 flex justify-between items-center text-[9px]">
++                                                                <span className="text-gray-400">Ho├án th├ánh ng├áy:</span>
++                                                                <span className="text-emerald-400 font-bold">{new Date(milestone.date).toLocaleDateString('vi-VN')}</span>
++                                                            </div>
++                                                        ) : (
++                                                            <div className="mt-1 flex justify-between items-center text-[9px]">
++                                                                <span className="text-gray-400">Thß╗¥i gian thß╗▒c tß║┐:</span>
++                                                                <span className="text-gray-500 font-bold">--/--</span>
++                                                            </div>
++                                                        )}
++                                                    </div>
++                                                </div>
++                                            );
++                                        })}
++                                    </div>
++                                </div>
+ 
+-                const alerts: { icon: string; text: string; type: 'danger' | 'warn' | 'success'; filterVal?: TaskFilter }[] = [];
+-                if (overdue.length > 0) alerts.push({ icon: '≡ƒö┤', text: `${overdue.length} c├┤ng viß╗çc ─æ├ú qu├í hß║ín`, type: 'danger', filterVal: 'overdue' });
+-                if (upcoming.length > 0) alerts.push({ icon: 'ΓÜá∩╕Å', text: `${upcoming.length} c├┤ng viß╗çc sß║»p tß╗¢i hß║ín`, type: 'warn', filterVal: 'this-week' });
+-                if (todayDone.length > 0) alerts.push({ icon: 'Γ£à', text: `${todayDone.length} ho├án th├ánh h├┤m nay`, type: 'success', filterVal: 'completed' });
+-
+-                const typeStyles = {
+-                    danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40',
+-                    warn: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40',
+-                    success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
+-                };
+-
+-                return (
+-                    <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm space-y-3">
+-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+-                            <div className="flex flex-wrap items-center gap-3">
+-                                <span className="text-xs font-bold text-txt-muted uppercase tracking-wide">Tiß║┐n ─æß╗Ö tß╗òng thß╗â</span>
+-                                {alerts.map((a, i) => (
++                                <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold text-txt-secondary pt-1.5">
+                                     <button 
+-                                        key={i} 
+-                                        onClick={() => a.filterVal && setCurrentFilter(a.filterVal)}
+-                                        className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-bold cursor-pointer transition-colors shadow-sm ${typeStyles[a.type]}`}
++                                        onClick={() => setCurrentFilter('completed')}
++                                        className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-bg-muted'} text-emerald-600 dark:text-emerald-400`}
+                                     >
+-                                        <span>{a.icon}</span>
+-                                        <span>{a.text}</span>
++                                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
++                                        Ho├án th├ánh: {done}
+                                     </button>
+-                                ))}
++                                    <button 
++                                        onClick={() => setCurrentFilter('in-progress')}
++                                        className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-bg-muted'} text-blue-600 dark:text-blue-400`}
++                                    >
++                                        <span className="w-2 h-2 rounded-full bg-blue-500" />
++                                        ─Éang thß╗▒c hiß╗çn: {inProgress}
++                                    </button>
++                                    <button 
++                                        onClick={() => setCurrentFilter('all')}
++                                        className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-bg-muted ring-1 ring-border' : 'hover:bg-bg-muted'} text-txt-muted`}
++                                    >
++                                        <span className="w-2 h-2 rounded-full bg-border" />
++                                        Ch╞░a bß║»t ─æß║ºu: {total - done - inProgress}
++                                    </button>
++                                    <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-txt-secondary">
++                                        Tß╗òng cß╗Öng: {total}
++                                    </div>
++                                </div>
+                             </div>
+-                            <span className="text-sm font-black text-txt-primary">{pct}%</span>
+                         </div>
+-                        <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
+-                            <div
+-                                className="h-full rounded-full transition-all duration-700 ease-out"
+-                                style={{ background: 'linear-gradient(90deg, #fdba74, #fb923c, #4a90e2)', width: `${pct}%` }}
+-                            />
++                    );
++                })()}           </div>
++                                </div>
++                            </div>
++                            
++                            {/* Horizontal Milestone Timeline integrated */}
++                            <div className="pt-1">
++                                <HorizontalMilestoneTimeline milestoneData={milestoneData} />
++                            </div>
+                         </div>
+-                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold">
+-                            <button 
+-                                onClick={() => setCurrentFilter('completed')}
+-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200' : 'hover:bg-bg-muted'} text-emerald-600 dark:text-emerald-400`}
+-                            >
+-                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+-                                Ho├án th├ánh: {done}
+-                            </button>
+-                            <button 
+-                                onClick={() => setCurrentFilter('in-progress')}
+-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'in-progress' ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200' : 'hover:bg-bg-muted'} text-blue-600 dark:text-blue-400`}
+-                            >
+-                                <span className="w-2 h-2 rounded-full bg-blue-500" />
+-                                ─Éang thß╗▒c hiß╗çn: {inProgress}
+-                            </button>
+-                            <button 
+-                                onClick={() => setCurrentFilter('all')}
+-                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${currentFilter === 'all' ? 'bg-bg-muted ring-1 ring-border' : 'hover:bg-bg-muted'} text-txt-muted`}
+-                            >
+-                                <span className="w-2 h-2 rounded-full bg-border" />
+-                                Ch╞░a bß║»t ─æß║ºu: {total - done - inProgress}
+-                            </button>
+-                            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded text-txt-secondary">
+-                                Tß╗òng cß╗Öng: {total}
++                    );
++                })()}
++
++                {/* Right: Project Health Score (1 col) */}
++                {(() => {
++                    const hs = calcProgress(tasks);
++                    
++                    const { total, done, overdue } = hs;
++                    const assigned = tasks.filter(t => t.AssigneeID || (t as any).Assignees?.length > 0).length;
++
++                    // Score calculation (0-100)
++                    const completionScore = total > 0 ? (done / total) * 30 : 0;
++                    const onTimeScore = total > 0 ? ((total - overdue) / total) * 30 : 100;
++                    const assignedScore = total > 0 ? (assigned / total) * 20 : 0;
++                    const hasProgress = tasks.filter(t => (t.ProgressPercent || 0) > 0 || t.Status === TaskStatus.Done).length;
++                    const progressScore = total > 0 ? (hasProgress / total) * 20 : 0;
++                    const score = total > 0 ? Math.round(completionScore + onTimeScore + assignedScore + progressScore) : 100;
++
++                    const getScoreInfo = (s: number) => {
++                        if (s >= 80) return { emoji: '≡ƒƒó', label: 'Tß╗æt', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500' };
++                        if (s >= 60) return { emoji: '≡ƒƒí', label: 'Trung b├¼nh', color: 'text-primary-600 dark:text-primary-400', bg: 'bg-primary-500' };
++                        if (s >= 40) return { emoji: '≡ƒƒá', label: 'Cß║ºn cß║úi thiß╗çn', color: 'text-warning-600 dark:text-warning-400', bg: 'bg-warning-500' };
++                        return { emoji: '≡ƒö┤', label: 'Rß╗ºi ro cao', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500' };
++                    };
++                    const info = getScoreInfo(score);
++
++                    return (
++                        <div className="lg:col-span-1 bg-bg-surface rounded-2xl border border-border p-5 shadow-sm flex flex-col justify-between">
++                            <div>
++                                <h4 className="text-[10px] font-black text-txt-muted uppercase tracking-widest mb-3">
++                                    Sß╗⌐c khß╗Åe dß╗▒ ├ín
++                                </h4>
++                                <div className="flex items-center gap-3 mb-3">
++                                    <span className="text-3xl">{info.emoji}</span>
++                                    <div>
++                                        <span className={`text-2xl font-black ${info.color}`}>{score}</span>
++                                        <span className="text-sm text-txt-muted">/100</span>
++                                        <p className={`text-xs font-bold ${info.color}`}>{info.label}</p>
++                                    </div>
++                                </div>
++                                {/* Score bar */}
++                                <div className="h-1.5 bg-bg-muted rounded-full overflow-hidden mb-4">
++                                    <div className={`h-full ${info.bg} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
++                                </div>
++                            </div>
++                            {/* Breakdown */}
++                            <div className="space-y-1.5 text-[10px] text-txt-secondary border-t border-gray-100 dark:border-slate-800/60 pt-3">
++                                <div className="flex justify-between"><span>Ho├án th├ánh ({done}/{total})</span><span className="font-bold">{Math.round(completionScore)}/30</span></div>
++                                <div className="flex justify-between"><span>─É├║ng hß║ín ({total - overdue}/{total})</span><span className="font-bold">{Math.round(onTimeScore)}/30</span></div>
++                                <div className="flex justify-between"><span>C├│ tiß║┐n ─æß╗Ö</span><span className="font-bold">{Math.round(progressScore)}/20</span></div>
++                                <div className="flex justify-between"><span>─É├ú ph├ón c├┤ng</span><span className="font-bold">{Math.round(assignedScore)}/20</span></div>
+                             </div>
+                         </div>
+-                    </div>
+-                );
+-            })()}
++                    );
++                })()}
++
++            </div>
+ 
+             {/* 2. Filter Bar */}
+             <TaskFilterBar
+@@ -799,180 +895,122 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
+                 currentUserId={currentUserId}
+             />
+ 
+-            {/* 3. Main Layout: Content + Sidebar */}
+-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+-                {/* Left: Main Content (3 cols) */}
+-                <div className="lg:col-span-3 space-y-4">
+-                    {currentView === 'wbs' && (
+-                        <ProjectPlanWBSView
+-                            phases={DECREE_175_PHASES}
+-                            tasks={tasks}
+-                            filteredTasks={filteredTasks}
+-                            projectID={projectID ?? ''}
+-                            groupCode={groupCode}
+-                            getGroupLabel={getGroupLabel}
+-                            expandedPhases={expandedPhases}
+-                            stepAggregates={stepAggregates}
+-                            bulkCreatingAll={bulkCreatingAll}
+-                            isDeletingAll={isDeletingAll}
+-                            deleteConfirmStep={deleteConfirmStep}
+-                            employeeNameMap={employeeNameMap}
+-                            uploadingTaskId={uploadingTaskId}
+-                            attachmentCounts={attachmentCounts}
+-                            deletingTaskId={deletingTaskId}
+-                            onTogglePhase={togglePhase}
+-                            onSetExpandedPhases={setExpandedPhases}
+-                            onDeleteAllTasks={handleDeleteAllTasks}
+-                            onOpenPlanModal={(trigger, title, desc) => {
+-                                openPanel({
+-                                    title: 'Thiß║┐t lß║¡p kß║┐ hoß║ích tß╗òng thß╗â',
+-                                    icon: <ListPlus className="w-5 h-5 text-emerald-500" />,
+-                                    component: (
+-                                        <CreateMasterPlanPanel
+-                                            project={project}
+-                                            hasExistingTasks={tasks.length > 0}
+-                                            onClose={() => closePanel()}
+-                                            onSuccess={() => {
+-                                                showToast('Γ£à ─É├ú thiß║┐t lß║¡p kß║┐ hoß║ích tß╗òng thß╗â th├ánh c├┤ng', 'success');
+-                                                queryClient.invalidateQueries({ queryKey: taskKeys.all });
+-                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
+-                                                queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
+-                                            }}
+-                                        />
+-                                    )
+-                                });
+-                            }}
+-                            onAddTask={(stepName, stepCode) => {
+-                                setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
+-                                setEditingTask({} as Task);
+-                                setIsTaskModalOpen(true);
+-                            }}
+-                            onEditTask={handleEditTask}
+-                            onQuickStatusChange={handleQuickStatusChange}
+-                            onDeleteTask={handleDeleteTask}
+-                            onSetPendingUploadTaskId={setPendingUploadTaskId}
+-                            onStepClick={handleStepClick}
+-                            expandedMasterTasks={expandedMasterTasks}
+-                            onToggleMasterTask={toggleMasterTask}
+-                            fileInputRef={fileInputRef}
+-                            navigate={navigate}
+-                            queryClient={queryClient}
+-                        />
+-                    )}
+-
+-                    {currentView === 'gantt' && (
+-                        <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+-                            <div className="px-4 py-3 border-b border-border bg-bg-muted flex justify-between items-center">
+-                                <h4 className="font-bold text-txt-primary text-xs uppercase flex items-center gap-2">
+-                                    <Layers className="w-4 h-4" /> Tiß║┐n ─æß╗Ö tß╗òng thß╗â (Gantt)
+-                                </h4>
+-                                <span className="text-[10px] text-txt-muted font-normal normal-case">
+-                                    * Hiß╗ân thß╗ï tiß║┐n ─æß╗Ö theo c├íc b╞░ß╗¢c quy tr├¼nh v├á c├┤ng viß╗çc t╞░╞íng ß╗⌐ng
+-                                </span>
+-                            </div>
+-                            <div className="p-4">
+-                                {tasks.length > 0 ? (
+-                                    <ProjectGanttChart 
+-                                        tasks={tasks} 
+-                                        phases={DECREE_175_PHASES}
+-                                        projectStartDate={project?.StartDate}
++            {/* 3. Main Layout: Full Width Content */}
++            <div className="w-full space-y-4">
++                {currentView === 'wbs' && (
++                    <ProjectPlanWBSView
++                        phases={DECREE_175_PHASES}
++                        tasks={tasks}
++                        filteredTasks={filteredTasks}
++                        projectID={projectID ?? ''}
++                        groupCode={groupCode}
++                        getGroupLabel={getGroupLabel}
++                        expandedPhases={expandedPhases}
++                        stepAggregates={stepAggregates}
++                        bulkCreatingAll={bulkCreatingAll}
++                        isDeletingAll={isDeletingAll}
++                        deleteConfirmStep={deleteConfirmStep}
++                        employeeNameMap={employeeNameMap}
++                        uploadingTaskId={uploadingTaskId}
++                        attachmentCounts={attachmentCounts}
++                        deletingTaskId={deletingTaskId}
++                        onTogglePhase={togglePhase}
++                        onSetExpandedPhases={setExpandedPhases}
++                        onDeleteAllTasks={handleDeleteAllTasks}
++                        onDeletePlan={handleDeletePlan}
++                        onOpenPlanModal={(trigger, title, desc) => {
++                            openPanel({
++                                title: 'Thiß║┐t lß║¡p kß║┐ hoß║ích tß╗òng thß╗â',
++                                icon: <ListPlus className="w-5 h-5 text-emerald-500" />,
++                                width: '98%',
++                                component: (
++                                    <CreateMasterPlanPanel
++                                        project={project}
++                                        hasExistingTasks={DECREE_175_PHASES.some(p => p.items.length > 0)}
++                                        onClose={() => closePanel()}
++                                        onSuccess={() => {
++                                            showToast('Γ£à ─É├ú thiß║┐t lß║¡p kß║┐ hoß║ích tß╗òng thß╗â th├ánh c├┤ng', 'success');
++                                            queryClient.invalidateQueries({ queryKey: taskKeys.all });
++                                            queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2', projectID] });
++                                            queryClient.invalidateQueries({ queryKey: ['project-task-progress-v2'] });
++                                            if (projectID) queryClient.invalidateQueries({ queryKey: projectStepsKey(projectID) });
++                                            closePanel();
++                                        }}
+                                     />
+-                                ) : (
+-                                    <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
+-                                        Ch╞░a c├│ c├┤ng viß╗çc n├áo ─æ╞░ß╗úc tß║ío. H├úy thiß║┐t lß║¡p kß║┐ hoß║ích tß╗òng thß╗â hoß║╖c th├¬m c├┤ng viß╗çc.
+-                                    </div>
+-                                )}
+-                            </div>
++                                )
++                            });
++                        }}
++                        onAddTask={(stepName, stepCode) => {
++                            setSelectedStep({ name: stepName ?? '', code: stepCode ?? '' });
++                            setEditingTask({} as Task);
++                            setIsTaskModalOpen(true);
++                        }}
++                        onEditTask={handleEditTask}
++                        onQuickStatusChange={handleQuickStatusChange}
++                        onDeleteTask={handleDeleteTask}
++                        onSetPendingUploadTaskId={setPendingUploadTaskId}
++                        onStepClick={handleStepClick}
++                        expandedMasterTasks={expandedMasterTasks}
++                        onToggleMasterTask={toggleMasterTask}
++                        fileInputRef={fileInputRef}
++                        navigate={navigate}
++                        queryClient={queryClient}
++                    />
++                )}
++
++                {currentView === 'gantt' && (
++                    <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
++                        <div className="px-4 py-3 border-b border-border bg-bg-muted flex justify-between items-center">
++                            <h4 className="font-bold text-txt-primary text-xs uppercase flex items-center gap-2">
++                                <Layers className="w-4 h-4" /> Tiß║┐n ─æß╗Ö tß╗òng thß╗â (Gantt)
++                            </h4>
++                            <span className="text-[10px] text-txt-muted font-normal normal-case">
++                                * Hiß╗ân thß╗ï tiß║┐n ─æß╗Ö theo c├íc b╞░ß╗¢c quy tr├¼nh v├á c├┤ng viß╗çc t╞░╞íng ß╗⌐ng
++                            </span>
+                         </div>
+-                    )}
+-
+-                    {currentView === 'kanban' && (
+-                        <KanbanBoardView
+-                            tasks={filteredTasks}
+-                            onTaskClick={handleEditTask}
+-                            onStatusChange={handleStatusChange}
+-                            onAddTask={(status) => {
+-                                setSelectedStep(null);
+-                                setEditingTask({ Status: status } as Task);
+-                                setIsTaskModalOpen(true);
+-                            }}
+-                        />
+-                    )}
+-
+-                    {currentView === 'resource' && (
+-                        <ResourceAllocationView
+-                            tasks={filteredTasks}
+-                            employees={employees}
+-                            onTaskClick={handleEditTask}
+-                        />
+-                    )}
+-                </div>
+-
+-                {/* Right: Sidebar (1 col) */}
+-                <div className="lg:col-span-1">
+-                    <div className="sticky top-4 space-y-4">
+-
+-                        {/* Project Health Score */}
+-                        {(() => {
+-                            const total = tasks.length;
+-                            if (total === 0) return null;
+-
+-                            const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
+-                            const today = new Date(); today.setHours(0, 0, 0, 0);
+-                            const overdue = tasks.filter(t => {
+-                                if (t.Status === TaskStatus.Done || !t.DueDate) return false;
+-                                const d = new Date(t.DueDate); d.setHours(0, 0, 0, 0);
+-                                return d < today;
+-                            }).length;
+-                            const assigned = tasks.filter(t => t.AssigneeID || (t.Assignees && t.Assignees.length > 0)).length;
+-
+-                            // Score calculation (0-100)
+-                            const completionScore = (done / total) * 30;
+-                            const onTimeScore = ((total - overdue) / total) * 30;
+-                            const assignedScore = (assigned / total) * 20;
+-                            const hasProgress = tasks.filter(t => (t.ProgressPercent || 0) > 0 || t.Status === TaskStatus.Done).length;
+-                            const progressScore = (hasProgress / total) * 20;
+-                            const score = Math.round(completionScore + onTimeScore + assignedScore + progressScore);
+-
+-                            const getScoreInfo = (s: number) => {
+-                                if (s >= 80) return { emoji: '≡ƒƒó', label: 'Tß╗æt', color: 'text-emerald-600', bg: 'bg-emerald-500' };
+-                                if (s >= 60) return { emoji: '≡ƒƒí', label: 'Trung b├¼nh', color: 'text-primary-600', bg: 'bg-primary-500' };
+-                                if (s >= 40) return { emoji: '≡ƒƒá', label: 'Cß║ºn cß║úi thiß╗çn', color: 'text-warning-600', bg: 'bg-warning-500' };
+-                                return { emoji: '≡ƒö┤', label: 'Rß╗ºi ro cao', color: 'text-red-600', bg: 'bg-red-500' };
+-                            };
+-                            const info = getScoreInfo(score);
+-
+-                            return (
+-                                <div className="bg-bg-surface rounded-2xl border border-border p-4 shadow-sm">
+-                                    <h4 className="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3">
+-                                        Sß╗⌐c khß╗Åe dß╗▒ ├ín
+-                                    </h4>
+-                                    <div className="flex items-center gap-3 mb-3">
+-                                        <span className="text-3xl">{info.emoji}</span>
+-                                        <div>
+-                                            <span className={`text-2xl font-black ${info.color}`}>{score}</span>
+-                                            <span className="text-sm text-txt-muted">/100</span>
+-                                            <p className={`text-xs font-semibold ${info.color}`}>{info.label}</p>
+-                                        </div>
+-                                    </div>
+-                                    {/* Score bar */}
+-                                    <div className="h-2 bg-bg-muted rounded-full overflow-hidden mb-3">
+-                                        <div className={`h-full ${info.bg} rounded-full transition-all duration-500`} style={{ width: `${score}%` }} />
+-                                    </div>
+-                                    {/* Breakdown */}
+-                                    <div className="space-y-1.5 text-[10px] text-txt-secondary">
+-                                        <div className="flex justify-between"><span>Ho├án th├ánh ({done}/{total})</span><span className="font-bold">{Math.round(completionScore)}/30</span></div>
+-                                        <div className="flex justify-between"><span>─É├║ng hß║ín ({total - overdue}/{total})</span><span className="font-bold">{Math.round(onTimeScore)}/30</span></div>
+-                                        <div className="flex justify-between"><span>C├│ tiß║┐n ─æß╗Ö</span><span className="font-bold">{Math.round(progressScore)}/20</span></div>
+-                                        <div className="flex justify-between"><span>─É├ú ph├ón c├┤ng</span><span className="font-bold">{Math.round(assignedScore)}/20</span></div>
+-                                    </div>
++                        <div className="p-4">
++                            {DECREE_175_PHASES.some(p => p.items.length > 0) || tasks.length > 0 ? (
++                                <ProjectGanttChart
++                                    tasks={tasks}
++                                    phases={DECREE_175_PHASES}
++                                    projectStartDate={project?.StartDate}
++                                />
++                            ) : (
++                                <div className="h-32 flex items-center justify-center text-txt-muted text-sm italic">
++                                    Ch╞░a c├│ kß║┐ hoß║ích tß╗òng thß╗â. H├úy tß║ío kß║┐ hoß║ích dß╗▒ ├ín tr╞░ß╗¢c.
+                                 </div>
+-                            );
+-                        })()}
+-
+-                        <MilestoneTimeline milestoneData={milestoneData} />
++                            )}
++                        </div>
+                     </div>
+-                </div>
++                )}
++
++                {currentView === 'kanban' && (
++                    <KanbanBoardView
++                        tasks={filteredTasks}
++                        onTaskClick={handleEditTask}
++                        onStatusChange={handleStatusChange}
++                        onAddTask={(status) => {
++                            setSelectedStep(null);
++                            setEditingTask({ Status: status } as Task);
++                            setIsTaskModalOpen(true);
++                        }}
++                    />
++                )}
++
++                {currentView === 'resource' && (
++                    <ResourceAllocationView
++                        tasks={filteredTasks}
++                        employees={employees}
++                        onTaskClick={handleEditTask}
++                    />
++                )}
++
++                {currentView === 'raci' && (
++                    <ProjectRaciMatrixView
++                        steps={projectSteps}
++                        onRefresh={invalidateProjectSteps}
++                    />
++                )}
+             </div>
+ 
+             <ProjectTaskModal

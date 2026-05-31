@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useTask } from '../../../hooks/useTasks';
 import TaskDetail from '../TaskDetail';
 import { TaskCollaboration } from './TaskCollaboration';
-import { X, CheckSquare, MessageSquare, History } from 'lucide-react';
+import { TaskWeeklyUpdates } from './TaskWeeklyUpdates';
+import { X, CheckSquare, MessageSquare, History, CalendarDays } from 'lucide-react';
 
 interface TaskSlidePanelProps {
     taskId: string;
     onClose: () => void;
 }
 
-type TabKey = 'overview' | 'comments' | 'history';
+type TabKey = 'overview' | 'updates' | 'comments' | 'history';
 
 export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose }) => {
     const [activeTab, setActiveTab] = useState<TabKey>('overview');
@@ -17,6 +18,7 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
 
     const tabs: { key: TabKey; label: string; icon: any }[] = [
         { key: 'overview', label: 'Tổng quan', icon: CheckSquare },
+        { key: 'updates', label: 'Cập nhật', icon: CalendarDays },
         { key: 'comments', label: 'Bình luận', icon: MessageSquare },
         { key: 'history', label: 'Lịch sử', icon: History },
     ];
@@ -75,6 +77,9 @@ export const TaskSlidePanel: React.FC<TaskSlidePanelProps> = ({ taskId, onClose 
             <div className="flex-1 overflow-y-auto relative">
                 {activeTab === 'overview' && (
                     <TaskDetail taskId={taskId} isPanel={true} onClose={onClose} />
+                )}
+                {activeTab === 'updates' && (
+                    <TaskWeeklyUpdates taskId={taskId} currentProgress={task?.ProgressPercent || 0} />
                 )}
                 {activeTab === 'comments' && (
                     <div className="p-4 md:p-6 h-full">

@@ -41,35 +41,35 @@ const CDEFilterBar: React.FC<CDEFilterBarProps> = ({ filters, onChange, onClear,
             <div className="relative" data-filter-dropdown>
                 <button
                     onClick={() => setExpandedFilter(isOpen ? null : filterKey)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCount > 0
-                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300'
-                        : 'bg-bg-surface border-gray-200 dark:border-slate-600 text-txt-muted hover:border-gray-300'
+                    className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${selectedCount > 0
+                        ? 'bg-bg-surface border-primary-500 dark:border-primary-500 text-primary-700 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/20'
+                        : 'bg-bg-surface border-border dark:border-slate-600 text-txt-secondary hover:bg-bg-hover-row'
                         }`}
                 >
                     {icon}
                     {label}
                     {selectedCount > 0 && (
-                        <span className="bg-primary-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{selectedCount}</span>
+                        <span className="bg-primary-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{selectedCount}</span>
                     )}
-                    <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 opacity-60 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {isOpen && (
-                    <div className="absolute top-full mt-1 left-0 w-56 bg-bg-surface border border-border rounded-xl shadow-sm z-30 p-2 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full mt-1.5 left-0 min-w-[180px] w-56 bg-bg-surface border border-border rounded-xl shadow-xl z-[9999] py-1.5 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
                         {options.map(opt => {
                             const isSelected = (filters as any)[filterKey]?.includes(opt.value);
                             return (
                                 <button
                                     key={opt.value}
                                     onClick={() => toggleArrayItem(filterKey as any, opt.value)}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-left transition-all ${isSelected
-                                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold'
-                                        : 'text-txt-muted hover:bg-bg-subtle dark:hover:bg-slate-700'
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-left transition-colors ${isSelected
+                                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                        : 'text-txt-secondary hover:bg-bg-hover-row'
                                         }`}
                                 >
-                                    {opt.color && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
+                                    {opt.color && <span className="w-2 h-2 rounded-full shrink-0 ring-1 ring-white/50" style={{ backgroundColor: opt.color }} />}
                                     <span className="flex-1 truncate">{opt.label}</span>
-                                    {isSelected && <span className="text-blue-600 dark:text-blue-400 font-black text-sm">✓</span>}
+                                    {isSelected && <span className="text-primary-600 dark:text-primary-400 text-[10px] font-bold ml-1">✓</span>}
                                 </button>
                             );
                         })}

@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     X, Calendar, User, AlignLeft, CheckSquare, Clock, Flag, Link2, BarChart3,
     Plus, Trash2, CheckCircle2, Scale, Paperclip, Upload, Download, FileText,
-    AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Layers, Zap, FileSpreadsheet, File, Folder
+    AlertTriangle, ChevronDown, ChevronUp, ExternalLink, Layers, Zap, FileSpreadsheet, File, Folder, Tag, Users, ShieldCheck, MessageSquare
 } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, TaskDependency, TaskAttachment } from '@/types';
+import { TASK_CATEGORIES, TASK_CATEGORY_LABELS, type TaskCategory, type ResponsibilityLevel } from '@/types/task.types';
+import { useAuth } from '@/context/AuthContext';
 import { useEmployees } from '@/hooks/useEmployees';
 import { ProgressSlider } from './ProgressSlider';
 import { TaskDependencyManager } from './TaskDependencyManager';
@@ -50,6 +52,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     asSlidePanel = false
 }) => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
     const { data: employees = [] } = useEmployees();
     const { projects = [] } = useProjects();
     const [planMonth, setPlanMonth] = useState(new Date().getMonth() + 1);
@@ -148,13 +151,25 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         ? availableEmployees.filter(emp => isEmployeeInDepartment(emp, parentDeptCode))
         : [];
 
+    // Fallback: nếu không filter được theo phòng ban, dùng tất cả nhân viên
     const dropdownEmployees = filteredEmployees.length > 0
         ? filteredEmployees
-        : availableEmployees;
+        : availableEmployees.length > 0
+        ? availableEmployees
+        : employees;
 
     const isEditMode = !!initialData?.TaskID;
     const project = projects.find(p => p.ProjectID === formData.ProjectID);
     const { openPanel } = useSlidePanel();
+
+    // Multi-month warning (Quy chế KHCV Điều 8.5)
+    const isMultiMonth = (() => {
+        if (!formData.StartDate || !formData.DueDate) return false;
+        const start = new Date(formData.StartDate);
+        const end = new Date(formData.DueDate);
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+        return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) > 0;
+    })();
 
     // Step info for template export
     const timelineStep = formData.StepCode;
@@ -174,11 +189,25 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
     if (!isOpen) return null;
 
+    const [saveError, setSaveError] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setSaveError(null);
         try {
-            await onSubmit({ ...formData, StepCode: stepCode || formData.StepCode });
+            const finalData = { ...formData, StepCode: stepCode || formData.StepCode };
+            // Self-proposed auto-flag (Điều 9.3) cho nhân viên thường khi tạo mới
+            if (!isEditMode && currentUser) {
+                const userRole = (currentUser.Role as string) || 'User';
+                const isDirector = userRole === 'Director' || userRole === 'DeputyDirector' || userRole === 'Admin';
+                const isDeptHead = userRole === 'DepartmentHead';
+                if (!isDirector && !isDeptHead) {
+                    finalData.IsSelfProposed = true;
+                    finalData.ProposalStatus = 'pending';
+                }
+            }
+            await onSubmit(finalData);
             if (isEditMode) {
                 // Stay open in edit mode, show save feedback
                 setSaveSuccess(true);
@@ -186,6 +215,10 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
             } else {
                 onClose(); // Close only when creating new task
             }
+        } catch (err: any) {
+            console.error('Task save failed:', err);
+            setSaveError(err?.message || 'Lưu thất bại. Vui lòng thử lại.');
+            setTimeout(() => setSaveError(null), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -508,6 +541,21 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             ))}
                                         </select>
                                     </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                            <Tag className="w-4 h-4 text-gray-400" /> Phân loại
+                                        </label>
+                                        <select
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                            value={formData.Category || ''}
+                                            onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
+                                        >
+                                            <option value="">-- Chọn phân loại --</option>
+                                            {TASK_CATEGORIES.map(cat => (
+                                                <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-4">
@@ -550,8 +598,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         >
                                             <option value={TaskStatus.Todo}>Chưa bắt đầu</option>
                                             <option value={TaskStatus.InProgress}>Đang thực hiện</option>
-                                            <option value={TaskStatus.Review}>Đang kiểm tra</option>
                                             <option value={TaskStatus.Done}>Hoàn thành</option>
+                                            <option value={TaskStatus.Incomplete}>Chưa hoàn thành</option>
                                         </select>
                                     </div>
                                     <div className="space-y-1.5">
@@ -569,6 +617,106 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             <option value="Urgent">Khẩn cấp</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                            <ShieldCheck className="w-4 h-4 text-gray-400" /> Người phê duyệt
+                                        </label>
+                                        <select
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                            value={formData.ApproverID || ''}
+                                            onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}
+                                        >
+                                            <option value="">-- Chọn người duyệt --</option>
+                                            {employees
+                                                .filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc') || emp.Position?.includes('Phó'))
+                                                .map(emp => (
+                                                    <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
+                                                ))}
+                                            {/* Nếu người phê duyệt hiện tại không nằm trong danh sách lọc, vẫn hiển thị */}
+                                            {formData.ApproverID && !employees.some(e =>
+                                                e.EmployeeID === formData.ApproverID &&
+                                                (e.Position?.includes('Trưởng') || e.Position?.includes('Giám đốc') || e.Position?.includes('Phó'))
+                                            ) && (() => {
+                                                const approver = employees.find(e => e.EmployeeID === formData.ApproverID);
+                                                return approver ? <option key={approver.EmployeeID} value={approver.EmployeeID}>{approver.FullName} - {approver.Position}</option> : null;
+                                            })()}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                            <Users className="w-4 h-4 text-gray-400" /> Cấp thực hiện
+                                        </label>
+                                        <select
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                            value={formData.ResponsibilityLevel || 'individual'}
+                                            onChange={e => setFormData({ ...formData, ResponsibilityLevel: e.target.value as ResponsibilityLevel })}
+                                        >
+                                            <option value="individual">Cá nhân</option>
+                                            <option value="team">Tập thể phòng</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Kết quả thực hiện — hiện khi Done, InProgress hoặc Incomplete */}
+                                {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress || formData.Status === TaskStatus.Incomplete) && (
+                                    <div className={`p-4 rounded-xl border ${formData.Status === TaskStatus.Done ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' : 'bg-bg-subtle border-border'}`}>
+                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả thực hiện {formData.Status === TaskStatus.Done && <span className="text-red-500">*</span>}
+                                        </label>
+                                        <textarea
+                                            required={formData.Status === TaskStatus.Done}
+                                            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
+                                            placeholder="Mô tả kết quả đạt được: VD Đã phê duyệt tại QĐ số..."
+                                            value={formData.CompletionResult || ''}
+                                            onChange={e => setFormData({ ...formData, CompletionResult: e.target.value })}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Lý do chưa hoàn thành — hiện khi Incomplete */}
+                                {formData.Status === TaskStatus.Incomplete && (
+                                    <div className="p-4 rounded-xl border bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800">
+                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
+                                            <AlertTriangle className="w-4 h-4 text-rose-500" /> Lý do chưa hoàn thành <span className="text-red-500">*</span>
+                                        </label>
+                                        <textarea
+                                            required
+                                            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
+                                            placeholder="Lý do chưa hoàn thành, vướng mắc cần giải quyết..."
+                                            value={formData.IncompleteReason || ''}
+                                            onChange={e => setFormData({ ...formData, IncompleteReason: e.target.value })}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Ghi chú */}
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <MessageSquare className="w-4 h-4 text-gray-400" /> Ghi chú
+                                    </label>
+                                    <textarea
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-16 resize-none text-sm"
+                                        placeholder="Ghi chú bổ sung (tùy chọn)..."
+                                        value={formData.Notes || ''}
+                                        onChange={e => setFormData({ ...formData, Notes: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Khó khăn / Vướng mắc */}
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <AlertTriangle className="w-4 h-4 text-amber-500" /> Khó khăn / Vướng mắc
+                                        <span className="text-xs font-normal text-slate-400">(hiển thị trong báo cáo giao ban)</span>
+                                    </label>
+                                    <textarea
+                                        className="w-full px-4 py-2.5 rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/10 text-txt-primary focus:ring-2 focus:ring-amber-400/30 outline-none h-20 resize-none text-sm"
+                                        placeholder="Mô tả các khó khăn, vướng mắc cần tháo gỡ trong quá trình thực hiện..."
+                                        value={formData.Obstacles || ''}
+                                        onChange={e => setFormData({ ...formData, Obstacles: e.target.value })}
+                                    />
                                 </div>
                             </>
                         )}
@@ -590,6 +738,16 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <DateInputVN value={formData.DueDate} onChange={v => setFormData({ ...formData, DueDate: v })} borderClass="border-gray-300 dark:border-slate-600 focus-within:ring-2 focus-within:ring-primary-500" />
                                     </div>
                                 </div>
+
+                                {/* Multi-month warning (Điều 8.5) */}
+                                {isMultiMonth && (
+                                    <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl flex items-start gap-2 text-amber-800 dark:text-amber-300 text-xs leading-relaxed animate-in fade-in duration-200">
+                                        <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+                                        <div>
+                                            <span className="font-bold">Cảnh báo:</span> Theo Quy chế KHCV (Điều 8.5), công việc không nên kéo dài nhiều tháng. Vui lòng chia nhỏ thành các công việc theo từng tháng tương ứng.
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Actual dates */}
                                 <div className={`grid grid-cols-2 gap-4 p-3 rounded-lg border ${(formData.ActualStartDate || formData.ActualEndDate) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700' : 'bg-bg-subtle border-border'}`}>
@@ -797,7 +955,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     <label className="text-sm font-semibold text-txt-secondary">Người phê duyệt</label>
                                     <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary" value={formData.ApproverID || ''} onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}>
                                         <option value="">-- Chọn --</option>
-                                        {availableEmployees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc')).map(emp => (
+                                        {employees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc') || emp.Position?.includes('Phó')).map(emp => (
                                             <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
                                         ))}
                                     </select>
@@ -818,7 +976,12 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                 ✅ Đã lưu thành công
                             </span>
                         )}
-                        {!saveSuccess && <div />}
+                        {saveError && (
+                            <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1 animate-in fade-in duration-200">
+                                ❌ {saveError}
+                            </span>
+                        )}
+                        {!saveSuccess && !saveError && <div />}
                         <div className="flex gap-3">
                             <button type="button" onClick={onClose} disabled={isSubmitting} className="px-5 py-2.5 text-txt-muted font-medium hover:bg-bg-muted rounded-lg transition-colors disabled:opacity-50">
                                 {isEditMode ? 'Đóng' : 'Hủy bỏ'}

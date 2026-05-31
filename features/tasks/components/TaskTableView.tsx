@@ -5,7 +5,7 @@ import { EmptyState, StatusBadge, Avatar } from '../../../components/ui';
 import { Task, TaskStatus } from '../../../types';
 import { TASK_CATEGORY_LABELS, TASK_CATEGORY_COLORS, type TaskCategory } from '../../../types/task.types';
 import { DEPARTMENT_NAMES, DepartmentCode } from '../../../types/plan.types';
-import { getStatusInfo, getPriorityInfo } from '../TaskCreateEditModal';
+import { getStatusInfo, getPriorityInfo } from '../taskStatusHelpers';
 interface TaskTableViewProps {
     paginatedTasks: Task[];
     tasksByProject: Record<string, Task[]>;

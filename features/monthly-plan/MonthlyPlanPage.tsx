@@ -39,9 +39,21 @@ interface MonthlyPlanPageProps {
     hideModeSelector?: boolean;
     leftElement?: React.ReactNode;
     department?: DepartmentCode;
+    filterProject?: string;
+    filterTaskType?: string;
+    filterStatus?: string;
 }
 
-const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth, year: externalYear, hideModeSelector, leftElement, department: externalDepartment }) => {
+const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ 
+    month: externalMonth, 
+    year: externalYear, 
+    hideModeSelector, 
+    leftElement, 
+    department: externalDepartment,
+    filterProject = 'All',
+    filterTaskType = 'All',
+    filterStatus = 'All'
+}) => {
     const { state, actions } = useMonthlyPlan(externalMonth, externalYear, externalDepartment);
     const { openPanel, closePanel } = useSlidePanel();
 
@@ -208,12 +220,38 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
         }
     ], [viewMode]);
 
+    const filteredItems = useMemo(() => {
+        return sortedItems.filter(item => {
+            // Lọc theo dự án dùng chung
+            const matchProject = filterProject === 'All' || item.project_id === filterProject;
+
+            // Lọc theo loại công việc dùng chung
+            const matchTaskType = filterTaskType === 'All' || (() => {
+                if (filterTaskType === 'project') return item.source_type === 'project_step' || item.source_type === 'from_project_task' || !!item.project_id;
+                if (filterTaskType === 'management') return item.source_type === 'manual' && !item.project_id;
+                if (filterTaskType === 'internal') return item.source_type === 'from_annual' && !item.project_id;
+                return true;
+            })();
+
+            // Lọc theo trạng thái dùng chung
+            const matchStatus = filterStatus === 'All' || (() => {
+                if (filterStatus === 'todo') return item.status === 'planned';
+                if (filterStatus === 'in_progress') return item.status === 'partial' || item.status === 'deferred';
+                if (filterStatus === 'done') return item.status === 'completed';
+                if (filterStatus === 'incomplete') return item.status === 'incomplete';
+                return true;
+            })();
+
+            return matchProject && matchTaskType && matchStatus;
+        });
+    }, [sortedItems, filterProject, filterTaskType, filterStatus]);
+
     const stats = useMemo(() => ({
-        total: items.length,
-        completed: items.filter(i => i.status === 'completed').length,
-        incomplete: items.filter(i => i.status === 'incomplete').length,
-        planned: items.filter(i => i.status === 'planned').length,
-    }), [items]);
+        total: filteredItems.length,
+        completed: filteredItems.filter(i => i.status === 'completed').length,
+        incomplete: filteredItems.filter(i => i.status === 'incomplete').length,
+        planned: filteredItems.filter(i => i.status === 'planned').length,
+    }), [filteredItems]);
 
     const openFormPanel = (item: MonthlyPlanItem | null) => {
         if (!currentPlan) return;
@@ -485,7 +523,7 @@ const MonthlyPlanPage: React.FC<MonthlyPlanPageProps> = ({ month: externalMonth,
                             </div>
                         ) : (
                             <DataTable
-                                data={sortedItems}
+                                data={filteredItems}
                                 columns={columns}
                                 keyExtractor={item => item.id}
                                 stickyHeader

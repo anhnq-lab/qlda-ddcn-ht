@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Role } from '../../types';
 import DataTable from '../../components/ui/DataTable';
-import { ViewToggle, EmptyState } from '../../components/ui';
+import { ViewToggle, EmptyState, FilterChip } from '../../components/ui';
 import { useEmployeeList } from './hooks/useEmployeeList';
 import EmployeeStatsBar from './components/EmployeeStatsBar';
 import EmployeeGridView from './components/EmployeeGridView';
@@ -37,14 +37,17 @@ const EmployeeList: React.FC = () => {
         canManageUsers,
         handleCreate,
         openEmployeePanel,
+        handleEdit,
+        handleDelete,
+        canEdit,
     } = useEmployeeList();
 
     const currentMonth = useMemo(() => new Date().getMonth() + 1, []);
     const currentYear = useMemo(() => new Date().getFullYear(), []);
 
     const columns = useMemo(
-        () => getEmployeeColumns(employeeWorkload),
-        [employeeWorkload]
+        () => getEmployeeColumns(employeeWorkload, handleEdit, handleDelete, canEdit, canManageUsers),
+        [employeeWorkload, handleEdit, handleDelete, canEdit, canManageUsers]
     );
 
     const tabClass = (tab: string) =>
@@ -56,28 +59,69 @@ const EmployeeList: React.FC = () => {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
 
-            {/* ══════════ TAB NAVIGATION ══════════ */}
-            <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border w-fit">
-                <button onClick={() => setActiveTab('list')} className={tabClass('list')}>
-                    <Users className="w-4 h-4" />
-                    Danh sách nhân sự
-                </button>
-                <button onClick={() => setActiveTab('org-chart')} className={tabClass('org-chart')}>
-                    <Briefcase className="w-4 h-4" />
-                    Sơ đồ tổ chức
-                </button>
-                <button onClick={() => setActiveTab('evaluation')} className={tabClass('evaluation')}>
-                    <ClipboardCheck className="w-4 h-4" />
-                    Đánh giá xếp loại
-                </button>
-                <button onClick={() => setActiveTab('regulation-scoring')} className={tabClass('regulation-scoring')}>
-                    <Award className="w-4 h-4" />
-                    Đánh giá Quy chế KHCV
-                </button>
-                <button onClick={() => setActiveTab('annual-evaluation')} className={tabClass('annual-evaluation')}>
-                    <Sparkles className="w-4 h-4" />
-                    Đánh giá cuối năm
-                </button>
+            {/* ══════════ TAB NAVIGATION & FILTERS ══════════ */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0 bg-transparent pb-1">
+                {/* Tabs */}
+                <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border w-fit">
+                    <button onClick={() => setActiveTab('list')} className={tabClass('list')}>
+                        <Users className="w-4 h-4" />
+                        Danh sách nhân sự
+                    </button>
+                    <button onClick={() => setActiveTab('org-chart')} className={tabClass('org-chart')}>
+                        <Briefcase className="w-4 h-4" />
+                        Sơ đồ tổ chức
+                    </button>
+                    <button onClick={() => setActiveTab('evaluation')} className={tabClass('evaluation')}>
+                        <ClipboardCheck className="w-4 h-4" />
+                        Đánh giá xếp loại
+                    </button>
+                    <button onClick={() => setActiveTab('regulation-scoring')} className={tabClass('regulation-scoring')}>
+                        <Award className="w-4 h-4" />
+                        Đánh giá Quy chế KHCV
+                    </button>
+                    <button onClick={() => setActiveTab('annual-evaluation')} className={tabClass('annual-evaluation')}>
+                        <Sparkles className="w-4 h-4" />
+                        Đánh giá cuối năm
+                    </button>
+                </div>
+
+                {/* Bộ lọc Đơn vị & Vai trò chuyển lên đầu */}
+                {activeTab === 'list' && (
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end max-w-full">
+                        <FilterChip
+                            label="Đơn vị"
+                            value={selectedDept}
+                            onChange={setSelectedDept}
+                            allValue="All"
+                            options={[
+                                { value: 'All', label: 'Tất cả đơn vị' },
+                                ...departments.map(dept => ({ value: dept, label: dept })),
+                            ]}
+                        />
+
+                        <FilterChip
+                            label="Vai trò"
+                            value={filterRole}
+                            onChange={setFilterRole}
+                            allValue="All"
+                            options={[
+                                { value: 'All', label: 'Tất cả vai trò' },
+                                { value: Role.Admin, label: 'Quản trị viên' },
+                                { value: Role.Manager, label: 'Quản lý' },
+                                { value: Role.Staff, label: 'Nhân viên' },
+                            ]}
+                        />
+
+                        {hasActiveFilters && (
+                            <button
+                                onClick={() => { setSelectedDept('All'); setFilterRole('All'); }}
+                                className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors font-bold"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
             {activeTab === 'org-chart' ? (
@@ -104,75 +148,33 @@ const EmployeeList: React.FC = () => {
                 </Suspense>
             ) : (
                 <>
-                    {/* ══════════ STATS STRIP ══════════ */}
-                    <EmployeeStatsBar
-                        stats={stats}
-                        departments={departments}
-                        filterRole={filterRole}
-                        setFilterRole={setFilterRole}
-                    />
-
                     {/* ══════════ MAIN LAYOUT ══════════ */}
                     <div className="flex-1 space-y-4">
+                        
+                        {/* ══════════ STATS STRIP & TOOLBAR (Gộp chung hàng) ══════════ */}
+                        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 shrink-0 pb-1">
+                            {/* Left: Các chỉ số nhân sự */}
+                            <div className="flex-1 min-w-0">
+                                <EmployeeStatsBar
+                                    stats={stats}
+                                    departments={departments}
+                                    filterRole={filterRole}
+                                    setFilterRole={setFilterRole}
+                                />
+                            </div>
 
-                        {/* ══════════ TOOLBAR ══════════ */}
-                        <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
-                            <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                                {/* Left: Filters (Search removed) */}
-                                <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
-                                    <div className="relative">
-                                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                                        <select
-                                            value={selectedDept}
-                                            onChange={(e) => setSelectedDept(e.target.value)}
-                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                                        >
-                                            <option value="All">Tất cả đơn vị</option>
-                                            {departments.map(dept => (
-                                                <option key={dept} value={dept}>{dept}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                                    </div>
-
-                                    <div className="relative">
-                                        <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                                        <select
-                                            value={filterRole}
-                                            onChange={(e) => setFilterRole(e.target.value)}
-                                            className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                                        >
-                                            <option value="All">Tất cả vai trò</option>
-                                            <option value={Role.Admin}>Quản trị viên</option>
-                                            <option value={Role.Manager}>Quản lý</option>
-                                            <option value={Role.Staff}>Nhân viên</option>
-                                        </select>
-                                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                                    </div>
-
-                                    {hasActiveFilters && (
-                                        <button
-                                            onClick={() => { setSelectedDept('All'); setFilterRole('All'); }}
-                                            className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
-                                        >
-                                            Xóa bộ lọc
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Right: View toggle + Create */}
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <ViewToggle value={viewMode} onChange={setViewMode} />
-                                    {canManageUsers && (
-                                        <button
-                                            onClick={handleCreate}
-                                            className="btn btn-primary"
-                                        >
-                                            <UserPlus className="w-4 h-4" />
-                                            <span>Thêm nhân sự</span>
-                                        </button>
-                                    )}
-                                </div>
+                            {/* Right: View toggle + Create */}
+                            <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto">
+                                <ViewToggle value={viewMode} onChange={setViewMode} />
+                                {canManageUsers && (
+                                    <button
+                                        onClick={handleCreate}
+                                        className="btn btn-primary cursor-pointer"
+                                    >
+                                        <UserPlus className="w-4 h-4" />
+                                        <span>Thêm nhân sự</span>
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -193,6 +195,8 @@ const EmployeeList: React.FC = () => {
                                             columns={columns}
                                             onRowClick={openEmployeePanel}
                                             keyExtractor={(row) => row.EmployeeID}
+                                            stickyHeader={true}
+                                            maxHeight="calc(100vh - 260px)"
                                         />
                                     </div>
                                 ) : (

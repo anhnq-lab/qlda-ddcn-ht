@@ -1,8 +1,11 @@
 import React, { useState, Suspense, useEffect } from 'react';
-import { ClipboardList, CalendarDays, ListChecks, Calendar, Users } from 'lucide-react';
+import { ClipboardList, CalendarDays, ListChecks } from 'lucide-react';
+import { FilterChip } from '../../components/ui';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 import { DepartmentCode, DEPARTMENT_CODES } from '../../types/plan.types';
+import { useScopedProjects } from '../../hooks/useScopedProjects';
+import { TaskStatus } from '../../types';
 
 // Lazy-load each sub-module inside the bundle
 const AnnualPlanPage  = React.lazy(() => import('../annual-plan/AnnualPlanPage'));
@@ -46,6 +49,14 @@ const WorkPlanPage: React.FC = () => {
     const [month, setMonth] = useState<string>(String(CURRENT_DATE.getMonth() + 1));
     const [year, setYear] = useState<number>(CURRENT_YEAR);
 
+    // Bộ lọc dự án, loại công việc, trạng thái dùng chung cho tab Công việc
+    const [filterProject, setFilterProject] = useState<string>('All');
+    const [filterTaskType, setFilterTaskType] = useState<string>('All');
+    const [filterStatus, setFilterStatus] = useState<string>('All');
+
+    // Lấy danh sách dự án cho bộ lọc
+    const { scopedProjects: projects = [] } = useScopedProjects({ pageSize: 9999 });
+
     const switchTab = (key: TabKey) => {
         setActive(key);
     };
@@ -74,66 +85,108 @@ const WorkPlanPage: React.FC = () => {
                 </div>
 
                 {/* Bộ lọc Tháng & Năm & Phòng ban dùng chung */}
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1.5 flex-wrap justify-end max-w-full">
+                    {/* Bộ lọc dự án dùng chung cho tất cả các tab */}
+                    <FilterChip
+                        label="Dự án"
+                        value={filterProject}
+                        onChange={setFilterProject}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả dự án' },
+                            ...projects.map(p => ({ value: p.ProjectID, label: p.ProjectName })),
+                        ]}
+                    />
+
+                    <FilterChip
+                        label="Loại công việc"
+                        value={filterTaskType}
+                        onChange={setFilterTaskType}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả loại' },
+                            { value: 'project', label: '📁 Dự án' },
+                            { value: 'management', label: '📋 Điều hành' },
+                            { value: 'internal', label: '🏢 Nội bộ' },
+                        ]}
+                    />
+
+                    <FilterChip
+                        label="Trạng thái"
+                        value={filterStatus}
+                        onChange={setFilterStatus}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả trạng thái' },
+                            { value: TaskStatus.Todo, label: 'Mới' },
+                            { value: TaskStatus.InProgress, label: 'Đang làm' },
+                            { value: TaskStatus.Done, label: 'Xong' },
+                            { value: TaskStatus.Incomplete, label: 'Chưa xong' },
+                        ]}
+                    />
+
                     {/* Bộ lọc phòng ban dùng chung */}
                     {!(active === 'monthly-report' && subTab === 'report') && (
-                        <div className="flex items-center bg-bg-surface p-1 rounded-xl shadow-sm border border-border-subtle h-[46px]">
-                            <div className="flex items-center px-2 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-xs font-bold text-slate-650 dark:text-slate-300">
-                                <Users className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-                                <select
-                                    value={dept}
-                                    onChange={e => setDept(e.target.value as FilterDeptCode)}
-                                    className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-5 font-bold border-0 p-0 text-xs focus:ring-0"
-                                >
-                                    {active !== 'monthly-report' && (
-                                        <option value="All">Tất cả phòng ban</option>
-                                    )}
-                                    {DEPARTMENT_CODES.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                        <FilterChip
+                            label="Phòng ban"
+                            value={dept}
+                            onChange={v => setDept(v as FilterDeptCode)}
+                            allValue="All"
+                            options={[
+                                ...(active !== 'monthly-report' ? [{ value: 'All', label: 'Tất cả phòng ban' }] : []),
+                                ...DEPARTMENT_CODES.map(code => ({ value: code, label: code })),
+                            ]}
+                        />
                     )}
 
-                    {/* Bộ lọc Tháng & Năm */}
-                    <div className="flex items-center gap-1.5 bg-bg-surface p-1 rounded-xl shadow-sm border border-border-subtle h-[46px]">
-                        {/* Chọn Tháng */}
-                        <div className="flex items-center px-2 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-xs font-bold text-slate-650 dark:text-slate-300">
-                            <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
-                            <select
-                                value={month}
-                                onChange={e => setMonth(e.target.value)}
-                                className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
-                            >
-                                <option value="All">Tất cả</option>
-                                {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                                    <option key={m} value={String(m)}>Tháng {m}</option>
-                                ))}
-                            </select>
-                        </div>
+                    {/* Bộ lọc Tháng */}
+                    <FilterChip
+                        label="Tháng"
+                        value={month}
+                        onChange={setMonth}
+                        allValue="All"
+                        options={[
+                            { value: 'All', label: 'Tất cả tháng' },
+                            ...Array.from({ length: 12 }, (_, i) => i + 1).map(m => ({ value: String(m), label: `Tháng ${m}` })),
+                        ]}
+                    />
 
-                        {/* Chọn Năm */}
-                        <div className="flex items-center px-2 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-xs font-bold text-slate-650 dark:text-slate-300">
-                            <select
-                                value={year}
-                                onChange={e => setYear(Number(e.target.value))}
-                                className="bg-transparent text-txt-primary focus:outline-none cursor-pointer pr-4 font-bold border-0 p-0 text-xs focus:ring-0"
-                            >
-                                {YEARS.map(y => (
-                                    <option key={y} value={y}>{y}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
+                    {/* Bộ lọc Năm */}
+                    <FilterChip
+                        label="Năm"
+                        value={String(year)}
+                        onChange={v => setYear(Number(v))}
+                        options={YEARS.map(y => ({ value: String(y), label: String(y) }))}
+                    />
                 </div>
             </div>
 
             {/* ── Tab content ── */}
             <div className="flex-1 min-h-0 flex flex-col">
                 <Suspense fallback={<PageLoadingFallback />}>
-                    {active === 'tasks'   && <TaskList month={month} year={String(year)} department={dept} />}
-                    {active === 'annual'  && <AnnualPlanPage year={year} hideDeptSelector={true} departmentCode={dept as DepartmentCode} />}
+                    {active === 'tasks'   && (
+                        <TaskList 
+                            month={month} 
+                            year={String(year)} 
+                            department={dept} 
+                            filterProject={filterProject}
+                            setFilterProject={setFilterProject}
+                            filterTaskType={filterTaskType}
+                            setFilterTaskType={setFilterTaskType}
+                            filterStatus={filterStatus}
+                            setFilterStatus={setFilterStatus}
+                        />
+                    )}
+                    {active === 'annual'  && (
+                        <AnnualPlanPage 
+                            year={year} 
+                            hideDeptSelector={true} 
+                            departmentCode={dept as DepartmentCode} 
+                            filterProject={filterProject}
+                            filterTaskType={filterTaskType}
+                            filterStatus={filterStatus}
+                        />
+                    )}
                     {active === 'monthly-report' && (() => {
                         const subTabsSelector = (
                             <div className="flex bg-slate-150 dark:bg-slate-900 rounded-lg p-0.5 shadow-sm border border-slate-200/50 dark:border-slate-800 shrink-0">
@@ -170,12 +223,18 @@ const WorkPlanPage: React.FC = () => {
                                             hideModeSelector={true}
                                             leftElement={subTabsSelector}
                                             department={dept as DepartmentCode}
+                                            filterProject={filterProject}
+                                            filterTaskType={filterTaskType}
+                                            filterStatus={filterStatus}
                                         />
                                     ) : (
                                         <MonthlyReportPage 
                                             month={month === 'All' ? CURRENT_DATE.getMonth() + 1 : parseInt(month)} 
                                             year={year} 
                                             leftElement={subTabsSelector}
+                                            filterProject={filterProject}
+                                            filterTaskType={filterTaskType}
+                                            filterStatus={filterStatus}
                                         />
                                     )}
                                 </div>

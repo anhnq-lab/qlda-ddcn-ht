@@ -6,6 +6,7 @@ import { useToast } from '../../components/ui/Toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash2, Plus, X, Search, Users, HardHat, Ruler, Eye, MapPin, Phone, User, Calendar, Loader2, Hash, AlertCircle, Filter, ArrowUpDown, ChevronLeft, ChevronRight, Building2, Download } from 'lucide-react';
 import { useSlidePanel } from '../../context/SlidePanelContext';
+import { FilterChip } from '../../components/ui';
 import { ContractorDetailPanel } from '../../components/common/ContractorDetailPanel';
 import { ContractorFormPanel } from './ContractorFormPanel';
 import { exportContractorsToExcel } from '../../utils/contractorExcelIO';
@@ -198,19 +199,16 @@ const ContractorList: React.FC = () => {
 
                 {/* Filter and Actions */}
                 <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto lg:justify-end">
-                    <div className="relative">
-                        <Filter className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-txt-placeholder" />
-                        <select
-                            value={typeFilter}
-                            onChange={(e) => setTypeFilter(e.target.value as ContractorType | '')}
-                            className="pl-8 pr-3 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs font-medium text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
-                        >
-                            <option value="">Tất cả loại hình</option>
-                            {(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => (
-                                <option key={value} value={value}>{label}</option>
-                            ))}
-                        </select>
-                    </div>
+                    <FilterChip
+                        label="Loại hình"
+                        value={typeFilter}
+                        onChange={v => setTypeFilter(v as ContractorType | '')}
+                        allValue=""
+                        options={[
+                            { value: '', label: 'Tất cả loại hình' },
+                            ...(Object.entries(CONTRACTOR_TYPE_LABELS) as [ContractorType, string][]).map(([value, label]) => ({ value, label })),
+                        ]}
+                    />
 
                     {/* Actions Divider */}
                     <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>
@@ -232,9 +230,8 @@ const ContractorList: React.FC = () => {
                 </div>
             </div>
 
-            {/* Danh sách */}
             <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mt-4">
-                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
+                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-260px)]">
                     <table className="w-full text-left text-sm">
                         <thead className="sticky top-0 z-10 bg-bg-subtle text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm shadow-slate-200/20">
                             <tr className="text-txt-muted">

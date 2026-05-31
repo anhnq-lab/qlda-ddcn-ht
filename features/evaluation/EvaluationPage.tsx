@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { 
-    FileText, Search, SlidersHorizontal, Plus, ChevronRight, 
-    Calendar, Users, Eye, FileSignature 
+import {
+    FileText, Search, Plus, ChevronRight,
+    Eye, FileSignature
 } from 'lucide-react';
+import { FilterChip } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
 import { Role } from '../../types/employee.types';
 import { 
@@ -196,55 +197,42 @@ export const EvaluationPage: React.FC = () => {
                         </button>
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
-                            <Calendar size={14} className="text-txt-muted" />
-                            <select 
-                                value={month} 
-                                onChange={e => setMonth(+e.target.value)}
-                                className="bg-transparent text-sm font-semibold text-txt-primary focus:outline-none"
-                            >
-                                {MONTHS_VI.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
-                            </select>
-                            <span className="text-border">/</span>
-                            <select 
-                                value={year} 
-                                onChange={e => setYear(+e.target.value)}
-                                className="bg-transparent text-sm font-semibold text-txt-primary focus:outline-none"
-                            >
-                                {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
-                            <SlidersHorizontal size={14} className="text-txt-muted" />
-                            <select 
-                                value={statusFilter} 
-                                onChange={e => setStatusFilter(e.target.value as any)}
-                                className="bg-transparent text-sm text-txt-primary focus:outline-none"
-                            >
-                                <option value="all">Tất cả trạng thái</option>
-                                <option value="draft">Nháp</option>
-                                <option value="submitted">Chờ duyệt</option>
-                                <option value="approved">Đã duyệt</option>
-                                <option value="rejected">Từ chối</option>
-                            </select>
-                        </div>
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                        <FilterChip
+                            label="Tháng"
+                            value={String(month)}
+                            onChange={v => setMonth(+v)}
+                            options={MONTHS_VI.map((m, i) => ({ value: String(i + 1), label: m }))}
+                        />
+                        <FilterChip
+                            label="Năm"
+                            value={String(year)}
+                            onChange={v => setYear(+v)}
+                            options={[2024, 2025, 2026, 2027].map(y => ({ value: String(y), label: String(y) }))}
+                        />
+                        <FilterChip
+                            label="Trạng thái"
+                            value={statusFilter}
+                            onChange={v => setStatusFilter(v as any)}
+                            options={[
+                                { value: 'all', label: 'Tất cả trạng thái' },
+                                { value: 'draft', label: 'Nháp' },
+                                { value: 'submitted', label: 'Chờ duyệt' },
+                                { value: 'approved', label: 'Đã duyệt' },
+                                { value: 'rejected', label: 'Từ chối' },
+                            ]}
+                        />
 
                         {currentUser?.Role === Role.Admin && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-bg-subtle border border-border rounded-lg">
-                                <Users size={14} className="text-txt-muted" />
-                                <select 
-                                    value={deptFilter} 
-                                    onChange={e => setDeptFilter(e.target.value)}
-                                    className="bg-transparent text-sm text-txt-primary focus:outline-none max-w-[200px] truncate"
-                                >
-                                    <option value="all">Tất cả phòng ban</option>
-                                    {departments.map(d => (
-                                        <option key={d.code} value={d.code}>{d.name}</option>
-                                    ))}
-                                </select>
-                            </div>
+                            <FilterChip
+                                label="Phòng ban"
+                                value={deptFilter}
+                                onChange={setDeptFilter}
+                                options={[
+                                    { value: 'all', label: 'Tất cả phòng ban' },
+                                    ...departments.map(d => ({ value: d.code, label: d.name })),
+                                ]}
+                            />
                         )}
                     </div>
                 </div>

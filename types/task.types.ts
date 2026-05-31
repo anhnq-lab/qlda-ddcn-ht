@@ -130,6 +130,7 @@ export interface Task {
     IncompleteReason?: string;
     IncompleteReasonType?: 'objective' | 'subjective';
     Notes?: string;
+    Obstacles?: string;
 
     // Self-proposal fields (Điều 9.3)
     IsSelfProposed?: boolean;

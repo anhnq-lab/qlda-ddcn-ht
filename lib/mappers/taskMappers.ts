@@ -35,6 +35,7 @@ export const dbToTask = (row: DbTask): Task => ({
     CompletionResult: row.completion_result || undefined,
     IncompleteReason: row.incomplete_reason || undefined,
     Notes: row.notes || undefined,
+    Obstacles: row.obstacles || row.metadata?.obstacles || undefined,
     SubTasks: row.metadata?.sub_tasks || [],
     Attachments: row.metadata?.attachments || [],
     Dependencies: row.metadata?.dependencies || [],
@@ -73,6 +74,7 @@ export const taskToDb = (task: Partial<Task>): Partial<DbTask> => {
     if (task.CompletionResult !== undefined) row.completion_result = task.CompletionResult || null;
     if (task.IncompleteReason !== undefined) row.incomplete_reason = task.IncompleteReason || null;
     if (task.Notes !== undefined) row.notes = task.Notes || null;
+    if (task.Obstacles !== undefined) row.obstacles = task.Obstacles || null;
     if (task.MonthlyPlanItemID !== undefined) row.monthly_plan_item_id = task.MonthlyPlanItemID || null;
     if (task.ProjectPlanItemID !== undefined) {
         row.project_plan_step_id = task.ProjectPlanItemID || null;

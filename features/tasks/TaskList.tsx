@@ -7,7 +7,7 @@ import { useEmployees } from '../../hooks/useEmployees';
 import { Task, TaskStatus, TaskPriority } from '../../types';
 import { workflowTaskToTask } from '../../lib/dbMappers';
 import { getTimelineStepLabel, getPhaseColor } from '../../utils/timelineStepUtils';
-import { getStatusInfo, getPriorityInfo } from './TaskCreateEditModal';
+import { getStatusInfo, getPriorityInfo } from './taskStatusHelpers';
 import { DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
 import { ProjectTaskModal } from '../../components/common/ProjectTaskModal';
 import ProjectDetail from '../projects/ProjectDetail';
@@ -76,9 +76,25 @@ interface TaskListProps {
     month?: string;
     year?: string;
     department?: string;
+    filterProject: string;
+    setFilterProject: (v: string) => void;
+    filterTaskType: string;
+    setFilterTaskType: (v: string) => void;
+    filterStatus: string;
+    setFilterStatus: (v: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externalYear, department: externalDepartment }) => {
+const TaskList: React.FC<TaskListProps> = ({ 
+    month: externalMonth, 
+    year: externalYear, 
+    department: externalDepartment,
+    filterProject,
+    setFilterProject,
+    filterTaskType,
+    setFilterTaskType,
+    filterStatus,
+    setFilterStatus
+}) => {
     const navigate = useNavigate();
     const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
@@ -87,9 +103,6 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     const urlTaskId = searchParams.get('taskId');
     
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-    
-    const [filterStatus, setFilterStatus] = useState<string>('All');
-    const [filterProject, setFilterProject] = useState<string>('All');
     
     const [localMonth, setLocalMonth] = useState<string>('All');
     const [localYear, setLocalYear] = useState<string>('All');
@@ -107,7 +120,6 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     const [filterNotUpdatedThisWeek, setFilterNotUpdatedThisWeek] = useState(false);
     const [filterPersonal, setFilterPersonal] = useState(false);
     const [filterPendingProposal, setFilterPendingProposal] = useState(false);
-    const [filterTaskType, setFilterTaskType] = useState<string>('All');
     const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
 
     // ── Sort ──
@@ -120,6 +132,10 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
 
     // ── Batch selection ──
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+    // ── Delete confirmation ──
+    const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; title?: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Data
     const { data: tasks = [], isLoading, error: tasksError } = useAllTasks();
@@ -533,6 +549,7 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
         const now = new Date();
         return {
             total: filteredTasks.length,
+            todo: filteredTasks.filter(t => t.Status === TaskStatus.Todo).length,
             inProgress: filteredTasks.filter(t => t.Status === TaskStatus.InProgress).length,
             done: filteredTasks.filter(t => t.Status === TaskStatus.Done).length,
             incomplete: filteredTasks.filter(t => t.Status === TaskStatus.Incomplete).length,
@@ -585,10 +602,8 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
         else setSelectedIds(new Set(paginatedTasks.map(t => t.TaskID)));
     }, [selectedIds.size, paginatedTasks]);
 
-    const handleBatchDelete = async () => {
-        if (!window.confirm(`Xóa ${selectedIds.size} công việc đã chọn?`)) return;
-        await Promise.all(Array.from(selectedIds).map((id: string) => deleteTaskMutation.mutateAsync(id)));
-        setSelectedIds(new Set());
+    const handleBatchDelete = () => {
+        setDeleteConfirm({ ids: Array.from(selectedIds) });
     };
 
     const handleBatchStatus = async (status: TaskStatus) => {
@@ -603,9 +618,26 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
     };
 
     // ── CRUD handlers ──
-    const handleDelete = async (id: string) => {
-        if (window.confirm("Xóa công việc này?")) {
-            await deleteTaskMutation.mutateAsync(id);
+    const handleDelete = (id: string) => {
+        const task = tasks.find(t => t.TaskID === id);
+        setDeleteConfirm({ ids: [id], title: task?.Title });
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteConfirm) return;
+        setIsDeleting(true);
+        try {
+            await Promise.all(deleteConfirm.ids.map(id => deleteTaskMutation.mutateAsync(id)));
+            setSelectedIds(prev => {
+                const next = new Set(prev);
+                deleteConfirm.ids.forEach(id => next.delete(id));
+                return next;
+            });
+        } catch (err: any) {
+            alert(err?.message || 'Xóa thất bại');
+        } finally {
+            setIsDeleting(false);
+            setDeleteConfirm(null);
         }
     };
 
@@ -690,26 +722,49 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             deptCode = currentUser?.Department;
         }
 
+        const isEdit = taskData.TaskID && !taskData.TaskID.startsWith('NEW_');
+
+        // Preserve existing metadata when editing (merge instead of overwrite)
+        let mergedMetadata: any = {
+            sub_tasks: taskData.SubTasks,
+            attachments: taskData.Attachments,
+            dependencies: taskData.Dependencies,
+            estimatedDays: taskData.DurationDays,
+            monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
+        };
+        if (isEdit && taskData.Metadata) {
+            mergedMetadata = { ...taskData.Metadata, ...mergedMetadata };
+        }
+
         // Re-map UI Task structure to DbTask payload for the service
         const workflowPayload: any = {
-            id: taskData.TaskID?.startsWith('NEW_') ? undefined : taskData.TaskID,
+            id: isEdit ? taskData.TaskID : undefined,
             task_type: taskData.ProjectID ? 'project' : 'internal',
             title: taskData.Title,
+            description: taskData.Description || null,
             progress: taskData.ProgressPercent,
-            assignee_id: taskData.AssigneeID,
+            priority: taskData.Priority ? taskData.Priority.toLowerCase() : 'medium',
+            assignee_id: taskData.AssigneeID || null,
+            approver_id: taskData.ApproverID || null,
             department_code: deptCode || null,
-            due_date: taskData.DueDate,
-            project_id: taskData.ProjectID,
-            actual_start_date: taskData.ActualStartDate,
-            actual_end_date: taskData.ActualEndDate,
+            start_date: taskData.StartDate || null,
+            due_date: taskData.DueDate || null,
+            project_id: taskData.ProjectID || null,
+            actual_start_date: taskData.ActualStartDate || null,
+            actual_end_date: taskData.ActualEndDate || null,
             monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
-            metadata: {
-                 sub_tasks: taskData.SubTasks,
-                 attachments: taskData.Attachments,
-                 dependencies: taskData.Dependencies,
-                 estimatedDays: taskData.DurationDays,
-                 monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
-            }
+            category: taskData.Category || null,
+            responsibility_level: taskData.ResponsibilityLevel || null,
+            completion_result: taskData.CompletionResult || null,
+            incomplete_reason: taskData.IncompleteReason || null,
+            incomplete_reason_type: taskData.IncompleteReasonType || null,
+            notes: taskData.Notes || null,
+            obstacles: taskData.Obstacles || null,
+            collaborator_ids: taskData.CollaboratorIDs || null,
+            // Self-proposed fields
+            is_self_proposed: taskData.IsSelfProposed || false,
+            proposal_status: taskData.ProposalStatus || null,
+            metadata: mergedMetadata,
         };
 
         if (taskData.Status) {
@@ -723,7 +778,10 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
         }
 
         await saveTaskMutation.mutateAsync(workflowPayload);
-        closePanel();
+        // Don't close panel in edit mode — ProjectTaskModal handles its own feedback
+        if (!isEdit) {
+            closePanel();
+        }
     };
 
     const hasActiveFilters = filterStatus !== 'All' || 
@@ -911,6 +969,44 @@ const TaskList: React.FC<TaskListProps> = ({ month: externalMonth, year: externa
             )}
 
             <TaskImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
+
+            {/* ══════════ DELETE CONFIRMATION DIALOG ══════════ */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-sm overflow-hidden ring-1 ring-black/5 animate-in zoom-in-95 duration-200">
+                        <div className="p-6 text-center">
+                            <div className="w-14 h-14 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <Trash2 className="w-6 h-6 text-red-500" />
+                            </div>
+                            <h3 className="text-lg font-bold text-txt-primary mb-2">Xác nhận xóa</h3>
+                            <p className="text-sm text-txt-muted">
+                                {deleteConfirm.ids.length === 1
+                                    ? <>Bạn có chắc muốn xóa công việc <strong className="text-txt-primary">"{deleteConfirm.title || deleteConfirm.ids[0]}"</strong>?</>
+                                    : <>Bạn có chắc muốn xóa <strong className="text-txt-primary">{deleteConfirm.ids.length} công việc</strong> đã chọn?</>
+                                }
+                            </p>
+                            <p className="text-xs text-red-500 mt-2">Hành động này không thể hoàn tác.</p>
+                        </div>
+                        <div className="flex border-t border-border-subtle">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                disabled={isDeleting}
+                                className="flex-1 py-3 text-sm font-medium text-txt-muted hover:bg-bg-muted transition-colors disabled:opacity-50"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                                className="flex-1 py-3 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-l border-border-subtle disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {isDeleting && <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />}
+                                {isDeleting ? 'Đang xóa...' : 'Xóa'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

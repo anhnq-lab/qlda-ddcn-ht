@@ -297,7 +297,7 @@ export const DashboardBriefingService = {
         const nextLastDay = new Date(nextYear, nextMonth, 0).getDate();
         const nextEndDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(nextLastDay).padStart(2, '0')}`;
 
-        const [projectsRes, tasksRes, nextTasksRes, disbursementsRes, issuesRes, employeesRes, packagesRes, commentsRes] = await Promise.all([
+        const [projectsRes, tasksRes, nextTasksRes, disbursementsRes, issuesRes, employeesRes, packagesRes, commentsRes, planStepsRes] = await Promise.all([
             (supabase.from('projects') as any).select('project_id, project_name, progress, status, management_board'),
             (supabase as any).from('tasks')
                 .select('id, title, status, progress, completion_result, incomplete_reason, incomplete_reason_type, obstacles, assignee_id, project_id')
@@ -318,6 +318,9 @@ export const DashboardBriefingService = {
                 .eq('view_type', 'briefing')
                 .eq('comment_month', month)
                 .eq('comment_year', year),
+            // Lấy kế hoạch dự án để tính progress từ các bước
+            (supabase as any).from('project_plan_steps')
+                .select('id, project_id, status'),
         ]);
 
         const employees = employeesRes.data || [];
@@ -445,6 +448,27 @@ export const DashboardBriefingService = {
                 title: t.title,
                 assigneeName,
             });
+        }
+
+        // Tính progress dự án từ kế hoạch dự án (project_plan_steps)
+        const planSteps = planStepsRes?.data || [];
+        const stepsByProject = new Map<string, { total: number; completed: number }>();
+        for (const step of planSteps) {
+            if (!step.project_id) continue;
+            if (!stepsByProject.has(step.project_id)) {
+                stepsByProject.set(step.project_id, { total: 0, completed: 0 });
+            }
+            const agg = stepsByProject.get(step.project_id)!;
+            agg.total++;
+            if (step.status === 'completed') agg.completed++;
+        }
+        for (const p of projectMap.values()) {
+            if (p.projectId === INTERNAL_ID) continue;
+            const stepAgg = stepsByProject.get(p.projectId);
+            if (stepAgg && stepAgg.total > 0) {
+                p.progress = Math.round((stepAgg.completed / stepAgg.total) * 100);
+            }
+            // Nếu không có plan steps, giữ nguyên progress từ projects table
         }
 
         // Lọc bỏ những dự án không có hoạt động nào trong tháng báo cáo hoặc tháng tiếp theo

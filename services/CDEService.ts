@@ -66,6 +66,10 @@ export class CDEService {
         return CDEDocumentService.downloadDocument(storagePath);
     }
 
+    static verifyFileIntegrity(storagePath: string, storedHash: string | null | undefined): Promise<'valid' | 'mismatch' | null> {
+        return CDEDocumentService.verifyFileIntegrity(storagePath, storedHash);
+    }
+
     static getRevisions(docId: number): Promise<Array<{
         doc_id: number; version: string; revision: string; date: string;
         author: string; reason: string; size: string; storagePath?: string;

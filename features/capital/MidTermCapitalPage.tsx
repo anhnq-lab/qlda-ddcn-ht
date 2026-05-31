@@ -11,6 +11,7 @@ import {
     ChevronDown, ChevronRight, Search, Building2, ArrowRight, DollarSign,
     BarChart3, TrendingDown, ArrowUpDown, Download, Filter, X, BookOpen, FileText, Upload
 } from 'lucide-react';
+import { FilterChip } from '../../components/ui';
 
 const CapitalOverviewChart = React.lazy(() => import('./components/CapitalOverviewChart'));
 import { CapitalImportModal } from './CapitalImportModal';
@@ -256,31 +257,23 @@ const CapitalPlanningPage: React.FC = () => {
 
                 {/* Filters and Actions */}
                 <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto lg:justify-end">
-                    {/* Source filter */}
-                    <div className="flex items-center gap-1.5">
-                        <Filter className="w-3.5 h-3.5 text-gray-400" />
-                        <select
-                            value={sourceFilter}
-                            onChange={e => setSourceFilter(e.target.value)}
-                            className="filter-primary px-3 py-1.5 text-xs bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
-                        >
-                            <option value="all">Tất cả nguồn</option>
-                            <option value="NSĐP">NS Địa phương</option>
-                            <option value="NSTW">NS Trung ương</option>
-                            <option value="ODA">ODA/Vốn vay</option>
-                        </select>
-                    </div>
-                    {/* Year filter */}
-                    <div className="flex items-center gap-1.5">
-                        <label className="text-xs font-bold text-txt-muted uppercase tracking-wider">Năm:</label>
-                        <select
-                            value={yearFilter}
-                            onChange={e => setYearFilter(Number(e.target.value))}
-                            className="filter-primary px-3 py-1.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-txt-secondary focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none cursor-pointer"
-                        >
-                            {Array.from({ length: 8 }, (_, i) => new Date().getFullYear() + 2 - i).map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                    </div>
+                    <FilterChip
+                        label="Nguồn vốn"
+                        value={sourceFilter}
+                        onChange={setSourceFilter}
+                        options={[
+                            { value: 'all', label: 'Tất cả nguồn' },
+                            { value: 'NSĐP', label: 'NS Địa phương' },
+                            { value: 'NSTW', label: 'NS Trung ương' },
+                            { value: 'ODA', label: 'ODA/Vốn vay' },
+                        ]}
+                    />
+                    <FilterChip
+                        label="Năm"
+                        value={String(yearFilter)}
+                        onChange={v => setYearFilter(Number(v))}
+                        options={Array.from({ length: 8 }, (_, i) => new Date().getFullYear() + 2 - i).map(y => ({ value: String(y), label: String(y) }))}
+                    />
                     
                     {/* Actions Divider */}
                     <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden sm:block"></div>

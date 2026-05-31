@@ -32,6 +32,16 @@ import { useProjects } from '../../hooks/useProjects';
 
 type ActiveTab = 'assets' | 'reports' | 'inventory';
 
+const formatToBillion = (amount: number | undefined | null): string => {
+  if (amount === undefined || amount === null) return '0 tỷ VNĐ';
+  const bill = amount / 1_000_000_000;
+  const formatted = bill.toLocaleString('vi-VN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+  return `${formatted} tỷ VNĐ`;
+};
+
 export const PublicAssetList: React.FC = () => {
   const { addToast } = useToast();
   
@@ -334,22 +344,25 @@ export const PublicAssetList: React.FC = () => {
     },
     {
       key: 'actions',
-      header: 'Hành động',
-      width: '8%',
-      align: 'center' as const,
+      header: 'Thao tác',
+      width: '120px',
+      align: 'right' as const,
       render: (_: any, row: PublicAsset) => (
-        <div className="flex items-center justify-center gap-1">
+        <div 
+          className="flex items-center justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             onClick={() => handleViewHistory(row)}
             title="Lịch sử biến động"
-            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
           >
             <History className="w-4 h-4" />
           </button>
           <button
             onClick={() => { setEditingAsset(row); setIsFormOpen(true); }}
             title="Chỉnh sửa"
-            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
@@ -357,7 +370,7 @@ export const PublicAssetList: React.FC = () => {
             <button
               onClick={() => handleQuickLiquidation(row)}
               title="Đề xuất thanh lý"
-              className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
             >
               <AlertTriangle className="w-4 h-4" />
             </button>
@@ -365,7 +378,7 @@ export const PublicAssetList: React.FC = () => {
           <button
             onClick={() => handleDeleteAsset(row.id, row.asset_name)}
             title="Xóa tài sản"
-            className="p-1 hover:bg-bg-muted rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -384,20 +397,107 @@ export const PublicAssetList: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* ══════════ TAB NAVIGATION ══════════ */}
-      <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border w-fit">
-        <button onClick={() => setActiveTab('assets')} className={tabClass('assets')}>
-          <Landmark className="w-4 h-4" />
-          Danh sách tài sản
-        </button>
-        <button onClick={() => setActiveTab('reports')} className={tabClass('reports')}>
-          <History className="w-4 h-4" />
-          Báo cáo Phụ lục 2
-        </button>
-        <button onClick={() => setActiveTab('inventory')} className={tabClass('inventory')}>
-          <RefreshCw className="w-4 h-4" />
-          Đối chiếu & Kiểm kê thực tế
-        </button>
+      {/* ══════════ TAB NAVIGATION & FILTERS (Ngang hàng) ══════════ */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 shrink-0 bg-transparent pb-1">
+        {/* Tabs */}
+        <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border w-fit">
+          <button onClick={() => setActiveTab('assets')} className={tabClass('assets')}>
+            <Landmark className="w-4 h-4" />
+            Danh sách tài sản
+          </button>
+          <button onClick={() => setActiveTab('reports')} className={tabClass('reports')}>
+            <History className="w-4 h-4" />
+            Báo cáo Phụ lục 2
+          </button>
+          <button onClick={() => setActiveTab('inventory')} className={tabClass('inventory')}>
+            <RefreshCw className="w-4 h-4" />
+            Đối chiếu & Kiểm kê thực tế
+          </button>
+        </div>
+
+        {/* Filters (Chỉ hiển thị ở tab Danh sách tài sản) */}
+        {activeTab === 'assets' && (
+          <div className="flex items-center gap-1.5 flex-wrap justify-end max-w-full animate-in fade-in duration-300">
+            {/* Phân loại */}
+            <div className="relative">
+              <Filter className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="pl-8 pr-7 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+              >
+                <option value="">Tất cả phân loại</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+            </div>
+
+            {/* Trạng thái */}
+            <div className="relative">
+              <Activity className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="pl-8 pr-7 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+              >
+                <option value="">Tất cả trạng thái</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="pending_liquidation">Chờ thanh lý</option>
+                <option value="liquidated">Đã thanh lý</option>
+                <option value="transferred">Đã điều chuyển</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+            </div>
+
+            {/* Chi nhánh */}
+            <div className="relative">
+              <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+              <select
+                value={selectedBranch}
+                onChange={(e) => setSelectedBranch(e.target.value)}
+                className="pl-8 pr-7 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+              >
+                <option value="">Tất cả chi nhánh</option>
+                {branches.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+            </div>
+
+            {/* Phòng ban */}
+            <div className="relative">
+              <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+              <select
+                value={selectedDept}
+                onChange={(e) => setSelectedDept(e.target.value)}
+                className="pl-8 pr-7 py-1.5 bg-bg-surface border border-border rounded-xl text-xs text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+              >
+                <option value="">Tất cả phòng ban</option>
+                {departments.map((dept) => (
+                  <option key={dept} value={dept}>{dept}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />
+            </div>
+
+            {(selectedCategory || selectedStatus || selectedBranch || selectedDept) && (
+              <button
+                onClick={() => {
+                  setSelectedCategory('');
+                  setSelectedStatus('');
+                  setSelectedBranch('');
+                  setSelectedDept('');
+                }}
+                className="text-[11px] text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors font-bold"
+              >
+                Xóa bộ lọc
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {activeTab === 'reports' ? (
@@ -406,169 +506,85 @@ export const PublicAssetList: React.FC = () => {
         <PublicAssetInventory assets={assets} />
       ) : (
         <>
-          {/* ══════════ STATS STRIP ══════════ */}
-          <div className="flex items-center gap-1 flex-wrap bg-bg-surface rounded-xl border border-border shadow-sm px-2 py-1.5">
-            {/* Đang dùng */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-blue-50/60 dark:hover:bg-blue-500/10 transition-colors">
-              <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10">
-                <Landmark className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-txt-primary tabular-nums">{totalStats.count}</span>
-                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Đang dùng</span>
-              </div>
-              {totalStats.pendingCount > 0 && (
-                <span className="text-[10px] text-amber-500 font-bold bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded ml-1">
-                  {totalStats.pendingCount} chờ thanh lý
-                </span>
-              )}
-            </div>
-
-            <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
-
-            {/* Nguyên giá */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-emerald-50/60 dark:hover:bg-emerald-500/10 transition-colors">
-              <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-txt-primary tabular-nums">{formatCurrency(totalStats.original)}</span>
-                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Nguyên giá</span>
-              </div>
-            </div>
-
-            <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
-
-            {/* Hao mòn lũy kế */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-amber-50/60 dark:hover:bg-amber-500/10 transition-colors">
-              <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10">
-                <Activity className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-txt-primary tabular-nums">{formatCurrency(totalStats.dep)}</span>
-                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Hao mòn lũy kế</span>
-              </div>
-            </div>
-
-            <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
-
-            {/* Còn lại */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-violet-50/60 dark:hover:bg-violet-500/10 transition-colors">
-              <div className="p-1.5 rounded-lg bg-violet-50 dark:bg-violet-500/10">
-                <BarChart3 className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{formatCurrency(totalStats.remaining)}</span>
-                <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Còn lại</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ══════════ TOOLBAR ══════════ */}
-          <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
-            <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              {/* Left: Filters */}
-              <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
-                {/* Phân loại */}
-                <div className="relative">
-                  <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                  >
-                    <option value="">Tất cả phân loại</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+          {/* ══════════ STATS STRIP & ACTIONS (Gộp chung hàng) ══════════ */}
+          <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 bg-bg-surface rounded-xl border border-border shadow-sm p-2.5">
+            {/* Left: Dải chỉ số thống kê */}
+            <div className="flex items-center gap-1 flex-wrap flex-1 min-w-0">
+              {/* Đang dùng */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-blue-50/60 dark:hover:bg-blue-500/10 transition-colors">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10">
+                  <Landmark className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 </div>
-
-                {/* Trạng thái */}
-                <div className="relative">
-                  <Activity className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                  >
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="active">Đang hoạt động</option>
-                    <option value="pending_liquidation">Chờ thanh lý</option>
-                    <option value="liquidated">Đã thanh lý</option>
-                    <option value="transferred">Đã điều chuyển</option>
-                  </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-black text-txt-primary tabular-nums">{totalStats.count}</span>
+                  <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Đang dùng</span>
                 </div>
-
-                {/* Chi nhánh */}
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                  <select
-                    value={selectedBranch}
-                    onChange={(e) => setSelectedBranch(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                  >
-                    <option value="">Tất cả chi nhánh</option>
-                    {branches.map((b) => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                </div>
-
-                {/* Phòng ban */}
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                  <select
-                    value={selectedDept}
-                    onChange={(e) => setSelectedDept(e.target.value)}
-                    className="pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-txt-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
-                  >
-                    <option value="">Tất cả phòng ban</option>
-                    {departments.map((dept) => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
-                </div>
-
-                {(selectedCategory || selectedStatus || selectedBranch || selectedDept) && (
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('');
-                      setSelectedStatus('');
-                      setSelectedBranch('');
-                      setSelectedDept('');
-                    }}
-                    className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors font-semibold"
-                  >
-                    Xóa bộ lọc
-                  </button>
+                {totalStats.pendingCount > 0 && (
+                  <span className="text-[10px] text-amber-500 font-bold bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded ml-1">
+                    {totalStats.pendingCount} chờ thanh lý
+                  </span>
                 )}
               </div>
 
-              {/* Right: Actions */}
-              <div className="flex items-center gap-2 shrink-0 w-full lg:w-auto justify-end">
-                <button
-                  onClick={handleTriggerDepreciation}
-                  className="btn btn-secondary"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Tính hao mòn tự động</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingAsset(null);
-                    setIsFormOpen(true);
-                  }}
-                  className="btn btn-primary"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Ghi tăng tài sản</span>
-                </button>
+              <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
+
+              {/* Nguyên giá */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-emerald-50/60 dark:hover:bg-emerald-500/10 transition-colors">
+                <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10">
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-black text-txt-primary tabular-nums">{formatToBillion(totalStats.original)}</span>
+                  <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Nguyên giá</span>
+                </div>
               </div>
+
+              <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
+
+              {/* Hao mòn lũy kế */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-amber-50/60 dark:hover:bg-amber-500/10 transition-colors">
+                <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10">
+                  <Activity className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-black text-txt-primary tabular-nums">{formatToBillion(totalStats.dep)}</span>
+                  <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Hao mòn lũy kế</span>
+                </div>
+              </div>
+
+              <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
+
+              {/* Còn lại */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-violet-50/60 dark:hover:bg-violet-500/10 transition-colors">
+                <div className="p-1.5 rounded-lg bg-violet-50 dark:bg-violet-500/10">
+                  <BarChart3 className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{formatToBillion(totalStats.remaining)}</span>
+                  <span className="text-[10px] font-semibold text-txt-placeholder uppercase tracking-wider">Còn lại</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Các nút hành động */}
+            <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto px-2">
+              <button
+                onClick={handleTriggerDepreciation}
+                className="btn btn-secondary py-1.5 text-xs animate-in fade-in"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Tính hao mòn tự động</span>
+              </button>
+              <button
+                onClick={() => {
+                  setEditingAsset(null);
+                  setIsFormOpen(true);
+                }}
+                className="btn btn-primary py-1.5 text-xs animate-in fade-in"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Ghi tăng tài sản</span>
+              </button>
             </div>
           </div>
 
@@ -578,6 +594,8 @@ export const PublicAssetList: React.FC = () => {
             columns={columns}
             keyExtractor={row => row.id}
             isLoading={isLoading}
+            stickyHeader={true}
+            maxHeight="calc(100vh - 260px)"
             emptyMessage="Không tìm thấy tài sản công nào phù hợp với bộ lọc."
           />
         </>

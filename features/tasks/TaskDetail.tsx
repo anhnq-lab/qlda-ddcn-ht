@@ -12,6 +12,10 @@ import { TemplateExportModal } from '../../components/common/TemplateExportModal
 import { supabase as _supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 const supabase = _supabase as any;
+import { ProjectTaskModal } from '../../components/common/ProjectTaskModal';
+import { useSlidePanel } from '../../context/SlidePanelContext';
+import { useSaveTask } from '../../hooks/useTasks';
+import { DEPARTMENT_NAMES, DepartmentCode } from '../../types/plan.types';
 import { TaskInfoPanel } from './components/TaskInfoPanel';
 import { TaskSubtaskList } from './components/TaskSubtaskList';
 import { TaskAttachments } from './components/TaskAttachments';
@@ -82,6 +86,8 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
     const { projects = [] } = useProjects();
     const { data: employees = [] } = useEmployees();
     const updateTaskMutation = useUpdateTask();
+    const saveTaskMutation = useSaveTask();
+    const slidePanelCtx = useSlidePanel();
 
     const [activeExportTemplate, setActiveExportTemplate] = useState<TaskTemplate | null>(null);
 
@@ -163,6 +169,74 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
         });
     };
 
+    const handleEditSave = async (taskData: Partial<Task>) => {
+        let deptCode = taskData.DepartmentCode || currentUser?.Department;
+        const isEdit = taskData.TaskID && !taskData.TaskID.startsWith('NEW_');
+        let mergedMetadata: any = {
+            sub_tasks: taskData.SubTasks,
+            attachments: taskData.Attachments,
+            dependencies: taskData.Dependencies,
+            estimatedDays: taskData.DurationDays,
+            monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
+        };
+        if (isEdit && taskData.Metadata) {
+            mergedMetadata = { ...taskData.Metadata, ...mergedMetadata };
+        }
+        const workflowPayload: any = {
+            id: isEdit ? taskData.TaskID : undefined,
+            task_type: taskData.ProjectID ? 'project' : 'internal',
+            title: taskData.Title,
+            description: taskData.Description || null,
+            progress: taskData.ProgressPercent,
+            priority: taskData.Priority ? taskData.Priority.toLowerCase() : 'medium',
+            assignee_id: taskData.AssigneeID || null,
+            approver_id: taskData.ApproverID || null,
+            department_code: deptCode || null,
+            start_date: taskData.StartDate || null,
+            due_date: taskData.DueDate || null,
+            project_id: taskData.ProjectID || null,
+            actual_start_date: taskData.ActualStartDate || null,
+            actual_end_date: taskData.ActualEndDate || null,
+            monthly_plan_item_id: taskData.MonthlyPlanItemID || null,
+            category: taskData.Category || null,
+            responsibility_level: taskData.ResponsibilityLevel || null,
+            completion_result: taskData.CompletionResult || null,
+            incomplete_reason: taskData.IncompleteReason || null,
+            notes: taskData.Notes || null,
+            obstacles: taskData.Obstacles || null,
+            metadata: mergedMetadata,
+        };
+        if (taskData.Status) {
+            switch (taskData.Status) {
+                case TaskStatus.InProgress: workflowPayload.status = 'in_progress'; break;
+                case TaskStatus.Done: workflowPayload.status = 'done'; break;
+                case TaskStatus.Review: workflowPayload.status = 'review'; break;
+                case TaskStatus.Incomplete: workflowPayload.status = 'incomplete'; break;
+                default: workflowPayload.status = 'todo'; break;
+            }
+        }
+        await saveTaskMutation.mutateAsync(workflowPayload);
+    };
+
+    const openEditPanel = () => {
+        if (!task) return;
+        slidePanelCtx.openPanel({
+            title: task.Title,
+            url: `/tasks/${task.TaskID}/edit`,
+            component: (
+                <ProjectTaskModal
+                    isOpen={true}
+                    asSlidePanel={true}
+                    onClose={() => slidePanelCtx.closePanel()}
+                    onSubmit={handleEditSave}
+                    initialData={task}
+                    allTasks={allTasks}
+                />
+            ),
+            width: '50vw',
+        });
+    };
+
     const handleStatusChange = (s: TaskStatus) => {
         setProgressModalTarget(s);
     };
@@ -186,7 +260,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
         }
         // Save obstacles regardless of status (can have obstacles even when in_progress)
         if (obstacles !== undefined) {
-            (taskUpdate as any).obstacles = obstacles || null;
+            taskUpdate.Obstacles = obstacles || undefined;
         }
 
         updateTaskMutation.mutate(taskUpdate);
@@ -328,6 +402,12 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                     </span>
                                 ) : (
                                     <>
+                                        <button
+                                            onClick={openEditPanel}
+                                            className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-bg-subtle dark:hover:bg-slate-700 text-txt-muted transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5"
+                                        >
+                                            <Edit3 className="w-3.5 h-3.5" /> Chỉnh sửa
+                                        </button>
                                         {prevStatus && (
                                             <button
                                                 onClick={() => handleStatusChange(prevStatus)}
@@ -412,7 +492,7 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                         </div>
 
                         {/* Kết quả & Vướng mắc */}
-                        {(task.CompletionResult || task.IncompleteReason || (task as any).obstacles || task.Notes) && (
+                        {(task.CompletionResult || task.IncompleteReason || task.Obstacles || task.Notes) && (
                             <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4 space-y-4">
                                 <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4" /> Kết quả báo cáo
@@ -429,12 +509,12 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
                                         <p className="text-sm text-rose-800 dark:text-rose-300 whitespace-pre-wrap">{task.IncompleteReason}</p>
                                     </div>
                                 )}
-                                {(task as any).obstacles && (
+                                {task.Obstacles && (
                                     <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                                         <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
                                             <AlertTriangle className="w-3 h-3" /> Khó khăn / Vướng mắc
                                         </p>
-                                        <p className="text-sm text-amber-800 dark:text-amber-300 whitespace-pre-wrap">{(task as any).obstacles}</p>
+                                        <p className="text-sm text-amber-800 dark:text-amber-300 whitespace-pre-wrap">{task.Obstacles}</p>
                                     </div>
                                 )}
                                 {task.Notes && (

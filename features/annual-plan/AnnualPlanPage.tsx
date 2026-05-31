@@ -32,9 +32,19 @@ interface AnnualPlanPageProps {
     year?: number;
     hideDeptSelector?: boolean;
     departmentCode?: DepartmentCode | 'All';
+    filterProject?: string;
+    filterTaskType?: string;
+    filterStatus?: string;
 }
 
-const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hideDeptSelector, departmentCode: externalDepartment }) => {
+const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ 
+    year: externalYear, 
+    hideDeptSelector, 
+    departmentCode: externalDepartment,
+    filterProject = 'All',
+    filterTaskType = 'All',
+    filterStatus = 'All'
+}) => {
     const { openPanel, closePanel } = useSlidePanel();
     const { options: employeeOptions } = useEmployeeOptions();
     const { currentUser } = useAuth();
@@ -142,14 +152,32 @@ const AnnualPlanPage: React.FC<AnnualPlanPageProps> = ({ year: externalYear, hid
     };
 
     const filtered = useMemo(() => {
-        if (!searchTerm.trim()) return items;
-        const q = searchTerm.toLowerCase();
-        return items.filter(i =>
-            i.task_name.toLowerCase().includes(q) ||
-            (i.group_name ?? '').toLowerCase().includes(q) ||
-            (i.deliverable ?? '').toLowerCase().includes(q)
-        );
-    }, [items, searchTerm]);
+        let res = items;
+        if (searchTerm.trim()) {
+            const q = searchTerm.toLowerCase();
+            res = res.filter(i =>
+                i.task_name.toLowerCase().includes(q) ||
+                (i.group_name ?? '').toLowerCase().includes(q) ||
+                (i.deliverable ?? '').toLowerCase().includes(q)
+            );
+        }
+
+        // Lọc theo Dự án dùng chung
+        if (filterProject !== 'All') {
+            res = res.filter(i => i.project_id === filterProject);
+        }
+
+        // Lọc theo Loại công việc dùng chung
+        if (filterTaskType !== 'All') {
+            res = res.filter(i => {
+                if (filterTaskType === 'project') return !!i.project_id || i.source_type === 'from_project_task';
+                if (filterTaskType === 'internal') return !i.project_id && i.source_type !== 'from_project_task';
+                return true;
+            });
+        }
+
+        return res;
+    }, [items, searchTerm, filterProject, filterTaskType]);
 
     // Nhóm theo group_name
     const groups = useMemo(() => {
