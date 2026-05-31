@@ -137,7 +137,27 @@ graph TD
 ### 🔑 Giai đoạn khởi động: Thiết lập bối cảnh demo (5 phút)
 * **Thao tác:** Presenter truy cập vào màn hình đăng nhập hệ thống (`/login`).
 * **Lời thoại Presenter:** 
-  > *"Kính thưa Ban Giám đốc cùng các đồng chí Trưởng, Phó phòng Ban QLDA. Để giải quyết triệt để các điểm nghẽn trong công tác quản lý dự án đầu tư xây dựng, Đơn vị tư vấn CIC đã phối hợp và xây dựng Hệ thống CIC QLDA. Hệ thống được thiết kế theo phong cách Corporate Elegant hiện đại, bảo mật đa tầng và tối ưu hóa cho nghiệp vụ thực tế của Ban. Đầu tiên, chúng ta sẽ bắt đầu bằng góc nhìn của Ban Giám đốc - những người cần bức tranh toàn cảnh để điều hành vĩ mô."*
+  > *"Kính thưa Ban Giám đốc cùng toàn thể các đồng chí cán bộ, Trưởng, Phó phòng chuyên môn Ban QLDA Đầu tư Xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh.
+  > 
+  > Nhằm thực hiện có hiệu quả Kế hoạch chuyển đổi số trong công tác quản lý dự án đầu tư xây dựng sử dụng vốn đầu tư công, Đơn vị tư vấn CIC đã phối hợp cùng Ban QLDA triển khai giải pháp Hệ thống điều hành số thống nhất CIC QLDA. Hệ thống được xây dựng đồng bộ nhằm tối ưu hóa quy trình tác nghiệp, củng cố kỷ cương công vụ và bảo đảm tính tuân thủ pháp luật nghiêm túc trong hoạt động đầu tư xây dựng của Ban.
+  > 
+  > Báo cáo Ban Giám đốc và hội nghị, trước khi đi vào trình diễn chi tiết các kịch bản nghiệp vụ tác nghiệp thực tế, tôi xin phép được giới thiệu khái quát cơ cấu vận hành của hệ thống thông qua **13 phân hệ chức năng cốt lõi** được sắp xếp đồng bộ theo đúng trình tự trên thanh Sidebar điều hành bên trái màn hình như sau:
+  > 
+  > * **Phân hệ thứ 1 - Tổng quan:** Đóng vai trò là trung tâm điều hành số tích hợp bản đồ số GIS và trợ lý trí tuệ nhân tạo Gemini, cung cấp cho Ban Giám đốc bức tranh tổng thể thời gian thực về sức khỏe các dự án, tiến độ giải ngân dòng vốn và định vị các mỏ vật liệu xây dựng (Đất, Đá, Cát) cấp phép trên địa bàn tỉnh.
+  > * **Phân hệ thứ 2 - Dashboard cá nhân:** Thiết lập không gian làm việc chuyên biệt, cá nhân hóa phân tầng theo 3 cấp độ (Chuyên viên tác nghiệp, Trưởng phòng chuyên môn, và Lãnh đạo Ban) nhằm phân định rõ thẩm quyền và trách nhiệm công vụ của từng cán bộ.
+  > * **Phân hệ thứ 3 - Lịch cơ quan:** Thực hiện số hóa toàn diện công tác đăng ký, phê duyệt lịch họp, điều phối phòng họp trực quan và hỗ trợ phương thức trình chiếu lịch công tác tự động trên hệ thống Tivi sảnh điện tử treo tại trụ sở Ban.
+  > * **Phân hệ thứ 4 - Quản lý dự án:** Đây là trọng tâm tác nghiệp chuyên sâu, quản lý toàn diện vòng đời công trình qua 11 tab liên thông: từ lý lịch dự án, kế hoạch WBS/Gantt, theo dõi thi công thực tế (S-Curve & thời tiết AI), lập hồ sơ vốn giải ngân, đến thanh tra kiểm toán, giải phóng mặt bằng, quản lý quy trình, hồ sơ và quyết toán vốn hoàn thành.
+  > * **Phân hệ thứ 5 - Quản lý công việc:** Trạm kiểm soát và đánh giá kỷ luật công vụ của toàn bộ các phòng ban trực thuộc thông qua 3 tab nghiệp vụ thống nhất: Công việc tác nghiệp hàng ngày, Kế hoạch khung năm định hướng và Báo cáo giao ban tháng.
+  > * **Phân hệ thứ 6 - Nhân sự:** Quản lý cơ cấu tổ chức, quá trình công tác, năng lực chuyên môn của đội ngũ cán bộ, đồng thời theo dõi Team Workload làm cơ sở khoa học để đánh giá KPI hàng tháng.
+  > * **Phân hệ thứ 7 - Tài sản công:** Giám sát chặt chẽ toàn bộ vòng đời tài sản công của Ban từ khâu mua sắm, cấp phát sử dụng, bảo dưỡng định kỳ, tính khấu hao tự động đến thanh lý theo đúng Nghị định của Chính phủ.
+  > * **Phân hệ thứ 8 - Nhà thầu:** Lưu trữ cơ sở dữ liệu hồ sơ năng lực và tự động chấm điểm KPI nhà thầu dựa trên kết quả thi công, nghiệm thu thực tế tại hiện trường các gói thầu.
+  > * **Phân hệ thứ 9 - Đấu thầu & Hợp đồng:** Số hóa quy trình đấu thầu qua mạng, quản lý hồ sơ mời thầu, thông tin hợp đồng kinh tế và các phụ lục điều chỉnh phát sinh quy mô xây lắp, thiết bị.
+  > * **Phân hệ thứ 10 - KH Vốn & Giải ngân:** Kiểm soát kế hoạch phân bổ vốn đầu tư trung hạn và hàng năm được giao, tự động hóa tính toán giá trị thanh quyết toán và kết xuất biểu mẫu Phụ lục 03a/08b của Bộ Tài chính để gửi Kho bạc Nhà nước.
+  > * **Phân hệ thứ 11 - Môi trường dữ liệu chung CDE:** Quản lý tập trung toàn bộ bản vẽ thiết kế 2D/3D, bảo đảm lưu vết lịch sử phiên bản và tích hợp trình xem bản vẽ trực tuyến tốc độ cao không cần phần mềm chuyên dụng.
+  > * **Phân hệ thứ 12 - Mô hình BIM:** Tích hợp Viewer BIM 3D trực tuyến chuẩn IFC kết hợp Trợ lý BIM AI Agent giúp bóc tách khối lượng và highlight trực quan cấu kiện trên mô hình 3D qua câu hỏi Tiếng Việt tự nhiên.
+  > * **Phân hệ thứ 13 - Văn bản pháp luật:** Thư viện số hóa toàn bộ hệ thống văn bản quy phạm pháp luật xây dựng và quyết định pháp lý của Ban QLDA, tích hợp công nghệ AI OCR trích xuất thông tin tự động từ file PDF quyết định đã ký số.
+  > 
+  > Kính thưa Ban Giám đốc, sau đây đơn vị tư vấn xin phép bắt đầu phiên trình diễn chi tiết bằng góc nhìn điều hành vĩ mô của Giám đốc Ban QLDA."*
 * **Thao tác phần mềm:** Đăng nhập với vai trò **Giám đốc Ban QLDA** để vào màn hình Dashboard chính (`/`).
 
 ---
