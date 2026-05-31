@@ -61,7 +61,7 @@ graph TD
 *Hệ thống CIC QLDA được thiết kế đồng bộ, liên kết dữ liệu đa tầng nhằm số hóa toàn diện quy trình nghiệp vụ thực tế của Ban QLDA theo đúng giao diện hiển thị trên thanh Sidebar:*
 
 ### 1️⃣ Tổng quan (`/` - System Dashboard & Map)
-* **Vai trò:** Trung tâm chỉ huy số dành cho Ban Giám đốc và các lãnh đạo phòng ban chuyên môn.
+* **Vai trò:** Giao diện điều hành số tập trung dành cho Ban Giám đốc và các lãnh đạo phòng chuyên môn.
 * **Tính năng cốt lõi:**
   * **Khối KPI động (Stat Cards):** Giám sát thời gian thực tổng số dự án đang quản lý (phân tách rõ 3 giai đoạn: Chuẩn bị đầu tư, Thực hiện dự án, Kết thúc dự án), Lũy kế giải ngân dòng vốn, Kế hoạch vốn năm và Tình hình giải ngân năm.
   * **AI Summary Widget:** Trợ lý trí tuệ nhân tạo Gemini quét và đưa ra báo cáo nhanh tình trạng hệ thống, tự động cảnh báo các "điểm nóng" (trễ hạn, giải ngân thấp) trong vòng 5 giây.
@@ -79,7 +79,7 @@ graph TD
 * **Vai trò:** Số hóa công tác điều hành hành chính, đăng ký lịch công tác và điều phối phòng họp thông minh.
 * **Tính năng cốt lõi:**
   * **Lịch tương tác kéo thả:** Đăng ký lịch họp, lịch đi hiện trường trực quan thông qua Slide Panel trượt. Hỗ trợ thao tác kéo thả (drag-and-drop) để thay đổi thời gian họp nhanh và tự động gửi thông báo qua email/hệ thống cho các thành phần tham dự.
-  * **Tivi sảnh điện tử (Lobby Display) 🌟 [WOW EFFECT]:** Giao diện Dark Mode chuyên dụng dành riêng cho màn hình Tivi sảnh chính hoặc hành lang cơ quan. Tự động đồng bộ và làm tươi dữ liệu mỗi 60 giây, giúp cán bộ và đối tác dễ dàng theo dõi lịch họp của lãnh đạo Ban trong ngày.
+  * **Tivi sảnh điện tử (Lobby Display):** Giao diện Dark Mode chuyên dụng dành riêng cho màn hình Tivi sảnh chính hoặc hành lang cơ quan. Tự động đồng bộ và làm tươi dữ liệu mỗi 60 giây, giúp cán bộ và đối tác dễ dàng theo dõi lịch họp của lãnh đạo Ban trong ngày.
 
 ### 4️⃣ Quản lý dự án (`/projects` - Project Detail & 11 Tabs)
 * **Vai trò:** Cơ sở dữ liệu tập trung, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
@@ -139,8 +139,8 @@ graph TD
   * Cấu trúc cây thư mục hồ sơ khoa học phân tầng theo giai đoạn dự án. Hỗ trợ xem trực tuyến các định dạng bản vẽ 2D/3D (PDF, DWG...) trực tiếp trên Web với tốc độ cực nhanh mà không cần cài đặt phần mềm chuyên ngành.
   * Quản lý phiên bản tài liệu (Version Control) chặt chẽ, tự động ghi vết người sửa đổi và hỗ trợ so sánh nhanh sự khác biệt giữa các phiên bản bản vẽ thiết kế kỹ thuật.
 
-### 1️⃣2️⃣ Mô hình BIM (`/bim` - 3D BIM Viewer & AI Agent) 🌟 [WOW EFFECT]
-* **Vai trò:** Đột phá công nghệ số hóa mô hình 3D công trình tích hợp Trí tuệ nhân tạo (Generative AI).
+### 1️⃣2️⃣ Mô hình BIM (`/bim` - 3D BIM Viewer & AI Agent)
+* **Vai trò:** Ứng dụng công nghệ số hóa mô hình 3D công trình tích hợp Trí tuệ nhân tạo (Generative AI).
 * **Tính năng cốt lõi:**
   * Nền tảng Web Viewer BIM 3D chuẩn IFC mượt mà, hỗ trợ các thao tác xoay, zoom, cắt lớp trực quan, nhấp chọn cấu kiện để xem thuộc tính kỹ thuật chi tiết.
   * **Trợ lý BIM AI Agent (BIM Chatbot):** Tích hợp hộp chat AI thông minh, cho phép kỹ sư/lãnh đạo gõ câu hỏi bằng Tiếng Việt tự nhiên (Ví dụ: *"Tính thể tích dầm sàn tầng 3?"*) để AI tự động truy vấn dữ liệu BIM trả về kết quả số liệu tức thì, hoặc yêu cầu AI tự động tô màu đỏ (Highlight) trực quan các cấu kiện chưa được nghiệm thu trực tiếp trên mô hình 3D.
@@ -377,7 +377,7 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 ---
 
 ### 🗓️ TẦNG 4.2: ĐIỀU HÀNH HÀNH CHÍNH - PHÂN HỆ LỊCH CƠ QUAN & TIVI SẢNH ĐIỆN TỬ (`/calendar`) (10 Phút)
-* **Mục tiêu:** Trình diễn năng lực quản lý lịch họp, điều phối phòng họp nội bộ thông minh và tính năng **Wow Effect** - Trình chiếu tivi sảnh điện tử.
+* **Mục tiêu:** Trình diễn năng lực quản lý lịch họp, điều phối phòng họp nội bộ thông minh và tính năng trình chiếu tivi sảnh điện tử.
 * **Tình huống Demo:** Chuyên viên phòng Hành chính – Tổng hợp tiếp nhận yêu cầu đăng nhập lịch họp giao ban điều phối dự án và thực hiện kéo thả thay đổi thời gian họp trực quan.
 
 Presenter giới thiệu qua 2 chế độ hiển thị đặc biệt:
@@ -388,13 +388,13 @@ Presenter giới thiệu qua 2 chế độ hiển thị đặc biệt:
   2. **Kéo thả drag-and-drop:** Cầm chuột kéo một cuộc họp từ Thứ Ba sang Thứ Tư. Hệ thống hiển thị hộp thoại xác nhận đổi thời gian họp và tự động thông báo nhắc lịch cho toàn bộ cán bộ tham dự.
   3. **Bộ lọc lịch thông minh:** Lọc nhanh lịch theo Phòng họp hoặc loại lịch công tác để kiểm tra xem phòng họp lớn có bị trùng lịch trong ngày không.
 
-#### 2. Chế độ Tivi Sảnh điện tử (`LobbyDisplay` - Tivi sảnh) 🌟 [WOW EFFECT]
+#### 2. Chế độ Tivi Sảnh điện tử (`LobbyDisplay` - Tivi sảnh)
 * **Thao tác:** Trên thanh điều khiển lịch, click chuyển sang chế độ **"Tivi Sảnh"**.
 * **Hiển thị trực quan:** Giao diện lịch chuyển đổi hoàn toàn sang **giao diện Dark Mode chuyên dụng** với font chữ to rõ nét, độ tương phản cực cao, hiển thị danh sách các phòng họp và lịch họp của cơ quan diễn ra trong ngày hôm nay. Treo ở sảnh chính hoặc hành lang cơ quan Ban QLDA. Tự động cập nhật mỗi 60 giây.
 
 ---
 
-### 🌐 TẦNG 5: ĐỘT PHÁ CÔNG NGHỆ - CDE, BIM & TRỢ LÝ BIM AI AGENT (10 Phút) 🌟 [WOW EFFECT]
+### 🌐 TẦNG 5: ỨNG DỤNG CÔNG NGHỆ HIỆN ĐẠI - CDE, BIM & TRỢ LÝ BIM AI AGENT (10 Phút)
 #### Phân hệ: Môi Trường Dữ Liệu Chung CDE, Viewer BIM 3D Trực Tuyến & Trợ Lý Hỏi Đáp BIM LLM Agent (`/cde` & `/bim`)
 
 > [!IMPORTANT]
