@@ -57,6 +57,102 @@ graph TD
 
 ---
 
+## 📋 TỔNG QUAN TÍNH NĂNG 13 PHÂN HỆ THEO TRÌNH TỰ SIDEBAR
+*Hệ thống CIC QLDA được thiết kế đồng bộ, liên kết dữ liệu đa tầng nhằm số hóa toàn diện quy trình nghiệp vụ thực tế của Ban QLDA theo đúng giao diện hiển thị trên thanh Sidebar:*
+
+### 1️⃣ Tổng quan (`/` - System Dashboard & Map)
+* **Vai trò:** Trung tâm chỉ huy số dành cho Ban Giám đốc và các lãnh đạo phòng ban chuyên môn.
+* **Tính năng cốt lõi:**
+  * **Khối KPI động (Stat Cards):** Giám sát thời gian thực tổng số dự án đang quản lý (phân tách rõ 3 giai đoạn: Chuẩn bị đầu tư, Thực hiện dự án, Kết thúc dự án), Lũy kế giải ngân dòng vốn, Kế hoạch vốn năm và Tình hình giải ngân năm.
+  * **AI Summary Widget:** Trợ lý trí tuệ nhân tạo Gemini quét và đưa ra báo cáo nhanh tình trạng hệ thống, tự động cảnh báo các "điểm nóng" (trễ hạn, giải ngân thấp) trong vòng 5 giây.
+  * **Biểu đồ điều hành (Charts):** So sánh giải ngân và giám sát tiến độ công việc trực quan của từng Phòng QLDA 1, 2, 3 để đánh giá hiệu suất.
+  * **Bản đồ số dự án & Mỏ vật liệu (Interactive Map):** Tích hợp bản đồ số định vị chính xác vị trí công trình và các mỏ vật liệu xây dựng (Đất, Đá, Cát) cấp phép trên địa bàn Hà Tĩnh, hỗ trợ tối ưu cự ly vận chuyển và điều phối nguồn lực tại công trường.
+
+### 2️⃣ Dashboard cá nhân (`/my-dashboard` - Role-based Dashboard)
+* **Vai trò:** Không gian làm việc cá nhân hóa, tối ưu hóa năng suất và giảm thiểu nhiễu thông tin cho từng cán bộ.
+* **Phân tầng 3 cấp độ tác nghiệp:**
+  * **Cấp chuyên viên (Staff):** Tập trung hiển thị danh sách nhiệm vụ được giao (My Tasks), cảnh báo thời hạn hoàn thành (Deadline), lịch công tác cá nhân và hộp thư xử lý nhanh hồ sơ bị phản hồi.
+  * **Cấp Trưởng phòng (Manager):** Giám sát biểu đồ tải trọng công việc của phòng (Team Workload) để phân công khoa học, theo dõi tiến độ tổng thể phòng và trạm duyệt hồ sơ trực tuyến cấp phòng (Pending Approvals).
+  * **Cấp Lãnh đạo Ban (Director):** Theo dõi tiến trình thực hiện kết luận, chỉ đạo giao ban toàn cơ quan và hộp ký duyệt số trực tuyến các hồ sơ thanh quyết toán đã qua thẩm định.
+
+### 3️⃣ Lịch cơ quan (`/calendar` - Agency Calendar & Lobby Tivi)
+* **Vai trò:** Số hóa công tác điều hành hành chính, đăng ký lịch công tác và điều phối phòng họp thông minh.
+* **Tính năng cốt lõi:**
+  * **Lịch tương tác kéo thả:** Đăng ký lịch họp, lịch đi hiện trường trực quan thông qua Slide Panel trượt. Hỗ trợ thao tác kéo thả (drag-and-drop) để thay đổi thời gian họp nhanh và tự động gửi thông báo qua email/hệ thống cho các thành phần tham dự.
+  * **Tivi sảnh điện tử (Lobby Display) 🌟 [WOW EFFECT]:** Giao diện Dark Mode chuyên dụng dành riêng cho màn hình Tivi sảnh chính hoặc hành lang cơ quan. Tự động đồng bộ và làm tươi dữ liệu mỗi 60 giây, giúp cán bộ và đối tác dễ dàng theo dõi lịch họp của lãnh đạo Ban trong ngày.
+
+### 4️⃣ Quản lý dự án (`/projects` - Project Detail & 11 Tabs)
+* **Vai trò:** "Vũ trụ dữ liệu" cốt lõi, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
+* **Tích hợp 11 tab tác nghiệp chuyên sâu:**
+  1. *Tổng quan (`info`):* Lý lịch dự án, thanh Stepper vòng đời dự án (Stage History), thông tin bàn giao/tiếp nhận dự án từ chủ đầu tư cũ, và biểu đồ chênh lệch dòng vốn (`BudgetVarianceCard`).
+  2. *Kế hoạch (`plan`):* Lập tiến độ và phân công công việc với 5 chế độ xem linh hoạt (WBS cấu trúc cây, Gantt đường găng, Kanban kéo thả, Nguồn lực nhân sự, Ma trận RACI). Tự động dịch chuyển ngày kế tiếp (Date Propagation) khi công việc trước bị trễ.
+  3. *Gói thầu (`packages`):* Sổ tay quản lý đấu thầu và hợp đồng, so sánh giá gói thầu vs giá trúng thầu để đánh giá hiệu quả tiết kiệm ngân sách.
+  4. *Thi công (`construction`):* Quản lý nhật ký thi công trực tuyến, biểu đồ tiến độ thực tế so với kế hoạch (S-Curve), thư viện ảnh hiện trường nghiệm thu và tích hợp Weather Widget dự báo thời tiết bằng AI.
+  5. *Vốn & Giải ngân (`capital`):* Lập kế hoạch phân bổ vốn trung hạn và hàng năm, lập hồ sơ giải ngân (tạm ứng, thanh toán khối lượng hoàn thành, thu hồi tạm ứng) tự động điền biểu mẫu Bộ Tài chính (Phụ lục 03a/08b) và import dữ liệu Kho bạc.
+  6. *Thanh tra (`inspection`):* Ghi nhận quyết định thanh tra, kiểm toán; trực quan hóa các kết luận khắc phục tài chính (thu hồi nộp ngân sách, giảm trừ quyết toán) dưới dạng biểu đồ.
+  7. *Quyết toán (`settlement`):* Theo dõi quy trình 5 bước quyết toán dự án hoàn thành theo Nghị định 99/2021/NĐ-CP, cảnh báo thời hạn pháp lý đếm ngược.
+  8. *Quy trình (`workflow`):* Vận hành và giám sát các luồng phê duyệt hồ sơ nội bộ Ban QLDA (duyệt thiết kế 1 bước, 2 bước, 3 bước) tích hợp ký duyệt trực tiếp trên Slide Panel.
+  9. *GPMB (`clearance`):* Quản lý đền bù giải phóng mặt bằng với 16 bước Milestone chuẩn hóa, giám sát diện tích bàn giao, số hộ dân tái định cư và tiến độ giải ngân kinh phí đền bù.
+  10. *Hồ sơ (`documents`):* Tủ hồ sơ số hóa dự án, tích hợp AI Compliance Panel quét phát hiện các văn bản còn thiếu so với quy định pháp luật xây dựng hiện hành và AI Document Drafter tự động soạn thảo tờ trình.
+  11. *Đồng bộ CSDL (`tt24`):* Danh mục hồ sơ chuẩn hóa Phần A & B theo Thông tư 24/2021/TT-BXD, tích hợp AI OCR trích xuất thông tin tự động từ file PDF quyết định ký số để điền vào hệ thống.
+
+### 5️⃣ Quản lý công việc (`/work-plan` - Work Management)
+* **Vai trò:** Quản trị kỷ luật công vụ của toàn bộ cán bộ và các phòng ban trực thuộc ngoài phạm vi dự án riêng lẻ.
+* **Hệ thống 3 Tab nghiệp vụ chuẩn hóa:**
+  * **Công việc (`tasks`):** Khối KPI động toàn cơ quan, 4 bộ lọc nhanh kỷ luật (Việc của tôi, Quá hạn, Chưa cập nhật tuần này, Chờ duyệt đề xuất), và danh sách công việc phân nhóm theo dự án tích hợp xuất/nhập Excel hàng loạt (`exceljs`).
+  * **KH khung năm (`annual`):** Lập kế hoạch khung định hướng chiến lược cả năm của phòng ban được lãnh đạo duyệt, làm cơ sở để phân rã nhiệm vụ chi tiết.
+  * **Báo cáo tháng (`monthly-report`):** Số hóa quy trình lập kế hoạch tháng mới (`plan`) và tự động tổng hợp kết quả sản lượng hoàn thành để xuất báo cáo giao ban tháng (`report`) định dạng Excel/PDF gửi Ban Giám đốc chỉ trong 1 chạm.
+
+### 6️⃣ Nhân sự (`/employees` - Human Resources)
+* **Vai trò:** Quản lý cơ cấu tổ chức, hồ sơ lý lịch cán bộ của toàn Ban QLDA.
+* **Tính năng cốt lõi:**
+  * Số hóa hồ sơ cán bộ trực tuyến, lưu trữ quá trình công tác, bằng cấp chuyên môn và chứng chỉ hành nghề xây dựng.
+  * Quản trị phân quyền tài khoản chặt chẽ theo ma trận vai trò, kết nối chặt chẽ với Team Workload trên các Dashboard cấp quản lý để theo dõi định mức tải công việc và đánh giá KPI cuối tháng.
+
+### 7️⃣ Tài sản công (`/assets` - Public Assets)
+* **Vai trò:** Quản lý chặt chẽ vòng đời của toàn bộ tài sản công được giao cho Ban QLDA quản lý và sử dụng.
+* **Tính năng cốt lõi:**
+  * Quản lý danh mục tài sản văn phòng, phương tiện công tác (xe công), thiết bị đo đạc hiện trường chuyên dụng.
+  * Ghi vết toàn bộ quá trình từ mua sắm, cấp phát sử dụng cho từng phòng ban/cán bộ, bảo dưỡng định kỳ, tính toán khấu hao tài sản tự động đến khi làm thủ tục thanh lý tài sản theo đúng quy chuẩn Nghị định Tài sản công.
+
+### 8️⃣ Nhà thầu (`/contractors` - Contractor Management)
+* **Vai trò:** Quản lý cơ sở dữ liệu đối tác thi công, tư vấn và đánh giá năng lực nhà thầu.
+* **Tính năng cốt lõi:**
+  * Số hóa hồ sơ năng lực của từng nhà thầu đơn lẻ hoặc liên danh, lưu vết lịch sử thực hiện các gói thầu tại Ban QLDA.
+  * Hệ thống chấm điểm KPI nhà thầu tự động dựa trên kết quả nghiệm thu thực tế hiện trường (chất lượng thi công, mức độ tuân thủ tiến độ, an toàn lao động, sự phối hợp thanh quyết toán) làm cơ sở tham chiếu khách quan cho công tác đấu thầu trong tương lai.
+
+### 9️⃣ Đấu thầu & Hợp đồng (`/bidding` - Bidding & Contracts)
+* **Vai trò:** Số hóa toàn diện quy trình lựa chọn nhà thầu và quản lý hợp đồng kinh tế.
+* **Tính năng cốt lõi:**
+  * Quản lý tiến trình đấu thầu qua mạng (lập hồ sơ mời thầu, hồ sơ yêu cầu, làm rõ thầu, mở thầu và phê duyệt quyết định trúng thầu).
+  * Quản lý chặt chẽ thông tin hợp đồng kinh tế, theo dõi bảo lãnh thực hiện hợp đồng, thời hạn hiệu lực hợp đồng. Ghi nhận chính xác các Phụ lục hợp đồng điều chỉnh quy mô, phát sinh khối lượng và gia hạn tiến độ.
+
+### 🔟 KH Vốn & Giải ngân (`/capital-planning` - Capital & Disbursement)
+* **Vai trò:** Kiểm soát tối cao nguồn lực tài chính đầu tư công của toàn Ban QLDA.
+* **Tính năng cốt lõi:**
+  * Lập kế hoạch vốn đầu tư trung hạn 5 năm của Ban và phân bổ chi tiết kế hoạch vốn hàng năm được Ủy ban tỉnh giao.
+  * Tự động hóa tính toán giá trị tạm ứng, theo dõi tỷ lệ thu hồi tạm ứng tự động và kết xuất phụ lục thanh toán khối lượng hoàn thành theo Biểu mẫu Phụ lục 03a và 08b của Bộ Tài chính gửi Kho bạc Nhà nước. Tích hợp thanh cảnh báo rủi ro dòng vốn (`CapitalAlertBanner`).
+
+### 1️⃣1️⃣ Môi trường dữ liệu chung CDE (`/cde` - Common Data Environment)
+* **Vai trò:** Nền tảng số quản lý và lưu trữ tập trung toàn bộ hồ sơ thiết kế, bản vẽ và văn bản dự án.
+* **Tính năng cốt lõi:**
+  * Cấu trúc cây thư mục hồ sơ khoa học phân tầng theo giai đoạn dự án. Hỗ trợ xem trực tuyến các định dạng bản vẽ 2D/3D (PDF, DWG...) trực tiếp trên Web với tốc độ cực nhanh mà không cần cài đặt phần mềm chuyên ngành.
+  * Quản lý phiên bản tài liệu (Version Control) chặt chẽ, tự động ghi vết người sửa đổi và hỗ trợ so sánh nhanh sự khác biệt giữa các phiên bản bản vẽ thiết kế kỹ thuật.
+
+### 1️⃣2️⃣ Mô hình BIM (`/bim` - 3D BIM Viewer & AI Agent) 🌟 [WOW EFFECT]
+* **Vai trò:** Đột phá công nghệ số hóa mô hình 3D công trình tích hợp Trí tuệ nhân tạo (Generative AI).
+* **Tính năng cốt lõi:**
+  * Nền tảng Web Viewer BIM 3D chuẩn IFC mượt mà, hỗ trợ các thao tác xoay, zoom, cắt lớp trực quan, nhấp chọn cấu kiện để xem thuộc tính kỹ thuật chi tiết.
+  * **Trợ lý BIM AI Agent (BIM Chatbot):** Tích hợp hộp chat AI thông minh, cho phép kỹ sư/lãnh đạo gõ câu hỏi bằng Tiếng Việt tự nhiên (Ví dụ: *"Tính thể tích dầm sàn tầng 3?"*) để AI tự động truy vấn dữ liệu BIM trả về kết quả số liệu tức thì, hoặc yêu cầu AI tự động tô màu đỏ (Highlight) trực quan các cấu kiện chưa được nghiệm thu trực tiếp trên mô hình 3D.
+
+### 1️⃣3️⃣ Văn bản pháp luật (`/legal-documents` hoặc `/regulations`)
+* **Vai trò:** Thư viện số hóa toàn bộ hệ thống văn bản quy phạm pháp luật xây dựng và quyết định pháp lý của Ban QLDA.
+* **Tính năng cốt lõi:**
+  * Lưu trữ tập trung các Nghị định, Thông tư, Quy chuẩn kỹ thuật xây dựng và các Quyết định nội bộ của Ban QLDA.
+  * Tích hợp công nghệ AI OCR trích xuất thông tin tự động khi tải lên file PDF đã ký số, giúp tự động điền các thông tin pháp lý (số hiệu, ngày ban hành, người ký) vào cơ sở dữ liệu hệ thống, phục vụ công tác tra cứu nhanh của cán bộ.
+
+---
+
 ### 🔑 Giai đoạn khởi động: Thiết lập bối cảnh demo (5 phút)
 * **Thao tác:** Presenter truy cập vào màn hình đăng nhập hệ thống (`/login`).
 * **Lời thoại Presenter:** 
