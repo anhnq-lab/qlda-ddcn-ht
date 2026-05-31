@@ -118,30 +118,6 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 ##### 4. Tối ưu hóa Nguồn lực (AIResourceOptimizer)
 * **Nghiệp vụ:** AI đề xuất cách phân bổ dòng tiền giải ngân tối ưu cho các dự án giải ngân tốt, điều phối nhân sự cán bộ QLDA giữa các phòng QLDA 1, 2, 3 để tránh tình trạng quá tải cục bộ.
 
----
-
-#### 📌 TAB 4: PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/tasks`)
-* **Mục tiêu:** Cung cấp cho Ban Giám đốc công cụ kiểm soát tối cao về kỷ luật hành chính và tiến độ xử lý công việc của toàn thể cán bộ trong cơ quan.
-* **Thao tác:** Presenter chuyển sang trang Quản lý Công việc toàn Ban (`/tasks`).
-
-##### 1. Khối KPI Sức khỏe Công vụ (TaskStatsRow)
-* **Các chỉ số hiển thị:** Tổng số việc đang giao, số việc chưa làm, số việc đang tiến hành, số việc đã hoàn thành, số việc trễ hẹn quá hạn (`overdue`) và đặc biệt là **Tỷ lệ hoàn thành công việc toàn cơ quan (% Completion)**.
-  * *Ý nghĩa:* Giúp Giám đốc Ban đánh giá ngay lập tức hiệu suất làm việc tổng thể của toàn Ban tại thời điểm hiện tại.
-
-##### 2. 5 Bộ lọc Nghiệp vụ Đột phá (Quick Filters)
-Presenter bấm click chọn lần lượt các bộ lọc để trình bày khả năng rà soát tức thời:
-* **Bộ lọc "Quá hạn" (`filterOverdue`):** Hiện ngay các công việc đã trễ hẹn so với deadline được giao. Giám đốc có thể chất vấn Trưởng phòng chịu trách nhiệm.
-* **Bộ lọc "Chưa cập nhật tuần này" (`filterNotUpdatedThisWeek`):** Một tính năng cực kỳ thông minh giúp phát hiện những đầu việc bị chuyên viên "bỏ quên", không hề có cập nhật tiến độ hay nhật ký xử lý trong suốt tuần qua.
-* **Bộ lọc "Đề xuất chờ duyệt" (`filterPendingProposal`):** Hiển thị danh sách các công việc do chuyên viên tự đề xuất lên từ hiện trường để xin ý kiến của Trưởng phòng hoặc Ban Giám đốc duyệt bổ sung vào kế hoạch.
-* **Bộ lọc cá nhân ("Của tôi") & Bộ lọc Phòng ban (`filterDepartment`):** Lọc nhanh công việc thuộc trách nhiệm của từng phòng cụ thể (ví dụ: Phòng QLDA 2).
-
-##### 3. Đa góc nhìn Tác nghiệp (View Modes)
-* **Chế độ bảng (List View):** Hiển thị danh mục công việc chi tiết. Hỗ trợ **Thao tác hàng loạt (Batch Actions)** cực kỳ nhanh: click chọn nhiều công việc và cùng lúc thay đổi trạng thái sang *Hoàn thành* hoặc *Chờ duyệt* chỉ bằng 1 click.
-* **Chế độ bảng Kanban (Kanban View):** Chuyển đổi sang giao diện Kanban trực quan, kéo thả công việc qua các cột trạng thái (*Mới*, *Đang làm*, *Chờ duyệt*, *Chưa xong*, *Đã xong*).
-
-##### 4. Tác vụ Excel thông minh (Excel JS)
-* **Xuất báo cáo Excel chuyên nghiệp:** Click nút **"Xuất Excel"**, hệ thống tự động tải về file Excel danh sách công việc được định dạng tuyệt đẹp, tự động tô màu các ô theo trạng thái (xanh cho hoàn thành, hồng cho trễ hạn), ghi đầy đủ Căn cứ pháp lý và Sản phẩm đầu ra.
-* **Nhập Excel hàng loạt (Import Excel):** Trình diễn nút tải file Excel mẫu chuẩn, nhập dữ liệu hàng chục công việc từ file Excel ngoài vào hệ thống chỉ trong 2 giây.
 
 ---
 
@@ -313,6 +289,67 @@ Trước khi đi vào các tab, Presenter giới thiệu nhanh 2 nút bấm "quy
 
 * **Lời thoại Presenter kết luận phân đoạn:**
   > *"Kính thưa Ban Giám đốc, qua việc khám phá chi tiết 11 tab tác nghiệp bên trong một dự án, chúng ta có thể thấy CIC QLDA không đơn thuần là một phần mềm lưu trữ văn bản. Đây là một thực thể quản lý sống động. Dòng tiền từ kế hoạch vốn ở Tab 5 tự động liên kết với giá trị hợp đồng ở Tab 3; tiến độ thi công thực tế ở Tab 4 tự động hiệu chỉnh ngày kết thúc trên biểu đồ Gantt ở Tab 2; toàn bộ hồ sơ bản vẽ được AI kiểm tra tính tuân thủ pháp lý ở Tab 10 và sẵn sàng cho công tác quyết toán ở Tab 7 hay đồng bộ nhà nước ở Tab 11. Tất cả tạo nên một hệ sinh thái dữ liệu khép kín, nhất quán và minh bạch tuyệt đối."*
+
+---
+
+### 📂 PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/work-plan`)
+#### Kiểm Soát Kỷ Luật Công Vụ Qua 3 Tab Nghiệp Vụ Toàn Diện (15 Phút)
+
+* **Mục tiêu:** Trình diễn năng lực quản trị công việc toàn cơ quan ngoài phạm vi dự án riêng lẻ. Phân hệ giúp Ban Giám đốc kiểm soát kỷ luật công vụ của toàn bộ các phòng ban thông qua **3 Tab nghiệp vụ chuẩn hóa** khớp 100% giao diện thực tế.
+* **Thao tác:** Presenter click vào menu **"Quản lý công việc"** ở Sidebar bên trái để chuyển sang trang `/work-plan`.
+
+---
+
+#### 📌 TAB 1️⃣: CÔNG VIỆC (`tasks`) - Trung Tâm Kiểm Soát & Rà Soát Tác Nghiệp
+* **Giao diện tổng quan:** Giao diện bảng lưới hiện đại, tích hợp các bộ lọc thông minh ở góc phải (Dự án, Loại công việc, Trạng thái, Phòng ban thụ lý, Tháng, Năm).
+
+1. **Khối 5 Chỉ số KPI Động toàn cơ quan (Stat Cards):**
+   * **Tổng công việc:** Hiển thị tổng số lượng việc đang giao của phòng ban được chọn (Ví dụ phòng HC-TH: *59 công việc*, đi kèm tỷ lệ hoàn thành công việc tổng thể đạt *68%*).
+   * **Công việc mới:** Các đầu việc vừa được tạo, đang chờ xử lý (*0 việc*).
+   * **Đang thực hiện:** Các công việc đang được triển khai ngoài thực địa hoặc văn phòng (*0 việc*).
+   * **Hoàn thành:** Đầu việc đã hoàn thành và nghiệm thu sản phẩm (*41 việc*).
+   * **Chưa hoàn thành:** Các công việc chưa đạt yêu cầu hoặc đang bị chậm trễ (*19 việc*).
+   * **Quá hạn:** Cảnh báo các công việc đã vượt quá hạn chót mà chưa hoàn thành (*0 việc*).
+
+2. **4 Bộ lọc nhanh Kỷ luật Công vụ (Quick Filters):**
+   * Presenter lần lượt click chọn 4 nút lọc nhanh phía dưới Stat Cards để biểu diễn khả năng truy xuất:
+     * *Việc của tôi:* Hiện các công việc do chính tài khoản đang đăng nhập thụ lý.
+     * *Qua hạn:* Lọc nhanh các việc trễ deadline.
+     * *Chưa cập nhật tuần này:* Phát hiện ngay các công việc "đóng băng", cán bộ không ghi nhật ký hay báo cáo tiến độ trong tuần.
+     * *Chờ duyệt đề xuất:* Các việc do cán bộ tự đề xuất chờ Trưởng phòng duyệt bổ sung vào kế hoạch.
+
+3. **Bảng Danh sách Công việc Phân nhóm theo Dự án:**
+   * Hệ thống tự động phân nhóm các công việc theo từng dự án lớn (Ví dụ: Dự án đường Cẩm Sơn đi Cẩm Thịnh, Nhà đa chức năng 2 tầng Trường Mầm non Đức Đồng...).
+   * **Các trường thông tin chi tiết trên từng hàng công việc:**
+     * *Tên công việc:* (Ví dụ: *"Lập hồ sơ và hoàn tạm ứng KBNN chi phí GPMB"*, *"Sở dự án hoàn thành BCQT nộp QT (Sở Tài chính)"*).
+     * *Phân loại (Category):* Gắn tag phân loại rõ ràng (Thanh toán, Điều hành, Quyết toán, Điều chỉnh, Báo cáo...) giúp phân định tính chất công việc.
+     * *Phòng ban:* Badge xanh thể hiện phòng ban thụ lý (Ví dụ: Phòng Hành chính - Tổng hợp).
+     * *Tiến độ:* Progress bar trực quan thể hiện phần trăm hoàn thành (Ví dụ: *0%*, *100%*).
+     * *Phụ trách:* Tên và avatar của chuyên viên (Ví dụ: Nguyễn Thanh Nam, Nguyễn Thị Thuận...).
+     * *Trạng thái:* Badge màu sắc rõ nét thể hiện trạng thái (*CHƯA HOÀN THÀNH* màu đỏ nhạt, *HOÀN THÀNH* màu xanh lá).
+     * *Hạn chót & Ưu tiên:* Ngày cụ thể (Ví dụ: *31/05/2026*) và mức độ ưu tiên (*TRUNG BÌNH* màu xanh dương, *CAO* màu cam).
+
+4. **Tác vụ nhanh (Excel & CRUD):**
+   * Trình diễn nút **"Xuất Excel"** và **"Nhập Excel"** hàng loạt công việc bằng tệp mẫu (`exceljs`) giúp số hóa hàng trăm đầu việc chỉ trong vài giây.
+
+---
+
+#### 📌 TAB 2️⃣: KH KHUNG NĂM (`annual`) - Định Hướng Chiến Lược Toàn Ban
+* **Mục tiêu:** Lập kế hoạch khung cả năm của phòng ban/cơ quan (kế hoạch công tác năm, nhiệm vụ trọng tâm được giao) làm nền tảng pháp lý và định hướng phân rã công việc.
+* **Nghiệp vụ:** Trưởng phòng lập danh mục các mục tiêu, mốc hoàn thành lớn của năm tài khóa được Ban Giám đốc duyệt, làm cơ sở để phân rã chi tiết thành các kế hoạch tháng và công việc tuần.
+
+---
+
+#### 📌 TAB 3️⃣: BÁO CÁO THÁNG (`monthly-report`) - Đánh Giá & Xuất Bản Báo Cáo Tự Động
+* **Mục tiêu:** Số hóa toàn diện quy trình lập kế hoạch và báo cáo sản lượng hàng tháng của toàn Ban QLDA.
+* **2 Phân hệ con (Sub-tabs):**
+  1. **Kế hoạch tháng (`plan`):** Cán bộ và Trưởng phòng phối hợp lập kế hoạch làm việc chi tiết cho tháng mới theo từng phòng ban chuyên môn.
+  2. **Báo cáo tháng (`report`):** Hệ thống tự động tổng hợp toàn bộ sản lượng, tiến độ công việc thực tế đã hoàn thành trong tháng của phòng ban đó để **Xuất báo cáo giao ban tự động (file Excel/PDF)** gửi Ban Giám đốc, giúp tiết kiệm 100% thời gian viết báo cáo giấy thủ công của các Trưởng phòng vào cuối tháng.
+
+---
+
+* **Lời thoại Presenter kết luận phân đoạn:**
+  > *"Kính thưa Ban Giám đốc, phân hệ Quản lý công việc toàn Ban chính là chìa khóa để số hóa kỷ luật công sở. Lãnh đạo Ban không cần đi sâu vào từng dự án vẫn có thể kiểm soát được phòng Hành chính - Tổng hợp đang có bao nhiêu việc chưa hoàn thành, phòng QLDA 2 có những đầu việc nào trễ hạn tuần này. Mọi kế hoạch năm, kế hoạch tháng đều liên kết chặt chẽ với từng đầu việc của cán bộ, giúp công tác điều hành của Ban luôn trôi chảy và khoa học."*
 
 ---
 

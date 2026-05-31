@@ -103,16 +103,6 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
   * **AIAnomalyDetector (Phát hiện điểm bất thường):** Cảnh báo khối lượng nghiệm thu thanh toán tăng vọt bất thường hoặc dự toán phát sinh vượt quá hạn mức định mức xây dựng.
   * **AIContractorScoring (Chấm điểm nhà thầu):** Đánh giá uy tín nhà thầu dựa trên lịch sử thi công để lãnh đạo lựa chọn đối tác tin cậy.
 
----
-
-##### 📌 TAB 4: PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/tasks`)
-* **Mục tiêu:** Cung cấp cho Ban Giám đốc công cụ kiểm soát tối cao về kỷ luật hành chính và tiến độ xử lý công việc của toàn thể cán bộ trong cơ quan.
-* **Thao tác:** Presenter chuyển sang trang Quản lý Công việc toàn Ban (`/tasks`).
-* **Nghiệp vụ:**
-  * **Khối KPI Sức khỏe Công vụ:** Tổng số việc đang giao, số việc chưa làm, số việc đang tiến hành, số việc đã hoàn thành, số việc trễ hẹn quá hạn (`overdue`) và đặc biệt là **Tỷ lệ hoàn thành công việc toàn cơ quan (% Completion)**.
-  * **5 Bộ lọc Nghiệp vụ Đột phá:** Lọc nhanh công việc "Quá hạn", công việc "Chưa cập nhật tuần này" (phát hiện việc bị bỏ quên), công việc "Đề xuất chờ duyệt" (xin ý kiến bổ sung kế hoạch), và lọc theo Phòng ban (`filterDepartment`).
-  * **Đa góc nhìn Tác nghiệp:** List View hỗ trợ Thao tác hàng loạt (Batch Actions - đổi trạng thái, xóa hàng loạt) và Kanban View kéo thả công việc trực quan qua các cột trạng thái.
-  * **Tác vụ Excel thông minh (Excel JS):** Xuất danh mục công việc ra file Excel tuyệt đẹp (tự động tô màu theo trạng thái) và Nhập hàng loạt công việc từ file Excel mẫu chỉ trong 2 giây.
 
 ---
 
@@ -182,6 +172,37 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 ##### Tab 1️⃣1️⃣: ĐỒNG BỘ CSDL (`tt24`) - Tuân Thủ Thông Tư 24
 * **Số hóa:** Mục lục hồ sơ chuẩn Phần A (dữ liệu chung) & Phần B (thiết kế triển khai sau thiết kế cơ sở) theo Thông tư 24/2021/TT-BXD.
 * **AI OCR Extraction:** Người dùng upload tệp PDF quyết định ký số, AI tự động quét (OCR) bóc tách số quyết định, ngày ban hành, tổng mức đầu tư được duyệt để tự động điền vào cơ sở dữ liệu hệ thống mà không cần gõ tay.
+
+---
+
+### 📂 PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/work-plan`)
+#### Kiểm Soát Kỷ Luật Công Vụ Qua 3 Tab Nghiệp Vụ Toàn Diện (15 Phút)
+
+* **Mục tiêu:** Trình diễn năng lực quản trị công việc toàn cơ quan ngoài phạm vi dự án riêng lẻ. Phân hệ giúp Ban Giám đốc kiểm soát kỷ luật công vụ của toàn bộ các phòng ban thông qua **3 Tab nghiệp vụ chuẩn hóa** khớp 100% giao diện thực tế.
+* **Thao tác:** Presenter click vào menu **"Quản lý công việc"** ở Sidebar bên trái để chuyển sang trang `/work-plan`.
+
+---
+
+#### 📌 TAB 1️⃣: CÔNG VIỆC (`tasks`) - Trung Tâm Kiểm Soát & Rà Soát Tác Nghiệp
+* **Giao diện tổng quan:** Giao diện bảng lưới hiện đại, tích hợp các bộ lọc thông minh ở góc phải (Dự án, Loại công việc, Trạng thái, Phòng ban thụ lý, Tháng, Năm).
+* **Nghiệp vụ:**
+  * **Khối KPI Sức khỏe Công vụ:** Tổng số việc đang giao (phòng HC-TH: *59 việc*), tỷ lệ hoàn thành công việc toàn cơ quan (*68%*), và các đầu việc mới (*0 việc*), đang thực hiện (*0 việc*), hoàn thành (*41 việc*), chưa hoàn thành (*19 việc*), quá hạn (*0 việc*).
+  * **4 Bộ lọc nhanh Kỷ luật Công vụ:** Click chọn các bộ lọc *Việc của tôi*, *Quá hạn*, *Chưa cập nhật tuần này* (phát hiện việc bỏ quên), và *Chờ duyệt đề xuất* (cán bộ tự lập đề xuất công việc).
+  * **Bảng Danh sách Công việc Phân nhóm theo Dự án:** Tên công việc (Lập hồ sơ KB, BCR quyết toán...), Phân loại (Thanh toán, Điều hành, Quyết toán, Điều chỉnh, Báo cáo), Phòng ban (HC-TH), Tiến độ (progress bar), Phụ trách, Trạng thái (CHƯA HOÀN THÀNH/HOÀN THÀNH), Hạn chót và Độ ưu tiên (Trung bình/Cao).
+  * **Tác vụ nhanh:** Nhập Excel và Xuất Excel chuyên nghiệp định dạng tự động (`exceljs`) chỉ bằng 1 click.
+
+---
+
+#### 📌 TAB 2️⃣: KH KHUNG NĂM (`annual`) - Định Hướng Chiến Lược Toàn Ban
+* **Mục tiêu:** Lập kế hoạch khung cả năm của phòng ban/cơ quan (kế hoạch công tác năm, nhiệm vụ trọng tâm được giao) làm nền tảng pháp lý và định hướng phân rã công việc.
+
+---
+
+#### 📌 TAB 3️⃣: BÁO CÁO THÁNG (`monthly-report`) - Đánh Giá & Xuất Bản Báo Cáo Tự Động
+* **Mục tiêu:** Số hóa toàn diện quy trình lập kế hoạch và báo cáo sản lượng hàng tháng của toàn Ban QLDA.
+* **2 Phân hệ con (Sub-tabs):**
+  * *Kế hoạch tháng (plan)*: Lập kế hoạch làm việc chi tiết cho tháng mới theo từng phòng ban chuyên môn.
+  * *Báo cáo tháng (report)*: Hệ thống tự động tổng hợp toàn bộ sản lượng, tiến độ thực tế đã hoàn thành trong tháng để **Xuất báo cáo giao ban tự động (file Excel/PDF)** gửi Ban Giám đốc, giúp tiết kiệm 100% thời gian viết báo cáo giấy thủ công.
 
 ---
 
