@@ -9,7 +9,7 @@
 * **Địa điểm:** Hội trường lớn Ban QLDA (Buổi sáng) và Phòng họp làm việc chuyên môn (Buổi chiều)
 * **Thành phần tham dự:**
   * **Phía Ban QLDA:** Ban Giám đốc, đại diện Đảng ủy, Công đoàn, Trưởng/Phó các phòng chuyên môn: Phòng Hành chính – Tổng hợp, Phòng Kế hoạch – Đấu thầu, Phòng Kỹ thuật – Thẩm định, các Phòng QLDA 1, 2, 3 và Phòng Phát triển dịch vụ cùng toàn thể chuyên viên kỹ thuật.
-  * **Phía Đơn vị tư vấn CIC:** Tổ chuyên gia Chuyển đổi số, Kỹ sư giải pháp BIM và Kỹ thuật viên hỗ trợ vận hành.
+  * **Phía Đơn vị tư vấn CIC:** Tổng giám đốc CIC, Đại diện bộ phận Phát triển phần mềm (Tác giả hệ thống), cùng Tổ chuyên gia chuyển đổi số.
 
 ---
 

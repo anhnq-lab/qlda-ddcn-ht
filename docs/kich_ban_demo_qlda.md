@@ -11,8 +11,8 @@
 * **Khẳng định tính thực tế:** Sử dụng chính xác 100% cơ cấu tổ chức, tên phòng ban và chức năng nhiệm vụ theo Quy chế làm việc thực tế của Ban QLDA.
 
 ### 2. Vai trò tham gia Demo (CIC Roleplay)
-* **Presenter chính (Đại diện tư vấn CIC):** Trình bày mạch kịch bản chính, phân tích lợi ích nghiệp vụ và điều phối cuộc họp.
-* **Kỹ thuật viên hỗ trợ (CIC Tech Support):** Thao tác trực tiếp hệ thống trên màn hình chiếu. Sử dụng tính năng **Giả lập tài khoản (Impersonation)** để chuyển đổi qua lại giữa các vai trò (Giám đốc, Trưởng phòng Kế hoạch - Đấu thầu, Chuyên viên QLDA, Nhà thầu...) mà không cần đăng xuất.
+* **Tổng giám đốc CIC (Chủ trì):** Trình bày chiến lược chuyển đổi số, phân tích lợi ích vĩ mô và phối hợp điều hành cuộc họp với Ban Giám đốc Ban QLDA.
+* **Người phát triển phần mềm (Tác giả hệ thống - Presenter & Tech Support):** Trực tiếp thực hiện trình diễn (demo) kỹ thuật trên màn hình chiếu toàn bộ 11 phân hệ tác nghiệp, BIM 3D và Trợ lý AI. Sử dụng tính năng **Giả lập tài khoản (Impersonation)** để chuyển đổi qua lại linh hoạt giữa các vai trò (Giám đốc, Trưởng phòng, Chuyên viên...) để phản hồi tức thời các câu hỏi nghiệp vụ.
 
 ### 3. Thời lượng dự kiến
 * **Tổng thời gian:** 90 phút (60 phút trình diễn trực quan + 30 phút thảo luận và giải đáp câu hỏi).
