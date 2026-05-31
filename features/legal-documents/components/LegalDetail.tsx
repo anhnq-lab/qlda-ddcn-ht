@@ -15,7 +15,7 @@ interface LegalDetailProps {
     fontSize: number;
     searchQuery: string;
     isBookmarked: (articleId: string) => boolean;
-    toggleBookmark: (articleId: string, docId: string) => void;
+    toggleBookmark: (articleId: string, docId: string, extra?: { chapterId?: string; docShortTitle?: string; articleCode?: string; articleTitle?: string }) => void;
     expandedChapters: Set<string>;
     toggleChapter: (chapterId: string) => void;
     activeArticleId: string | null;
@@ -178,6 +178,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                                             toggleBookmark={toggleBookmark}
                                                             handleCopy={handleCopy}
                                                             onSaveEdit={onSaveEdit}
+                                                            docShortTitle={selectedDoc.short_title || selectedDoc.title}
                                                         />
                                                     );
                                                 })}

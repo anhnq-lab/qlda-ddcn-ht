@@ -16,6 +16,10 @@ export interface BookmarkItem {
     docId: string;
     addedAt: number;
     note?: string;
+    chapterId?: string;
+    docShortTitle?: string;
+    articleCode?: string;
+    articleTitle?: string;
 }
 
 export interface RecentlyViewedItem {
@@ -55,10 +59,15 @@ export function useBookmarks() {
         saveToStorage(STORAGE_KEYS.BOOKMARKS, bookmarks);
     }, [bookmarks]);
 
-    const addBookmark = useCallback((articleId: string, docId: string, note?: string) => {
+    const addBookmark = useCallback((
+        articleId: string,
+        docId: string,
+        note?: string,
+        extra?: { chapterId?: string; docShortTitle?: string; articleCode?: string; articleTitle?: string }
+    ) => {
         setBookmarks(prev => {
             if (prev.some(b => b.articleId === articleId)) return prev;
-            return [...prev, { articleId, docId, addedAt: Date.now(), note }];
+            return [...prev, { articleId, docId, addedAt: Date.now(), note, ...extra }];
         });
     }, []);
 
@@ -66,12 +75,16 @@ export function useBookmarks() {
         setBookmarks(prev => prev.filter(b => b.articleId !== articleId));
     }, []);
 
-    const toggleBookmark = useCallback((articleId: string, docId: string) => {
+    const toggleBookmark = useCallback((
+        articleId: string,
+        docId: string,
+        extra?: { chapterId?: string; docShortTitle?: string; articleCode?: string; articleTitle?: string }
+    ) => {
         setBookmarks(prev => {
             if (prev.some(b => b.articleId === articleId)) {
                 return prev.filter(b => b.articleId !== articleId);
             }
-            return [...prev, { articleId, docId, addedAt: Date.now() }];
+            return [...prev, { articleId, docId, addedAt: Date.now(), ...extra }];
         });
     }, []);
 

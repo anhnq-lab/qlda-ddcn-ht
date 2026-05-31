@@ -12,9 +12,10 @@ interface LegalArticleCardProps {
     searchQuery: string;
     copiedId: string | null;
     toggleArticleExpansion: (id: string, e: React.MouseEvent) => void;
-    toggleBookmark: (articleId: string, docId: string) => void;
+    toggleBookmark: (articleId: string, docId: string, extra?: { chapterId?: string; docShortTitle?: string; articleCode?: string; articleTitle?: string }) => void;
     handleCopy: (text: string, id: string) => void;
     onSaveEdit?: (articleId: string, newContent: string) => void;
+    docShortTitle?: string;
 }
 
 // ============================================
@@ -25,7 +26,8 @@ const RichLegalContent: React.FC<{
     searchQuery: string;
     isEditing: boolean;
     onContentChange: (newContent: string) => void;
-}> = ({ content, searchQuery, isEditing, onContentChange }) => {
+    editorRef?: React.RefObject<HTMLDivElement | null>;
+}> = ({ content, searchQuery, isEditing, onContentChange, editorRef }) => {
     const contentRef = useRef<HTMLDivElement>(null);
 
     const handleFormat = (command: string, value?: string) => {
@@ -87,7 +89,7 @@ const RichLegalContent: React.FC<{
 
     return (
         <div
-            ref={contentRef}
+            ref={editorRef || contentRef}
             contentEditable={isEditing}
             onBlur={handleBlur}
             suppressContentEditableWarning={true}
@@ -99,10 +101,11 @@ const RichLegalContent: React.FC<{
 
 const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
     article, selectedDocId, isActive, isExpanded, bookmarked, searchQuery, copiedId,
-    toggleArticleExpansion, toggleBookmark, handleCopy, onSaveEdit
+    toggleArticleExpansion, toggleBookmark, handleCopy, onSaveEdit, docShortTitle
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(article.content || '');
+    const editorRef = useRef<HTMLDivElement>(null);
 
     // Reset edited content if article changes
     useEffect(() => {
@@ -110,9 +113,14 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
     }, [article.content]);
 
     const handleSaveEdit = () => {
-        if (onSaveEdit) {
-            onSaveEdit(article.id, editedContent);
+        let finalContent = editedContent;
+        if (editorRef.current) {
+            finalContent = editorRef.current.innerHTML;
         }
+        if (onSaveEdit) {
+            onSaveEdit(article.id, finalContent);
+        }
+        setEditedContent(finalContent);
         setIsEditing(false);
     };
 
@@ -183,7 +191,12 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
                                 {copiedId === article.id ? <Check className="w-4 h-4 text-success-500" /> : <LinkIcon className="w-4 h-4" />}
                             </button>
                             <button
-                                onClick={() => toggleBookmark(article.id, selectedDocId)}
+                                onClick={() => toggleBookmark(article.id, selectedDocId, {
+                                    chapterId: article.chapter_id,
+                                    docShortTitle: docShortTitle || 'Văn bản đã lưu',
+                                    articleCode: article.code,
+                                    articleTitle: article.title
+                                })}
                                 className={`p-1.5 rounded-lg transition-all ${bookmarked
                                     ? 'text-primary-500 bg-primary-50 dark:bg-primary-900/30'
                                     : 'text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30'
@@ -237,6 +250,7 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
                             searchQuery={searchQuery}
                             isEditing={isEditing}
                             onContentChange={setEditedContent}
+                            editorRef={editorRef}
                         />
                     </div>
                 </div>
