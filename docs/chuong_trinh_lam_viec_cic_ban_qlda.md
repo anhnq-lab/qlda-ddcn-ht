@@ -105,6 +105,17 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 
 ---
 
+##### 📌 TAB 4: PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/tasks`)
+* **Mục tiêu:** Cung cấp cho Ban Giám đốc công cụ kiểm soát tối cao về kỷ luật hành chính và tiến độ xử lý công việc của toàn thể cán bộ trong cơ quan.
+* **Thao tác:** Presenter chuyển sang trang Quản lý Công việc toàn Ban (`/tasks`).
+* **Nghiệp vụ:**
+  * **Khối KPI Sức khỏe Công vụ:** Tổng số việc đang giao, số việc chưa làm, số việc đang tiến hành, số việc đã hoàn thành, số việc trễ hẹn quá hạn (`overdue`) và đặc biệt là **Tỷ lệ hoàn thành công việc toàn cơ quan (% Completion)**.
+  * **5 Bộ lọc Nghiệp vụ Đột phá:** Lọc nhanh công việc "Quá hạn", công việc "Chưa cập nhật tuần này" (phát hiện việc bị bỏ quên), công việc "Đề xuất chờ duyệt" (xin ý kiến bổ sung kế hoạch), và lọc theo Phòng ban (`filterDepartment`).
+  * **Đa góc nhìn Tác nghiệp:** List View hỗ trợ Thao tác hàng loạt (Batch Actions - đổi trạng thái, xóa hàng loạt) và Kanban View kéo thả công việc trực quan qua các cột trạng thái.
+  * **Tác vụ Excel thông minh (Excel JS):** Xuất danh mục công việc ra file Excel tuyệt đẹp (tự động tô màu theo trạng thái) và Nhập hàng loạt công việc từ file Excel mẫu chỉ trong 2 giây.
+
+---
+
 ### 👤 TẦNG 1.2: DASHBOARD CÁ NHÂN PHÂN TẦNG THÔNG MINH (`/my-dashboard`) (10 Phút)
 * **Mục tiêu:** Chứng minh hệ thống được thiết kế theo hướng cá nhân hóa tối đa (Role-based Personalization), khớp hoàn toàn với vị trí công tác và thẩm quyền chuyên môn.
 * **Trình diễn qua 3 cấp độ Dashboard cá nhân:**

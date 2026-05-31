@@ -120,6 +120,31 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 
 ---
 
+#### 📌 TAB 4: PHÂN HỆ QUẢN LÝ CÔNG VIỆC TOÀN BAN (`/tasks`)
+* **Mục tiêu:** Cung cấp cho Ban Giám đốc công cụ kiểm soát tối cao về kỷ luật hành chính và tiến độ xử lý công việc của toàn thể cán bộ trong cơ quan.
+* **Thao tác:** Presenter chuyển sang trang Quản lý Công việc toàn Ban (`/tasks`).
+
+##### 1. Khối KPI Sức khỏe Công vụ (TaskStatsRow)
+* **Các chỉ số hiển thị:** Tổng số việc đang giao, số việc chưa làm, số việc đang tiến hành, số việc đã hoàn thành, số việc trễ hẹn quá hạn (`overdue`) và đặc biệt là **Tỷ lệ hoàn thành công việc toàn cơ quan (% Completion)**.
+  * *Ý nghĩa:* Giúp Giám đốc Ban đánh giá ngay lập tức hiệu suất làm việc tổng thể của toàn Ban tại thời điểm hiện tại.
+
+##### 2. 5 Bộ lọc Nghiệp vụ Đột phá (Quick Filters)
+Presenter bấm click chọn lần lượt các bộ lọc để trình bày khả năng rà soát tức thời:
+* **Bộ lọc "Quá hạn" (`filterOverdue`):** Hiện ngay các công việc đã trễ hẹn so với deadline được giao. Giám đốc có thể chất vấn Trưởng phòng chịu trách nhiệm.
+* **Bộ lọc "Chưa cập nhật tuần này" (`filterNotUpdatedThisWeek`):** Một tính năng cực kỳ thông minh giúp phát hiện những đầu việc bị chuyên viên "bỏ quên", không hề có cập nhật tiến độ hay nhật ký xử lý trong suốt tuần qua.
+* **Bộ lọc "Đề xuất chờ duyệt" (`filterPendingProposal`):** Hiển thị danh sách các công việc do chuyên viên tự đề xuất lên từ hiện trường để xin ý kiến của Trưởng phòng hoặc Ban Giám đốc duyệt bổ sung vào kế hoạch.
+* **Bộ lọc cá nhân ("Của tôi") & Bộ lọc Phòng ban (`filterDepartment`):** Lọc nhanh công việc thuộc trách nhiệm của từng phòng cụ thể (ví dụ: Phòng QLDA 2).
+
+##### 3. Đa góc nhìn Tác nghiệp (View Modes)
+* **Chế độ bảng (List View):** Hiển thị danh mục công việc chi tiết. Hỗ trợ **Thao tác hàng loạt (Batch Actions)** cực kỳ nhanh: click chọn nhiều công việc và cùng lúc thay đổi trạng thái sang *Hoàn thành* hoặc *Chờ duyệt* chỉ bằng 1 click.
+* **Chế độ bảng Kanban (Kanban View):** Chuyển đổi sang giao diện Kanban trực quan, kéo thả công việc qua các cột trạng thái (*Mới*, *Đang làm*, *Chờ duyệt*, *Chưa xong*, *Đã xong*).
+
+##### 4. Tác vụ Excel thông minh (Excel JS)
+* **Xuất báo cáo Excel chuyên nghiệp:** Click nút **"Xuất Excel"**, hệ thống tự động tải về file Excel danh sách công việc được định dạng tuyệt đẹp, tự động tô màu các ô theo trạng thái (xanh cho hoàn thành, hồng cho trễ hạn), ghi đầy đủ Căn cứ pháp lý và Sản phẩm đầu ra.
+* **Nhập Excel hàng loạt (Import Excel):** Trình diễn nút tải file Excel mẫu chuẩn, nhập dữ liệu hàng chục công việc từ file Excel ngoài vào hệ thống chỉ trong 2 giây.
+
+---
+
 ### 👤 TẦNG 1.2: DÀNH CHO CÁN BỘ BAN - DASHBOARD CÁ NHÂN PHÂN TẦNG THÔNG MINH (`/my-dashboard`) (10 Phút)
 
 * **Mục tiêu:** Chứng minh hệ thống được thiết kế theo hướng **Cá nhân hóa tối đa (Role-based Personalization)**. Mỗi cán bộ khi đăng nhập sẽ có một Dashboard cá nhân riêng biệt, khớp hoàn toàn với vị trí công tác và thẩm quyền chuyên môn, giúp giảm tối đa nhiễu thông tin.
