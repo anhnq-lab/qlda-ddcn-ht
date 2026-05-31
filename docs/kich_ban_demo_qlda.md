@@ -61,7 +61,7 @@ graph TD
   * **Tivi sảnh điện tử (Lobby Display) 🌟 [WOW EFFECT]:** Giao diện Dark Mode chuyên dụng dành riêng cho màn hình Tivi sảnh chính hoặc hành lang cơ quan. Tự động đồng bộ và làm tươi dữ liệu mỗi 60 giây, giúp cán bộ và đối tác dễ dàng theo dõi lịch họp của lãnh đạo Ban trong ngày.
 
 ### 4️⃣ Quản lý dự án (`/projects` - Project Detail & 11 Tabs)
-* **Vai trò:** "Vũ trụ dữ liệu" cốt lõi, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
+* **Vai trò:** Cơ sở dữ liệu tập trung, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
 * **Tích hợp 11 tab tác nghiệp chuyên sâu:**
   1. *Tổng quan (`info`):* Lý lịch dự án, thanh Stepper vòng đời dự án (Stage History), thông tin bàn giao/tiếp nhận dự án từ chủ đầu tư cũ, và biểu đồ chênh lệch dòng vốn (`BudgetVarianceCard`).
   2. *Kế hoạch (`plan`):* Lập tiến độ và phân công công việc với 5 chế độ xem linh hoạt (WBS cấu trúc cây, Gantt đường găng, Kanban kéo thả, Nguồn lực nhân sự, Ma trận RACI). Tự động dịch chuyển ngày kế tiếp (Date Propagation) khi công việc trước bị trễ.
@@ -281,7 +281,7 @@ Presenter sử dụng tính năng **Giả lập tài khoản (Impersonation)** �
 ### 🔍 TIÊU ĐIỂM: KHÁM PHÁ CHI TIẾT DỰ ÁN (PROJECT DETAIL)
 #### Trực Quan Hóa 11 Phân Hệ Tác Nghiệp Chuyên Sâu (30 Phút)
 
-* **Mục tiêu:** Chứng minh sức mạnh cốt lõi của **CIC QLDA** nằm ở giao diện **Chi tiết dự án (Project Detail)**. Đây là một "vũ trụ dữ liệu" được chia thành **11 tab tác nghiệp chuyên sâu**, xâu chuỗi toàn bộ vòng đời dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành, tích hợp sâu mô hình 3D BIM và Trợ lý AI.
+* **Mục tiêu:** Chứng minh năng lực của hệ thống **CIC QLDA** trong việc số hóa toàn diện hồ sơ dự án thông qua giao diện **Chi tiết dự án (Project Detail)**. Đây là cơ sở dữ liệu tập trung được chia thành **11 tab tác nghiệp chuyên sâu**, quản lý liên thông toàn bộ vòng đời dự án từ giai đoạn chuẩn bị đầu tư đến quyết toán hoàn thành, tích hợp mô hình 3D BIM và Trợ lý AI.
 * **Thao tác chuyển tiếp:** Từ Dashboard, Presenter nhấp chọn một dự án trọng điểm (ví dụ: *"Dự án Cầu vượt nút giao X"* hoặc *"Chung cư tái định cư Y"*) để truy cập thẳng vào giao diện Chi tiết Dự án (`/projects/:id`).
 
 ---
@@ -526,7 +526,7 @@ Trước khi đi vào các tab, Presenter giới thiệu nhanh 2 nút bấm "quy
      * Kỹ sư QLDA cập nhật phần trăm hoàn thành (% Progress) công việc trực tiếp từ điện thoại di động khi đi hiện trường.
      * Tải ảnh chụp thực tế thi công làm bằng chứng nghiệm thu, viết nhật ký công trình trực tuyến và trao đổi trực tiếp với nhà thầu.
 * **Lời thoại Presenter:**
-  > *"Ba phòng QLDA là lực lượng trực tiếp chiến đấu tại hiện trường. Hệ thống cung cấp cho các phòng công cụ quản lý tiến độ cực kỳ trực quan. Kế hoạch tổng thể được chia nhỏ thành các nhiệm vụ tuần/ngày. Kỹ sư đi hiện trường chỉ cần dùng điện thoại chụp ảnh thi công, cập nhật trực tiếp phần trăm tiến độ vào hệ thống. Ban Giám đốc ngồi tại cơ quan cũng biết được cấu kiện nào đã hoàn thành, hạng mục nào đang gặp vướng mắc hiện trường."*
+  > *"Ba phòng QLDA là lực lượng trực tiếp quản lý, giám sát tại hiện trường. Hệ thống cung cấp cho các phòng công cụ quản lý tiến độ cực kỳ trực quan. Kế hoạch tổng thể được chia nhỏ thành các nhiệm vụ tuần/ngày. Kỹ sư đi hiện trường chỉ cần dùng điện thoại chụp ảnh thi công, cập nhật trực tiếp phần trăm tiến độ vào hệ thống. Ban Giám đốc ngồi tại cơ quan cũng biết được cấu kiện nào đã hoàn thành, hạng mục nào đang gặp vướng mắc hiện trường."*
 
 ---
 

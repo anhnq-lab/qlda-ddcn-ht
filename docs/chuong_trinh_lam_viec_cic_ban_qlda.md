@@ -82,7 +82,7 @@ graph TD
   * **Tivi sảnh điện tử (Lobby Display) 🌟 [WOW EFFECT]:** Giao diện Dark Mode chuyên dụng dành riêng cho màn hình Tivi sảnh chính hoặc hành lang cơ quan. Tự động đồng bộ và làm tươi dữ liệu mỗi 60 giây, giúp cán bộ và đối tác dễ dàng theo dõi lịch họp của lãnh đạo Ban trong ngày.
 
 ### 4️⃣ Quản lý dự án (`/projects` - Project Detail & 11 Tabs)
-* **Vai trò:** "Vũ trụ dữ liệu" cốt lõi, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
+* **Vai trò:** Cơ sở dữ liệu tập trung, quản lý xuyên suốt toàn bộ vòng đời của từng dự án từ chuẩn bị đầu tư đến quyết toán hoàn thành.
 * **Tích hợp 11 tab tác nghiệp chuyên sâu:**
   1. *Tổng quan (`info`):* Lý lịch dự án, thanh Stepper vòng đời dự án (Stage History), thông tin bàn giao/tiếp nhận dự án từ chủ đầu tư cũ, và biểu đồ chênh lệch dòng vốn (`BudgetVarianceCard`).
   2. *Kế hoạch (`plan`):* Lập tiến độ và phân công công việc với 5 chế độ xem linh hoạt (WBS cấu trúc cây, Gantt đường găng, Kanban kéo thả, Nguồn lực nhân sự, Ma trận RACI). Tự động dịch chuyển ngày kế tiếp (Date Propagation) khi công việc trước bị trễ.
@@ -234,7 +234,7 @@ Presenter lần lượt trình bày qua 3 Tab tương tác cốt lõi trên Dash
 ### 🔍 TIÊU ĐIỂM: KHÁM PHÁ CHI TIẾT DỰ ÁN (PROJECT DETAIL)
 #### Trực Quan Hóa 11 Phân Hệ Tác Nghiệp Chuyên Sâu (30 Phút)
 
-* **Mục tiêu:** Khám phá "vũ trụ dữ liệu" của một dự án được phân chia thành **11 tab tác nghiệp chuyên sâu**, xâu chuỗi toàn bộ vòng đời công trình từ chuẩn bị đầu tư đến quyết toán hoàn thành.
+* **Mục tiêu:** Giới thiệu cơ sở dữ liệu tích hợp của một dự án được phân chia thành **11 tab tác nghiệp chuyên sâu**, quản lý liên thông toàn bộ vòng đời công trình từ giai đoạn chuẩn bị đầu tư đến quyết toán hoàn thành.
 * **Giao diện Header Dự án:** Giới thiệu nút **"Tóm tắt AI"** (quét toàn bộ dự án xuất tóm tắt bằng Gemini trong 5 giây) và nút **"3D BIM"** (kết nối nhanh tới bản vẽ 3D).
 
 #### 📌 CHI TIẾT 11 TAB TÁC NGHIỆP:
