@@ -296,6 +296,34 @@ export const TaskCreateEditModal: React.FC<TaskCreateEditModalProps> = ({
                         </div>
                     </div>
 
+                    {/* Căn cứ pháp lý & Kết quả đầu ra */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
+                                Căn cứ pháp lý
+                            </label>
+                            <input
+                                value={formData.LegalBasis || ''}
+                                onChange={e => setFormData({ ...formData, LegalBasis: e.target.value })}
+                                type="text"
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
+                                placeholder="VD: Điều 24 Luật ĐTC..."
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-txt-muted mb-1.5 uppercase tracking-wider">
+                                Kết quả đầu ra
+                            </label>
+                            <input
+                                value={formData.OutputDocument || ''}
+                                onChange={e => setFormData({ ...formData, OutputDocument: e.target.value })}
+                                type="text"
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
+                                placeholder="VD: Quyết định phê duyệt..."
+                            />
+                        </div>
+                    </div>
+
                     {/* Kết quả thực hiện — hiện khi done hoặc in_progress */}
                     {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress) && (
                         <div className="p-4 rounded-xl border bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-800">

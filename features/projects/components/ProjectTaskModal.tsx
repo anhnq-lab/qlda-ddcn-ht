@@ -204,7 +204,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [activeSection, setActiveSection] = useState<string>('basic');
+
     const [isSubTaskModalOpen, setIsSubTaskModalOpen] = useState(false);
     const [editingSubTask, setEditingSubTask] = useState<any>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -311,7 +311,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                 AssigneeIDs: initAssigneeIDs,
                 CollaboratorIDs: initCollaboratorIDs
             });
-            setActiveSection('basic');
+
             setIsSubTaskModalOpen(false);
             setEditingSubTask(null);
         }
@@ -445,15 +445,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         if (isEditMode) updateTaskMutation.mutate(updatedData as Task);
     };
 
-    const sections = [
-        { id: 'basic', label: 'Thông tin cơ bản', icon: <CheckSquare className="w-4 h-4" /> },
-        { id: 'schedule', label: 'Lịch & Tiến độ', icon: <Calendar className="w-4 h-4" /> },
-        ...(isEditMode ? [
-            { id: 'subtasks', label: `Công việc thuộc bước (${(formData.SubTasks || []).length})`, icon: <Layers className="w-4 h-4" /> },
-            { id: 'documents', label: `Tài liệu (${(formData.Attachments || []).length + templates.length})`, icon: <Paperclip className="w-4 h-4" /> },
-        ] : []),
-        { id: 'advanced', label: 'Nâng cao', icon: <Flag className="w-4 h-4" /> },
-    ];
+
 
     // When used as slide panel content, skip the if (!isOpen) guard
     if (!asSlidePanel && !isOpen) return null;
@@ -617,241 +609,254 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                             </div>
                         )}
                     </div>
-
-                    {/* Section tabs */}
-                    <div className="flex overflow-x-auto px-4 gap-1 pb-0">
-                        {sections.map(s => (
-                            <button
-                                key={s.id}
-                                type="button"
-                                onClick={() => setActiveSection(s.id)}
-                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${activeSection === s.id
-                                    ? 'text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400'
-                                    : 'text-txt-muted border-transparent hover:text-gray-700 dark:hover:text-slate-300'
-                                    }`}
-                            >
-                                {s.icon} {s.label}
-                            </button>
-                        ))}
-                    </div>
                 </div>
 
                 {/* ══════════ SCROLLABLE BODY ══════════ */}
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-                    <div className="p-4 space-y-5">
+                    <div className="p-6 space-y-8">
 
-                        {/* ── BASIC ── */}
-                        {activeSection === 'basic' && (
-                            <>
+                        {/* ── SECTION 1: THÔNG TIN CƠ BẢN ── */}
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest flex items-center gap-1.5 border-b border-border pb-2">
+                                <CheckSquare className="w-4 h-4 text-primary-500" /> Thông tin cơ bản
+                            </h3>
+
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                    Tên công việc <span className="text-red-500">*</span>
+                                </label>
+                                <input type="text" required
+                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                                    placeholder="VD: Lập tờ trình thẩm định..."
+                                    value={formData.Title}
+                                    onChange={e => setFormData({ ...formData, Title: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                    Diễn giải chi tiết
+                                </label>
+                                <textarea
+                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-24 resize-none text-sm"
+                                    placeholder="Nhập ghi chú, yêu cầu kỹ thuật..."
+                                    value={formData.Description}
+                                    onChange={e => setFormData({ ...formData, Description: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                        <CheckSquare className="w-4 h-4 text-gray-400" /> Tên công việc <span className="text-red-500">*</span>
+                                        Dự án liên kết
                                     </label>
-                                    <input type="text" required
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                                        placeholder="VD: Lập tờ trình thẩm định..."
-                                        value={formData.Title}
-                                        onChange={e => setFormData({ ...formData, Title: e.target.value })}
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.ProjectID || ''}
+                                        onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
+                                    >
+                                        <option value="">-- Thuộc dự án (Tùy chọn) --</option>
+                                        {projects.map(p => (
+                                            <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        Phân loại
+                                    </label>
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.Category || ''}
+                                        onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
+                                    >
+                                        <option value="">-- Chọn phân loại --</option>
+                                        {TASK_CATEGORIES.map(cat => (
+                                            <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <MultiSelectEmployees
+                                    label="Người thực hiện chính"
+                                    icon={<User className="w-4 h-4 text-gray-400" />}
+                                    selectedIds={formData.AssigneeIDs || []}
+                                    onChange={ids => setFormData({ ...formData, AssigneeIDs: ids })}
+                                    employees={dropdownEmployees}
+                                    placeholder="-- Chọn người thực hiện chính --"
+                                />
+                                <MultiSelectEmployees
+                                    label="Người phối hợp thực hiện"
+                                    icon={<Users className="w-4 h-4 text-gray-400" />}
+                                    selectedIds={formData.CollaboratorIDs || []}
+                                    onChange={ids => setFormData({ ...formData, CollaboratorIDs: ids })}
+                                    employees={employees}
+                                    placeholder="-- Chọn người phối hợp (tùy chọn) --"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary">Trạng thái</label>
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.Status}
+                                        onChange={e => {
+                                            const newStatus = e.target.value as TaskStatus;
+                                            let newProgress = formData.ProgressPercent || 0;
+                                            if (newStatus === TaskStatus.Done) newProgress = 100;
+                                            else if (newStatus === TaskStatus.Todo) newProgress = 0;
+                                            else if (newStatus === TaskStatus.InProgress && newProgress === 0) newProgress = 25;
+                                            else if (newStatus === TaskStatus.Review && newProgress < 100) newProgress = 100;
+                                            const updates: Partial<Task> = { ...formData, Status: newStatus, ProgressPercent: newProgress };
+                                            if (newStatus === TaskStatus.InProgress && !formData.ActualStartDate) updates.ActualStartDate = todayISO();
+                                            if (newStatus === TaskStatus.Done) {
+                                                if (!formData.ActualStartDate) updates.ActualStartDate = todayISO();
+                                                if (!formData.ActualEndDate) updates.ActualEndDate = todayISO();
+                                            }
+                                            if (newStatus === TaskStatus.Todo) { updates.ActualStartDate = ''; updates.ActualEndDate = ''; }
+                                            setFormData(updates);
+                                        }}
+                                    >
+                                        <option value={TaskStatus.Todo}>Chưa bắt đầu</option>
+                                        <option value={TaskStatus.InProgress}>Đang thực hiện</option>
+                                        <option value={TaskStatus.Done}>Hoàn thành</option>
+                                        <option value={TaskStatus.Incomplete}>Chưa hoàn thành</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Flag className="w-4 h-4 text-gray-400" /> Ưu tiên
+                                    </label>
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.Priority}
+                                        onChange={e => setFormData({ ...formData, Priority: e.target.value as TaskPriority })}
+                                    >
+                                        <option value="Low">Thấp</option>
+                                        <option value="Medium">Trung bình</option>
+                                        <option value="High">Cao</option>
+                                        <option value="Urgent">Khẩn cấp</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4 text-gray-400" /> Người phê duyệt
+                                    </label>
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.ApproverID || ''}
+                                        onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}
+                                    >
+                                        <option value="">-- Chọn người duyệt --</option>
+                                        {employees
+                                            .filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc') || emp.Position?.includes('Phó'))
+                                            .map(emp => (
+                                                <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
+                                            ))}
+                                        {formData.ApproverID && !employees.some(e =>
+                                            e.EmployeeID === formData.ApproverID &&
+                                            (e.Position?.includes('Trưởng') || e.Position?.includes('Giám đốc') || e.Position?.includes('Phó'))
+                                        ) && (() => {
+                                            const approver = employees.find(e => e.EmployeeID === formData.ApproverID);
+                                            return approver ? <option key={approver.EmployeeID} value={approver.EmployeeID}>{approver.FullName} - {approver.Position}</option> : null;
+                                        })()}
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Users className="w-4 h-4 text-gray-400" /> Cấp thực hiện
+                                    </label>
+                                    <select
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
+                                        value={formData.ResponsibilityLevel || 'individual'}
+                                        onChange={e => setFormData({ ...formData, ResponsibilityLevel: e.target.value as ResponsibilityLevel })}
+                                    >
+                                        <option value="individual">Cá nhân</option>
+                                        <option value="team">Tập thể phòng</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Scale className="w-4 h-4 text-gray-400" /> Căn cứ pháp lý
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                                        placeholder="VD: Điều 24 Luật ĐTC"
+                                        value={formData.LegalBasis || ''}
+                                        onChange={e => setFormData({ ...formData, LegalBasis: e.target.value })}
                                     />
                                 </div>
-
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                        <AlignLeft className="w-4 h-4 text-gray-400" /> Diễn giải chi tiết
+                                        <FileText className="w-4 h-4 text-gray-400" /> Kết quả đầu ra
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                                        placeholder="VD: Quyết định phê duyệt"
+                                        value={formData.OutputDocument || ''}
+                                        onChange={e => setFormData({ ...formData, OutputDocument: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Kết quả thực hiện — hiện khi Done, InProgress hoặc Incomplete */}
+                            {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress || formData.Status === TaskStatus.Incomplete) && (
+                                <div className={`p-4 rounded-xl border ${formData.Status === TaskStatus.Done ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' : 'bg-bg-subtle border-border'}`}>
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả thực hiện {formData.Status === TaskStatus.Done && <span className="text-red-500">*</span>}
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-24 resize-none"
-                                        placeholder="Nhập ghi chú, yêu cầu kỹ thuật..."
-                                        value={formData.Description}
-                                        onChange={e => setFormData({ ...formData, Description: e.target.value })}
+                                        required={formData.Status === TaskStatus.Done}
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
+                                        placeholder="Mô tả kết quả đạt được: VD Đã phê duyệt tại QĐ số..."
+                                        value={formData.CompletionResult || ''}
+                                        onChange={e => setFormData({ ...formData, CompletionResult: e.target.value })}
                                     />
                                 </div>
+                            )}
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Folder className="w-4 h-4 text-gray-400" /> Dự án liên kết
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.ProjectID || ''}
-                                            onChange={e => setFormData({ ...formData, ProjectID: e.target.value })}
-                                        >
-                                            <option value="">-- Thuộc dự án (Tùy chọn) --</option>
-                                            {projects.map(p => (
-                                                <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Tag className="w-4 h-4 text-gray-400" /> Phân loại
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.Category || ''}
-                                            onChange={e => setFormData({ ...formData, Category: (e.target.value || undefined) as TaskCategory | undefined })}
-                                        >
-                                            <option value="">-- Chọn phân loại --</option>
-                                            {TASK_CATEGORIES.map(cat => (
-                                                <option key={cat} value={cat}>{TASK_CATEGORY_LABELS[cat]}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <MultiSelectEmployees
-                                        label="Người thực hiện chính"
-                                        icon={<User className="w-4 h-4 text-gray-400" />}
-                                        selectedIds={formData.AssigneeIDs || []}
-                                        onChange={ids => setFormData({ ...formData, AssigneeIDs: ids })}
-                                        employees={dropdownEmployees}
-                                        placeholder="-- Chọn người thực hiện chính --"
-                                    />
-                                    <MultiSelectEmployees
-                                        label="Người phối hợp thực hiện"
-                                        icon={<Users className="w-4 h-4 text-gray-400" />}
-                                        selectedIds={formData.CollaboratorIDs || []}
-                                        onChange={ids => setFormData({ ...formData, CollaboratorIDs: ids })}
-                                        employees={employees}
-                                        placeholder="-- Chọn người phối hợp (tùy chọn) --"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary">Trạng thái</label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.Status}
-                                            onChange={e => {
-                                                const newStatus = e.target.value as TaskStatus;
-                                                let newProgress = formData.ProgressPercent || 0;
-                                                if (newStatus === TaskStatus.Done) newProgress = 100;
-                                                else if (newStatus === TaskStatus.Todo) newProgress = 0;
-                                                else if (newStatus === TaskStatus.InProgress && newProgress === 0) newProgress = 25;
-                                                else if (newStatus === TaskStatus.Review && newProgress < 100) newProgress = 100;
-                                                const updates: Partial<Task> = { ...formData, Status: newStatus, ProgressPercent: newProgress };
-                                                if (newStatus === TaskStatus.InProgress && !formData.ActualStartDate) updates.ActualStartDate = todayISO();
-                                                if (newStatus === TaskStatus.Done) {
-                                                    if (!formData.ActualStartDate) updates.ActualStartDate = todayISO();
-                                                    if (!formData.ActualEndDate) updates.ActualEndDate = todayISO();
-                                                }
-                                                if (newStatus === TaskStatus.Todo) { updates.ActualStartDate = ''; updates.ActualEndDate = ''; }
-                                                setFormData(updates);
-                                            }}
-                                        >
-                                            <option value={TaskStatus.Todo}>Chưa bắt đầu</option>
-                                            <option value={TaskStatus.InProgress}>Đang thực hiện</option>
-                                            <option value={TaskStatus.Done}>Hoàn thành</option>
-                                            <option value={TaskStatus.Incomplete}>Chưa hoàn thành</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Flag className="w-4 h-4 text-gray-400" /> Ưu tiên
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.Priority}
-                                            onChange={e => setFormData({ ...formData, Priority: e.target.value as TaskPriority })}
-                                        >
-                                            <option value="Low">Thấp</option>
-                                            <option value="Medium">Trung bình</option>
-                                            <option value="High">Cao</option>
-                                            <option value="Urgent">Khẩn cấp</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <ShieldCheck className="w-4 h-4 text-gray-400" /> Người phê duyệt
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.ApproverID || ''}
-                                            onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}
-                                        >
-                                            <option value="">-- Chọn người duyệt --</option>
-                                            {employees
-                                                .filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc') || emp.Position?.includes('Phó'))
-                                                .map(emp => (
-                                                    <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
-                                                ))}
-                                            {/* Nếu người phê duyệt hiện tại không nằm trong danh sách lọc, vẫn hiển thị */}
-                                            {formData.ApproverID && !employees.some(e =>
-                                                e.EmployeeID === formData.ApproverID &&
-                                                (e.Position?.includes('Trưởng') || e.Position?.includes('Giám đốc') || e.Position?.includes('Phó'))
-                                            ) && (() => {
-                                                const approver = employees.find(e => e.EmployeeID === formData.ApproverID);
-                                                return approver ? <option key={approver.EmployeeID} value={approver.EmployeeID}>{approver.FullName} - {approver.Position}</option> : null;
-                                            })()}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Users className="w-4 h-4 text-gray-400" /> Cấp thực hiện
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.ResponsibilityLevel || 'individual'}
-                                            onChange={e => setFormData({ ...formData, ResponsibilityLevel: e.target.value as ResponsibilityLevel })}
-                                        >
-                                            <option value="individual">Cá nhân</option>
-                                            <option value="team">Tập thể phòng</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Kết quả thực hiện — hiện khi Done, InProgress hoặc Incomplete */}
-                                {(formData.Status === TaskStatus.Done || formData.Status === TaskStatus.InProgress || formData.Status === TaskStatus.Incomplete) && (
-                                    <div className={`p-4 rounded-xl border ${formData.Status === TaskStatus.Done ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' : 'bg-bg-subtle border-border'}`}>
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
-                                            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Kết quả thực hiện {formData.Status === TaskStatus.Done && <span className="text-red-500">*</span>}
-                                        </label>
-                                        <textarea
-                                            required={formData.Status === TaskStatus.Done}
-                                            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
-                                            placeholder="Mô tả kết quả đạt được: VD Đã phê duyệt tại QĐ số..."
-                                            value={formData.CompletionResult || ''}
-                                            onChange={e => setFormData({ ...formData, CompletionResult: e.target.value })}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Lý do chưa hoàn thành — hiện khi Incomplete */}
-                                {formData.Status === TaskStatus.Incomplete && (
-                                    <div className="p-4 rounded-xl border bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
-                                            <AlertTriangle className="w-4 h-4 text-rose-500" /> Lý do chưa hoàn thành <span className="text-red-500">*</span>
-                                        </label>
-                                        <textarea
-                                            required
-                                            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
-                                            placeholder="Lý do chưa hoàn thành, vướng mắc cần giải quyết..."
-                                            value={formData.IncompleteReason || ''}
-                                            onChange={e => setFormData({ ...formData, IncompleteReason: e.target.value })}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Ghi chú */}
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                        <MessageSquare className="w-4 h-4 text-gray-400" /> Ghi chú
+                            {/* Lý do chưa hoàn thành — hiện khi Incomplete */}
+                            {formData.Status === TaskStatus.Incomplete && (
+                                <div className="p-4 rounded-xl border bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2 mb-1.5">
+                                        <AlertTriangle className="w-4 h-4 text-rose-500" /> Lý do chưa hoàn thành <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-16 resize-none text-sm"
-                                        placeholder="Ghi chú bổ sung (tùy chọn)..."
-                                        value={formData.Notes || ''}
-                                        onChange={e => setFormData({ ...formData, Notes: e.target.value })}
+                                        required
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none text-sm"
+                                        placeholder="Lý do chưa hoàn thành, vướng mắc cần giải quyết..."
+                                        value={formData.IncompleteReason || ''}
+                                        onChange={e => setFormData({ ...formData, IncompleteReason: e.target.value })}
                                     />
                                 </div>
+                            )}
 
-                                {/* Khó khăn / Vướng mắc */}
+                            {/* Ghi chú */}
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                    <MessageSquare className="w-4 h-4 text-gray-400" /> Ghi chú
+                                </label>
+                                <textarea
+                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none h-16 resize-none text-sm"
+                                    placeholder="Ghi chú bổ sung (tùy chọn)..."
+                                    value={formData.Notes || ''}
+                                    onChange={e => setFormData({ ...formData, Notes: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Khó khăn / Vướng mắc */}
+                            {isEditMode && (
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
                                         <AlertTriangle className="w-4 h-4 text-amber-500" /> Khó khăn / Vướng mắc
@@ -864,38 +869,72 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         onChange={e => setFormData({ ...formData, Obstacles: e.target.value })}
                                     />
                                 </div>
-                            </>
-                        )}
+                            )}
+                        </div>
 
-                        {/* ── SCHEDULE ── */}
-                        {activeSection === 'schedule' && (
-                            <>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-gray-400" /> Ngày bắt đầu
+                        {/* ── SECTION 2: LỊCH TRÌNH & TIẾN ĐỘ ── */}
+                        <div className="space-y-4 pt-5 border-t border-border">
+                            <h3 className="text-xs font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest flex items-center gap-1.5 border-b border-border pb-2">
+                                <Calendar className="w-4 h-4 text-primary-500" /> Lịch trình & Tiến độ
+                            </h3>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-gray-400" /> Ngày bắt đầu
+                                    </label>
+                                    <DateInputVN value={formData.StartDate} onChange={v => setFormData({ ...formData, StartDate: v })} borderClass="border-gray-300 dark:border-slate-600 focus-within:ring-2 focus-within:ring-primary-500" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-gray-400" /> Hạn hoàn thành
+                                    </label>
+                                    <DateInputVN value={formData.DueDate} onChange={v => setFormData({ ...formData, DueDate: v })} borderClass="border-gray-300 dark:border-slate-600 focus-within:ring-2 focus-within:ring-primary-500" />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-gray-400" /> Thời gian thực hiện (ngày)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                                        placeholder="15"
+                                        value={formData.DurationDays || ''}
+                                        onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })}
+                                    />
+                                </div>
+                                <div className="flex items-end pb-1">
+                                    <div className="flex items-center gap-3 p-3 bg-warning-50 dark:bg-warning-900/20 rounded-lg border border-warning-200 dark:border-warning-700 w-full h-[42px]">
+                                        <input
+                                            type="checkbox"
+                                            id="isCritical"
+                                            className="w-4 h-4 text-warning-600 border-warning-300 rounded focus:ring-warning-500"
+                                            checked={formData.IsCritical || false}
+                                            onChange={e => setFormData({ ...formData, IsCritical: e.target.checked })}
+                                        />
+                                        <label htmlFor="isCritical" className="text-sm font-medium text-warning-700 dark:text-warning-300 cursor-pointer">
+                                            Critical Path (ảnh hưởng tiến độ dự án)
                                         </label>
-                                        <DateInputVN value={formData.StartDate} onChange={v => setFormData({ ...formData, StartDate: v })} borderClass="border-gray-300 dark:border-slate-600 focus-within:ring-2 focus-within:ring-primary-500" />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-gray-400" /> Hạn hoàn thành
-                                        </label>
-                                        <DateInputVN value={formData.DueDate} onChange={v => setFormData({ ...formData, DueDate: v })} borderClass="border-gray-300 dark:border-slate-600 focus-within:ring-2 focus-within:ring-primary-500" />
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Multi-month warning (Điều 8.5) */}
-                                {isMultiMonth && (
-                                    <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl flex items-start gap-2 text-amber-800 dark:text-amber-300 text-xs leading-relaxed animate-in fade-in duration-200">
-                                        <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
-                                        <div>
-                                            <span className="font-bold">Cảnh báo:</span> Theo Quy chế KHCV (Điều 8.5), công việc không nên kéo dài nhiều tháng. Vui lòng chia nhỏ thành các công việc theo từng tháng tương ứng.
-                                        </div>
+                            {/* Multi-month warning (Điều 8.5) */}
+                            {isMultiMonth && (
+                                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-250 dark:border-amber-900 rounded-xl flex items-start gap-2 text-amber-800 dark:text-amber-300 text-xs leading-relaxed animate-in fade-in duration-200">
+                                    <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+                                    <div>
+                                        <span className="font-bold">Cảnh báo:</span> Theo Quy chế KHCV (Điều 8.5), công việc không nên kéo dài nhiều tháng. Vui lòng chia nhỏ thành các công việc theo từng tháng tương ứng.
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {/* Actual dates */}
+                            {/* Actual dates */}
+                            {isEditMode && (
                                 <div className={`grid grid-cols-2 gap-4 p-3 rounded-lg border ${(formData.ActualStartDate || formData.ActualEndDate) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700' : 'bg-bg-subtle border-border'}`}>
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
@@ -910,16 +949,16 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <DateInputVN value={formData.ActualEndDate} onChange={v => setFormData({ ...formData, ActualEndDate: v })} borderClass="border-emerald-300 dark:border-emerald-700" />
                                     </div>
                                 </div>
+                            )}
 
-                                {/* Progress slider */}
+                            {/* Progress slider */}
+                            {isEditMode && (
                                 <ProgressSlider
                                     value={formData.ProgressPercent || 0}
                                     onChange={(value) => {
                                         let newStatus = formData.Status;
-                                        // Keep InProgress at 100% — user must click "Báo cáo hoàn thành" to move to Review
                                         if (value >= 1) newStatus = TaskStatus.InProgress;
                                         else newStatus = TaskStatus.Todo;
-                                        // Don't change status if already Review or Done
                                         if (formData.Status === TaskStatus.Review || formData.Status === TaskStatus.Done) newStatus = formData.Status;
                                         const updates: Partial<Task> = { ...formData, ProgressPercent: value, Status: newStatus };
                                         if (value > 0 && !formData.ActualStartDate) updates.ActualStartDate = todayISO();
@@ -927,21 +966,22 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         setFormData(updates);
                                     }}
                                 />
-                            </>
-                        )}
+                            )}
+                        </div>
 
-                        {/* ── SUBTASKS ── */}
-                        {activeSection === 'subtasks' && isEditMode && (
-                            <>
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-xs font-black text-txt-muted uppercase tracking-widest">Công việc thuộc bước</h3>
+                        {/* ── SECTION 3: CÔNG VIỆC THUỘC BƯỚC ── */}
+                        {isEditMode && (
+                            <div className="space-y-4 pt-5 border-t border-border">
+                                <div className="flex justify-between items-center border-b border-border pb-2">
+                                    <h3 className="text-xs font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest flex items-center gap-1.5">
+                                        <Layers className="w-4.5 h-4.5" /> Công việc thuộc bước ({(formData.SubTasks || []).length})
+                                    </h3>
                                     <button type="button" onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors">
-                                        <Plus className="w-3.5 h-3.5" /> Thêm
+                                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-primary-600 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors">
+                                        <Plus className="w-3.5 h-3.5" /> Thêm mới
                                     </button>
                                 </div>
 
-                                {/* Parent deadline banner */}
                                 {formData.DueDate && (
                                     <div className={`flex items-center gap-3 p-3 rounded-xl border text-sm ${new Date(formData.DueDate) < new Date() ? 'bg-red-50 dark:bg-red-900/20 border-red-200' : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200'}`}>
                                         <Calendar className={`w-4 h-4 ${new Date(formData.DueDate) < new Date() ? 'text-red-500' : 'text-primary-500'}`} />
@@ -965,7 +1005,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                                 onClick={() => toggleSubTaskDone(idx)}
                                                 className={`mt-0.5 w-5 h-5 rounded-lg border-2 cursor-pointer flex items-center justify-center transition-all ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'border-gray-300 bg-bg-surface hover:border-primary-400'}`}
                                             >
-                                                {(sub.Status as any) === 'Done' || sub.Status === 'done' && <CheckCircle2 className="w-3 h-3" />}
+                                                {((sub.Status as any) === 'Done' || sub.Status === 'done') && <CheckCircle2 className="w-3 h-3" />}
                                             </div>
                                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
                                                 <p className={`text-xs font-semibold ${(sub.Status as any) === 'Done' || sub.Status === 'done' ? 'text-gray-400' : 'text-txt-secondary'}`}>{sub.Title}</p>
@@ -988,13 +1028,16 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         </div>
                                     ))}
                                 </div>
-                            </>
+                            </div>
                         )}
 
-                        {/* ── DOCUMENTS ── */}
-                        {activeSection === 'documents' && isEditMode && (
-                            <>
-                                {/* Template documents */}
+                        {/* ── SECTION 4: TÀI LIỆU & FILE ĐÍNH KÈM ── */}
+                        {isEditMode && (
+                            <div className="space-y-4 pt-5 border-t border-border">
+                                <h3 className="text-xs font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest flex items-center gap-1.5 border-b border-border pb-2">
+                                    <Paperclip className="w-4 h-4 text-primary-500" /> Tài liệu & File đính kèm ({(formData.Attachments || []).length + templates.length})
+                                </h3>
+
                                 {templates.length > 0 && (
                                     <div>
                                         <p className="text-[10px] font-bold text-warning-600 dark:text-warning-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
@@ -1029,7 +1072,6 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 )}
 
-                                {/* Uploaded */}
                                 {(formData.Attachments || []).length > 0 && (
                                     <div>
                                         <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
@@ -1055,63 +1097,12 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 )}
 
-                                {/* Upload button */}
                                 <input type="file" ref={fileInputRef} className="hidden" multiple onChange={handleFileUpload} accept=".pdf,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg,.zip,.rar" />
                                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading}
                                     className="w-full text-center py-3.5 text-xs font-bold text-primary-600 hover:bg-primary-50 rounded-xl transition-colors flex items-center justify-center gap-2 border-2 border-dashed border-primary-200 hover:border-primary-300 disabled:opacity-50">
                                     {isUploading ? (<><div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" /> Đang tải...</>) : (<><Upload className="w-4 h-4" /> Thêm tài liệu</>)}
                                 </button>
-                            </>
-                        )}
-
-                        {/* ── ADVANCED ── */}
-                        {activeSection === 'advanced' && (
-                            <>
-                                {timelineStep && (
-                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-subtle border border-border">
-                                        <Layers className="w-4 h-4 text-gray-400" />
-                                        <div>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bước quy trình</p>
-                                            <p className="text-xs text-txt-muted">{stepLabel || timelineStep}</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="p-4 bg-bg-subtle rounded-xl border border-border">
-                                    <TaskDependencyManager task={formData as Task} allTasks={allTasks} onUpdate={handleDependencyUpdate} />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary">Căn cứ pháp lý</label>
-                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Điều 24 Luật ĐTC" value={formData.LegalBasis || ''} onChange={e => setFormData({ ...formData, LegalBasis: e.target.value })} />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary">Sản phẩm đầu ra</label>
-                                        <input type="text" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none" placeholder="VD: Quyết định phê duyệt" value={formData.OutputDocument || ''} onChange={e => setFormData({ ...formData, OutputDocument: e.target.value })} />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-txt-secondary">Thời gian (ngày)</label>
-                                    <input type="number" min="1" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 outline-none" placeholder="15" value={formData.DurationDays || ''} onChange={e => setFormData({ ...formData, DurationDays: parseInt(e.target.value) || undefined })} />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-txt-secondary">Người phê duyệt</label>
-                                    <select className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary" value={formData.ApproverID || ''} onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}>
-                                        <option value="">-- Chọn --</option>
-                                        {employees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc') || emp.Position?.includes('Phó')).map(emp => (
-                                            <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName} - {emp.Position}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="flex items-center gap-3 p-3 bg-warning-50 dark:bg-warning-900/20 rounded-lg border border-warning-200 dark:border-warning-700">
-                                    <input type="checkbox" id="isCritical" className="w-4 h-4 text-warning-600 border-warning-300 rounded focus:ring-warning-500" checked={formData.IsCritical || false} onChange={e => setFormData({ ...formData, IsCritical: e.target.checked })} />
-                                    <label htmlFor="isCritical" className="text-sm font-medium text-warning-700 dark:text-warning-300">Critical Path (ảnh hưởng tiến độ dự án)</label>
-                                </div>
-                            </>
+                            </div>
                         )}
                     </div>
 
