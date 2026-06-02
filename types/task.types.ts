@@ -94,6 +94,7 @@ export interface Task {
 
     // Core fields
     AssigneeID: string;
+    AssigneeIDs?: string[];
     CollaboratorIDs?: string[];
     ApproverID?: string;
     Status: TaskStatus;

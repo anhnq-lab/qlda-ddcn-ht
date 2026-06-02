@@ -731,6 +731,7 @@ const TaskList: React.FC<TaskListProps> = ({
             dependencies: taskData.Dependencies,
             estimatedDays: taskData.DurationDays,
             monthly_plan_item_id: taskData.MonthlyPlanItemID || undefined,
+            assignee_ids: taskData.AssigneeIDs || (taskData.AssigneeID ? [taskData.AssigneeID] : []),
         };
         if (isEdit && taskData.Metadata) {
             mergedMetadata = { ...taskData.Metadata, ...mergedMetadata };

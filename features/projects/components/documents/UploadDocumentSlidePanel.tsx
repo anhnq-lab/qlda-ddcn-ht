@@ -37,10 +37,17 @@ export const UploadDocumentSlidePanel: React.FC<UploadDocumentSlidePanelProps> =
 
     const extractDocMetadata = async (file: File): Promise<Record<string, string>> => {
         try {
-            const buffer = await file.arrayBuffer();
-            const base64 = btoa(
-                new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-            );
+            // Sử dụng FileReader để convert sang Base64 cực kỳ nhanh và không bao giờ bị lỗi call stack size
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = reader.result as string;
+                    const base64Data = result.split(',')[1];
+                    resolve(base64Data);
+                };
+                reader.onerror = (err) => reject(err);
+                reader.readAsDataURL(file);
+            });
 
             const prompt = `Bạn là chuyên gia pháp lý xây dựng Việt Nam. Đọc văn bản đính kèm và trích xuất thông tin.
 
@@ -60,8 +67,16 @@ Trả về JSON object với đúng các key:
 Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KHÔNG markdown.`;
 
             const text = await generateFromImage(base64, file.type || 'application/pdf', prompt);
-            const jsonStr = text.trim().replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
-            return JSON.parse(jsonStr);
+            
+            // Tìm và trích xuất JSON một cách an toàn nhất từ phản hồi của AI
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                const jsonStr = text.substring(start, end + 1);
+                return JSON.parse(jsonStr);
+            }
+            
+            throw new Error("Không tìm thấy khối JSON hợp lệ trong phản hồi của AI.");
         } catch (err) {
             console.error('Gemini extract error:', err);
             return {};

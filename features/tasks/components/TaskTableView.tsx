@@ -212,25 +212,61 @@ export const TaskTableView: React.FC<TaskTableViewProps> = ({
                                         </td>
 
                                         {/* Assignee */}
-                                        <td className="px-2 py-2 hidden lg:table-cell">
-                                            {assignee ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="relative">
-                                                        <Avatar
-                                                            name={assignee.FullName}
-                                                            imageUrl={assignee.AvatarUrl}
-                                                            size="xs"
-                                                            className="ring-1 ring-white dark:ring-slate-800 shadow-md"
-                                                        />
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="text-[11px] font-semibold text-txt-secondary truncate">{assignee.FullName}</p>
-                                                        <p className="text-[9px] text-txt-placeholder truncate">{assignee.Position || assignee.Department}</p>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <span className="text-[9px] text-slate-300 dark:text-slate-600 italic">Chưa gán</span>
-                                            )}
+                                        <td className="px-2 py-2 hidden lg:table-cell" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center -space-x-1.5 overflow-hidden">
+                                                {(() => {
+                                                    const assigneeIds: string[] = task.Metadata?.assignee_ids || (task.AssigneeID ? [task.AssigneeID] : []);
+                                                    const collaboratorIds: string[] = task.CollaboratorIDs || [];
+                                                    
+                                                    const allUsers: { id: string; role: 'primary' | 'collaborator' }[] = [
+                                                        ...assigneeIds.map(id => ({ id, role: 'primary' as const })),
+                                                        ...collaboratorIds.map(id => ({ id, role: 'collaborator' as const }))
+                                                    ];
+
+                                                    if (allUsers.length === 0) {
+                                                        return <span className="text-[9px] text-slate-300 dark:text-slate-600 italic">Chưa gán</span>;
+                                                    }
+
+                                                    // Giới hạn hiển thị tối đa 3 người, còn lại hiện +N
+                                                    const displayUsers = allUsers.slice(0, 3);
+                                                    const remainingCount = allUsers.length - displayUsers.length;
+
+                                                    return (
+                                                        <>
+                                                            {displayUsers.map(({ id, role }, idx) => {
+                                                                const emp = getAssignee(id);
+                                                                if (!emp) return null;
+                                                                const isLead = role === 'primary' && idx === 0;
+                                                                return (
+                                                                    <div 
+                                                                        key={id} 
+                                                                        className="relative group/avatar"
+                                                                        title={`${emp.FullName} (${isLead ? 'Đầu mối chịu trách nhiệm' : role === 'primary' ? 'Thực hiện chính' : 'Phối hợp'})`}
+                                                                    >
+                                                                        <Avatar
+                                                                            name={emp.FullName}
+                                                                            imageUrl={emp.AvatarUrl}
+                                                                            size="xs"
+                                                                            className={`ring-1 ${isLead ? 'ring-blue-500 shadow-blue-200' : role === 'primary' ? 'ring-primary-400' : 'ring-emerald-300'} dark:ring-slate-800 shadow-sm hover:scale-105 hover:z-10 transition-transform`}
+                                                                        />
+                                                                        {isLead && (
+                                                                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 text-white text-[6px] font-black rounded-full flex items-center justify-center border border-white dark:border-slate-800" title="Đầu mối chịu trách nhiệm">★</span>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                            {remainingCount > 0 && (
+                                                                <div 
+                                                                    className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-[9px] font-bold text-txt-muted shrink-0 z-0"
+                                                                    title={`Và ${remainingCount} người khác`}
+                                                                >
+                                                                    +{remainingCount}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
                                         </td>
 
                                         <td className="px-2 py-2 hidden sm:table-cell"><StatusBadge label={statusInfo.label} variant={statusInfo.variant} size="sm" /></td>

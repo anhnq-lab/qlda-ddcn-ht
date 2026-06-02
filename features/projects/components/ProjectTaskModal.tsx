@@ -30,6 +30,126 @@ import {
     getPriorityConfig,
 } from './ProjectTaskModal.helpers';
 
+// Custom Multi-select component for employee selection
+const MultiSelectEmployees: React.FC<{
+    label: string;
+    icon?: React.ReactNode;
+    selectedIds: string[];
+    onChange: (ids: string[]) => void;
+    employees: any[];
+    placeholder?: string;
+}> = ({ label, icon, selectedIds, onChange, employees, placeholder = '-- Chọn --' }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const filtered = employees.filter(emp =>
+        emp.FullName.toLowerCase().includes(search.toLowerCase()) ||
+        (emp.Department || '').toLowerCase().includes(search.toLowerCase())
+    );
+
+    const toggleSelect = (id: string) => {
+        if (selectedIds.includes(id)) {
+            onChange(selectedIds.filter(x => x !== id));
+        } else {
+            onChange([...selectedIds, id]);
+        }
+    };
+
+    const removeTag = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange(selectedIds.filter(x => x !== id));
+    };
+
+    return (
+        <div className="space-y-1.5 text-left" ref={containerRef}>
+            <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
+                {icon} {label}
+            </label>
+            <div className="relative">
+                <div
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="min-h-[42px] w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary cursor-pointer flex flex-wrap gap-1.5 items-center justify-between text-sm"
+                >
+                    <div className="flex flex-wrap gap-1">
+                        {selectedIds.length === 0 ? (
+                            <span className="text-gray-400">{placeholder}</span>
+                        ) : (
+                            selectedIds.map(id => {
+                                const emp = employees.find(e => e.EmployeeID === id);
+                                if (!emp) return null;
+                                return (
+                                    <span
+                                        key={id}
+                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-bold border border-primary-200 dark:border-primary-800"
+                                    >
+                                        {emp.FullName}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => removeTag(id, e)}
+                                            className="hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-full p-0.5 text-primary-500"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </span>
+                                );
+                            })
+                        )}
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {isOpen && (
+                    <div className="absolute z-20 w-full mt-1 bg-bg-surface border border-border shadow-lg rounded-lg overflow-hidden max-h-60 flex flex-col animate-in fade-in duration-100">
+                        <div className="p-2 border-b border-border shrink-0 bg-bg-subtle">
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs rounded border border-gray-300 dark:border-slate-600 bg-bg-surface text-txt-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                placeholder="Tìm kiếm cán bộ..."
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </div>
+                        <div className="overflow-y-auto flex-1 p-1 space-y-0.5">
+                            {filtered.length === 0 ? (
+                                <div className="p-3 text-xs text-gray-400 text-center italic">Không tìm thấy cán bộ</div>
+                            ) : (
+                                filtered.map(emp => {
+                                    const isSelected = selectedIds.includes(emp.EmployeeID);
+                                    return (
+                                        <div
+                                            key={emp.EmployeeID}
+                                            onClick={() => toggleSelect(emp.EmployeeID)}
+                                            className={`flex items-center justify-between px-3 py-2 text-xs rounded-md cursor-pointer transition-colors ${isSelected ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-bold' : 'hover:bg-bg-subtle text-txt-primary'}`}
+                                        >
+                                            <div className="flex flex-col">
+                                                <span>{emp.FullName}</span>
+                                                <span className="text-[10px] text-gray-400">{emp.Department}</span>
+                                            </div>
+                                            {isSelected && <CheckCircle2 className="w-4 h-4 text-primary-500 shrink-0" />}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 interface ProjectTaskModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -59,10 +179,16 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     const [planYear, setPlanYear] = useState(new Date().getFullYear());
     const updateTaskMutation = useUpdateTask();
 
-    const [formData, setFormData] = useState<Partial<Task>>({
-        Title: '', Description: '', Status: TaskStatus.Todo, Priority: TaskPriority.Medium,
-        StartDate: '', DueDate: '', AssigneeID: '', ProgressPercent: 0, Dependencies: [],
-        ...initialData
+    const [formData, setFormData] = useState<Partial<Task>>(() => {
+        const initAssigneeIDs = initialData?.Metadata?.assignee_ids || (initialData?.AssigneeID ? [initialData.AssigneeID] : []);
+        const initCollaboratorIDs = initialData?.CollaboratorIDs || [];
+        return {
+            Title: '', Description: '', Status: TaskStatus.Todo, Priority: TaskPriority.Medium,
+            StartDate: '', DueDate: '', AssigneeID: '', ProgressPercent: 0, Dependencies: [],
+            ...initialData,
+            AssigneeIDs: initAssigneeIDs,
+            CollaboratorIDs: initCollaboratorIDs
+        };
     });
 
     // Đồng bộ tháng/năm kế hoạch theo hạn hoàn thành công việc
@@ -176,10 +302,14 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 
     useEffect(() => {
         if (isOpen) {
+            const initAssigneeIDs = initialData?.Metadata?.assignee_ids || (initialData?.AssigneeID ? [initialData.AssigneeID] : []);
+            const initCollaboratorIDs = initialData?.CollaboratorIDs || [];
             setFormData({
                 Title: '', Description: '', Status: TaskStatus.Todo, Priority: TaskPriority.Medium,
                 StartDate: '', DueDate: '', AssigneeID: '', ProgressPercent: 0, Dependencies: [],
-                ...initialData
+                ...initialData,
+                AssigneeIDs: initAssigneeIDs,
+                CollaboratorIDs: initCollaboratorIDs
             });
             setActiveSection('basic');
             setIsSubTaskModalOpen(false);
@@ -196,7 +326,19 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         setIsSubmitting(true);
         setSaveError(null);
         try {
-            const finalData = { ...formData, StepCode: stepCode || formData.StepCode };
+            const assigneeIds = formData.AssigneeIDs || [];
+            const primaryAssigneeId = assigneeIds.length > 0 ? assigneeIds[0] : '';
+
+            const finalData = {
+                ...formData,
+                AssigneeID: primaryAssigneeId,
+                CollaboratorIDs: formData.CollaboratorIDs || [],
+                StepCode: stepCode || formData.StepCode,
+                Metadata: {
+                    ...formData.Metadata,
+                    assignee_ids: assigneeIds
+                }
+            };
             // Self-proposed auto-flag (Điều 9.3) cho nhân viên thường khi tạo mới
             if (!isEditMode && currentUser) {
                 const userRole = (currentUser.Role as string) || 'User';
@@ -558,22 +700,26 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-txt-secondary flex items-center gap-2">
-                                            <User className="w-4 h-4 text-gray-400" /> Người thực hiện
-                                        </label>
-                                        <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary-500 outline-none bg-bg-surface text-txt-primary text-sm"
-                                            value={formData.AssigneeID || ''}
-                                            onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
-                                        >
-                                            <option value="">-- Chọn --</option>
-                                            {dropdownEmployees.map(emp => (
-                                                <option key={emp.EmployeeID} value={emp.EmployeeID}>{emp.FullName}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <MultiSelectEmployees
+                                        label="Người thực hiện chính"
+                                        icon={<User className="w-4 h-4 text-gray-400" />}
+                                        selectedIds={formData.AssigneeIDs || []}
+                                        onChange={ids => setFormData({ ...formData, AssigneeIDs: ids })}
+                                        employees={dropdownEmployees}
+                                        placeholder="-- Chọn người thực hiện chính --"
+                                    />
+                                    <MultiSelectEmployees
+                                        label="Người phối hợp thực hiện"
+                                        icon={<Users className="w-4 h-4 text-gray-400" />}
+                                        selectedIds={formData.CollaboratorIDs || []}
+                                        onChange={ids => setFormData({ ...formData, CollaboratorIDs: ids })}
+                                        employees={employees}
+                                        placeholder="-- Chọn người phối hợp (tùy chọn) --"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-semibold text-txt-secondary">Trạng thái</label>
                                         <select

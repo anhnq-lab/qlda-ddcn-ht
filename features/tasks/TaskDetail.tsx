@@ -610,7 +610,8 @@ const TaskDetail: React.FC<TaskDetailProps> = (props) => {
 
                         <TaskInfoPanel 
                             task={task} 
-                            assignee={assignee} 
+                            assignees={(task.Metadata?.assignee_ids || (task.AssigneeID ? [task.AssigneeID] : [])).map(id => employees.find(e => e.EmployeeID === id)).filter(Boolean)} 
+                            collaborators={(task.CollaboratorIDs || []).map(id => employees.find(e => e.EmployeeID === id)).filter(Boolean)} 
                             approver={approver} 
                             isOverdue={isOverdue} 
                             monthlyPlanItem={monthlyPlanItem} 

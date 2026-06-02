@@ -1,38 +1,83 @@
 import React from 'react';
-import { Calendar, User, DollarSign, CalendarDays, AlertTriangle } from 'lucide-react';
+import { Calendar, User, Users, DollarSign, CalendarDays, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Task } from '../../../types';
 import { Avatar } from '../../../components/ui';
 
 interface TaskInfoPanelProps {
     task: Task;
-    assignee: any;
+    assignees: any[];
+    collaborators: any[];
     approver: any;
     isOverdue: boolean;
     monthlyPlanItem: any;
 }
 
-export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignee, approver, isOverdue, monthlyPlanItem }) => {
+export const TaskInfoPanel: React.FC<TaskInfoPanelProps> = ({ task, assignees, collaborators, approver, isOverdue, monthlyPlanItem }) => {
     return (
         <div className="space-y-6">
             {/* Assignee Card */}
             <div className="bg-bg-surface rounded-2xl border border-border-subtle shadow-sm p-4">
-                <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest mb-5">Phân công</h3>
+                <h3 className="text-xs font-black text-txt-placeholder uppercase tracking-widest mb-5">Phân công nhân sự</h3>
 
-                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-border-subtle">
-                    <div className="relative">
-                        <Avatar
-                            name={assignee?.FullName || 'User'}
-                            imageUrl={assignee?.AvatarUrl}
-                            size="lg"
-                            className="ring-2 ring-white shadow-md object-cover"
-                        />
-                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-bold text-txt-primary">{assignee?.FullName || "Chưa phân công"}</p>
-                        <p className="text-xs text-txt-placeholder">{assignee?.Position || assignee?.Department || "N/A"}</p>
-                    </div>
+                {/* Người thực hiện chính */}
+                <div className="space-y-3 mb-5 pb-5 border-b border-border-subtle">
+                    <p className="text-[10px] uppercase font-bold text-txt-placeholder tracking-wider flex items-center gap-1">
+                        <User className="w-3.5 h-3.5 text-blue-500" /> Người thực hiện chính
+                    </p>
+                    {assignees.length === 0 ? (
+                        <p className="text-xs text-txt-placeholder italic">Chưa phân công</p>
+                    ) : (
+                        <div className="space-y-2">
+                            {assignees.map((emp, idx) => (
+                                <div key={emp.EmployeeID} className="flex items-center gap-3">
+                                    <div className="relative shrink-0">
+                                        <Avatar
+                                            name={emp.FullName}
+                                            imageUrl={emp.AvatarUrl}
+                                            size="sm"
+                                            className="ring-2 ring-white shadow-sm object-cover"
+                                        />
+                                        {idx === 0 && (
+                                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-blue-500 text-white text-[7px] font-black rounded-full flex items-center justify-center border border-white" title="Đầu mối chịu trách nhiệm">★</span>
+                                        )}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-txt-primary flex items-center gap-1.5">
+                                            {emp.FullName}
+                                            {idx === 0 && <span className="text-[8px] font-black text-blue-600 bg-blue-50 px-1 py-0.5 rounded border border-blue-200">ĐẦU MỐI</span>}
+                                        </p>
+                                        <p className="text-[10px] text-txt-placeholder truncate">{emp.Position || emp.Department}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
+
+                {/* Người phối hợp */}
+                {collaborators.length > 0 && (
+                    <div className="space-y-3 mb-5 pb-5 border-b border-border-subtle">
+                        <p className="text-[10px] uppercase font-bold text-txt-placeholder tracking-wider flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5 text-emerald-500" /> Người phối hợp
+                        </p>
+                        <div className="space-y-2">
+                            {collaborators.map(emp => (
+                                <div key={emp.EmployeeID} className="flex items-center gap-3">
+                                    <Avatar
+                                        name={emp.FullName}
+                                        imageUrl={emp.AvatarUrl}
+                                        size="sm"
+                                        className="ring-2 ring-white shadow-sm object-cover shrink-0"
+                                    />
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-txt-primary">{emp.FullName}</p>
+                                        <p className="text-[10px] text-txt-placeholder truncate">{emp.Position || emp.Department}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="space-y-4">
                     <div>

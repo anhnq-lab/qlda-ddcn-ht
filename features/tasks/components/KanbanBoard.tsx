@@ -202,24 +202,60 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isDragging, onClick, getAssig
                 </div>
             </div>
 
-            {assignee && (
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-subtle">
-                    <div className="flex items-center gap-1.5">
-                        <Avatar 
-                            name={assignee.FullName}
-                            imageUrl={assignee.AvatarUrl}
-                            size="xs"
-                            className="ring-2 ring-white dark:ring-slate-800"
-                        />
-                        <span className="text-[10px] font-medium text-txt-muted truncate max-w-[100px]">{assignee.FullName}</span>
+            {(() => {
+                const assigneeIds: string[] = task.Metadata?.assignee_ids || (task.AssigneeID ? [task.AssigneeID] : []);
+                const collaboratorIds: string[] = task.CollaboratorIDs || [];
+                
+                const allUsers: { id: string; role: 'primary' | 'collaborator' }[] = [
+                    ...assigneeIds.map(id => ({ id, role: 'primary' as const })),
+                    ...collaboratorIds.map(id => ({ id, role: 'collaborator' as const }))
+                ];
+
+                if (allUsers.length === 0) return null;
+
+                const displayUsers = allUsers.slice(0, 3);
+                const remainingCount = allUsers.length - displayUsers.length;
+                const leadAssignee = getAssignee(assigneeIds[0]);
+
+                return (
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-subtle" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center -space-x-1.5 overflow-hidden">
+                            {displayUsers.map(({ id, role }, idx) => {
+                                const emp = getAssignee(id);
+                                if (!emp) return null;
+                                const isLead = role === 'primary' && idx === 0;
+                                return (
+                                    <div 
+                                        key={id} 
+                                        className="relative group/avatar"
+                                        title={`${emp.FullName} (${isLead ? 'Đầu mối chịu trách nhiệm' : role === 'primary' ? 'Thực hiện chính' : 'Phối hợp'})`}
+                                    >
+                                        <Avatar
+                                            name={emp.FullName}
+                                            imageUrl={emp.AvatarUrl}
+                                            size="xs"
+                                            className={`ring-2 ring-bg-surface ${isLead ? 'ring-blue-500' : role === 'primary' ? 'ring-primary-400' : 'ring-emerald-300'}`}
+                                        />
+                                        {isLead && (
+                                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 text-white text-[5px] font-black rounded-full flex items-center justify-center border border-white dark:border-slate-800">★</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            {remainingCount > 0 && (
+                                <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-[8px] font-bold text-txt-muted shrink-0 z-0">
+                                    +{remainingCount}
+                                </div>
+                            )}
+                        </div>
+                        {leadAssignee?.Department && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-bg-muted text-txt-muted truncate max-w-[120px]">
+                                {leadAssignee.Department.replace('Phòng ', '')}
+                            </span>
+                        )}
                     </div>
-                    {assignee.Department && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-bg-muted text-txt-muted truncate max-w-[80px]">
-                            {assignee.Department.replace('Phòng ', '')}
-                        </span>
-                    )}
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 };

@@ -1894,6 +1894,7 @@ Lắp đặt đường ống thoát nước kỹ thuật tầng hầm,10,5,0,0,T
                               <img 
                                 src={p.publicUrl || p.image_path} 
                                 alt={p.caption || 'Hiện trường công trường'} 
+                                crossOrigin="anonymous"
                                 className="w-full h-40 object-cover"
                               />
                               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
@@ -1943,6 +1944,7 @@ Lắp đặt đường ống thoát nước kỹ thuật tầng hầm,10,5,0,0,T
             <img 
               src={activePhoto} 
               alt="Phóng to ảnh" 
+              crossOrigin="anonymous"
               className="rounded-2xl shadow-2xl max-w-full max-h-[85vh] object-contain border border-white/10" 
             />
             <button 
