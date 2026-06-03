@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { Employee, Role } from '../../types';
 import { useImpersonation } from '../../context/ImpersonationContext';
 import { Avatar } from '../../components/ui';
+import { PermissionService } from '../../services/PermissionService';
 import {
     ALL_RESOURCES,
     RESOURCE_LABELS,
@@ -21,6 +22,7 @@ import {
     resolveSystemRole,
     type PermissionResource,
     type PermissionAction,
+    type SystemRole,
 } from '../../types/permission.types';
 
 type UserTab = 'employees' | 'contractors';
@@ -72,6 +74,7 @@ const UserImpersonator: React.FC = () => {
                         JoinDate: e.join_date || '',
                         Username: e.username || '',
                         Role: e.role as Role,
+                        SystemRole: e.system_role || undefined,
                     })));
                 }
 
@@ -103,11 +106,17 @@ const UserImpersonator: React.FC = () => {
         fetchData();
     }, []);
 
-    const filteredEmployees = useMemo(() => employees.filter(emp =>
-        emp.FullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.Position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.Department?.toLowerCase().includes(searchTerm.toLowerCase())
-    ), [employees, searchTerm]);
+    const filteredEmployees = useMemo(() => employees.filter(emp => {
+        // Chặn giả lập tài khoản Quản trị HT (super_admin) — tránh leo thang đặc quyền (C-6.4)
+        const effRole: SystemRole = (emp.SystemRole as SystemRole)
+            || resolveSystemRole(emp.Role, emp.Position, emp.Department);
+        if (effRole === 'super_admin') return false;
+        return (
+            emp.FullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emp.Position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emp.Department?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }), [employees, searchTerm]);
 
     const filteredContractors = useMemo(() => contractorAccounts.filter(c =>
         c.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,11 +156,58 @@ const UserImpersonator: React.FC = () => {
         stopImpersonation();
     };
 
-    // Get default permissions preview for impersonated user
-    const systemRole = impersonatedUser
-        ? resolveSystemRole(impersonatedUser.Role, impersonatedUser.Position)
-        : null;
-    const permissions = systemRole ? DEFAULT_ROLE_PERMISSIONS[systemRole] || {} : null;
+    // ── Preview quyền HIỆU LỰC THẬT của người bị giả lập (C-6.1) ──
+    // Ưu tiên system_role; nạp ghi đè cá nhân (user_permissions) → role_permission_defaults.
+    const [previewRole, setPreviewRole] = useState<SystemRole | null>(null);
+    const [previewPerms, setPreviewPerms] = useState<Partial<Record<PermissionResource, PermissionAction[]>> | null>(null);
+    const [previewLoading, setPreviewLoading] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+        if (!impersonatedUser) {
+            setPreviewRole(null);
+            setPreviewPerms(null);
+            return;
+        }
+        const isContractor = (impersonatedUser.Role as string) === 'contractor';
+        const role: SystemRole = isContractor
+            ? 'contractor'
+            : (impersonatedUser.SystemRole as SystemRole)
+                || resolveSystemRole(impersonatedUser.Role, impersonatedUser.Position, impersonatedUser.Department);
+        setPreviewRole(role);
+        setPreviewLoading(true);
+
+        (async () => {
+            try {
+                // super_admin / contractor: dùng template (super_admin = toàn quyền)
+                if (role === 'super_admin' || role === 'contractor') {
+                    if (active) setPreviewPerms(DEFAULT_ROLE_PERMISSIONS[role] || {});
+                    return;
+                }
+                // 1) Ghi đè cá nhân
+                const overrides = await PermissionService.getByUserId(impersonatedUser.EmployeeID);
+                if (overrides.length > 0) {
+                    const m: Partial<Record<PermissionResource, PermissionAction[]>> = {};
+                    overrides.forEach(p => { m[p.resource] = p.actions; });
+                    if (active) setPreviewPerms(m);
+                    return;
+                }
+                // 2) Template theo role (DB → fallback hằng số)
+                const defaults = await PermissionService.getDefaultPermissions(role);
+                if (active) setPreviewPerms(defaults);
+            } catch (e) {
+                console.warn('[Impersonator] Không nạp được quyền hiệu lực, dùng hằng số:', e);
+                if (active) setPreviewPerms(DEFAULT_ROLE_PERMISSIONS[role] || {});
+            } finally {
+                if (active) setPreviewLoading(false);
+            }
+        })();
+
+        return () => { active = false; };
+    }, [impersonatedUser]);
+
+    const systemRole = previewRole;
+    const permissions = previewPerms;
 
     const totalCount = employees.length + contractorAccounts.length;
 
@@ -223,9 +279,12 @@ const UserImpersonator: React.FC = () => {
                     {/* Permissions Preview */}
                     {permissions && (
                         <div className="mt-5 pt-4 border-t border-primary-200 dark:border-primary-700">
-                            <p className="text-xs font-bold text-primary-700 dark:text-primary-400 mb-3 flex items-center gap-1">
+                            <p className="text-xs font-bold text-primary-700 dark:text-primary-400 mb-1 flex items-center gap-1">
                                 <Shield size={14} />
-                                QUYỀN CỦA NGƯỜI NÀY ({ROLE_LABELS[systemRole!]}):
+                                QUYỀN HIỆU LỰC CỦA NGƯỜI NÀY ({ROLE_LABELS[systemRole!]}){previewLoading ? ' — đang tải…' : ''}:
+                            </p>
+                            <p className="text-[11px] text-txt-muted mb-3 italic">
+                                ⚠️ Chế độ <strong>xem trước</strong>: giao diện thích ứng theo quyền của người này, nhưng truy vấn dữ liệu vẫn chạy dưới phiên đăng nhập Admin (RLS chưa đổi).
                             </p>
                             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                                 {ALL_RESOURCES.map(resource => {

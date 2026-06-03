@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard } from 'lucide-react';
+import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard, Award } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
@@ -11,12 +11,13 @@ const ContractorAccountManager = React.lazy(() => import('./components/admin/Con
 const AuditLogViewer = React.lazy(() => import('./components/admin/AuditLogViewer'));
 const UserImpersonator = React.lazy(() => import('./UserImpersonator'));
 const DashboardWidgetManager = React.lazy(() => import('./components/admin/DashboardWidgetManager'));
+const LeadershipAssignmentManager = React.lazy(() => import('./LeadershipAssignmentManager'));
 
 // ============================================================
 // SETTINGS — Unified Admin Control Panel
 // ============================================================
 
-type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'permissions' | 'dashboard-widgets' | 'audit-log' | 'tools';
+type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'audit-log' | 'tools';
 
 interface TabDef {
     key: TabKey;
@@ -29,6 +30,7 @@ const TABS: TabDef[] = [
     { key: 'contractors', label: 'Nhà thầu', icon: Building2 },
     { key: 'role-defaults', label: 'Ma trận quyền', icon: ShieldCheck },
     { key: 'permissions', label: 'Quyền cá nhân', icon: Shield },
+    { key: 'leadership', label: 'Phân công lãnh đạo', icon: Award },
     { key: 'dashboard-widgets', label: 'Cấu hình Dashboard', icon: LayoutDashboard },
     { key: 'audit-log', label: 'Nhật ký hệ thống', icon: Network },
     { key: 'tools', label: 'Công cụ', icon: Wrench },
@@ -43,7 +45,7 @@ const Settings: React.FC = () => {
     // Sync tab ↔ URL
     const [activeTab, setActiveTab] = useTabSearchParam<TabKey>(
         'accounts',
-        ['accounts', 'contractors', 'role-defaults', 'permissions', 'dashboard-widgets', 'audit-log', 'tools'] as const,
+        ['accounts', 'contractors', 'role-defaults', 'permissions', 'leadership', 'dashboard-widgets', 'audit-log', 'tools'] as const,
         'tab'
     );
 
@@ -132,6 +134,11 @@ const Settings: React.FC = () => {
                     {activeTab === 'permissions' && (
                         <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
                             <PermissionManager />
+                        </div>
+                    )}
+                    {activeTab === 'leadership' && (
+                        <div className="p-6 lg:p-8 h-full overflow-y-auto">
+                            <LeadershipAssignmentManager />
                         </div>
                     )}
                     {activeTab === 'dashboard-widgets' && (

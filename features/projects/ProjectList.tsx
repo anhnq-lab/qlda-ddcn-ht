@@ -105,7 +105,7 @@ const ProjectList: React.FC = () => {
 
     // ── Auth & Permissions ──
     const { currentUser } = useAuth();
-    const { isGlobalScope, systemRole } = usePermissionCheck();
+    const { isGlobalScope, systemRole, managedBoards } = usePermissionCheck();
     const { impersonatedUser, isImpersonating } = useImpersonation();
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const banNumber = useMemo(() => extractBanNumber(effectiveUser?.Department), [effectiveUser]);
@@ -191,8 +191,12 @@ const ProjectList: React.FC = () => {
                 sortOrder: queryParams.sortOrder,
             };
 
-            if (!isGlobalScope && systemRole !== 'super_admin' && systemRole !== 'contractor' && banNumber !== null) {
-                exportParams.filters.board = banNumber.toString();
+            if (!isGlobalScope && systemRole !== 'super_admin' && systemRole !== 'contractor') {
+                if (systemRole === 'deputy_director' && managedBoards.length > 0) {
+                    exportParams.filters.boards = managedBoards.map(String);
+                } else if (banNumber !== null) {
+                    exportParams.filters.board = banNumber.toString();
+                }
             }
 
             let allProjects = await ProjectService.getAll(exportParams);
@@ -364,35 +368,68 @@ const ProjectList: React.FC = () => {
             const wb = new ExcelJS.Workbook();
             const ws = wb.addWorksheet('Mau_Import_DuAn');
 
-            // Columns definition
+            // Columns definition (54 columns in total)
             ws.columns = [
                 { header: 'Tên dự án (*)', key: 'project_name', width: 35 },
-                { header: 'Mã dự án (chỉ điền khi muốn cập nhật)', key: 'project_id', width: 25 },
+                { header: 'Mã dự án (Mã QHNS - chỉ điền khi muốn cập nhật)', key: 'project_id', width: 25 },
                 { header: 'Nhóm dự án (QN/A/B/C)', key: 'group_code', width: 20 },
+                { header: 'Chuyên ngành dự án (Dân dụng & CN / Giao thông & ĐT / Nông nghiệp & NT / Hỗn hợp / Khác)', key: 'specialty_type', width: 35 },
                 { header: 'Loại hình đầu tư (Đầu tư công / Vốn nhà nước ngoài đầu tư công / PPP / Khác)', key: 'investment_type', width: 30 },
                 { header: 'Tổng mức đầu tư (VNĐ)', key: 'total_investment', width: 22 },
                 { header: 'Nguồn vốn', key: 'capital_source', width: 25 },
+                { header: 'Cơ cấu nguồn vốn - Vốn NSTW (VNĐ)', key: 'budget_nstw', width: 25 },
+                { header: 'Cơ cấu nguồn vốn - Vốn NSĐP (VNĐ)', key: 'budget_nsdp', width: 25 },
+                { header: 'Cơ cấu nguồn vốn - Vốn vay (VNĐ)', key: 'budget_loan', width: 25 },
+                { header: 'Cơ cấu nguồn vốn - Vốn ODA (VNĐ)', key: 'budget_oda', width: 25 },
+                { header: 'Cơ cấu nguồn vốn - Vốn khác (VNĐ)', key: 'budget_other', width: 25 },
+                { header: 'Cơ cấu chi phí - GPMB (VNĐ)', key: 'cost_clearance', width: 22 },
+                { header: 'Cơ cấu chi phí - Xây lắp (VNĐ)', key: 'cost_construction', width: 22 },
+                { header: 'Cơ cấu chi phí - Thiết bị (VNĐ)', key: 'cost_equipment', width: 22 },
+                { header: 'Cơ cấu chi phí - QLDA (VNĐ)', key: 'cost_management', width: 22 },
+                { header: 'Cơ cấu chi phí - Tư vấn (VNĐ)', key: 'cost_consultancy', width: 22 },
+                { header: 'Cơ cấu chi phí - Chi phí khác (VNĐ)', key: 'cost_other', width: 22 },
+                { header: 'Cơ cấu chi phí - Dự phòng (VNĐ)', key: 'cost_contingency', width: 22 },
                 { header: 'Trạng thái (Chuẩn bị dự án / Thực hiện dự án / Kết thúc xây dựng)', key: 'status', width: 30 },
                 { header: 'Hiện trạng chi tiết (ví dụ: Đang thi công)', key: 'current_status', width: 30 },
-                { header: 'Địa điểm', key: 'location_code', width: 20 },
-                { header: 'Lĩnh vực', key: 'sector', width: 20 },
+                { header: 'Địa điểm (chỉ nhập tên địa điểm, không nhập tọa độ)', key: 'location_code', width: 25 },
+                { header: 'Lĩnh vực (chọn trong danh sách)', key: 'sector', width: 25 },
                 { header: 'Cấp quyết định chủ trương', key: 'policy_level', width: 25 },
                 { header: 'Số QĐ chủ trương', key: 'policy_number', width: 20 },
                 { header: 'Ngày QĐ chủ trương (YYYY-MM-DD)', key: 'policy_date', width: 25 },
+                { header: 'Cơ quan ban hành QĐ chủ trương', key: 'policy_authority', width: 25 },
+                { header: 'Số QĐ phê duyệt dự án', key: 'decision_number', width: 22 },
+                { header: 'Ngày phê duyệt dự án (YYYY-MM-DD)', key: 'decision_date', width: 25 },
+                { header: 'Cơ quan phê duyệt dự án', key: 'decision_authority', width: 25 },
+                { header: 'Số QĐ phê duyệt thiết kế - dự toán', key: 'design_approval_number', width: 25 },
+                { header: 'Ngày phê duyệt thiết kế - dự toán (YYYY-MM-DD)', key: 'design_approval_date', width: 25 },
+                { header: 'Cơ quan thẩm định thiết kế - dự toán', key: 'design_approval_authority', width: 25 },
+                { header: 'Tổng dự toán phê duyệt (VNĐ)', key: 'total_estimate', width: 22 },
                 { header: 'Phòng QLDA (Phòng 1/Phòng 2/Phòng 3)', key: 'management_board', width: 25 },
                 { header: 'Chủ đầu tư cũ', key: 'old_investor', width: 25 },
                 { header: 'Quyết định điều chuyển', key: 'transfer_decision', width: 25 },
+                { header: 'Cấp QĐ trước bàn giao', key: 'decision_level_before_handover', width: 25 },
                 { header: 'Ngày khởi công (YYYY-MM-DD)', key: 'start_date', width: 25 },
                 { header: 'Hạn chót dự kiến (YYYY-MM-DD)', key: 'expected_end_date', width: 25 },
                 { header: 'Thực tế kết thúc (YYYY-MM-DD)', key: 'actual_end_date', width: 25 },
                 { header: 'Tiến độ vật lý (%)', key: 'progress', width: 18 },
                 { header: 'Tiến độ giải ngân (%)', key: 'payment_progress', width: 20 },
+                { header: 'Quy mô - Diện tích khu đất (m2)', key: 'site_area', width: 25 },
+                { header: 'Quy mô - Diện tích xây dựng (m2)', key: 'construction_area', width: 25 },
+                { header: 'Quy mô - Diện tích sàn (m2)', key: 'floor_area', width: 25 },
+                { header: 'Quy mô - Chiều cao công trình (m)', key: 'building_height', width: 25 },
+                { header: 'Quy mô - Mật độ xây dựng (%)', key: 'building_density', width: 25 },
+                { header: 'Quy mô - Hệ số sử dụng đất', key: 'land_use_coefficient', width: 25 },
+                { header: 'Quy mô - Số tầng nổi', key: 'above_ground_floors', width: 20 },
+                { header: 'Quy mô - Số tầng hầm', key: 'basement_floors', width: 20 },
+                { header: 'Nhân sự - Kế toán theo dõi', key: 'mgmt_accountant', width: 25 },
+                { header: 'Nhân sự - Giám đốc QLDA', key: 'mgmt_director', width: 25 },
+                { header: 'Nhân sự - Cán bộ kỹ thuật', key: 'mgmt_tech', width: 25 },
             ];
 
             // Title block
             ws.insertRow(1, []);
             ws.insertRow(2, [null, 'MẪU FILE NHẬP DỰ ÁN HÀNG LOẠT (PROJECT IMPORT TEMPLATE)']);
-            ws.mergeCells('B2:M2');
+            ws.mergeCells('B2:Z2');
             const titleRow = ws.getRow(2);
             titleRow.height = 32;
             titleRow.getCell(2).font = { name: 'Times New Roman', bold: true, size: 15, color: { argb: 'FFC00000' } };
@@ -400,9 +437,9 @@ const ProjectList: React.FC = () => {
 
             ws.insertRow(3, [
                 null,
-                'HƯỚNG DẪN: Các cột có dấu (*) là bắt buộc. Nhập đúng các giá trị trong ngoặc đơn ở tiêu đề cột. Định dạng ngày là YYYY-MM-DD.'
+                'HƯỚNG DẪN: Các cột có dấu (*) là bắt buộc. Hãy chọn giá trị từ dropdown cho các cột danh mục. Định dạng ngày là YYYY-MM-DD. Địa điểm chỉ ghi dạng văn bản, không ghi tọa độ.'
             ]);
-            ws.mergeCells('B3:M3');
+            ws.mergeCells('B3:Z3');
             const subtitleRow = ws.getRow(3);
             subtitleRow.height = 20;
             subtitleRow.getCell(2).font = { name: 'Times New Roman', italic: true, size: 10, color: { argb: 'FF595959' } };
@@ -412,7 +449,7 @@ const ProjectList: React.FC = () => {
 
             // Table headers style
             const headerRow = ws.getRow(5);
-            headerRow.height = 30;
+            headerRow.height = 35;
             headerRow.eachCell((cell) => {
                 cell.fill = {
                     type: 'pattern',
@@ -429,29 +466,62 @@ const ProjectList: React.FC = () => {
                 };
             });
 
-            // Add sample row
+            // Add sample row with realistic dummy values for all 54 columns
             const sampleRow = ws.addRow({
-                project_name: 'Dự án Đầu tự xây dựng tuyến đường trục chính kết nối khu công nghiệp X',
-                project_id: '', // Empty for new project
+                project_name: 'Dự án Đầu tư xây dựng tuyến đường trục chính kết nối khu công nghiệp X',
+                project_id: 'DA-QHNS-2026-001',
                 group_code: 'B',
+                specialty_type: 'Giao thông & ĐT',
                 investment_type: 'Đầu tư công',
                 total_investment: 150000000000,
-                capital_source: 'Ngân sách Trung ương',
+                capital_source: 'Ngân sách Trung ương & Ngân sách Tỉnh',
+                budget_nstw: 80000000000,
+                budget_nsdp: 70000000000,
+                budget_loan: 0,
+                budget_oda: 0,
+                budget_other: 0,
+                cost_clearance: 30000000000,
+                cost_construction: 90000000000,
+                cost_equipment: 10000000000,
+                cost_management: 3000000000,
+                cost_consultancy: 5000000000,
+                cost_other: 2000000000,
+                cost_contingency: 10000000000,
                 status: 'Thực hiện dự án',
                 current_status: 'Đang thi công',
-                location_code: 'Hà Tĩnh',
-                sector: 'Transport',
-                policy_level: 'UBND tỉnh',
-                policy_number: '123/QĐ-UBND',
+                location_code: 'Thị xã Kỳ Anh, Hà Tĩnh',
+                sector: 'Giao thông',
+                policy_level: 'HĐND Tỉnh',
+                policy_number: '123/NQ-HĐND',
                 policy_date: '2025-01-15',
-                management_board: 'Phòng QLDA 1',
-                old_investor: 'CĐT Cũ X',
-                transfer_decision: '456/QĐ-TC',
-                start_date: '2025-03-01',
-                expected_end_date: '2026-12-31',
+                policy_authority: 'HĐND tỉnh Hà Tĩnh',
+                decision_number: '456/QĐ-UBND',
+                decision_date: '2025-02-20',
+                decision_authority: 'UBND tỉnh Hà Tĩnh',
+                design_approval_number: '789/QĐ-SXD',
+                design_approval_date: '2025-05-10',
+                design_approval_authority: 'Sở Xây dựng Hà Tĩnh',
+                total_estimate: 145000000000,
+                management_board: 'Phòng 1',
+                old_investor: 'Ban QLDA Huyện Y',
+                transfer_decision: '1011/QĐ-UBND',
+                decision_level_before_handover: 'UBND Tỉnh',
+                start_date: '2025-06-01',
+                expected_end_date: '2027-12-31',
                 actual_end_date: '',
-                progress: 30,
-                payment_progress: 25,
+                progress: 35,
+                payment_progress: 28,
+                site_area: 55000,
+                construction_area: 12000,
+                floor_area: 24000,
+                building_height: 12.5,
+                building_density: 21.8,
+                land_use_coefficient: 0.44,
+                above_ground_floors: 3,
+                basement_floors: 0,
+                mgmt_accountant: 'Võ Thị Kim Ngân',
+                mgmt_director: 'Nguyễn Quang Linh',
+                mgmt_tech: 'Lê Hoàng Nam',
             });
 
             sampleRow.height = 24;
@@ -464,10 +534,86 @@ const ProjectList: React.FC = () => {
                     right: { style: 'thin', color: { argb: 'FFD0D0D0' } },
                 };
                 cell.alignment = { vertical: 'middle', wrapText: true };
-                if (cellNumber === 5) {
+                
+                // Format numbers for currency columns
+                if ([6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 34].includes(cellNumber)) {
                     cell.numFmt = '#,##0';
+                    cell.font = { name: 'Times New Roman', size: 9, italic: true, color: { argb: 'FF808080' } };
                 }
             });
+
+            // Apply Data Validations for dropdown columns (Rows 6 to 1000)
+            for (let r = 6; r <= 1000; r++) {
+                // Nhóm dự án (Cột C / Index 2 / Cell C{r})
+                ws.getCell(`C${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"QN,A,B,C"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Nhóm dự án từ danh sách (QN, A, B, C).'
+                };
+
+                // Chuyên ngành dự án (Cột D / Index 3 / Cell D{r})
+                ws.getCell(`D${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Dân dụng & CN,Giao thông & ĐT,Nông nghiệp & NT,Hỗn hợp,Khác"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Chuyên ngành từ danh sách.'
+                };
+
+                // Loại hình đầu tư (Cột E / Index 4 / Cell E{r})
+                ws.getCell(`E${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Đầu tư công,Vốn nhà nước ngoài đầu tư công,PPP,Khác"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Loại hình đầu tư từ danh sách.'
+                };
+
+                // Trạng thái (Cột T / Index 19 / Cell T{r})
+                ws.getCell(`T${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Chuẩn bị dự án,Thực hiện dự án,Kết thúc xây dựng"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Trạng thái chính từ danh sách.'
+                };
+
+                // Hiện trạng chi tiết (Cột U / Index 20 / Cell U{r})
+                ws.getCell(`U${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Duyệt chủ trương,Chưa khởi công,Đang thi công,Hoàn thành chưa bàn giao,Bàn giao chưa trình QT,Đã trình chưa duyệt QT,Đã QT còn công nợ,Xử lý tài chính,Dự án kết thúc,Chưa nhận bàn giao"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Hiện trạng chi tiết từ danh sách.'
+                };
+
+                // Lĩnh vực (Cột W / Index 22 / Cell W{r})
+                ws.getCell(`W${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Giao thông (trọng điểm),Công nghiệp điện,Khai thác dầu khí,Luyện kim - Xi măng - Chế tạo máy,Xây dựng khu nhà ở,Giao thông,Thủy lợi và cấp thoát nước,Bưu chính và viễn thông,Vật liệu xây dựng,Nông lâm ngư nghiệp,Hạ tầng khu đô thị,Công nghiệp,Y tế,Giáo dục,Văn hóa và thể thao,Khoa học công nghệ,Khác"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Lĩnh vực từ danh sách.'
+                };
+
+                // Phòng QLDA (Cột AI / Index 34 / Cell AI{r})
+                ws.getCell(`AI${r}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Phòng 1,Phòng 2,Phòng 3"'],
+                    showErrorMessage: true,
+                    errorTitle: 'Dữ liệu không hợp lệ',
+                    error: 'Vui lòng chọn Phòng QLDA phụ trách từ danh sách.'
+                };
+            }
 
             const buffer = await wb.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

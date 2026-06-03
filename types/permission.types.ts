@@ -134,14 +134,32 @@ export const ALL_RESOURCES: PermissionResource[] = [
 // Role groups — data scope
 // ═══════════════════════════════════════════
 
-/** Roles that can see data across ALL projects */
+/**
+ * Roles that can see data across ALL projects.
+ *
+ * NOTE: `deputy_director` is intentionally NOT global. Per the org chart,
+ * a Phó GĐ only oversees specific QLDA boards (see leadership_assignments).
+ * Their scope is resolved dynamically in PermissionContext (managedBoards).
+ * Fallback: a deputy with no assignments yet keeps global view (non-breaking)
+ * until an admin configures their boards.
+ */
 export const GLOBAL_VIEW_ROLES: SystemRole[] = [
-    'super_admin', 'director', 'deputy_director', 'chief_accountant'
+    'super_admin', 'director', 'chief_accountant'
 ];
 
-/** Departments that see all projects */
+/**
+ * Departments that see all projects (global scope).
+ * Tên canonical theo cơ cấu Ban QLDA Hà Tĩnh; kèm tên cũ/biến thể làm alias.
+ * Phải đồng bộ với `OrgChartPage` và dữ liệu `employees.department`.
+ */
 export const GLOBAL_VIEW_DEPARTMENTS = [
+    // Canonical (Hà Tĩnh)
     'Ban Giám đốc',
+    'Phòng Hành chính – Tổng hợp',
+    'Phòng Kế hoạch – Đấu thầu',
+    'Phòng Kỹ thuật – Thẩm định',
+    'Phòng Phát triển dịch vụ',
+    // Legacy / alias (giữ để không vỡ dữ liệu cũ)
     'Văn phòng',
     'Phòng Kế hoạch – Đầu tư',
     'Phòng Tài chính – Kế toán',
@@ -207,7 +225,7 @@ export function resolveSystemRole(legacyRole: string, position: string, departme
     if (posLower.includes('chánh văn phòng')) return 'dept_head';
     if (posLower.includes('trưởng phòng') || posLower.includes('trưởng ban')) return 'dept_head';
     if (posLower.includes('phó phòng') || posLower.includes('phó văn phòng') || posLower.includes('phó ban')) return 'deputy_head';
-    if (posLower.includes('chuyên viên') || posLower.includes('kỹ sư')) return 'specialist';
+    if (posLower.includes('chuyên viên') || posLower.includes('kỹ sư') || posLower.includes('thành viên')) return 'specialist';
     if (posLower.includes('nhân viên')) return 'staff';
     if (posLower.includes('nhà thầu') || legacyRole.toLowerCase() === 'contractor') return 'contractor';
 
@@ -391,7 +409,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
     staff: {
         dashboard: ['view'],
         projects: ['view'],
-        tasks: ['view'],
+        tasks: ['view', 'create', 'update'],
         employees: ['view'],
         contractors: ['view'],
         bidding: ['view'],

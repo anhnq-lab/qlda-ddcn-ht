@@ -205,6 +205,10 @@ export class ProjectService {
             if (f.currentStatus !== undefined && f.currentStatus !== '' && f.currentStatus !== 'all') query = query.eq('current_status_code', f.currentStatus);
             if (f.group && f.group !== 'all') query = query.eq('group_code', f.group);
             if (f.board && f.board !== 'all') query = query.eq('management_board', f.board);
+            // Multi-board scope (Phó GĐ phụ trách nhiều Ban) — hard scope, không phải filter UI
+            if (Array.isArray(f.boards) && f.boards.length > 0) query = query.in('management_board', f.boards);
+            // Project-id scope (nhà thầu: chỉ dự án được gói) — hard scope
+            if (Array.isArray(f.projectIds)) query = query.in('project_id', f.projectIds.length > 0 ? f.projectIds : ['__none__']);
             if (f.specialtyType && f.specialtyType !== 'all') query = query.eq('specialty_type', f.specialtyType);
             if (f.investmentType) query = query.eq('investment_type', f.investmentType);
             if (f.stage) query = query.eq('stage', f.stage);

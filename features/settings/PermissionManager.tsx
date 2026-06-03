@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
 import EmployeeService from '../../services/EmployeeService';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
+import { permissionCache } from '../../utils/permissionCache';
 import {
     PermissionAction,
     PermissionResource,
@@ -40,7 +41,7 @@ const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', '
 
 const PermissionManager: React.FC = () => {
     const { addToast } = useToast();
-    const { can } = usePermissionCheck();
+    const { can, refresh } = usePermissionCheck();
     const { currentUser } = useAuth();
     const [employees, setEmployees] = useState<EmployeeInfo[]>([]);
     const [allPermissions, setAllPermissions] = useState<UserPermission[]>([]);
@@ -248,6 +249,14 @@ const PermissionManager: React.FC = () => {
             // Refresh all permissions
             const refreshed = await PermissionService.getAll();
             setAllPermissions(refreshed);
+
+            // Áp dụng ngay (C-5.1): xoá cache quyền của người vừa sửa.
+            permissionCache.invalidate(selectedEmployee.employeeId);
+            // Nếu sửa quyền của chính mình → nạp lại quyền hiện hành.
+            if (selectedEmployee.employeeId === currentUser?.EmployeeID) {
+                await refresh();
+            }
+
             addToast({ title: 'Thành công', message: `Đã lưu quyền cho ${selectedEmployee.fullName}`, type: 'success' });
         } catch (err) {
             console.error('Save failed:', err);
@@ -255,7 +264,7 @@ const PermissionManager: React.FC = () => {
         } finally {
             setSaving(false);
         }
-    }, [selectedEmployee, editedPermissions, can, currentUser]);
+    }, [selectedEmployee, editedPermissions, can, currentUser, refresh]);
 
     // Bulk apply defaults for employees that DON'T have DB records yet
     const applyDefaultsForAll = useCallback(async () => {

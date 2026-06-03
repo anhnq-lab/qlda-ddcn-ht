@@ -17,6 +17,8 @@ export interface PermissionCacheEntry {
     permissionPairs: [string, string[]][];
     systemRole: string;
     isGlobalScope: boolean;
+    /** Ban QLDA mà PGĐ phụ trách (chỉ dùng cho deputy_director) */
+    managedBoards?: number[];
     cachedAt: number;
     userId: string;
 }

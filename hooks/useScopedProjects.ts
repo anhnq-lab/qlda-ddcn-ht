@@ -17,19 +17,12 @@ import { useProjectStats, ProjectStatsResult } from './useProjectStats';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { usePermissionCheck } from './usePermissionCheck';
+import { extractBanNumber } from '../utils/boardScope';
 import type { Project } from '../types';
 import type { QueryParams } from '../types/api';
 
-/**
- * Extract the Ban number (1-7) from department name.
- * e.g. "Ban Điều hành dự án 1" → 1, "Ban Điều hành dự án 7" → 7
- * Returns null if not a Ban ĐHDA department.
- */
-export function extractBanNumber(department: string | undefined): number | null {
-    if (!department) return null;
-    const match = department.match(/Ban Điều hành dự án\s*(\d+)/i);
-    return match ? parseInt(match[1], 10) : null;
-}
+// Re-export để giữ tương thích các nơi đang import từ hook này.
+export { extractBanNumber };
 
 export interface ScopedProjectsResult {
     /** Projects visible to current user (paginated from server) */
@@ -77,24 +70,41 @@ export interface ScopedProjectsResult {
 export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     const { currentUser } = useAuth();
     const { impersonatedUser, isImpersonating } = useImpersonation();
-    const { isGlobalScope, systemRole } = usePermissionCheck();
+    const { isGlobalScope, systemRole, managedBoards } = usePermissionCheck();
 
     // Effective user for scoping
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const banNumber = extractBanNumber(effectiveUser?.Department);
+    // Khoá theo nội dung để memo ổn định (mảng đổi tham chiếu mỗi render)
+    const managedBoardsKey = managedBoards.join(',');
+    const allowedIdsKey = (effectiveUser?.AllowedProjectIDs || []).join(',');
 
     // Build server-side filter params with board scope injected
     const serverParams = useMemo((): QueryParams => {
         const base: QueryParams = { ...params };
         if (!base.filters) base.filters = {};
 
-        // Inject board scope for Ban ĐHDA users
-        if (!isGlobalScope && systemRole !== 'super_admin' && systemRole !== 'contractor' && banNumber !== null) {
+        // Nhà thầu: scope theo danh sách dự án được gói (đẩy xuống server → phân trang đúng)
+        if (systemRole === 'contractor') {
+            base.filters.projectIds = effectiveUser?.AllowedProjectIDs || [];
+            return base;
+        }
+
+        if (isGlobalScope || systemRole === 'super_admin') {
+            return base;
+        }
+
+        // Phó GĐ: scope theo nhiều Ban phụ trách (leadership_assignments)
+        if (systemRole === 'deputy_director' && managedBoards.length > 0) {
+            base.filters.boards = managedBoards.map(String);
+        }
+        // Phòng QLDA / Ban ĐHDA: scope theo đúng Ban của mình
+        else if (banNumber !== null) {
             base.filters.board = banNumber.toString();
         }
 
         return base;
-    }, [params, isGlobalScope, systemRole, banNumber]);
+    }, [params, isGlobalScope, systemRole, banNumber, managedBoardsKey, allowedIdsKey]);
 
     // Paginated fetch from server
     const { projects, total, page, pageSize, totalPages, isLoading, isFetching, refetch } = usePaginatedProjects(serverParams);
@@ -102,15 +112,9 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     // Fetch aggregate stats for the current scope (ignoring status/currentStatus filters)
     const { statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, total: totalUnfiltered, isLoading: isLoadingStats } = useProjectStats(serverParams);
 
-    // Contractor: client-side filter by allowed IDs (small set, OK client-side)
-    const scopedProjects = useMemo(() => {
-        if (systemRole === 'contractor') {
-            const allowedIds = effectiveUser?.AllowedProjectIDs || [];
-            if (allowedIds.length === 0) return [];
-            return projects.filter(p => allowedIds.includes(p.ProjectID));
-        }
-        return projects;
-    }, [projects, systemRole, effectiveUser]);
+    // Scope nhà thầu nay được đẩy xuống server (filters.projectIds) + RLS enforce
+    // → không cần lọc client, phân trang/đếm chính xác.
+    const scopedProjects = projects;
 
     // Derived: set of scoped IDs for quick lookup in other modules
     const scopedProjectIds = useMemo(() => {
@@ -121,7 +125,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         scopedProjects,
         scopedProjectIds,
         allProjects: scopedProjects,
-        total: systemRole === 'contractor' ? scopedProjects.length : total,
+        total,
         page,
         pageSize,
         totalPages,
@@ -130,7 +134,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         groupCounts,
         boardCounts,
         specialtyCounts,
-        totalUnfiltered: systemRole === 'contractor' ? scopedProjects.length : totalUnfiltered,
+        totalUnfiltered,
         isGlobalScope,
         banNumber,
         isLoading: isLoading || isLoadingStats,

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 import {
@@ -19,6 +19,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useEmployees } from '../../hooks/useEmployees';
+import { LeadershipService } from '../../services/LeadershipService';
 import { Avatar } from '../../components/ui';
 import {
     Network, Users, Building2, ChevronRight,
@@ -135,7 +136,8 @@ const nodeTypes = {
 
 function buildFlowElements(
     employees: ReturnType<typeof useEmployees>['data'] extends undefined ? never[] : NonNullable<ReturnType<typeof useEmployees>['data']>,
-    deptGroups: Record<string, typeof employees>
+    deptGroups: Record<string, typeof employees>,
+    boardToDeputy: Map<number, NonNullable<ReturnType<typeof useEmployees>['data']>[number]>
 ): { nodes: Node[]; edges: Edge[] } {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
@@ -143,11 +145,11 @@ function buildFlowElements(
     const gd = employees.find(e => e.Position === 'Giám đốc Ban');
     const pgds = employees.filter(e => e.Position === 'Phó Giám đốc Ban');
 
-
-    // --- PGD Selection dynamically ---
-    const pgdBao  = pgds[0];
-    const pgdNhan = pgds[1];
-    const pgdQuy  = pgds[2];
+    // --- PGĐ phụ trách: ưu tiên phân công thực (leadership_assignments),
+    //     fallback theo vị trí mảng nếu Ban chưa được phân công. ---
+    const pgdBao  = boardToDeputy.get(1) ?? pgds[0]; // Ban 1
+    const pgdNhan = boardToDeputy.get(2) ?? pgds[1]; // Ban 2
+    const pgdQuy  = boardToDeputy.get(3) ?? pgds[2]; // Ban 3
 
     const edgeType = 'step';
     const edgeStyle = (color: string) => ({ stroke: color, strokeWidth: 1.5 });
@@ -257,6 +259,16 @@ const OrgChartPage: React.FC = () => {
     const { data: employees = [] } = useEmployees();
     const [activeTab, setActiveTab] = useTabSearchParam<'flow' | 'grid'>('flow', ['flow', 'grid'] as const, 'chart');
 
+    // Phân công Ban phụ trách của các Phó GĐ (nguồn: leadership_assignments)
+    const [boardAssignments, setBoardAssignments] = useState<Array<{ deputyEmployeeId: string; boardNumber: number }>>([]);
+    useEffect(() => {
+        let active = true;
+        LeadershipService.getAll()
+            .then(rows => { if (active) setBoardAssignments(rows); })
+            .catch(() => { /* bảng có thể chưa áp migration — bỏ qua, fallback vị trí */ });
+        return () => { active = false; };
+    }, []);
+
     const deptGroups = useMemo(() => {
         const g: Record<string, typeof employees> = {};
         employees.forEach(emp => {
@@ -266,14 +278,30 @@ const OrgChartPage: React.FC = () => {
         return g;
     }, [employees]);
 
+    // Map: số Ban → nhân sự PGĐ phụ trách
+    const boardToDeputy = useMemo(() => {
+        const m = new Map<number, typeof employees[number]>();
+        boardAssignments.forEach(a => {
+            const emp = employees.find(e => e.EmployeeID === a.deputyEmployeeId);
+            if (emp) m.set(a.boardNumber, emp);
+        });
+        return m;
+    }, [boardAssignments, employees]);
+
     const { nodes: initialNodes, edges: initialEdges } = useMemo(
-        () => buildFlowElements(employees, deptGroups),
-        [employees, deptGroups]
+        () => buildFlowElements(employees, deptGroups, boardToDeputy),
+        [employees, deptGroups, boardToDeputy]
     );
 
-    const [nodes, , onNodesChange] = useNodesState(initialNodes);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const onConnect = useCallback((params: Connection) => setEdges(eds => addEdge(params, eds)), [setEdges]);
+
+    // Đồng bộ lại khi dữ liệu (nhân sự / phân công Ban) nạp bất đồng bộ.
+    useEffect(() => {
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+    }, [initialNodes, initialEdges, setNodes, setEdges]);
 
     const leadership = useMemo(() => ({
         gd: employees.find(e => e.Position === 'Giám đốc Ban'),

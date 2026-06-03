@@ -6,6 +6,8 @@ import {
 import { supabase } from '../../lib/supabase';
 import { PermissionService } from '../../services/PermissionService';
 import { usePermissionCheck } from '../../hooks/usePermissionCheck';
+import { clearRoleDefaultsCache } from '../../context/PermissionContext';
+import { permissionCache } from '../../utils/permissionCache';
 import {
     PermissionAction,
     PermissionResource,
@@ -23,7 +25,7 @@ import {
 const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'approve', 'export'];
 
 const RoleDefaultsManager: React.FC = () => {
-    const { can } = usePermissionCheck();
+    const { can, refresh } = usePermissionCheck();
     
     // Auth guard
     const [userId, setUserId] = useState<string | null>(null);
@@ -171,15 +173,20 @@ const RoleDefaultsManager: React.FC = () => {
 
             if (error) throw error;
 
+            // Áp dụng ngay (C-5.4): xoá cache template + cache quyền mọi user → nạp lại quyền mới.
+            clearRoleDefaultsCache();
+            permissionCache.invalidateAll();
+            await refresh();
+
             setHasChanges(false);
-            alert('Đã lưu ma trận quyền mặc định vào cơ sở dữ liệu!');
+            alert('Đã lưu ma trận quyền mặc định vào cơ sở dữ liệu! Quyền mới sẽ áp dụng ở lần điều hướng kế tiếp.');
         } catch (err: any) {
             console.error('Error saving role defaults:', err);
             alert('Lỗi khi lưu: ' + err.message);
         } finally {
             setSaving(false);
         }
-    }, [rolePerms, can]);
+    }, [rolePerms, can, refresh]);
 
     // ─── Apply defaults to all users with this role ─────
     const handleApplyToAll = useCallback(async () => {
@@ -225,6 +232,8 @@ const RoleDefaultsManager: React.FC = () => {
                 }
             }
 
+            // Áp dụng ngay: xoá cache để nhân viên nạp lại quyền vừa ghi đè.
+            permissionCache.invalidateAll();
             alert(`Đã áp dụng thành công quyền mặc định cho ${successCount}/${targetEmployees.length} nhân viên (${ROLE_LABELS[selectedRole]}).`);
         } catch (err: any) {
             console.error('Error applying defaults:', err);

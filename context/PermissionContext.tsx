@@ -34,6 +34,8 @@ import {
     resolveSystemRole,
 } from '../types/permission.types';
 import { permissionCache } from '../utils/permissionCache';
+import { LeadershipService } from '../services/LeadershipService';
+import { extractBanNumber } from '../utils/boardScope';
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -42,6 +44,8 @@ interface PermissionCacheState {
     permissionMap: Map<string, PermissionAction[]>;
     systemRole: SystemRole;
     isGlobalScope: boolean;
+    /** Ban QLDA mà PGĐ phụ trách (chỉ dùng cho deputy_director) */
+    managedBoards: number[];
     loading: boolean;
     loaded: boolean;
     /** Which effectiveUserId this cache is for */
@@ -63,6 +67,14 @@ const PermissionContext = createContext<PermissionContextType | undefined>(undef
 // In-memory cache for role defaults to avoid repeated DB calls across users
 const roleDefaultsCache = new Map<SystemRole, Map<string, PermissionAction[]>>();
 
+/**
+ * Xoá cache template quyền theo role (gọi sau khi Admin sửa role_permission_defaults).
+ * Kết hợp permissionCache.invalidateAll() để mọi user nạp lại quyền mới. [C-5.4]
+ */
+export function clearRoleDefaultsCache(): void {
+    roleDefaultsCache.clear();
+}
+
 // ─── Provider ─────────────────────────────────────────────
 
 export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -79,6 +91,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         permissionMap: new Map(),
         systemRole: 'staff',
         isGlobalScope: false,
+        managedBoards: [],
         loading: true,
         loaded: false,
         cachedForUserId: null,
@@ -114,7 +127,9 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             return false;
         }
 
-        if (['super_admin', 'director', 'deputy_director', 'chief_accountant'].includes(systemRole)) {
+        // NOTE: deputy_director is intentionally excluded here — their scope is
+        // resolved dynamically from leadership_assignments in fetchPermissions().
+        if (['super_admin', 'director', 'chief_accountant'].includes(systemRole)) {
             return true;
         }
         return GLOBAL_VIEW_DEPARTMENTS.some(dept =>
@@ -171,6 +186,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                     permissionMap: new Map(),
                     systemRole: 'staff',
                     isGlobalScope: false,
+                    managedBoards: [],
                     loading: false,
                     loaded: true,
                     cachedForUserId: null,
@@ -198,6 +214,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 permissionMap: map,
                 systemRole: cached.systemRole as SystemRole,
                 isGlobalScope: cached.isGlobalScope,
+                managedBoards: cached.managedBoards ?? [],
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -220,17 +237,36 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 permissionPairs: [],
                 systemRole,
                 isGlobalScope: true,
+                managedBoards: [],
             });
             fetchingRef.current = null;
             setState({
                 permissionMap: new Map(),
                 systemRole,
                 isGlobalScope: true,
+                managedBoards: [],
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
             });
             return;
+        }
+
+        // ── Resolve deputy_director scope từ leadership_assignments ──
+        // PGĐ chỉ thấy dự án của các Ban phụ trách. Fallback không phá vỡ:
+        // chưa được phân công → tạm giữ Global view cho tới khi admin cấu hình.
+        let managedBoards: number[] = [];
+        let effectiveGlobalScope = isGlobalScope;
+        if (systemRole === 'deputy_director') {
+            try {
+                managedBoards = await LeadershipService.getManagedBoards(userId);
+            } catch (e) {
+                console.warn('[PermissionCtx] Không tải được Ban phụ trách của PGĐ:', e);
+            }
+            effectiveGlobalScope = managedBoards.length === 0;
+            if (managedBoards.length === 0) {
+                console.warn(`[PermissionCtx] ⚠️ PGĐ ${userId} chưa được phân công Ban phụ trách — tạm giữ Global view. Cấu hình tại Quản trị HT → Cài đặt.`);
+            }
         }
 
         try {
@@ -259,7 +295,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 permissionCache.set(userId, {
                     permissionPairs: [...map.entries()],
                     systemRole,
-                    isGlobalScope,
+                    isGlobalScope: effectiveGlobalScope,
+                    managedBoards,
                 });
             }
 
@@ -267,7 +304,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             setState({
                 permissionMap: map,
                 systemRole,
-                isGlobalScope,
+                isGlobalScope: effectiveGlobalScope,
+                managedBoards,
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -278,7 +316,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             setState(prev => ({
                 ...prev,
                 systemRole,
-                isGlobalScope,
+                isGlobalScope: effectiveGlobalScope,
+                managedBoards,
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -362,6 +401,12 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             if (!can('projects', action)) return false;
             if (state.isGlobalScope) return true;
 
+            // Phó GĐ: chỉ thao tác trên dự án thuộc Ban mình phụ trách.
+            if (state.systemRole === 'deputy_director' && state.managedBoards.length > 0) {
+                const projectBoard = extractBanNumber(projectManagementUnit);
+                return projectBoard !== null && state.managedBoards.includes(projectBoard);
+            }
+
             if (effectiveUser?.Department && projectManagementUnit) {
                 const userDept = effectiveUser.Department;
                 
@@ -379,7 +424,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             if (state.systemRole === 'contractor') return false;
             return true;
         },
-        [can, state.isGlobalScope, effectiveUser, state.systemRole]
+        [can, state.isGlobalScope, state.managedBoards, effectiveUser, state.systemRole]
     );
 
     const contextValue = useMemo<PermissionContextType>(() => ({

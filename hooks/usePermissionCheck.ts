@@ -21,6 +21,8 @@ export interface PermissionCheckResult {
     canOnProject: (action: PermissionAction, projectManagementUnit?: string) => boolean;
     /** Check if user has global view (sees all projects) */
     isGlobalScope: boolean;
+    /** Ban QLDA mà PGĐ phụ trách (chỉ deputy_director; rỗng với role khác) */
+    managedBoards: number[];
     /** Get the user's system role */
     systemRole: SystemRole;
     /** Whether permissions have been loaded */
@@ -48,6 +50,7 @@ export function usePermissionCheck(): PermissionCheckResult {
         can: ctx.can,
         canOnProject: ctx.canOnProject,
         isGlobalScope: ctx.isGlobalScope,
+        managedBoards: ctx.managedBoards,
         systemRole: ctx.systemRole,
         loading: ctx.loading,
         permissionMap: ctx.permissionMap,
