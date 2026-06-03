@@ -380,18 +380,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         <button
                             id="btn-ai-summary"
                             onClick={() => setShowAISummary(true)}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/15 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all text-[11px] font-bold text-blue-600 dark:text-blue-400"
+                            className="flex items-center gap-1.5 px-2 py-1.5 sm:px-2.5 rounded-lg border border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/15 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all text-[11px] font-bold text-blue-600 dark:text-blue-400"
                         >
-                            <Sparkles className="w-3 h-3" />
-                            Tóm tắt AI
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Tóm tắt AI</span>
                         </button>
                         <button
                             id="btn-edit-project"
                             onClick={() => setShowEditModal(true)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 gradient-btn text-white rounded-lg text-[11px] font-bold shadow-sm transition-all hover:-translate-y-0.5"
+                            className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 gradient-btn text-white rounded-lg text-[11px] font-bold shadow-sm transition-all hover:-translate-y-0.5"
                         >
-                            <Pencil className="w-3 h-3" />
-                            Chỉnh sửa
+                            <Pencil className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Chỉnh sửa</span>
                         </button>
                         <div className="relative group">
                             <button className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">

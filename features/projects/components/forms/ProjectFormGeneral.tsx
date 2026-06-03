@@ -1,7 +1,14 @@
 import React from 'react';
-import { Building2, Calendar, Shield, DollarSign, Layers, MapPin, Clock, User, HardHat } from 'lucide-react';
+import { Building2, Calendar, Shield, DollarSign, Layers, MapPin, Clock, User, HardHat, Image as ImageIcon } from 'lucide-react';
 import { MANAGEMENT_BOARDS } from '../../../../types';
 import { SectionHeader, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, PROVINCES, CONSTRUCTION_TYPES } from './FormShared';
+
+const GROUP_LABELS = {
+    QN: 'Quan trọng Quốc gia',
+    A: 'Nhóm A',
+    B: 'Nhóm B',
+    C: 'Nhóm C',
+} as const;
 
 interface ProjectFormGeneralProps {
     formData: Record<string, any>;
@@ -39,20 +46,18 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                     {err('ProjectID') && <p className="text-xs text-red-500 mt-1">{err('ProjectID')}</p>}
                 </div>
                 <div>
-                    <label className={labelClass}>Nhóm dự án</label>
+                    <label className={labelClass}>
+                        Nhóm dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Tự động xác định)</span>
+                    </label>
                     <div className="relative">
-                        <select
-                            className={selectWithIconClass + aiHighlight('GroupCode')}
-                            value={formData.GroupCode || 'C'}
-                            onChange={e => updateField('GroupCode', e.target.value)}
-                        >
-                            <option value="QN">Quan trọng Quốc gia</option>
-                            <option value="A">Nhóm A</option>
-                            <option value="B">Nhóm B</option>
-                            <option value="C">Nhóm C</option>
-                        </select>
+                        <div className={`${inputWithIconClass} flex items-center bg-bg-subtle cursor-not-allowed select-none`}>
+                            {GROUP_LABELS[formData.GroupCode as keyof typeof GROUP_LABELS] || 'Nhóm C'}
+                        </div>
                         <Layers className={iconClass} />
                     </div>
+                    <p className="text-[11px] text-txt-placeholder mt-1">
+                        Xác định theo Tổng mức đầu tư &amp; Chuyên ngành (Luật ĐTC 58/2024).
+                    </p>
                 </div>
             </div>
 
@@ -262,6 +267,69 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                                 onChange={e => updateField('InvestorName', e.target.value)}
                             />
                             <User className={iconClass} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Cờ phân loại ── */}
+                <div className="flex flex-wrap gap-3 mt-4">
+                    <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
+                        formData.IsEmergency
+                            ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                            : 'border-gray-200 dark:border-slate-500 text-txt-muted hover:border-red-300'
+                    }`}>
+                        <input type="checkbox" className="accent-red-500"
+                            checked={!!formData.IsEmergency}
+                            onChange={e => updateField('IsEmergency', e.target.checked)} />
+                        Dự án khẩn cấp
+                    </label>
+                    <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
+                        formData.IsODA
+                            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                            : 'border-gray-200 dark:border-slate-500 text-txt-muted hover:border-blue-300'
+                    }`}>
+                        <input type="checkbox" className="accent-blue-500"
+                            checked={!!formData.IsODA}
+                            onChange={e => updateField('IsODA', e.target.checked)} />
+                        Dự án ODA / vốn nước ngoài
+                    </label>
+                </div>
+
+                {/* ── Ảnh dự án & Tọa độ GPS ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label className={labelClass}>Ảnh dự án (đường dẫn URL)</label>
+                        <div className="relative">
+                            <input type="text"
+                                placeholder="https://..."
+                                className={inputWithIconClass}
+                                value={formData.ImageUrl || ''}
+                                onChange={e => updateField('ImageUrl', e.target.value)}
+                            />
+                            <ImageIcon className={iconClass} />
+                        </div>
+                    </div>
+                    <div>
+                        <label className={labelClass}>Tọa độ GPS (vĩ độ, kinh độ)</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <input type="number" step="any"
+                                placeholder="Vĩ độ (lat)"
+                                className={inputClass}
+                                value={formData.Coordinates?.lat ?? ''}
+                                onChange={e => updateField('Coordinates', {
+                                    ...formData.Coordinates,
+                                    lat: e.target.value === '' ? undefined : Number(e.target.value),
+                                })}
+                            />
+                            <input type="number" step="any"
+                                placeholder="Kinh độ (lng)"
+                                className={inputClass}
+                                value={formData.Coordinates?.lng ?? ''}
+                                onChange={e => updateField('Coordinates', {
+                                    ...formData.Coordinates,
+                                    lng: e.target.value === '' ? undefined : Number(e.target.value),
+                                })}
+                            />
                         </div>
                     </div>
                 </div>

@@ -45,17 +45,31 @@ export const ProjectFormContractors: React.FC<ProjectFormContractorsProps> = ({
                 </div>
             </div>
 
-            {/* ── Tiêu chuẩn áp dụng ── */}
-            <div>
-                <label className={labelClass}>Tiêu chuẩn, quy chuẩn áp dụng</label>
-                <div className="relative">
-                    <input type="text"
-                        placeholder="VD: TCVN 5574:2018, QCVN 03:2022/BXD..."
-                        className={inputWithIconClass + aiHighlight('ApplicableStandards')}
-                        value={formData.ApplicableStandards}
-                        onChange={e => updateField('ApplicableStandards', e.target.value)}
-                    />
-                    <FileText className={iconClass} />
+            {/* ── Tiêu chuẩn áp dụng + Nhà thầu chính ── */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className={labelClass}>Tiêu chuẩn, quy chuẩn áp dụng</label>
+                    <div className="relative">
+                        <input type="text"
+                            placeholder="VD: TCVN 5574:2018, QCVN 03:2022/BXD..."
+                            className={inputWithIconClass + aiHighlight('ApplicableStandards')}
+                            value={formData.ApplicableStandards}
+                            onChange={e => updateField('ApplicableStandards', e.target.value)}
+                        />
+                        <FileText className={iconClass} />
+                    </div>
+                </div>
+                <div>
+                    <label className={labelClass}>Tên nhà thầu chính</label>
+                    <div className="relative">
+                        <input type="text"
+                            placeholder="Tên nhà thầu thi công chính..."
+                            className={inputWithIconClass}
+                            value={formData.MainContractorName || ''}
+                            onChange={e => updateField('MainContractorName', e.target.value)}
+                        />
+                        <Building className={iconClass} />
+                    </div>
                 </div>
             </div>
 

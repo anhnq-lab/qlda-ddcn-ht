@@ -1,7 +1,7 @@
 import React from 'react';
 import { ProjectModalFormValues } from '../../../../schemas/project.schema';
-import { Shield, FileText, Calendar, Building2, Ruler, ArrowLeftRight, User } from 'lucide-react';
-import { SectionHeader, FormattedInput, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, CONSTRUCTION_GRADES } from './FormShared';
+import { Shield, FileText, Calendar, Building2, ArrowLeftRight, User } from 'lucide-react';
+import { SectionHeader, labelClass, inputWithIconClass, iconClass, selectWithIconClass, CONSTRUCTION_GRADES } from './FormShared';
 
 interface ProjectFormLegalProps {
     formData: Record<string, any>;
@@ -110,11 +110,11 @@ export const ProjectFormLegal: React.FC<ProjectFormLegalProps> = ({ formData, up
                 </div>
             </div>
 
-            {/* ── Quy mô công trình ── */}
+            {/* ── Cấp công trình ── */}
             <div className="pt-5 border-t border-gray-100 dark:border-slate-500/50">
-                <SectionHeader icon={Ruler} title="Quy mô công trình" subtitle="Thông số kỹ thuật: diện tích, tầng, chiều cao" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div className="col-span-2">
+                <SectionHeader icon={Building2} title="Cấp công trình" subtitle="Phân cấp công trình theo quy định" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
                         <label className={labelClass}>Cấp công trình</label>
                         <div className="relative">
                             <select
@@ -130,42 +130,10 @@ export const ProjectFormLegal: React.FC<ProjectFormLegalProps> = ({ formData, up
                             <Building2 className={iconClass} />
                         </div>
                     </div>
-
-                    <div>
-                        <label className={labelClass}>DT khu đất (m²)</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.SiteArea || 0}
-                            onChange={(v: string | number) => updateField('SiteArea', Number(v))} isDecimal={true} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>DT xây dựng (m²)</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.ConstructionArea || 0}
-                            onChange={(v: string | number) => updateField('ConstructionArea', Number(v))} isDecimal={true} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>DT sàn (m²)</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.FloorArea || 0}
-                            onChange={(v: string | number) => updateField('FloorArea', Number(v))} isDecimal={true} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Chiều cao (m)</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BuildingHeight || 0}
-                            onChange={(v: string | number) => updateField('BuildingHeight', Number(v))} isDecimal={true} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Mật độ XD (%)</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BuildingDensity || 0}
-                            onChange={(v: string | number) => updateField('BuildingDensity', Number(v))} isDecimal={true} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Hệ số SD đất</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.LandUseCoefficient || 0}
-                            onChange={(v: string | number) => updateField('LandUseCoefficient', Number(v))} isDecimal={true} />
+                    <div className="flex items-end">
+                        <p className="text-xs text-txt-placeholder pb-2">
+                            Các thông số diện tích, chiều cao, số tầng… nhập tại tab <span className="font-semibold">Quy mô công trình</span>.
+                        </p>
                     </div>
                 </div>
             </div>

@@ -176,6 +176,23 @@ export const ProjectModalFormSchema = z.object({
     CurrentStatusCode: z.number().int().min(1).max(10).nullable().optional(),
     SpecialtyType: z.string().optional(),
     SpecialtyDetails: z.string().optional(),
+
+    // Giai đoạn dự án (Chuẩn bị / Thực hiện / Kết thúc)
+    Stage: z.string().optional(),
+
+    // Cờ phân loại
+    IsEmergency: z.boolean().optional(),
+    IsODA: z.boolean().optional(),
+
+    // Nhà thầu chính
+    MainContractorName: z.string().optional(),
+
+    // Ảnh dự án & Tọa độ GPS
+    ImageUrl: z.string().optional(),
+    Coordinates: z.object({
+        lat: z.coerce.number(),
+        lng: z.coerce.number(),
+    }).partial().optional(),
 });
 
 export type ProjectModalFormValues = z.infer<typeof ProjectModalFormSchema>;

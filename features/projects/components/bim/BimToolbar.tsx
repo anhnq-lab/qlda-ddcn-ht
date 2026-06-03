@@ -318,7 +318,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     if (isMobile) {
         return (
             <div className={`
-                absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 rounded-2xl z-30
+                absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 rounded-2xl z-30
                 backdrop-blur-xl shadow-sm border
                 ${isDarkMode ? 'bg-slate-50 border-slate-700/50' : 'bg-white/95 border-gray-200'}
             `}>

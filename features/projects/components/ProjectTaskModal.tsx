@@ -8,6 +8,8 @@ import { Task, TaskStatus, TaskPriority, TaskDependency, TaskAttachment } from '
 import { TASK_CATEGORIES, TASK_CATEGORY_LABELS, type TaskCategory, type ResponsibilityLevel } from '@/types/task.types';
 import { useAuth } from '@/context/AuthContext';
 import { useEmployees } from '@/hooks/useEmployees';
+import { useImpersonation } from '@/context/ImpersonationContext';
+import { resolveSystemRole, type SystemRole } from '@/types/permission.types';
 import { ProgressSlider } from './ProgressSlider';
 import { TaskDependencyManager } from './TaskDependencyManager';
 import { getTimelineStepLabel, getPhaseColor } from '@/utils/timelineStepUtils';
@@ -173,6 +175,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
 }) => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const { data: employees = [] } = useEmployees();
     const { projects = [] } = useProjects();
     const [planMonth, setPlanMonth] = useState(new Date().getMonth() + 1);
@@ -284,6 +288,27 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         ? availableEmployees
         : employees;
 
+    // Lọc danh sách nhân viên thực hiện chính cùng phòng ban với người tạo
+    const assigneeEmployees = React.useMemo(() => {
+        if (!effectiveUser?.Department) return dropdownEmployees;
+
+        const userSystemRole = ('SystemRole' in effectiveUser && effectiveUser.SystemRole)
+            ? (effectiveUser.SystemRole as SystemRole)
+            : resolveSystemRole(effectiveUser.Role, effectiveUser.Position);
+
+        const isGlobalAdmin = ['super_admin', 'director', 'deputy_director'].includes(userSystemRole);
+
+        if (isGlobalAdmin) {
+            return dropdownEmployees;
+        }
+
+        const sameDeptEmployees = dropdownEmployees.filter(emp =>
+            isEmployeeInDepartment(emp, effectiveUser.Department)
+        );
+
+        return sameDeptEmployees.length > 0 ? sameDeptEmployees : dropdownEmployees;
+    }, [dropdownEmployees, effectiveUser, availableEmployees]);
+
     const isEditMode = !!initialData?.TaskID;
     const project = projects.find(p => p.ProjectID === formData.ProjectID);
     const { openPanel } = useSlidePanel();
@@ -317,9 +342,9 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
         }
     }, [isOpen, initialData]);
 
-    if (!isOpen) return null;
-
     const [saveError, setSaveError] = useState<string | null>(null);
+
+    if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -684,7 +709,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     icon={<User className="w-4 h-4 text-gray-400" />}
                                     selectedIds={formData.AssigneeIDs || []}
                                     onChange={ids => setFormData({ ...formData, AssigneeIDs: ids })}
-                                    employees={dropdownEmployees}
+                                    employees={assigneeEmployees}
                                     placeholder="-- Chọn người thực hiện chính --"
                                 />
                                 <MultiSelectEmployees

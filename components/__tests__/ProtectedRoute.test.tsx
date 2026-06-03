@@ -9,6 +9,10 @@ vi.mock('../../hooks/usePermissionCheck', () => ({
     usePermissionCheck: vi.fn(),
 }));
 
+vi.mock('../../context/AuthContext', () => ({
+    useAuth: vi.fn(() => ({ userType: 'employee' })),
+}));
+
 describe('ProtectedRoute Component', () => {
     const mockCan = vi.fn();
 

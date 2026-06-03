@@ -4,6 +4,7 @@ import { GitBranch, Plus, AlertCircle, FileText, DownloadCloud, ArrowLeft, Layou
 import { getStandardWorkflowTemplates } from './data/seedWorkflows';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 import { useSearchParams } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 
 import type { Workflow, WorkflowNode, WorkflowEdge } from '../../types/workflow.types';
 import { useToast } from '../../components/ui/Toast';
@@ -17,6 +18,8 @@ import { WorkflowStepDetailPanel } from './components/WorkflowStepDetailPanel';
 import { useWorkflowRaci } from './hooks/useWorkflowRaci';
 
 const WorkflowManagerPage: React.FC = () => {
+    const isMobile = useIsMobile();
+    const panelWidth = isMobile ? '100%' : '95%';
     const [searchParams] = useSearchParams();
     const workflowIdParam = searchParams.get('workflowId');
 
@@ -144,7 +147,7 @@ const WorkflowManagerPage: React.FC = () => {
         let createdPanelId: string;
         createdPanelId = openPanel({
             title: 'Tạo Quy Trình Mới',
-            width: '95%',
+            width: panelWidth,
             icon: <Plus size={16} className="text-primary-500" />,
             component: <WorkflowBuilderPanel 
                            workflowId="" 
@@ -182,7 +185,7 @@ const WorkflowManagerPage: React.FC = () => {
         let panelId: string;
         panelId = openPanel({
             title: wf.name,
-            width: '95%',
+            width: panelWidth,
             icon: <FileText size={16} className="text-primary-500" />,
             url: `/quy-trinh/${wf.id}`,
             component: <WorkflowProcessTable 
@@ -201,7 +204,7 @@ const WorkflowManagerPage: React.FC = () => {
                                let editPanelId: string;
                                editPanelId = openPanel({
                                    title: 'Chỉnh sửa: ' + wf.name,
-                                   width: '95%',
+                                   width: panelWidth,
                                    icon: <PenLine size={16} className="text-primary-500" />,
                                    component: <WorkflowBuilderPanel 
                                                   workflowId={wf.id} 

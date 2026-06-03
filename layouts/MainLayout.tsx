@@ -3,6 +3,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from './Sidebar';
 import { Header } from '../components/common/Header';
+import { MobileHeader } from '../components/common/MobileHeader';
+import { MobileBottomNav } from './MobileBottomNav';
 import { AIChatbot } from '../components/common/AIChatbot';
 import { GlobalSearch } from '../components/common/GlobalSearch';
 import { Breadcrumb } from '../components/common/Breadcrumb';
@@ -12,6 +14,7 @@ import { SlidePanelProvider } from '../context/SlidePanelContext';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { useTheme } from '../context/ThemeContext';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import { UserCheck, X } from 'lucide-react';
 
 
@@ -58,6 +61,8 @@ const MainLayout: React.FC = () => {
         localStorage.setItem('sidebar-collapsed', String(newState));
     };
 
+    const isMobile = useIsMobile();
+
     // Show loading skeleton while checking auth session
     if (isLoading) return <PageLoadingSkeleton />;
 
@@ -101,10 +106,14 @@ const MainLayout: React.FC = () => {
 
                     <div className="flex-1 flex flex-col min-w-0 min-h-0">
                         {/* Header */}
-                        <Header
-                            onOpenSearch={() => setIsSearchOpen(true)}
-                            onMenuClick={() => setIsSidebarOpen(true)}
-                        />
+                        {isMobile ? (
+                            <MobileHeader onOpenSearch={() => setIsSearchOpen(true)} />
+                        ) : (
+                            <Header
+                                onOpenSearch={() => setIsSearchOpen(true)}
+                                onMenuClick={() => setIsSidebarOpen(true)}
+                            />
+                        )}
 
                         {/* Page Content */}
                         <main className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
@@ -114,7 +123,11 @@ const MainLayout: React.FC = () => {
                             </div>
 
                             {/* Content */}
-                            <div className={`px-3 sm:px-4 lg:px-6 ${isImpersonating ? 'pb-20' : 'pb-6 sm:pb-8'}`}>
+                            <div className={`px-3 sm:px-4 lg:px-6 ${
+                                isMobile 
+                                    ? (isImpersonating ? 'pb-36' : 'pb-24') 
+                                    : (isImpersonating ? 'pb-20' : 'pb-6 sm:pb-8')
+                            }`}>
                                 <ErrorBoundary>
                                     <Suspense fallback={<PageLoadingSkeleton />}>
                                         <AnimatePresence mode="wait">
@@ -133,15 +146,17 @@ const MainLayout: React.FC = () => {
                             </div>
                         </main>
 
-                        {/* AI Chatbot */}
-                        <AIChatbot />
+                        {/* AI Chatbot - Adjust bottom position on mobile to avoid bottom nav overlay */}
+                        <div className={isMobile ? 'pb-16' : ''}>
+                            <AIChatbot />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Floating Impersonation Bar */}
             {isImpersonating && impersonatedUser && (
-                <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-primary-500 to-warning-500 text-white shadow-2xl">
+                <div className={`fixed ${isMobile ? 'bottom-16' : 'bottom-0'} left-0 right-0 z-50 bg-gradient-to-r from-primary-500 to-warning-500 text-white shadow-2xl`}>
                     <div className="max-w-screen-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
@@ -171,6 +186,14 @@ const MainLayout: React.FC = () => {
                 </div>
             )}
 
+            {/* Mobile Bottom Navigation */}
+            {isMobile && (
+                <MobileBottomNav 
+                    onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                    isSidebarOpen={isSidebarOpen} 
+                />
+            )}
+
             {/* Global Search Modal */}
             <GlobalSearch
                 isOpen={isSearchOpen}
@@ -182,6 +205,7 @@ const MainLayout: React.FC = () => {
         </div>
         </SlidePanelProvider>
     );
+
 };
 
 export default MainLayout;

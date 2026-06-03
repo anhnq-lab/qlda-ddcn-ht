@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { supabase } from '../../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { ProjectService } from '../../../services/ProjectService';
-import { ProjectGroup, InvestmentType, ProjectStatus } from '../../../types';
+import { ProjectGroup, InvestmentType, ProjectStatus, ProjectSector } from '../../../types';
 import { PROJECT_CURRENT_STATUS_CONFIG } from '../../../types/project.types';
 
 interface ProjectImportModalProps {
@@ -16,9 +16,22 @@ interface ImportProjectRow {
     id?: string; // ProjectID
     projectName: string;
     groupCode: ProjectGroup;
+    specialtyType: string;
     investmentType: InvestmentType;
     totalInvestment: number;
     capitalSource: string;
+    budgetNSTW: number;
+    budgetNSDP: number;
+    budgetLoan: number;
+    budgetODA: number;
+    budgetOther: number;
+    costClearance: number;
+    costConstruction: number;
+    costEquipment: number;
+    costManagement: number;
+    costConsultancy: number;
+    costOther: number;
+    costContingency: number;
     status: ProjectStatus;
     currentStatusCode: number | null;
     locationCode: string;
@@ -26,14 +39,34 @@ interface ImportProjectRow {
     policyDecisionLevel: string;
     policyDecisionNumber: string;
     policyDecisionDate: string | null;
+    policyDecisionAuthority: string;
+    decisionNumber: string;
+    decisionDate: string | null;
+    decisionAuthority: string;
+    designApprovalNumber: string;
+    designApprovalDate: string | null;
+    designApprovalAuthority: string;
+    totalEstimate: number;
     managementBoard: number | null;
     oldInvestor: string;
     transferDecision: string;
+    decisionLevelBeforeHandover: string;
     startDate: string | null;
     expectedEndDate: string | null;
     actualEndDate: string | null;
     progress: number;
     paymentProgress: number;
+    siteArea: number;
+    constructionArea: number;
+    floorArea: number;
+    buildingHeight: number;
+    buildingDensity: number;
+    landUseCoefficient: number;
+    aboveGroundFloors: number;
+    basementFloors: number;
+    mgmtAccountant: string;
+    mgmtDirector: string;
+    mgmtTech: string;
     importStatus: 'pending' | 'success' | 'error';
     errorMsg?: string;
     warnings: string[];
@@ -108,6 +141,44 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
         }
         warnings.push(`Nhóm dự án "${val}" không hợp lệ (mặc định chọn Nhóm C)`);
         return ProjectGroup.C;
+    };
+
+    const mapSpecialtyType = (val: any, warnings: string[]): string => {
+        if (!val) return '';
+        const str = String(val).trim().toLowerCase();
+        if (str.includes('dân dụng') || str.includes('công nghiệp') || str.includes('civil') || str.includes('industrial')) return 'civil_industrial';
+        if (str.includes('giao thông') || str.includes('đô thị') || str.includes('urban') || str.includes('transport')) return 'transport_urban';
+        if (str.includes('nông nghiệp') || str.includes('nông thôn') || str.includes('rural') || str.includes('agriculture')) return 'agriculture_rural';
+        if (str.includes('hỗn hợp') || str.includes('mixed')) return 'mixed';
+        if (str.includes('khác') || str.includes('other')) return 'other';
+        
+        warnings.push(`Chuyên ngành dự án "${val}" không khớp (chọn Khác)`);
+        return 'other';
+    };
+
+    const mapSectorType = (val: any, warnings: string[]): ProjectSector => {
+        if (!val) return ProjectSector.Other;
+        const str = String(val).trim().toLowerCase();
+        if (str.includes('trọng điểm') && str.includes('giao thông')) return ProjectSector.TransportMajor;
+        if (str.includes('điện')) return ProjectSector.PowerIndustry;
+        if (str.includes('dầu khí')) return ProjectSector.OilGas;
+        if (str.includes('luyện kim') || str.includes('xi măng')) return ProjectSector.HeavyIndustry;
+        if (str.includes('nhà ở')) return ProjectSector.ResidentialHousing;
+        if (str === 'giao thông' || (str.includes('giao thông') && !str.includes('trọng điểm'))) return ProjectSector.Transport;
+        if (str.includes('thủy lợi') || str.includes('cấp thoát nước')) return ProjectSector.WaterResources;
+        if (str.includes('bưu chính') || str.includes('viễn thông')) return ProjectSector.Telecom;
+        if (str.includes('vật liệu')) return ProjectSector.BuildingMaterials;
+        if (str.includes('nông lâm') || str.includes('ngư nghiệp')) return ProjectSector.Agriculture;
+        if (str.includes('đô thị')) return ProjectSector.UrbanInfra;
+        if (str === 'công nghiệp' || (str.includes('công nghiệp') && !str.includes('điện'))) return ProjectSector.Industry;
+        if (str.includes('y tế')) return ProjectSector.Health;
+        if (str.includes('giáo dục')) return ProjectSector.Education;
+        if (str.includes('văn hóa') || str.includes('thể thao')) return ProjectSector.Culture;
+        if (str.includes('công nghệ')) return ProjectSector.Technology;
+        if (str.includes('khác')) return ProjectSector.Other;
+
+        warnings.push(`Lĩnh vực "${val}" không đúng danh mục hệ thống (mặc định chọn Khác)`);
+        return ProjectSector.Other;
     };
 
     const mapInvestmentType = (val: any, warnings: string[]): InvestmentType => {
@@ -192,24 +263,57 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                 const projectName = row[0];
                 const id = row[1];
                 const rawGroupCode = row[2];
-                const rawInvestmentType = row[3];
-                const totalInvestment = Number(row[4]) || 0;
-                const capitalSource = row[5];
-                const rawStatus = row[6];
-                const rawCurrentStatus = row[7];
-                const locationCode = row[8];
-                const sector = row[9];
-                const policyDecisionLevel = row[10];
-                const policyDecisionNumber = row[11];
-                const rawPolicyDecisionDate = row[12];
-                const rawManagementBoard = row[13];
-                const oldInvestor = row[14];
-                const transferDecision = row[15];
-                const rawStartDate = row[16];
-                const rawExpectedEndDate = row[17];
-                const rawActualEndDate = row[18];
-                const progress = Number(row[19]) || 0;
-                const paymentProgress = Number(row[20]) || 0;
+                const rawSpecialtyType = row[3];
+                const rawInvestmentType = row[4];
+                const totalInvestment = Number(row[5]) || 0;
+                const capitalSource = row[6];
+                const budgetNSTW = Number(row[7]) || 0;
+                const budgetNSDP = Number(row[8]) || 0;
+                const budgetLoan = Number(row[9]) || 0;
+                const budgetODA = Number(row[10]) || 0;
+                const budgetOther = Number(row[11]) || 0;
+                const costClearance = Number(row[12]) || 0;
+                const costConstruction = Number(row[13]) || 0;
+                const costEquipment = Number(row[14]) || 0;
+                const costManagement = Number(row[15]) || 0;
+                const costConsultancy = Number(row[16]) || 0;
+                const costOther = Number(row[17]) || 0;
+                const costContingency = Number(row[18]) || 0;
+                const rawStatus = row[19];
+                const rawCurrentStatus = row[20];
+                const locationCode = row[21];
+                const sector = row[22];
+                const policyDecisionLevel = row[23];
+                const policyDecisionNumber = row[24];
+                const rawPolicyDecisionDate = row[25];
+                const policyDecisionAuthority = row[26];
+                const decisionNumber = row[27];
+                const rawDecisionDate = row[28];
+                const decisionAuthority = row[29];
+                const designApprovalNumber = row[30];
+                const rawDesignApprovalDate = row[31];
+                const designApprovalAuthority = row[32];
+                const totalEstimate = Number(row[33]) || 0;
+                const rawManagementBoard = row[34];
+                const oldInvestor = row[35];
+                const transferDecision = row[36];
+                const decisionLevelBeforeHandover = row[37];
+                const rawStartDate = row[38];
+                const rawExpectedEndDate = row[39];
+                const rawActualEndDate = row[40];
+                const progress = Number(row[41]) || 0;
+                const paymentProgress = Number(row[42]) || 0;
+                const siteArea = Number(row[43]) || 0;
+                const constructionArea = Number(row[44]) || 0;
+                const floorArea = Number(row[45]) || 0;
+                const buildingHeight = Number(row[46]) || 0;
+                const buildingDensity = Number(row[47]) || 0;
+                const landUseCoefficient = Number(row[48]) || 0;
+                const aboveGroundFloors = Number(row[49]) || 0;
+                const basementFloors = Number(row[50]) || 0;
+                const mgmtAccountant = row[51];
+                const mgmtDirector = row[52];
+                const mgmtTech = row[53];
 
                 // Bỏ qua dòng trống hoặc dòng hướng dẫn mẫu
                 if (!projectName || String(projectName).trim() === '' || String(projectName).includes('MẪU FILE') || String(projectName).includes('HƯỚNG DẪN')) {
@@ -224,17 +328,22 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                 const warnings: string[] = [];
 
                 const groupCode = mapGroupCode(rawGroupCode, warnings);
+                const specialtyType = mapSpecialtyType(rawSpecialtyType, warnings);
                 const investmentType = mapInvestmentType(rawInvestmentType, warnings);
                 const status = mapProjectStatus(rawStatus, warnings);
                 const currentStatusCode = mapCurrentStatusCode(rawCurrentStatus, warnings);
                 const managementBoard = mapManagementBoard(rawManagementBoard, warnings);
 
                 const policyDecisionDate = parseExcelDate(rawPolicyDecisionDate);
+                const decisionDate = parseExcelDate(rawDecisionDate);
+                const designApprovalDate = parseExcelDate(rawDesignApprovalDate);
                 const startDate = parseExcelDate(rawStartDate);
                 const expectedEndDate = parseExcelDate(rawExpectedEndDate);
                 const actualEndDate = parseExcelDate(rawActualEndDate);
 
                 if (rawPolicyDecisionDate && !policyDecisionDate) warnings.push('Ngày quyết định chủ trương không đúng định dạng YYYY-MM-DD');
+                if (rawDecisionDate && !decisionDate) warnings.push('Ngày quyết định phê duyệt dự án không đúng định dạng YYYY-MM-DD');
+                if (rawDesignApprovalDate && !designApprovalDate) warnings.push('Ngày phê duyệt thiết kế không đúng định dạng YYYY-MM-DD');
                 if (rawStartDate && !startDate) warnings.push('Ngày khởi công không đúng định dạng YYYY-MM-DD');
                 if (rawExpectedEndDate && !expectedEndDate) warnings.push('Hạn chót dự kiến không đúng định dạng YYYY-MM-DD');
                 if (rawActualEndDate && !actualEndDate) warnings.push('Thực tế kết thúc không đúng định dạng YYYY-MM-DD');
@@ -251,24 +360,57 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                     id: id ? String(id).trim() : undefined,
                     projectName: String(projectName).trim(),
                     groupCode,
+                    specialtyType,
                     investmentType,
                     totalInvestment,
                     capitalSource: capitalSource ? String(capitalSource).trim() : 'Ngân sách Địa phương',
+                    budgetNSTW,
+                    budgetNSDP,
+                    budgetLoan,
+                    budgetODA,
+                    budgetOther,
+                    costClearance,
+                    costConstruction,
+                    costEquipment,
+                    costManagement,
+                    costConsultancy,
+                    costOther,
+                    costContingency,
                     status,
                     currentStatusCode,
                     locationCode: locationCode ? String(locationCode).trim() : '',
-                    sector: sector ? String(sector).trim() : 'Other',
+                    sector: mapSectorType(sector, warnings),
                     policyDecisionLevel: policyDecisionLevel ? String(policyDecisionLevel).trim() : '',
                     policyDecisionNumber: policyDecisionNumber ? String(policyDecisionNumber).trim() : '',
                     policyDecisionDate,
+                    policyDecisionAuthority: policyDecisionAuthority ? String(policyDecisionAuthority).trim() : '',
+                    decisionNumber: decisionNumber ? String(decisionNumber).trim() : '',
+                    decisionDate,
+                    decisionAuthority: decisionAuthority ? String(decisionAuthority).trim() : '',
+                    designApprovalNumber: designApprovalNumber ? String(designApprovalNumber).trim() : '',
+                    designApprovalDate,
+                    designApprovalAuthority: designApprovalAuthority ? String(designApprovalAuthority).trim() : '',
+                    totalEstimate,
                     managementBoard,
                     oldInvestor: oldInvestor ? String(oldInvestor).trim() : '',
                     transferDecision: transferDecision ? String(transferDecision).trim() : '',
+                    decisionLevelBeforeHandover: decisionLevelBeforeHandover ? String(decisionLevelBeforeHandover).trim() : '',
                     startDate,
                     expectedEndDate,
                     actualEndDate,
                     progress,
                     paymentProgress,
+                    siteArea,
+                    constructionArea,
+                    floorArea,
+                    buildingHeight,
+                    buildingDensity,
+                    landUseCoefficient,
+                    aboveGroundFloors,
+                    basementFloors,
+                    mgmtAccountant: mgmtAccountant ? String(mgmtAccountant).trim() : '',
+                    mgmtDirector: mgmtDirector ? String(mgmtDirector).trim() : '',
+                    mgmtTech: mgmtTech ? String(mgmtTech).trim() : '',
                     importStatus: 'pending',
                     warnings,
                     isUpdate
@@ -294,13 +436,41 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
         for (let i = 0; i < updatedPreview.length; i++) {
             const row = updatedPreview[i];
             try {
+                // Build proper JSONB structures for structured fields in db
+                const budgetAllocations = {
+                    BudgetNSTW: row.budgetNSTW,
+                    BudgetNSDiaphuong: row.budgetNSDP,
+                    BudgetLoan: row.budgetLoan,
+                    BudgetODA: row.budgetODA,
+                    BudgetOtherNSNN: row.budgetOther
+                };
+
+                const costBreakdown = {
+                    landClearance: row.costClearance,
+                    construction: row.costConstruction,
+                    equipment: row.costEquipment,
+                    management: row.costManagement,
+                    consultancy: row.costConsultancy,
+                    other: row.costOther,
+                    contingency: row.costContingency
+                };
+
+                const projectManagement = {
+                    accountant: row.mgmtAccountant,
+                    projectDirector: row.mgmtDirector,
+                    techStaff: row.mgmtTech
+                };
+
                 const payload: any = {
                     ProjectID: row.id || `DA-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                     ProjectName: row.projectName,
                     GroupCode: row.groupCode,
+                    SpecialtyType: row.specialtyType,
                     InvestmentType: row.investmentType,
                     TotalInvestment: row.totalInvestment,
                     CapitalSource: row.capitalSource,
+                    BudgetAllocations: budgetAllocations,
+                    CostBreakdown: costBreakdown,
                     Status: row.status,
                     CurrentStatusCode: row.currentStatusCode,
                     LocationCode: row.locationCode,
@@ -308,14 +478,32 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                     PolicyDecisionLevel: row.policyDecisionLevel,
                     PolicyDecisionNumber: row.policyDecisionNumber,
                     PolicyDecisionDate: row.policyDecisionDate,
+                    PolicyDecisionAuthority: row.policyDecisionAuthority,
+                    DecisionNumber: row.decisionNumber,
+                    DecisionDate: row.decisionDate,
+                    DecisionAuthority: row.decisionAuthority,
+                    DesignApprovalNumber: row.designApprovalNumber,
+                    DesignApprovalDate: row.designApprovalDate,
+                    DesignApprovalAuthority: row.designApprovalAuthority,
+                    TotalEstimate: row.totalEstimate,
                     ManagementBoard: row.managementBoard,
                     OldInvestor: row.oldInvestor,
                     TransferDecision: row.transferDecision,
+                    DecisionLevelBeforeHandover: row.decisionLevelBeforeHandover,
                     StartDate: row.startDate,
                     ExpectedEndDate: row.expectedEndDate,
                     ActualEndDate: row.actualEndDate,
                     Progress: row.progress,
-                    PaymentProgress: row.paymentProgress
+                    PaymentProgress: row.paymentProgress,
+                    SiteArea: row.siteArea,
+                    ConstructionArea: row.constructionArea,
+                    FloorArea: row.floorArea,
+                    BuildingHeight: row.buildingHeight,
+                    BuildingDensity: row.buildingDensity,
+                    LandUseCoefficient: row.landUseCoefficient,
+                    AboveGroundFloors: row.aboveGroundFloors,
+                    BasementFloors: row.basementFloors,
+                    ProjectManagement: projectManagement
                 };
 
                 if (row.isUpdate && row.id) {

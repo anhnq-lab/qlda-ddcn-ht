@@ -652,7 +652,7 @@ const ProjectList: React.FC = () => {
                             <div className="h-6 w-px bg-border hidden lg:block"></div>
 
                             <div className="flex items-center gap-3">
-                                <div className="flex bg-bg-muted p-0.5 rounded-lg border border-border/50">
+                                <div className="hidden sm:flex bg-bg-muted p-0.5 rounded-lg border border-border/50">
                                     <button
                                         onClick={() => setViewMode('grid')}
                                         className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-bg-surface shadow-sm text-primary-600 dark:text-primary-400' : 'text-txt-muted hover:text-txt-primary'}`}
@@ -787,7 +787,7 @@ const ProjectList: React.FC = () => {
                                     </PermissionGate>
                                 )}
                             </EmptyState>
-                        ) : viewMode === 'list' ? (
+                        ) : (viewMode === 'list' && !isMobile) ? (
                             <div className="bg-bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                                 <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
                                     <table className="w-full text-left text-sm">

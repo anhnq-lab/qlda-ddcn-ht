@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, LayoutList } from 'lucide-react';
+import { TrendingUp, LayoutList, AlertTriangle } from 'lucide-react';
 import { SectionHeader, FormattedInput, labelClass, inputClass } from './FormShared';
 
 interface ProjectFormInvestmentProps {
@@ -23,9 +23,30 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
         updateField('BudgetAllocations', { ...(formData.BudgetAllocations || {}), [key]: value });
     };
 
+    // ── Kiểm tra nhất quán: Tổng mức đầu tư vs tổng cơ cấu chi phí / nguồn vốn ──
+    const totalInvestment = Number(formData.TotalInvestment) || 0;
+    const costSum = ['landClearance', 'construction', 'equipment', 'management', 'consultancy', 'other', 'contingency']
+        .reduce((sum, key) => sum + (Number(formData.CostBreakdown?.[key]) || 0), 0);
+    const budgetSum = ['BudgetNSTW', 'BudgetNSDiaphuong', 'BudgetLoan', 'BudgetODA', 'BudgetOtherNSNN']
+        .reduce((sum, key) => sum + (Number(formData.BudgetAllocations?.[key]) || 0), 0);
+    const fmt = (n: number) => new Intl.NumberFormat('vi-VN').format(n);
+    const costMismatch = costSum > 0 && totalInvestment > 0 && costSum !== totalInvestment;
+    const budgetMismatch = budgetSum > 0 && totalInvestment > 0 && budgetSum !== totalInvestment;
+
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             <SectionHeader icon={TrendingUp} title="Cơ cấu vốn & Chi phí" subtitle="Phân tích nguồn vốn và hạng mục chi phí trong tổng mức đầu tư" />
+
+            {(costMismatch || budgetMismatch) && (
+                <div className="flex items-start gap-2 px-3 py-2 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs">
+                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <div className="space-y-0.5">
+                        <p className="font-semibold">Số liệu chưa khớp Tổng mức đầu tư ({fmt(totalInvestment)} VNĐ):</p>
+                        {costMismatch && <p>• Tổng hạng mục chi phí: {fmt(costSum)} VNĐ (lệch {fmt(Math.abs(costSum - totalInvestment))})</p>}
+                        {budgetMismatch && <p>• Tổng cơ cấu nguồn vốn: {fmt(budgetSum)} VNĐ (lệch {fmt(Math.abs(budgetSum - totalInvestment))})</p>}
+                    </div>
+                </div>
+            )}
 
             {/* ── Thông tin tổng quát ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

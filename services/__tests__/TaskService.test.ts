@@ -32,35 +32,34 @@ describe('TaskService', () => {
     });
 
     describe('getAllTasks', () => {
-        it('fetches tasks and filters project workflows without monthly plan item', async () => {
+        it('fetches all tasks without filtering monthly plan item', async () => {
             const mockTasks = [
                 { id: '1', title: 'Task 1', task_type: 'internal', sort_order: 1 },
                 { id: '2', title: 'Task 2', task_type: 'project', monthly_plan_item_id: 'item-1', sort_order: 2 },
-                { id: '3', title: 'Task 3', task_type: 'project', monthly_plan_item_id: null, sort_order: 3 } // Should be filtered out
+                { id: '3', title: 'Task 3', task_type: 'project', monthly_plan_item_id: null, sort_order: 3 }
             ];
             mockFrom.mockReturnValue(createChainMock({ data: mockTasks, error: null }));
 
             const result = await TaskService.getAllTasks();
-            expect(result).toHaveLength(2);
+            expect(result).toHaveLength(3);
             expect(result[0].id).toBe('1');
             expect(result[1].id).toBe('2');
+            expect(result[2].id).toBe('3');
             expect(mockFrom).toHaveBeenCalledWith('tasks');
         });
     });
 
     describe('getProjectTasks', () => {
-        it('fetches project tasks and groups parent and sub-tasks', async () => {
+        it('fetches project tasks with parent_id as null', async () => {
             const mockTasks = [
-                { id: 'parent-1', title: 'Parent Task', parent_id: null, sort_order: 1 },
-                { id: 'sub-1', title: 'Sub Task', parent_id: 'parent-1', sort_order: 1 }
+                { id: 'parent-1', title: 'Parent Task', parent_id: null, sort_order: 1 }
             ];
             mockFrom.mockReturnValue(createChainMock({ data: mockTasks, error: null }));
 
             const result = await TaskService.getProjectTasks('project-123');
             expect(result).toHaveLength(1);
             expect(result[0].id).toBe('parent-1');
-            expect((result[0] as any).metadata?.sub_tasks).toHaveLength(1);
-            expect((result[0] as any).metadata?.sub_tasks[0].SubTaskID).toBe('sub-1');
+            expect(mockFrom).toHaveBeenCalledWith('tasks');
         });
     });
 
@@ -90,7 +89,7 @@ describe('TaskService', () => {
 
     describe('deleteTask', () => {
         it('calls delete query', async () => {
-            mockFrom.mockReturnValue(createChainMock({ data: null, error: null }));
+            mockFrom.mockReturnValue(createChainMock({ data: { id: 'task-id', is_self_proposed: false }, error: null }));
             await TaskService.deleteTask('task-id');
             expect(mockFrom).toHaveBeenCalledWith('tasks');
         });

@@ -11,6 +11,7 @@ import { ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { useProjectFilterContextSafe } from '../../context/ProjectFilterContext';
 import { STATUS_OPTIONS, CURRENT_STATUS_OPTIONS, GROUP_OPTIONS, SPECIALTY_OPTIONS } from '../../features/projects/hooks/useProjectFilters';
 import { MANAGEMENT_BOARDS } from '../../types';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 
 
 // ─────────────────────────────────────────────────────────
@@ -110,6 +111,7 @@ const ChipSelect: React.FC<ChipSelectProps> = ({ label, value, options, counts, 
 // ─────────────────────────────────────────────────────────
 export const ProjectFilters: React.FC = () => {
     const filters = useProjectFilterContextSafe();
+    const { isGlobalScope } = usePermissionCheck();
 
     if (!filters) return null;
 
@@ -209,14 +211,16 @@ export const ProjectFilters: React.FC = () => {
                 totalUnfiltered={totalUnfiltered}
                 onChange={setSelectedSpecialty}
             />
-            <ChipSelect
-                label="Phòng QLDA"
-                value={selectedBoard}
-                options={boardOptions}
-                counts={boardCounts}
-                totalUnfiltered={totalUnfiltered}
-                onChange={setSelectedBoard}
-            />
+            {isGlobalScope && (
+                <ChipSelect
+                    label="Phòng QLDA"
+                    value={selectedBoard}
+                    options={boardOptions}
+                    counts={boardCounts}
+                    totalUnfiltered={totalUnfiltered}
+                    onChange={setSelectedBoard}
+                />
+            )}
 
             {/* Clear all */}
             {hasActiveFilters && (

@@ -3,9 +3,12 @@ import { ClipboardList, CalendarDays, ListChecks } from 'lucide-react';
 import { FilterChip } from '../../components/ui';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
-import { DepartmentCode, DEPARTMENT_CODES } from '../../types/plan.types';
+import { DepartmentCode, DEPARTMENT_CODES, DEPARTMENT_NAMES } from '../../types/plan.types';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
 import { TaskStatus } from '../../types';
+import { useAuth } from '../../context/AuthContext';
+import { useImpersonation } from '../../context/ImpersonationContext';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 
 // Lazy-load each sub-module inside the bundle
 const AnnualPlanPage  = React.lazy(() => import('../annual-plan/AnnualPlanPage'));
@@ -38,6 +41,25 @@ const WorkPlanPage: React.FC = () => {
     const FILTER_DEPT_CODES = [...DEPARTMENT_CODES, 'All'] as const;
     const [dept, setDept] = useTabSearchParam<FilterDeptCode>('HCTH', FILTER_DEPT_CODES, 'dept');
     
+    const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const { isGlobalScope } = usePermissionCheck();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+
+    // Tự động ép buộc lọc theo phòng ban của nhân viên nếu không có quyền xem toàn cục
+    useEffect(() => {
+        if (!isGlobalScope && effectiveUser?.Department) {
+            const userDeptName = effectiveUser.Department;
+            const userDeptCode = Object.keys(DEPARTMENT_NAMES).find(
+                key => DEPARTMENT_NAMES[key as DepartmentCode] === userDeptName
+            ) as FilterDeptCode;
+            
+            if (userDeptCode && dept !== userDeptCode) {
+                setDept(userDeptCode);
+            }
+        }
+    }, [isGlobalScope, effectiveUser, dept, setDept]);
+
     // Tự động chuyển 'All' về 'HCTH' khi ở tab monthly-report (vì kế hoạch tháng cần phòng ban cụ thể)
     useEffect(() => {
         if (active === 'monthly-report' && dept === 'All') {
@@ -66,7 +88,7 @@ const WorkPlanPage: React.FC = () => {
             {/* ══════════ TAB NAVIGATION & FILTERS ══════════ */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0 bg-transparent pb-1">
                 {/* Tabs */}
-                <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border-subtle w-fit">
+                <div className="flex items-center gap-1 bg-bg-surface p-1.5 rounded-2xl shadow-sm border border-border-subtle overflow-x-auto no-scrollbar w-full md:w-fit shrink-0 flex-nowrap">
                     {TABS.map(({ key, label, icon: Icon }) => (
                         <button
                             key={key}
@@ -85,7 +107,7 @@ const WorkPlanPage: React.FC = () => {
                 </div>
 
                 {/* Bộ lọc Tháng & Năm & Phòng ban dùng chung */}
-                <div className="flex items-center gap-1.5 flex-wrap justify-end max-w-full">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar md:flex-wrap md:justify-end max-w-full pb-1 py-0.5 shrink-0 flex-nowrap w-full md:w-auto">
                     {/* Bộ lọc dự án dùng chung cho tất cả các tab */}
                     <FilterChip
                         label="Dự án"
@@ -126,7 +148,7 @@ const WorkPlanPage: React.FC = () => {
                     />
 
                     {/* Bộ lọc phòng ban dùng chung */}
-                    {!(active === 'monthly-report' && subTab === 'report') && (
+                    {isGlobalScope && !(active === 'monthly-report' && subTab === 'report') && (
                         <FilterChip
                             label="Phòng ban"
                             value={dept}

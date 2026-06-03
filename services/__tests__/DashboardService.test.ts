@@ -313,7 +313,7 @@ describe('DashboardService', () => {
             });
             queue.push({                                                  // projects
                 data: [
-                    { project_id: 'P1', project_name: 'A', status: 3, progress: 100, start_date: '2026-04-10' },
+                    { project_id: 'P1', project_name: 'A', status: 3, progress: 100, start_date: '2026-04-10', actual_end_date: '2026-04-15' },
                     { project_id: 'P2', project_name: 'B', status: 2, progress: 50,  start_date: '2026-04-20' },
                     { project_id: 'P3', project_name: 'C', status: 1, progress: 10,  start_date: '2026-01-05' },
                 ],

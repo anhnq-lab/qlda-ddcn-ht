@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale } from 'lucide-react';
+import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType, detectSpecialtyByName } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
@@ -14,7 +14,10 @@ import { classifyProjectBySpecialty } from '../../../utils/projectCompliance';
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
 import { ProjectFormLegal } from './forms/ProjectFormLegal';
+import { ProjectFormScale } from './forms/ProjectFormScale';
 import { ProjectFormInvestment } from './forms/ProjectFormInvestment';
+import { ProjectFormContractors } from './forms/ProjectFormContractors';
+import { ProjectFormStatus } from './forms/ProjectFormStatus';
 import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
@@ -27,8 +30,11 @@ interface CreateProjectModalProps {
 
 const PROJ_TABS = [
     { id: 'general',     label: 'Thông tin chung',       icon: Building2 },
-    { id: 'legal',       label: 'Pháp lý & Quy mô',      icon: Scale },
+    { id: 'legal',       label: 'Pháp lý',                icon: Scale },
+    { id: 'scale',       label: 'Quy mô công trình',     icon: Ruler },
     { id: 'investment',  label: 'Cơ cấu vốn & Chi phí',  icon: DollarSign },
+    { id: 'contractors', label: 'Nhà thầu',                icon: HardHat },
+    { id: 'status',      label: 'Trạng thái',              icon: Activity },
     { id: 'members',     label: 'Thành viên',              icon: Users },
 ] as const;
 
@@ -41,14 +47,21 @@ const FIELD_TO_TAB: Record<string, TabId> = {
     CompetentAuthority: 'general', InvestorName: 'general', Duration: 'general',
     ExpectedEndDate: 'general', Objective: 'general', InvestmentScale: 'general',
     SpecialtyType: 'general', SpecialtyDetails: 'general',
+    IsEmergency: 'general', IsODA: 'general', ImageUrl: 'general', Coordinates: 'general',
+    Stage: 'status', MainContractorName: 'contractors',
     PolicyDecisionLevel: 'legal', PolicyDecisionNumber: 'legal', PolicyDecisionDate: 'legal',
     PolicyDecisionAuthority: 'legal', DecisionNumber: 'legal', DecisionAuthority: 'legal',
-    ApprovalDate: 'legal', ConstructionGrade: 'legal', SiteArea: 'legal',
-    ConstructionArea: 'legal', FloorArea: 'legal', BuildingHeight: 'legal',
-    BuildingDensity: 'legal', LandUseCoefficient: 'legal', TotalEstimate: 'legal',
+    ApprovalDate: 'legal', ConstructionGrade: 'legal',
     DecisionLevelBeforeHandover: 'legal', OldInvestor: 'legal', TransferDecision: 'legal',
+    SiteArea: 'scale', ConstructionArea: 'scale', FloorArea: 'scale', BuildingHeight: 'scale',
+    BuildingDensity: 'scale', LandUseCoefficient: 'scale', TotalEstimate: 'scale',
+    AboveGroundFloors: 'scale', BasementFloors: 'scale',
     TotalInvestment: 'investment', CapitalSource: 'investment', BudgetAllocations: 'investment',
     CostBreakdown: 'investment',
+    BiddingForm: 'contractors', ApplicableStandards: 'contractors', FeasibilityContractor: 'contractors',
+    SurveyContractor: 'contractors', ReviewContractor: 'contractors', ContractorDetails: 'contractors',
+    ProjectManagement: 'contractors',
+    CurrentStatusCode: 'status', AdjustedApproval: 'status', ProjectStatusInfo: 'status',
 };
 
 const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
@@ -111,6 +124,12 @@ const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
     CurrentStatusCode: null,
     SpecialtyType: '',
     SpecialtyDetails: '',
+    Stage: '',
+    IsEmergency: false,
+    IsODA: false,
+    MainContractorName: '',
+    ImageUrl: '',
+    Coordinates: undefined,
 };
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
@@ -238,6 +257,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             ? 'agriculture_rural'
                             : editProject.SpecialtyType || '') as any,
                 SpecialtyDetails: editProject.SpecialtyDetails || '',
+                Stage: editProject.Stage || '',
+                IsEmergency: editProject.IsEmergency || false,
+                IsODA: editProject.IsODA || false,
+                MainContractorName: editProject.MainContractorName || '',
+                ImageUrl: editProject.ImageUrl || '',
+                Coordinates: editProject.Coordinates || undefined,
             });
         } else if (isOpen && !editProject) {
             reset(DEFAULT_FORM_VALUES);
@@ -637,7 +662,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             />
                         )}
 
-                        {/* ═══ Tab 2: Pháp lý & Quy mô ═══ */}
+                        {/* ═══ Tab 2: Pháp lý ═══ */}
                         {activeTab === 'legal' && (
                             <ProjectFormLegal
                                 formData={formData}
@@ -647,7 +672,15 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             />
                         )}
 
-                        {/* ═══ Tab 3: Cơ cấu vốn & Chi phí ═══ */}
+                        {/* ═══ Tab 3: Quy mô công trình ═══ */}
+                        {activeTab === 'scale' && (
+                            <ProjectFormScale
+                                formData={formData}
+                                updateField={updateField}
+                            />
+                        )}
+
+                        {/* ═══ Tab 4: Cơ cấu vốn & Chi phí ═══ */}
                         {activeTab === 'investment' && (
                             <ProjectFormInvestment
                                 formData={formData}
@@ -656,7 +689,25 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             />
                         )}
 
-                        {/* ═══ Tab 5: Thành viên ═══ */}
+                        {/* ═══ Tab 5: Nhà thầu ═══ */}
+                        {activeTab === 'contractors' && (
+                            <ProjectFormContractors
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                            />
+                        )}
+
+                        {/* ═══ Tab 6: Trạng thái ═══ */}
+                        {activeTab === 'status' && (
+                            <ProjectFormStatus
+                                formData={formData}
+                                updateField={updateField}
+                                aiHighlight={aiHighlight}
+                            />
+                        )}
+
+                        {/* ═══ Tab 7: Thành viên ═══ */}
                         {activeTab === 'members' && (
                             <ProjectFormMembers
                                 formData={formData}

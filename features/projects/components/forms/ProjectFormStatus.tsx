@@ -111,25 +111,46 @@ export const ProjectFormStatus: React.FC<ProjectFormStatusProps> = ({ formData, 
                 </div>
             </div>
 
-            {/* ── Hiện trạng dự án ── */}
+            {/* ── Giai đoạn & Hiện trạng dự án ── */}
             <div className="pt-5 border-t border-border-subtle">
                 <h4 className="text-sm font-semibold text-txt-secondary mb-3 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Hiện trạng dự án
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Giai đoạn &amp; hiện trạng dự án
                 </h4>
-                <div className="relative">
-                    <select
-                        className={selectWithIconClass}
-                        value={formData.CurrentStatusCode || ''}
-                        onChange={e => updateField('CurrentStatusCode', e.target.value ? Number(e.target.value) : null)}
-                    >
-                        <option value="">-- Chọn hiện trạng dự án --</option>
-                        {Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([code, status]) => (
-                            <option key={code} value={code}>
-                                {code}. {status.label}
-                            </option>
-                        ))}
-                    </select>
-                    <Activity className={iconClass} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className={labelClass}>Giai đoạn dự án</label>
+                        <div className="relative">
+                            <select
+                                className={selectWithIconClass}
+                                value={formData.Stage || ''}
+                                onChange={e => updateField('Stage', e.target.value)}
+                            >
+                                <option value="">-- Chọn giai đoạn --</option>
+                                <option value="Preparation">Chuẩn bị dự án</option>
+                                <option value="Execution">Thực hiện dự án</option>
+                                <option value="Completion">Kết thúc xây dựng</option>
+                            </select>
+                            <Activity className={iconClass} />
+                        </div>
+                    </div>
+                    <div>
+                        <label className={labelClass}>Hiện trạng dự án (chi tiết)</label>
+                        <div className="relative">
+                            <select
+                                className={selectWithIconClass}
+                                value={formData.CurrentStatusCode || ''}
+                                onChange={e => updateField('CurrentStatusCode', e.target.value ? Number(e.target.value) : null)}
+                            >
+                                <option value="">-- Chọn hiện trạng dự án --</option>
+                                {Object.entries(PROJECT_CURRENT_STATUS_CONFIG).map(([code, status]) => (
+                                    <option key={code} value={code}>
+                                        {code}. {status.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <Activity className={iconClass} />
+                        </div>
+                    </div>
                 </div>
             </div>
 

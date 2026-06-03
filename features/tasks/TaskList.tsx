@@ -17,6 +17,7 @@ import { SkeletonStatCard } from '../../components/ui/Skeleton';
 import { KanbanBoard } from './components/KanbanBoard';
 import { TaskSlidePanel } from './components/TaskSlidePanel';
 import { useAuth } from '../../context/AuthContext';
+import { useImpersonation } from '../../context/ImpersonationContext';
 import { User, Sparkles, FolderOpen, X, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, CheckCircle2, Trash2 } from 'lucide-react';
 import { TaskStatsRow } from './components/TaskStatsRow';
 import { TaskFilterBar } from './components/TaskFilterBar';
@@ -98,6 +99,9 @@ const TaskList: React.FC<TaskListProps> = ({
     const navigate = useNavigate();
     const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const userDept = effectiveUser?.Department || '';
     
     const [searchParams] = useSearchParams();
     const urlTaskId = searchParams.get('taskId');
@@ -460,16 +464,19 @@ const TaskList: React.FC<TaskListProps> = ({
             (task.StartDate && new Date(task.StartDate).getFullYear() === parseInt(filterYear))
         );
 
+        // Ép buộc lọc theo phòng ban đối với nhân viên không có quyền xem toàn cục
+        const finalFilterDept = isGlobalScope ? filterDepartment : userDept;
+
         // Department filter
-        const matchDepartment = filterDepartment === 'All' || (() => {
+        const matchDepartment = finalFilterDept === 'All' || finalFilterDept === '' || (() => {
             if (task.DepartmentCode) {
                 const taskDeptName = DEPARTMENT_NAMES[task.DepartmentCode as DepartmentCode];
-                if (taskDeptName === filterDepartment || task.DepartmentCode === filterDepartment) {
+                if (taskDeptName === finalFilterDept || task.DepartmentCode === finalFilterDept) {
                     return true;
                 }
             }
             const assignee = employees.find(e => e.EmployeeID === task.AssigneeID);
-            return assignee?.Department === filterDepartment;
+            return assignee?.Department === finalFilterDept;
         })();
 
         // Overdue: chưa xong + có hạn + đã quá hạn

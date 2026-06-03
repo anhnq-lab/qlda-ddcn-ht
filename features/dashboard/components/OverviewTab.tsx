@@ -388,7 +388,7 @@ export const OverviewTab: React.FC<{ selectedYear: number | null; selectedBoard:
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 w-full bg-bg-app rounded-2xl relative border border-border overflow-hidden z-0">
+                    <div className="flex-1 w-full min-h-[300px] sm:min-h-[400px] bg-bg-app rounded-2xl relative border border-border overflow-hidden z-0">
                         {loadingProjects ? (
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
