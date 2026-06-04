@@ -2,36 +2,15 @@ import React, { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LogoDDCN } from '../components/common/LogoDDCN';
 import {
-  LayoutDashboard,
-  Briefcase,
-  Users,
-  FileText,
-  CreditCard,
-  FileBox,
   Settings,
   LogOut,
-  UserCircle,
-  CheckSquare,
-  BarChart2,
-  BookOpen,
-  User,
   ChevronLeft,
   ChevronRight,
-  Scale,
-  FolderTree,
-  ShieldCheck,
-  Layers,
-  CalendarRange,
-  Calendar,
-  GitBranch,
-  Network,
-  LayoutList,
-  ClipboardCheck,
-  Landmark,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
-import type { PermissionResource } from '../types/permission.types';
+import { useSidebarModuleConfig } from '../hooks/useSidebarModuleConfig';
+import { navItems, contractorNavItems } from './sidebarModules';
 
 // ========================================
 // SIDEBAR COMPONENT — Ban DDCN TP.HCM Theme (Amber Style)
@@ -43,41 +22,6 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-interface NavItem {
-  name: string;
-  path: string;
-  icon: React.ElementType;
-  badge?: number;
-  /** Permission resource needed to see this item */
-  resource?: PermissionResource;
-}
-
-const navItems: NavItem[] = [
-  { name: 'Tổng quan', path: '/', icon: LayoutDashboard, resource: 'dashboard' },
-  { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
-  { name: 'Lịch cơ quan', path: '/calendar', icon: Calendar, resource: 'calendar' },
-  { name: 'Quản lý dự án', path: '/projects', icon: Briefcase, resource: 'projects' },
-  { name: 'Quản lý công việc', path: '/work-plan', icon: LayoutList, resource: 'tasks' },
-  { name: 'Nhân sự', path: '/employees', icon: UserCircle, resource: 'employees' },
-  { name: 'Tài sản công', path: '/tai-san-cong', icon: Landmark, resource: 'projects' },
-  { name: 'Nhà thầu', path: '/contractors', icon: Users, resource: 'contractors' },
-  { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase, resource: 'bidding' },
-  { name: 'KH Vốn & Giải ngân', path: '/capital-planning', icon: CalendarRange, resource: 'capital' },
-  { name: 'Môi trường dữ liệu chung', path: '/cde', icon: FolderTree, resource: 'cde' },
-  { name: 'Mô hình BIM', path: '/bim', icon: Layers, resource: 'bim' },
-  { name: 'Văn bản pháp luật', path: '/legal-documents', icon: Scale, resource: 'legal_docs' },
-  { name: 'Báo cáo', path: '/reports', icon: BarChart2, resource: 'reports' },
-  { name: 'Quy chế làm việc', path: '/regulations', icon: BookOpen, resource: 'regulations' },
-  { name: 'Quy trình', path: '/quy-trinh', icon: GitBranch, resource: 'workflows' },
-];
-
-// Contractor-only: limited menu
-const contractorNavItems: NavItem[] = [
-  { name: 'Quản lý tài liệu', path: '/cde', icon: FolderTree },
-  { name: 'Đấu thầu & Hợp đồng', path: '/bidding', icon: Briefcase },
-];
-
-
 const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = false,
   onToggleCollapse,
@@ -85,19 +29,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { currentUser, logout, userType } = useAuth();
   const { can, loading: permLoading } = usePermissionCheck();
+  const { isModuleVisible } = useSidebarModuleConfig();
   const isContractor = userType === 'contractor';
 
-  // Filter nav items based on permissions
+  // Filter nav items based on permissions + admin's module visibility config
   const visibleNavItems = useMemo(() => {
-    // Contractors get a limited menu
-    if (isContractor) return contractorNavItems;
+    // Contractors get a limited menu (also respects admin's hide config)
+    if (isContractor) return contractorNavItems.filter(item => isModuleVisible(item.path));
     // While permissions are loading, show nothing to avoid flash of wrong items
     if (permLoading) return [];
     return navItems.filter(item => {
+      if (!isModuleVisible(item.path)) return false; // Admin đã ẩn module này
       if (!item.resource) return true; // No resource = always visible
       return can(item.resource, 'view');
     });
-  }, [can, isContractor, permLoading]);
+  }, [can, isContractor, permLoading, isModuleVisible]);
 
 
   return (
@@ -217,8 +163,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         )}
 
-        {/* Settings (Admin Only) */}
-        {can('admin_accounts', 'view') && (
+        {/* Settings (Admin Only) — canh theo cùng điều kiện guard của trang Settings
+            (currentUser.Role === 'Admin') để admin luôn thấy link, không phụ thuộc
+            vào việc resolve systemRole vốn có thể chập chờn. */}
+        {(currentUser?.Role === 'Admin' || can('admin_accounts', 'view')) && (
           <NavLink
             to="/settings"
             className={`

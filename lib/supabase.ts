@@ -40,7 +40,8 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
 /**
  * Escape hatch for tables added after the last `supabase gen types` run.
  * Use this client for: contractor_accounts, role_permission_defaults,
- * dashboard_widget_config, cde_audit_log, cde_comments, cde_permissions, cde_transmittals.
+ * dashboard_widget_config, sidebar_module_config, cde_audit_log, cde_comments,
+ * cde_permissions, cde_transmittals.
  * Remove after running: supabase gen types typescript --local > types/database.ts
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

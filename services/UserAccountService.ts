@@ -344,14 +344,22 @@ export class UserAccountService {
     static async changePassword(employeeId: string, newPassword: string): Promise<void> {
         const password_hash = await hashPassword(newPassword);
 
-        // Update Supabase Auth if auth_user_id exists
         try {
             const { data: accountData } = await supabase.from('user_accounts').select('auth_user_id').eq('employee_id', employeeId).single();
             if (accountData?.auth_user_id) {
-                await adminUserOp('updateUser', { userId: accountData.auth_user_id, attributes: { password: newPassword } });
+                const { data: { user: currentUser } } = await supabase.auth.getUser();
+                if (currentUser && currentUser.id === accountData.auth_user_id) {
+                    // Tự đổi mật khẩu của chính mình -> Dùng API chính thức của Supabase (không cần quyền admin)
+                    const { error } = await supabase.auth.updateUser({ password: newPassword });
+                    if (error) throw error;
+                } else {
+                    // Admin đổi mật khẩu cho user khác -> Dùng Edge Function adminUserOp
+                    await adminUserOp('updateUser', { userId: accountData.auth_user_id, attributes: { password: newPassword } });
+                }
             }
-        } catch (e) {
-            console.warn('[UserAccountService] Failed to update Supabase Auth password', e);
+        } catch (e: any) {
+            console.error('[UserAccountService] Failed to update Supabase Auth password', e);
+            throw new Error(`Không thể cập nhật mật khẩu xác thực: ${e.message}`);
         }
 
         const client: any = supabase;

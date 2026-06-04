@@ -6,8 +6,9 @@ type TableNamesToOverride =
   | 'cde_folders' 
   | 'cde_comments' 
   | 'cde_transmittals' 
-  | 'cde_audit_log' 
-  | 'document_attachments';
+  | 'cde_audit_log'
+  | 'document_attachments'
+  | 'sidebar_module_config';
 
 export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
     public: Omit<GeneratedDatabase['public'], 'Tables'> & {
@@ -271,6 +272,30 @@ export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
                     role?: string;
                     widget_id?: string;
                     is_active?: boolean;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Relationships: [];
+            };
+            sidebar_module_config: {
+                Row: {
+                    id: string;
+                    module_key: string;
+                    is_visible: boolean;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    module_key: string;
+                    is_visible?: boolean;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    module_key?: string;
+                    is_visible?: boolean;
                     created_at?: string;
                     updated_at?: string;
                 };

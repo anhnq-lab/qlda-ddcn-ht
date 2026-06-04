@@ -354,8 +354,11 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     // ── Core permission check ──────────────────────────────
     const can = useCallback(
         (resource: PermissionResource, action: PermissionAction): boolean => {
-            // super_admin bypasses all checks
-            if (state.systemRole === 'super_admin') return true;
+            // super_admin bypasses all checks.
+            // Dùng `systemRole` (useMemo, đồng bộ từ effectiveUser) thay vì chỉ
+            // `state.systemRole` (bất đồng bộ, có thể kẹt do race/cache cũ) để admin
+            // luôn có toàn quyền ngay lập tức. `systemRole` đã tính cả impersonation.
+            if (systemRole === 'super_admin' || state.systemRole === 'super_admin') return true;
 
             // Permissions not loaded yet → deny (safe default)
             if (!state.loaded) return false;
@@ -392,7 +395,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             }
             return result;
         },
-        [state.permissionMap, state.loaded, state.systemRole, dbRoleDefaults]
+        [state.permissionMap, state.loaded, state.systemRole, systemRole, dbRoleDefaults]
     );
 
     // ── Project-scoped check ───────────────────────────────
@@ -427,15 +430,19 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         [can, state.isGlobalScope, state.managedBoards, effectiveUser, state.systemRole]
     );
 
+    // super_admin được suy ra đồng bộ từ effectiveUser → expose ngay, không chờ
+    // state bất đồng bộ (vốn có thể kẹt do race/cache), bảo đảm admin luôn full quyền.
+    const isSuperAdmin = systemRole === 'super_admin' || state.systemRole === 'super_admin';
+
     const contextValue = useMemo<PermissionContextType>(() => ({
         ...state,
-        isGlobalScope: state.isGlobalScope,
-        systemRole: state.systemRole,
+        isGlobalScope: isSuperAdmin ? true : state.isGlobalScope,
+        systemRole: isSuperAdmin ? 'super_admin' : state.systemRole,
         can,
         canOnProject,
         refreshPermissions,
         isImpersonating,
-    }), [state, can, canOnProject, refreshPermissions, isImpersonating]);
+    }), [state, isSuperAdmin, can, canOnProject, refreshPermissions, isImpersonating]);
 
     return (
         <PermissionContext.Provider value={contextValue}>

@@ -482,11 +482,11 @@ INSERT INTO employees (employee_id, full_name, position, department, role, statu
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO user_accounts (employee_id, username, password_hash) VALUES
-    ('NV001', 'Admin', '123456'),
-    ('NV002', 'LINH.NQ', '123456'),
-    ('NV003', 'BAO.TN', '123456'),
-    ('NV004', 'NHAN.NV', '123456'),
-    ('NV040', 'QUY.ND', '123456')
+    ('NV001', 'quantrivien', '97aaf2d6a56550735e4c4a2bc1bc42b8b37f081f4bc0b8ca50203189fe86789a'),
+    ('NV002', 'nguyenquanglinh', '1a678f06451f9296895f0ff755289072d5a86dc660c100758f031e2977184aa2'),
+    ('NV003', 'tranngocbao', '75971380c0e6558d69bdf2cbca67b424152a71175d2cc3fe1b3b4bb7815dbc39'),
+    ('NV004', 'nguyenvannhan', '56337a3684f46b49c9d8152e8bcdd3ffb1538319c32eb5261ac7862b02aeadb1'),
+    ('NV040', 'ngoducquy', 'efd6e7c51b3a844ee68ac4f4578980b1645e7a9f7aeab125258ebfc1e1dfbc78')
 ON CONFLICT (username) DO NOTHING;
 
 
