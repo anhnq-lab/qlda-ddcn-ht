@@ -9,7 +9,7 @@ import { ProgressBar, DataTable, Column } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient, getGroupColor } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
-import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown, Download, Upload, FileSpreadsheet } from 'lucide-react';
+import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown, Download, Upload, FileSpreadsheet, Building2 } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { CreateProjectModal } from './components/CreateProjectModal';
@@ -23,6 +23,7 @@ import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { useImpersonation } from '../../context/ImpersonationContext';
 import { useAuth } from '../../context/AuthContext';
 import { extractBanNumber } from '../../hooks/useScopedProjects';
+import { useSlidePanel } from '../../context/SlidePanelContext';
 
 // ── PaginationBar — memo để tránh re-render không cần thiết khi filter/sort thay đổi ──
 const PaginationBar = memo(({ page, totalPages, total, pageSize, onPageChange }: {
@@ -129,9 +130,7 @@ const ProjectList: React.FC = () => {
         queryParams,
     } = useProjectFilterContext();
 
-    // Create & Import Modal States
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isImportOpen, setIsImportOpen] = useState(false);
+    const { openPanel, closePanel } = useSlidePanel();
 
     // Responsive setup
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -140,10 +139,6 @@ const ProjectList: React.FC = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-    const handleCreateProject = () => {
-        setIsModalOpen(true);
-    };
 
     const handleSaveProject = async (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => {
         try {
@@ -162,7 +157,7 @@ const ProjectList: React.FC = () => {
 
             // 3. Notify and Navigate
             invalidateProjects();
-            setIsModalOpen(false);
+            closePanel('create-project');
             addToast({ title: 'Thành công', message: `Đã tạo dự án "${newProject.ProjectName}"`, type: 'success' });
             navigate(`/projects/${newProject.ProjectID}`);
         } catch (error) {
@@ -174,6 +169,16 @@ const ProjectList: React.FC = () => {
                 type: 'error',
             });
         }
+    };
+
+    const handleCreateProject = () => {
+        openPanel({
+            id: 'create-project',
+            title: 'Thêm mới dự án',
+            icon: <Building2 size={14} />,
+            url: '/projects/new',
+            component: <CreateProjectModal onSave={handleSaveProject} onClose={() => closePanel('create-project')} />,
+        });
     };
 
     // Open project detail — full page navigation
@@ -699,7 +704,13 @@ const ProjectList: React.FC = () => {
 
                                 <PermissionGate resource="projects" action="create">
                                     <button
-                                        onClick={() => setIsImportOpen(true)}
+                                        onClick={() => openPanel({
+                                            id: 'import-project',
+                                            title: 'Nhập dự án từ Excel',
+                                            icon: <FileSpreadsheet size={14} />,
+                                            url: '/projects/import',
+                                            component: <ProjectImportModal onClose={() => closePanel('import-project')} />,
+                                        })}
                                         className="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold h-8 shadow-sm transition-all"
                                         title="Nhập danh sách dự án từ Excel"
                                     >
@@ -918,18 +929,6 @@ const ProjectList: React.FC = () => {
                     />
                 </div>
 
-            {/* Create Project Modal */}
-            <CreateProjectModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveProject}
-            />
-
-            {/* Import Project Modal */}
-            <ProjectImportModal
-                isOpen={isImportOpen}
-                onClose={() => setIsImportOpen(false)}
-            />
         </div>
     );
 };

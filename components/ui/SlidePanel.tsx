@@ -143,10 +143,11 @@ const SlidePanelItem: React.FC<SlidePanelItemProps> = ({
         touchStartRef.current = null;
     }, [swipeOffset, onClose]);
 
-    // Compute width style (Default to 50% width instead of 100%)
-    const widthValue = panel.width
+    // Compute width style: user-resized width (panelWidth) overrides panel.width
+    const initialWidth = panel.width
         ? (typeof panel.width === 'number' ? `${panel.width}px` : panel.width)
-        : (panelWidth > 0 ? `${panelWidth}px` : `calc(50% - ${stackOffset}px)`);
+        : `calc(50% - ${stackOffset}px)`;
+    const widthValue = (isTopPanel && panelWidth > 0) ? `${panelWidth}px` : initialWidth;
 
     const widthStyle: React.CSSProperties = isMaximized
         ? {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler } from 'lucide-react';
+import { Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType, detectSpecialtyByName } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
@@ -22,7 +22,6 @@ import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
 interface CreateProjectModalProps {
-    isOpen: boolean;
     onClose: () => void;
     onSave: (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => Promise<void>;
     editProject?: Project | null;
@@ -132,7 +131,7 @@ const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
     Coordinates: undefined,
 };
 
-export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
+export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose, onSave, editProject }) => {
     const isEditMode = !!editProject;
     const [isLoading, setIsLoading] = useState(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -196,7 +195,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
     // Populate form data in edit mode
     useEffect(() => {
-        if (isOpen && editProject) {
+        if (editProject) {
             reset({
                 ProjectID: editProject.ProjectID || '',
                 ProjectName: editProject.ProjectName || '',
@@ -264,33 +263,24 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 ImageUrl: editProject.ImageUrl || '',
                 Coordinates: editProject.Coordinates || undefined,
             });
-        } else if (isOpen && !editProject) {
+        } else {
             reset(DEFAULT_FORM_VALUES);
         }
-    }, [isOpen, editProject, reset]);
+    }, [editProject, reset]);
 
-    // Fetch employees when modal opens + load existing members in edit mode
+    // Fetch employees on mount + load existing members in edit mode
     useEffect(() => {
-        if (isOpen) {
-            EmployeeService.getAll().then(setEmployees).catch(console.error);
-            if (editProject?.ProjectID) {
-                ProjectMemberService.getSelectedMembers(editProject.ProjectID)
-                    .then(members => setSelectedMembers(members))
-                    .catch(console.error);
-            }
-        } else {
-            setSelectedMembers([]);
-            // Reset AI state
-            setAiStatus('idle');
-            setAiPreviewUrl(null);
-            setAiFilledFields(new Set());
-            setAiError('');
+        EmployeeService.getAll().then(setEmployees).catch(console.error);
+        if (editProject?.ProjectID) {
+            ProjectMemberService.getSelectedMembers(editProject.ProjectID)
+                .then(members => setSelectedMembers(members))
+                .catch(console.error);
         }
-    }, [isOpen, editProject]);
+    }, [editProject]);
 
     // ── AI: Listen for paste events ──
     useEffect(() => {
-        if (!isOpen || isEditMode) return;
+        if (isEditMode) return;
         const handlePaste = (e: ClipboardEvent) => {
             const items = e.clipboardData?.items;
             if (!items) return;
@@ -305,7 +295,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         };
         document.addEventListener('paste', handlePaste);
         return () => document.removeEventListener('paste', handlePaste);
-    }, [isOpen, isEditMode]);
+    }, [isEditMode]);
 
     // ── AI: Process image extraction ──
     const handleAiImageExtract = useCallback(async (file: File) => {
@@ -396,7 +386,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const watchedConstructionType = watch('ConstructionType');
 
     useEffect(() => {
-        if (isOpen && !isEditMode) {
+        if (!isEditMode) {
             const year = new Date(watchedStartDate).getFullYear();
             const ctMap: Record<string, ConstructionType> = {
                 'Dân dụng': ConstructionType.Civil,
@@ -418,7 +408,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
             );
             setValue('ProjectID', code, { shouldDirty: false });
         }
-    }, [isOpen, isEditMode, watchedGroupCode, watchedInvestmentType, watchedStartDate, watchedProvinceCode, watchedConstructionType, setValue]);
+    }, [isEditMode, watchedGroupCode, watchedInvestmentType, watchedStartDate, watchedProvinceCode, watchedConstructionType, setValue]);
 
     const toggleMember = (empId: string) => {
         setSelectedMembers(prev => {
@@ -492,32 +482,21 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const aiHighlight = (field: string) =>
         aiFilledFields.has(field) ? ' ring-2 ring-emerald-400 dark:ring-emerald-500 border-emerald-400 dark:border-emerald-500 animate-pulse' : '';
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => {
-            if (e.target === e.currentTarget) onClose();
-        }}>
-            <div className="bg-bg-surface shadow-sm w-full max-w-6xl h-full overflow-hidden flex flex-col animate-in slide-in-from-right duration-300">
+        <div className="flex flex-col h-full overflow-hidden">
 
-                {/* Header */}
-                <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
-                    <div>
-                        <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            {isEditMode ? 'Chỉnh sửa dự án' : 'Thêm mới dự án'}
-                        </h2>
-                        <p className="text-xs text-txt-muted mt-1">
-                            {isEditMode ? 'Cập nhật thông tin dự án' : 'Theo mẫu Phụ lục I (NĐ 175/2024) • Hệ thống tự động tạo mã dự án'}
-                        </p>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-txt-placeholder transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-gradient-to-r from-primary-50 to-warning-50 dark:from-slate-800 dark:to-slate-800">
+                <div>
+                    <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        {isEditMode ? 'Chỉnh sửa dự án' : 'Thêm mới dự án'}
+                    </h2>
+                    <p className="text-xs text-txt-muted mt-1">
+                        {isEditMode ? 'Cập nhật thông tin dự án' : 'Theo mẫu Phụ lục I (NĐ 175/2024) • Hệ thống tự động tạo mã dự án'}
+                    </p>
                 </div>
+            </div>
 
                 {/* ── AI Image Import Zone (only in create mode) ── */}
                 {!isEditMode && (
@@ -751,7 +730,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     );
 };

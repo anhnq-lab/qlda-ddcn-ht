@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Upload, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Upload, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { supabase } from '../../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -8,7 +8,6 @@ import { ProjectGroup, InvestmentType, ProjectStatus, ProjectSector, MANAGEMENT_
 import { PROJECT_CURRENT_STATUS_CONFIG } from '../../../types/project.types';
 
 interface ProjectImportModalProps {
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -73,7 +72,7 @@ interface ImportProjectRow {
     isUpdate?: boolean;
 }
 
-export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, onClose }) => {
+export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [isParsing, setIsParsing] = useState(false);
@@ -539,27 +538,21 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
         setImportStats({ total: 0, success: 0, error: 0 });
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-bg-surface w-full max-w-6xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                
-                {/* Header */}
-                <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg-subtle">
-                    <div>
-                        <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
-                            <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                            Nhập dự án từ Excel
-                        </h2>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Tải lên file mẫu đã điền dữ liệu để thêm hoặc cập nhật dự án hàng loạt
-                        </p>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                        <X className="w-5 h-5 text-gray-500" />
-                    </button>
+        <div className="flex flex-col h-full overflow-hidden">
+
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg-subtle">
+                <div>
+                    <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
+                        <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        Nhập dự án từ Excel
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Tải lên file mẫu đã điền dữ liệu để thêm hoặc cập nhật dự án hàng loạt
+                    </p>
                 </div>
+            </div>
 
                 {/* Body */}
                 <div className="flex-1 overflow-auto p-6 bg-bg-surface">
@@ -746,7 +739,6 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                         )}
                     </div>
                 </div>
-            </div>
         </div>
     );
 };

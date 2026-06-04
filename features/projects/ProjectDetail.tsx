@@ -33,6 +33,7 @@ import { Map, LandPlot, Info, CalendarCheck, Briefcase, FolderOpen, Landmark, Da
 import { AIReportModal } from './components/AIReportModal';
 import { generateMonthlyReport } from '@/services/aiService';
 import { useToast } from '@/components/ui/Toast';
+import { useSlidePanel } from '@/context/SlidePanelContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 // Lazy-loaded: only fetched when user navigates to that tab or opens the modal
@@ -169,8 +170,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Edit modal
-    const [showEditModal, setShowEditModal] = useState(false);
+    // Edit modal via SlidePanel
+    const { openPanel: openEditPanel, closePanel: closeEditPanel } = useSlidePanel();
 
     // AI Document Drafter modal
     const [showDrafter, setShowDrafter] = useState(false);
@@ -341,6 +342,40 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
         }
     }, [project, queryClient, id]);
 
+    const handleOpenEditModal = useCallback(() => {
+        if (!project) return;
+        openEditPanel({
+            id: 'edit-project',
+            title: 'Chỉnh sửa dự án',
+            icon: <Pencil size={14} />,
+            url: `/projects/${project.ProjectID}/edit`,
+            component: (
+                <CreateProjectModal
+                    onSave={async (data, members) => {
+                        try {
+                            await handleEditSave(data as Partial<Project>);
+                            if (project) {
+                                try {
+                                    await ProjectMemberService.replaceMembers(project.ProjectID, members);
+                                    queryClient.invalidateQueries({ queryKey: ['project-members', project.ProjectID] });
+                                } catch (error) {
+                                    console.error('Failed to save members:', error);
+                                }
+                            }
+                            closeEditPanel('edit-project');
+                        } catch (error) {
+                            const errObj = error as any;
+                            addToast({ title: 'Lỗi cập nhật', message: errObj?.message || 'Vui lòng thử lại.', type: 'error' });
+                            console.error('Edit error:', error);
+                        }
+                    }}
+                    onClose={() => closeEditPanel('edit-project')}
+                    editProject={project}
+                />
+            ),
+        });
+    }, [project, openEditPanel, closeEditPanel, handleEditSave, queryClient, addToast]);
+
     // ─── Render ───
     if (loading) return <ProjectDetailSkeleton />;
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-txt-muted">Dự án không tồn tại.</div>;
@@ -387,7 +422,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         </button>
                         <button
                             id="btn-edit-project"
-                            onClick={() => setShowEditModal(true)}
+                            onClick={() => handleOpenEditModal()}
                             className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 gradient-btn text-white rounded-lg text-[11px] font-bold shadow-sm transition-all hover:-translate-y-0.5"
                         >
                             <Pencil className="w-3.5 h-3.5" />
@@ -482,7 +517,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                                 queryClient.setQueryData(['project-detail', id], (prev: Project | undefined) => prev ? { ...prev, StageHistory: history } : prev);
                             }}
                             canEditLifecycle={true}
-                            onEditProject={() => setShowEditModal(true)}
+                            onEditProject={() => handleOpenEditModal()}
                             onTabChange={(tab) => setActiveTab(tab as any)}
                         />
                     </div>
@@ -653,32 +688,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                 isLoading={isDeleting}
             />
 
-            {/* ─── Edit Project Modal (reuse CreateProjectModal in edit mode) ─── */}
-            <CreateProjectModal
-                isOpen={showEditModal}
-                onClose={() => setShowEditModal(false)}
-                onSave={async (data, members) => {
-                    try {
-                        await handleEditSave(data as Partial<Project>);
-                        // Save members: delete old, insert new
-                        if (project) {
-                            try {
-                                await ProjectMemberService.replaceMembers(project.ProjectID, members);
-                                // Invalidate cache so React Query re-fetches members
-                                queryClient.invalidateQueries({ queryKey: ['project-members', project.ProjectID] });
-                            } catch (error) {
-                                console.error('Failed to save members:', error);
-                            }
-                        }
-                        setShowEditModal(false);
-                    } catch (error) {
-                        const errObj = error as any;
-                        addToast({ title: 'Lỗi cập nhật', message: errObj?.message || 'Vui lòng thử lại.', type: 'error' });
-                        console.error('Edit error:', error);
-                    }
-                }}
-                editProject={project}
-            />
 
             {/* ─── AI Document Drafter Modal ─── */}
             {showDrafter && (
