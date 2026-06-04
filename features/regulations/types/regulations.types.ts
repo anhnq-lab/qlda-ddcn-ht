@@ -36,5 +36,6 @@ export interface RegulationDocument {
     date: string;
     effectiveDate?: string;
     status: 'active' | 'draft' | 'archived';
+    pdfUrl?: string;
     chapters: RegChapter[];
 }

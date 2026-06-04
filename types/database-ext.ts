@@ -8,7 +8,11 @@ type TableNamesToOverride =
   | 'cde_transmittals' 
   | 'cde_audit_log'
   | 'document_attachments'
-  | 'sidebar_module_config';
+  | 'sidebar_module_config'
+  | 'regulation_bookmarks'
+  | 'regulation_documents'
+  | 'regulation_chapters'
+  | 'regulation_articles';
 
 export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
     public: Omit<GeneratedDatabase['public'], 'Tables'> & {
@@ -298,6 +302,132 @@ export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
                     is_visible?: boolean;
                     created_at?: string;
                     updated_at?: string;
+                };
+                Relationships: [];
+            };
+            regulation_bookmarks: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    document_id: string;
+                    article_id: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    document_id: string;
+                    article_id: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    user_id?: string;
+                    document_id?: string;
+                    article_id?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            regulation_documents: {
+                Row: {
+                    id: string;
+                    code: string;
+                    title: string;
+                    description: string;
+                    date: string;
+                    effective_date: string | null;
+                    status: 'active' | 'draft' | 'archived';
+                    pdf_url: string | null;
+                    sort_order: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id: string;
+                    code: string;
+                    title: string;
+                    description?: string;
+                    date?: string;
+                    effective_date?: string | null;
+                    status?: 'active' | 'draft' | 'archived';
+                    pdf_url?: string | null;
+                    sort_order?: number;
+                };
+                Update: {
+                    id?: string;
+                    code?: string;
+                    title?: string;
+                    description?: string;
+                    date?: string;
+                    effective_date?: string | null;
+                    status?: 'active' | 'draft' | 'archived';
+                    pdf_url?: string | null;
+                    sort_order?: number;
+                };
+                Relationships: [];
+            };
+            regulation_chapters: {
+                Row: {
+                    id: string;
+                    document_id: string;
+                    code: string;
+                    title: string;
+                    icon: string | null;
+                    sort_order: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id: string;
+                    document_id: string;
+                    code: string;
+                    title: string;
+                    icon?: string | null;
+                    sort_order?: number;
+                };
+                Update: {
+                    id?: string;
+                    document_id?: string;
+                    code?: string;
+                    title?: string;
+                    icon?: string | null;
+                    sort_order?: number;
+                };
+                Relationships: [];
+            };
+            regulation_articles: {
+                Row: {
+                    id: string;
+                    chapter_id: string;
+                    code: string;
+                    title: string;
+                    content: string;
+                    content_type: 'text' | 'markdown' | 'component';
+                    component_key: string | null;
+                    sort_order: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id: string;
+                    chapter_id: string;
+                    code: string;
+                    title: string;
+                    content?: string;
+                    content_type?: 'text' | 'markdown' | 'component';
+                    component_key?: string | null;
+                    sort_order?: number;
+                };
+                Update: {
+                    id?: string;
+                    chapter_id?: string;
+                    code?: string;
+                    title?: string;
+                    content?: string;
+                    content_type?: 'text' | 'markdown' | 'component';
+                    component_key?: string | null;
+                    sort_order?: number;
                 };
                 Relationships: [];
             };
