@@ -12,6 +12,9 @@
  */
 export function extractBanNumber(department: string | undefined): number | null {
     if (!department) return null;
+    const lowerDept = department.toLowerCase();
+    if (lowerDept.includes('phát triển') && lowerDept.includes('dịch vụ')) return 4;
+    if (lowerDept.includes('dịch vụ tư vấn')) return 4;
     const match = department.match(/(?:Ban Điều hành dự án|Phòng Quản lý dự án|Ban ĐHDA|Phòng QLDA)\s*(\d+)/i);
     return match ? parseInt(match[1], 10) : null;
 }

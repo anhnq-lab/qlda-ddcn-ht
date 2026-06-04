@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { supabase } from '../../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { ProjectService } from '../../../services/ProjectService';
-import { ProjectGroup, InvestmentType, ProjectStatus, ProjectSector } from '../../../types';
+import { ProjectGroup, InvestmentType, ProjectStatus, ProjectSector, MANAGEMENT_BOARDS } from '../../../types';
 import { PROJECT_CURRENT_STATUS_CONFIG } from '../../../types/project.types';
 
 interface ProjectImportModalProps {
@@ -228,8 +228,9 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
         if (str.includes('1') || str.includes('phòng 1') || str.includes('qlda 1')) return 1;
         if (str.includes('2') || str.includes('phòng 2') || str.includes('qlda 2')) return 2;
         if (str.includes('3') || str.includes('phòng 3') || str.includes('qlda 3')) return 3;
+        if (str.includes('4') || str.includes('phát triển') || str.includes('dịch vụ') || str.includes('ptdv')) return 4;
         
-        warnings.push(`Phòng QLDA "${val}" không đúng (chỉ chấp nhận Phòng 1, 2 hoặc 3)`);
+        warnings.push(`Phòng QLDA "${val}" không đúng (chỉ chấp nhận Phòng 1, 2, 3 hoặc Phòng Phát triển dịch vụ)`);
         return null;
     };
 
@@ -675,7 +676,7 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ isOpen, 
                                                         {row.status === 3 && 'Kết thúc'}
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
-                                                        {row.managementBoard ? `Phòng ${row.managementBoard}` : <span className="text-gray-400">—</span>}
+                                                         {row.managementBoard ? (MANAGEMENT_BOARDS.find(b => b.value === row.managementBoard)?.label || `Phòng ${row.managementBoard}`) : <span className="text-gray-400">—</span>}
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
                                                         {row.importStatus === 'pending' && (

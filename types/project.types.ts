@@ -5,6 +5,7 @@ export const MANAGEMENT_BOARDS = [
     { value: 1, label: 'Phòng QLDA 1', color: 'bg-blue-500',    hex: '#3B82F6' },
     { value: 2, label: 'Phòng QLDA 2', color: 'bg-emerald-500', hex: '#10B981' },
     { value: 3, label: 'Phòng QLDA 3', color: 'bg-violet-500',  hex: '#8B5CF6' },
+    { value: 4, label: 'Phòng Phát triển dịch vụ', color: 'bg-pink-500', hex: '#EC4899' },
 ] as const;
 
 // 3.1. Bảng dữ liệu: Projects (Dự án Đầu tư)

@@ -70,7 +70,7 @@ INSERT INTO public.departments (code, name, name_aliases, is_global_scope, sort_
            TRUE,  6),
   ('PTDV', 'Phòng Phát triển dịch vụ',
            ARRAY['Trung tâm Dịch vụ tư vấn']::TEXT[],
-           TRUE,  7),
+           FALSE,  7),
   -- Project-scoped departments
   ('QLDA1','Phòng Quản lý dự án 1', ARRAY[]::TEXT[], FALSE, 8),
   ('QLDA2','Phòng Quản lý dự án 2', ARRAY[]::TEXT[], FALSE, 9),

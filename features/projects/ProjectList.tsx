@@ -287,7 +287,8 @@ const ProjectList: React.FC = () => {
             };
 
             allProjects.forEach((proj, idx) => {
-                const boardLabel = proj.ManagementBoard ? `Phòng QLDA ${proj.ManagementBoard}` : '';
+                const boardObj = proj.ManagementBoard ? MANAGEMENT_BOARDS.find(b => b.value === proj.ManagementBoard) : null;
+                const boardLabel = boardObj ? boardObj.label : '';
                 const currentStatusLabel = proj.CurrentStatusCode ? (PROJECT_CURRENT_STATUS_CONFIG[proj.CurrentStatusCode]?.label || '') : '';
                 
                 const row = ws.addRow({
@@ -404,7 +405,7 @@ const ProjectList: React.FC = () => {
                 { header: 'Ngày phê duyệt thiết kế - dự toán (YYYY-MM-DD)', key: 'design_approval_date', width: 25 },
                 { header: 'Cơ quan thẩm định thiết kế - dự toán', key: 'design_approval_authority', width: 25 },
                 { header: 'Tổng dự toán phê duyệt (VNĐ)', key: 'total_estimate', width: 22 },
-                { header: 'Phòng QLDA (Phòng 1/Phòng 2/Phòng 3)', key: 'management_board', width: 25 },
+                { header: 'Phòng QLDA (Phòng 1/Phòng 2/Phòng 3/Phòng Phát triển dịch vụ)', key: 'management_board', width: 25 },
                 { header: 'Chủ đầu tư cũ', key: 'old_investor', width: 25 },
                 { header: 'Quyết định điều chuyển', key: 'transfer_decision', width: 25 },
                 { header: 'Cấp QĐ trước bàn giao', key: 'decision_level_before_handover', width: 25 },
@@ -608,7 +609,7 @@ const ProjectList: React.FC = () => {
                 ws.getCell(`AI${r}`).dataValidation = {
                     type: 'list',
                     allowBlank: true,
-                    formulae: ['"Phòng 1,Phòng 2,Phòng 3"'],
+                    formulae: ['"Phòng 1,Phòng 2,Phòng 3,Phòng Phát triển dịch vụ"'],
                     showErrorMessage: true,
                     errorTitle: 'Dữ liệu không hợp lệ',
                     error: 'Vui lòng chọn Phòng QLDA phụ trách từ danh sách.'
@@ -848,7 +849,7 @@ const ProjectList: React.FC = () => {
                                                         <td className="px-4 py-4 text-center">
                                                             {board ? (
                                                                 <span className="inline-flex items-center justify-center text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: board.hex }}>
-                                                                    Phòng {board.value}
+                                                                    {board.label}
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-txt-muted">—</span>

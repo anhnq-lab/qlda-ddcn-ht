@@ -100,6 +100,7 @@ interface GroupedProjects {
     board1: Project[];
     board2: Project[];
     board3: Project[];
+    board4: Project[];
     unassigned: Project[];
 }
 
@@ -108,6 +109,7 @@ function groupProjectsByBoard(projects: Project[]): GroupedProjects {
         board1: [],
         board2: [],
         board3: [],
+        board4: [],
         unassigned: []
     };
 
@@ -119,6 +121,8 @@ function groupProjectsByBoard(projects: Project[]): GroupedProjects {
             groups.board2.push(p);
         } else if (board === 3) {
             groups.board3.push(p);
+        } else if (board === 4) {
+            groups.board4.push(p);
         } else {
             groups.unassigned.push(p);
         }
@@ -207,7 +211,8 @@ function buildAppendixSheet1(ws: ExcelJS.Worksheet, projects: Project[]) {
         { key: 'board1', label: 'Phòng QLDA 1', indexStr: 'A', data: grouped.board1 },
         { key: 'board2', label: 'Phòng QLDA 2', indexStr: 'B', data: grouped.board2 },
         { key: 'board3', label: 'Phòng QLDA 3', indexStr: 'C', data: grouped.board3 },
-        { key: 'unassigned', label: 'Chưa phân phối', indexStr: 'D', data: grouped.unassigned },
+        { key: 'board4', label: 'Phòng Phát triển dịch vụ', indexStr: 'D', data: grouped.board4 },
+        { key: 'unassigned', label: 'Chưa phân phối', indexStr: 'E', data: grouped.unassigned },
     ];
 
     const boardRowNumbers: number[] = [];
@@ -372,7 +377,8 @@ function buildAppendixSheet2(ws: ExcelJS.Worksheet, projects: Project[]) {
         { key: 'board1', label: 'Phòng QLDA 1', indexStr: 'A', data: grouped.board1 },
         { key: 'board2', label: 'Phòng QLDA 2', indexStr: 'B', data: grouped.board2 },
         { key: 'board3', label: 'Phòng QLDA 3', indexStr: 'C', data: grouped.board3 },
-        { key: 'unassigned', label: 'Chưa phân phối', indexStr: 'D', data: grouped.unassigned },
+        { key: 'board4', label: 'Phòng Phát triển dịch vụ', indexStr: 'D', data: grouped.board4 },
+        { key: 'unassigned', label: 'Chưa phân phối', indexStr: 'E', data: grouped.unassigned },
     ];
 
     const boardRowNumbers: number[] = [];
