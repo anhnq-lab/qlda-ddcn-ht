@@ -363,14 +363,6 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         isFullscreen ? 'h-screen rounded-none border-none' : 'h-full min-h-[700px]'
       }`}
     >
-      <style>{`
-        @media (min-width: 768px) {
-          .lobby-grid-layout {
-            display: grid !important;
-            grid-template-columns: minmax(130px, 1.2fr) 3.6fr 2.4fr 1.3fr 2.5fr !important;
-          }
-        }
-      `}</style>
       
       {/* LEFT SIDEBAR (Branded theme) */}
       <div className={`w-full md:w-[22%] flex flex-col items-center justify-start gap-6 p-5 md:p-6 border-b md:border-b-0 md:border-r shrink-0 overflow-y-auto ${styles.sidebar}`}>
@@ -620,9 +612,9 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                           </div>
 
                           {/* Column 5: Location */}
-                          <div className={`col-span-1 flex items-center gap-2.5 text-lg md:text-xl min-w-0 p-5 border-r ${styles.columnBorder} ${styles.locationText}`}>
-                            <MapPin className={`w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-1 ${styles.locationIcon}`} />
-                            <span className="font-bold break-words whitespace-normal" title={event.room || event.location || undefined}>
+                          <div className={`col-span-1 flex items-center gap-2 text-base md:text-lg min-w-0 p-5 border-r ${styles.columnBorder} ${styles.locationText}`}>
+                            <MapPin className={`w-4 h-4 md:w-5 md:h-5 shrink-0 ${styles.locationIcon}`} />
+                            <span className="font-bold whitespace-nowrap" title={event.room || event.location || undefined}>
                               {event.room || event.location || 'Không rõ'}
                             </span>
                           </div>

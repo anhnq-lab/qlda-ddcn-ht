@@ -538,3 +538,11 @@
   box-shadow: 0 0 10px rgba(100, 116, 139, 0.4) !important;
 }
 
+/* Lobby TV Display Symmetrical Column Layout */
+@media (min-width: 768px) {
+  .lobby-grid-layout {
+    display: grid !important;
+    grid-template-columns: 160px 4fr 3fr 1.6fr 3fr !important;
+  }
+}
+
