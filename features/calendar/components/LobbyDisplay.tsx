@@ -106,7 +106,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header */}
-        <header className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] items-center gap-4 px-6 py-4 rounded-3xl border z-10 mb-6 bg-white/[0.02] border-white/5 shadow-lg text-center lg:text-left">
+        <header className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] items-center gap-6 px-6 py-4 rounded-3xl border z-10 mb-6 bg-white/[0.02] border-white/5 shadow-lg text-center lg:text-left">
           {/* Left Column: Date & Time Widget */}
           <div className="flex items-center justify-center lg:justify-start">
             <div className="flex items-center gap-4 px-4 py-2 rounded-2xl border bg-white/[0.01] border-white/5 shadow-inner">
@@ -126,14 +126,14 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
           </div>
           
           {/* Center Column: Branding & Main Title */}
-          <div className="text-center flex flex-col items-center justify-center">
-            <span className="block text-sm md:text-base lg:text-lg font-bold tracking-widest uppercase text-amber-500">
+          <div className="text-center flex flex-col items-center justify-center px-4">
+            <span className="block text-base md:text-lg lg:text-xl font-bold tracking-widest uppercase text-amber-500 whitespace-nowrap">
               UBND TỈNH HÀ TĨNH
             </span>
-            <span className="block text-[11px] md:text-xs lg:text-sm font-black mt-1 tracking-wider uppercase text-white/90">
+            <span className="block text-lg md:text-xl lg:text-2xl font-black mt-1 tracking-wider uppercase text-white/90 whitespace-nowrap">
               BAN QLDA ĐẦU TƯ XÂY DỰNG CÔNG TRÌNH DÂN DỤNG VÀ HẠ TẦNG KHU VỰC
             </span>
-            <h1 className={`text-3xl md:text-4xl lg:text-5xl font-black tracking-widest uppercase drop-shadow-sm mt-3 ${styles.contentHeaderTitle}`}>
+            <h1 className={`text-2xl md:text-3xl lg:text-4xl font-black tracking-widest uppercase drop-shadow-sm mt-3 ${styles.contentHeaderTitle} whitespace-nowrap`}>
               LỊCH CÔNG TÁC
             </h1>
           </div>
