@@ -203,7 +203,13 @@
       "Bash(echo \"started pid $!\")",
       "Read(//c/Users/nguye/AppData/Local/Temp/claude/**)",
       "Bash(grep -E \"error|warning|\\\\.tsx?$|\\\\.ts$\")",
-      "Bash(grep -E \"error|warning|problems|\\\\.tsx?$\")"
+      "Bash(grep -E \"error|warning|problems|\\\\.tsx?$\")",
+      "Bash(powershell -Command \"\\(\\(Get-Content 'D:\\\\01_Projects\\\\qlda-ddcn-ht\\\\features\\\\projects\\\\components\\\\ProjectImportModal.tsx' -Raw\\) -split '</div>' | Measure-Object\\).Count - 1\")",
+      "Bash(Select-Object -First 40)",
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(node scripts/seed_regulation_articles.cjs)",
+      "Bash(node scripts/gen_seed_sql.cjs)",
+      "Bash(antiword \"7.11-QD-PHAN-CONG-NHIEM-VU-BAN-GIAM-DOC_nguyenquanglinh-07-11-2025_17h32p49 \\(1\\)_1.doc\")"
     ]
   }
 }

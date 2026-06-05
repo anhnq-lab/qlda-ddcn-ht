@@ -7,6 +7,8 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../context/AuthContext';
+import { useImpersonation } from '../../../context/ImpersonationContext';
+import { usePermissionCheck } from '../../../hooks/usePermissionCheck';
 import { useProjects } from '../../../hooks/useProjects';
 import { useTasks } from '../../../hooks/useTasks';
 import { supabase } from '../../../lib/supabase';
@@ -17,10 +19,30 @@ import { DashboardService } from '../../../services/DashboardService';
 const STALE_5M = 5 * 60 * 1000;
 
 export function useDepartmentData(config: DashboardConfig) {
-    const { currentUser } = useAuth();
+    const { currentUser: authUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    // Khi giả lập → dữ liệu dashboard theo người được giả lập.
+    const currentUser = isImpersonating && impersonatedUser ? impersonatedUser : authUser;
+    const { managedBoards } = usePermissionCheck();
     const { projects } = useProjects();
     const { data: allTasks } = useTasks();
     const tasks = allTasks || [];
+
+    // ── Phạm vi dự án hiệu lực (dùng cho KPI tầng Director) ──
+    // Toàn cục → tất cả; PGĐ → các Ban phụ trách; phòng QLDA → Ban của mình; còn lại → dự án mình là thành viên.
+    const scopedProjects = useMemo(() => {
+        if (!currentUser) return [];
+        if (config.isGlobalScope) return projects;
+        if (managedBoards && managedBoards.length > 0) {
+            return projects.filter((p: any) => managedBoards.includes(p.ManagementBoard));
+        }
+        const code = config.departmentCode?.toUpperCase() || '';
+        const boardId = code === 'QLDA1' ? 1 : code === 'QLDA2' ? 2 : code === 'QLDA3' ? 3 : null;
+        if (boardId !== null) {
+            return projects.filter((p: any) => p.ManagementBoard === boardId || p.Members?.includes(currentUser.EmployeeID));
+        }
+        return projects.filter((p: any) => p.Members?.includes(currentUser.EmployeeID));
+    }, [projects, config.isGlobalScope, config.departmentCode, managedBoards, currentUser]);
 
     // ── Department dashboard scoped data (via RPC) ──
     const { data: deptDashboardData } = useQuery({
@@ -220,5 +242,7 @@ export function useDepartmentData(config: DashboardConfig) {
         upcomingDeadlines,
         // Helpers
         allProjects: projects,
+        /** Dự án trong phạm vi của người dùng (đã lọc theo Ban/PGĐ phụ trách). */
+        scopedProjects,
     };
 }

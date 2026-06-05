@@ -61,7 +61,7 @@ const OUT = path.resolve(__dirname, '../docs/rbac_matrix.md');
 
 // Mirrors types/permission.types.ts. Keep in sync (the TS file is the
 // source of truth for labels; here we only need ordering).
-const ACTIONS = ['view', 'create', 'update', 'delete', 'approve', 'export'];
+const ACTIONS = ['view', 'create', 'update', 'delete', 'export'];
 
 const ROLE_ORDER = [
     'super_admin', 'director', 'deputy_director', 'chief_accountant',

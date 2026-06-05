@@ -1,7 +1,7 @@
 # 🛡️ Tài liệu Phân quyền Hệ thống QLDA ĐTXD ĐDCN
 
 > [!IMPORTANT]
-> **Phiên bản:** 3.1 | **Cập nhật:** 2026-06-03
+> **Phiên bản:** 3.3 | **Cập nhật:** 2026-06-04
 > Tài liệu này gồm 3 phần: **(A) Đặc tả thiết kế phân quyền**, **(B) Đánh giá hiện trạng triển khai & rủi ro**, **(C) Kế hoạch hoàn thiện code** (gồm scope Phó GĐ, hoàn thiện UI Cài đặt, hoàn thiện Giả làm người dùng).
 > Hệ thống phân quyền thiết kế theo nguyên tắc **Deny-by-default** — mỗi người dùng chỉ truy cập được chức năng và dữ liệu được cấp phép rõ ràng.
 
@@ -64,9 +64,9 @@ Hệ thống quy định **9 vai trò**, chia 3 nhóm (mã định nghĩa tại 
 | Vai trò | Code | Phạm vi | Thẩm quyền |
 | :--- | :--- | :--- | :--- |
 | **Quản trị HT** | `super_admin` | Global | Toàn quyền, bỏ qua mọi kiểm tra (bypass). |
-| **Giám đốc** | `director` | Global | Phê duyệt cuối, xem toàn hệ thống. |
-| **Phó Giám đốc** | `deputy_director` | **Theo phòng phụ trách** | Phê duyệt theo ủy quyền; **chỉ xem dữ liệu/dự án của các phòng do mình phụ trách** (xem §6.2). |
-| **Kế toán Trưởng** | `chief_accountant` | Global | Quản lý & duyệt module Thanh toán, KH Vốn. |
+| **Giám đốc** | `director` | Global | Quản lý chung, xem toàn hệ thống. |
+| **Phó Giám đốc** | `deputy_director` | **Theo phòng phụ trách** | Quản lý theo ủy quyền; **chỉ xem dữ liệu/dự án của các phòng do mình phụ trách** (xem §6.2). |
+| **Kế toán Trưởng** | `chief_accountant` | Global | Soát xét tài chính, quản lý module Thanh toán và Hợp đồng. |
 
 > [!IMPORTANT]
 > **Thay đổi v3.0:** Phó Giám đốc **KHÔNG còn là Global Scope**. Theo sơ đồ tổ chức, mỗi Phó GĐ chỉ phụ trách một nhóm phòng nhất định và chỉ được xem nội dung/dự án thuộc các phòng đó. Đây là thay đổi so với hiện trạng code (xem Phần B-11, kế hoạch C-1.4).
@@ -74,7 +74,7 @@ Hệ thống quy định **9 vai trò**, chia 3 nhóm (mã định nghĩa tại 
 ### 🏢 Nhóm Chuyên môn (theo Phòng ban / Ban ĐHDA)
 | Vai trò | Code | Thẩm quyền |
 | :--- | :--- | :--- |
-| **Trưởng phòng / Trưởng ban** | `dept_head` | Quản lý phòng/ban, duyệt trong phạm vi dự án quản lý. |
+| **Trưởng phòng / Trưởng ban** | `dept_head` | Quản lý phòng/ban, quản lý trong phạm vi dự án phụ trách. |
 | **Phó phòng** | `deputy_head` | Hỗ trợ trưởng phòng, điều hành tác nghiệp. |
 | **Chuyên viên / Kỹ sư** | `specialist` | Tác nghiệp chính (thêm/sửa tài liệu, lập phiếu). |
 | **Nhân viên (Hành chính)** | `staff` | Nhập liệu, xem cơ bản, tải tài liệu. Không có quyền Sửa/Xóa diện rộng. |
@@ -114,22 +114,23 @@ flowchart LR
 
 Nguồn chuẩn (source of truth): bảng DB `role_permission_defaults` (seed tại migration `20260515100004_seed_all_role_permissions.sql`), đồng bộ với hằng số `DEFAULT_ROLE_PERMISSIONS`.
 
-**Action:** `view` (Xem) · `create` (Thêm) · `update` (Sửa) · `delete` (Xóa) · `approve` (Duyệt) · `export` (Xuất).
+**Action:** `view` (Xem) · `create` (Thêm) · `update` (Sửa) · `delete` (Xóa) · `export` (Xuất).
 
 ### 4.1 Nhóm Lãnh đạo & Quản trị
 > `super_admin` có toàn quyền mọi nơi (bypass).
 
 | Module | Giám đốc / Phó GĐ | Kế toán trưởng |
 | :--- | :---: | :---: |
-| Dự án | Thêm/Sửa/Xóa | Xem |
-| Công việc | Thêm/Sửa | Xem |
+| Dự án | Xem | Xem |
+| Công việc | Xem | Xem |
 | Nhân sự, Nhà thầu | Xem | Xem |
-| Đấu thầu | Duyệt | Xem |
-| Hợp đồng | Duyệt | Xem |
-| Thanh toán | Duyệt | **Thêm/Sửa/Xóa/Duyệt** |
-| KH Vốn & Giải ngân | Duyệt, Xuất | **Thêm/Sửa/Duyệt/Xuất** |
-| CDE | Duyệt | Xem |
+| Đấu thầu | Xem | Xem |
+| Hợp đồng | Xem | Xem |
+| Thanh toán | Xem | **Thêm/Sửa/Xóa** |
+| KH Vốn & Giải ngân | Xem, Xuất | **Xem, Xuất** |
+| CDE | Xem | Xem |
 | Báo cáo | Xem, Xuất | Xem, Xuất |
+| Giải phóng mặt bằng | Xem, Xuất | Xem |
 | Quản trị HT | Chỉ xem (accounts/audit) | Chỉ xem (accounts) |
 
 ### 4.2 Nhóm Chuyên môn
@@ -143,7 +144,8 @@ Nguồn chuẩn (source of truth): bảng DB `role_permission_defaults` (seed t�
 | Đấu thầu | Thêm/Sửa/Xuất | Thêm/Sửa | Chỉ Xem |
 | Hợp đồng | Thêm/Sửa | Thêm/Sửa | Chỉ Xem |
 | Thanh toán | Thêm/Sửa | Thêm | Chỉ Xem |
-| CDE | Thêm/Sửa/Duyệt | Thêm/Sửa | Chỉ Xem |
+| KH Vốn & Giải ngân | **Thêm/Sửa/Xuất** | **Thêm/Sửa** | Chỉ Xem |
+| CDE | Thêm/Sửa | Thêm/Sửa | Chỉ Xem |
 | Hồ sơ tài liệu | Thêm/Sửa/Xóa | Thêm/Sửa | **Chỉ Thêm** (nhập liệu) |
 | GPMB | Thêm/Sửa | Thêm/Sửa | Chỉ Xem |
 
@@ -209,7 +211,7 @@ const { can, canOnProject, isGlobalScope, systemRole } = usePermissionCheck();
 
 if (can('contracts', 'create')) { /* ... */ }
 
-<PermissionGate resource="cde" anyAction={['create', 'approve']}>
+<PermissionGate resource="cde" anyAction={['create', 'update']}>
   <Button>Thao tác CDE</Button>
 </PermissionGate>
 
@@ -343,10 +345,9 @@ Theo yêu cầu nghiệp vụ mới, Phó GĐ chỉ được xem dự án của 
 - **Lưu ý rollout:** `has_permission` == `can()` của app (cùng resolver + cùng bảng) → thao tác hợp lệ qua UI không bị ảnh hưởng; chỉ chặn ghi vượt quyền qua API trực tiếp. Nếu có luồng ghi không qua `can()` gate, cần bổ sung gate hoặc cấp quyền.
 - **Còn lại (B-2 — row scope):** SELECT vẫn mở; chưa giới hạn "ghi đúng dự án của mình" ở DB. Cần thay `allow_all_select` + thêm điều kiện scope (`is_global_role` OR `is_project_member` OR `is_project_managed_by_current_deputy` OR contractor) — nhưng phải **đối soát `project_members` vs `management_board`** trước (hiện app scope theo board, RLS theo membership). Đây là hạng mục lớn, làm sau.
 
-### C-1.2 Bảo vệ action `approve` *(B-1)* — 🟢 ĐÃ LÀM & VERIFY
-- **Đã làm (2026-06-03):** Vì phê duyệt thực hiện qua UPDATE status, policy UPDATE của `contracts/payments/bidding_packages/capital_plans/disbursements` cho phép khi có `update` **HOẶC** `approve` (vẫn chặn role không có cả hai). Migration `20260603210000`.
-- **Verify (RLS thật):** GĐ (chỉ có approve) UPDATE được payments (23 dòng); chuyên viên (không update/approve) bị RLS chặn (lỗi 42501).
-- **Tinh chỉnh tương lai (tùy chọn):** RPC `SECURITY DEFINER` chỉ cho đổi đúng cột trạng thái khi approve.
+### C-1.2 Bảo vệ action `approve` *(B-1)* — 🚫 ĐÃ LOẠI BỎ THEO YÊU CẦU (2026-06-04)
+- **Đã xử lý (2026-06-04):** Do hệ thống chưa triển khai phê duyệt và ký số thực tế, quyền `approve` đã bị xóa bỏ hoàn toàn khỏi hệ thống (TypeScript và DB).
+- **Điều chỉnh:** Các RLS policies cho hành động UPDATE trên các bảng nghiệp vụ (`contracts`, `payments`, `bidding_packages`, `capital_plans`, `disbursements`) đã được sửa đổi để chỉ kiểm tra quyền Sửa (`update`) đơn thuần (loại bỏ kiểm tra quyền `approve`). Migration `20260604180000_remove_approve_permission.sql`.
 
 ### C-1.3 Đồng bộ `system_role` vào RLS *(giải quyết B-3)*
 - **Việc làm:** Sửa `is_global_role()` / `is_admin()` để ưu tiên đọc `employees.system_role` (nếu có) trước khi rơi về `role`+`department`. Bổ sung index trên `employees.system_role`.
@@ -457,7 +458,7 @@ Khu vực **Quản trị HT → Cài đặt** gồm các tab: Phân quyền cá 
 | # | Hạng mục | Mức | Giai đoạn | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- |
 | B-1 | RLS enforce action (`has_permission`) | 🔴 | 1 | ✅ Done & verify |
-| B-1 | Phê duyệt qua UPDATE (approve-or-update) | 🔴 | 1 | ✅ Done & verify |
+| B-1 | Phê duyệt qua UPDATE (approve-or-update) | 🔴 | 1 | 🚫 Đã loại bỏ |
 | B-3 | RLS công nhận `system_role` (`is_admin`) | 🟠 | 1 | ✅ Done |
 | B-11 | Phó GĐ scope theo phòng phụ trách | 🟠 | 1 | ✅ Done (client+data+RLS) |
 | B-2/B-4 | Row-scope RLS theo dự án (đọc+ghi) | 🟠 | 2 | ✅ Done & verify |
@@ -473,7 +474,7 @@ Khu vực **Quản trị HT → Cài đặt** gồm các tab: Phân quyền cá 
 | B-12 | Làm rõ giới hạn RLS + audit giả lập an toàn | 🟡 | 6 | ✅ Done |
 
 > **Đã hoàn thiện toàn bộ roadmap (2026-06-03).** Phát hiện lớn: DB `qlda-ddcn-ht` chưa từng nhận các migration RLS hardening/departments → đã xử lý bằng bộ migration RBAC mới (scope theo `management_board`, không phụ thuộc `departments`).
-> **Tinh chỉnh tương lai (tùy chọn, không chặn):** (1) RPC `SECURITY DEFINER` cho approve chỉ đổi cột trạng thái (thay vì mở UPDATE cho approver); (2) row-scope cho các bảng phụ (cde_*, sub_tasks, folders...); (3) áp `departments` lookup + đồng bộ migration history giữa repo và DB.
+> **Tinh chỉnh tương lai (tùy chọn, không chặn):** (1) Đã loại bỏ quyền approve do chưa có phê duyệt & ký số thực tế; (2) row-scope cho các bảng phụ (cde_*, sub_tasks, folders...); (3) áp `departments` lookup + đồng bộ migration history giữa repo và DB.
 
 > Thêm mục C-3.4: chuẩn hóa bộ tên phòng ban (B-14) — gộp vào Giai đoạn 3 cùng việc dọn dẹp.
 

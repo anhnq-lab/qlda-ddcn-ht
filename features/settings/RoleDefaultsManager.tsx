@@ -13,6 +13,7 @@ import {
     PermissionResource,
     SystemRole,
     ALL_RESOURCES,
+    PHASE1_RESOURCES,
     ALL_ROLES,
     RESOURCE_LABELS,
     ACTION_LABELS,
@@ -22,7 +23,7 @@ import {
 } from '../../types/permission.types';
 
 // Các Action hiện có (Tất cả)
-const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'approve', 'export'];
+const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'export'];
 
 const RoleDefaultsManager: React.FC = () => {
     const { can, refresh } = usePermissionCheck();
@@ -133,9 +134,9 @@ const RoleDefaultsManager: React.FC = () => {
     // ─── Toggle all resources for an action ─────────────
     const handleToggleColumn = useCallback((action: PermissionAction) => {
         setRolePerms(prev => {
-            const allEnabled = ALL_RESOURCES.every(r => (prev[selectedRole][r] || []).includes(action));
+            const allEnabled = PHASE1_RESOURCES.every(r => (prev[selectedRole][r] || []).includes(action));
             const updated = { ...prev[selectedRole] };
-            ALL_RESOURCES.forEach(resource => {
+            PHASE1_RESOURCES.forEach(resource => {
                 const current = updated[resource] || [];
                 if (allEnabled) {
                     updated[resource] = current.filter(a => a !== action);
@@ -247,7 +248,7 @@ const RoleDefaultsManager: React.FC = () => {
     const permCount = useMemo(() => {
         const counts: Record<SystemRole, number> = {} as any;
         ALL_ROLES.forEach(role => {
-            counts[role] = ALL_RESOURCES.reduce((sum, r) => sum + (rolePerms[role][r]?.length || 0), 0);
+            counts[role] = PHASE1_RESOURCES.reduce((sum, r) => sum + (rolePerms[role][r]?.length || 0), 0);
         });
         return counts;
     }, [rolePerms]);
@@ -262,6 +263,16 @@ const RoleDefaultsManager: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            {/* Lưu ý 3 lớp phân quyền */}
+            <div className="flex items-start gap-3 px-4 py-3 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl text-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-amber-800 dark:text-amber-300">
+                    Đây là quyền <strong>theo vai trò (Lớp 1)</strong>. Một số quyền còn bị siết thêm bởi
+                    <strong> Giới hạn theo phòng (Lớp 2)</strong> — vd chỉ KH-ĐT tạo dự án, chỉ HC-TH sửa nhân sự/lịch/quy chế —
+                    và <strong>theo thành viên dự án (Lớp 3)</strong> cho việc Sửa dự án. Xem tab <em>“Giới hạn theo phòng”</em>.
+                </p>
+            </div>
+
             {/* ─── Role Tabs ─── */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                 {ALL_ROLES.map(role => {
@@ -361,7 +372,7 @@ const RoleDefaultsManager: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {ALL_RESOURCES.map((resource, idx) => {
+                            {PHASE1_RESOURCES.map((resource, idx) => {
                                 const actions = currentPerms[resource] || [];
                                 const allEnabled = ALL_ACTIONS.every(a => actions.includes(a));
                                 return (

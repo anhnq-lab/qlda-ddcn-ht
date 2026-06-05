@@ -18,6 +18,7 @@ import {
     PermissionResource,
     SystemRole,
     ALL_RESOURCES,
+    PHASE1_RESOURCES,
     CORE_ACTIONS,
     RESOURCE_LABELS,
     ACTION_LABELS,
@@ -37,7 +38,7 @@ interface EmployeeInfo {
     systemRole: SystemRole;
 }
 
-const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'approve', 'export'];
+const ALL_ACTIONS: PermissionAction[] = ['view', 'create', 'update', 'delete', 'export'];
 
 const PermissionManager: React.FC = () => {
     const { addToast } = useToast();
@@ -194,7 +195,7 @@ const PermissionManager: React.FC = () => {
     const permissionDiff = useMemo(() => {
         if (!selectedEmployee) return null;
         const diff: Record<string, { extra: PermissionAction[]; removed: PermissionAction[] }> = {};
-        for (const resource of ALL_RESOURCES) {
+        for (const resource of PHASE1_RESOURCES) {
             const defaultActions: PermissionAction[] = currentRoleDefaults[resource] || [];
             const currentActions: PermissionAction[] = editedPermissions[resource] || [];
             const extra = currentActions.filter(a => !defaultActions.includes(a));
@@ -548,7 +549,7 @@ const PermissionManager: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {ALL_RESOURCES
+                                        {PHASE1_RESOURCES
                                             .filter(resource => !showDiff || (permissionDiff && permissionDiff[resource]))
                                             .map((resource, idx) => {
                                             const hasPermission = editedPermissions[resource] || [];

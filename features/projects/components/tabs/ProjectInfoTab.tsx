@@ -493,13 +493,15 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                         </>
                                     )}
                                 </button>
-                                <button
-                                    onClick={onEditProject}
-                                    className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline font-bold"
-                                >
-                                    <Pencil className="w-3 h-3" />
-                                    Chỉnh sửa
-                                </button>
+                                {onEditProject && (
+                                    <button
+                                        onClick={onEditProject}
+                                        className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline font-bold"
+                                    >
+                                        <Pencil className="w-3 h-3" />
+                                        Chỉnh sửa
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <div className="p-2.5">

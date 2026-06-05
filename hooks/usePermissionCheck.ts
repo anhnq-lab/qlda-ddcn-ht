@@ -19,6 +19,8 @@ export interface PermissionCheckResult {
     can: (resource: PermissionResource, action: PermissionAction) => boolean;
     /** Check if user can perform action on a specific project */
     canOnProject: (action: PermissionAction, projectManagementUnit?: string) => boolean;
+    /** Lớp 3 — record-level: được phép Sửa một dự án cụ thể (người tạo hoặc thành viên) */
+    canEditProject: (project: { createdBy?: string | null; memberIds?: string[] }) => boolean;
     /** Check if user has global view (sees all projects) */
     isGlobalScope: boolean;
     /** Ban QLDA mà PGĐ phụ trách (chỉ deputy_director; rỗng với role khác) */
@@ -49,6 +51,7 @@ export function usePermissionCheck(): PermissionCheckResult {
     return {
         can: ctx.can,
         canOnProject: ctx.canOnProject,
+        canEditProject: ctx.canEditProject,
         isGlobalScope: ctx.isGlobalScope,
         managedBoards: ctx.managedBoards,
         systemRole: ctx.systemRole,

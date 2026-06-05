@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTabSearchParam } from '@/hooks/useTabSearchParam';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import { useUpdateTask } from '@/hooks/useTasks';
 import { useProjectTasks } from '@/hooks/useWorkflowTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
 import { useEmployees } from '@/hooks/useEmployees';
+import { usePermissionCheck } from '@/hooks/usePermissionCheck';
 import { supabase } from '@/lib/supabase';
 
 /** Props when rendering inside a SlidePanel */
@@ -121,6 +122,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
     const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const { can, canEditProject } = usePermissionCheck();
 
     // Project fetch — React Query for caching (re-visits skip DB round-trip)
     const { data: project = null, isLoading: loading, refetch: refetchProject } = useQuery({
@@ -241,6 +243,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
         staleTime: 5 * 60 * 1000,   // 5 phút cache
         gcTime: 15 * 60 * 1000,
     });
+
+    // Lớp 3 — chỉ thành viên dự án (hoặc super_admin) mới được Sửa dự án này.
+    const projectMemberIds = useMemo(() => projectMembers.map((m: any) => m.EmployeeID), [projectMembers]);
+    const canEditThisProject = canEditProject({ memberIds: projectMemberIds });
 
     // ─── Handlers ───
     const handleSync = useCallback(async () => {
@@ -420,28 +426,32 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <Sparkles className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">Tóm tắt AI</span>
                         </button>
-                        <button
-                            id="btn-edit-project"
-                            onClick={() => handleOpenEditModal()}
-                            className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 gradient-btn text-white rounded-lg text-[11px] font-bold shadow-sm transition-all hover:-translate-y-0.5"
-                        >
-                            <Pencil className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Chỉnh sửa</span>
-                        </button>
-                        <div className="relative group">
-                            <button className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
-                                <MoreVertical className="w-4 h-4 text-txt-muted" />
+                        {canEditThisProject && (
+                            <button
+                                id="btn-edit-project"
+                                onClick={() => handleOpenEditModal()}
+                                className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 gradient-btn text-white rounded-lg text-[11px] font-bold shadow-sm transition-all hover:-translate-y-0.5"
+                            >
+                                <Pencil className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Chỉnh sửa</span>
                             </button>
-                            <div className="absolute right-0 top-full mt-1 bg-bg-surface rounded-xl shadow-sm border border-border py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                                <button
-                                    onClick={() => setShowDeleteModal(true)}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    Xoá dự án
+                        )}
+                        {can('projects', 'delete') && (
+                            <div className="relative group">
+                                <button className="p-1.5 hover:bg-bg-muted rounded-lg transition-colors">
+                                    <MoreVertical className="w-4 h-4 text-txt-muted" />
                                 </button>
+                                <div className="absolute right-0 top-full mt-1 bg-bg-surface rounded-xl shadow-sm border border-border py-1 min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                    <button
+                                        onClick={() => setShowDeleteModal(true)}
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        Xoá dự án
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -516,8 +526,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             onHistoryUpdate={(history) => {
                                 queryClient.setQueryData(['project-detail', id], (prev: Project | undefined) => prev ? { ...prev, StageHistory: history } : prev);
                             }}
-                            canEditLifecycle={true}
-                            onEditProject={() => handleOpenEditModal()}
+                            canEditLifecycle={canEditThisProject}
+                            onEditProject={canEditThisProject ? handleOpenEditModal : undefined}
                             onTabChange={(tab) => setActiveTab(tab as any)}
                         />
                     </div>

@@ -9,7 +9,7 @@
 // Core types
 // ═══════════════════════════════════════════
 
-export type PermissionAction = 'view' | 'create' | 'update' | 'delete' | 'approve' | 'export';
+export type PermissionAction = 'view' | 'create' | 'update' | 'delete' | 'export';
 
 export type PermissionResource =
     | 'dashboard'
@@ -87,7 +87,6 @@ export const ACTION_LABELS: Record<PermissionAction, string> = {
     create: 'Thêm',
     update: 'Sửa',
     delete: 'Xóa',
-    approve: 'Duyệt',
     export: 'Xuất',
 };
 
@@ -128,6 +127,18 @@ export const ALL_RESOURCES: PermissionResource[] = [
     'documents', 'cde', 'bim',
     'legal_docs', 'reports', 'regulations', 'workflows',
     'admin_accounts', 'admin_roles', 'admin_audit', 'calendar', 'site_clearance'
+];
+
+/**
+ * Module thuộc PHẠM VI GIAI ĐOẠN 1 (đang vận hành) — dùng cho UI phân quyền.
+ * Các module hoãn (contractors, bidding, contracts, payments, capital, documents,
+ * cde, bim, site_clearance) tạm ẩn khỏi ma trận, sẽ mở lại khi đưa vào vận hành.
+ * Theo docs/phan_quyen_theo_module.md (Mục 3 & Mục 7).
+ */
+export const PHASE1_RESOURCES: PermissionResource[] = [
+    'dashboard', 'calendar', 'projects', 'tasks', 'employees',
+    'legal_docs', 'regulations', 'reports', 'workflows',
+    'admin_accounts', 'admin_roles', 'admin_audit',
 ];
 
 // ═══════════════════════════════════════════
@@ -175,24 +186,57 @@ export const GLOBAL_VIEW_DEPARTMENTS = [
  * Must stay in sync with the `departments` table (is_global_scope = FALSE rows).
  */
 export const PROJECT_SCOPED_DEPARTMENTS = [
-    // Current canonical names (DB departments table)
+    // Cơ cấu Hà Tĩnh hiện tại chỉ còn 3 Phòng QLDA (Decision #7 — đã dọn QLDA 4/5).
     'Phòng Quản lý dự án 1',
     'Phòng Quản lý dự án 2',
     'Phòng Quản lý dự án 3',
-    'Phòng Quản lý dự án 4',
-    'Phòng Quản lý dự án 5',
     // Legacy / alias names (employees.department may still carry these)
     'Ban Điều hành dự án 1',
     'Ban Điều hành dự án 2',
     'Ban Điều hành dự án 3',
-    'Ban Điều hành dự án 4',
-    'Ban Điều hành dự án 5',
     'Ban ĐHDA 1',
     'Ban ĐHDA 2',
     'Ban ĐHDA 3',
-    'Ban ĐHDA 4',
-    'Ban ĐHDA 5',
 ];
+
+// ═══════════════════════════════════════════
+// Lớp 2 — Giới hạn quyền theo phòng ban (department_permission_rules)
+// ═══════════════════════════════════════════
+
+export interface DepartmentRule {
+    resource: PermissionResource;
+    action: PermissionAction;
+    /** Danh sách phòng được phép (so khớp linh hoạt qua departmentMatches). */
+    allowedDepartments: string[];
+}
+
+/**
+ * Khi tồn tại rule cho (resource, action): chỉ user thuộc allowedDepartments mới
+ * được thực hiện action đó — TRỪ các vai trò toàn cục (GLOBAL_VIEW_ROLES) bypass.
+ * Đây là fallback hằng số; nguồn chuẩn là bảng `department_permission_rules` (DB).
+ * Phải đồng bộ với seed migration.
+ */
+export const DEFAULT_DEPARTMENT_RULES: DepartmentRule[] = [
+    { resource: 'projects', action: 'create', allowedDepartments: ['Phòng Kế hoạch – Đấu thầu'] },
+    { resource: 'employees', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'employees', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'employees', action: 'delete', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'calendar', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'calendar', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'regulations', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+    { resource: 'regulations', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
+];
+
+/** So khớp tên phòng linh hoạt: chuẩn hóa gạch ngang/khoảng trắng, so 2 chiều substring. */
+export function departmentMatches(userDept: string | undefined | null, allowed: string[]): boolean {
+    if (!userDept) return false;
+    const norm = (s: string) => s.toLowerCase().replace(/[–—-]/g, '-').replace(/\s+/g, ' ').trim();
+    const u = norm(userDept);
+    return allowed.some(a => {
+        const x = norm(a);
+        return u === x || u.includes(x) || x.includes(u);
+    });
+}
 
 // ═══════════════════════════════════════════
 // Legacy role → new system role mapping
@@ -252,12 +296,12 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         tasks: ['view', 'create', 'update', 'delete'],
         employees: ['view', 'create', 'update', 'delete'],
         contractors: ['view', 'create', 'update'],
-        bidding: ['view', 'create', 'update', 'delete', 'approve', 'export'],
-        contracts: ['view', 'create', 'update', 'delete', 'approve'],
-        payments: ['view', 'create', 'update', 'delete', 'approve'],
-        capital: ['view', 'create', 'update', 'delete', 'approve', 'export'],
+        bidding: ['view', 'create', 'update', 'delete', 'export'],
+        contracts: ['view', 'create', 'update', 'delete'],
+        payments: ['view', 'create', 'update', 'delete'],
+        capital: ['view', 'create', 'update', 'delete', 'export'],
         documents: ['view', 'create', 'update', 'delete'],
-        cde: ['view', 'create', 'update', 'delete', 'approve'],
+        cde: ['view', 'create', 'update', 'delete'],
         bim: ['view', 'create', 'update', 'delete'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
@@ -273,48 +317,45 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
     // ── Giám đốc Ban ──
     director: {
         dashboard: ['view', 'export'],
-        projects: ['view', 'create', 'update', 'delete'],
-        tasks: ['view', 'create', 'update'],
+        projects: ['view'],
+        tasks: ['view'],
         employees: ['view'],
         contractors: ['view'],
-        bidding: ['view', 'approve'],
-        contracts: ['view', 'approve'],
-        payments: ['view', 'approve'],
-        capital: ['view', 'approve', 'export'],
+        bidding: ['view'],
+        contracts: ['view'],
+        payments: ['view'],
+        capital: ['view', 'export'],
         documents: ['view'],
-        cde: ['view', 'approve'],
+        cde: ['view'],
         bim: ['view'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
-        admin_accounts: ['view'],
-        admin_audit: ['view'],
         calendar: ['view', 'create', 'update', 'delete'],
-        site_clearance: ['view', 'update', 'approve', 'export'],
+        site_clearance: ['view', 'export'],
     },
 
     // ── Phó Giám đốc ──
     deputy_director: {
         dashboard: ['view', 'export'],
-        projects: ['view', 'create', 'update', 'delete'],
-        tasks: ['view', 'create', 'update'],
+        projects: ['view'],
+        tasks: ['view'],
         employees: ['view'],
         contractors: ['view'],
-        bidding: ['view', 'approve'],
-        contracts: ['view', 'approve'],
-        payments: ['view', 'approve'],
-        capital: ['view', 'approve', 'export'],
+        bidding: ['view'],
+        contracts: ['view'],
+        payments: ['view'],
+        capital: ['view', 'export'],
         documents: ['view'],
-        cde: ['view', 'approve'],
+        cde: ['view'],
         bim: ['view'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
-        admin_accounts: ['view'],
         calendar: ['view', 'create', 'update', 'delete'],
-        site_clearance: ['view', 'update', 'approve', 'export'],
+        site_clearance: ['view', 'export'],
     },
 
     // ── Kế toán trưởng ──
@@ -326,8 +367,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         contractors: ['view'],
         bidding: ['view'],
         contracts: ['view'],
-        payments: ['view', 'create', 'update', 'delete', 'approve'],
-        capital: ['view', 'create', 'update', 'approve', 'export'],
+        payments: ['view'],
+        capital: ['view'],
         documents: ['view'],
         cde: ['view'],
         bim: ['view'],
@@ -335,77 +376,81 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         reports: ['view', 'export'],
         regulations: ['view'],
         workflows: ['view'],
-        admin_accounts: ['view'],
         calendar: ['view'],
         site_clearance: ['view'],
     },
 
     // ── Trưởng phòng / Trưởng ban ──
+    // GĐ1: projects chỉ Xem (Decision #1). employees/calendar/regulations cấp ở role,
+    // bị Lớp 2 (department_permission_rules) siết về Phòng HC-TH.
     dept_head: {
         dashboard: ['view'],
-        projects: ['view', 'create', 'update'],
+        projects: ['view'],
         tasks: ['view', 'create', 'update', 'delete'],
-        employees: ['view'],
+        employees: ['view', 'create', 'update', 'delete'], // Lớp 2 → chỉ HC-TH
         contractors: ['view', 'create', 'update'],
         bidding: ['view', 'create', 'update', 'export'],
         contracts: ['view', 'create', 'update'],
         payments: ['view', 'create', 'update'],
-        capital: ['view', 'create', 'update'],
+        capital: ['view', 'create', 'update', 'export'],
         documents: ['view', 'create', 'update', 'delete'],
-        cde: ['view', 'create', 'update', 'approve'],
+        cde: ['view', 'create', 'update'],
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
-        regulations: ['view'],
+        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
         workflows: ['view', 'create', 'update'],
-        calendar: ['view', 'create'],
+        calendar: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH (Decision #4)
         site_clearance: ['view', 'create', 'update'],
     },
 
     // ── Phó phòng ──
     deputy_head: {
         dashboard: ['view'],
-        projects: ['view', 'update'],
+        projects: ['view'],
         tasks: ['view', 'create', 'update'],
         employees: ['view'],
         contractors: ['view', 'create', 'update'],
         bidding: ['view', 'create', 'update'],
         contracts: ['view', 'create', 'update'],
         payments: ['view', 'create', 'update'],
-        capital: ['view', 'create', 'update'],
+        capital: ['view', 'create', 'update', 'export'],
         documents: ['view', 'create', 'update'],
         cde: ['view', 'create', 'update'],
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
-        regulations: ['view'],
+        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
         workflows: ['view'],
-        calendar: ['view', 'create'],
+        calendar: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH (Decision #4)
         site_clearance: ['view', 'create', 'update'],
     },
 
     // ── Chuyên viên / Kỹ sư ──
+    // projects.create bị Lớp 2 siết về Phòng KH-ĐT; projects.update bị Lớp 3 siết
+    // theo thành viên dự án (created_by / project_members). regulations Lớp 2 → HC-TH.
     specialist: {
         dashboard: ['view'],
-        projects: ['view', 'create', 'update'],  // Removed 'delete' — CV không xóa DA
+        projects: ['view', 'create', 'update'],  // create→KH-ĐT (Lớp 2); update→thành viên (Lớp 3)
         tasks: ['view', 'create', 'update'],
         employees: ['view'],
         contractors: ['view', 'create', 'update'],
         bidding: ['view', 'create', 'update'],
         contracts: ['view', 'create', 'update'],
         payments: ['view', 'create'],
-        capital: ['view'],
+        capital: ['view', 'create', 'update'],
         documents: ['view', 'create', 'update'],
         cde: ['view', 'create', 'update'],
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view'],
-        regulations: ['view'],
+        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
         workflows: ['view'],
         calendar: ['view'],
         site_clearance: ['view', 'create', 'update'],
     },
     // ── Nhân viên Hành chính ──
+    // projects.update bị Lớp 3 siết theo thành viên dự án. regulations Lớp 2 → HC-TH.
     staff: {
         dashboard: ['view'],
         projects: ['view'],
@@ -421,7 +466,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         bim: ['view'],
         legal_docs: ['view'],
         reports: ['view'],
-        regulations: ['view'],
+        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
         workflows: ['view'],
         calendar: ['view'],
         site_clearance: ['view'],

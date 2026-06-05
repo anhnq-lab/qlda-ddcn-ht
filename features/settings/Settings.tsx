@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard, Award, PanelLeft } from 'lucide-react';
+import { ShieldCheck, Users, Shield, Building2, Network, Wrench, LayoutDashboard, Award, PanelLeft, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 
@@ -7,6 +7,8 @@ import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 const UserAccountManager = React.lazy(() => import('./components/admin/UserAccountManager'));
 const PermissionManager = React.lazy(() => import('./PermissionManager'));
 const RoleDefaultsManager = React.lazy(() => import('./RoleDefaultsManager'));
+const DepartmentRuleManager = React.lazy(() => import('./DepartmentRuleManager'));
+const ProjectFieldPermissionManager = React.lazy(() => import('./ProjectFieldPermissionManager'));
 const ContractorAccountManager = React.lazy(() => import('./components/admin/ContractorAccountManager'));
 const AuditLogViewer = React.lazy(() => import('./components/admin/AuditLogViewer'));
 const UserImpersonator = React.lazy(() => import('./UserImpersonator'));
@@ -18,7 +20,7 @@ const LeadershipAssignmentManager = React.lazy(() => import('./LeadershipAssignm
 // SETTINGS — Unified Admin Control Panel
 // ============================================================
 
-type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
+type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'dept-rules' | 'project-fields' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
 
 interface TabDef {
     key: TabKey;
@@ -30,6 +32,8 @@ const TABS: TabDef[] = [
     { key: 'accounts', label: 'Tài khoản', icon: Users },
     { key: 'contractors', label: 'Nhà thầu', icon: Building2 },
     { key: 'role-defaults', label: 'Ma trận quyền', icon: ShieldCheck },
+    { key: 'dept-rules', label: 'Giới hạn theo phòng', icon: Building2 },
+    { key: 'project-fields', label: 'Quyền trường dự án', icon: SlidersHorizontal },
     { key: 'permissions', label: 'Quyền cá nhân', icon: Shield },
     { key: 'leadership', label: 'Phân công lãnh đạo', icon: Award },
     { key: 'dashboard-widgets', label: 'Cấu hình Dashboard', icon: LayoutDashboard },
@@ -47,7 +51,7 @@ const Settings: React.FC = () => {
     // Sync tab ↔ URL
     const [activeTab, setActiveTab] = useTabSearchParam<TabKey>(
         'accounts',
-        ['accounts', 'contractors', 'role-defaults', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
+        ['accounts', 'contractors', 'role-defaults', 'dept-rules', 'project-fields', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
         'tab'
     );
 
@@ -133,6 +137,16 @@ const Settings: React.FC = () => {
                             <RoleDefaultsManager />
                         </div>
                     )}
+                    {activeTab === 'dept-rules' && (
+                        <div className="p-6 lg:p-8 h-full overflow-y-auto">
+                            <DepartmentRuleManager />
+                        </div>
+                    )}
+                    {activeTab === 'project-fields' && (
+                        <div className="p-6 lg:p-8 h-full overflow-y-auto">
+                            <ProjectFieldPermissionManager />
+                        </div>
+                    )}
                     {activeTab === 'permissions' && (
                         <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
                             <PermissionManager />
@@ -159,7 +173,7 @@ const Settings: React.FC = () => {
                         </div>
                     )}
                     {activeTab === 'tools' && (
-                        <div className="p-6 lg:p-8 max-w-2xl">
+                        <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
                             <div className="bg-bg-surface rounded-2xl border border-border shadow-sm">
                                 <div className="p-4 border-b border-border flex items-center gap-3">
                                     <div className="p-2 bg-warning-50 dark:bg-warning-900/30 rounded-xl">

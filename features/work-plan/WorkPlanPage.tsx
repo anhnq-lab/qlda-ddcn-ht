@@ -107,7 +107,7 @@ const WorkPlanPage: React.FC = () => {
                 </div>
 
                 {/* Bộ lọc Tháng & Năm & Phòng ban dùng chung */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar md:flex-wrap md:justify-end max-w-full pb-1 py-0.5 shrink-0 flex-nowrap w-full md:w-auto">
+                <div className="flex items-center gap-1.5 overflow-x-auto md:overflow-visible no-scrollbar shrink-0 flex-nowrap md:flex-wrap w-full md:w-auto justify-start md:justify-end max-w-full pb-1 py-0.5">
                     {/* Bộ lọc dự án dùng chung cho tất cả các tab */}
                     <FilterChip
                         label="Dự án"

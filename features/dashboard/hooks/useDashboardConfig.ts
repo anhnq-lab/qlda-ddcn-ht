@@ -8,6 +8,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../context/AuthContext';
+import { useImpersonation } from '../../../context/ImpersonationContext';
 import { usePermissionCheck } from '../../../hooks/usePermissionCheck';
 import { resolveSystemRole, type SystemRole } from '../../../types/permission.types';
 import type { DepartmentCode } from '../../../types/plan.types';
@@ -90,7 +91,10 @@ function resolveTier(role: SystemRole): DashboardTier {
 }
 
 export function useDashboardConfig(): DashboardConfig {
-    const { currentUser } = useAuth();
+    const { currentUser: authUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    // Khi giả lập → mọi cấu hình dashboard theo người được giả lập.
+    const currentUser = isImpersonating && impersonatedUser ? impersonatedUser : authUser;
     const { isGlobalScope, systemRole } = usePermissionCheck();
 
     const { data: allowedWidgets = [], isLoading: isLoadingConfig } = useQuery({

@@ -1,0 +1,11 @@
+INSERT INTO public.regulation_articles (id,chapter_id,code,title,content,content_type,sort_order) VALUES ('chuong-iv-ieu-13','qclv-chuong-iv','Điều 13','Trách nhiệm của các phòng trực thuộc trong việc trình Lãnh đạo Ban QLDA giải quyết hồ sơ công việc','1. Các phòng trực thuộc chỉ trình Giám đốc, Phó Giám đốc những vấn đề thuộc phạm vi giải quyết của Giám đốc, Phó Giám đốc khi có đủ các hồ sơ theo quy định.
+
+2. Khi trình Giám đốc, Phó Giám đốc, các phòng trực thuộc có nhiệm vụ:
+
+a) Thẩm định về mặt thủ tục: Nếu hồ sơ công việc trình không đúng theo quy định, phải hướng dẫn ngay cho cá nhân, đơn vị đã nộp hồ sơ để bổ sung thủ tục đầy đủ. Đối với những vấn đề cần giải quyết gấp, các phòng trực thuộc làm phiếu báo cho đơn vị trình bổ sung thêm hồ sơ, đồng thời báo cho Giám đốc, Phó Giám đốc phụ trách được biết;','text',2),('chuong-iv-ieu-14','qclv-chuong-iv','Điều 14','Tiếp nhận, xử lý và ban hành văn bản','1. Quy trình tiếp nhận, xử lý và ban hành văn bản phải tuân thủ theo quy định pháp luật về công tác văn thư và Quy định tiếp nhận, xử lý, ban hành văn bản tại Ban QLDA;
+
+2. Các phòng chuyên môn, cán bộ Ban QLDA phải kiểm tra và chịu trách nhiệm về độ chính xác của văn bản; Đối với dự toán/dự toán điều chỉnh, báo cáo, … có file excel đính kèm, thì bắt buộc phải gửi file pdf để ban hành kèm theo;	3. Trưởng bộ phận chuyên môn phải kiểm tra và chịu trách nhiệm về hình thức, thể thức, kỹ thuật trình bày và thủ tục ban hành văn bản theo đúng quy định của pháp luật, đồng thời phải ký nháy vào văn bản tham mưu ban hành.','text',3),('chuong-iv-ieu-15','qclv-chuong-iv','Điều 15','Quy định về sử dụng dấu của cơ quan','1. Việc quản lý, sử dụng con dấu được thực hiện theo quy định của pháp luật về quản lý và sử dụng con dấu.
+
+2. Nhân viên văn thư có trách nhiệm bảo quản, sử dụng con dấu theo đúng quy định và có trách nhiệm.
+
+a) Không giao con dấu cho người khác khi chưa được phép bằng văn bản của người có thẩm quyền;','text',4) ON CONFLICT (id) DO UPDATE SET content=EXCLUDED.content,title=EXCLUDED.title;

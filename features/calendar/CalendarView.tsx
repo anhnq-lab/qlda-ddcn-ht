@@ -100,11 +100,12 @@ export default function CalendarView() {
 
   const dateRange = React.useMemo(() => {
     if (displayMode === 'lobby') {
-      const todayStart = startOfDay(new Date());
-      const todayEnd = endOfDay(new Date());
+      const today = new Date();
+      const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
       return {
-        startDate: todayStart.toISOString(),
-        endDate: todayEnd.toISOString(),
+        startDate: startOfDay(weekStart).toISOString(),
+        endDate: endOfDay(weekEnd).toISOString(),
       };
     }
     return getDateRange(date, view);

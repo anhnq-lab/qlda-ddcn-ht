@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { User, Download, FileText } from 'lucide-react';
 import { Avatar } from '../../../../components/ui';
 import { useAuth } from '../../../../context/AuthContext';
+import { useImpersonation } from '../../../../context/ImpersonationContext';
 import type { SystemRole } from '../../../../types/permission.types';
 import type { DashboardConfig } from '../../hooks/useDashboardConfig';
 
@@ -36,6 +37,9 @@ const ROLE_LABELS: Record<string, string> = {
 
 export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ config, taskStats }) => {
     const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    // Hiển thị theo người đang được giả lập (nếu có) để khớp với badge vai trò.
+    const displayUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
 
     const greeting = useMemo(() => {
         const hour = new Date().getHours();
@@ -62,9 +66,9 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ config, taskStats 
         const rows = [
             ['BÁO CÁO NHANH DASHBOARD CÁ NHÂN'],
             [`Thời gian xuất:`, new Date().toLocaleString('vi-VN')],
-            [`Người xuất:`, currentUser?.FullName || ''],
-            [`Chức vụ:`, currentUser?.Position || ''],
-            [`Phòng ban:`, currentUser?.Department || ''],
+            [`Người xuất:`, displayUser?.FullName || ''],
+            [`Chức vụ:`, displayUser?.Position || ''],
+            [`Phòng ban:`, displayUser?.Department || ''],
             [],
             ['CHỈ SỐ KPI', 'SỐ LƯỢNG'],
             ['Đang thực hiện', taskStats.inProgress],
@@ -97,20 +101,20 @@ export const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ config, taskStats 
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <Avatar
-                        name={currentUser?.FullName || 'User'}
-                        imageUrl={currentUser?.AvatarUrl}
+                        name={displayUser?.FullName || 'User'}
+                        imageUrl={displayUser?.AvatarUrl}
                         size="lg"
                     />
                     <div>
                         <h1 className="text-2xl font-bold text-white drop-shadow-lg print:text-black">
-                            {greeting}, {currentUser?.FullName || 'Khách'}!
+                            {greeting}, {displayUser?.FullName || 'Khách'}!
                         </h1>
                         <p className="text-xs text-primary-100 dark:text-slate-300 font-medium mt-0.5 print:text-gray-600">
                             {quickSummary}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
                             <p className="text-xs text-primary-100/80 dark:text-slate-400 font-medium print:text-gray-500">
-                                {currentUser?.Position} — {currentUser?.Department}
+                                {displayUser?.Position} — {displayUser?.Department}
                             </p>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/30 print:border-gray-300 print:text-gray-700">
                                 {ROLE_LABELS[config.systemRole] || config.systemRole}

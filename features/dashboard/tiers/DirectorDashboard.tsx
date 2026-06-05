@@ -63,22 +63,22 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
     const weekEvents = useMemo(() => (weekEventsData || []).slice(0, 5), [weekEventsData]);
 
     const statusSummary = useMemo(() => ({
-        prep: data.allProjects.filter((p: any) => p.Status === 1).length,
-        exec: data.allProjects.filter((p: any) => p.Status === 2).length,
-        comp: data.allProjects.filter((p: any) => p.Status === 3).length,
-    }), [data.allProjects]);
+        prep: data.scopedProjects.filter((p: any) => p.Status === 1).length,
+        exec: data.scopedProjects.filter((p: any) => p.Status === 2).length,
+        comp: data.scopedProjects.filter((p: any) => p.Status === 3).length,
+    }), [data.scopedProjects]);
 
     const totalInvestmentSum = useMemo(() => {
-        return data.allProjects.reduce((sum: number, p: any) => sum + (p.TotalInvestment ?? p.totalInvestment ?? 0), 0);
-    }, [data.allProjects]);
+        return data.scopedProjects.reduce((sum: number, p: any) => sum + (p.TotalInvestment ?? p.totalInvestment ?? 0), 0);
+    }, [data.scopedProjects]);
 
     const totalAllTimeDisbursed = useMemo(() => {
-        return data.allProjects.reduce((sum: number, p: any) => {
+        return data.scopedProjects.reduce((sum: number, p: any) => {
             const inv = p.TotalInvestment ?? p.totalInvestment ?? 0;
             const progress = p.PaymentProgress ?? p.paymentProgress ?? 0;
             return sum + inv * (progress / 100);
         }, 0);
-    }, [data.allProjects]);
+    }, [data.scopedProjects]);
 
     const overallDisbursementRate = useMemo(() => {
         return totalInvestmentSum > 0 ? Math.round((totalAllTimeDisbursed / totalInvestmentSum) * 100) : 0;
@@ -97,7 +97,7 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
                 <StatCard 
                     label="Dự án đang quản lý" 
-                    value={data.allProjects.length.toString()} 
+                    value={data.scopedProjects.length.toString()} 
                     icon={<Building2 className="w-5 h-5 flex-shrink-0" />} 
                     color="slate" 
                     loading={loadingMetrics} 
@@ -105,7 +105,7 @@ export const DirectorDashboard: React.FC<Props> = ({ config, data }) => {
                     trend="up"
                     trendPercentage={4}
                     trendLabel="tháng này"
-                    sparklineData={[48, 50, 52, 51, 55, data.allProjects.length]}
+                    sparklineData={[48, 50, 52, 51, 55, data.scopedProjects.length]}
                     footer={<div className="flex items-center gap-1.5 flex-wrap mt-0.5"><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400">CB: {statusSummary.prep}</span><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-400">TH: {statusSummary.exec}</span><span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">KT: {statusSummary.comp}</span></div>} 
                 />
                 <StatCard

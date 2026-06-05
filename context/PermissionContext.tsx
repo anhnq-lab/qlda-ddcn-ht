@@ -30,7 +30,11 @@ import {
     SystemRole,
     DEFAULT_ROLE_PERMISSIONS,
     GLOBAL_VIEW_DEPARTMENTS,
+    GLOBAL_VIEW_ROLES,
     PROJECT_SCOPED_DEPARTMENTS,
+    DepartmentRule,
+    DEFAULT_DEPARTMENT_RULES,
+    departmentMatches,
     resolveSystemRole,
 } from '../types/permission.types';
 import { permissionCache } from '../utils/permissionCache';
@@ -57,6 +61,11 @@ interface PermissionContextType extends PermissionCacheState {
     can: (resource: PermissionResource, action: PermissionAction) => boolean;
     /** Check if effective user can act on a specific project (dept-scoped) */
     canOnProject: (action: PermissionAction, projectManagementUnit?: string) => boolean;
+    /**
+     * Lớp 3 — record-level: được phép SỬA một dự án cụ thể hay không.
+     * Chỉ TRUE khi có quyền projects.update VÀ (là người tạo HOẶC là thành viên dự án).
+     */
+    canEditProject: (project: { createdBy?: string | null; memberIds?: string[] }) => boolean;
     /** Force refresh from DB */
     refreshPermissions: () => Promise<void>;
     isImpersonating: boolean;
@@ -73,6 +82,14 @@ const roleDefaultsCache = new Map<SystemRole, Map<string, PermissionAction[]>>()
  */
 export function clearRoleDefaultsCache(): void {
     roleDefaultsCache.clear();
+}
+
+// Lớp 2 — cache rule giới hạn theo phòng ban (global, không theo user)
+let deptRulesCache: DepartmentRule[] | null = null;
+
+/** Xoá cache rule phòng ban (gọi sau khi Admin sửa department_permission_rules). */
+export function clearDeptRulesCache(): void {
+    deptRulesCache = null;
 }
 
 // ─── Provider ─────────────────────────────────────────────
@@ -98,6 +115,31 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     });
 
     const [dbRoleDefaults, setDbRoleDefaults] = useState<Map<string, PermissionAction[]>>(new Map());
+
+    // Lớp 2 — rule giới hạn theo phòng ban (global; nạp 1 lần từ DB, fallback hằng số)
+    const [deptRules, setDeptRules] = useState<DepartmentRule[]>(deptRulesCache ?? DEFAULT_DEPARTMENT_RULES);
+
+    useEffect(() => {
+        if (deptRulesCache) { setDeptRules(deptRulesCache); return; }
+        (async () => {
+            try {
+                const { data, error } = await (supabase as any)
+                    .from('department_permission_rules')
+                    .select('resource, action, allowed_departments');
+                if (!error && Array.isArray(data)) {
+                    const rules: DepartmentRule[] = data.map((r: any) => ({
+                        resource: r.resource,
+                        action: r.action,
+                        allowedDepartments: r.allowed_departments || [],
+                    }));
+                    deptRulesCache = rules;
+                    setDeptRules(rules);
+                }
+            } catch (e) {
+                console.warn('[PermissionCtx] Không tải được department_permission_rules, dùng hằng số:', e);
+            }
+        })();
+    }, []);
 
     // Prevent concurrent fetches for the same user
     const fetchingRef = useRef<string | null>(null);
@@ -351,6 +393,21 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         await fetchPermissions();
     }, [fetchPermissions, effectiveUser?.EmployeeID, state.systemRole]);
 
+    // ── Lớp 2: cổng giới hạn theo phòng ban ────────────────
+    // Khi có rule cho (resource, action): chỉ phòng được phép mới qua.
+    // Vai trò lãnh đạo (toàn cục) bypass — ma trận Lớp 1 vốn không cấp action nhạy cảm cho họ.
+    const deptGateAllows = useCallback(
+        (resource: PermissionResource, action: PermissionAction): boolean => {
+            const effRole = systemRole;
+            const LEADERSHIP_BYPASS: SystemRole[] = ['super_admin', ...GLOBAL_VIEW_ROLES, 'deputy_director'];
+            if (LEADERSHIP_BYPASS.includes(effRole)) return true;
+            const rules = deptRules.filter(r => r.resource === resource && r.action === action);
+            if (rules.length === 0) return true; // không có giới hạn
+            return rules.some(r => departmentMatches(effectiveUser?.Department, r.allowedDepartments));
+        },
+        [deptRules, systemRole, effectiveUser]
+    );
+
     // ── Core permission check ──────────────────────────────
     const can = useCallback(
         (resource: PermissionResource, action: PermissionAction): boolean => {
@@ -363,7 +420,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             // Permissions not loaded yet → deny (safe default)
             if (!state.loaded) return false;
 
-            // 1) DB override exists for this user → use it (even empty means "no access")
+            // 1) DB override exists for this user → use it (even empty means "no access").
+            //    Ghi đè cá nhân là TUYỆT ĐỐI (QTV chủ ý) → bỏ qua Lớp 2.
             if (state.permissionMap.size > 0) {
                 const actions = state.permissionMap.get(resource);
                 const result = actions ? actions.includes(action) : false;
@@ -373,10 +431,10 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 return result;
             }
 
-            // 2) Fallback to DB role defaults if available
+            // 2) Fallback to DB role defaults if available (AND cổng phòng ban Lớp 2)
             if (dbRoleDefaults.size > 0) {
                 const actions = dbRoleDefaults.get(resource);
-                const result = actions ? actions.includes(action) : false;
+                const result = (actions ? actions.includes(action) : false) && deptGateAllows(resource, action);
                 if (import.meta.env.DEV) {
                     console.debug(`[PermissionCtx] [DB-role-defaults] ${resource}.${action} = ${result}`);
                 }
@@ -387,7 +445,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             const defaults = DEFAULT_ROLE_PERMISSIONS[state.systemRole];
             if (!defaults) return false;
             const defaultActions = defaults[resource as keyof typeof defaults];
-            const result = defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
+            const result = (defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false)
+                && deptGateAllows(resource, action);
             // Warn in all environments for non-contractor roles — DB should be authoritative
             // (super_admin is handled above and never reaches here)
             if (state.systemRole !== 'contractor') {
@@ -395,7 +454,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             }
             return result;
         },
-        [state.permissionMap, state.loaded, state.systemRole, systemRole, dbRoleDefaults]
+        [state.permissionMap, state.loaded, state.systemRole, systemRole, dbRoleDefaults, deptGateAllows]
     );
 
     // ── Project-scoped check ───────────────────────────────
@@ -430,6 +489,21 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         [can, state.isGlobalScope, state.managedBoards, effectiveUser, state.systemRole]
     );
 
+    // ── Lớp 3: record-level — quyền SỬA một dự án cụ thể ───
+    // Theo tài liệu Mục 3.3: chỉ người tạo (created_by) hoặc thành viên dự án
+    // (project_members) mới được sửa. Lãnh đạo/Trưởng phòng chỉ Xem (matrix đã chặn).
+    const canEditProject = useCallback(
+        (project: { createdBy?: string | null; memberIds?: string[] }): boolean => {
+            if (systemRole === 'super_admin' || state.systemRole === 'super_admin') return true;
+            if (!can('projects', 'update')) return false;
+            const uid = effectiveUser?.EmployeeID;
+            if (!uid) return false;
+            if (project.createdBy && project.createdBy === uid) return true;
+            return Array.isArray(project.memberIds) && project.memberIds.includes(uid);
+        },
+        [can, systemRole, state.systemRole, effectiveUser]
+    );
+
     // super_admin được suy ra đồng bộ từ effectiveUser → expose ngay, không chờ
     // state bất đồng bộ (vốn có thể kẹt do race/cache), bảo đảm admin luôn full quyền.
     const isSuperAdmin = systemRole === 'super_admin' || state.systemRole === 'super_admin';
@@ -440,9 +514,10 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         systemRole: isSuperAdmin ? 'super_admin' : state.systemRole,
         can,
         canOnProject,
+        canEditProject,
         refreshPermissions,
         isImpersonating,
-    }), [state, isSuperAdmin, can, canOnProject, refreshPermissions, isImpersonating]);
+    }), [state, isSuperAdmin, can, canOnProject, canEditProject, refreshPermissions, isImpersonating]);
 
     return (
         <PermissionContext.Provider value={contextValue}>

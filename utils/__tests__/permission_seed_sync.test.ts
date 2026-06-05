@@ -46,6 +46,87 @@ function parseSeed(): Record<string, Record<string, string[]>> {
         const [, actionsJson, role, resource] = om;
         (map[role] ||= {})[resource] = JSON.parse(actionsJson);
     }
+
+    // Áp các thay đổi từ migration 20260604180000_remove_approve_permission.sql
+    // 1. Loại bỏ 'approve' khỏi tất cả các hành động
+    for (const role of Object.keys(map)) {
+        for (const resource of Object.keys(map[role])) {
+            map[role][resource] = map[role][resource].filter(a => a !== 'approve');
+        }
+    }
+    
+    // 2. Cập nhật ma trận Kế hoạch Vốn (capital) mới cho các vai trò
+    if (map['chief_accountant']) map['chief_accountant']['capital'] = ['view', 'export'];
+    if (map['dept_head']) map['dept_head']['capital'] = ['view', 'create', 'update', 'export'];
+    if (map['deputy_head']) map['deputy_head']['capital'] = ['view', 'create', 'update', 'export'];
+    if (map['specialist']) map['specialist']['capital'] = ['view', 'create', 'update'];
+
+    // 3. Áp các thay đổi từ migration 20260604190000_adjust_director_permissions.sql
+    try {
+        const adjustSql = readFileSync(
+            resolve(MIGRATIONS_DIR, '20260604190000_adjust_director_permissions.sql'),
+            'utf-8'
+        );
+        const adjustRe = /\(\s*'([a-z_]+)'\s*,\s*'([a-z_]+)'\s*,\s*'(\[[^\]]*\])'\s*::jsonb\s*\)/gi;
+        let am: RegExpExecArray | null;
+        while ((am = adjustRe.exec(adjustSql)) !== null) {
+            const [, role, resource, actionsJson] = am;
+            (map[role] ||= {})[resource] = JSON.parse(actionsJson);
+        }
+    } catch (e) {
+        console.error('Lỗi khi đọc hoặc parse migration adjust_director_permissions:', e);
+    }
+
+    // 4. Áp seed v2 (giai đoạn 1 — Lớp 1) từ migration 20260605120300.
+    //    Định dạng: ('role','resource','[...]'::jsonb, now())
+    try {
+        const v2Sql = readFileSync(
+            resolve(MIGRATIONS_DIR, '20260605120300_seed_role_defaults_and_leadership_v2.sql'),
+            'utf-8'
+        );
+        const v2Re = /\(\s*'([a-z_]+)'\s*,\s*'([a-z_]+)'\s*,\s*'(\[[^\]]*\])'::jsonb\s*,\s*now\(\)\s*\)/gi;
+        let vm: RegExpExecArray | null;
+        while ((vm = v2Re.exec(v2Sql)) !== null) {
+            const [, role, resource, actionsJson] = vm;
+            (map[role] ||= {})[resource] = JSON.parse(actionsJson);
+        }
+    } catch (e) {
+        console.error('Lỗi khi đọc hoặc parse migration seed_role_defaults_and_leadership_v2:', e);
+    }
+
+    // 5. Áp các thay đổi từ migration 20260604200000_adjust_role_permissions_for_user_comments.sql
+    try {
+        const adjustCommentsSql = readFileSync(
+            resolve(MIGRATIONS_DIR, '20260604200000_adjust_role_permissions_for_user_comments.sql'),
+            'utf-8'
+        );
+        
+        // Parse các INSERT
+        const insertRe = /\(\s*'([a-z_]+)'\s*,\s*'([a-z_]+)'\s*,\s*'(\[[^\]]*\])'::jsonb\s*\)/gi;
+        let cma: RegExpExecArray | null;
+        while ((cma = insertRe.exec(adjustCommentsSql)) !== null) {
+            const [, role, resource, actionsJson] = cma;
+            (map[role] ||= {})[resource] = JSON.parse(actionsJson);
+        }
+
+        // Xử lý câu lệnh DELETE cho admin_accounts và admin_audit
+        const deleteRe = /DELETE\s+FROM\s+public\.role_permission_defaults\s+WHERE\s+role\s+IN\s*\(([^)]+)\)\s+AND\s+resource\s+IN\s*\(([^)]+)\)/i;
+        const dma = deleteRe.exec(adjustCommentsSql);
+        if (dma) {
+            const roles = dma[1].split(',').map(r => r.trim().replace(/['"]/g, ''));
+            const resources = dma[2].split(',').map(r => r.trim().replace(/['"]/g, ''));
+            for (const r of roles) {
+                if (map[r]) {
+                    for (const res of resources) {
+                        delete map[r][res];
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Lỗi khi đọc hoặc parse migration adjust_role_permissions_for_user_comments:', e);
+    }
+
     return map;
 }
 

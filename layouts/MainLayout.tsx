@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from './Sidebar';
@@ -15,7 +15,11 @@ import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { useTheme } from '../context/ThemeContext';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { UserCheck, X } from 'lucide-react';
+import { UserCheck, X, RefreshCw, Clock, ChevronUp, Search, Check } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS } from '../types/permission.types';
+import { Employee } from '../types';
+import { Avatar } from '../components/ui';
 
 
 // Loading skeleton for lazy-loaded pages
@@ -38,12 +42,104 @@ const PageLoadingSkeleton: React.FC = () => (
 
 const MainLayout: React.FC = () => {
     const { isAuthenticated, isLoading } = useAuth();
-    const { impersonatedUser, isImpersonating, stopImpersonation } = useImpersonation();
+    const { impersonatedUser, isImpersonating, stopImpersonation, minutesRemaining, expiryWarning, extendSession, startImpersonation } = useImpersonation();
     const location = useLocation();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const { theme } = useTheme();
+    const [showQuickSwitcher, setShowQuickSwitcher] = useState(false);
+    const [quickUsers, setQuickUsers] = useState<Employee[]>([]);
+    const [quickContractors, setQuickContractors] = useState<any[]>([]);
+    const [quickSearch, setQuickSearch] = useState('');
+    const [quickLoading, setQuickLoading] = useState(false);
+
+    useEffect(() => {
+        if (showQuickSwitcher && quickUsers.length === 0) {
+            setQuickLoading(true);
+            Promise.all([
+                supabase.from('employees').select('*').eq('status', 1).order('full_name'),
+                (supabase as any).from('contractor_accounts').select('id, contractor_id, username, display_name, contractors(full_name)').eq('is_active', true).order('display_name')
+            ]).then(([empRes, ctrRes]) => {
+                if (empRes.data) {
+                    setQuickUsers(empRes.data.map((e: any) => ({
+                        EmployeeID: e.employee_id,
+                        FullName: e.full_name,
+                        Department: e.department || '',
+                        Position: e.position || '',
+                        Email: e.email || '',
+                        Phone: e.phone || '',
+                        AvatarUrl: e.avatar_url || '',
+                        Status: e.status,
+                        JoinDate: e.join_date || '',
+                        Username: e.username || '',
+                        Role: e.role,
+                        SystemRole: e.system_role,
+                    })));
+                }
+                if (ctrRes.data) {
+                    setQuickContractors(ctrRes.data.map((c: any) => ({
+                        id: c.id,
+                        contractor_id: c.contractor_id,
+                        username: c.username,
+                        display_name: c.display_name,
+                        contractor_name: c.contractors?.full_name || c.contractor_id,
+                        allowed_project_ids: c.allowed_project_ids || [],
+                    })));
+                }
+                setQuickLoading(false);
+            }).catch(err => {
+                console.error('[QuickSwitcher] Load error:', err);
+                setQuickLoading(false);
+            });
+        }
+    }, [showQuickSwitcher]);
+
+    const filteredQuickEmployees = useMemo(() => {
+        return quickUsers.filter(emp => {
+            const effRole = emp.SystemRole || resolveSystemRole(emp.Role, emp.Position, emp.Department);
+            if (effRole === 'super_admin') return false;
+            return (
+                emp.FullName?.toLowerCase().includes(quickSearch.toLowerCase()) ||
+                emp.Position?.toLowerCase().includes(quickSearch.toLowerCase()) ||
+                emp.Department?.toLowerCase().includes(quickSearch.toLowerCase())
+            );
+        });
+    }, [quickUsers, quickSearch]);
+
+    const filteredQuickContractors = useMemo(() => {
+        return quickContractors.filter(c =>
+            c.display_name.toLowerCase().includes(quickSearch.toLowerCase()) ||
+            c.contractor_name.toLowerCase().includes(quickSearch.toLowerCase())
+        );
+    }, [quickContractors, quickSearch]);
+
+    const handleQuickSwitchEmployee = (emp: Employee) => {
+        startImpersonation(emp);
+        setShowQuickSwitcher(false);
+        setQuickSearch('');
+    };
+
+    const handleQuickSwitchContractor = (ctr: any) => {
+        const fakeEmployee: Employee = {
+            EmployeeID: ctr.id,
+            FullName: ctr.display_name,
+            Role: 'contractor' as any,
+            Department: ctr.contractor_name,
+            Position: 'Nhà thầu',
+            Email: ctr.email || '',
+            Phone: '',
+            AvatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(ctr.display_name)}&background=4a90e2&color=fff`,
+            JoinDate: '',
+            Status: 'Active' as any,
+            Username: ctr.username,
+            Password: '',
+            AllowedProjectIDs: ctr.allowed_project_ids,
+        };
+        startImpersonation(fakeEmployee);
+        setShowQuickSwitcher(false);
+        setQuickSearch('');
+    };
 
     // Layout background — sử dụng CSS variable (tự động theo theme)
     const layoutBg = 'bg-bg-app';
@@ -154,36 +250,226 @@ const MainLayout: React.FC = () => {
                 </div>
             </div>
 
-            {/* Floating Impersonation Bar */}
+            {/* Floating Impersonation Pill & Quick Switcher */}
             {isImpersonating && impersonatedUser && (
-                <div className={`fixed ${isMobile ? 'bottom-16' : 'bottom-0'} left-0 right-0 z-50 bg-gradient-to-r from-primary-500 to-warning-500 text-white shadow-2xl`}>
-                    <div className="max-w-screen-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
-                                {impersonatedUser.FullName?.charAt(0) || 'U'}
+                <>
+                    {/* Quick Switcher Panel */}
+                    {showQuickSwitcher && (
+                        <div 
+                            className={`fixed ${isMobile ? 'bottom-36' : 'bottom-24'} left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-bg-elevated/90 dark:bg-slate-900/90 backdrop-blur-lg border border-border rounded-2xl shadow-2xl p-4 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200`}
+                            style={{ maxHeight: '380px' }}
+                        >
+                            <div className="flex items-center justify-between pb-3 border-b border-border-subtle mb-3">
+                                <h4 className="text-xs font-bold text-txt-primary uppercase tracking-wider flex items-center gap-1.5">
+                                    <UserCheck size={14} className="text-primary-500" />
+                                    Chuyển đổi người dùng nhanh
+                                </h4>
+                                <button 
+                                    onClick={() => setShowQuickSwitcher(false)}
+                                    className="p-1 hover:bg-bg-muted rounded-full transition-colors"
+                                >
+                                    <X size={14} className="text-txt-muted" />
+                                </button>
                             </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <UserCheck size={14} />
-                                    <span className="text-xs font-bold uppercase tracking-wide">Đang giả làm</span>
-                                </div>
-                                <p className="text-sm font-bold">
-                                    {impersonatedUser.FullName}
-                                    <span className="font-normal opacity-80 ml-2">
-                                        {impersonatedUser.Position} • {impersonatedUser.Department}
-                                    </span>
-                                </p>
+
+                            <div className="relative mb-3">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm theo tên, vai trò, phòng..."
+                                    value={quickSearch}
+                                    onChange={e => setQuickSearch(e.target.value)}
+                                    className="w-full pl-8 pr-8 py-1.5 bg-bg-subtle dark:bg-slate-950 border border-border rounded-lg text-xs text-txt-primary focus:outline-none"
+                                    autoFocus
+                                />
+                                {quickSearch && (
+                                    <button 
+                                        onClick={() => setQuickSearch('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 hover:bg-bg-muted rounded-full"
+                                    >
+                                        <X size={10} className="text-txt-muted" />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="overflow-y-auto space-y-1 pr-1" style={{ maxHeight: '240px' }}>
+                                {quickLoading ? (
+                                    <div className="text-center py-6 text-xs text-txt-muted animate-pulse">
+                                        Đang tải danh sách...
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Employees Section */}
+                                        {filteredQuickEmployees.length > 0 && (
+                                            <div className="space-y-0.5">
+                                                <div className="text-[9px] font-bold text-txt-muted uppercase tracking-wider px-2 py-1 bg-bg-subtle/50 rounded">
+                                                    Nhân sự Ban
+                                                </div>
+                                                {filteredQuickEmployees.map(emp => {
+                                                    const role = emp.SystemRole || resolveSystemRole(emp.Role, emp.Position, emp.Department);
+                                                    const isCurrent = impersonatedUser.EmployeeID === emp.EmployeeID;
+                                                    return (
+                                                        <button
+                                                            key={emp.EmployeeID}
+                                                            onClick={() => !isCurrent && handleQuickSwitchEmployee(emp)}
+                                                            disabled={isCurrent}
+                                                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors ${
+                                                                isCurrent
+                                                                    ? 'bg-primary-50/50 dark:bg-primary-950/20 text-primary-600 cursor-not-allowed'
+                                                                    : 'hover:bg-bg-muted/70 text-txt-secondary'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <Avatar name={emp.FullName} imageUrl={emp.AvatarUrl} size="sm" />
+                                                                <div className="truncate">
+                                                                    <p className="text-xs font-semibold text-txt-primary truncate">{emp.FullName}</p>
+                                                                    <p className="text-[10px] text-txt-muted truncate mt-0.5">{emp.Position}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-1 shrink-0 ml-2">
+                                                                <span className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded border ${ROLE_COLORS[role] || 'bg-bg-muted'}`}>
+                                                                    {ROLE_LABELS[role] || role}
+                                                                </span>
+                                                                {isCurrent && <Check size={12} className="text-green-500 shrink-0" />}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+
+                                        {/* Contractors Section */}
+                                        {filteredQuickContractors.length > 0 && (
+                                            <div className="space-y-0.5 mt-2">
+                                                <div className="text-[9px] font-bold text-txt-muted uppercase tracking-wider px-2 py-1 bg-bg-subtle/50 rounded">
+                                                    Nhà thầu
+                                                </div>
+                                                {filteredQuickContractors.map(ctr => {
+                                                    const isCurrent = impersonatedUser.EmployeeID === ctr.id;
+                                                    return (
+                                                        <button
+                                                            key={ctr.id}
+                                                            onClick={() => !isCurrent && handleQuickSwitchContractor(ctr)}
+                                                            disabled={isCurrent}
+                                                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors ${
+                                                                isCurrent
+                                                                    ? 'bg-primary-50/50 dark:bg-primary-950/20 text-primary-600 cursor-not-allowed'
+                                                                    : 'hover:bg-bg-muted/70 text-txt-secondary'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <Avatar name={ctr.display_name} size="sm" />
+                                                                <div className="truncate">
+                                                                    <p className="text-xs font-semibold text-txt-primary truncate">{ctr.display_name}</p>
+                                                                    <p className="text-[10px] text-txt-muted truncate mt-0.5">{ctr.contractor_name}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-1 shrink-0 ml-2">
+                                                                <span className="text-[8px] font-extrabold px-1.5 py-0.5 rounded border border-purple-200/50 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                                                                    Nhà thầu
+                                                                </span>
+                                                                {isCurrent && <Check size={12} className="text-green-500 shrink-0" />}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+
+                                        {filteredQuickEmployees.length === 0 && filteredQuickContractors.length === 0 && (
+                                            <div className="text-center py-6 text-xs text-txt-muted">
+                                                Không tìm thấy người dùng phù hợp
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <button
-                            onClick={stopImpersonation}
-                            className="flex items-center gap-1.5 px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-bold transition-colors"
-                        >
-                            <X size={16} />
-                            Dừng giả làm
-                        </button>
+                    )}
+
+                    {/* Floating Impersonation Pill */}
+                    <div 
+                        className={`fixed ${
+                            isMobile ? 'bottom-20' : 'bottom-6 sm:bottom-8'
+                        } left-1/2 -translate-x-1/2 z-50 max-w-2xl w-[92%] bg-slate-900/85 dark:bg-slate-950/85 text-white shadow-2xl rounded-2xl border border-white/10 backdrop-blur-md overflow-hidden transition-all duration-300 ${
+                            expiryWarning ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 animate-pulse-slow' : 'hover:border-white/20'
+                        }`}
+                    >
+                        <div className="px-4 py-3 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <Avatar 
+                                    name={impersonatedUser.FullName} 
+                                    imageUrl={impersonatedUser.AvatarUrl}
+                                    size="sm" 
+                                    ringColor={expiryWarning ? "ring-red-500 ring-2" : "ring-amber-500 ring-2"}
+                                    className="shrink-0 scale-105"
+                                />
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <span className="inline-flex items-center gap-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-400">
+                                            <UserCheck size={10} />
+                                            Giả làm
+                                        </span>
+                                        {minutesRemaining !== null && (
+                                            <span className={`text-[10px] font-bold ${
+                                                expiryWarning ? 'text-red-400' : 'text-slate-300'
+                                            }`}>
+                                                ({minutesRemaining}m)
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-100 truncate">
+                                        {impersonatedUser.FullName}
+                                        <span className="font-medium text-slate-400 text-[11px] ml-2 truncate">
+                                            {impersonatedUser.Position} • {impersonatedUser.Department}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                {expiryWarning && (
+                                    <button
+                                        onClick={extendSession}
+                                        className="flex items-center gap-1 px-2.5 py-1 bg-warning-500 hover:bg-warning-600 active:scale-95 text-[11px] font-extrabold text-white rounded-lg transition-all"
+                                    >
+                                        <RefreshCw size={11} className="animate-spin-slow" />
+                                        Gia hạn
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setShowQuickSwitcher(!showQuickSwitcher)}
+                                    className={`flex items-center gap-1 px-3 py-1.5 ${
+                                        showQuickSwitcher 
+                                            ? 'bg-slate-700/80 text-white' 
+                                            : 'bg-white/10 hover:bg-white/15 text-slate-200 hover:text-white'
+                                    } active:scale-95 text-[11px] font-bold rounded-lg transition-all`}
+                                >
+                                    Đổi vai
+                                    <ChevronUp size={12} className={`transition-transform duration-200 ${showQuickSwitcher ? 'rotate-180' : ''}`} />
+                                </button>
+                                <button
+                                    onClick={stopImpersonation}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-[11px] font-bold rounded-lg transition-colors shadow-inner"
+                                >
+                                    Thoát
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar Timer */}
+                        {minutesRemaining !== null && (
+                            <div className="w-full h-[3px] bg-white/5 relative">
+                                <div 
+                                    className={`absolute top-0 bottom-0 left-0 transition-all duration-1000 ${
+                                        expiryWarning ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-gradient-to-r from-amber-400 to-amber-500'
+                                    }`}
+                                    style={{ width: `${Math.min(100, Math.max(0, (minutesRemaining / 30) * 100))}%` }}
+                                />
+                            </div>
+                        )}
                     </div>
-                </div>
+                </>
             )}
 
             {/* Mobile Bottom Navigation */}

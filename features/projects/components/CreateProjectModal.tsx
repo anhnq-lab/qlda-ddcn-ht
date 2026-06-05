@@ -1,11 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler } from 'lucide-react';
+import { Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler, Lock } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType, detectSpecialtyByName } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
 import { ProjectMemberService } from '../../../services/ProjectMemberService';
+import { useAuth } from '../../../context/AuthContext';
+import { useImpersonation } from '../../../context/ImpersonationContext';
+import { useProjectFieldAccess } from '../hooks/useProjectFieldAccess';
+import { PROJECT_FIELD_CATALOG } from '../projectFieldCatalog';
 import { extractProjectFromImage, fileToBase64, ExtractedProjectData } from '../../../services/ai/aiImageExtractor';
 import { supabase } from '../../../lib/supabase';
 import { useToast } from '../../../components/ui/Toast';
@@ -162,10 +166,28 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
     // Bridge: expose formData as a plain object for legacy sub-form components
     const formData = watch();
 
-    // Bridge: updateField replaces setFormData(prev => {...}) pattern
+    // ── Phân quyền cấp TRƯỜNG theo vai trò thành viên dự án ──
+    const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const myMemberRole = useMemo(
+        () => selectedMembers.find(m => m.employeeId === effectiveUser?.EmployeeID)?.role ?? null,
+        [selectedMembers, effectiveUser]
+    );
+    const { canEditField, hasRestrictions } = useProjectFieldAccess({
+        memberRole: myMemberRole,
+        isCreate: !isEditMode,
+    });
+    const lockedFieldLabels = useMemo(
+        () => PROJECT_FIELD_CATALOG.filter(f => !canEditField(f.tsKey)).map(f => f.label),
+        [canEditField]
+    );
+
+    // Bridge: updateField — chặn sửa trường bị khoá theo vai trò thành viên (Lớp field)
     const updateField = useCallback((field: string, value: any) => {
+        if (isEditMode && !canEditField(field)) return; // trường bị khoá → bỏ qua thay đổi
         setValue(field as keyof ProjectModalFormValues, value, { shouldDirty: true });
-    }, [setValue]);
+    }, [setValue, isEditMode, canEditField]);
 
     // Tự động nhận diện chuyên ngành khi tên dự án thay đổi (chỉ ở chế độ tạo mới)
     const projectNameVal = watch('ProjectName');
@@ -630,6 +652,19 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                 {/* Body */}
                 <form onSubmit={handleSubmit(onValid as any, onInvalid)} className="flex flex-col flex-1 min-h-[50vh]">
                     <div className="p-4 overflow-y-auto flex-1">
+
+                        {/* Cảnh báo trường bị khoá theo vai trò thành viên dự án */}
+                        {isEditMode && hasRestrictions && lockedFieldLabels.length > 0 && (
+                            <div className="mb-4 flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 text-xs">
+                                <Lock className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                <div className="text-amber-800 dark:text-amber-300">
+                                    <span className="font-semibold">Một số trường bị khoá theo vai trò của bạn trong dự án{myMemberRole ? ` (${myMemberRole})` : ''}.</span>
+                                    <span className="block mt-0.5 text-amber-700/90 dark:text-amber-300/80">
+                                        Không sửa được: {lockedFieldLabels.slice(0, 12).join(', ')}{lockedFieldLabels.length > 12 ? `… (+${lockedFieldLabels.length - 12} trường)` : ''}.
+                                    </span>
+                                </div>
+                            </div>
+                        )}
 
                         {/* ═══ Tab 1: Thông tin chung ═══ */}
                         {activeTab === 'general' && (

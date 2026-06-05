@@ -27,33 +27,73 @@ export const InlineActivityFeed: React.FC = () => {
     const [activities, setActivities] = useState<ActivityItem[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // State phục vụ ánh xạ tài khoản để lấy tên hiển thị từ UUID
+    const [userAccounts, setUserAccounts] = useState<any[]>([]);
+    const [contractorAccounts, setContractorAccounts] = useState<any[]>([]);
+    const [contractors, setContractors] = useState<any[]>([]);
+
     useEffect(() => {
         const fetchRecentActivities = async () => {
             setLoading(true);
             try {
-                // Fetch recent logs
-                let query = supabase
-                    .from('audit_logs')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(6);
+                // Tải song song log và các bảng map tài khoản để tối ưu hiệu năng
+                const [logsRes, userAccountsRes, contractorAccountsRes, contractorsRes] = await Promise.all([
+                    supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(6),
+                    supabase.from('user_accounts').select('auth_user_id, employee_id'),
+                    supabase.from('contractor_accounts').select('auth_user_id, contractor_id, display_name'),
+                    supabase.from('contractors').select('contractor_id, full_name')
+                ]);
+
+                if (logsRes.error) throw logsRes.error;
+
+                const userAccs = userAccountsRes.data || [];
+                const contractorAccs = contractorAccountsRes.data || [];
+                const contrs = contractorsRes.data || [];
                 
-                // For staff/specialists, filter logs that relate to them or tasks/projects they own
-                if (currentUser && currentUser.SystemRole !== 'director' && currentUser.SystemRole !== 'super_admin') {
-                    // Let's filter logs by the user
-                    query = query.eq('changed_by', currentUser.EmployeeID);
-                }
+                setUserAccounts(userAccs);
+                setContractorAccounts(contractorAccs);
+                setContractors(contrs);
 
-                const { data, error } = await query;
-                if (error) throw error;
+                const formatted: ActivityItem[] = (logsRes.data || []).map((item: any) => {
+                    const getUserName = (userId: string) => {
+                        if (!userId) return 'Không rõ';
+                        if (userId === 'system') return 'Hệ thống';
+                        if (userId === 'unknown') return 'Không rõ';
 
-                const formatted: ActivityItem[] = (data || []).map((item: any) => {
-                    const emp = (employees || []).find((e: any) => e.EmployeeID === item.changed_by);
+                        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+
+                        if (isUuid) {
+                            const userAcc = userAccs.find(ua => ua.auth_user_id === userId);
+                            if (userAcc) {
+                                const employee = (employees || []).find(e => e.EmployeeID === userAcc.employee_id);
+                                if (employee) return employee.FullName;
+                                return `Nhân viên (${userAcc.employee_id})`;
+                            }
+
+                            const contractorAcc = contractorAccs.find(ca => ca.auth_user_id === userId);
+                            if (contractorAcc) {
+                                const contractor = contrs.find(c => c.contractor_id === contractorAcc.contractor_id);
+                                if (contractor) return contractor.full_name;
+                                return contractorAcc.display_name || `Nhà thầu (${contractorAcc.contractor_id})`;
+                            }
+
+                            return `Tài khoản (${userId.substring(0, 8)})`;
+                        }
+
+                        const employee = (employees || []).find(e => e.EmployeeID === userId);
+                        if (employee) return employee.FullName;
+
+                        const contractor = contrs.find(c => c.contractor_id === userId);
+                        if (contractor) return contractor.full_name;
+
+                        return userId;
+                    };
+
                     return {
                         id: item.id,
                         timestamp: item.created_at,
                         userId: item.changed_by,
-                        userName: emp?.FullName || 'Hệ thống',
+                        userName: getUserName(item.changed_by),
                         action: item.action,
                         entityType: item.target_entity,
                         entityId: item.target_id,
@@ -76,20 +116,42 @@ export const InlineActivityFeed: React.FC = () => {
 
     const getActionIcon = (action: string) => {
         switch (action) {
-            case 'CREATE': return <Plus className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />;
-            case 'UPDATE': return <Edit3 className="w-3 h-3 text-blue-600 dark:text-blue-400" />;
-            case 'DELETE': return <Trash2 className="w-3 h-3 text-rose-600 dark:text-rose-400" />;
+            case 'CREATE':
+            case 'ADD_CDE_ORG':
+            case 'CREATE_CDE_STAFF_ACCOUNT':
+                return <Plus className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />;
+            case 'UPDATE':
+            case 'UPDATE_CDE_ROLE':
+                return <Edit3 className="w-3 h-3 text-blue-600 dark:text-blue-400" />;
+            case 'DELETE':
+            case 'REMOVE_CDE_ORG':
+                return <Trash2 className="w-3 h-3 text-rose-600 dark:text-rose-400" />;
             case 'VIEW': return <Eye className="w-3 h-3 text-txt-muted" />;
             case 'EXPORT': return <Download className="w-3 h-3 text-purple-600 dark:text-purple-400" />;
+            case 'LOGIN_SUCCESS':
+            case 'impersonation_start':
+                return <User className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />;
+            case 'LOGIN_FAILED':
+                return <Activity className="w-3 h-3 text-rose-600 dark:text-rose-400" />;
             default: return <Activity className="w-3 h-3 text-primary-600 dark:text-primary-400" />;
         }
     };
 
     const getActionBg = (action: string) => {
         switch (action) {
-            case 'CREATE': return 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-900/30';
-            case 'UPDATE': return 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-900/30';
-            case 'DELETE': return 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-900/30';
+            case 'CREATE':
+            case 'ADD_CDE_ORG':
+            case 'CREATE_CDE_STAFF_ACCOUNT':
+            case 'LOGIN_SUCCESS':
+            case 'impersonation_start':
+                return 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-900/30';
+            case 'UPDATE':
+            case 'UPDATE_CDE_ROLE':
+                return 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-900/30';
+            case 'DELETE':
+            case 'REMOVE_CDE_ORG':
+            case 'LOGIN_FAILED':
+                return 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-900/30';
             case 'EXPORT': return 'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-900/30';
             default: return 'bg-bg-subtle border-border';
         }
@@ -101,6 +163,12 @@ export const InlineActivityFeed: React.FC = () => {
             case 'Task': return <Clock className="w-3.5 h-3.5 text-txt-secondary" />;
             case 'Contract': return <FileText className="w-3.5 h-3.5 text-txt-secondary" />;
             case 'Payment': return <CreditCard className="w-3.5 h-3.5 text-txt-secondary" />;
+            case 'employees':
+            case 'employee':
+            case 'auth':
+            case 'user_accounts':
+            case 'contractor_accounts':
+                return <User className="w-3.5 h-3.5 text-txt-secondary" />;
             default: return <FileText className="w-3.5 h-3.5 text-txt-secondary" />;
         }
     };
@@ -125,6 +193,77 @@ export const InlineActivityFeed: React.FC = () => {
         } else if (item.entityType === 'Task') {
             navigate(`/tasks/${item.entityId}`);
         }
+    };
+
+    // Định dạng nội dung chi tiết dạng Tiếng Việt thân thiện
+    const formatDetails = (item: ActivityItem) => {
+        if (!item.details) return '—';
+
+        const translateEntity = (entity: string) => {
+            const entityMap: Record<string, string> = {
+                employees: 'Nhân sự',
+                employee: 'Nhân sự',
+                auth: 'Xác thực / Tài khoản',
+                role_permission_defaults: 'Quyền mặc định vai trò',
+                role_permissions: 'Quyền mặc định vai trò',
+                user_permissions: 'Quyền cá nhân',
+                projects: 'Dự án',
+                Project: 'Dự án',
+                contracts: 'Hợp đồng',
+                Contract: 'Hợp đồng',
+                payments: 'Thanh toán',
+                Payment: 'Thanh toán',
+                tasks: 'Công việc',
+                Task: 'Công việc',
+                documents: 'Tài liệu',
+                Document: 'Tài liệu',
+                bidding_packages: 'Gói thầu',
+                BiddingPackage: 'Gói thầu',
+                contractors: 'Nhà thầu',
+                Contractor: 'Nhà thầu',
+                cde_permissions: 'Phân quyền CDE',
+                user_accounts: 'Tài khoản người dùng',
+                contractor_accounts: 'Tài khoản nhà thầu',
+                leadership_assignments: 'Phân công lãnh đạo',
+                dashboard_widgets: 'Cấu hình Dashboard',
+                sidebar_modules: 'Module Sidebar'
+            };
+            return entityMap[entity] || entity;
+        };
+
+        try {
+            const parsed = JSON.parse(item.details);
+            
+            // 1. Logs giả danh
+            if (item.action.startsWith('impersonation_')) {
+                const actionText = 
+                    item.action === 'impersonation_start' ? 'Bắt đầu giả danh' :
+                    item.action === 'impersonation_stop' ? 'Kết thúc giả danh' : 'Hết hạn giả danh';
+                return `${actionText} người dùng ${parsed.target_name}`;
+            }
+            
+            // 2. Logs thay đổi dữ liệu (Trigger / API)
+            if (parsed.op) {
+                const opText = parsed.op === 'UPDATE' ? 'Cập nhật' : parsed.op === 'INSERT' ? 'Thêm mới' : 'Xóa';
+                return `${opText} dữ liệu ${translateEntity(item.entityType)} (ID: ${item.entityId})`;
+            }
+
+            // 3. Log có target_name
+            if (parsed.target_name) {
+                return `Thao tác trên ${translateEntity(item.entityType).toLowerCase()}: ${parsed.target_name}`;
+            }
+        } catch (_) {
+            const text = item.details;
+            if (text.startsWith('Login via:')) {
+                return text.replace('Login via:', 'Đăng nhập qua tài khoản:');
+            }
+            if (text.startsWith('Login failed for:')) {
+                return text.replace('Login failed for:', 'Đăng nhập thất bại đối với tài khoản:');
+            }
+            return text;
+        }
+
+        return item.details;
     };
 
     return (
@@ -184,7 +323,7 @@ export const InlineActivityFeed: React.FC = () => {
                                     </span>
                                 </div>
                                 <p className="text-[11px] text-txt-secondary mt-0.5 line-clamp-2" title={item.details}>
-                                    {item.details}
+                                    {formatDetails(item)}
                                 </p>
                             </div>
                             

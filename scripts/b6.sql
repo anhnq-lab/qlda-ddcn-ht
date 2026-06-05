@@ -1,0 +1,13 @@
+INSERT INTO public.regulation_articles (id,chapter_id,code,title,content,content_type,sort_order) VALUES ('chuong-v-ieu-19','qclv-chuong-v','Điều 19','Quan hệ công tác giữa Ban QLDA với chủ đầu tư các dự án thực hiện quản lý dự án, chủ quản lý sử dụng công trình','1. Thực hiện các quyền, nghĩa vụ đối với các chủ đầu tư, chịu sự kiểm tra, giám sát của chủ đầu tư trong quá trình thực hiện quản lý các dự án theo hợp đồng ký kết và theo quy định của pháp luật có liên quan;
+
+2. Phối hợp với chủ quản lý sử dụng công trình khi lập, phê duyệt nhiệm vụ thiết kế xây dựng công trình, trong quá trình tổ chức thực hiện dự án, nghiệm thu, bàn giao công trình xây dựng hoàn thành vào vận hành, sử dụng (kể cả việc thực hiện bảo hành công trình theo quy định);
+
+3. Bàn giao công trình xây dựng hoàn thành cho chủ đầu tư hoặc chủ quản lý sử dụng theo quy định của pháp luật; quản lý công trình xây dựng hoàn thành trong thời gian chưa xác định được đơn vị quản lý sử dụng công trình theo yêu cầu của người quyết định đầu tư;
+
+4. Thực hiện các nhiệm vụ tư vấn quản lý dự án của chủ đầu tư theo ủy quyền và theo quy định của pháp luật có liên quan.','text',4),('chuong-v-ieu-20','qclv-chuong-v','Điều 20','Quan hệ công tác giữa Ban QLDA với nhà thầu','1. Tổ chức lựa chọn nhà thầu thực hiện các gói thầu thuộc dự án do mình làm chủ đầu tư hoặc được thuê làm tư vấn quản lý dự án; đàm phán, ký kết và thực hiện hợp đồng với nhà thầu được lựa chọn theo quy định của pháp luật;
+
+2. Thực hiện các quyền, nghĩa vụ của chủ đầu tư đối với nhà thầu xây dựng theo quy định của hợp đồng xây dựng và quy định của pháp luật có liên quan;
+
+3. Tiếp nhận, xử lý theo thẩm quyền hoặc kiến nghị cấp có thẩm quyền giải quyết các đề xuất, vướng mắc của nhà thầu trong quá trình thực hiện.','text',5),('chuong-v-ieu-21','qclv-chuong-v','Điều 21','Quan hệ công tác giữa Ban QLDA với các đơn vị tiếp nhận tài sản, hưởng lợi','1. Phối hợp với Các đơn vị tiếp nhận tài sản, hưởng lợi tham gia vào quá trình thực hiện dự án bao gồm công tác giải phóng mặt bằng (nếu có), chuẩn bị dự án, giám sát quá trình thực hiện, tiếp nhận và duy tu bảo dưỡng, vận hành công trình. Giám đốc Ban QLDA có thẩm quyền ra quyết định thành lập các ban, tổ công tác gồm các thành phần trên để phối hợp trong quá trình triển khai thực hiện dự án và sử dụng, duy tu bảo dưỡng, vận hành công trình;
+
+2. Các chế độ, chính sách liên quan (nếu có) của các cán bộ đơn vị hưởng lợi thực hiện theo quy định của pháp luật và quy chế của dự án.','text',6) ON CONFLICT (id) DO UPDATE SET content=EXCLUDED.content,title=EXCLUDED.title;
