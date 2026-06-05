@@ -480,49 +480,44 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         <header className={`grid grid-cols-3 items-center pb-6 border-b z-10 ${theme === 'dark' ? 'border-indigo-950/40' : 'border-slate-200'}`}>
           {/* Left Column: Date & Time Widget */}
           <div className="flex items-center justify-start">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-2xl border bg-white/[0.02] border-white/5 shadow-inner">
+            <div className="flex items-center gap-4 px-5 py-2.5 rounded-2xl border bg-white/[0.02] border-white/5 shadow-inner">
               <div className="flex flex-col text-left">
-                <span className="text-xs md:text-sm font-black capitalize tracking-wide text-amber-500">
+                <span className="text-base md:text-lg font-black capitalize tracking-wide text-amber-500 leading-tight">
                   {dayOfWeek}
                 </span>
-                <span className="text-xs md:text-sm font-bold text-slate-300">
+                <span className="text-xs md:text-sm font-bold text-slate-300 leading-tight">
                   {dayAndMonth}
                 </span>
               </div>
-              <div className="w-[1px] h-7 bg-white/10" />
-              <span className="text-xl md:text-2xl font-mono font-black tracking-wider text-white">
+              <div className="w-[1px] h-8 bg-white/10" />
+              <span className="text-2xl md:text-3xl font-mono font-black tracking-wider text-white">
                 {clockStr}
               </span>
             </div>
           </div>
+          
           <div className="text-center">
             <h1 className={`text-3xl md:text-5xl font-black tracking-widest uppercase drop-shadow-sm ${styles.contentHeaderTitle}`}>
               LỊCH CÔNG TÁC
             </h1>
-            <p className={`text-sm md:text-lg font-medium tracking-wide mt-2 ${styles.contentHeaderSub}`}>
-              Hệ thống hiển thị lịch sự kiện trực quan tại sảnh
-            </p>
           </div>
-          <div className="flex items-center gap-4 justify-end">
-            <div>
-              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold mt-1 border ${
-                theme === 'dark'
-                  ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
-                  : 'text-emerald-700 bg-emerald-100 border-emerald-200'
-              }`}>
+          
+          {/* Right Column: Status & Controls Widget */}
+          <div className="flex items-center justify-end">
+            <div className="flex items-center gap-4 px-5 py-2.5 rounded-2xl border bg-white/[0.02] border-white/5 shadow-inner">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border text-emerald-400 bg-emerald-400/10 border-emerald-400/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Trực tuyến
               </span>
+              <div className="w-[1px] h-8 bg-white/10" />
+              <button
+                onClick={toggleFullscreen}
+                className="p-1 text-indigo-300 hover:text-white transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                title={isFullscreen ? "Thu nhỏ" : "Toàn màn hình"}
+              >
+                {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              </button>
             </div>
-            
-            {/* Fullscreen Toggle */}
-            <button
-              onClick={toggleFullscreen}
-              className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${styles.tiviButton}`}
-              title={isFullscreen ? "Thu nhỏ" : "Toàn màn hình"}
-            >
-              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-            </button>
           </div>
         </header>
 
@@ -588,7 +583,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
 
                         {/* Column 3: Content */}
                         <div className={`col-span-1 md:col-span-3 min-w-0 flex items-center p-5 border-r ${styles.columnBorder}`}>
-                          <h3 className={`text-lg md:text-xl font-bold leading-relaxed break-words whitespace-normal transition-colors ${styles.eventTitle}`}>
+                          <h3 className={`text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug break-words whitespace-normal transition-colors ${styles.eventTitle}`}>
                             {event.title}
                           </h3>
                         </div>

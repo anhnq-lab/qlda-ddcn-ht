@@ -17,7 +17,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { UserCheck, X, RefreshCw, Clock, ChevronUp, Search, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS } from '../types/permission.types';
+import { resolveSystemRole, ROLE_LABELS, ROLE_COLORS, type SystemRole } from '../types/permission.types';
 import { Employee } from '../types';
 import { Avatar } from '../components/ui';
 
@@ -306,7 +306,7 @@ const MainLayout: React.FC = () => {
                                                     Nhân sự Ban
                                                 </div>
                                                 {filteredQuickEmployees.map(emp => {
-                                                    const role = emp.SystemRole || resolveSystemRole(emp.Role, emp.Position, emp.Department);
+                                                    const role = (emp.SystemRole || resolveSystemRole(emp.Role, emp.Position, emp.Department)) as SystemRole;
                                                     const isCurrent = impersonatedUser.EmployeeID === emp.EmployeeID;
                                                     return (
                                                         <button

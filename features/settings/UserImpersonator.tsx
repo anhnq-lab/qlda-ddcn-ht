@@ -465,7 +465,7 @@ const UserImpersonator: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                         {quickSimulations.map(sim => {
                             const SimIcon = sim.icon;
-                            const isCurrent = impersonatedUser?.EmployeeID === (sim.isContractor ? sim.data.id : (sim.data as Employee).EmployeeID);
+                            const isCurrent = impersonatedUser?.EmployeeID === (sim.isContractor ? (sim.data as ContractorAccountItem).id : (sim.data as Employee).EmployeeID);
                             return (
                                 <div
                                     key={sim.type}
@@ -493,10 +493,10 @@ const UserImpersonator: React.FC = () => {
                                     
                                     <div className="mb-4">
                                         <h5 className="font-bold text-sm text-txt-primary truncate">
-                                            {sim.isContractor ? sim.data.display_name : (sim.data as Employee).FullName}
+                                            {sim.isContractor ? (sim.data as ContractorAccountItem).display_name : (sim.data as Employee).FullName}
                                         </h5>
                                         <p className="text-xs text-txt-muted truncate mt-0.5">
-                                            {sim.isContractor ? sim.data.contractor_name : (sim.data as Employee).Position}
+                                            {sim.isContractor ? (sim.data as ContractorAccountItem).contractor_name : (sim.data as Employee).Position}
                                         </p>
                                     </div>
 
