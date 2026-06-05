@@ -219,7 +219,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
 
                           {/* Column 2: Content */}
                           <div className={`col-span-1 min-w-0 flex items-center p-5 border-r ${styles.columnBorder}`}>
-                            <span className="text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug break-words whitespace-normal">
+                            <span className="text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug break-words whitespace-normal text-justify block w-full">
                               {event.title}
                             </span>
                           </div>
@@ -243,7 +243,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
 
                           {/* Column 5: Notes */}
                           <div className="col-span-1 min-w-0 flex items-center p-5">
-                            <span className="text-lg md:text-xl lg:text-2xl font-semibold text-white break-words whitespace-normal">
+                            <span className="text-lg md:text-xl lg:text-2xl font-semibold text-white break-words whitespace-normal text-justify block w-full">
                               {event.description || '-'}
                             </span>
                           </div>
