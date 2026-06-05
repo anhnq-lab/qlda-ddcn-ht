@@ -477,10 +477,10 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         )}
 
         {/* Top Header */}
-        <header className={`grid grid-cols-3 items-center pb-6 border-b z-10 ${theme === 'dark' ? 'border-indigo-950/40' : 'border-slate-200'}`}>
+        <header className={`grid grid-cols-3 items-center px-6 py-4 rounded-3xl border z-10 mb-6 bg-white/[0.02] border-white/5 shadow-lg`}>
           {/* Left Column: Date & Time Widget */}
           <div className="flex items-center justify-start">
-            <div className="flex items-center gap-4 px-5 py-2.5 rounded-2xl border bg-white/[0.02] border-white/5 shadow-inner">
+            <div className="flex items-center gap-4 px-4 py-2 rounded-2xl border bg-white/[0.01] border-white/5 shadow-inner">
               <div className="flex flex-col text-left">
                 <span className="text-base md:text-lg font-black capitalize tracking-wide text-amber-500 leading-tight">
                   {dayOfWeek}
@@ -504,7 +504,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
           
           {/* Right Column: Status & Controls Widget */}
           <div className="flex items-center justify-end">
-            <div className="flex items-center gap-4 px-5 py-2.5 rounded-2xl border bg-white/[0.02] border-white/5 shadow-inner">
+            <div className="flex items-center gap-4 px-4 py-2 rounded-2xl border bg-white/[0.01] border-white/5 shadow-inner">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border text-emerald-400 bg-emerald-400/10 border-emerald-400/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Trực tuyến
@@ -522,7 +522,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         </header>
 
         {/* Main Schedule List */}
-        <main className="flex-1 flex flex-col justify-start mt-6 z-10 overflow-y-auto no-scrollbar">
+        <main className="flex-1 flex flex-col justify-start mt-2 z-10 overflow-y-auto no-scrollbar">
           {displayEvents.length === 0 ? (
             <div className={`flex-1 flex flex-col items-center justify-center py-16 ${styles.emptyStateText}`}>
               <div className={`p-5 rounded-full border mb-5 relative ${theme === 'dark' ? 'bg-indigo-950/30 border-indigo-900/30' : 'bg-slate-100 border-slate-200'}`}>
