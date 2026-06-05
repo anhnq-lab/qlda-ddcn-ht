@@ -363,6 +363,14 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
         isFullscreen ? 'h-screen rounded-none border-none' : 'h-full min-h-[700px]'
       }`}
     >
+      <style>{`
+        @media (min-width: 768px) {
+          .lobby-grid-layout {
+            display: grid !important;
+            grid-template-columns: minmax(130px, 1.2fr) 3.6fr 2.4fr 1.3fr 2.5fr !important;
+          }
+        }
+      `}</style>
       
       {/* LEFT SIDEBAR (Branded theme) */}
       <div className={`w-full md:w-[22%] flex flex-col items-center justify-start gap-6 p-5 md:p-6 border-b md:border-b-0 md:border-r shrink-0 overflow-y-auto ${styles.sidebar}`}>
@@ -538,12 +546,12 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
             <div className="flex-1 flex flex-col justify-between">
               <div className="flex flex-col gap-4">
                 {/* Header Row */}
-                <div className={`hidden md:grid grid-cols-12 text-lg md:text-xl font-bold uppercase tracking-wider rounded-xl mb-1 ${styles.tableHeaderRow}`}>
-                  <div className={`col-span-2 py-3.5 text-center border-r ${styles.columnBorder}`}>Thời gian</div>
-                  <div className={`col-span-3 py-3.5 text-center border-r ${styles.columnBorder}`}>Nội dung</div>
-                  <div className={`col-span-3 py-3.5 text-center border-r ${styles.columnBorder}`}>Thành phần</div>
-                  <div className={`col-span-2 py-3.5 text-center border-r ${styles.columnBorder}`}>Địa điểm</div>
-                  <div className="col-span-2 py-3.5 text-center">Ghi chú</div>
+                <div className={`hidden md:grid lobby-grid-layout text-lg md:text-xl font-bold uppercase tracking-wider rounded-xl mb-1 ${styles.tableHeaderRow}`}>
+                  <div className={`py-3.5 text-center border-r ${styles.columnBorder}`}>Thời gian</div>
+                  <div className={`py-3.5 text-center border-r ${styles.columnBorder}`}>Nội dung</div>
+                  <div className={`py-3.5 text-center border-r ${styles.columnBorder}`}>Thành phần</div>
+                  <div className={`py-3.5 text-center border-r ${styles.columnBorder}`}>Địa điểm</div>
+                  <div className="py-3.5 text-center">Ghi chú</div>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -559,7 +567,7 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -15 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className={`relative overflow-hidden border rounded-2xl transition-all duration-300 shadow-md grid grid-cols-1 md:grid-cols-12 md:items-stretch ${styles.eventRow}`}
+                        className={`relative overflow-hidden border rounded-2xl transition-all duration-300 shadow-md ${styles.eventRow}`}
                       >
                         {/* Event Left border accent */}
                         <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${
@@ -572,56 +580,59 @@ export const LobbyDisplay: React.FC<LobbyDisplayProps> = ({ events }) => {
                             : 'bg-slate-500'
                         }`} />
 
-                        {/* Column 1: Time */}
-                        <div className={`col-span-1 md:col-span-2 flex items-center justify-center p-5 border-r ${styles.columnBorder}`}>
-                          <div className={`px-4 py-2 rounded-lg border flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${styles.timeBadge}`}>
-                            <span className="text-xl md:text-2xl font-bold font-mono leading-none">{timeStr}</span>
-                            <span className="text-sm md:text-lg font-mono">-</span>
-                            <span className="text-xl md:text-2xl font-bold font-mono leading-none">{format(endDate, 'HH:mm')}</span>
-                          </div>
-                        </div>
-
-                        {/* Column 3: Content */}
-                        <div className={`col-span-1 md:col-span-3 min-w-0 flex items-center p-5 border-r ${styles.columnBorder}`}>
-                          <h3 className={`text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug break-words whitespace-normal transition-colors ${styles.eventTitle}`}>
-                            {event.title}
-                          </h3>
-                        </div>
-
-                        {/* Column 2: Attendees */}
-                        <div className={`col-span-1 md:col-span-3 flex flex-col justify-center gap-1.5 min-w-0 p-5 border-r ${styles.columnBorder}`}>
-                          {event.attendees && event.attendees.length > 0 ? (
-                            <div className="flex flex-wrap gap-1.5">
-                              {event.attendees.slice(0, 10).map((emp, idx) => (
-                                <span key={emp.EmployeeID || idx} className={`inline-flex items-center px-2.5 py-1 rounded-lg border text-sm md:text-base whitespace-nowrap ${styles.attendeeBadge}`}>
-                                  <span className="w-2 h-2 rounded-full bg-sky-500 dark:bg-sky-400 mr-1.5" />
-                                  {emp.FullName}
-                                </span>
-                              ))}
-                              {event.attendees.length > 10 && (
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/25 dark:border-sky-400/25 text-sm md:text-base font-bold text-sky-600 dark:text-sky-400 shadow-sm">
-                                  +{event.attendees.length - 10}
-                                </span>
-                              )}
+                        {/* Inner Grid Columns Container */}
+                        <div className="grid grid-cols-1 lobby-grid-layout md:items-stretch w-full">
+                          {/* Column 1: Time */}
+                          <div className={`col-span-1 flex items-center justify-center p-5 border-r ${styles.columnBorder}`}>
+                            <div className={`px-4 py-2 rounded-lg border flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap ${styles.timeBadge}`}>
+                              <span className="text-xl md:text-2xl font-bold font-mono leading-none">{timeStr}</span>
+                              <span className="text-sm md:text-lg font-mono">-</span>
+                              <span className="text-xl md:text-2xl font-bold font-mono leading-none">{format(endDate, 'HH:mm')}</span>
                             </div>
-                          ) : (
-                            <span className={`text-lg md:text-xl italic ${theme === 'dark' ? 'text-sky-300/40' : 'text-slate-400'}`}>Toàn cơ quan</span>
-                          )}
-                        </div>
+                          </div>
 
-                        {/* Column 5: Location */}
-                        <div className={`col-span-1 md:col-span-2 flex items-center gap-2.5 text-lg md:text-xl min-w-0 p-5 border-r ${styles.columnBorder} ${styles.locationText}`}>
-                          <MapPin className={`w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-1 ${styles.locationIcon}`} />
-                          <span className="font-bold break-words whitespace-normal" title={event.room || event.location || undefined}>
-                            {event.room || event.location || 'Không rõ'}
-                          </span>
-                        </div>
+                          {/* Column 3: Content */}
+                          <div className={`col-span-1 min-w-0 flex items-center p-5 border-r ${styles.columnBorder}`}>
+                            <h3 className={`text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug break-words whitespace-normal transition-colors ${styles.eventTitle}`}>
+                              {event.title}
+                            </h3>
+                          </div>
 
-                        {/* Column 6: Notes */}
-                        <div className="col-span-1 md:col-span-2 min-w-0 flex items-center p-5">
-                          <span className={`text-lg md:text-xl break-words whitespace-normal block ${theme === 'dark' ? 'text-indigo-200/80' : 'text-slate-600'}`} title={event.description || undefined}>
-                            {event.description || '-'}
-                          </span>
+                          {/* Column 2: Attendees */}
+                          <div className={`col-span-1 flex flex-col justify-center gap-1.5 min-w-0 p-5 border-r ${styles.columnBorder}`}>
+                            {event.attendees && event.attendees.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {event.attendees.slice(0, 10).map((emp, idx) => (
+                                  <span key={emp.EmployeeID || idx} className={`inline-flex items-center px-2.5 py-1 rounded-lg border text-sm md:text-base whitespace-nowrap ${styles.attendeeBadge}`}>
+                                    <span className="w-2 h-2 rounded-full bg-sky-500 dark:bg-sky-400 mr-1.5" />
+                                    {emp.FullName}
+                                  </span>
+                                ))}
+                                {event.attendees.length > 10 && (
+                                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/25 dark:border-sky-400/25 text-sm md:text-base font-bold text-sky-600 dark:text-sky-400 shadow-sm">
+                                    +{event.attendees.length - 10}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className={`text-lg md:text-xl italic ${theme === 'dark' ? 'text-sky-300/40' : 'text-slate-400'}`}>Toàn cơ quan</span>
+                            )}
+                          </div>
+
+                          {/* Column 5: Location */}
+                          <div className={`col-span-1 flex items-center gap-2.5 text-lg md:text-xl min-w-0 p-5 border-r ${styles.columnBorder} ${styles.locationText}`}>
+                            <MapPin className={`w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-1 ${styles.locationIcon}`} />
+                            <span className="font-bold break-words whitespace-normal" title={event.room || event.location || undefined}>
+                              {event.room || event.location || 'Không rõ'}
+                            </span>
+                          </div>
+
+                          {/* Column 6: Notes */}
+                          <div className="col-span-1 min-w-0 flex items-center p-5">
+                            <span className={`text-lg md:text-xl break-words whitespace-normal block ${theme === 'dark' ? 'text-indigo-200/80' : 'text-slate-600'}`} title={event.description || undefined}>
+                              {event.description || '-'}
+                            </span>
+                          </div>
                         </div>
                       </motion.div>
                     );
