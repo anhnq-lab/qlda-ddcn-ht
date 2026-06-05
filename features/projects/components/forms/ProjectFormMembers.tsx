@@ -180,6 +180,7 @@ export const ProjectFormMembers: React.FC<ProjectFormMembersProps> = ({
                                                 <option value="Giám đốc dự án">Giám đốc dự án</option>
                                                 <option value="Trưởng phòng phụ trách">Trưởng phòng phụ trách</option>
                                                 <option value="Chuyên viên phụ trách">Chuyên viên phụ trách</option>
+                                                <option value="Chuyên viên KH-ĐT">Chuyên viên KH-ĐT</option>
                                                 <option value="Kế toán dự án">Kế toán dự án</option>
                                                 <option value="Thành viên">Thành viên</option>
                                             </select>

@@ -22,6 +22,7 @@ const ROLE_SHORT: Record<string, string> = {
     'Giám đốc dự án': 'GĐ dự án',
     'Trưởng phòng phụ trách': 'TrP phụ trách',
     'Chuyên viên phụ trách': 'CV phụ trách',
+    'Chuyên viên KH-ĐT': 'CV KH-ĐT',
     'Kế toán dự án': 'Kế toán',
     'Thành viên': 'Thành viên',
 };

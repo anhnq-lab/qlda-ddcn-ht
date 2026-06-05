@@ -15,6 +15,7 @@ export const PROJECT_MEMBER_ROLES = [
     'Giám đốc dự án',
     'Trưởng phòng phụ trách',
     'Chuyên viên phụ trách',
+    'Chuyên viên KH-ĐT',
     'Kế toán dự án',
     'Thành viên',
 ] as const;
