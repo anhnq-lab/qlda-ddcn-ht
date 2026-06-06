@@ -1,7 +1,7 @@
 /**
- * Permission Types — QLDA ĐDCN TP.HCM
- * 
- * Based on authorization_specification.md v1.0
+ * Permission Types — QLDA ĐDCN Hà Tĩnh
+ *
+ * Nguồn sự thật: docs/phan_quyen_theo_module.md (Tài liệu phân quyền chuẩn v2.0)
  * Pattern follows cic-erp-contract/types.ts
  */
 
@@ -285,7 +285,7 @@ export function resolveSystemRole(legacyRole: string, position: string, departme
 
 // ═══════════════════════════════════════════
 // Default permissions per role
-// Based on authorization_specification.md §4
+// Nguồn: docs/phan_quyen_theo_module.md (Phần C — Ma trận quyền)
 // ═══════════════════════════════════════════
 
 export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<PermissionResource, PermissionAction[]>>> = {

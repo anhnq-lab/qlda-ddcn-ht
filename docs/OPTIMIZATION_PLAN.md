@@ -64,7 +64,7 @@
 | P2-5 | Schema legacy: 12 bảng cốt lõi dùng TEXT PK, bảng mới dùng UUID | `supabase/init_schema.sql` |
 | P2-6 | File rác trong root: `scratch/`, `backup_untracked/`, `*.cjs` dumps, `tsc_errors.log`, `build_output.txt` | root |
 | P2-7 | Thiếu bundle analyzer & budget guard | `vite.config.ts` |
-| P2-8 | RBAC matrix chưa được document tự động | `docs/authorization_specification.md` |
+| P2-8 | RBAC matrix chưa được document tự động | `docs/phan_quyen_theo_module.md` |
 
 ---
 
