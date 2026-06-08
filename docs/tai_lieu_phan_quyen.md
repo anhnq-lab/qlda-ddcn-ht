@@ -1,4 +1,4 @@
-# 🔐 PHÂN QUYỀN HỆ THỐNG — THEO TỪNG MODULE
+# 🔐 TÀI LIỆU PHÂN QUYỀN HỆ THỐNG
 
 **Ban QLDA Đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh**
 
@@ -52,7 +52,7 @@ Hệ thống tự suy vai trò từ **chức vụ** + **phòng ban** trong hồ 
 | 7 | 🔧 **Chuyên viên** | `specialist` | Chuyên viên, Kỹ sư, Tư vấn giám sát, Thành viên. |
 | 8 | 📝 **Hành chính** | `staff` | Nhân viên văn thư, hành chính, kế toán viên. |
 
-> 💡 Hai vai trò Giám đốc và Phó Giám đốc cùng hiển thị nhãn **"Lãnh đạo Ban"** trên giao diện, nhưng **khác nhau về phạm vi dữ liệu** (xem Mục 4) và một số quyền quản trị (xem [3.9](#39-️-cài-đặt-hệ-thống)).
+> 💡 Hai vai trò Giám đốc và Phó Giám đốc cùng hiển thị nhãn **"Lãnh đạo Ban"** trên giao diện, nhưng **khác nhau về phạm vi dữ liệu** (xem Mục 4) và một số quyền quản trị (xem [3.8](#38-️-cài-đặt-hệ-thống)).
 >
 > *(Vai trò 👷 Nhà thầu để giai đoạn sau — xem khung phạm vi ở đầu tài liệu.)*
 
@@ -122,12 +122,12 @@ Khi **thêm mới / sửa dự án** (tab *Thành viên*), mỗi nhân sự đư
 | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 👁️ Xem | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | ➕ Thêm | ❌ | ❌ | ❌ | ❌ | ❌ | 📢✅ | ❌ | ❌ |
-| ✏️ Sửa | ❌ | ❌ | ❌ | ❌ | ❌ | 📝✅ | 📝✅ | 📝✅ |
+| ✏️ Sửa | ❌ | ❌ | ❌ | ❌ | ❌ | 📝✅ | ❌ | ❌ |
 | 🗑️ Xóa | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > **CV·PT** = Chuyên viên phụ trách dự án. Theo Quy chế nhập liệu QLDA (Điều 23):
-> - 📢 **Quyền Thêm mới dự án:** Chỉ dành riêng cho **Chuyên viên phòng Kế hoạch – Đấu thầu** (KHDT).
-> - 📝 **Quyền Sửa thông tin dự án:** Dành cho người tạo dự án (`created_by = auth.uid()`), hoặc **Kỹ sư/Cán bộ phụ trách chính** dự án đó, hoặc bất kỳ **Chuyên viên phối hợp (`CV·HT`)** và **Nhân viên Hành chính (`HC`)** nào được phân công làm thành viên phối hợp của dự án đó (`project_members`). Họ được phép sửa các tab/nhiệm vụ tương ứng theo phân công nghiệp vụ.
+> - 📢 **Quyền Thêm mới dự án:** Dành cho **Chuyên viên phụ trách** (khi được phân công phụ trách chuẩn bị/thực hiện dự án, họ sẽ trực tiếp tạo mới dự án trên hệ thống).
+> - 📝 **Quyền Sửa thông tin dự án:** Chỉ dành cho người tạo dự án (`created_by = auth.uid()`), hoặc thành viên dự án (`project_members`) có vai trò quản lý chính (`'Giám đốc dự án'`, `'Chuyên viên phụ trách'`, `'Trưởng phòng phụ trách'`). Các chuyên viên hỗ trợ (`CV·HT`) và nhân viên hành chính (`HC`) khác không có quyền trực tiếp chỉnh sửa thông tin dự án này (chỉ xem và phối hợp cập nhật phần việc được giao).
 > - Các vị trí Lãnh đạo Ban/Phòng chỉ có quyền **Xem**, không trực tiếp thêm/sửa thông tin dự án trên hệ thống.
 
 ---
@@ -187,19 +187,7 @@ Khi **thêm mới / sửa dự án** (tab *Thành viên*), mỗi nhân sự đư
 
 ---
 
-### 3.8. 🔄 Quy trình
-*Đường dẫn: `/quy-trinh` · Quy trình ISO, biểu mẫu.*
-
-| Hành động | GĐ | PGĐ | KTT | TrP | PhP | CV | HC |
-| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 👁️ Xem | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| ➕ Thêm | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| ✏️ Sửa | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| 🗑️ Xóa | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-
----
-
-### 3.9. ⚙️ Cài đặt hệ thống
+### 3.8. ⚙️ Cài đặt hệ thống
 *Đường dẫn: `/settings` · Tài khoản, phân quyền, nhật ký. Footer sidebar — chỉ QTV thấy.*
 
 | Chức năng | GĐ | PGĐ | KTT | TrP | PhP | CV | HC |
@@ -247,7 +235,7 @@ Quyền hành động (Mục 3) trả lời *"được làm gì"*; **phạm vi d
 
 > 💡 **Ghi chú:** Phòng HC-TH, KT-TĐ, PTDV là **phòng chức năng** (không "sở hữu" dự án theo board), nên phạm vi dữ liệu dự án của mỗi PGĐ chủ yếu = dự án của Phòng QLDA mà PGĐ đó phụ trách. Việc PGĐ kiêm phụ trách phòng chức năng ảnh hưởng tới chỉ đạo nghiệp vụ, không mở rộng tập dự án.
 >
-> 🟧 **Cần chốt:** PGĐ Bảo phụ trách thêm PTDV — nếu PTDV có dự án tư vấn riêng (board riêng), cần gán cả board đó cho PGĐ Bảo trong `leadership_assignments`.
+> PGĐ Bảo phụ trách thêm PTDV — gán cả board đó cho PGĐ Bảo trong `leadership_assignments` (Đã chốt ok).
 
 ---
 
@@ -259,12 +247,11 @@ Quyền hành động (Mục 3) trả lời *"được làm gì"*; **phạm vi d
 | :--- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
 | Tổng quan | X E | X E | X E | X | X | X | X | X |
 | Lịch cơ quan | X T S D | X T S D | X | X T | X T | X | X | X |
-| Dự án | X | X | X | X | X | X T S | X S | X S |
-| Công việc | X | X | X | X T S D | X T S | X T S | X T S |
-| Nhân sự | X | X | X | X T S D | X | X | X |
+| Dự án | X | X | X | X | X | X T S | X | X |
+| Công việc | X | X | X | X T S D | X T S | X T S | X T S | X T S |
+| Nhân sự | X | X | X | X T S D | X | X | X | X |
 | VB Pháp luật / Quy chế | X | X | X | X T S | X T S | X T S | X T S | X T S |
 | Báo cáo | X E | X E | X E | X E | X E | X | X | X |
-| Quy trình | X | X | X | X T S | X | X | X | X |
 | Cài đặt: xem tài khoản | — | — | — | — | — | — | — | — |
 | Cài đặt: nhật ký HT | — | — | — | — | — | — | — | — |
 
@@ -279,7 +266,7 @@ Tôi đã đánh dấu 🟧 ở các mục. Tóm tắt để bạn quyết một
 | # | Vấn đề | Hiện tại (code) | Đề xuất | Quyết định (Đã chốt) |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | **Lãnh đạo Ban thao tác trực tiếp dự án** | GĐ/PGĐ được Thêm/Sửa/Xóa dự án | Theo Quy chế lãnh đạo chỉ đạo/duyệt → hạ về **chỉ Xem**, giao tác nghiệp cho phòng QLDA | **Hạ về Xem** |
-| 2 | **Chuyên viên phụ trách vs hỗ trợ** | Có sẵn `project_members.role` nhưng chỉ là nhãn, engine phân quyền chưa dùng | Nối `project_members.role` và `created_by` vào logic RLS: Chỉ Chuyên viên KHDT được Tạo mới; chỉ Kỹ sư phụ trách chính hoặc người tạo mới được Sửa dự án. | **Đồng ý** |
+| 2 | **Chuyên viên phụ trách vs hỗ trợ** | Có sẵn `project_members.role` nhưng chỉ là nhãn, engine phân quyền chưa dùng | Nối `project_members.role` và `created_by` vào logic RLS: Chuyên viên phụ trách được Tạo mới; chỉ Kỹ sư phụ trách chính hoặc người tạo mới được Sửa dự án. | **Đồng ý** |
 | 3 | **Nhân sự** | Chỉ QTV được sửa | Có cấp Thêm/Sửa cho Trưởng phòng HC-TH? | **Mở cho Trưởng phòng HC-TH** |
 | 4 | **Lịch cơ quan** | Chỉ Lãnh đạo Ban Sửa/Xóa | HC-TH chủ trì lịch → cấp Thêm/Sửa cho HC-TH? | **Mở cho HC-TH** |
 | 5 | **Quy chế (Thêm/Sửa điều khoản)** | Chỉ có quyền Xem | Cấp Thêm/Sửa cho QTV/HC-TH? | **Mở cho QTV/HC-TH** |

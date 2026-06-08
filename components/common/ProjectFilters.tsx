@@ -121,6 +121,7 @@ export const ProjectFilters: React.FC = () => {
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
         selectedSpecialty, setSelectedSpecialty,
+        myProjectsOnly, setMyProjectsOnly,
         hasActiveFilters, clearFilters,
         statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, totalUnfiltered,
     } = filters;
@@ -164,6 +165,7 @@ export const ProjectFilters: React.FC = () => {
         selectedGroup !== 'all',
         selectedBoard !== 'all',
         selectedSpecialty !== 'all',
+        myProjectsOnly,
     ].filter(Boolean).length;
 
     return (
@@ -211,6 +213,22 @@ export const ProjectFilters: React.FC = () => {
                 totalUnfiltered={totalUnfiltered}
                 onChange={setSelectedSpecialty}
             />
+
+            {/* Dự án của tôi */}
+            <button
+                onClick={() => setMyProjectsOnly(!myProjectsOnly)}
+                className={`
+                    flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold
+                    border transition-all duration-150 cursor-pointer select-none whitespace-nowrap
+                    ${myProjectsOnly
+                        ? 'bg-primary-500/10 border-primary-500 text-primary-600 dark:text-primary-400 shadow-sm ring-1 ring-primary-500/20'
+                        : 'bg-bg-surface border-border dark:border-slate-600 text-txt-secondary hover:bg-bg-hover-row'
+                    }
+                `}
+            >
+                <span>Dự án của tôi</span>
+            </button>
+
             {isGlobalScope && (
                 <ChipSelect
                     label="Phòng QLDA"

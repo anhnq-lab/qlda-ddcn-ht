@@ -148,6 +148,7 @@ export interface Project {
     Status: ProjectStatus;
     IsEmergency: boolean;
     ImageUrl?: string;
+    CreatedBy?: string;
     Progress?: number;
     PaymentProgress?: number;
     InvestorName?: string;

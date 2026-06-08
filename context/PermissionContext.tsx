@@ -65,7 +65,7 @@ interface PermissionContextType extends PermissionCacheState {
      * Lớp 3 — record-level: được phép SỬA một dự án cụ thể hay không.
      * Chỉ TRUE khi có quyền projects.update VÀ (là người tạo HOẶC là thành viên dự án).
      */
-    canEditProject: (project: { createdBy?: string | null; memberIds?: string[] }) => boolean;
+    canEditProject: (project: { createdBy?: string | null; memberIds?: string[]; members?: Array<{ employeeId: string; role: string }> }) => boolean;
     /** Force refresh from DB */
     refreshPermissions: () => Promise<void>;
     isImpersonating: boolean;
@@ -174,9 +174,10 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         if (['super_admin', 'director', 'chief_accountant'].includes(systemRole)) {
             return true;
         }
-        return GLOBAL_VIEW_DEPARTMENTS.some(dept =>
+        const isGlobalDept = GLOBAL_VIEW_DEPARTMENTS.some(dept =>
             userDept.includes(dept) || dept.includes(userDept)
         );
+        return isGlobalDept && ['dept_head', 'deputy_head'].includes(systemRole);
     }, [effectiveUser, systemRole]);
 
     // Fetch role defaults from DB
@@ -493,13 +494,20 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     // Theo tài liệu Mục 3.3: chỉ người tạo (created_by) hoặc thành viên dự án
     // (project_members) mới được sửa. Lãnh đạo/Trưởng phòng chỉ Xem (matrix đã chặn).
     const canEditProject = useCallback(
-        (project: { createdBy?: string | null; memberIds?: string[] }): boolean => {
+        (project: { createdBy?: string | null; memberIds?: string[]; members?: Array<{ employeeId: string; role: string }> }): boolean => {
             if (systemRole === 'super_admin' || state.systemRole === 'super_admin') return true;
             if (!can('projects', 'update')) return false;
             const uid = effectiveUser?.EmployeeID;
             if (!uid) return false;
             if (project.createdBy && project.createdBy === uid) return true;
-            return Array.isArray(project.memberIds) && project.memberIds.includes(uid);
+            
+            if (Array.isArray(project.members)) {
+                const myMemberObj = project.members.find(m => m.employeeId === uid);
+                if (myMemberObj) {
+                    return ['Giám đốc dự án', 'Chuyên viên phụ trách', 'Trưởng phòng phụ trách'].includes(myMemberObj.role);
+                }
+            }
+            return false;
         },
         [can, systemRole, state.systemRole, effectiveUser]
     );

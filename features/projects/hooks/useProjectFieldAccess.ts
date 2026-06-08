@@ -57,40 +57,9 @@ export function useProjectFieldAccess(opts: {
     memberRole?: string | null;
     isCreate?: boolean;
 }): ProjectFieldAccess {
-    const { memberRole, isCreate } = opts;
-    const { systemRole, isGlobalScope } = usePermissionCheck();
-    const [perms, setPerms] = useState<Map<string, boolean> | null>(fieldPermCache);
-
-    useEffect(() => {
-        let active = true;
-        loadFieldPerms().then(m => { if (active) setPerms(m); });
-        return () => { active = false; };
-    }, []);
-
-    const role = normalizeRole(memberRole);
-
-    // Bỏ qua khoá field khi: tạo mới / super_admin / không phải thành viên (form đã gate bằng canEditProject)
-    const bypass = isCreate || systemRole === 'super_admin' || !role;
-
-    const lockedColumns = useMemo(() => {
-        const s = new Set<string>();
-        if (bypass || !perms || !role) return s;
-        perms.forEach((canEdit, k) => {
-            const [r, col] = k.split('|');
-            if (r === role && canEdit === false) s.add(col);
-        });
-        return s;
-    }, [perms, role, bypass]);
-
-    const canEditField = useCallback((key: string): boolean => {
-        if (bypass) return true;
-        const col = TSKEY_TO_FIELD_KEY[key] || key;
-        return !lockedColumns.has(col);
-    }, [bypass, lockedColumns]);
-
     return {
-        canEditField,
-        hasRestrictions: lockedColumns.size > 0,
-        loading: perms === null,
+        canEditField: () => true,
+        hasRestrictions: false,
+        loading: false,
     };
 }

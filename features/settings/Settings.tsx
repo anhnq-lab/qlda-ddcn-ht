@@ -20,7 +20,7 @@ const LeadershipAssignmentManager = React.lazy(() => import('./LeadershipAssignm
 // SETTINGS — Unified Admin Control Panel
 // ============================================================
 
-type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'dept-rules' | 'project-fields' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
+type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'dept-rules' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
 
 interface TabDef {
     key: TabKey;
@@ -33,7 +33,6 @@ const TABS: TabDef[] = [
     { key: 'contractors', label: 'Nhà thầu', icon: Building2 },
     { key: 'role-defaults', label: 'Ma trận quyền', icon: ShieldCheck },
     { key: 'dept-rules', label: 'Giới hạn theo phòng', icon: Building2 },
-    { key: 'project-fields', label: 'Quyền trường dự án', icon: SlidersHorizontal },
     { key: 'permissions', label: 'Quyền cá nhân', icon: Shield },
     { key: 'leadership', label: 'Phân công lãnh đạo', icon: Award },
     { key: 'dashboard-widgets', label: 'Cấu hình Dashboard', icon: LayoutDashboard },
@@ -51,7 +50,7 @@ const Settings: React.FC = () => {
     // Sync tab ↔ URL
     const [activeTab, setActiveTab] = useTabSearchParam<TabKey>(
         'accounts',
-        ['accounts', 'contractors', 'role-defaults', 'dept-rules', 'project-fields', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
+        ['accounts', 'contractors', 'role-defaults', 'dept-rules', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
         'tab'
     );
 
@@ -140,11 +139,6 @@ const Settings: React.FC = () => {
                     {activeTab === 'dept-rules' && (
                         <div className="p-6 lg:p-8 h-full overflow-y-auto">
                             <DepartmentRuleManager />
-                        </div>
-                    )}
-                    {activeTab === 'project-fields' && (
-                        <div className="p-6 lg:p-8 h-full overflow-y-auto">
-                            <ProjectFieldPermissionManager />
                         </div>
                     )}
                     {activeTab === 'permissions' && (

@@ -10,6 +10,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ProjectService } from '../services/ProjectService';
 import type { QueryParams } from '../types/api';
 import type { Project } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { useImpersonation } from '../context/ImpersonationContext';
 
 export const PROJECTS_QUERY_KEY = 'projects-paginated';
 
@@ -26,8 +28,13 @@ export interface PaginatedProjectsResult {
 }
 
 export function usePaginatedProjects(params?: QueryParams): PaginatedProjectsResult {
+    const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const userId = effectiveUser?.EmployeeID || 'guest';
+
     const { data, isLoading, isFetching, error, refetch } = useQuery({
-        queryKey: [PROJECTS_QUERY_KEY, JSON.stringify(params)],
+        queryKey: [PROJECTS_QUERY_KEY, userId, JSON.stringify(params)],
         queryFn: () => ProjectService.getPaginated(params),
         staleTime: 30_000,        // 30s — don't refetch if data is fresh
         retry: 2,                  // retry failed requests twice

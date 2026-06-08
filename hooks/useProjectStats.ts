@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { ProjectService } from '../services/ProjectService';
 import type { QueryParams } from '../types/api';
+import { useAuth } from '../context/AuthContext';
+import { useImpersonation } from '../context/ImpersonationContext';
 
 export const PROJECT_STATS_QUERY_KEY = 'project-stats';
 
@@ -16,8 +18,13 @@ export interface ProjectStatsResult {
 }
 
 export function useProjectStats(params?: QueryParams): ProjectStatsResult {
+    const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const userId = effectiveUser?.EmployeeID || 'guest';
+
     const { data, isLoading, error } = useQuery({
-        queryKey: [PROJECT_STATS_QUERY_KEY, JSON.stringify(params)],
+        queryKey: [PROJECT_STATS_QUERY_KEY, userId, JSON.stringify(params)],
         queryFn: () => ProjectService.getStats(params),
         staleTime: 60_000,        // 1 minute stale time
         retry: 2,

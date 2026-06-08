@@ -213,6 +213,14 @@ export class ProjectService {
             if (f.investmentType) query = query.eq('investment_type', f.investmentType);
             if (f.stage) query = query.eq('stage', f.stage);
             if (f.sector) query = query.eq('sector', f.sector);
+            if (f.myProjectsOnly) {
+                const myProjectIds = f.myProjectIds || [];
+                if (myProjectIds.length > 0) {
+                    query = query.in('project_id', myProjectIds);
+                } else {
+                    query = query.eq('project_id', 'da_none_placeholder');
+                }
+            }
         }
 
         return query;

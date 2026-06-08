@@ -12,6 +12,8 @@
  * The ban/board filter is pushed to the server via QueryParams.filters.board
  */
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../lib/supabase';
 import { usePaginatedProjects } from './usePaginatedProjects';
 import { useProjectStats, ProjectStatsResult } from './useProjectStats';
 import { useAuth } from '../context/AuthContext';
@@ -79,10 +81,33 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     const managedBoardsKey = managedBoards.join(',');
     const allowedIdsKey = (effectiveUser?.AllowedProjectIDs || []).join(',');
 
+    const myProjectsOnly = params?.filters?.myProjectsOnly;
+
+    // Fetch my project IDs
+    const { data: myProjectIds = [], isLoading: isLoadingMyProjectIds } = useQuery({
+        queryKey: ['my-project-ids', effectiveUser?.EmployeeID],
+        queryFn: async () => {
+            if (!effectiveUser?.EmployeeID) return [];
+            const { data, error } = await supabase
+                .from('project_members')
+                .select('project_id')
+                .eq('employee_id', effectiveUser.EmployeeID);
+            if (error) throw error;
+            return (data || []).map((row: any) => row.project_id);
+        },
+        enabled: !!effectiveUser?.EmployeeID && !!myProjectsOnly,
+    });
+    const myProjectIdsKey = myProjectIds.join(',');
+
     // Build server-side filter params with board scope injected
     const serverParams = useMemo((): QueryParams => {
         const base: QueryParams = { ...params };
         if (!base.filters) base.filters = {};
+
+        if (myProjectsOnly) {
+            base.filters.myProjectsOnly = true;
+            base.filters.myProjectIds = myProjectIds;
+        }
 
         // Nhà thầu: scope theo danh sách dự án được gói (đẩy xuống server → phân trang đúng)
         if (systemRole === 'contractor') {
@@ -104,7 +129,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         }
 
         return base;
-    }, [params, isGlobalScope, systemRole, banNumber, managedBoardsKey, allowedIdsKey]);
+    }, [params, isGlobalScope, systemRole, banNumber, managedBoardsKey, allowedIdsKey, myProjectsOnly, myProjectIdsKey]);
 
     // Paginated fetch from server
     const { projects, total, page, pageSize, totalPages, isLoading, isFetching, refetch } = usePaginatedProjects(serverParams);
@@ -137,7 +162,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         totalUnfiltered,
         isGlobalScope,
         banNumber,
-        isLoading: isLoading || isLoadingStats,
+        isLoading: isLoading || isLoadingStats || (myProjectsOnly ? isLoadingMyProjectIds : false),
         isFetching,
         refetch,
     };

@@ -110,6 +110,7 @@ export const dbToProject = (row: any): Project => ({
     ProjectStatusInfo: row.project_status_info || {},
     SpecialtyType: row.specialty_type || '',
     SpecialtyDetails: row.specialty_details || '',
+    CreatedBy: row.created_by || '',
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -123,6 +124,7 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.Status !== undefined) result.status = p.Status;
     if (p.IsEmergency !== undefined) result.is_emergency = p.IsEmergency;
     if (p.ImageUrl !== undefined) result.image_url = p.ImageUrl;
+    if (p.CreatedBy !== undefined) result.created_by = p.CreatedBy;
     if (p.Progress !== undefined) result.progress = p.Progress;
     if (p.PaymentProgress !== undefined) result.payment_progress = p.PaymentProgress;
     if (p.InvestorName !== undefined) result.investor_name = p.InvestorName;

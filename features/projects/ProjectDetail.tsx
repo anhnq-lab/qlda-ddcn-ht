@@ -246,7 +246,15 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
 
     // Lớp 3 — chỉ thành viên dự án (hoặc super_admin) mới được Sửa dự án này.
     const projectMemberIds = useMemo(() => projectMembers.map((m: any) => m.EmployeeID), [projectMembers]);
-    const canEditThisProject = canEditProject({ memberIds: projectMemberIds });
+    const projectMembersWithRoles = useMemo(() => projectMembers.map((m: any) => ({
+        employeeId: m.EmployeeID,
+        role: m.Role
+    })), [projectMembers]);
+    const canEditThisProject = canEditProject({
+        memberIds: projectMemberIds,
+        members: projectMembersWithRoles,
+        createdBy: project?.CreatedBy
+    });
 
     // ─── Handlers ───
     const handleSync = useCallback(async () => {

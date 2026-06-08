@@ -7,6 +7,8 @@ import { TaskService } from '../services/TaskService';
 import type { DbTask } from '../services/TaskService';
 import { workflowTaskToTask, taskToDbTask } from '../lib/dbMappers';
 import { Task } from '../types/task.types';
+import { useAuth } from '../context/AuthContext';
+import { useImpersonation } from '../context/ImpersonationContext';
 
 // ── Query Keys ────────────────────────────────────────────────
 export const taskKeys = {
@@ -14,15 +16,20 @@ export const taskKeys = {
   lists: () => [...taskKeys.all, 'list'] as const,
   list: (filters: Record<string, any>) => [...taskKeys.lists(), filters] as const,
   details: () => [...taskKeys.all, 'detail'] as const,
-  detail: (id: string) => [...taskKeys.details(), id] as const,
+  detail: (id: string, filters?: Record<string, any>) => [...taskKeys.details(), id, filters || {}] as const,
 };
 
 // ── Read Hooks ────────────────────────────────────────────────
 
 /** Lấy tasks theo dự án */
 export const useProjectTasks = (projectId?: string) => {
+  const { currentUser } = useAuth();
+  const { impersonatedUser, isImpersonating } = useImpersonation();
+  const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+  const userId = effectiveUser?.EmployeeID || 'guest';
+
   return useQuery({
-    queryKey: taskKeys.list({ projectId }),
+    queryKey: taskKeys.list({ projectId, userId }),
     queryFn: async () => {
       if (!projectId) return [] as Task[];
       const data = await TaskService.getProjectTasks(projectId);
@@ -36,8 +43,13 @@ export const useProjectTasks = (projectId?: string) => {
 
 /** Lấy tất cả tasks (scoped theo project IDs) — cho TaskList page */
 export const useAllTasks = (projectIds?: string[]) => {
+  const { currentUser } = useAuth();
+  const { impersonatedUser, isImpersonating } = useImpersonation();
+  const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+  const userId = effectiveUser?.EmployeeID || 'guest';
+
   return useQuery({
-    queryKey: taskKeys.list({ scope: projectIds }),
+    queryKey: taskKeys.list({ scope: projectIds, userId }),
     queryFn: async () => {
       const data = await TaskService.getAllTasks(projectIds);
       return data.map(wt => workflowTaskToTask(wt));
@@ -49,8 +61,13 @@ export const useAllTasks = (projectIds?: string[]) => {
 
 /** Lấy tasks nội bộ */
 export const useInternalTasks = () => {
+  const { currentUser } = useAuth();
+  const { impersonatedUser, isImpersonating } = useImpersonation();
+  const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+  const userId = effectiveUser?.EmployeeID || 'guest';
+
   return useQuery({
-    queryKey: taskKeys.list({ type: 'internal' }),
+    queryKey: taskKeys.list({ type: 'internal', userId }),
     queryFn: async () => {
         const data = await TaskService.getInternalTasks();
         return data.map(wt => workflowTaskToTask(wt));
@@ -62,8 +79,13 @@ export const useInternalTasks = () => {
 
 /** Lấy 1 task */
 export const useTask = (taskId?: string) => {
+  const { currentUser } = useAuth();
+  const { impersonatedUser, isImpersonating } = useImpersonation();
+  const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+  const userId = effectiveUser?.EmployeeID || 'guest';
+
   return useQuery({
-    queryKey: taskKeys.detail(taskId || ''),
+    queryKey: taskKeys.detail(taskId || '', { userId }),
     queryFn: async () => {
       if (!taskId) return null;
       const data = await TaskService.getTaskById(taskId);

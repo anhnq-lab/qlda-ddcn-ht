@@ -18,6 +18,7 @@ import { KanbanBoard } from './components/KanbanBoard';
 import { TaskSlidePanel } from './components/TaskSlidePanel';
 import { useAuth } from '../../context/AuthContext';
 import { useImpersonation } from '../../context/ImpersonationContext';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { User, Sparkles, FolderOpen, X, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, CheckCircle2, Trash2 } from 'lucide-react';
 import { TaskStatsRow } from './components/TaskStatsRow';
 import { TaskFilterBar } from './components/TaskFilterBar';
@@ -100,8 +101,40 @@ const TaskList: React.FC<TaskListProps> = ({
     const { openPanel, closePanel } = useSlidePanel();
     const { currentUser } = useAuth();
     const { impersonatedUser, isImpersonating } = useImpersonation();
+    const { systemRole } = usePermissionCheck();
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const userDept = effectiveUser?.Department || '';
+
+    // Normalize department names for comparison (handles em-dash vs hyphen)
+    const normalizeDeptName = (name: string) => {
+        return name.replace(/[–—-]/g, '-').trim();
+    };
+
+    // Resolve user's department code
+    const userDeptCode = useMemo(() => {
+        if (!effectiveUser?.Department) return null;
+        const userDeptName = effectiveUser.Department;
+        return Object.keys(DEPARTMENT_NAMES).find(
+            key => normalizeDeptName(DEPARTMENT_NAMES[key as DepartmentCode]) === normalizeDeptName(userDeptName)
+        ) as DepartmentCode | undefined;
+    }, [effectiveUser]);
+
+    // Check if user has global work plan scope (can view all departments' tasks/plans)
+    const hasGlobalWorkPlanScope = useMemo(() => {
+        if (!effectiveUser) return false;
+        
+        // 1. Super Admin or Director or Deputy Director
+        if (['super_admin', 'director', 'deputy_director'].includes(systemRole)) {
+            return true;
+        }
+        
+        // 2. Head of HCTH (Administration)
+        if (systemRole === 'dept_head' && userDeptCode === 'HCTH') {
+            return true;
+        }
+        
+        return false;
+    }, [effectiveUser, systemRole, userDeptCode]);
     
     const [searchParams] = useSearchParams();
     const urlTaskId = searchParams.get('taskId');
@@ -464,8 +497,8 @@ const TaskList: React.FC<TaskListProps> = ({
             (task.StartDate && new Date(task.StartDate).getFullYear() === parseInt(filterYear))
         );
 
-        // Ép buộc lọc theo phòng ban đối với nhân viên không có quyền xem toàn cục
-        const finalFilterDept = isGlobalScope ? filterDepartment : userDept;
+        // Ép buộc lọc theo phòng ban đối với nhân viên không có quyền xem toàn cục kế hoạch công việc
+        const finalFilterDept = hasGlobalWorkPlanScope ? filterDepartment : userDept;
 
         // Department filter
         const matchDepartment = finalFilterDept === 'All' || finalFilterDept === '' || (() => {
@@ -502,7 +535,7 @@ const TaskList: React.FC<TaskListProps> = ({
         const matchTaskType = filterTaskType === 'All' || task.TaskType === filterTaskType;
 
         return matchStatus && matchProject && matchMonth && matchYear && matchDepartment && matchOverdue && matchNotUpdatedThisWeek && matchPersonal && matchTaskType && matchPendingProposal;
-    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterNotUpdatedThisWeek, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
+    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterNotUpdatedThisWeek, filterPersonal, filterTaskType, currentUser, scopedProjectIds, hasGlobalWorkPlanScope, employees]);
 
     // Tự động mở slide panel khi có taskId trên URL
     useEffect(() => {

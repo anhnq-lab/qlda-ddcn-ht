@@ -73,6 +73,8 @@ export interface ProjectFiltersResult {
     setSelectedBoard: (b: string) => void;
     selectedSpecialty: string;
     setSelectedSpecialty: (s: string) => void;
+    myProjectsOnly: boolean;
+    setMyProjectsOnly: (m: boolean) => void;
     sortBy: SortOption;
     setSortBy: (s: SortOption) => void;
     // Pagination
@@ -100,6 +102,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     const [selectedGroup, setSelectedGroup] = useState(searchParams.get('group') || 'all');
     const [selectedBoard, setSelectedBoard] = useState(searchParams.get('board') || 'all');
     const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get('specialty') || 'all');
+    const [myProjectsOnly, setMyProjectsOnly] = useState(searchParams.get('myProjects') === 'true');
     const [sortBy, setSortBy] = useState<SortOption>((searchParams.get('sort') as SortOption) || 'created');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
     const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
@@ -110,7 +113,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
     // Reset page when filters change
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, sortBy]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, myProjectsOnly, sortBy]);
 
     // ── Sync state → URL (skip on first render) ──
     useEffect(() => {
@@ -125,11 +128,12 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         if (selectedGroup !== 'all') params.set('group', selectedGroup);
         if (selectedBoard !== 'all') params.set('board', selectedBoard);
         if (selectedSpecialty !== 'all') params.set('specialty', selectedSpecialty);
+        if (myProjectsOnly) params.set('myProjects', 'true');
         if (sortBy !== 'created') params.set('sort', sortBy);
         if (viewMode !== 'grid') params.set('view', viewMode);
         if (page > 1) params.set('page', page.toString());
         setSearchParams(params, { replace: true });
-    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, sortBy, viewMode, page, setSearchParams]);
+    }, [debouncedSearch, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, myProjectsOnly, sortBy, viewMode, page, setSearchParams]);
 
     // ── Build QueryParams for server-side query ──
     const queryParams = useMemo((): QueryParams => ({
@@ -144,11 +148,12 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
             ...(selectedGroup !== 'all' && { group: selectedGroup }),
             ...(selectedBoard !== 'all' && { board: selectedBoard }),
             ...(selectedSpecialty !== 'all' && { specialtyType: selectedSpecialty }),
+            ...(myProjectsOnly && { myProjectsOnly: true }),
         },
-    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty]);
+    }), [page, defaultPageSize, debouncedSearch, sortBy, selectedStatus, selectedCurrentStatus, selectedGroup, selectedBoard, selectedSpecialty, myProjectsOnly]);
 
     // ── Actions ──
-    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedCurrentStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all' || selectedSpecialty !== 'all';
+    const hasActiveFilters = debouncedSearch !== '' || selectedStatus !== 'all' || selectedCurrentStatus !== 'all' || selectedGroup !== 'all' || selectedBoard !== 'all' || selectedSpecialty !== 'all' || myProjectsOnly;
 
     const clearFilters = useCallback(() => {
         setSearchQuery('');
@@ -157,6 +162,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         setSelectedGroup('all');
         setSelectedBoard('all');
         setSelectedSpecialty('all');
+        setMyProjectsOnly(false);
         setPage(1);
     }, []);
 
@@ -167,6 +173,7 @@ export function useProjectFilters(defaultPageSize = 50): ProjectFiltersResult {
         selectedGroup, setSelectedGroup,
         selectedBoard, setSelectedBoard,
         selectedSpecialty, setSelectedSpecialty,
+        myProjectsOnly, setMyProjectsOnly,
         sortBy, setSortBy,
         page, setPage,
         pageSize: defaultPageSize,

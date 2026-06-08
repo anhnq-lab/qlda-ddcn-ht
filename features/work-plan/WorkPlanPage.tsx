@@ -1,4 +1,4 @@
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { useState, Suspense, useEffect, useMemo } from 'react';
 import { ClipboardList, CalendarDays, ListChecks } from 'lucide-react';
 import { FilterChip } from '../../components/ui';
 import PageLoadingFallback from '../../components/ui/PageLoadingFallback';
@@ -43,22 +43,48 @@ const WorkPlanPage: React.FC = () => {
     
     const { currentUser } = useAuth();
     const { impersonatedUser, isImpersonating } = useImpersonation();
-    const { isGlobalScope } = usePermissionCheck();
+    const { isGlobalScope, systemRole } = usePermissionCheck();
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
 
-    // Tự động ép buộc lọc theo phòng ban của nhân viên nếu không có quyền xem toàn cục
+    // Normalize department names for comparison (handles em-dash vs hyphen)
+    const normalizeDeptName = (name: string) => {
+        return name.replace(/[–—-]/g, '-').trim();
+    };
+
+    // Resolve user's department code
+    const userDeptCode = useMemo(() => {
+        if (!effectiveUser?.Department) return null;
+        const userDeptName = effectiveUser.Department;
+        return Object.keys(DEPARTMENT_NAMES).find(
+            key => normalizeDeptName(DEPARTMENT_NAMES[key as DepartmentCode]) === normalizeDeptName(userDeptName)
+        ) as DepartmentCode | undefined;
+    }, [effectiveUser]);
+
+    // Check if user has global work plan scope (can view all departments' tasks/plans)
+    const hasGlobalWorkPlanScope = useMemo(() => {
+        if (!effectiveUser) return false;
+        
+        // 1. Super Admin or Director or Deputy Director
+        if (['super_admin', 'director', 'deputy_director'].includes(systemRole)) {
+            return true;
+        }
+        
+        // 2. Head of HCTH (Administration)
+        if (systemRole === 'dept_head' && userDeptCode === 'HCTH') {
+            return true;
+        }
+        
+        return false;
+    }, [effectiveUser, systemRole, userDeptCode]);
+
+    // Tự động ép buộc lọc theo phòng ban của nhân viên nếu không có quyền xem toàn cục kế hoạch công việc
     useEffect(() => {
-        if (!isGlobalScope && effectiveUser?.Department) {
-            const userDeptName = effectiveUser.Department;
-            const userDeptCode = Object.keys(DEPARTMENT_NAMES).find(
-                key => DEPARTMENT_NAMES[key as DepartmentCode] === userDeptName
-            ) as FilterDeptCode;
-            
-            if (userDeptCode && dept !== userDeptCode) {
+        if (!hasGlobalWorkPlanScope && userDeptCode) {
+            if (dept !== userDeptCode) {
                 setDept(userDeptCode);
             }
         }
-    }, [isGlobalScope, effectiveUser, dept, setDept]);
+    }, [hasGlobalWorkPlanScope, userDeptCode, dept, setDept]);
 
     // Tự động chuyển 'All' về 'HCTH' khi ở tab monthly-report (vì kế hoạch tháng cần phòng ban cụ thể)
     useEffect(() => {
@@ -148,7 +174,7 @@ const WorkPlanPage: React.FC = () => {
                     />
 
                     {/* Bộ lọc phòng ban dùng chung */}
-                    {isGlobalScope && !(active === 'monthly-report' && subTab === 'report') && (
+                    {hasGlobalWorkPlanScope && !(active === 'monthly-report' && subTab === 'report') && (
                         <FilterChip
                             label="Phòng ban"
                             value={dept}

@@ -13,12 +13,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { ProjectService } from '../services/ProjectService';
 import { QueryParams } from '../types/api';
+import { useAuth } from '../context/AuthContext';
+import { useImpersonation } from '../context/ImpersonationContext';
 
 export const LEGACY_PROJECTS_QUERY_KEY = 'projects';
 
 export const useProjects = (params?: QueryParams) => {
+    const { currentUser } = useAuth();
+    const { impersonatedUser, isImpersonating } = useImpersonation();
+    const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
+    const userId = effectiveUser?.EmployeeID || 'guest';
+
     const { data: projects = [], isLoading, error, refetch } = useQuery({
-        queryKey: [LEGACY_PROJECTS_QUERY_KEY, JSON.stringify(params)],
+        queryKey: [LEGACY_PROJECTS_QUERY_KEY, userId, JSON.stringify(params)],
         queryFn: () => ProjectService.getAll(params),
     });
 
